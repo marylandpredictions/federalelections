@@ -1596,14 +1596,24 @@ dd {
   gap: 8px;
 }
 
-.fallback-list a {
+.fallback-list a,
+.fallback-list button {
   min-height: 54px;
   display: grid;
   place-items: center;
   border: 1px solid var(--line);
   border-radius: 2px;
+  color: var(--ink);
   text-decoration: none;
   font: 900 1rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.fallback-list button {
+  cursor: pointer;
+}
+
+.governor-state-grid {
+  grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
 }
 
 .dashboard-grid {
