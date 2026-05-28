@@ -2141,7 +2141,7 @@ function renderTopArticle() {
   }
   const article = sortedArticles().find((item) => item.featured) || sortedArticles()[0];
   container.innerHTML = `
-    <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections")}</p>
+    <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections Analysis")}</p>
     <h2 id="top-article-title"><a href="${articleUrl(article)}">${escapeHtml(article.title)}</a></h2>
     <p>${escapeHtml(article.dek || "")}</p>
     <a class="button-link" href="${articleUrl(article)}">Read article</a>
@@ -2166,7 +2166,7 @@ function renderArticlesList() {
   const list = sortedArticles();
   container.innerHTML = list.length ? list.map((article) => `
     <article class="article-card">
-      <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections")}</p>
+      <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections Analysis")}</p>
       <h2><a href="${articleUrl(article)}">${escapeHtml(article.title)}</a></h2>
       <p>${escapeHtml(article.dek || "")}</p>
     </article>
@@ -2182,12 +2182,12 @@ function renderArticlePage() {
     container.innerHTML = `<p class="kicker">Article</p><h1>Article not found.</h1><p><a class="button-link" href="articles.html">Back to articles</a></p>`;
     return;
   }
-  document.title = `${article.title} | Federal Elections`;
+  document.title = `${article.title} | Federal Elections Analysis`;
   container.innerHTML = `
     <p class="kicker">Article</p>
     <h1>${escapeHtml(article.title)}</h1>
     <p class="lede">${escapeHtml(article.dek || "")}</p>
-    <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections")}</p>
+    <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections Analysis")}</p>
     <div id="article-body" class="article-body"></div>
     <p><a class="button-link" href="articles.html">Back to articles</a></p>
   `;
