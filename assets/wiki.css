@@ -1,4 +1,24 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Roboto:wght@700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700;900&display=swap");
+
+@font-face {
+  font-family: "Telegraf";
+  src:
+    url("fonts/Telegraf-Regular.woff2") format("woff2"),
+    url("fonts/Telegraf-Regular.woff") format("woff");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Telegraf";
+  src:
+    url("fonts/Telegraf-Bold.woff2") format("woff2"),
+    url("fonts/Telegraf-Bold.woff") format("woff");
+  font-weight: 900 950;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   color-scheme: light;
@@ -100,7 +120,7 @@ body {
   min-width: 320px;
   background: var(--bg);
   color: var(--ink);
-  font: 16px/1.5 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 16px/1.5 "Telegraf", "Segoe UI", Arial, sans-serif;
   animation: page-in .34s var(--ease-out) both;
   overflow-x: hidden;
 }
@@ -188,7 +208,7 @@ button {
 }
 
 .brand strong {
-  font: 900 1rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 1rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .brand small,
@@ -199,7 +219,7 @@ button {
 .race-kicker,
 .chart-label {
   color: var(--muted);
-  font: 800 .72rem/1.2 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .72rem/1.2 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: .08em;
   text-transform: uppercase;
 }
@@ -225,7 +245,7 @@ button {
     color-mix(in srgb, var(--paper) 74%, transparent);
   color: color-mix(in srgb, var(--ink) 82%, var(--muted));
   text-decoration: none;
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-family: "Telegraf", "Segoe UI", Arial, sans-serif;
   font-weight: 900;
   font-size: .9rem;
   transition: background .16s var(--ease-out), border-color .16s var(--ease-out), color .16s var(--ease-out), transform .16s var(--ease-out);
@@ -327,7 +347,7 @@ main {
 
 .site-footer strong {
   display: block;
-  font: 950 1rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 1rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .site-footer p {
@@ -464,7 +484,7 @@ h1 {
   font-size: clamp(2.35rem, 5vw, 4.85rem);
   line-height: .95;
   letter-spacing: 0;
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-family: "Telegraf", "Segoe UI", Arial, sans-serif;
   font-weight: 950;
 }
 
@@ -478,7 +498,7 @@ h2 {
   margin: 0;
   font-size: clamp(1.55rem, 2.7vw, 2.75rem);
   line-height: 1;
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-family: "Telegraf", "Segoe UI", Arial, sans-serif;
   font-weight: 950;
 }
 
@@ -554,13 +574,13 @@ h3 {
   display: block;
   margin-bottom: 7px;
   color: var(--muted);
-  font: 850 .7rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 .7rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
 }
 
 .forecast-family-card strong {
   display: block;
-  font: 950 1.45rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 1.45rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .forecast-family-card small {
@@ -622,21 +642,21 @@ h3 {
 .forecast-overview-card span {
   display: block;
   color: var(--muted);
-  font: 850 .7rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 .7rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
 }
 
 .forecast-overview-card strong {
   display: block;
   margin-top: 8px;
-  font: 950 1.45rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 1.45rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .forecast-overview-card b {
   display: block;
   margin-top: 15px;
   color: var(--ink);
-  font: 950 clamp(1.65rem, 3vw, 2.6rem)/.95 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 clamp(1.65rem, 3vw, 2.6rem)/.95 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .forecast-overview-card small {
@@ -671,13 +691,13 @@ h3 {
 
 .home-run-panel dt {
   color: var(--muted);
-  font: 850 .68rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 .68rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
 }
 
 .home-run-panel dd {
   margin: 4px 0 0;
-  font: 950 1.05rem/1.05 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 1.05rem/1.05 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .home-radar-grid,
@@ -731,7 +751,7 @@ h3 {
 
 .home-section-head span {
   color: var(--muted);
-  font: 850 .72rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 .72rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: .08em;
   text-transform: uppercase;
 }
@@ -854,7 +874,7 @@ h3 {
 .home-radar-row strong,
 .home-radar-row b,
 .home-radar-row i {
-  font: 900 .8rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .8rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
   font-style: normal;
 }
 
@@ -899,7 +919,7 @@ h3 {
 }
 
 .home-article-list strong {
-  font: 900 .95rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .95rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .home-data-links {
@@ -913,7 +933,7 @@ h3 {
   padding: 11px 2px;
   border-bottom: 1px solid var(--line);
   color: var(--ink);
-  font: 900 .92rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .92rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
   transition: background .14s var(--ease-out), padding-left .14s var(--ease-out);
@@ -943,18 +963,18 @@ h3 {
 }
 
 .signal-row strong {
-  font: 950 1.05rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 1.05rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .signal-row span {
   color: var(--muted);
-  font: 800 .82rem/1.2 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .82rem/1.2 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .model-credit {
   margin-top: 10px;
   color: var(--muted);
-  font: 900 .82rem/1.25 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .82rem/1.25 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
 }
 
@@ -962,7 +982,7 @@ h3 {
   max-width: 760px;
   margin-top: 8px;
   color: var(--muted);
-  font: 800 .86rem/1.45 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .86rem/1.45 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .signal-row.signal-muted strong {
@@ -1010,7 +1030,7 @@ h3 {
   display: grid;
   gap: 2px;
   color: var(--rep);
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-family: "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: 0;
 }
 
@@ -1039,7 +1059,7 @@ h3 {
 
 .big-odds span {
   color: var(--muted);
-  font: 900 .74rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .74rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
 }
 
@@ -1078,13 +1098,13 @@ h3 {
 
 dt {
   color: var(--muted);
-  font: 800 .72rem/1.2 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .72rem/1.2 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
 }
 
 dd {
   margin: 3px 0 0;
-  font: 900 1.05rem/1.15 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 1.05rem/1.15 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .control-bar,
@@ -1137,7 +1157,7 @@ dd {
   border-radius: 3px;
   background: var(--paper);
   color: var(--muted);
-  font: 850 .78rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 .78rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   transition: background .14s var(--ease-out), color .14s var(--ease-out), border-color .14s var(--ease-out), transform .14s var(--ease-out);
 }
 
@@ -1233,7 +1253,7 @@ dd {
   border-radius: 2px;
   padding: 0;
   color: transparent;
-  font: 800 .45rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .45rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -1302,7 +1322,7 @@ dd {
 .district-list-row strong,
 .district-list-row em,
 .district-list-row i {
-  font: 900 .78rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .78rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
   font-style: normal;
 }
 
@@ -1372,7 +1392,7 @@ dd {
   align-items: center;
   gap: 6px;
   color: var(--muted);
-  font: 800 .72rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .72rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
 }
 
@@ -1416,7 +1436,7 @@ dd {
 }
 
 .hover-card .state-code {
-  font: 950 2.75rem/.86 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 2.75rem/.86 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .map-card-title {
@@ -1434,7 +1454,7 @@ dd {
   border: 1px solid var(--line);
   border-radius: 3px;
   color: var(--ink);
-  font: 900 .72rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .72rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   transition: transform .14s var(--ease-out);
 }
 
@@ -1461,7 +1481,7 @@ dd {
 .candidate-table-head,
 .candidate-margin span {
   color: var(--muted);
-  font: 850 .66rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 .66rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
 }
 
@@ -1473,7 +1493,7 @@ dd {
 
 .candidate-row {
   border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
-  font: 800 .82rem/1.2 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .82rem/1.2 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .candidate-row span {
@@ -1489,7 +1509,7 @@ dd {
   margin-left: 4px;
   border-radius: 4px;
   color: white;
-  font: 900 .62rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .62rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   font-style: normal;
   vertical-align: middle;
 }
@@ -1540,7 +1560,7 @@ dd {
 .candidate-key {
   margin: 8px 0 0;
   color: var(--muted);
-  font: 750 .72rem/1.25 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 750 .72rem/1.25 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .candidate-key b {
@@ -1553,7 +1573,7 @@ dd {
   color: var(--muted);
   border: 1px solid color-mix(in srgb, var(--muted) 55%, transparent);
   background: color-mix(in srgb, var(--paper) 85%, white);
-  font: 900 .6rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .6rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .candidate-key b + b,
@@ -1581,7 +1601,7 @@ dd {
   border: 1px solid var(--line);
   border-radius: 2px;
   text-decoration: none;
-  font: 900 1rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 1rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .dashboard-grid {
@@ -1685,7 +1705,7 @@ dd {
 .leverage-row span,
 .poll-row span {
   color: var(--muted);
-  font: 700 .74rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 700 .74rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-align: center;
 }
 
@@ -1721,7 +1741,7 @@ dd {
 .matchup-strength-grid h3 {
   margin: 0 0 9px;
   color: var(--muted);
-  font: 900 .72rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .72rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: .03em;
   text-transform: uppercase;
 }
@@ -1769,7 +1789,7 @@ dd {
 .matchup-pair-row strong {
   min-width: 0;
   color: var(--ink);
-  font: 850 .86rem/1.15 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 .86rem/1.15 "Telegraf", "Segoe UI", Arial, sans-serif;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1778,7 +1798,7 @@ dd {
 .matchup-strength-row span,
 .matchup-pair-row span {
   color: var(--ink);
-  font: 900 .82rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .82rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-align: right;
 }
 
@@ -1826,7 +1846,7 @@ dd {
 
 .president-race-board .race-board-row > span:first-of-type small {
   color: var(--muted);
-  font: 800 .68rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .68rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .president-race-board .race-board-row span {
@@ -1844,7 +1864,7 @@ dd {
   align-items: center;
   padding: 10px 0;
   border-bottom: 1px solid var(--line);
-  font: 700 .9rem/1.2 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 700 .9rem/1.2 "Telegraf", "Segoe UI", Arial, sans-serif;
   transition: background .14s var(--ease-out), padding-left .14s var(--ease-out);
 }
 
@@ -1972,12 +1992,12 @@ button.race-board-row {
 .race-board-row strong {
   padding-left: 8px;
   color: var(--ink);
-  font: 950 1.05rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 1.05rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .race-board-row span {
   color: color-mix(in srgb, var(--ink) 76%, var(--muted));
-  font: 750 .9rem/1.25 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 750 .9rem/1.25 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .race-board-row span:last-child {
@@ -1993,13 +2013,13 @@ button.race-board-row {
 
 .path-summary h3 {
   margin: 0 0 6px;
-  font: 950 1.05rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 1.05rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .path-summary p {
   margin: 0 0 10px;
   color: var(--muted);
-  font: 750 .95rem/1.35 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 750 .95rem/1.35 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .path-chip-grid,
@@ -2034,13 +2054,13 @@ button.race-board-row {
 .path-chip strong,
 .path-chip b,
 .path-stat-grid strong {
-  font: 950 .9rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 .9rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .path-chip span,
 .path-stat-grid span {
   color: var(--muted);
-  font: 750 .82rem/1.2 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 750 .82rem/1.2 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .path-stat-grid div {
@@ -2062,7 +2082,7 @@ button.race-board-row {
 .accordion-list summary {
   cursor: pointer;
   padding: 12px;
-  font: 950 .95rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 .95rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .accordion-list ul {
@@ -2145,13 +2165,13 @@ button.race-board-row {
   display: block;
   margin-top: 3px;
   color: var(--ink);
-  font: 950 1.15rem/1.08 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 1.15rem/1.08 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .movement-summary small,
 .movement-note {
   color: var(--muted);
-  font: 800 .78rem/1.25 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .78rem/1.25 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .movement-driver-list {
@@ -2186,7 +2206,7 @@ button.race-board-row {
 .movement-driver-label {
   display: block;
   color: var(--muted);
-  font: 950 .66rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 .66rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
 }
 
@@ -2194,14 +2214,14 @@ button.race-board-row {
   display: block;
   margin-top: 5px;
   color: var(--ink);
-  font: 900 .92rem/1.18 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .92rem/1.18 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .movement-driver-list em {
   display: inline-block;
   margin-top: 7px;
   color: var(--muted);
-  font: 850 .68rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 .68rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
   font-style: normal;
 }
@@ -2228,7 +2248,7 @@ button.race-board-row {
 .input-snapshot-card span {
   display: block;
   color: var(--muted);
-  font: 950 .66rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 .66rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
 }
 
@@ -2236,20 +2256,20 @@ button.race-board-row {
   display: block;
   margin-top: 8px;
   color: var(--ink);
-  font: 950 1rem/1.08 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 1rem/1.08 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .input-snapshot-card small {
   display: block;
   margin-top: 8px;
   color: var(--muted);
-  font: 800 .76rem/1.22 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .76rem/1.22 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .calibration-table table {
   width: 100%;
   border-collapse: collapse;
-  font: 800 .92rem/1.25 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .92rem/1.25 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .calibration-table th,
@@ -2283,14 +2303,14 @@ button.race-board-row {
 
 .backtest-card strong {
   display: block;
-  font: 950 1.15rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 1.15rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .backtest-card span {
   display: inline-block;
   margin-top: 6px;
   color: var(--muted);
-  font: 850 .72rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 .72rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
 }
 
@@ -2307,7 +2327,7 @@ button.race-board-row {
   border-radius: 999px;
   background: color-mix(in srgb, var(--paper-2) 78%, transparent);
   color: var(--muted);
-  font: 850 .68rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 .68rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
 }
 
@@ -2326,7 +2346,7 @@ button.race-board-row {
 
 .map-card-factors dt {
   color: var(--muted);
-  font: 850 .62rem/1.05 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 .62rem/1.05 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: 0;
   text-transform: uppercase;
 }
@@ -2334,7 +2354,7 @@ button.race-board-row {
 .map-card-factors dd {
   margin: 0;
   color: var(--ink);
-  font: 800 .76rem/1.15 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .76rem/1.15 "Telegraf", "Segoe UI", Arial, sans-serif;
   overflow-wrap: anywhere;
 }
 
@@ -2351,7 +2371,7 @@ button.race-board-row {
   border-radius: 4px;
   background: color-mix(in srgb, var(--paper) 86%, white);
   color: var(--muted);
-  font: 800 .66rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .66rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .coalition-chips b {
@@ -2370,7 +2390,7 @@ button.race-board-row {
 .calibration-miss-row p {
   margin: 4px 0 0 44px;
   color: var(--muted);
-  font: 750 .78rem/1.3 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 750 .78rem/1.3 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .race-board-row:hover,
@@ -2394,7 +2414,7 @@ button.race-board-row {
 }
 
 .race-title {
-  font: 950 clamp(3rem, 7vw, 5.8rem)/.86 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 clamp(3rem, 7vw, 5.8rem)/.86 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .race-selector {
@@ -2410,7 +2430,7 @@ button.race-board-row {
   border-radius: 2px;
   text-align: center;
   text-decoration: none;
-  font: 800 .9rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .9rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   transition: border-color .14s var(--ease-out), background .14s var(--ease-out), transform .14s var(--ease-out);
 }
 
@@ -2494,7 +2514,7 @@ button.race-board-row {
 
 .form-row label {
   color: var(--muted);
-  font: 900 .72rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .72rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: .08em;
   text-transform: uppercase;
 }
@@ -2506,7 +2526,7 @@ button.race-board-row {
   border-radius: 4px;
   background: color-mix(in srgb, var(--bg) 58%, var(--paper));
   color: var(--ink);
-  font: 700 1rem/1.4 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 700 1rem/1.4 "Telegraf", "Segoe UI", Arial, sans-serif;
   outline: none;
 }
 
@@ -2539,7 +2559,7 @@ button.race-board-row {
   min-height: 20px;
   margin: 0;
   color: var(--muted);
-  font: 800 .9rem/1.3 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .9rem/1.3 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .form-status[data-status="success"] {
@@ -2645,7 +2665,7 @@ button.race-board-row {
   border: 1px solid color-mix(in srgb, var(--ink) 24%, transparent);
   border-radius: 999px;
   color: var(--muted);
-  font: 850 .72rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 .72rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: .08em;
   text-transform: uppercase;
 }
@@ -2686,7 +2706,7 @@ button.race-board-row {
   padding: 5px 8px;
   border: 1px solid currentColor;
   border-radius: 5px;
-  font: 950 .68rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 .68rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: .08em;
   text-transform: uppercase;
 }
@@ -2722,7 +2742,7 @@ button.race-board-row {
     #092f24;
   color: #a9f5c5;
   box-shadow: 0 0 0 1px rgba(126, 231, 135, .28), 0 0 18px rgba(126, 231, 135, .36);
-  font: 900 .82rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .82rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: .08em;
   text-transform: uppercase;
 }
@@ -2754,7 +2774,7 @@ button.race-board-row {
 }
 
 .team-member-grid strong {
-  font: 950 1.1rem/1.05 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 950 1.1rem/1.05 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .team-member-grid span {
@@ -2765,7 +2785,7 @@ button.race-board-row {
 .team-member-grid em {
   margin-top: 5px;
   color: var(--muted);
-  font: 800 .72rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .72rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   font-style: normal;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -2782,6 +2802,8 @@ button.race-board-row {
 
 .video-section-label {
   display: inline-flex;
+  align-items: center;
+  gap: 9px;
   width: fit-content;
   padding: 8px 12px;
   border: 1px solid #ff2a2a;
@@ -2789,6 +2811,18 @@ button.race-board-row {
   background: #4d070b;
   color: #fff;
   box-shadow: 0 0 0 1px rgba(255, 42, 42, .35), 0 0 18px rgba(255, 42, 42, .42);
+}
+
+.video-section-label-upcoming {
+  color: #ffb7b7;
+}
+
+.video-section-label-upcoming::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  background: url("https://i.imgur.com/Ccm7HVf.png") center / contain no-repeat;
 }
 
 .video-feature iframe,
@@ -2816,7 +2850,7 @@ button.race-board-row {
 
 .video-card h3 {
   margin: 0;
-  font: 900 1rem/1.15 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 1rem/1.15 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .source-status-grid {
@@ -2927,7 +2961,7 @@ button.race-board-row {
 .article-image figcaption {
   margin-top: 7px;
   color: var(--muted);
-  font: 800 .78rem/1.35 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .78rem/1.35 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .article-image-small {
@@ -2961,7 +2995,7 @@ button.race-board-row {
 .article-external-embed figcaption {
   margin-top: 7px;
   color: var(--muted);
-  font: 800 .78rem/1.35 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 .78rem/1.35 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .article-external-embed-small {
@@ -3071,7 +3105,7 @@ button.race-board-row {
   display: inline-flex;
   margin-top: 8px;
   color: var(--ink);
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-family: "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .history-chart {
@@ -3123,7 +3157,7 @@ button.race-board-row {
 
 .history-current-marker text {
   fill: var(--chart-axis);
-  font: 850 11px/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 11px/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-anchor: end;
 }
 
@@ -3131,7 +3165,7 @@ button.race-board-row {
 .history-primary-marker text,
 .history-event-marker text {
   fill: var(--chart-axis);
-  font: 900 9px/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 9px/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: 1.2px;
   text-transform: uppercase;
 }
@@ -3243,7 +3277,7 @@ button.race-board-row {
   background: transparent;
   color: var(--muted);
   padding: 6px 10px;
-  font: 800 11px/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 11px/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   cursor: pointer;
   transition: background .14s var(--ease-out), color .14s var(--ease-out);
 }
@@ -3282,7 +3316,7 @@ button.race-board-row {
 
 .history-date {
   fill: var(--chart-axis);
-  font: 800 13px/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 13px/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .history-date-start {
@@ -3294,7 +3328,7 @@ button.race-board-row {
 }
 
 .history-end-label {
-  font: 800 13px/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 13px/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .history-end-label-dem {
@@ -3321,7 +3355,7 @@ button.race-board-row {
 
 .history-annotation text {
   fill: color-mix(in srgb, var(--chart-axis) 82%, var(--ink));
-  font: 800 11px/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 11px/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: .04em;
   text-anchor: middle;
 }
@@ -3368,7 +3402,7 @@ button.race-board-row {
 .history-hover-dem,
 .history-hover-rep,
 .history-hover-extra {
-  font: 800 12px/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 800 12px/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .history-hover-title {
@@ -3393,7 +3427,7 @@ button.race-board-row {
 
 .history-axis {
   fill: var(--chart-axis);
-  font: 700 13px/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 700 13px/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-anchor: end;
 }
 
@@ -3406,7 +3440,7 @@ button.race-board-row {
   background: color-mix(in srgb, var(--paper) 98%, white);
   color: var(--ink);
   box-shadow: 0 8px 18px rgba(49, 45, 38, .18);
-  font: 850 .78rem/1.28 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 850 .78rem/1.28 "Telegraf", "Segoe UI", Arial, sans-serif;
   opacity: 0;
   pointer-events: none;
   transform: translateY(3px);
@@ -3456,7 +3490,7 @@ button.race-board-row {
 .detail-chip strong {
   display: block;
   color: var(--ink);
-  font: 900 1.05rem/1.1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 1.05rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .detail-chip.independent-candidate {
@@ -3481,7 +3515,7 @@ button.race-board-row {
 .method-list strong {
   display: block;
   color: var(--ink);
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-family: "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 @media (prefers-reduced-motion: reduce) {
