@@ -9,6 +9,8 @@
   --ink: #050814;
   --muted: #25315a;
   --line: #6179cf;
+  --party-gradient: linear-gradient(100deg, var(--dem) 0%, #f4f7ff 48%, var(--rep) 100%);
+  --party-gradient-strong: linear-gradient(105deg, var(--dem) 0%, #6f87d8 42%, var(--rep) 100%);
   --chart-bg: #edf2ff;
   --chart-runway: #dfe7ff;
   --chart-grid: #9aabe6;
@@ -45,6 +47,8 @@
   --ink: #ffffff;
   --muted: #c7d2ff;
   --line: #ffffff;
+  --party-gradient: linear-gradient(100deg, #84b6e3 0%, #ffffff 48%, #ff8a80 100%);
+  --party-gradient-strong: linear-gradient(105deg, var(--dem) 0%, #9fb2ff 42%, var(--rep) 100%);
   --no-election: #172654;
   --chart-bg: #071848;
   --chart-runway: #0e235d;
@@ -67,6 +71,8 @@
     --ink: #ffffff;
     --muted: #c7d2ff;
     --line: #ffffff;
+    --party-gradient: linear-gradient(100deg, #84b6e3 0%, #ffffff 48%, #ff8a80 100%);
+    --party-gradient-strong: linear-gradient(105deg, var(--dem) 0%, #9fb2ff 42%, var(--rep) 100%);
     --no-election: #172654;
     --chart-bg: #071848;
     --chart-runway: #0e235d;
@@ -214,7 +220,9 @@ button {
   padding: 7px 11px;
   border: 1px solid var(--line);
   border-radius: 3px;
-  background: color-mix(in srgb, var(--paper) 74%, transparent);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 10%, transparent), color-mix(in srgb, var(--rep) 8%, transparent)),
+    color-mix(in srgb, var(--paper) 74%, transparent);
   color: color-mix(in srgb, var(--ink) 82%, var(--muted));
   text-decoration: none;
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
@@ -228,7 +236,9 @@ button {
 .button-link:hover {
   color: var(--ink);
   border-color: var(--ink);
-  background: var(--paper-2);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 24%, transparent), color-mix(in srgb, var(--rep) 20%, transparent)),
+    var(--paper-2);
 }
 
 .site-nav a:hover,
@@ -355,7 +365,9 @@ main {
 .detail-panel {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--dem) 7%, transparent), transparent 35%, color-mix(in srgb, var(--rep) 6%, transparent)),
+    color-mix(in srgb, var(--paper) 92%, transparent);
   box-shadow: var(--shadow-soft);
   animation: panel-in .42s var(--ease-out) both;
 }
@@ -445,11 +457,21 @@ p {
 h1 {
   max-width: 820px;
   margin: 0;
+  background: var(--party-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   font-size: clamp(2.35rem, 5vw, 4.85rem);
   line-height: .95;
   letter-spacing: 0;
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
   font-weight: 950;
+}
+
+.hero-main h1,
+.text-panel h1,
+.article-page h1 {
+  filter: drop-shadow(0 5px 16px color-mix(in srgb, var(--bg) 24%, transparent));
 }
 
 h2 {
@@ -458,6 +480,16 @@ h2 {
   line-height: 1;
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
   font-weight: 950;
+}
+
+.section-head h2,
+.text-panel > h2 {
+  width: fit-content;
+  max-width: 100%;
+  background: var(--party-gradient-strong);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 h3 {
@@ -2683,10 +2715,13 @@ button.race-board-row {
   gap: 7px;
   width: 100%;
   min-height: 38px;
-  border: 1px solid color-mix(in srgb, var(--green) 65%, var(--line));
+  border: 1px solid #7ee787;
   border-radius: 6px;
-  background: color-mix(in srgb, var(--green) 18%, transparent);
+  background:
+    linear-gradient(100deg, rgba(126, 231, 135, .16), rgba(13, 72, 47, .76), rgba(126, 231, 135, .12)),
+    #092f24;
   color: #a9f5c5;
+  box-shadow: 0 0 0 1px rgba(126, 231, 135, .28), 0 0 18px rgba(126, 231, 135, .36);
   font: 900 .82rem/1 "Inter", "Segoe UI", Arial, sans-serif;
   letter-spacing: .08em;
   text-transform: uppercase;
