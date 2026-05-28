@@ -2129,10 +2129,19 @@ function articleUrl(article) {
 
 function renderTopArticle() {
   const container = document.getElementById("top-article");
-  if (!container || !articles.length) return;
+  if (!container) return;
+  if (!articles.length) {
+    container.innerHTML = `
+      <p class="meta">Latest article</p>
+      <h2 id="top-article-title">No articles yet.</h2>
+      <p>Published writing will appear here once articles are added.</p>
+      <a class="button-link" href="articles.html">See all articles</a>
+    `;
+    return;
+  }
   const article = sortedArticles().find((item) => item.featured) || sortedArticles()[0];
   container.innerHTML = `
-    <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Capitol Forecast")}</p>
+    <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections")}</p>
     <h2 id="top-article-title"><a href="${articleUrl(article)}">${escapeHtml(article.title)}</a></h2>
     <p>${escapeHtml(article.dek || "")}</p>
     <a class="button-link" href="${articleUrl(article)}">Read article</a>
@@ -2157,11 +2166,11 @@ function renderArticlesList() {
   const list = sortedArticles();
   container.innerHTML = list.length ? list.map((article) => `
     <article class="article-card">
-      <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Capitol Forecast")}</p>
+      <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections")}</p>
       <h2><a href="${articleUrl(article)}">${escapeHtml(article.title)}</a></h2>
       <p>${escapeHtml(article.dek || "")}</p>
     </article>
-  `).join("") : `<article class="article-card"><h2>No articles yet.</h2></article>`;
+  `).join("") : `<article class="article-card"><h2>No articles yet.</h2><p>Published writing will appear here once articles are added.</p></article>`;
 }
 
 function renderArticlePage() {
@@ -2173,12 +2182,12 @@ function renderArticlePage() {
     container.innerHTML = `<p class="kicker">Article</p><h1>Article not found.</h1><p><a class="button-link" href="articles.html">Back to articles</a></p>`;
     return;
   }
-  document.title = `${article.title} | Capitol Forecast`;
+  document.title = `${article.title} | Federal Elections`;
   container.innerHTML = `
     <p class="kicker">Article</p>
     <h1>${escapeHtml(article.title)}</h1>
     <p class="lede">${escapeHtml(article.dek || "")}</p>
-    <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Capitol Forecast")}</p>
+    <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections")}</p>
     <div id="article-body" class="article-body"></div>
     <p><a class="button-link" href="articles.html">Back to articles</a></p>
   `;
