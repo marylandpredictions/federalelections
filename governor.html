@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Governors | Federal Elections Analysis</title>
+  <meta name="description" content="2026 gubernatorial forecast from Federal Elections Analysis.">
+  <link rel="icon" href="assets/img/FEA_White.png" type="image/png">
+  <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
+  <script src="assets/theme.js"></script>
+  <link rel="stylesheet" href="assets/wiki.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <img class="brand-mark" src="assets/img/FEA_White.png" alt="Federal Elections Analysis">
+      <span><strong>Federal Elections Analysis</strong><small>Election team</small></span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="index.html">Home</a>
+      <a href="videos.html">Videos</a>
+      <a href="senate.html">Senate</a>
+      <a class="active" href="governor.html">Governors</a>
+      <a href="president.html">2028 Pres</a>
+      <a href="endorsements.html">Endorsements</a>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A8.5 8.5 0 1 1 11.21 3 6.5 6.5 0 0 0 21 12.79Z"></path></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-grid" aria-labelledby="page-title">
+      <div class="hero-main">
+        <p class="kicker">Governors</p>
+        <h1 id="page-title">2026 gubernatorial forecast.</h1>
+        <p class="lede">Daily probabilities for the 36 state governor races on the 2026 ballot.</p>
+        <p class="model-credit">Model built and maintained by gamerdoglover.</p>
+      </div>
+      <aside class="odds-panel" aria-label="Governor majority forecast">
+        <span class="panel-label">Governor majority</span>
+        <div>
+          <div id="governor-odds-phrase" class="big-odds">--</div>
+          <p id="governor-control-headline">Calculating</p>
+        </div>
+        <div class="control-bar" aria-hidden="true">
+          <span id="governor-dem-bar"></span>
+          <span id="governor-rep-bar"></span>
+        </div>
+        <dl>
+          <div><dt>Democratic majority</dt><dd id="governor-dem-majority">--</dd></div>
+          <div><dt>Republican majority</dt><dd id="governor-rep-majority">--</dd></div>
+          <div><dt>No majority / tie</dt><dd id="governor-no-majority">--</dd></div>
+          <div><dt>Median governors</dt><dd id="governor-median">--</dd></div>
+          <div><dt>Run</dt><dd id="governor-run-date">--</dd></div>
+        </dl>
+        <p class="forecast-disclaimer">Forecasts are automated estimates, not guarantees. This first gubernatorial model is rating-led while candidate fields and polling mature.</p>
+      </aside>
+    </section>
+
+    <section class="map-panel" aria-labelledby="governor-map-title">
+      <div class="section-head">
+        <div>
+          <p class="kicker">Ratings</p>
+          <h2 id="governor-map-title">The 2026 governor map.</h2>
+        </div>
+        <p><span id="governor-sim-count">--</span> simulations. <span id="governor-watch-count">--</span> races below 75 percent certainty.</p>
+      </div>
+      <div class="map-wrap">
+        <div>
+          <div id="governor-map"></div>
+          <div id="governor-map-legend" class="map-legend" aria-label="Governor rating legend"></div>
+          <p class="map-note">Muted states do not hold gubernatorial elections in 2026.</p>
+        </div>
+        <aside id="governor-map-hover-card" class="hover-card"></aside>
+      </div>
+    </section>
+
+    <section class="dashboard-grid" aria-label="Governor forecast charts">
+      <article class="chart-panel">
+        <span class="chart-label">Governor distribution</span>
+        <div id="governor-seat-histogram" class="seat-histogram"></div>
+      </article>
+      <article class="chart-panel">
+        <span class="chart-label">Most decisive governor races</span>
+        <div id="governor-leverage-chart" class="leverage-chart"></div>
+      </article>
+      <article class="chart-panel chart-wide">
+        <span class="chart-label">Governor majority probability over time</span>
+        <div id="governor-history-chart" class="history-chart"></div>
+      </article>
+    </section>
+
+    <section class="chart-panel full-width" aria-labelledby="governor-board-title">
+      <p class="kicker">Race board</p>
+      <h2 id="governor-board-title">State-by-state gubernatorial ratings.</h2>
+      <div id="governor-race-board" class="race-board"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <strong>Federal Elections Analysis</strong>
+      <p>Election modeling, public analysis, endorsements, and team updates.</p>
+    </div>
+    <nav aria-label="Footer navigation">
+      <a href="index.html">Home</a>
+      <a href="videos.html">Videos</a>
+      <a href="senate.html">Senate</a>
+      <a href="governor.html">Governors</a>
+      <a href="president.html">2028 Pres</a>
+      <a href="endorsements.html">Endorsements</a>
+      <a href="calibration.html">Calibration</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="articles.html">Articles</a>
+    </nav>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+  <script src="assets/wiki.js"></script>
+</body>
+</html>

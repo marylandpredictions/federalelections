@@ -38,6 +38,7 @@ jobs:
         run: |
           node scripts/generate-forecast.mjs
           node scripts/generate-house-forecast.mjs
+          node scripts/generate-governor-forecast.mjs
           node scripts/generate-videos.mjs
           for dem in newsom beshear shapiro buttigieg harris aoc; do
             for rep in vance rubio desantis haley cruz; do

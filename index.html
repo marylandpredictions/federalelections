@@ -21,6 +21,7 @@
       <a class="active" href="index.html">Home</a>
       <a href="videos.html">Videos</a>
       <a href="senate.html">Senate</a>
+      <a href="governor.html">Governors</a>
       <a href="president.html">2028 Pres</a>
       <a href="endorsements.html">Endorsements</a>
       <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
@@ -38,6 +39,7 @@
         <p class="lede">Forecast dashboards, race signals, endorsements, videos, and team updates in one place.</p>
         <div class="hero-actions">
           <a class="button-link" href="senate.html">Senate</a>
+          <a class="button-link" href="governor.html">Governors</a>
           <a class="button-link" href="president.html">2028 president</a>
           <a class="button-link" href="endorsements.html">Endorsements</a>
           <a class="button-link" href="videos.html">Videos</a>
@@ -49,6 +51,7 @@
         <p class="kicker">Latest run</p>
         <dl>
           <div><dt>Senate</dt><dd id="home-senate-run">--</dd></div>
+          <div><dt>Governors</dt><dd id="home-governor-run">--</dd></div>
           <div><dt>President</dt><dd id="home-president-run">--</dd></div>
           <div><dt>Senate median</dt><dd id="home-senate-median">--</dd></div>
           <div><dt>President avg EV</dt><dd id="home-president-ev">--</dd></div>
@@ -77,6 +80,13 @@
         <small><i id="home-president-dem">--</i> D / <i id="home-president-rep">--</i> R</small>
         <small id="home-president-note">--</small>
       </a>
+      <a class="forecast-overview-card" id="home-governor-card" href="governor.html">
+        <span>First build</span>
+        <strong>Governors</strong>
+        <b id="home-governor-favored">--</b>
+        <small><i id="home-governor-dem">--</i> D / <i id="home-governor-rep">--</i> R</small>
+        <small id="home-governor-note">--</small>
+      </a>
     </section>
 
     <div class="home-section-head">
@@ -87,6 +97,10 @@
       <article class="chart-panel">
         <span class="chart-label">Senate watch</span>
         <div id="home-senate-radar" class="home-radar-list"></div>
+      </article>
+      <article class="chart-panel">
+        <span class="chart-label">Governor watch</span>
+        <div id="home-governor-radar" class="home-radar-list"></div>
       </article>
       <article class="chart-panel">
         <span class="chart-label">2028 watch</span>
@@ -153,6 +167,7 @@
       <a href="index.html">Home</a>
       <a href="videos.html">Videos</a>
       <a href="senate.html">Senate</a>
+      <a href="governor.html">Governors</a>
       <a href="president.html">2028 Pres</a>
       <a href="endorsements.html">Endorsements</a>
       <a href="calibration.html">Calibration</a>

@@ -48,6 +48,7 @@ const SENATE_NATIONAL_MARKERS = [
 
 let forecast = null;
 let houseForecast = null;
+let governorForecast = null;
 let presidentForecasts = null;
 let articles = [];
 let mapColorMode = "rating";
@@ -662,6 +663,26 @@ function updateHomeHouseSummary() {
   }
 }
 
+function updateHomeGovernorSummary() {
+  if (!governorForecast) return;
+  const demProb = governorForecast.demMajorityProbability || 0;
+  const repProb = governorForecast.repMajorityProbability || 0;
+  const tieProb = governorForecast.noMajorityProbability || Math.max(0, 1 - demProb - repProb);
+  const favoredIsDem = demProb >= repProb;
+  const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
+  const favoredProbability = Math.max(demProb, repProb);
+  setText("home-governor-run", governorForecast.runDate || governorForecast.modelDate || "--");
+  setText("home-governor-favored", `${favoredSide} ${pct(favoredProbability)}`);
+  setText("home-governor-dem", oneDecimal(demProb));
+  setText("home-governor-rep", oneDecimal(repProb));
+  setText("home-governor-note", `${governorForecast.races?.filter((race) => race.competitive).length ?? "--"} competitive races`);
+  const card = document.getElementById("home-governor-card");
+  if (card) {
+    card.classList.toggle("control-dem", favoredIsDem);
+    card.classList.toggle("control-rep", !favoredIsDem);
+  }
+}
+
 function presidentCandidateShortName(name) {
   if (!name) return "--";
   if (String(name).includes("Ocasio-Cortez")) return "AOC";
@@ -732,6 +753,26 @@ function renderHomeRadar() {
         <i>${oneDecimal(district.leverage || 0)}</i>
       </a>
     `).join("");
+  }
+
+  const governors = document.getElementById("home-governor-radar");
+  if (governors && governorForecast) {
+    const races = [...governorForecast.races]
+      .filter((race) => race.competitive || race.tippingPower > .05)
+      .sort((a, b) => b.tippingPower - a.tippingPower)
+      .slice(0, 6);
+    governors.innerHTML = races.map((race) => {
+      const leader = race.demProbability >= .5 ? "D" : "R";
+      const probability = Math.max(race.demProbability, race.repProbability);
+      return `
+        <a class="home-radar-row ${governorLeaderClass(race)}" href="governor.html">
+          <strong>${escapeHtml(race.state)}</strong>
+          <span>${escapeHtml(race.displayName.replace(" Governor", ""))}</span>
+          <b>${leader} ${oneDecimal(probability)}</b>
+          <i>${oneDecimal(race.tippingPower || 0)}</i>
+        </a>
+      `;
+    }).join("");
   }
 
   const president = document.getElementById("home-president-radar");
@@ -969,6 +1010,202 @@ function renderSeatHistogramInto(container, model = forecast, options = {}) {
     return `<button class="seat-bin" type="button" data-tip="${seat} Democratic seats<br>${pct(share)} of simulations"><i style="--bar-scale:${height}"></i><span>${seat}</span></button>`;
   }).join("");
   bindPanelTooltipFor(container, ".seat-bin", (node) => node.dataset.tip);
+}
+
+function governorLeaderClass(race) {
+  return race.demProbability >= .5 ? "leads-dem" : "leads-rep";
+}
+
+function updateGovernorSummary() {
+  if (!governorForecast) return;
+  const demProb = governorForecast.demMajorityProbability || 0;
+  const repProb = governorForecast.repMajorityProbability || 0;
+  const favoredIsDem = demProb >= repProb;
+  const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
+  const favoredProbability = Math.max(demProb, repProb);
+  setText("governor-run-date", governorForecast.runDate || governorForecast.modelDate || "--");
+  setText("governor-sim-count", Number(governorForecast.settings?.simulations || 0).toLocaleString("en-US"));
+  setText("governor-watch-count", governorForecast.races?.filter((race) => race.competitive).length ?? "--");
+  setText("governor-dem-majority", oneDecimal(demProb));
+  setText("governor-rep-majority", oneDecimal(repProb));
+  setText("governor-no-majority", oneDecimal(tieProb));
+  setText("governor-median", `${governorForecast.medianDemGovernors} D / ${governorForecast.medianRepGovernors} R`);
+  setText("governor-control-headline", `${favoredSide} favored for governor majority`);
+  const oddsNode = document.getElementById("governor-odds-phrase");
+  if (oddsNode) oddsNode.innerHTML = `<span>${favoredSide} favored</span><strong>${pct(favoredProbability)}</strong>`;
+  const demBar = document.getElementById("governor-dem-bar");
+  const repBar = document.getElementById("governor-rep-bar");
+  if (demBar && repBar) {
+    demBar.style.width = `${demProb * 100}%`;
+    repBar.style.width = `${repProb * 100}%`;
+  }
+  const panel = document.querySelector("#governor-odds-phrase")?.closest(".odds-panel");
+  if (panel) {
+    panel.classList.toggle("control-dem", favoredIsDem);
+    panel.classList.toggle("control-rep", !favoredIsDem);
+  }
+}
+
+function governorHoverMarkup(race) {
+  if (!race) return `<span class="panel-label">State detail</span><h3>No 2026 governor race</h3><p>This state is not on the 2026 governor board.</p>`;
+  const leader = race.demProbability >= .5 ? "Democrat" : "Republican";
+  const leaderProb = Math.max(race.demProbability, race.repProbability);
+  return `
+    <span class="race-kicker">${escapeHtml(race.displayName)}</span>
+    <div class="map-card-title">
+      <div class="state-code">${escapeHtml(race.state)}</div>
+      <span class="rating-pill ${bucketForRace(race)}">${escapeHtml(race.rating)}</span>
+    </div>
+    <h3>${leader} has a ${oneDecimal(leaderProb)} chance.</h3>
+    <div class="candidate-table" aria-label="${escapeHtml(race.displayName)} forecast">
+      <div class="candidate-table-head"><span>Party</span><span>Chance</span></div>
+      <div class="candidate-row dem-row"><span>Democrat <i class="party-badge dem-badge">D</i></span><strong>${oneDecimal(race.demProbability)}</strong></div>
+      <div class="candidate-row rep-row"><span>Republican <i class="party-badge rep-badge">R</i></span><strong>${oneDecimal(race.repProbability)}</strong></div>
+      <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(race.margin)}</strong></div>
+    </div>
+    <p>${escapeHtml(race.status)}. Incumbent party: ${escapeHtml(race.incumbentParty)}.</p>
+    <p class="meta">Tipping power: ${oneDecimal(race.tippingPower || 0)}</p>
+  `;
+}
+
+function updateGovernorHoverCard(race) {
+  const card = document.getElementById("governor-map-hover-card");
+  if (card) card.innerHTML = governorHoverMarkup(race);
+}
+
+function renderGovernorFallbackMap() {
+  const container = document.getElementById("governor-map");
+  if (!container || !governorForecast) return;
+  container.innerHTML = `
+    <div class="fallback-list">
+      ${governorForecast.races.map((race) => `<button type="button" style="background:${ratingColor(race)}" title="${escapeHtml(race.rating)}">${escapeHtml(race.state)}</button>`).join("")}
+    </div>
+    <p class="map-note">State map library unavailable.</p>
+  `;
+}
+
+async function renderGovernorMap() {
+  const container = document.getElementById("governor-map");
+  if (!container || !governorForecast) return;
+  if (!window.d3 || !window.topojson) {
+    renderGovernorFallbackMap();
+    return;
+  }
+  try {
+    const us = await d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json");
+    const features = topojson.feature(us, us.objects.states).features;
+    const width = 960;
+    const height = 610;
+    const projection = d3.geoAlbersUsa().fitSize([width, height], { type: "FeatureCollection", features });
+    const path = d3.geoPath(projection);
+    const racesByState = new Map(governorForecast.races.map((race) => [race.state, race]));
+    container.innerHTML = "";
+    const svg = d3.select(container).append("svg").attr("viewBox", `0 0 ${width} ${height}`).attr("role", "img").attr("aria-label", "United States map of 2026 governor race ratings");
+    svg.selectAll("path")
+      .data(features)
+      .join("path")
+      .attr("class", (feature) => racesByState.has(FIPS_TO_STATE[String(feature.id).padStart(2, "0")]) ? "state-shape" : "state-shape state-muted")
+      .attr("d", path)
+      .attr("fill", (feature) => {
+        const race = racesByState.get(FIPS_TO_STATE[String(feature.id).padStart(2, "0")]);
+        return race ? ratingColor(race) : null;
+      })
+      .attr("opacity", (feature) => racesByState.has(FIPS_TO_STATE[String(feature.id).padStart(2, "0")]) ? 1 : null)
+      .attr("tabindex", (feature) => racesByState.has(FIPS_TO_STATE[String(feature.id).padStart(2, "0")]) ? 0 : -1)
+      .on("mouseenter focus", (event, feature) => updateGovernorHoverCard(racesByState.get(FIPS_TO_STATE[String(feature.id).padStart(2, "0")])))
+      .append("title")
+      .text((feature) => {
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        const race = racesByState.get(state);
+        return race ? `${STATE_NAMES[state]}: ${race.rating}` : STATE_NAMES[state];
+      });
+    updateGovernorHoverCard([...governorForecast.races].sort((a, b) => b.tippingPower - a.tippingPower)[0]);
+  } catch {
+    renderGovernorFallbackMap();
+  }
+}
+
+function renderGovernorLegend() {
+  const legend = document.getElementById("governor-map-legend");
+  if (!legend) return;
+  const ratings = ["Safe D", "Likely D", "Lean D", "Tilt D", "Toss-up", "Tilt R", "Lean R", "Likely R", "Safe R"];
+  legend.innerHTML = ratings.map((rating) => `<span><i class="${RATING_BUCKET[rating]}"></i>${rating}</span>`).join("");
+}
+
+function renderGovernorHistogram() {
+  const container = document.getElementById("governor-seat-histogram");
+  if (!container || !governorForecast) return;
+  const counts = governorForecast.distribution || {};
+  const seats = Object.keys(counts).map(Number).sort((a, b) => a - b);
+  const minSeat = Math.min(...seats);
+  const maxSeat = Math.max(...seats);
+  const maxCount = Math.max(...Object.values(counts));
+  const sims = governorForecast.settings?.simulations || Object.values(counts).reduce((a, b) => a + b, 0);
+  container.style.gridTemplateColumns = `repeat(${maxSeat - minSeat + 1}, minmax(0, 1fr))`;
+  container.innerHTML = Array.from({ length: maxSeat - minSeat + 1 }, (_, index) => {
+    const seat = minSeat + index;
+    const value = counts[seat] || 0;
+    const share = sims ? value / sims : 0;
+    const height = maxCount ? clamp(value / maxCount, .02, 1) : .02;
+    return `<button class="seat-bin" type="button" data-tip="${seat} Democratic governors<br>${pct(share)} of simulations"><i style="--bar-scale:${height}"></i><span>${seat}</span></button>`;
+  }).join("");
+  bindPanelTooltipFor(container, ".seat-bin", (node) => node.dataset.tip);
+}
+
+function renderGovernorLeverage() {
+  const chart = document.getElementById("governor-leverage-chart");
+  if (!chart || !governorForecast) return;
+  const ranked = [...governorForecast.races].sort((a, b) => b.tippingPower - a.tippingPower).slice(0, 10);
+  const max = Math.max(...ranked.map((race) => race.tippingPower));
+  chart.innerHTML = ranked.map((race) => {
+    const width = max ? clamp((race.tippingPower / max) * 100, 8, 100) : 8;
+    return `<button class="leverage-row ${governorLeaderClass(race)}" type="button" data-tip="${escapeHtml(race.displayName)}<br>${oneDecimal(race.tippingPower)} tipping power<br>${escapeHtml(race.rating)}"><strong>${escapeHtml(race.state)}</strong><i style="width:${width}%"></i><span>${oneDecimal(race.tippingPower)}</span></button>`;
+  }).join("");
+  bindPanelTooltipFor(chart, ".leverage-row", (node) => node.dataset.tip);
+}
+
+function renderGovernorHistory() {
+  const chart = document.getElementById("governor-history-chart");
+  if (!chart || !governorForecast) return;
+  const points = governorForecast.controlHistory?.length ? governorForecast.controlHistory : [{ date: governorForecast.modelDate, dem: governorForecast.demMajorityProbability, rep: governorForecast.repMajorityProbability }];
+  renderLineChart(chart, points, {
+    label: "Governor majority probability history",
+    pointHtml: (point) => `${point.date}<br>D ${pct(point.dem)} / R ${pct(point.rep ?? 1 - point.dem)}`,
+    value: (point) => point.dem,
+    electionDate: governorForecast.settings?.electionDate || "2026-11-03",
+    singleNote: "Governor history starts with the first generated forecast and grows each daily run."
+  });
+}
+
+function renderGovernorRaceBoard() {
+  const board = document.getElementById("governor-race-board");
+  if (!board || !governorForecast) return;
+  const rows = [...governorForecast.races].sort((a, b) => Math.abs(a.demProbability - .5) - Math.abs(b.demProbability - .5));
+  board.innerHTML = rows.map((race) => {
+    const leader = race.demProbability >= .5 ? "D" : "R";
+    const probability = Math.max(race.demProbability, race.repProbability);
+    return `
+      <div class="race-board-row ${governorLeaderClass(race)}">
+        <strong>${escapeHtml(race.state)}</strong>
+        <span>${escapeHtml(race.displayName)}</span>
+        <span>${escapeHtml(race.status)}</span>
+        <span>${escapeHtml(race.rating)}</span>
+        <span>${signedPointMargin(race.margin)}</span>
+        <span>${leader} ${oneDecimal(probability)}</span>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderGovernorPage() {
+  if (!document.getElementById("governor-race-board")) return;
+  updateGovernorSummary();
+  renderGovernorMap();
+  renderGovernorLegend();
+  renderGovernorHistogram();
+  renderGovernorLeverage();
+  renderGovernorHistory();
+  renderGovernorRaceBoard();
 }
 
 function renderLeverageChart() {
@@ -2782,6 +3019,16 @@ async function loadHouseForecast() {
   }
 }
 
+async function loadGovernorForecast() {
+  try {
+    const response = await fetch("data/governor-forecast.json", { cache: "no-store" });
+    if (!response.ok) return null;
+    return response.json();
+  } catch {
+    return null;
+  }
+}
+
 async function loadPresidentForecasts() {
   const files = [];
   PRESIDENT_DEM_CANDIDATES.forEach((dem) => {
@@ -2817,18 +3064,23 @@ async function init() {
   installInteractionDismiss();
   articles = await loadArticles();
   houseForecast = await loadHouseForecast();
+  governorForecast = await loadGovernorForecast();
   if (document.getElementById("home-president-card") || document.getElementById("article-page")) {
     presidentForecasts = await loadPresidentForecasts();
   }
   updateHomeHouseSummary();
+  updateHomeGovernorSummary();
   updateHomePresidentSummary();
   renderHousePage();
+  renderGovernorPage();
   try {
     forecast = await loadForecast();
   } catch (error) {
     renderLoadError(error);
     updateHomeHouseSummary();
+    updateHomeGovernorSummary();
     renderHousePage();
+    renderGovernorPage();
     renderHomeRadar();
     renderHomeDiagnostics();
     renderTopArticle();
@@ -2840,6 +3092,7 @@ async function init() {
   }
   updateSummary();
   updateHomeHouseSummary();
+  updateHomeGovernorSummary();
   updateHomePresidentSummary();
   renderMapColorControls();
   renderStateMap();
@@ -2853,6 +3106,7 @@ async function init() {
   renderRaceSelector();
   renderSourceStatus();
   renderHousePage();
+  renderGovernorPage();
   renderBattlegroundList();
   renderHomeRadar();
   renderHomeDiagnostics();
