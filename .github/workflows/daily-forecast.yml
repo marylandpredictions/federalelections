@@ -1,0 +1,37 @@
+name: Daily forecast
+
+on:
+  schedule:
+    - cron: "20 11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out site
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Generate forecast data
+        run: |
+          node scripts/generate-forecast.mjs
+          node scripts/generate-house-forecast.mjs
+          for dem in newsom beshear shapiro buttigieg whitmer aoc; do
+            for rep in vance rubio desantis haley cruz; do
+              node scripts/generate-president-forecast.mjs "$dem" "$rep"
+            done
+          done
+
+      - name: Commit forecast data
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update daily forecasts"
+          file_pattern: data/*.json

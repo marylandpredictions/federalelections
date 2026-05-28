@@ -1,0 +1,72 @@
+How to publish an article
+
+Open data/articles.json.
+
+Copy this object, paste it at the top of the array after the opening [, then add a comma after it if another article follows.
+
+{
+  "slug": "short-url-name-with-dashes",
+  "title": "Article headline",
+  "date": "2026-05-17",
+  "dek": "One or two sentence summary that appears on the homepage and article list.",
+  "author": "Capitol Forecast",
+  "featured": true,
+  "content": [
+    { "type": "paragraph", "text": "First paragraph." },
+    { "type": "embed", "embed": { "type": "control-history", "title": "National chamber control probability", "size": "small" } },
+    { "type": "paragraph", "text": "Second paragraph." },
+    { "type": "embed", "embed": { "type": "state-history", "state": "OH", "title": "Ohio probability history", "size": "small" } },
+    { "type": "embed", "embed": { "type": "state-preview", "state": "OH", "size": "small", "mode": "rating" } },
+    { "type": "embed", "embed": { "type": "house-district-preview", "district": "WI-03", "size": "small" } },
+    { "type": "embed", "embed": { "type": "house-district-history", "district": "WI-03", "title": "Wisconsin 3 probability history", "size": "small" } },
+    { "type": "embed", "embed": { "type": "president-average", "title": "2028 matchup average", "size": "small" } },
+    { "type": "embed", "embed": { "type": "president-state-preview", "state": "PA", "dem": "beshear", "rep": "vance", "size": "small", "mode": "rating" } },
+    { "type": "image", "url": "https://example.com/image.jpg", "alt": "Short description of the image", "caption": "Optional caption.", "size": "medium" },
+    { "type": "external-embed", "url": "https://www.youtube.com/watch?v=VIDEO_ID", "title": "Video title", "caption": "Optional caption.", "height": 360, "size": "large" },
+    { "type": "paragraph", "text": "Third paragraph." }
+  ]
+}
+
+Rules:
+- Keep slug lowercase with dashes only.
+- Only one article needs featured: true. The newest featured article appears on the homepage.
+- Use straight quotes, not curly quotes, inside JSON.
+- Each content block must be separated by commas.
+- Use paragraph blocks where you want text: { "type": "paragraph", "text": "Your paragraph." }
+- Use embed blocks exactly where the chart should appear in the article.
+- Embed types:
+  - "control-history": national chamber-control probability over time.
+  - "state-history": a state's probability history. Requires "state": "OH" or another two-letter state code.
+  - "state-preview": a narrow map-style state preview card. Requires "state": "OH" or another two-letter state code.
+  - "state-card", "map-preview", and "map-state": aliases for "state-preview".
+  - "seat-distribution": national simulated seat distribution.
+  - "leverage": most decisive races by control tipping power.
+  - "house-control-history": House chamber-control probability over time.
+  - "house-seat-distribution": House simulated seat distribution.
+  - "house-district-preview": a narrow House district preview card. Requires "district": "WI-03" or another district id.
+  - "house-district", "house-race", and "district-preview": aliases for "house-district-preview".
+  - "house-district-history": a House district probability history. Requires "district": "WI-03" or another district id.
+  - "house-closest": closest House districts by simulated leverage. Optional "limit": 10.
+  - "president-average": average Democratic and Republican win probability across all saved 2028 matchups.
+  - "president-win-history": national 2028 win probability for a matchup. Optional "dem": "beshear" and "rep": "vance".
+  - "president-ev-history": expected Electoral College votes for a matchup. Optional "dem": "beshear" and "rep": "vance".
+  - "president-state-preview": a narrow presidential state preview card. Requires "state": "PA". Optional "dem": "beshear", "rep": "vance", and "mode": "rating", "margin", or "probability".
+  - "president-state-history": a state's presidential probability history. Requires "state": "PA". Optional "dem": "beshear" and "rep": "vance".
+  - "president-decisive": most decisive presidential states for a matchup. Optional "dem": "beshear", "rep": "vance", and "limit": 10.
+  - "president-matchup-strength": strongest saved 2028 matchups. Optional "limit": 4.
+- Image blocks:
+  - Use { "type": "image", "url": "https://example.com/image.jpg", "alt": "Short image description", "caption": "Optional caption.", "size": "medium" }.
+  - Image "size" can be "small", "medium", "large", or "full".
+  - Image URLs can be https links or local files under assets/.
+- External embed blocks:
+  - Use { "type": "external-embed", "url": "https://www.youtube.com/watch?v=VIDEO_ID", "title": "Video title", "caption": "Optional caption.", "height": 360, "size": "large" }.
+  - Supported iframe sources: YouTube, Vimeo player links, Google Docs/Drive embeds, Datawrapper, Flourish, and Observable.
+  - YouTube watch links and youtu.be links are automatically converted to embed links.
+  - "height" is optional and can be 180-900.
+  - "size" can be "small", "medium", "large", or "full".
+  - Pasted arbitrary HTML is not supported; use the URL only.
+- The optional "title" field overrides the chart heading shown in the article.
+- The optional "size" field can be "small", "medium", or "large". Use "small" for most article embeds.
+- State-preview embeds can also use "mode": "rating", "margin", or "probability". If omitted, they follow that visitor's current map color mode.
+- Older articles can still use "body" and "embeds", but "content" is better because it lets you place embeds where they are relevant.
+- Run `node -e "JSON.parse(require('fs').readFileSync('data/articles.json','utf8')); console.log('articles ok')"` if you want to check the file before pushing.

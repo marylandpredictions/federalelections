@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Senate | Federal Elections</title>
+  <meta name="description" content="Live 2026 Senate control forecast from Federal Elections.">
+  <link rel="icon" href="assets/img/FEA_White.png" type="image/png">
+  <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
+  <script src="assets/theme.js"></script>
+  <link rel="stylesheet" href="assets/wiki.css">
+</head>
+<body>
+      <header class="site-header">
+    <a class="brand" href="index.html">
+      <img class="brand-mark" src="assets/img/FEA_White.png" alt="Federal Elections Analysis">
+      <span><strong>Federal Elections</strong><small>Election team</small></span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="index.html">Home</a>
+      <a class="active" href="senate.html">Senate</a>
+      <a href="president.html">2028 Pres</a>
+      <a href="calibration.html">Calibration</a>
+      <a href="about.html">About</a>
+      <a href="videos.html">Videos</a>
+      <a href="endorsements.html">Endorsements</a>
+      <a href="contact.html">Contact</a>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A8.5 8.5 0 1 1 11.21 3 6.5 6.5 0 0 0 21 12.79Z"></path></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-grid" aria-labelledby="page-title">
+      <div class="hero-main">
+        <p class="kicker">Senate</p>
+        <h1 id="page-title">Senate control forecast.</h1>
+        <p class="lede">Daily probabilities for the 2026 Senate.</p>
+        <div class="hero-actions">
+          <a class="button-link" href="races.html">Senate races</a>
+          <a class="button-link" href="methodology.html">Method</a>
+        </div>
+      </div>
+      <aside class="odds-panel" aria-label="Control forecast">
+        <span class="panel-label">Chamber control</span>
+        <div>
+          <div id="odds-phrase" class="big-odds">--</div>
+          <p id="control-headline">Calculating</p>
+        </div>
+        <div class="control-bar" aria-hidden="true">
+          <span id="dem-control-bar"></span>
+          <span id="rep-control-bar"></span>
+        </div>
+        <dl>
+          <div><dt>Democratic control</dt><dd id="dem-control">--</dd></div>
+          <div><dt>Republican control</dt><dd id="rep-control">--</dd></div>
+          <div><dt>Median outcome</dt><dd id="median-seats">--</dd></div>
+          <div><dt>Run</dt><dd id="run-date">--</dd></div>
+          <div><dt>Schedule</dt><dd id="update-time">--</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="map-panel" aria-labelledby="map-title">
+      <div class="section-head">
+        <div>
+          <p class="kicker">Ratings</p>
+          <h2 id="map-title">The Senate battleground.</h2>
+        </div>
+        <p><span id="sim-count">--</span> simulations. <span id="watch-count">--</span> races below 75 percent certainty.</p>
+      </div>
+      <div class="map-wrap">
+        <div>
+          <div id="senate-map"></div>
+          <div id="map-color-controls" class="map-color-controls" aria-label="Map color mode"></div>
+          <div id="map-legend" class="map-legend" aria-label="Race rating legend"></div>
+          <p class="map-note">Muted states do not hold regular 2026 Senate contests.</p>
+        </div>
+        <aside id="map-hover-card" class="hover-card"></aside>
+      </div>
+    </section>
+
+    <section class="dashboard-grid" aria-label="Forecast charts">
+      <article class="chart-panel">
+        <span class="chart-label">Seat distribution</span>
+        <div id="seat-histogram" class="seat-histogram"></div>
+      </article>
+      <article class="chart-panel">
+        <span class="chart-label">Most decisive races by simulated control tipping power</span>
+        <div id="leverage-chart" class="leverage-chart"></div>
+      </article>
+      <article class="chart-panel chart-wide">
+        <span class="chart-label">National chamber control probability over time</span>
+        <div id="control-history-chart" class="history-chart"></div>
+      </article>
+      <article class="chart-panel chart-wide">
+        <span class="chart-label">Projected chamber seats over time</span>
+        <div id="seat-history-chart" class="history-chart"></div>
+      </article>
+    </section>
+
+    <section class="text-panel" aria-labelledby="senate-path-title">
+      <p class="kicker">Path to control</p>
+      <h2 id="senate-path-title">Common winning states in control simulations.</h2>
+      <div id="senate-control-path" class="path-summary"></div>
+    </section>
+
+    <section class="confidence-note text-panel" aria-labelledby="confidence-title">
+      <p class="kicker">Model confidence</p>
+      <h2 id="confidence-title">Early forecast, wide error bands.</h2>
+      <p>The 40,000 simulations make the model internally stable, but May 2026 data is still thin. Probabilities should be read as today's best estimate from current polling, candidate, finance, and fundamentals inputs, not as November-level certainty.</p>
+    </section>
+
+  </main>
+
+    <footer class="site-footer">
+    <div>
+      <strong>Federal Elections</strong>
+      <p>Election modeling, public analysis, endorsements, and team updates.</p>
+    </div>
+    <nav aria-label="Footer navigation">
+      <a href="senate.html">Senate</a>
+      <a href="president.html">President</a>
+      <a href="calibration.html">Calibration</a>
+    </nav>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+  <script src="assets/wiki.js"></script>
+</body>
+</html>

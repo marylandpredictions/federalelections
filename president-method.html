@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2028 President Method | Federal Elections</title>
+  <meta name="description" content="2028 presidential method notes for Federal Elections.">
+  <link rel="icon" href="assets/img/FEA_White.png" type="image/png">
+  <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
+  <script src="assets/theme.js"></script>
+  <link rel="stylesheet" href="assets/wiki.css">
+</head>
+<body>
+      <header class="site-header">
+    <a class="brand" href="index.html">
+      <img class="brand-mark" src="assets/img/FEA_White.png" alt="Federal Elections Analysis">
+      <span><strong>Federal Elections</strong><small>Election team</small></span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="index.html">Home</a>
+      <a href="senate.html">Senate</a>
+      <a class="active" href="president.html">2028 Pres</a>
+      <a href="calibration.html">Calibration</a>
+      <a href="about.html">About</a>
+      <a href="videos.html">Videos</a>
+      <a href="endorsements.html">Endorsements</a>
+      <a href="contact.html">Contact</a>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A8.5 8.5 0 1 1 11.21 3 6.5 6.5 0 0 0 21 12.79Z"></path></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="text-panel image-panel compact-page-head">
+      <p class="kicker">2028 President</p>
+      <h1>Method.</h1>
+      <p class="lede">Early-cycle presidential model notes and data status.</p>
+    </section>
+
+    <section class="dashboard-grid" aria-label="Model overview">
+      <article class="chart-panel">
+        <span class="chart-label">Model Overview</span>
+        <dl class="method-list">
+          <div><dt>Simulations</dt><dd>100,000 Monte Carlo trials per forecast</dd></div>
+          <div><dt>States</dt><dd>50 states + District of Columbia (538 total electoral votes)</dd></div>
+          <div><dt>Win threshold</dt><dd>270 electoral votes</dd></div>
+          <div><dt>Error correlation</dt><dd>0.6 between states (national polling error affects all states)</dd></div>
+        </dl>
+      </article>
+      <article class="chart-panel">
+        <span class="chart-label">Key Features</span>
+        <dl class="method-list">
+          <div><dt>Candidate modifiers</dt><dd>Home-state, regional, ideology, favorability, electability, and state-fit adjustments</dd></div>
+          <div><dt>Correlated error</dt><dd>National polling error correlated across states</dd></div>
+          <div><dt>Tipping point</dt><dd>State most likely to decide the election</dd></div>
+          <div><dt>Popular vote</dt><dd>Weighted by state population</dd></div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="text-panel" aria-label="Candidate modifiers">
+      <h2>Candidate Modifiers</h2>
+      <ul>
+        <li><strong>Home-state:</strong> direct home-state lift, with a separate swing-state fit table for candidates with obvious regional strengths.</li>
+        <li><strong>State fit:</strong> bounded adjustments for traits such as Appalachia, Sun Belt, Midwest, suburbs, rural states, Hispanic-heavy states, and independent-leaning states.</li>
+        <li><strong>Ideology:</strong> small penalties or bonuses in states where the candidate profile is a poor or strong fit.</li>
+        <li><strong>Favorability, finance, and electability:</strong> live national favorability averages when reachable, plus bounded donor-network and grassroots-capacity estimates.</li>
+      </ul>
+    </section>
+
+    <section class="text-panel" aria-label="State baselines">
+      <h2>State Baselines</h2>
+      <p>Each state starts with a 2024 presidential baseline, then receives long-term trend, elasticity, and current-cycle adjustments.</p>
+      <ul>
+        <li>Baseline: 2024 Democratic margin, electoral votes, region, and population.</li>
+        <li>Trend: state movement over the last decade-plus, including states such as Texas and Florida moving differently.</li>
+        <li>Elasticity: close and fast-moving states react more to national conditions than deeply safe states.</li>
+        <li>Current cycle: 2026 Senate state margins are lightly blended where they exist; generic ballot is shared with the Senate model.</li>
+      </ul>
+    </section>
+
+    <section class="text-panel" aria-label="Correlated error">
+      <h2>Correlated Polling Error</h2>
+      <p>The model generates correlated polling error across states:</p>
+      <ul>
+        <li>National error: Drawn from normal distribution (SD = 3.5 points)</li>
+        <li>State-specific error: Drawn from normal distribution (SD = 4.0 points)</li>
+        <li>Correlation: 0.6 (60% of state error comes from national component)</li>
+        <li>This accounts for systematic polling bias that affects all states similarly</li>
+      </ul>
+    </section>
+
+    <section class="text-panel" aria-label="Monte Carlo simulation">
+      <h2>Monte Carlo Simulation</h2>
+      <p>For each of 100,000 simulations:</p>
+      <ol>
+        <li>Generate correlated polling error for all states</li>
+        <li>Calculate final margin for each state (baseline + modifiers + error)</li>
+        <li>Determine state winner based on margin</li>
+        <li>Sum electoral votes for each candidate</li>
+        <li>Track state wins, EV distribution, and popular vote</li>
+      </ol>
+      <p>Final probabilities are calculated as the proportion of simulations each candidate wins.</p>
+    </section>
+
+    <section class="text-panel" aria-label="Tipping point">
+      <h2>Tipping Point State</h2>
+      <p>The tipping point state is the state most likely to decide the election:</p>
+      <ul>
+        <li>Calculated as the state with the highest "tipping power"</li>
+        <li>Tipping power = min(Dem wins, Rep wins) × state EV</li>
+        <li>States that are close to 50% probability with high EV have highest tipping power</li>
+      </ul>
+    </section>
+
+    <section class="text-panel" aria-label="Historical backtesting">
+      <h2>Historical Backtesting</h2>
+      <p>The model is validated against historical presidential elections:</p>
+      <ul>
+        <li>2020: Biden vs Trump (306-232 EV)</li>
+        <li>2016: Clinton vs Trump (227-304 EV)</li>
+        <li>Additional cycles (2012, 2008, 2004) can be added</li>
+      </ul>
+      <p>Backtest metrics include:</p>
+      <ul>
+        <li>Mean Brier score (lower is better)</li>
+        <li>Overall accuracy</li>
+        <li>Calibration by probability bucket (50-60%, 60-70%, etc.)</li>
+      </ul>
+    </section>
+
+    <section class="text-panel" aria-label="Fundamentals">
+      <h2>Fundamentals</h2>
+      <p>Current national inputs:</p>
+      <ul>
+        <li><strong>Generic ballot:</strong> read from the Senate forecast's stored polling blend.</li>
+        <li><strong>Presidential approval:</strong> blended from the Senate forecast cache and live approval pages when reachable.</li>
+        <li><strong>Consumer sentiment:</strong> FRED UMCSENT, weighted more heavily than raw GDP because voter mood often diverges from topline growth.</li>
+        <li><strong>Economic indicators:</strong> unemployment and GDP are secondary terms.</li>
+        <li><strong>Migration:</strong> Census state population growth and net migration are used as a small electorate-change term.</li>
+        <li><strong>State and matchup polling:</strong> included when reachable and parseable, with lower weight this early in the cycle.</li>
+      </ul>
+      <p>National conditions pass through state elasticity, so a one-point national move does not affect Wyoming, Texas, Wisconsin, and Vermont the same way.</p>
+    </section>
+
+    <section class="text-panel" aria-label="Data sources">
+      <h2>Data Sources</h2>
+      <p>Primary source families:</p>
+      <ul>
+        <li><strong>Shared 2026 polling blend:</strong> generic ballot from the Senate forecast's stored source blend.</li>
+        <li><strong>Approval:</strong> Senate Pollfinity cache plus live approval pages when reachable.</li>
+        <li><strong>Consumer sentiment:</strong> FRED UMCSENT.</li>
+        <li><strong>Migration:</strong> Census Vintage 2024 state population estimates and migration components.</li>
+        <li><strong>Presidential polling:</strong> RealClearPolling and Public Sentiment Institute pages when reachable and parseable.</li>
+        <li><strong>Candidate favorability:</strong> Ballotline and USPollingData pages where they publish a candidate average.</li>
+        <li><strong>Campaign finance:</strong> normalized donor-network, donor-constraint, and grassroots-capacity profiles until named 2028 presidential committees are consistently available.</li>
+        <li><strong>Current-cycle state signal:</strong> 2026 Senate state forecast margins, lightly weighted.</li>
+      </ul>
+    </section>
+
+    <section class="text-panel" aria-label="Limitations">
+      <h2>Limitations</h2>
+      <ul>
+        <li>Some candidates still fall back to stored favorability estimates when no consistent public national average is reachable.</li>
+        <li>Campaign finance is currently a profile-based estimate for most candidates because 2028 presidential committees are not consistently registered under these matchups.</li>
+        <li>2028 head-to-head and state polling is sparse this early.</li>
+        <li>Candidate traits are intentionally bounded; they do not model campaign quality, running mates, scandals, or turnout operations.</li>
+        <li>Historical presidential backtest currently covers 2020 and 2016.</li>
+        <li>Some live polling and approval pages can block automated requests.</li>
+      </ul>
+    </section>
+  </main>
+
+    <footer class="site-footer">
+    <div>
+      <strong>Federal Elections</strong>
+      <p>Election modeling, public analysis, endorsements, and team updates.</p>
+    </div>
+    <nav aria-label="Footer navigation">
+      <a href="senate.html">Senate</a>
+      <a href="president.html">President</a>
+      <a href="calibration.html">Calibration</a>
+    </nav>
+  </footer>
+</body>
+</html>

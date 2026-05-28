@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>President | Federal Elections</title>
+  <meta name="description" content="2028 presidential forecast page for Federal Elections.">
+  <link rel="icon" href="assets/img/FEA_White.png" type="image/png">
+  <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
+  <script src="assets/theme.js"></script>
+  <link rel="stylesheet" href="assets/wiki.css">
+</head>
+<body>
+      <header class="site-header">
+    <a class="brand" href="index.html">
+      <img class="brand-mark" src="assets/img/FEA_White.png" alt="Federal Elections Analysis">
+      <span><strong>Federal Elections</strong><small>Election team</small></span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="index.html">Home</a>
+      <a href="senate.html">Senate</a>
+      <a class="active" href="president.html">2028 Pres</a>
+      <a href="calibration.html">Calibration</a>
+      <a href="about.html">About</a>
+      <a href="videos.html">Videos</a>
+      <a href="endorsements.html">Endorsements</a>
+      <a href="contact.html">Contact</a>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A8.5 8.5 0 1 1 11.21 3 6.5 6.5 0 0 0 21 12.79Z"></path></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-grid" aria-labelledby="page-title">
+      <div class="hero-main">
+        <p class="kicker">President</p>
+        <h1 id="page-title">2028 Presidential forecast.</h1>
+        <p class="lede">Early-cycle Electoral College forecast.</p>
+        <div class="hero-actions">
+          <a class="button-link" href="president-method.html">Method</a>
+        </div>
+      </div>
+      <aside id="president-odds-panel" class="odds-panel" aria-label="Win probability">
+        <span class="panel-label">National win probability</span>
+        <div>
+          <div id="president-odds-phrase" class="big-odds">--</div>
+          <p id="president-winner-headline">Calculating</p>
+        </div>
+        <div class="control-bar" aria-hidden="true">
+          <span id="dem-win-bar"></span>
+          <span id="rep-win-bar"></span>
+        </div>
+        <dl>
+          <div><dt id="president-dem-win-label">Democratic win</dt><dd id="president-dem-win">--</dd></div>
+          <div><dt id="president-rep-win-label">Republican win</dt><dd id="president-rep-win">--</dd></div>
+          <div><dt>Median EV outcome</dt><dd id="president-median-ev">--</dd></div>
+          <div><dt>Tipping point</dt><dd id="president-tipping-point-display">--</dd></div>
+          <div><dt>Run</dt><dd id="president-run-date">--</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="text-panel matchup-panel" aria-labelledby="candidate-title">
+      <p class="kicker">Candidate Matchup</p>
+      <h2 id="candidate-title">Matchup selector.</h2>
+      <div class="candidate-selector">
+        <label>
+          <span>Democratic candidate</span>
+          <select id="dem-candidate">
+            <option value="newsom">Gavin Newsom (CA)</option>
+            <option value="beshear">Andy Beshear (KY)</option>
+            <option value="shapiro">Josh Shapiro (PA)</option>
+            <option value="buttigieg">Pete Buttigieg (IN)</option>
+            <option value="whitmer">Gretchen Whitmer (MI)</option>
+            <option value="aoc">Alexandria Ocasio-Cortez (NY)</option>
+          </select>
+        </label>
+        <label>
+          <span>Republican candidate</span>
+          <select id="rep-candidate">
+            <option value="vance">JD Vance (OH)</option>
+            <option value="rubio">Marco Rubio (FL)</option>
+            <option value="desantis">Ron DeSantis (FL)</option>
+            <option value="haley">Nikki Haley (SC)</option>
+            <option value="cruz">Ted Cruz (TX)</option>
+          </select>
+        </label>
+        <button id="update-forecast" type="button">Update forecast</button>
+      </div>
+    </section>
+
+    <section class="map-panel" aria-labelledby="map-title">
+      <div class="section-head">
+        <div>
+          <p class="kicker">Electoral College</p>
+          <h2 id="map-title">The 2028 battleground.</h2>
+        </div>
+        <p><span id="president-sim-count">--</span> simulations. <span id="president-battleground-count">--</span> battleground states (25-75% win probability).</p>
+      </div>
+      <div class="map-wrap">
+        <div>
+          <div id="president-map"></div>
+          <div id="president-map-color-controls" class="map-color-controls" aria-label="Map color mode"></div>
+          <div id="president-map-legend" class="map-legend" aria-label="Race rating legend"></div>
+          <p id="president-map-note" class="map-note"></p>
+        </div>
+        <aside id="president-map-hover-card" class="hover-card"></aside>
+      </div>
+    </section>
+
+    <section class="dashboard-grid" aria-label="Forecast charts">
+      <article class="chart-panel chart-wide">
+        <span class="chart-label">Candidate and matchup strength</span>
+        <div id="president-matchup-strength" class="matchup-strength"></div>
+      </article>
+      <article class="chart-panel">
+        <span class="chart-label">Most decisive states by simulated election-deciding power</span>
+        <div id="president-leverage-chart" class="leverage-chart"></div>
+      </article>
+      <article class="chart-panel chart-wide">
+        <span class="chart-label">National win probability over time</span>
+        <div id="win-history-chart" class="history-chart"></div>
+      </article>
+      <article class="chart-panel chart-wide">
+        <span class="chart-label">Expected electoral votes over time</span>
+        <div id="ev-history-chart" class="history-chart"></div>
+      </article>
+    </section>
+
+    <section class="dashboard-grid" aria-label="State probabilities">
+      <article class="chart-panel full-width">
+        <span class="chart-label">Closest state probabilities</span>
+        <div id="state-probabilities" class="president-state-list">
+          <p>Loading forecast...</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="dashboard-grid" aria-label="Presidential model signals">
+      <article class="chart-panel">
+        <span class="chart-label">Input confidence</span>
+        <div id="president-confidence-panel" class="signal-list"></div>
+      </article>
+      <article class="chart-panel">
+        <span class="chart-label">National inputs</span>
+        <div id="president-input-panel" class="signal-list"></div>
+      </article>
+    </section>
+
+    <section class="dashboard-grid" aria-label="Historical backtest">
+      <article class="chart-panel">
+        <span class="chart-label">Historical Backtest</span>
+        <div id="historical-backtest">
+          <p>Loading forecast...</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+    <footer class="site-footer">
+    <div>
+      <strong>Federal Elections</strong>
+      <p>Election modeling, public analysis, endorsements, and team updates.</p>
+    </div>
+    <nav aria-label="Footer navigation">
+      <a href="senate.html">Senate</a>
+      <a href="president.html">President</a>
+      <a href="calibration.html">Calibration</a>
+    </nav>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+  <script src="assets/wiki.js"></script>
+  <script>
+    let forecastData = null;
+    let presidentMapColorMode = "rating";
+    let usStates = null;
+    let allPresidentMatchups = null;
+
+    const DEM_CANDIDATES = ["newsom", "beshear", "shapiro", "buttigieg", "whitmer", "aoc"];
+    const REP_CANDIDATES = ["vance", "rubio", "desantis", "haley", "cruz"];
+
+    const PRESIDENTIAL_MAP_COLOR_MODES = {
+      rating: "Rating",
+      margin: "Projected margin",
+      probability: "Win probability"
+    };
+
+    const PRESIDENT_RATING_COLORS = {
+      "Safe D": "var(--safe-d)",
+      "Likely D": "var(--likely-d)",
+      "Lean D": "var(--lean-d)",
+      "Tilt D": "var(--tilt-d)",
+      "Toss-up": "var(--toss)",
+      "Tilt R": "var(--tilt-r)",
+      "Lean R": "var(--lean-r)",
+      "Likely R": "var(--likely-r)",
+      "Safe R": "var(--safe-r)"
+    };
+
+    async function loadForecast() {
+      const demCandidate = document.getElementById('dem-candidate').value;
+      const repCandidate = document.getElementById('rep-candidate').value;
+      
+      try {
+        const response = await fetch(`data/president-forecast-${demCandidate}-${repCandidate}.json`);
+        forecastData = await response.json();
+        
+        displayNationalProbability();
+        renderStateMap();
+        renderMatchupStrengthChart();
+        renderLeverageChart();
+        renderPresidentHistoryCharts();
+        renderMapColorControls();
+        renderLegend();
+        displayStateProbabilities();
+        renderPresidentSignalPanels();
+        displayHistoricalBacktest();
+      } catch (error) {
+        console.error('Error loading forecast:', error);
+        document.getElementById('president-odds-phrase').textContent = 'Error loading forecast';
+      }
+    }
+
+    function displayNationalProbability() {
+      const demProb = forecastData.national.demWinProbability;
+      const repProb = forecastData.national.repWinProbability;
+      const demName = forecastData.demCandidateName || "Democratic nominee";
+      const repName = forecastData.repCandidateName || "Republican nominee";
+      const demLast = candidateLastName(demName);
+      const repLast = candidateLastName(repName);
+      
+      const favoredIsDem = demProb >= repProb;
+      const favoredProb = Math.max(demProb, repProb);
+      const oddsPanel = document.getElementById("president-odds-panel");
+      oddsPanel?.classList.toggle("control-dem", favoredIsDem);
+      oddsPanel?.classList.toggle("control-rep", !favoredIsDem);
+      document.getElementById('president-odds-phrase').innerHTML = `<span>${favoredIsDem ? demLast : repLast} favored</span><strong>${Math.round(favoredProb * 100)}%</strong>`;
+      document.getElementById('president-winner-headline').textContent = demProb > 0.5 ?
+        `${demName} favored` :
+        `${repName} favored`;
+      
+      document.getElementById('president-dem-win-label').textContent = `${demLast} win`;
+      document.getElementById('president-rep-win-label').textContent = `${repLast} win`;
+      document.getElementById('president-dem-win').textContent = `${(demProb * 100).toFixed(1)}%`;
+      document.getElementById('president-rep-win').textContent = `${(repProb * 100).toFixed(1)}%`;
+      document.getElementById('president-median-ev').textContent = `${forecastData.electoralCollege.demExpectedEV} ${demLast} / ${forecastData.electoralCollege.repExpectedEV} ${repLast}`;
+      document.getElementById('president-tipping-point-display').textContent = forecastData.tippingPoint.state;
+      document.getElementById('president-run-date').textContent = forecastData.date;
+      document.getElementById('president-sim-count').textContent = '100,000';
+      document.getElementById("president-map-note").textContent = `${demLast} vs. ${repLast}, by state.`;
+      
+      const battlegroundCount = Object.values(forecastData.states).filter(s => s.demProbability > 0.25 && s.demProbability < 0.75).length;
+      document.getElementById('president-battleground-count').textContent = battlegroundCount;
+      
+      const demBar = document.getElementById('dem-win-bar');
+      const repBar = document.getElementById('rep-win-bar');
+      demBar.style.width = `${demProb * 100}%`;
+      repBar.style.width = `${repProb * 100}%`;
+    }
+
+    function candidateLastName(name) {
+      const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+      return parts.length ? parts[parts.length - 1] : "Candidate";
+    }
+
+    function candidateSideLabel(isDem, format = "last") {
+      const name = isDem ? forecastData.demCandidateName : forecastData.repCandidateName;
+      if (format === "full") return name || (isDem ? "Democratic nominee" : "Republican nominee");
+      return candidateLastName(name);
+    }
+
+    function stateLeaderData(stateData) {
+      const demProb = stateData.demProbability;
+      const demLeads = demProb >= .5;
+      const probability = demLeads ? demProb : 1 - demProb;
+      return {
+        demLeads,
+        candidate: candidateSideLabel(demLeads),
+        fullCandidate: candidateSideLabel(demLeads, "full"),
+        probability,
+        projectedMargin: Math.abs(stateData.demMargin),
+        side: demLeads ? "D" : "R"
+      };
+    }
+
+    async function renderStateMap() {
+      const container = document.getElementById("president-map");
+      if (!container || !forecastData) return;
+      if (!window.d3 || !window.topojson) {
+        renderFallbackMap();
+        return;
+      }
+      try {
+        const us = await d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json");
+        const features = topojson.feature(us, us.objects.states).features;
+        const width = 960;
+        const height = 610;
+        const projection = d3.geoAlbersUsa().fitSize([width, height], { type: "FeatureCollection", features });
+        const path = d3.geoPath(projection);
+        container.innerHTML = "";
+        const svg = d3.select(container).append("svg").attr("viewBox", `0 0 ${width} ${height}`).attr("role", "img").attr("aria-label", "United States map of 2028 presidential race probabilities");
+        svg.selectAll("path")
+          .data(features)
+          .join("path")
+          .attr("class", "state-shape")
+          .attr("d", path)
+          .attr("fill", (feature) => {
+            const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+            const stateData = forecastData.states[state];
+            return stateData ? stateColor(stateData) : "#ccc";
+          })
+          .attr("opacity", (feature) => {
+            const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+            const stateData = forecastData.states[state];
+            return stateData ? 1 : null;
+          })
+          .attr("tabindex", (feature) => forecastData.states[FIPS_TO_STATE[String(feature.id).padStart(2, "0")]] ? 0 : -1)
+          .on("mouseenter focus", (event, feature) => updateHoverCard(forecastData.states[FIPS_TO_STATE[String(feature.id).padStart(2, "0")]]))
+          .on("mouseout", () => {
+            document.getElementById('president-map-hover-card').style.display = 'none';
+          })
+          .append("title")
+          .text((feature) => {
+            const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+            const stateData = forecastData.states[state];
+            if (!stateData) return STATE_NAMES[state];
+            const leader = stateLeaderData(stateData);
+            return `${STATE_NAMES[state]}: ${leader.fullCandidate} ${oneDecimal(leader.probability)}, ${stateData.ev} EV`;
+          });
+      } catch (error) {
+        console.error("Error rendering map:", error);
+        renderFallbackMap();
+      }
+    }
+
+    function stateColor(stateData) {
+      return PRESIDENT_RATING_COLORS[presidentRating(stateData, presidentMapColorMode)] || "var(--toss)";
+    }
+
+    function renderFallbackMap() {
+      const container = document.getElementById("president-map");
+      if (!container || !forecastData) return;
+      const states = Object.entries(forecastData.states);
+      let html = '<div style="display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; max-width: 800px; margin: 0 auto;">';
+      
+      const stateOrder = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC'];
+      
+      for (const state of stateOrder) {
+        const stateData = forecastData.states[state];
+        if (!stateData) continue;
+        
+        const color = stateColor(stateData);
+        
+        const leader = stateLeaderData(stateData);
+        html += `
+          <div style="background-color: ${color}; color: white; padding: 8px 4px; text-align: center; font-size: 12px; font-weight: bold; border-radius: 2px;" title="${state}: ${stateData.ev} EV, ${leader.fullCandidate} ${oneDecimal(leader.probability)}">
+            ${state}<br><span style="font-size: 10px;">${stateData.ev}</span>
+          </div>
+        `;
+      }
+      
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function updateHoverCard(stateData) {
+      const hoverCard = document.getElementById('president-map-hover-card');
+      if (!stateData) {
+        hoverCard.style.display = 'none';
+        return;
+      }
+      const stateCode = Object.keys(forecastData.states).find(k => forecastData.states[k] === stateData);
+      const leader = stateLeaderData(stateData);
+      const rating = presidentRating(stateData, presidentMapColorMode);
+      const ratingModeLabel = PRESIDENTIAL_MAP_COLOR_MODES[presidentMapColorMode] || "Rating";
+      const demName = candidateSideLabel(true, "full");
+      const repName = candidateSideLabel(false, "full");
+      const demProb = stateData.demProbability;
+      const repProb = 1 - stateData.demProbability;
+      const winnerVerb = leader.demLeads ? demName : repName;
+      const demographicPull = stateData.demographicPull;
+      const demographicPullLabel = (() => {
+        const value = demographicPull?.adjustment ?? 0;
+        if (Math.abs(value) < .05) return "Even";
+        return `${value > 0 ? demName : repName} by ${Math.abs(value).toFixed(1)} pts`;
+      })();
+      const demographicChipLabel = (item) => {
+        const value = item.effect || 0;
+        if (Math.abs(value) < .05) return `${item.label || item.group}: even`;
+        return `${item.label || item.group}: ${value > 0 ? demName : repName} +${Math.abs(value).toFixed(1)}`;
+      };
+      const demographicChips = demographicPull?.topGroups?.length
+        ? demographicPull.topGroups.slice(0, 3).map((item) => `<span>${demographicChipLabel(item)}</span>`).join("")
+        : "<span>Not separately scored</span>";
+      const demProfile = demographicPull?.demProfile?.profile || "Democratic profile";
+      const repProfile = demographicPull?.repProfile?.profile || "Republican profile";
+      hoverCard.innerHTML = `
+        <span class="race-kicker">${STATE_NAMES[stateCode]} Presidential</span>
+        <div class="map-card-title">
+          <div class="state-code">${stateCode}</div>
+          <span class="rating-pill ${presidentRatingBucket(rating)}" title="${ratingModeLabel}">${rating}</span>
+        </div>
+        <h3>${winnerVerb} has a ${oneDecimal(leader.probability)} chance.</h3>
+        <div class="candidate-table" aria-label="${STATE_NAMES[stateCode]} candidate forecast">
+          <div class="candidate-table-head"><span>Candidate</span><span>Chance</span></div>
+          <div class="candidate-row dem-row">
+            <span>${demName} <i class="party-badge dem-badge">D</i></span>
+            <strong>${oneDecimal(demProb)}</strong>
+          </div>
+          <div class="candidate-row rep-row">
+            <span>${repName} <i class="party-badge rep-badge">R</i></span>
+            <strong>${oneDecimal(repProb)}</strong>
+          </div>
+          <div class="candidate-margin"><span>Projected margin</span><strong>${leader.side}+${leader.projectedMargin.toFixed(1)} pts</strong></div>
+        </div>
+        <div class="prob-track" aria-label="${stateCode} probability split">
+          <span style="width:${demProb * 100}%"></span>
+          <span style="width:${repProb * 100}%"></span>
+        </div>
+        <div class="badge-row">
+          <span>${stateData.ev} electoral votes</span>
+          <span>${ratingModeLabel}</span>
+        </div>
+        <dl class="map-card-factors">
+          <div><dt>Rating basis</dt><dd>${ratingModeLabel}</dd></div>
+          <div><dt>Demographic pull</dt><dd>${demographicPullLabel}</dd></div>
+          <div><dt>${demName}</dt><dd>${demProfile}</dd></div>
+          <div><dt>${repName}</dt><dd>${repProfile}</dd></div>
+        </dl>
+        <div class="coalition-chips">${demographicChips}</div>
+      `;
+      hoverCard.style.display = 'block';
+    }
+
+    async function loadAllPresidentMatchups() {
+      if (allPresidentMatchups) return allPresidentMatchups;
+      const loads = [];
+      for (const dem of DEM_CANDIDATES) {
+        for (const rep of REP_CANDIDATES) {
+          loads.push(fetch(`data/president-forecast-${dem}-${rep}.json`).then(response => response.ok ? response.json() : null).catch(() => null));
+        }
+      }
+      allPresidentMatchups = (await Promise.all(loads)).filter(Boolean);
+      return allPresidentMatchups;
+    }
+
+    function candidateShortName(name) {
+      if (!name) return "";
+      if (/Ocasio/i.test(name)) return "AOC";
+      return candidateLastName(name);
+    }
+
+    async function renderMatchupStrengthChart() {
+      const container = document.getElementById("president-matchup-strength");
+      if (!container || !forecastData) return;
+      const matchups = await loadAllPresidentMatchups();
+      if (!matchups.length) {
+        container.innerHTML = "<p>Loading matchups...</p>";
+        return;
+      }
+
+      const demRows = DEM_CANDIDATES.map((id) => {
+        const rows = matchups.filter((item) => item.demCandidate === id);
+        return {
+          id,
+          name: rows[0]?.demCandidateName || id,
+          avgProb: rows.reduce((sum, item) => sum + item.national.demWinProbability, 0) / Math.max(rows.length, 1),
+          avgEv: rows.reduce((sum, item) => sum + item.electoralCollege.demExpectedEV, 0) / Math.max(rows.length, 1)
+        };
+      }).sort((a, b) => b.avgProb - a.avgProb);
+
+      const repRows = REP_CANDIDATES.map((id) => {
+        const rows = matchups.filter((item) => item.repCandidate === id);
+        return {
+          id,
+          name: rows[0]?.repCandidateName || id,
+          avgProb: rows.reduce((sum, item) => sum + item.national.repWinProbability, 0) / Math.max(rows.length, 1),
+          avgEv: rows.reduce((sum, item) => sum + item.electoralCollege.repExpectedEV, 0) / Math.max(rows.length, 1)
+        };
+      }).sort((a, b) => b.avgProb - a.avgProb);
+
+      const matchupRows = matchups.map((item) => ({
+        label: `${candidateShortName(item.demCandidateName)} vs. ${candidateShortName(item.repCandidateName)}`,
+        demName: candidateShortName(item.demCandidateName),
+        repName: candidateShortName(item.repCandidateName),
+        demProb: item.national.demWinProbability,
+        repProb: item.national.repWinProbability,
+        demEv: item.electoralCollege.demExpectedEV,
+        repEv: item.electoralCollege.repExpectedEV
+      }));
+      const bestDemMatchups = [...matchupRows].sort((a, b) => b.demProb - a.demProb).slice(0, 3);
+      const bestRepMatchups = [...matchupRows].sort((a, b) => b.repProb - a.repProb).slice(0, 3);
+
+      const maxDem = Math.max(...demRows.map((row) => row.avgProb), .01);
+      const maxRep = Math.max(...repRows.map((row) => row.avgProb), .01);
+      const rowHtml = (row, side, max) => `
+        <button class="matchup-strength-row ${side}" type="button" data-tip="${row.name}<br>${oneDecimal(row.avgProb)} average win chance<br>${Math.round(row.avgEv)} average EV">
+          <strong>${candidateShortName(row.name)}</strong>
+          <i style="width:${clamp((row.avgProb / max) * 100, 8, 100)}%"></i>
+          <span>${oneDecimal(row.avgProb)}</span>
+        </button>
+      `;
+      const matchupHtml = (row, side) => `
+        <button class="matchup-pair-row ${side}" type="button" data-tip="${row.label}<br>${oneDecimal(side === "dem" ? row.demProb : row.repProb)} win chance<br>${Math.round(side === "dem" ? row.demEv : row.repEv)} EV">
+          <strong>${row.label}</strong>
+          <span>${oneDecimal(side === "dem" ? row.demProb : row.repProb)}</span>
+        </button>
+      `;
+
+      container.innerHTML = `
+        <div class="matchup-strength-grid">
+          <section>
+            <h3>Best Democratic averages</h3>
+            ${demRows.map((row) => rowHtml(row, "dem", maxDem)).join("")}
+          </section>
+          <section>
+            <h3>Best Republican averages</h3>
+            ${repRows.map((row) => rowHtml(row, "rep", maxRep)).join("")}
+          </section>
+          <section>
+            <h3>Best Democratic matchups</h3>
+            ${bestDemMatchups.map((row) => matchupHtml(row, "dem")).join("")}
+          </section>
+          <section>
+            <h3>Best Republican matchups</h3>
+            ${bestRepMatchups.map((row) => matchupHtml(row, "rep")).join("")}
+          </section>
+        </div>
+      `;
+      bindPanelTooltipFor(container, "button", (node) => node.dataset.tip);
+    }
+
+    function renderLeverageChart() {
+      const container = document.getElementById("president-leverage-chart");
+      if (!container || !forecastData) return;
+      
+      const states = Object.entries(forecastData.states)
+        .map(([state, data]) => ({
+          state,
+          ev: data.ev,
+          prob: data.demProbability,
+          tippingPower: Math.min(data.demProbability, 1 - data.demProbability) * data.ev
+        }))
+        .filter(s => s.tippingPower > 0.5)
+        .sort((a, b) => b.tippingPower - a.tippingPower)
+        .slice(0, 10);
+      
+      const max = Math.max(...states.map((state) => state.tippingPower), .01);
+      container.innerHTML = states.map((s) => {
+        const width = clamp((s.tippingPower / max) * 100, 8, 100);
+        const leaderClass = s.prob > .55 ? "leads-dem" : s.prob < .45 ? "leads-rep" : "leads-tossup";
+        const leaderName = s.prob >= .5 ? candidateSideLabel(true) : candidateSideLabel(false);
+        const leaderProb = s.prob >= .5 ? s.prob : 1 - s.prob;
+        return `<button class="leverage-row ${leaderClass}" type="button" data-tip="${STATE_NAMES[s.state]}<br>${leaderName} ${oneDecimal(leaderProb)}<br>${s.tippingPower.toFixed(1)} deciding power"><strong>${s.state}</strong><i style="width:${width}%"></i><span>${s.tippingPower.toFixed(1)}</span></button>`;
+      }).join("");
+      bindPanelTooltipFor(container, ".leverage-row", (node) => node.dataset.tip);
+    }
+
+    function renderPresidentHistoryCharts() {
+      const winChart = document.getElementById("win-history-chart");
+      const evChart = document.getElementById("ev-history-chart");
+      if (winChart && forecastData) {
+        const points = forecastData.history?.length
+          ? forecastData.history.map((point) => ({ date: point.date, dem: point.demWinProbability, rep: point.repWinProbability }))
+          : [{
+            date: forecastData.date,
+            dem: forecastData.national.demWinProbability,
+            rep: forecastData.national.repWinProbability
+          }];
+        renderLineChart(winChart, points, {
+          label: "2028 presidential win probability",
+          pointHtml: (item) => `${item.date}<br>${candidateSideLabel(true)} ${(item.dem * 100).toFixed(1)}% / ${candidateSideLabel(false)} ${(item.rep * 100).toFixed(1)}%`,
+          endLabel: (party, value) => `${party === "dem" ? candidateSideLabel(true) : candidateSideLabel(false)} ${(value * 100).toFixed(1)}%`,
+          hoverLabel: (party, value) => `${party === "dem" ? candidateSideLabel(true) : candidateSideLabel(false)} ${(value * 100).toFixed(1)}%`,
+          electionDate: "2028-11-07",
+          eventMarkers: PRESIDENT_PRIMARY_MARKERS,
+          zoomControls: true,
+          singleNote: "History begins once daily presidential forecast files are saved."
+        });
+      }
+      if (evChart && forecastData) {
+        const points = forecastData.history?.length
+          ? forecastData.history.map((point) => ({ date: point.date, dem: point.demExpectedEV, rep: point.repExpectedEV }))
+          : [{
+            date: forecastData.date,
+            dem: forecastData.electoralCollege.demExpectedEV,
+            rep: forecastData.electoralCollege.repExpectedEV
+          }];
+        renderLineChart(evChart, points, {
+          label: "Expected electoral votes",
+          pointHtml: (item) => `${item.date}<br>${candidateSideLabel(true)} ${Math.round(item.dem)} / ${candidateSideLabel(false)} ${Math.round(item.rep)}`,
+          domain: [160, 380],
+          ticks: [350, 300, 270, 240, 190],
+          midline: 270,
+          band: 12,
+          valueFormat: (value) => String(Math.round(value)),
+          endLabel: (party, value) => `${party === "dem" ? candidateSideLabel(true) : candidateSideLabel(false)} ${Math.round(value)}`,
+          hoverLabel: (party, value) => `${party === "dem" ? candidateSideLabel(true) : candidateSideLabel(false)} ${Math.round(value)}`,
+          electionDate: "2028-11-07",
+          eventMarkers: PRESIDENT_PRIMARY_MARKERS,
+          zoomControls: true,
+          singleNote: "History begins once daily presidential forecast files are saved."
+        });
+      }
+    }
+
+    function renderMapColorControls() {
+      const container = document.getElementById("president-map-color-controls");
+      if (!container) return;
+      container.innerHTML = Object.entries(PRESIDENTIAL_MAP_COLOR_MODES).map(([mode, label]) => (
+        `<button type="button" class="${mode === presidentMapColorMode ? "active" : ""}" data-map-color="${mode}">${label}</button>`
+      )).join("");
+      container.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => {
+          presidentMapColorMode = button.dataset.mapColor || "probability";
+          renderMapColorControls();
+          renderStateMap();
+          renderLegend();
+        });
+      });
+    }
+
+    function renderLegend() {
+      const legend = document.getElementById("president-map-legend");
+      if (!legend) return;
+      const ratings = ["Safe D", "Likely D", "Lean D", "Tilt D", "Toss-up", "Tilt R", "Lean R", "Likely R", "Safe R"];
+      legend.innerHTML = ratings.map((rating) => `<span><i style="background:${PRESIDENT_RATING_COLORS[rating]}"></i>${rating}</span>`).join("");
+    }
+
+    function displayStateProbabilities() {
+      const states = Object.entries(forecastData.states)
+        .sort((a, b) => Math.abs(a[1].demProbability - .5) - Math.abs(b[1].demProbability - .5))
+        .slice(0, 18);
+      const html = `
+        <div class="battleground-list president-race-board">
+          ${states.map(([state, stateData]) => {
+            const leader = stateLeaderData(stateData);
+            const rating = presidentRating(stateData, "rating");
+            const leaderClass = leader.demLeads ? "leads-dem" : "leads-rep";
+            const marginClass = leader.demLeads ? "dem-margin" : "rep-margin";
+            return `
+              <button class="race-board-row ${leaderClass}" type="button" data-tip="${STATE_NAMES[state]}<br>${leader.fullCandidate} ${oneDecimal(leader.probability)}<br>Projected margin ${leader.side}+${leader.projectedMargin.toFixed(1)}">
+                <strong>${state}</strong>
+                <span><b>${STATE_NAMES[state]}</b><small>${stateData.ev} EV</small></span>
+                <span><b class="rating-pill ${presidentRatingBucket(rating)}">${rating}</b></span>
+                <span>${leader.fullCandidate}</span>
+                <span class="${marginClass}">${oneDecimal(leader.probability)}</span>
+                <span class="${marginClass}">${leader.side}+${leader.projectedMargin.toFixed(1)}</span>
+              </button>
+            `;
+          }).join("")}
+        </div>
+      `;
+      document.getElementById('state-probabilities').innerHTML = html;
+      bindPanelTooltipFor(document.getElementById('state-probabilities'), ".race-board-row", (node) => node.dataset.tip);
+    }
+
+    function confidenceScoreForPresidentModel() {
+      const summary = forecastData.sourceSummary || {};
+      const inputs = forecastData.modelInputs || {};
+      let score = 42;
+      const reasons = [];
+      if ((summary.polling?.usablePresidentialPolls || 0) > 10) score += 14;
+      else reasons.push("thin matchup polling");
+      if ((summary.genericPolling?.sources || []).length >= 3) score += 10;
+      else reasons.push("thin generic-ballot blend");
+      if (summary.consumerSentiment?.value) score += 8;
+      if (summary.trumpApproval?.approval) score += 8;
+      if ((inputs.senateStateSignalStates || 0) >= 30) score += 8;
+      if ((inputs.migrationStates || 0) >= 50) score += 5;
+      if (summary.candidateFavorability?.[forecastData.demCandidate]?.live && summary.candidateFavorability?.[forecastData.repCandidate]?.live) score += 8;
+      else reasons.push("candidate favorability is partly estimated");
+      if (forecastData.date && /2026/.test(forecastData.date)) {
+        score -= 10;
+        reasons.push("early 2028 cycle");
+      }
+      const finalScore = Math.round(clamp(score, 25, 86));
+      const label = finalScore >= 72 ? "Medium-high input confidence" : finalScore >= 55 ? "Medium input confidence" : "Low input confidence";
+      return { score: finalScore, label, reasons };
+    }
+
+    function renderPresidentSignalPanels() {
+      const confidence = document.getElementById("president-confidence-panel");
+      const inputsPanel = document.getElementById("president-input-panel");
+      if (!forecastData) return;
+      const summary = forecastData.sourceSummary || {};
+      const inputs = forecastData.modelInputs || {};
+      if (confidence) {
+        const score = confidenceScoreForPresidentModel();
+        confidence.innerHTML = `
+          <div class="signal-row"><strong>${score.score}/100</strong><span>${score.label}</span></div>
+          <div class="signal-row"><strong>${summary.polling?.usablePresidentialPolls ?? 0}</strong><span>usable matchup polls</span></div>
+          <div class="signal-row"><strong>${(summary.genericPolling?.sources || []).length}</strong><span>generic-ballot sources</span></div>
+          <div class="signal-row"><strong>${inputs.senateStateSignalStates ?? 0}</strong><span>states with 2026 signal</span></div>
+          ${score.reasons.map((reason) => `<div class="signal-row signal-muted"><strong>Flag</strong><span>${reason}</span></div>`).join("")}
+        `;
+      }
+      if (inputsPanel) {
+        inputsPanel.innerHTML = `
+          <div class="signal-row"><strong>${signedPointMargin(summary.genericPolling?.genericBallotMargin || 0)}</strong><span>generic ballot</span></div>
+          <div class="signal-row"><strong>${Number(summary.trumpApproval?.approval || 0).toFixed(1)}%</strong><span>Trump approval input</span></div>
+          <div class="signal-row"><strong>${Number(summary.consumerSentiment?.value || 0).toFixed(1)}</strong><span>consumer sentiment</span></div>
+          <div class="signal-row"><strong>${inputs.longTermTrendStates ?? 0}</strong><span>long-term trend states</span></div>
+          <div class="signal-row"><strong>${inputs.migrationStates ?? 0}</strong><span>migration states</span></div>
+        `;
+      }
+    }
+
+    function presidentRating(stateData, mode = presidentMapColorMode) {
+      const signedValue = mode === "probability" ? (stateData.demProbability - .5) * 100 : stateData.demMargin;
+      const abs = Math.abs(signedValue);
+      if (abs < (mode === "probability" ? 2.5 : 1)) return "Toss-up";
+      const side = signedValue > 0 ? "D" : "R";
+      if (abs >= (mode === "probability" ? 45 : 12)) return `Safe ${side}`;
+      if (abs >= (mode === "probability" ? 25 : 7)) return `Likely ${side}`;
+      if (abs >= (mode === "probability" ? 10 : 3)) return `Lean ${side}`;
+      return `Tilt ${side}`;
+    }
+
+    function presidentRatingBucket(rating) {
+      if (rating === "Toss-up") return "tossup";
+      return String(rating || "Toss-up").toLowerCase().replace(/\s+/g, "-");
+    }
+
+    function displayHistoricalBacktest() {
+      const backtest = forecastData.historicalBacktest;
+      const brier = backtest.meanBrier.toFixed(4);
+      const accuracy = (backtest.accuracy * 100).toFixed(1);
+      
+      let bucketsHtml = '<div class="buckets">';
+      for (const bucket of backtest.buckets) {
+        const actualRate = (bucket.actualWinRate * 100).toFixed(1);
+        bucketsHtml += `
+          <div class="bucket">
+            <strong>${bucket.label}</strong>: Expected ${bucket.expectedWinRate}, Actual ${actualRate}% (n=${bucket.sample})
+          </div>
+        `;
+      }
+      bucketsHtml += '</div>';
+      
+      document.getElementById('historical-backtest').innerHTML = `
+        <div class="backtest">
+          <div><strong>Cycles:</strong> ${backtest.cycles.join(', ')}</div>
+          <div><strong>Mean Brier Score:</strong> ${brier}</div>
+          <div><strong>Accuracy:</strong> ${accuracy}%</div>
+          ${bucketsHtml}
+        </div>
+      `;
+    }
+
+    // Load forecast on page load
+    document.addEventListener('DOMContentLoaded', loadForecast);
+    
+    // Update forecast when button is clicked
+    document.getElementById('update-forecast').addEventListener('click', loadForecast);
+  </script>
+
+  <style>
+    .matchup-panel {
+      border-top-color: var(--dem);
+    }
+    .candidate-selector {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+    }
+    .candidate-selector label {
+      display: grid;
+      gap: 6px;
+    }
+    .candidate-selector label span {
+      color: var(--muted);
+      font: 900 .72rem/1.1 "Segoe UI", Arial, sans-serif;
+      text-transform: uppercase;
+    }
+    .candidate-selector select,
+    .candidate-selector button {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      background: var(--paper);
+      color: var(--ink);
+      padding: 8px 10px;
+      font: 800 .95rem/1.1 "Segoe UI", Arial, sans-serif;
+    }
+    .candidate-selector button {
+      border-color: var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    .candidate-selector button:hover {
+      background: color-mix(in srgb, var(--ink) 88%, var(--dem));
+    }
+    .state-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .state-table th, .state-table td {
+      padding: 0.5rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    .state-table th {
+      background-color: #f5f5f5;
+    }
+    .dem-margin {
+      color: #0066cc;
+    }
+    .rep-margin {
+      color: #cc0000;
+    }
+    .buckets {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .bucket {
+      font-size: 0.9rem;
+    }
+    @media (max-width: 760px) {
+      .candidate-selector {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</body>
+</html>
