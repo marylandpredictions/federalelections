@@ -55,7 +55,7 @@ let houseViewMode = "board";
 let houseColorMode = "rating";
 let selectedHouseDistrictId = null;
 
-const PRESIDENT_DEM_CANDIDATES = ["newsom", "beshear", "shapiro", "buttigieg", "whitmer", "aoc"];
+const PRESIDENT_DEM_CANDIDATES = ["newsom", "beshear", "shapiro", "buttigieg", "harris", "aoc"];
 const PRESIDENT_REP_CANDIDATES = ["vance", "rubio", "desantis", "haley", "cruz"];
 
 const HOUSE_DISTRICT_MAP_URL = "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_119th_Congressional_Districts_no_territories/FeatureServer/0/query?where=1%3D1&outFields=DISTRICTID,STATE_ABBR,CDFIPS,NAME,PARTY&returnGeometry=true&f=geojson&outSR=4326&resultRecordCount=2000";
