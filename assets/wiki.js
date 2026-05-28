@@ -38,6 +38,7 @@ const MONTANA_CHART_ANNOTATIONS = [
 ];
 
 const PRESIDENT_PRIMARY_MARKERS = [
+  { date: "2026-05-27", label: "Model reworked" },
   { date: "2028-02-01", label: "Presidential primaries", className: "history-primary-marker", fullOnly: true }
 ];
 
