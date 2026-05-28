@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Roboto:wght@700;900&display=swap");
 
 :root {
   color-scheme: light;
@@ -924,6 +924,13 @@ h3 {
   color: var(--muted);
   font: 900 .82rem/1.25 "Inter", "Segoe UI", Arial, sans-serif;
   text-transform: uppercase;
+}
+
+.forecast-disclaimer {
+  max-width: 760px;
+  margin-top: 8px;
+  color: var(--muted);
+  font: 800 .86rem/1.45 "Inter", "Segoe UI", Arial, sans-serif;
 }
 
 .signal-row.signal-muted strong {
@@ -2560,7 +2567,7 @@ button.race-board-row {
   border-radius: 6px;
   background: color-mix(in srgb, var(--green) 18%, transparent);
   color: var(--ink);
-  font: 950 .82rem/1 "Inter", "Segoe UI", Arial, sans-serif;
+  font: 900 .82rem/1 "Roboto", "Inter", "Segoe UI", Arial, sans-serif;
   letter-spacing: .08em;
   text-transform: uppercase;
 }

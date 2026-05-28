@@ -2,11 +2,25 @@ name: Daily forecast
 
 on:
   schedule:
+    # Primary target: 6:20 AM Central during daylight time.
+    # GitHub scheduled workflows can be delayed, so the later entries are
+    # backup triggers. The model scripts are date-idempotent and the commit
+    # step only writes when data changes.
     - cron: "20 11 * * *"
+    - cron: "45 11 * * *"
+    - cron: "10 12 * * *"
+    - cron: "35 12 * * *"
+    - cron: "0 13 * * *"
   workflow_dispatch:
+  repository_dispatch:
+    types: [daily-forecast]
 
 permissions:
   contents: write
+
+concurrency:
+  group: daily-forecast
+  cancel-in-progress: true
 
 jobs:
   generate:
