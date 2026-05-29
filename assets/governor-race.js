@@ -100,6 +100,23 @@
     `;
   }
 
+  function renderHistory(race) {
+    const chart = document.getElementById("governor-race-history");
+    if (!chart) return;
+    let points = race.history?.length ? race.history : [{ date: race.modelDate || new Date().toISOString().split('T')[0], dem: race.demProbability }];
+    if (typeof renderLineChart === "function") {
+      renderLineChart(chart, points, {
+        label: "Governor race probability history",
+        pointHtml: (point) => `${point.date}<br>D ${pct(point.dem)} / R ${pct(1 - point.dem)}`,
+        value: (point) => point.dem,
+        electionDate: "2026-11-03",
+        singleNote: "Probability history starts with the first generated forecast and grows each daily run."
+      });
+    } else {
+      chart.innerHTML = `<p class="meta">Chart rendering not available. Current: D ${pct(race.demProbability)} / R ${pct(race.repProbability)}</p>`;
+    }
+  }
+
   function renderRace(data) {
     const state = new URLSearchParams(window.location.search).get("state")?.toUpperCase() || "VT";
     const race = data.races.find((item) => item.state === state) || data.races[0];
@@ -130,6 +147,7 @@
       repTrack.style.width = `${race.repProbability * 100}%`;
     }
     renderInputs(race);
+    renderHistory(race);
   }
 
   async function init() {

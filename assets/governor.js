@@ -213,28 +213,30 @@
     legend.innerHTML = Object.keys(ratings).map((rating) => `<span><i class="${ratings[rating]}"></i>${rating}</span>`).join("");
   }
 
-  function renderLeverage(data) {
-    const chart = document.getElementById("governor-leverage-chart");
+  function renderGovernorCountHistory(data) {
+    const chart = document.getElementById("governor-count-history-chart");
     if (!chart) return;
-    const rows = [...data.races].sort((a, b) => b.tippingPower - a.tippingPower).slice(0, 10);
-    const max = Math.max(...rows.map((race) => race.tippingPower), .01);
-    chart.innerHTML = rows.map((race) => {
-      const width = Math.max((race.tippingPower / max) * 100, 8);
-      return `<button class="leverage-row ${leaderClass(race)}" type="button"><strong>${escapeHtml(race.state)}</strong><i style="width:${width}%"></i><span>${oneDecimal(race.tippingPower)}</span></button>`;
-    }).join("");
-  }
-
-  function renderHistory(data) {
-    const chart = document.getElementById("governor-history-chart");
-    if (!chart) return;
-    const latest = data.governorCountHistory?.at(-1) || { demGovernors: data.medianDemGovernors, repGovernors: data.medianRepGovernors, date: data.modelDate };
-    chart.innerHTML = `
-      <div class="source-status-grid governor-count-grid">
-        <article class="source-status-card is-ok"><span>Median Democrats</span><h3>${data.medianDemGovernors}</h3><p>${escapeHtml(latest.date || data.modelDate)}</p></article>
-        <article class="source-status-card is-warn"><span>Median Republicans</span><h3>${data.medianRepGovernors}</h3><p>50 governorships</p></article>
-        <article class="source-status-card"><span>Average split</span><h3>${Number(data.averageDemGovernors).toFixed(1)} D</h3><p>${Number(data.averageRepGovernors).toFixed(1)} R</p></article>
-      </div>
-    `;
+    const points = data.governorCountHistory?.length ? data.governorCountHistory : [{ date: data.modelDate, demGovernors: data.medianDemGovernors, repGovernors: data.medianRepGovernors }];
+    const convertedPoints = points.map((point) => ({
+      date: point.date,
+      dem: point.demGovernors,
+      rep: point.repGovernors
+    }));
+    if (typeof renderLineChart === "function") {
+      renderLineChart(chart, convertedPoints, {
+        label: "Projected governor count history",
+        domain: [15, 35],
+        ticks: [35, 30, 25, 20, 15],
+        band: 1.5,
+        valueFormat: (value) => value.toFixed(0),
+        endLabel: (party, value) => `${party === "dem" ? "Democratic" : "Republican"} governors ${value.toFixed(0)}`,
+        hoverLabel: (party, value) => `${party === "dem" ? "Democratic" : "Republican"} governors ${value.toFixed(0)}`,
+        electionDate: data.settings?.electionDate || "2026-11-03",
+        singleNote: "Governor count history starts with the first generated forecast and grows each daily run."
+      });
+    } else {
+      chart.innerHTML = `<p class="meta">Chart rendering not available. Median: ${data.medianDemGovernors} D / ${data.medianRepGovernors} R</p>`;
+    }
   }
 
   function renderBoard(data) {
@@ -274,8 +276,7 @@
       renderSummary(data);
       renderMap(data);
       renderLegend();
-      renderLeverage(data);
-      renderHistory(data);
+      renderGovernorCountHistory(data);
       renderBoard(data);
     } catch (error) {
       renderError(error);
