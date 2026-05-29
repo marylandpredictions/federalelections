@@ -3,6 +3,226 @@ import { readFileSync, writeFileSync } from "node:fs";
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const previousForecast = readPreviousForecast();
 
+async function fetchText(url, label, status, options = {}) {
+  const startedAt = Date.now();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 20000);
+
+  try {
+    const response = await fetch(url, {
+      headers: options.headers || {},
+      signal: controller.signal
+    });
+    const text = await response.text();
+    status[label] = {
+      ok: response.ok,
+      status: response.status,
+      ms: Date.now() - startedAt,
+      url
+    };
+    if (!response.ok) {
+      status[label].error = text.slice(0, 180);
+    }
+    return response.ok ? text : null;
+  } catch (error) {
+    status[label] = {
+      ok: false,
+      status: "fetch-error",
+      ms: Date.now() - startedAt,
+      url,
+      error: error.message
+    };
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let quoted = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i];
+    const next = text[i + 1];
+    if (quoted && char === "\"" && next === "\"") {
+      cell += "\"";
+      i += 1;
+    } else if (char === "\"") {
+      quoted = !quoted;
+    } else if (!quoted && char === ",") {
+      row.push(cell);
+      cell = "";
+    } else if (!quoted && (char === "\n" || char === "\r")) {
+      if (char === "\r" && next === "\n") i += 1;
+      row.push(cell);
+      if (row.some((value) => value !== "")) rows.push(row);
+      row = [];
+      cell = "";
+    } else {
+      cell += char;
+    }
+  }
+  if (cell || row.length) {
+    row.push(cell);
+    rows.push(row);
+  }
+  const headers = rows.shift() || [];
+  return rows.map((values) => Object.fromEntries(headers.map((header, index) => [header, values[index] ?? ""])));
+}
+
+function toNumber(value) {
+  const number = Number(String(value ?? "").replace(/[$,]/g, ""));
+  return Number.isFinite(number) ? number : 0;
+}
+
+function rowNumber(row, names) {
+  for (const name of names) {
+    if (row[name] !== undefined && row[name] !== "") return toNumber(row[name]);
+  }
+  return 0;
+}
+
+function decodeHtml(value) {
+  return String(value || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&quot;/g, "\"")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
+function stateSlug(state) {
+  return STATE_NAMES[state]?.toLowerCase().replace(/\s+/g, "-") || state.toLowerCase();
+}
+
+async function fetchFec(status) {
+  const text = await fetchText("https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv", "openFecCandidateSummary", status);
+  const byState = {};
+  const national = {
+    demReceipts: 0, repReceipts: 0,
+    demCash: 0, repCash: 0,
+    demDebts: 0, repDebts: 0,
+    demDisbursements: 0, repDisbursements: 0,
+    demIndividual: 0, repIndividual: 0,
+    otherReceipts: 0, otherCash: 0, otherDebts: 0, otherDisbursements: 0, otherIndividual: 0
+  };
+  if (!text) return { byState, national };
+  const rows = parseCsv(text);
+  for (const row of rows) {
+    const stateCode = row["cand_st"] || row["CAND_ST"];
+    const party = (row["cand_party_affiliation"] || row["CAND_PARTY_AFFILIATION"] || "").toUpperCase();
+    const receipts = rowNumber(row, ["net_contributions", "NET_CONTRIBUTIONS", "total_receipts", "TOTAL_RECEIPTS"]);
+    const cash = rowNumber(row, ["cash_on_hand_end_period", "CASH_ON_HAND_END_PERIOD"]);
+    const debts = rowNumber(row, ["debts_owed_by_committee", "DEBTS_OWED_BY_COMMITTEE"]);
+    const disbursements = rowNumber(row, ["total_disbursements", "TOTAL_DISBURSEMENTS"]);
+    const individual = rowNumber(row, ["contributions_from_individuals", "CONTRIBUTIONS_FROM_INDIVIDUALS"]);
+    if (!stateCode || !STATE_NAMES[stateCode]) continue;
+    if (!byState[stateCode]) {
+      byState[stateCode] = {
+        demReceipts: 0, repReceipts: 0,
+        demCash: 0, repCash: 0,
+        demDebts: 0, repDebts: 0,
+        demDisbursements: 0, repDisbursements: 0,
+        demIndividual: 0, repIndividual: 0,
+        otherReceipts: 0, otherCash: 0, otherDebts: 0, otherDisbursements: 0, otherIndividual: 0
+      };
+    }
+    const stateData = byState[stateCode];
+    if (party === "DEM" || party === "D") {
+      stateData.demReceipts += receipts;
+      stateData.demCash += cash;
+      stateData.demDebts += debts;
+      stateData.demDisbursements += disbursements;
+      stateData.demIndividual += individual;
+      national.demReceipts += receipts;
+      national.demCash += cash;
+      national.demDebts += debts;
+      national.demDisbursements += disbursements;
+      national.demIndividual += individual;
+    } else if (party === "REP" || party === "R") {
+      stateData.repReceipts += receipts;
+      stateData.repCash += cash;
+      stateData.repDebts += debts;
+      stateData.repDisbursements += disbursements;
+      stateData.repIndividual += individual;
+      national.repReceipts += receipts;
+      national.repCash += cash;
+      national.repDebts += debts;
+      national.repDisbursements += disbursements;
+      national.repIndividual += individual;
+    } else {
+      stateData.otherReceipts += receipts;
+      stateData.otherCash += cash;
+      stateData.otherDebts += debts;
+      stateData.otherDisbursements += disbursements;
+      stateData.otherIndividual += individual;
+      national.otherReceipts += receipts;
+      national.otherCash += cash;
+      national.otherDebts += debts;
+      national.otherDisbursements += disbursements;
+      national.otherIndividual += individual;
+    }
+  }
+  national.financeSignal = nationalFinanceSignal(national);
+  byState.__national = national;
+  status.openFecCandidateSummary = { rows: rows.length, governorStates: Object.keys(byState).filter((state) => STATE_NAMES[state]).length, nationalFinanceSignal: national.financeSignal };
+  return byState;
+}
+
+async function fetchDdhqGenericBallot(status) {
+  const url = "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults";
+  const text = await fetchText(url, "ddhqGenericBallot", status, { timeoutMs: 15000 });
+  if (!text) return { genericBallotMargin: null, polls: 0 };
+  if (/Vercel Security Checkpoint/i.test(text)) {
+    status.ddhqGenericBallot.ok = false;
+    status.ddhqGenericBallot.error = "Vercel security checkpoint";
+    return { genericBallotMargin: null, polls: 0 };
+  }
+  const match = text.match(/"margin":\s*([0-9.-]+)/);
+  const margin = match ? Number(match[1]) : null;
+  const pollsMatch = text.match(/"polls":\s*([0-9]+)/);
+  const polls = pollsMatch ? Number(pollsMatch[1]) : 0;
+  return { genericBallotMargin: margin, polls };
+}
+
+async function fetchPollfinityAverages(status) {
+  const url = "https://pollfinity.com/averages.json";
+  const text = await fetchText(url, "pollfinityAverages", status, {
+    headers: { accept: "application/json" },
+    timeoutMs: 15000
+  });
+  if (!text) return { genericBallotMargin: null, governorPolls: {} };
+  try {
+    const data = JSON.parse(text);
+    const generic = data.generic_ballot?.national?.margin;
+    const governorPolls = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key.startsWith("governor_")) {
+        const state = key.replace("governor_", "").toUpperCase();
+        if (value.margin !== undefined && STATE_NAMES[state]) {
+          governorPolls[state] = { margin: value.margin, polls: value.poll_count || 0 };
+        }
+      }
+    }
+    return { genericBallotMargin: generic, governorPolls };
+  } catch {
+    return { genericBallotMargin: null, governorPolls: {} };
+  }
+}
+
+async function fetchAllSources() {
+  const status = { checkedAt: new Date().toISOString() };
+  const [fec, ddhqGeneric, pollfinity] = await Promise.all([
+    fetchFec(status),
+    fetchDdhqGenericBallot(status),
+    fetchPollfinityAverages(status)
+  ]);
+  return { fec, ddhqGeneric, pollfinity, status };
+}
+
 const SETTINGS = {
   simulations: 50000,
   electionDate: "2026-11-03",
@@ -13,7 +233,8 @@ const SETTINGS = {
   dataSources: [
     "Manual 2026 gubernatorial race ledger with candidates, incumbency, PVI, and last gubernatorial margin",
     "Cook Political Report, Inside Elections, Sabato's Crystal Ball, WH, VoteHub, and RCP rating references",
-    "Current Senate model generic ballot signal as a broad midterm environment input"
+    "Current Senate model generic ballot signal as a broad midterm environment input",
+    "OpenFEC candidate finance bulk files"
   ]
 };
 
@@ -29,6 +250,130 @@ const RATING_TO_MARGIN = {
 const RATING_TO_ERROR = {
   "Safe D": 7.5, "Likely D": 8.5, "Lean D": 9.5, "Tilt D": 10.5, "Toss-up": 11,
   "Tilt R": 10.5, "Lean R": 9.5, "Likely R": 8.5, "Safe R": 7.5
+};
+
+const MODEL_WEIGHTS = {
+  nationalFinance: .45
+};
+
+const INDEPENDENT_CONTROL_FINANCE = {
+  NE: { side: "dem", label: "Dan Osborn" }
+};
+
+const STATE_COALITION_TRAITS = {
+  AL: ["deep_south", "rural", "evangelical"], AK: ["frontier", "independent"], AZ: ["sunbelt", "suburban", "latino"], AR: ["south", "rural"],
+  CA: ["urban", "college", "latino"], CO: ["suburban", "college"], CT: ["suburban", "college"], DE: ["suburban"],
+  FL: ["sunbelt", "suburban", "latino", "senior"], GA: ["suburban", "black_belt"], HI: ["minority"], ID: ["rural"],
+  IL: ["urban", "suburban"], IN: ["working_class"], IA: ["rural", "working_class"], KS: ["suburban", "rural"],
+  KY: ["appalachian", "rural", "working_class"], LA: ["deep_south", "black_belt"], ME: ["independent", "rural"], MD: ["suburban", "college"],
+  MA: ["college", "urban"], MI: ["working_class", "suburban"], MN: ["college", "suburban"], MS: ["black_belt", "rural"],
+  MO: ["rural", "working_class"], MT: ["frontier", "rural", "independent"], NE: ["rural", "suburban", "independent"], NV: ["sunbelt", "working_class", "latino"],
+  NH: ["independent", "suburban"], NJ: ["suburban", "college"], NM: ["latino"], NY: ["urban", "college"], NC: ["suburban", "black_belt"],
+  ND: ["rural"], OH: ["appalachian", "working_class"], OK: ["evangelical", "rural"], OR: ["college"], PA: ["working_class", "suburban"],
+  RI: ["urban"], SC: ["black_belt", "suburban", "evangelical"], SD: ["rural"], TN: ["appalachian", "evangelical"], TX: ["sunbelt", "suburban", "latino"],
+  UT: ["suburban", "religious"], VT: ["rural", "college"], VA: ["suburban", "college"], WA: ["college", "urban"], WV: ["appalachian", "rural", "working_class"],
+  WI: ["working_class", "rural"], WY: ["rural"]
+};
+
+const MIDTERM_LIKELY_VOTER_BASELINES = {
+  AL: { white_college: .24, white_noncollege: .43, black: .27, latino: .03, asian_other: .03 },
+  AK: { white_college: .31, white_noncollege: .42, black: .03, latino: .04, asian_other: .20 },
+  AR: { white_college: .25, white_noncollege: .55, black: .14, latino: .03, asian_other: .03 },
+  CO: { white_college: .47, white_noncollege: .31, black: .03, latino: .14, asian_other: .05 },
+  DE: { white_college: .39, white_noncollege: .35, black: .18, latino: .05, asian_other: .03 },
+  FL: { white_college: .31, white_noncollege: .36, black: .12, latino: .16, asian_other: .05 },
+  GA: { white_college: .31, white_noncollege: .31, black: .30, latino: .04, asian_other: .04 },
+  ID: { white_college: .32, white_noncollege: .54, black: .01, latino: .09, asian_other: .04 },
+  IL: { white_college: .40, white_noncollege: .36, black: .13, latino: .07, asian_other: .04 },
+  IA: { white_college: .32, white_noncollege: .58, black: .03, latino: .04, asian_other: .03 },
+  KS: { white_college: .34, white_noncollege: .49, black: .06, latino: .07, asian_other: .04 },
+  KY: { white_college: .28, white_noncollege: .59, black: .08, latino: .03, asian_other: .02 },
+  LA: { white_college: .24, white_noncollege: .41, black: .29, latino: .03, asian_other: .03 },
+  ME: { white_college: .42, white_noncollege: .51, black: .01, latino: .02, asian_other: .04 },
+  MA: { white_college: .55, white_noncollege: .28, black: .07, latino: .06, asian_other: .04 },
+  MI: { white_college: .35, white_noncollege: .49, black: .10, latino: .03, asian_other: .03 },
+  MN: { white_college: .42, white_noncollege: .44, black: .06, latino: .04, asian_other: .04 },
+  MS: { white_college: .21, white_noncollege: .41, black: .34, latino: .02, asian_other: .02 },
+  MT: { white_college: .36, white_noncollege: .54, black: .01, latino: .03, asian_other: .06 },
+  NE: { white_college: .33, white_noncollege: .54, black: .04, latino: .06, asian_other: .03 },
+  NV: { white_college: .33, white_noncollege: .38, black: .08, latino: .16, asian_other: .05 },
+  NH: { white_college: .47, white_noncollege: .47, black: .01, latino: .02, asian_other: .03 },
+  NJ: { white_college: .43, white_noncollege: .31, black: .12, latino: .10, asian_other: .04 },
+  NM: { white_college: .30, white_noncollege: .30, black: .02, latino: .33, asian_other: .05 },
+  NY: { white_college: .43, white_noncollege: .31, black: .12, latino: .10, asian_other: .04 },
+  NC: { white_college: .34, white_noncollege: .42, black: .19, latino: .03, asian_other: .02 },
+  OH: { white_college: .33, white_noncollege: .53, black: .09, latino: .03, asian_other: .02 },
+  OK: { white_college: .25, white_noncollege: .51, black: .07, latino: .06, asian_other: .11 },
+  OR: { white_college: .43, white_noncollege: .40, black: .02, latino: .08, asian_other: .07 },
+  PA: { white_college: .38, white_noncollege: .42, black: .10, latino: .04, asian_other: .02 },
+  RI: { white_college: .43, white_noncollege: .36, black: .06, latino: .11, asian_other: .04 },
+  SC: { white_college: .29, white_noncollege: .43, black: .24, latino: .02, asian_other: .02 },
+  SD: { white_college: .31, white_noncollege: .56, black: .02, latino: .03, asian_other: .08 },
+  TN: { white_college: .29, white_noncollege: .53, black: .13, latino: .03, asian_other: .02 },
+  TX: { white_college: .29, white_noncollege: .37, black: .12, latino: .18, asian_other: .04 },
+  UT: { white_college: .35, white_noncollege: .48, black: .01, latino: .10, asian_other: .06 },
+  VA: { white_college: .43, white_noncollege: .33, black: .16, latino: .05, asian_other: .03 },
+  WA: { white_college: .45, white_noncollege: .33, black: .04, latino: .08, asian_other: .10 },
+  WV: { white_college: .23, white_noncollege: .72, black: .03, latino: .01, asian_other: .01 },
+  WI: { white_college: .38, white_noncollege: .48, black: .06, latino: .03, asian_other: .05 },
+  WY: { white_college: .30, white_noncollege: .61, black: .01, latino: .05, asian_other: .03 }
+};
+
+const MIDTERM_AGE_BASELINES = {
+  AL: { youth: .13, core_age: .57, senior: .30 },
+  AK: { youth: .16, core_age: .63, senior: .21 },
+  AR: { youth: .13, core_age: .56, senior: .31 },
+  CO: { youth: .17, core_age: .60, senior: .23 },
+  DE: { youth: .13, core_age: .55, senior: .32 },
+  FL: { youth: .12, core_age: .55, senior: .33 },
+  GA: { youth: .15, core_age: .59, senior: .26 },
+  ID: { youth: .15, core_age: .57, senior: .28 },
+  IL: { youth: .15, core_age: .58, senior: .27 },
+  IA: { youth: .14, core_age: .55, senior: .31 },
+  KS: { youth: .15, core_age: .57, senior: .28 },
+  KY: { youth: .13, core_age: .56, senior: .31 },
+  LA: { youth: .14, core_age: .58, senior: .28 },
+  ME: { youth: .11, core_age: .52, senior: .37 },
+  MA: { youth: .15, core_age: .57, senior: .28 },
+  MI: { youth: .14, core_age: .56, senior: .30 },
+  MN: { youth: .15, core_age: .57, senior: .28 },
+  MS: { youth: .14, core_age: .57, senior: .29 },
+  MT: { youth: .13, core_age: .55, senior: .32 },
+  NE: { youth: .15, core_age: .56, senior: .29 },
+  NV: { youth: .16, core_age: .60, senior: .24 },
+  NH: { youth: .12, core_age: .55, senior: .33 },
+  NJ: { youth: .14, core_age: .57, senior: .29 },
+  NM: { youth: .14, core_age: .56, senior: .30 },
+  NC: { youth: .15, core_age: .58, senior: .27 },
+  OH: { youth: .14, core_age: .56, senior: .30 },
+  OK: { youth: .14, core_age: .57, senior: .29 },
+  OR: { youth: .14, core_age: .57, senior: .29 },
+  PA: { youth: .13, core_age: .56, senior: .31 },
+  RI: { youth: .13, core_age: .56, senior: .31 },
+  SC: { youth: .13, core_age: .56, senior: .31 },
+  SD: { youth: .14, core_age: .55, senior: .31 },
+  TN: { youth: .13, core_age: .57, senior: .30 },
+  TX: { youth: .16, core_age: .60, senior: .24 },
+  UT: { youth: .15, core_age: .57, senior: .28 },
+  VA: { youth: .15, core_age: .58, senior: .27 },
+  WA: { youth: .16, core_age: .59, senior: .25 },
+  WV: { youth: .11, core_age: .54, senior: .35 },
+  WI: { youth: .14, core_age: .56, senior: .30 },
+  WY: { youth: .13, core_age: .56, senior: .31 }
+};
+
+const PATH_CENTRALITY = {
+  OH: 1.85, TX: 1.65, AK: 1.6, MI: 1.35, GA: 1.25, NC: 1.12, ME: 1.1, NH: 1,
+  IA: .75, NE: .72, MT: .68, SC: .55, KS: .45, FL: .25
+};
+
+const STATE_ELASTICITY = {
+  AK: 1.18, AZ: 1.08, GA: 1.12, IA: 1.1, ME: .86, MI: 1.12, MN: .9, MT: 1.04,
+  NC: 1.18, NH: .94, OH: 1.22, PA: 1.12, TX: 1.16, VA: .86, WI: 1.12
+};
+
+const CANDIDATE_HISTORY = {
+  OH: 1.15, PA: 1.25, GA: .7, MI: .25, NE: 1.45, MT: .8, NC: 1.25
 };
 
 const GOVERNOR_RACES = [
@@ -232,20 +577,40 @@ function governorCandidateProfile(race, party) {
   };
 }
 
+function financeSideForRace(fec, race) {
+  const independent = INDEPENDENT_CONTROL_FINANCE[race.state];
+  if (independent?.side === "dem" && fec.otherReceipts > fec.demReceipts) {
+    return {
+      ...fec,
+      demReceipts: fec.otherReceipts,
+      demCash: fec.otherCash,
+      demDebts: fec.otherDebts,
+      demIndividual: fec.otherIndividual,
+      demFinanceLabel: independent.label,
+      demFinanceParty: "I",
+      financeTreatment: `${independent.label} is an independent who counts with Democrats for control, so independent-side FEC money is compared against Republican money.`
+    };
+  }
+  return { ...fec, demFinanceLabel: "Democratic side", repFinanceLabel: "Republican side" };
+}
+
+function nationalFinanceSignal(finance) {
+  const demScore = Math.log1p(Math.max(finance.demReceipts, 0) + Math.max(finance.demCash, 0) * 1.1) - Math.log1p(Math.max(finance.demDebts, 0) * 1.2);
+  const repScore = Math.log1p(Math.max(finance.repReceipts, 0) + Math.max(finance.repCash, 0) * 1.1) - Math.log1p(Math.max(finance.repDebts, 0) * 1.2);
+  return Number(clamp((demScore - repScore) / 5, -.8, .8).toFixed(3));
+}
+
 function governorElectorateWeights(state) {
-  const pvi = GOVERNOR_RACES.find((race) => race.state === state)?.pvi || 0;
-  const sunbelt = ["AZ", "CA", "FL", "GA", "NV", "NM", "TX"].includes(state);
-  const blackBelt = ["AL", "AR", "FL", "GA", "MD", "SC"].includes(state);
-  const college = ["CA", "CO", "CT", "MA", "MD", "MN", "NY", "OR", "PA", "VT", "WI"].includes(state);
-  const rural = Math.abs(pvi) >= 8 || ["AK", "IA", "KS", "ME", "NE", "NH", "SD", "WY"].includes(state);
+  const baseline = MIDTERM_LIKELY_VOTER_BASELINES[state] || { white_college: .3, white_noncollege: .4, black: .1, latino: .1, asian_other: .05 };
+  const ageBaseline = MIDTERM_AGE_BASELINES[state] || { youth: .15, core_age: .6, senior: .25 };
   const weights = {
-    white_college: college ? .3 : rural ? .17 : .23,
-    white_noncollege: rural ? .42 : college ? .22 : .31,
-    black: blackBelt ? .2 : .08,
-    latino: sunbelt ? .18 : .06,
-    asian_other: ["CA", "HI", "MA", "MD", "NY", "VA", "WA"].includes(state) ? .1 : .04,
-    youth: college || sunbelt ? .12 : .09,
-    senior: rural ? .18 : .13
+    white_college: baseline.white_college,
+    white_noncollege: baseline.white_noncollege,
+    black: baseline.black,
+    latino: baseline.latino,
+    asian_other: baseline.asian_other,
+    youth: ageBaseline.youth,
+    senior: ageBaseline.senior
   };
   const total = Object.values(weights).reduce((sum, value) => sum + value, 0) || 1;
   return Object.fromEntries(Object.entries(weights).map(([key, value]) => [key, Number((value / total).toFixed(4))]));
@@ -286,7 +651,7 @@ function statusEffect(race) {
   return 0;
 }
 
-function buildRace(baseRace, nationalShift) {
+function buildRace(baseRace, nationalShift, sourceData) {
   const candidateInfo = GOVERNOR_CANDIDATE_STATUS[baseRace.state] || {};
   const race = {
     ...baseRace,
@@ -302,7 +667,34 @@ function buildRace(baseRace, nationalShift) {
   const fundamentals = (race.pvi * .38) + (race.lastMargin * .24) + statusEffect(race);
   const candidateAndLocal = race.candidateEdge || 0;
   const demographicPull = demographicPullAdjustment(race);
-  const margin = (ratingMargin * .58) + (fundamentals * .34) + candidateAndLocal + nationalShift + demographicPull.adjustment;
+  
+  // Candidate history adjustment
+  const candidateHistory = CANDIDATE_HISTORY[race.state] || 0;
+  
+  // Finance integration
+  let financeSignal = 0;
+  let nationalFinance = 0;
+  const fec = sourceData?.fec?.[race.state];
+  if (fec) {
+    const raceFec = financeSideForRace(fec, race);
+    const demEfficiency = (raceFec.demCash + raceFec.demIndividual * .45 - raceFec.demDebts * .7) / Math.sqrt(1 + Math.max(raceFec.demDisbursements, 1));
+    const repEfficiency = (raceFec.repCash + raceFec.repIndividual * .45 - raceFec.repDebts * .7) / Math.sqrt(1 + Math.max(raceFec.repDisbursements, 1));
+    const efficiencySignal = clamp((demEfficiency - repEfficiency) / 1800, -1.35, 1.35);
+    const rawReceiptSignal = clamp((raceFec.demReceipts - raceFec.repReceipts) / 8000000, -1, 1);
+    financeSignal = efficiencySignal * .72 + rawReceiptSignal * .28;
+  }
+  if (sourceData?.fec?.__national) {
+    nationalFinance = sourceData.fec.__national.financeSignal * MODEL_WEIGHTS.nationalFinance;
+  }
+  
+  // Polling integration
+  let pollMargin = 0;
+  const governorPoll = sourceData?.pollfinity?.governorPolls?.[race.state];
+  if (governorPoll && governorPoll.polls > 0) {
+    pollMargin = governorPoll.margin * .5;
+  }
+  
+  const margin = (ratingMargin * .58) + (fundamentals * .34) + candidateAndLocal + nationalShift + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin;
   const error = clamp((RATING_TO_ERROR[race.rating] ?? 9.5) + (race.status.includes("Term-limited") || race.status.includes("retiring") ? 1.2 : 0), 6.5, 13.5);
   const demProbability = clamp(normalCdf(margin, 0, error), 0.01, 0.99);
   const winnerParty = demProbability >= .5 ? "D" : "R";
@@ -316,6 +708,13 @@ function buildRace(baseRace, nationalShift) {
     ratingMargin: Number(ratingMargin.toFixed(2)),
     candidateAndLocal: Number(candidateAndLocal.toFixed(2)),
     demographicPull,
+    sourceInputs: {
+      financeSignal,
+      nationalFinance,
+      candidateHistory,
+      pollMargin,
+      pollCount: governorPoll?.polls || 0
+    },
     modelRating: ratingFromProbability(demProbability, margin),
     demProbability: Number(demProbability.toFixed(5)),
     repProbability: Number((1 - demProbability).toFixed(5)),
@@ -333,10 +732,11 @@ function appendHistory(forecast) {
   return history.slice(-365);
 }
 
-function buildForecast() {
+async function buildForecast() {
+  const sourceData = await fetchAllSources();
   const senateSignals = readSenateSignals();
   const nationalShift = clamp(senateSignals.genericBallotMargin * 0.18, -1.8, 1.8);
-  const modeledRaces = GOVERNOR_RACES.map((race) => buildRace(race, nationalShift));
+  const modeledRaces = GOVERNOR_RACES.map((race) => buildRace(race, nationalShift, sourceData));
   const distribution = {};
   const decisive = Object.fromEntries(modeledRaces.map((race) => [race.state, 0]));
   const demCounts = [];
@@ -381,7 +781,9 @@ function buildForecast() {
     sourceSummary: {
       genericBallotMargin: senateSignals.genericBallotMargin,
       gubernatorialNationalShift: Number(nationalShift.toFixed(2)),
-      approvalNet: senateSignals.approvalNet
+      approvalNet: senateSignals.approvalNet,
+      dataSources: sourceData.status,
+      nationalFinance: sourceData.fec?.__national || null
     },
     projectedDemRaceWins: demWinningRaceTotal,
     projectedRepRaceWins: repWinningRaceTotal,
@@ -396,6 +798,14 @@ function buildForecast() {
   return forecast;
 }
 
-const forecast = buildForecast();
-writeFileSync(FORECAST_URL, JSON.stringify(forecast, null, 2));
-console.log(`Wrote gubernatorial forecast for ${forecast.races.length} races`);
+async function writeForecast() {
+  const forecast = await buildForecast();
+  writeFileSync(FORECAST_URL, JSON.stringify(forecast, null, 2), "utf8");
+  console.log(`Wrote gubernatorial forecast for ${forecast.races.length} races`);
+  console.log(`Data sources status:`, Object.keys(forecast.sourceSummary.dataSources || {}).join(", "));
+}
+
+writeForecast().catch((error) => {
+  console.error("Error generating forecast:", error);
+  process.exit(1);
+});
