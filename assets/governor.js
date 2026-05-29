@@ -44,8 +44,9 @@
   function candidateDisplayName(race, party) {
     const name = party === "D" ? race.dem : race.rep;
     const status = party === "D" ? race.demStatus : race.repStatus;
+    if (status === "unresolved" && (name === "Democrat" || name === "Republican")) return name;
     if (status === "unresolved" && ["Democratic field", "Republican field"].includes(name)) return party === "D" ? "Democratic field" : "Republican field";
-    return name || (party === "D" ? "Democratic field" : "Republican field");
+    return name || (party === "D" ? "Democrat" : "Republican");
   }
 
   function candidateBadge(race, party) {
@@ -62,7 +63,10 @@
   }
 
   function extraCandidateRows(race) {
-    return (race.extraCandidates || []).map((candidate) => {
+    const competitiveIndependents = (race.extraCandidates || []).filter((candidate) => {
+      return candidate.party === "I" && candidate.note && candidate.note.toLowerCase().includes("competitive");
+    });
+    return competitiveIndependents.map((candidate) => {
       const party = candidate.party || "I";
       const badgeClass = party === "D" ? "party-badge dem-badge" : party === "R" ? "party-badge rep-badge" : "ind-badge";
       const label = party === "I" ? "Independent" : party === "D" ? "Democratic option" : "Republican option";

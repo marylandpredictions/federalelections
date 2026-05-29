@@ -30,7 +30,10 @@
 
   function candidateDisplayName(race, party) {
     const name = party === "D" ? race.dem : race.rep;
-    return name || (party === "D" ? "Democratic field" : "Republican field");
+    const status = party === "D" ? race.demStatus : race.repStatus;
+    if (status === "unresolved" && (name === "Democrat" || name === "Republican")) return name;
+    if (status === "unresolved" && ["Democratic field", "Republican field"].includes(name)) return party === "D" ? "Democratic field" : "Republican field";
+    return name || (party === "D" ? "Democrat" : "Republican");
   }
 
   function candidateStatusLabel(race, party) {
@@ -61,7 +64,10 @@
     const container = document.getElementById("governor-race-input-cards");
     if (!container) return;
     const demographic = race.demographicPull;
-    const extras = (race.extraCandidates || []).map((candidate) => `<li>${escapeHtml(candidate.name)}: ${escapeHtml(candidate.note || candidate.party || "tracked option")}</li>`).join("");
+    const competitiveIndependents = (race.extraCandidates || []).filter((candidate) => {
+      return candidate.party === "I" && candidate.note && candidate.note.toLowerCase().includes("competitive");
+    });
+    const extras = competitiveIndependents.map((candidate) => `<li>${escapeHtml(candidate.name)}: ${escapeHtml(candidate.note || candidate.party || "tracked option")}</li>`).join("");
     const demographicRows = demographic ? [
       `<li>Adjustment: ${signedPointMargin(demographic.adjustment || 0)}</li>`,
       `<li>Democratic profile: ${escapeHtml(profileLabel(demographic.demProfile))}</li>`,
