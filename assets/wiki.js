@@ -665,16 +665,14 @@ function updateHomeHouseSummary() {
 
 function updateHomeGovernorSummary() {
   if (!governorForecast) return;
-  const demProb = governorForecast.demMajorityProbability || 0;
-  const repProb = governorForecast.repMajorityProbability || 0;
-  const tieProb = governorForecast.noMajorityProbability || Math.max(0, 1 - demProb - repProb);
-  const favoredIsDem = demProb >= repProb;
+  const demRaces = governorForecast.projectedDemRaceWins ?? governorForecast.races?.filter((race) => race.demProbability >= .5).length ?? 0;
+  const repRaces = governorForecast.projectedRepRaceWins ?? Math.max(0, (governorForecast.races?.length ?? 36) - demRaces);
+  const favoredIsDem = demRaces >= repRaces;
   const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
-  const favoredProbability = Math.max(demProb, repProb);
   setText("home-governor-run", governorForecast.runDate || governorForecast.modelDate || "--");
-  setText("home-governor-favored", `${favoredSide} ${pct(favoredProbability)}`);
-  setText("home-governor-dem", oneDecimal(demProb));
-  setText("home-governor-rep", oneDecimal(repProb));
+  setText("home-governor-favored", `${favoredSide} lead`);
+  setText("home-governor-dem", demRaces);
+  setText("home-governor-rep", repRaces);
   setText("home-governor-note", `${governorForecast.races?.filter((race) => race.competitive).length ?? "--"} competitive races`);
   const card = document.getElementById("home-governor-card");
   if (card) {

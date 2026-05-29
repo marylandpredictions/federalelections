@@ -36,11 +36,11 @@
       <div class="hero-main">
         <p class="kicker">Governors</p>
         <h1 id="page-title">2026 gubernatorial forecast.</h1>
-        <p class="lede">Daily probabilities for the 36 state governor races on the 2026 ballot.</p>
+        <p class="lede">Daily race-by-race estimates for the 36 state governor races on the 2026 ballot.</p>
         <p class="model-credit">Model built and maintained by gamerdoglover.</p>
       </div>
-      <aside class="odds-panel" aria-label="Governor majority forecast">
-        <span class="panel-label">Governor majority</span>
+      <aside class="odds-panel" aria-label="Projected governor race wins">
+        <span class="panel-label">Projected race wins</span>
         <div>
           <div id="governor-odds-phrase" class="big-odds">--</div>
           <p id="governor-control-headline">Calculating</p>
@@ -50,13 +50,13 @@
           <span id="governor-rep-bar"></span>
         </div>
         <dl>
-          <div><dt>Democratic majority</dt><dd id="governor-dem-majority">--</dd></div>
-          <div><dt>Republican majority</dt><dd id="governor-rep-majority">--</dd></div>
-          <div><dt>No majority / tie</dt><dd id="governor-no-majority">--</dd></div>
+          <div><dt>Dem races</dt><dd id="governor-dem-races">--</dd></div>
+          <div><dt>GOP races</dt><dd id="governor-rep-races">--</dd></div>
+          <div><dt>Average governors</dt><dd id="governor-average">--</dd></div>
           <div><dt>Median governors</dt><dd id="governor-median">--</dd></div>
           <div><dt>Run</dt><dd id="governor-run-date">--</dd></div>
         </dl>
-        <p class="forecast-disclaimer">Forecasts are automated estimates, not guarantees. This first gubernatorial model is rating-led while candidate fields and polling mature.</p>
+        <p class="forecast-disclaimer">Forecasts are automated estimates, not guarantees. The model blends ratings, candidates, incumbency, PVI, prior governor margins, and the current national environment.</p>
       </aside>
     </section>
 
@@ -78,17 +78,13 @@
       </div>
     </section>
 
-    <section class="dashboard-grid" aria-label="Governor forecast charts">
-      <article class="chart-panel">
-        <span class="chart-label">Governor distribution</span>
-        <div id="governor-seat-histogram" class="seat-histogram"></div>
-      </article>
+    <section class="dashboard-grid governor-dashboard-grid" aria-label="Governor forecast details">
       <article class="chart-panel">
         <span class="chart-label">Most decisive governor races</span>
         <div id="governor-leverage-chart" class="leverage-chart"></div>
       </article>
-      <article class="chart-panel chart-wide">
-        <span class="chart-label">Governor majority probability over time</span>
+      <article class="chart-panel">
+        <span class="chart-label">Projected governor count</span>
         <div id="governor-history-chart" class="history-chart"></div>
       </article>
     </section>

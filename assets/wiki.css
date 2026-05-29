@@ -1342,14 +1342,16 @@ dd {
 }
 
 #senate-map,
-#president-map {
+#president-map,
+#governor-map {
   min-height: 430px;
   width: 100%;
   overflow: hidden;
 }
 
 #senate-map svg,
-#president-map svg {
+#president-map svg,
+#governor-map svg {
   width: 100%;
   height: auto;
   display: block;
@@ -1614,6 +1616,18 @@ dd {
 
 .governor-state-grid {
   grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
+}
+
+.governor-dashboard-grid {
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
+}
+
+.governor-race-row {
+  grid-template-columns: 48px minmax(130px, 1fr) minmax(150px, 1fr) minmax(150px, 1fr) 92px 78px 94px;
+}
+
+.governor-count-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .dashboard-grid {
