@@ -56,8 +56,8 @@
           <span id="rep-win-bar"></span>
         </div>
         <dl>
-          <div><dt id="president-dem-win-label">Democratic win</dt><dd id="president-dem-win">--</dd></div>
-          <div><dt id="president-rep-win-label">Republican win</dt><dd id="president-rep-win">--</dd></div>
+          <div><dt id="president-dem-win-label"><span class="gradient-democrat">Democratic</span> win</dt><dd id="president-dem-win">--</dd></div>
+          <div><dt id="president-rep-win-label"><span class="gradient-republican">Republican</span> win</dt><dd id="president-rep-win">--</dd></div>
           <div><dt>Median EV outcome</dt><dd id="president-median-ev">--</dd></div>
           <div><dt>Tipping point</dt><dd id="president-tipping-point-display">--</dd></div>
           <div><dt>Run</dt><dd id="president-run-date">--</dd></div>
@@ -82,7 +82,7 @@
           </select>
         </label>
         <label>
-          <span>Republican candidate</span>
+          <span><span class="gradient-republican">Republican</span> candidate</span>
           <select id="rep-candidate">
             <option value="vance">JD Vance (OH)</option>
             <option value="rubio">Marco Rubio (FL)</option>
@@ -525,19 +525,19 @@
       container.innerHTML = `
         <div class="matchup-strength-grid">
           <section>
-            <h3>Best Democratic averages</h3>
+            <h3>Best <span class="gradient-democrat">Democratic</span> averages</h3>
             ${demRows.map((row) => rowHtml(row, "dem", maxDem)).join("")}
           </section>
           <section>
-            <h3>Best Republican averages</h3>
+            <h3>Best <span class="gradient-republican">Republican</span> averages</h3>
             ${repRows.map((row) => rowHtml(row, "rep", maxRep)).join("")}
           </section>
           <section>
-            <h3>Best Democratic matchups</h3>
+            <h3>Best <span class="gradient-democrat">Democratic</span> matchups</h3>
             ${bestDemMatchups.map((row) => matchupHtml(row, "dem")).join("")}
           </section>
           <section>
-            <h3>Best Republican matchups</h3>
+            <h3>Best <span class="gradient-republican">Republican</span> matchups</h3>
             ${bestRepMatchups.map((row) => matchupHtml(row, "rep")).join("")}
           </section>
         </div>
