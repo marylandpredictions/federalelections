@@ -48,7 +48,7 @@
   --gold: #f4a629;
   --green: #49a078;
   --ind: #8b5cf6;
-  --toss: #F5F0C8;
+  --toss: #FFFFF0;
   --no-election: #e8e6df;
   --tilt-r: #FAB8B5;
   --lean-r: #F4837D;
@@ -180,10 +180,9 @@ button {
   top: 0;
   z-index: 40;
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) auto;
+  grid-template-columns: minmax(220px, 1fr) 1fr auto;
   gap: 12px;
   align-items: center;
-  justify-content: space-between;
   padding: 12px clamp(14px, 3vw, 44px);
   border-bottom: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
   background: color-mix(in srgb, var(--chrome) 96%, transparent);
@@ -235,7 +234,15 @@ button {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  justify-content: center;
+}
+
+.site-nav-right {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .site-nav a,
