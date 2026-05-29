@@ -217,7 +217,7 @@
       <span class="race-kicker">${escapeHtml(race.displayName)}</span>
       <div class="map-card-title">
         <div class="state-code">${escapeHtml(race.state)}</div>
-        <span class="rating-pill ${ratings[race.modelRating || race.rating] || "tossup"}">${escapeHtml(race.modelRating || race.rating)}</span>
+        <span class="rating-pill ${ratings[race.rating] || "tossup"}">${escapeHtml(race.rating)}</span>
       </div>
       <h3>${leader} leads with a ${oneDecimal(probability)} race win chance.</h3>
       <div class="candidate-table">

@@ -112,6 +112,18 @@
   box-sizing: border-box;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100vh;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
@@ -125,6 +137,8 @@ body {
   font: 16px/1.5 "Telegraf", "Segoe UI", Arial, sans-serif;
   animation: page-in .34s var(--ease-out) both;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .state-shape {
@@ -283,7 +297,8 @@ button {
   font-family: "Telegraf", "Segoe UI", Arial, sans-serif;
   font-weight: 900;
   font-size: .9rem;
-  transition: background .16s var(--ease-out), border-color .16s var(--ease-out), color .16s var(--ease-out), transform .16s var(--ease-out);
+  transition: background .16s var(--ease-out), border-color .16s var(--ease-out), color .16s var(--ease-out), transform .16s var(--ease-out), box-shadow .16s var(--ease-out), filter .16s var(--ease-out);
+  box-shadow: 0 0 5px rgba(0, 204, 0, .3);
 }
 
 .donate-button {
@@ -319,11 +334,14 @@ button {
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--dem) 24%, transparent), color-mix(in srgb, var(--rep) 20%, transparent)),
     var(--paper-2);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 15px rgba(0, 204, 0, .6), 0 0 30px rgba(0, 204, 0, .3);
+  filter: brightness(1.1);
 }
 
 .site-nav a:hover,
 .button-link:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.02);
 }
 
 .theme-toggle {
@@ -396,7 +414,8 @@ main {
 
 .site-footer {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) auto;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
   gap: 18px;
   align-items: center;
   padding: 22px clamp(14px, 3vw, 44px);
@@ -418,7 +437,7 @@ main {
 .site-footer nav {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 10px;
 }
 
@@ -2087,7 +2106,7 @@ button.leverage-row {
   border-left: 6px solid var(--toss);
   color: var(--ink);
   text-decoration: none;
-  transition: background .14s var(--ease-out), transform .14s var(--ease-out), padding-left .14s var(--ease-out);
+  transition: background .14s var(--ease-out), transform .14s var(--ease-out), padding-left .14s var(--ease-out), box-shadow .14s var(--ease-out), filter .14s var(--ease-out);
 }
 
 button.race-board-row {
@@ -2519,7 +2538,9 @@ button.race-board-row {
 .race-board-row:focus {
   background: color-mix(in srgb, var(--paper-2) 72%, transparent);
   padding-left: 10px;
-  transform: translateX(2px);
+  transform: translateX(2px) translateY(-1px) scale(1.01);
+  box-shadow: 0 4px 12px rgba(244, 185, 66, .3), 0 0 20px rgba(244, 185, 66, .15);
+  filter: brightness(1.05);
   outline: none;
 }
 
@@ -3044,15 +3065,16 @@ button.race-board-row {
   border-radius: 4px;
   background: color-mix(in srgb, var(--paper) 92%, transparent);
   box-shadow: var(--shadow-soft);
-  transition: background .16s var(--ease-out), box-shadow .16s var(--ease-out), transform .16s var(--ease-out), border-color .16s var(--ease-out);
+  transition: background .16s var(--ease-out), box-shadow .16s var(--ease-out), transform .16s var(--ease-out), border-color .16s var(--ease-out), filter .16s var(--ease-out);
 }
 
 .article-card:hover,
 .article-card:focus-within {
-  transform: translateY(-3px);
+  transform: translateY(-3px) scale(1.01);
   background: color-mix(in srgb, var(--paper) 98%, white);
   border-color: color-mix(in srgb, var(--ink) 24%, var(--line));
-  box-shadow: var(--shadow-lift);
+  box-shadow: var(--shadow-lift), 0 0 20px rgba(244, 185, 66, .2);
+  filter: brightness(1.05);
 }
 
 .article-body {
