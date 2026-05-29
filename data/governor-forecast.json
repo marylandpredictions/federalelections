@@ -59,11 +59,11 @@
       "candidateEdge": 1.2,
       "dem": "Doug Jones",
       "rep": "Tommy Tuberville",
-      "demStatus": "presumptive",
-      "repStatus": "presumptive",
-      "primary": "unresolved",
+      "demStatus": "nominee",
+      "repStatus": "nominee",
+      "primary": "resolved",
       "primaryDate": "2026-05-19",
-      "primarySummary": "Alabama's governor field is treated as unsettled until the state primary is complete; Jones and Tuberville are modeled as the major-party front-runners.",
+      "primarySummary": "Jones won the Democratic primary and Tuberville won the Republican primary on May 19, 2026.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Alabama Governor",
@@ -90,8 +90,8 @@
           "weaknesses": []
         },
         "repProfile": {
-          "key": "incumbentRepublican",
-          "label": "Incumbent Republican",
+          "key": "standardRepublican",
+          "label": "Standard Republican",
           "source": "generic",
           "scores": {
             "white_college": -0.02,
@@ -736,15 +736,15 @@
       "lastMargin": -7.5,
       "rating": "Toss-up",
       "demCandidate": "Keisha Lance Bottoms",
-      "repCandidate": "Republican",
+      "repCandidate": "Burt Jones / Rick Jackson",
       "candidateEdge": 0.5,
       "dem": "Keisha Lance Bottoms",
-      "rep": "Republican",
-      "demStatus": "presumptive",
-      "repStatus": "unresolved",
-      "primary": "unresolved",
-      "primaryDate": "2026-05-19",
-      "primarySummary": "Bottoms is treated as the Democratic front-runner; the Republican primary remains open.",
+      "rep": "Burt Jones / Rick Jackson",
+      "demStatus": "nominee",
+      "repStatus": "runoff",
+      "primary": "runoff",
+      "primaryDate": "2026-06-16",
+      "primarySummary": "Bottoms won the Democratic primary on May 19, 2026. Jones and Jackson advanced to a Republican runoff on June 16, 2026.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Georgia Governor",
@@ -755,20 +755,25 @@
       "demographicPull": {
         "adjustment": 0.03,
         "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
+          "key": "keisha lance bottoms",
+          "label": "Keisha Lance Bottoms",
+          "source": "candidate",
+          "profile": "Former Atlanta mayor, Black woman, progressive Democrat",
           "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
-            "black": 0.07,
+            "white_college": 0.05,
+            "white_noncollege": -0.06,
+            "black": 0.15,
             "latino": 0.04,
             "asian_other": 0.03,
-            "youth": 0.03,
-            "senior": -0.01
+            "youth": 0.04,
+            "senior": -0.02
           },
-          "strengths": [],
-          "weaknesses": []
+          "strengths": [
+            "Black"
+          ],
+          "weaknesses": [
+            "White non-college"
+          ]
         },
         "repProfile": {
           "key": "standardRepublican",
@@ -1652,16 +1657,16 @@
       "pvi": -10,
       "lastMargin": -23.8,
       "rating": "Safe R",
-      "demCandidate": "Democrat",
+      "demCandidate": "Lynne Walz",
       "repCandidate": "Jim Pillen",
       "candidateEdge": -1,
-      "dem": "Democrat",
+      "dem": "Lynne Walz",
       "rep": "Jim Pillen",
-      "demStatus": "unresolved",
-      "repStatus": "presumptive",
-      "primary": "unresolved",
+      "demStatus": "nominee",
+      "repStatus": "nominee",
+      "primary": "resolved",
       "primaryDate": "2026-05-12",
-      "primarySummary": "Pillen is the Republican incumbent and treated as presumptive.",
+      "primarySummary": "Walz won the Democratic primary and Pillen won the Republican primary on May 12, 2026.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Nebraska Governor",
@@ -1672,35 +1677,40 @@
       "demographicPull": {
         "adjustment": -0.04,
         "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
+          "key": "lynne walz",
+          "label": "Lynne Walz",
+          "source": "candidate",
+          "profile": "Former Nebraska state senator, educator",
           "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
+            "white_college": 0.07,
+            "white_noncollege": -0.04,
             "black": 0.07,
-            "latino": 0.04,
-            "asian_other": 0.03,
-            "youth": 0.03,
-            "senior": -0.01
+            "latino": 0.05,
+            "asian_other": 0.04,
+            "youth": 0.04,
+            "senior": 0
           },
           "strengths": [],
           "weaknesses": []
         },
         "repProfile": {
-          "key": "incumbentRepublican",
-          "label": "Incumbent Republican",
-          "source": "generic",
+          "key": "jim pillen",
+          "label": "Jim Pillen",
+          "source": "candidate",
+          "profile": "Nebraska incumbent governor, rancher",
           "scores": {
-            "white_college": -0.02,
-            "white_noncollege": 0.12,
+            "white_college": -0.01,
+            "white_noncollege": 0.14,
             "black": -0.07,
             "latino": -0.03,
             "asian_other": -0.02,
-            "youth": -0.05,
-            "senior": 0.08
+            "youth": -0.04,
+            "senior": 0.09
           },
-          "strengths": [],
+          "strengths": [
+            "White non-college",
+            "Senior"
+          ],
           "weaknesses": []
         },
         "topGroups": [
@@ -2075,16 +2085,16 @@
       "pvi": -5,
       "lastMargin": -25.4,
       "rating": "Lean R",
-      "demCandidate": "Democrat",
-      "repCandidate": "Republican",
+      "demCandidate": "Amy Acton",
+      "repCandidate": "Vivek Ramaswamy",
       "candidateEdge": -0.6,
-      "dem": "Democrat",
-      "rep": "Republican",
-      "demStatus": "unresolved",
-      "repStatus": "presumptive",
-      "primary": "unresolved",
+      "dem": "Amy Acton",
+      "rep": "Vivek Ramaswamy",
+      "demStatus": "nominee",
+      "repStatus": "nominee",
+      "primary": "resolved",
       "primaryDate": "2026-05-05",
-      "primarySummary": "Ohio is an open seat; Ramaswamy is treated as the Republican front-runner while the Democratic field remains unresolved.",
+      "primarySummary": "Acton won the Democratic primary and Ramaswamy won the Republican primary on May 5, 2026.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Ohio Governor",
@@ -2095,40 +2105,49 @@
       "demographicPull": {
         "adjustment": -0.02,
         "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
+          "key": "amy acton",
+          "label": "Amy Acton",
+          "source": "candidate",
+          "profile": "Former Ohio health director, public health background",
           "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
-            "black": 0.07,
-            "latino": 0.04,
-            "asian_other": 0.03,
-            "youth": 0.03,
-            "senior": -0.01
+            "white_college": 0.08,
+            "white_noncollege": -0.03,
+            "black": 0.09,
+            "latino": 0.05,
+            "asian_other": 0.04,
+            "youth": 0.05,
+            "senior": 0.01
           },
-          "strengths": [],
-          "weaknesses": []
+          "strengths": [
+            "White college",
+            "Black",
+            "Latino"
+          ],
+          "weaknesses": [
+            "White non-college"
+          ]
         },
         "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
+          "key": "vivek ramaswamy",
+          "label": "Vivek Ramaswamy",
+          "source": "candidate",
+          "profile": "Entrepreneur, Trump-aligned Republican",
           "scores": {
-            "white_college": -0.09,
-            "white_noncollege": 0.17,
-            "black": -0.09,
-            "latino": -0.02,
-            "asian_other": 0.01,
-            "youth": -0.02,
-            "senior": 0.03
+            "white_college": -0.07,
+            "white_noncollege": 0.19,
+            "black": -0.11,
+            "latino": -0.04,
+            "asian_other": 0.02,
+            "youth": -0.03,
+            "senior": 0.04
           },
           "strengths": [
             "White non-college"
           ],
           "weaknesses": [
             "White college",
-            "Black"
+            "Black",
+            "Latino"
           ]
         },
         "topGroups": [
@@ -2246,15 +2265,15 @@
       "lastMargin": 3.4,
       "rating": "Likely D",
       "demCandidate": "Tina Kotek",
-      "repCandidate": "Republican",
+      "repCandidate": "Christine Drazan",
       "candidateEdge": 0.2,
       "dem": "Tina Kotek",
-      "rep": "Republican",
-      "demStatus": "presumptive",
-      "repStatus": "unresolved",
-      "primary": "unresolved",
+      "rep": "Christine Drazan",
+      "demStatus": "nominee",
+      "repStatus": "nominee",
+      "primary": "resolved",
       "primaryDate": "2026-05-19",
-      "primarySummary": "Kotek is the Democratic incumbent and treated as presumptive.",
+      "primarySummary": "Kotek won the Democratic primary and Drazan won the Republican primary on May 19, 2026.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Oregon Governor",
@@ -2265,36 +2284,49 @@
       "demographicPull": {
         "adjustment": 0.01,
         "demProfile": {
-          "key": "incumbentDemocrat",
-          "label": "Incumbent Democrat",
-          "source": "generic",
+          "key": "tina kotek",
+          "label": "Tina Kotek",
+          "source": "candidate",
+          "profile": "Oregon incumbent governor, progressive Democrat",
           "scores": {
-            "white_college": 0.12,
-            "white_noncollege": -0.06,
-            "black": 0.08,
-            "latino": 0.05,
-            "asian_other": 0.05,
-            "youth": 0.02,
-            "senior": 0.04
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
-          "scores": {
-            "white_college": -0.06,
-            "white_noncollege": 0.1,
-            "black": -0.07,
-            "latino": -0.04,
-            "asian_other": -0.03,
-            "youth": -0.04,
+            "white_college": 0.14,
+            "white_noncollege": -0.04,
+            "black": 0.09,
+            "latino": 0.06,
+            "asian_other": 0.06,
+            "youth": 0.03,
             "senior": 0.05
           },
-          "strengths": [],
-          "weaknesses": []
+          "strengths": [
+            "White college",
+            "Asian/other",
+            "Latino"
+          ],
+          "weaknesses": [
+            "White non-college"
+          ]
+        },
+        "repProfile": {
+          "key": "christine drazan",
+          "label": "Christine Drazan",
+          "source": "candidate",
+          "profile": "Former Oregon Senate minority leader, 2022 Republican nominee",
+          "scores": {
+            "white_college": -0.04,
+            "white_noncollege": 0.12,
+            "black": -0.06,
+            "latino": -0.03,
+            "asian_other": -0.02,
+            "youth": -0.03,
+            "senior": 0.06
+          },
+          "strengths": [
+            "White non-college",
+            "Senior"
+          ],
+          "weaknesses": [
+            "White college"
+          ]
         },
         "topGroups": [
           {
@@ -2326,15 +2358,15 @@
       "lastMargin": 14.8,
       "rating": "Safe D",
       "demCandidate": "Josh Shapiro",
-      "repCandidate": "Republican",
+      "repCandidate": "Stacy Garrity",
       "candidateEdge": 3.8,
       "dem": "Josh Shapiro",
-      "rep": "Republican",
-      "demStatus": "presumptive",
-      "repStatus": "unresolved",
-      "primary": "unresolved",
+      "rep": "Stacy Garrity",
+      "demStatus": "nominee",
+      "repStatus": "nominee",
+      "primary": "resolved",
       "primaryDate": "2026-05-19",
-      "primarySummary": "Shapiro is the Democratic incumbent and treated as presumptive.",
+      "primarySummary": "Shapiro won the Democratic primary and Garrity won the Republican primary on May 19, 2026.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Pennsylvania Governor",
@@ -2366,20 +2398,26 @@
           "weaknesses": []
         },
         "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
+          "key": "stacy garrity",
+          "label": "Stacy Garrity",
+          "source": "candidate",
+          "profile": "Pennsylvania state treasurer, former military officer",
           "scores": {
-            "white_college": -0.06,
-            "white_noncollege": 0.1,
-            "black": -0.07,
-            "latino": -0.04,
-            "asian_other": -0.03,
-            "youth": -0.04,
-            "senior": 0.05
+            "white_college": -0.04,
+            "white_noncollege": 0.12,
+            "black": -0.06,
+            "latino": -0.03,
+            "asian_other": -0.02,
+            "youth": -0.03,
+            "senior": 0.07
           },
-          "strengths": [],
-          "weaknesses": []
+          "strengths": [
+            "White non-college",
+            "Senior"
+          ],
+          "weaknesses": [
+            "White college"
+          ]
         },
         "topGroups": [
           {
@@ -2580,16 +2618,16 @@
       "pvi": -15,
       "lastMargin": -24,
       "rating": "Safe R",
-      "demCandidate": "Dan Ahlers",
-      "repCandidate": "Republican",
+      "demCandidate": "Daniel Ahlers",
+      "repCandidate": "Larry Rhoden",
       "candidateEdge": -0.8,
-      "dem": "Dan Ahlers",
-      "rep": "Republican",
-      "demStatus": "unresolved",
+      "dem": "Daniel Ahlers",
+      "rep": "Larry Rhoden",
+      "demStatus": "presumptive",
       "repStatus": "presumptive",
       "primary": "unresolved",
       "primaryDate": "2026-06-02",
-      "primarySummary": "Rhoden is the Republican incumbent and treated as presumptive, though the GOP field is tracked as contested.",
+      "primarySummary": "Ahlers is the presumptive Democratic nominee. Rhoden is the Republican incumbent and treated as presumptive for the June 2 primary.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "South Dakota Governor",
@@ -2600,35 +2638,40 @@
       "demographicPull": {
         "adjustment": -0.04,
         "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
+          "key": "daniel ahlers",
+          "label": "Daniel Ahlers",
+          "source": "candidate",
+          "profile": "South Dakota Democratic Party executive director, former state senator",
           "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
+            "white_college": 0.07,
+            "white_noncollege": -0.04,
             "black": 0.07,
             "latino": 0.04,
             "asian_other": 0.03,
-            "youth": 0.03,
+            "youth": 0.04,
             "senior": -0.01
           },
           "strengths": [],
           "weaknesses": []
         },
         "repProfile": {
-          "key": "incumbentRepublican",
-          "label": "Incumbent Republican",
-          "source": "generic",
+          "key": "larry rhoden",
+          "label": "Larry Rhoden",
+          "source": "candidate",
+          "profile": "South Dakota incumbent governor, former lieutenant governor",
           "scores": {
-            "white_college": -0.02,
-            "white_noncollege": 0.12,
+            "white_college": -0.01,
+            "white_noncollege": 0.14,
             "black": -0.07,
             "latino": -0.03,
             "asian_other": -0.02,
-            "youth": -0.05,
-            "senior": 0.08
+            "youth": -0.04,
+            "senior": 0.09
           },
-          "strengths": [],
+          "strengths": [
+            "White non-college",
+            "Senior"
+          ],
           "weaknesses": []
         },
         "topGroups": [
