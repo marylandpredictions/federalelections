@@ -26,6 +26,45 @@
   let mapColorMode = "rating";
   let governorData = null;
 
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function componentToHex(value) {
+    return Math.round(value).toString(16).padStart(2, "0").toUpperCase();
+  }
+
+  function scoreToHex(score) {
+    const S = clamp(score, -100, 100);
+    const t = (S + 100) / 200;
+
+    const r = 178 + t * (13 - 178);
+    const g = 34 + t * (59 - 34);
+    const b = 34 + t * (130 - 34);
+
+    return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+  }
+
+  function getPartisanScore(demProbability, projectedDemMargin) {
+    const P = (demProbability - 0.5) * 200;
+    const M = clamp(projectedDemMargin / 25, -1, 1) * 100;
+    return clamp((0.55 * P) + (0.45 * M), -100, 100);
+  }
+
+  function getRaceColor(demProbability, projectedDemMargin) {
+    const score = getPartisanScore(demProbability, projectedDemMargin);
+    return {
+      score,
+      color: scoreToHex(score)
+    };
+  }
+
+  function ratingColor(race) {
+    if (!race) return null;
+    const colorData = getRaceColor(race.demProbability, race.margin);
+    return colorData.color;
+  }
+
   function setText(id, value) {
     const node = document.getElementById(id);
     if (node) node.textContent = value;
@@ -182,9 +221,14 @@
         .attr("class", (feature) => {
           const state = FIPS_TO_STATE_LOCAL[String(feature.id).padStart(2, "0")];
           const race = racesByState.get(state);
-          return race ? `state-shape ${bucketForRace(race)}` : "state-shape state-muted";
+          return race ? `state-shape` : "state-shape state-muted";
         })
         .attr("d", path)
+        .attr("fill", (feature) => {
+          const state = FIPS_TO_STATE_LOCAL[String(feature.id).padStart(2, "0")];
+          const race = racesByState.get(state);
+          return race ? ratingColor(race) : null;
+        })
         .attr("tabindex", (feature) => {
           const state = FIPS_TO_STATE_LOCAL[String(feature.id).padStart(2, "0")];
           return racesByState.has(state) ? 0 : -1;

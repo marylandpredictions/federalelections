@@ -65,6 +65,35 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+function componentToHex(value) {
+  return Math.round(value).toString(16).padStart(2, "0").toUpperCase();
+}
+
+function scoreToHex(score) {
+  const S = clamp(score, -100, 100);
+  const t = (S + 100) / 200;
+
+  const r = 178 + t * (13 - 178);
+  const g = 34 + t * (59 - 34);
+  const b = 34 + t * (130 - 34);
+
+  return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+}
+
+function getPartisanScore(demProbability, projectedDemMargin) {
+  const P = (demProbability - 0.5) * 200;
+  const M = clamp(projectedDemMargin / 25, -1, 1) * 100;
+  return clamp((0.55 * P) + (0.45 * M), -100, 100);
+}
+
+function getRaceColor(demProbability, projectedDemMargin) {
+  const score = getPartisanScore(demProbability, projectedDemMargin);
+  return {
+    score,
+    color: scoreToHex(score)
+  };
+}
+
 function pct(value) {
   return `${Math.round(value * 100)}%`;
 }
@@ -507,13 +536,9 @@ function ratingLabelForRace(race, mode = mapColorMode) {
 }
 
 function ratingColor(race, mode = mapColorMode) {
-  const root = getComputedStyle(document.documentElement);
-  const bucket = bucketForRace(race, mode);
-  const colors = {
-    "safe-d": "--safe-d", "likely-d": "--likely-d", "lean-d": "--lean-d", "tilt-d": "--tilt-d",
-    tossup: "--toss", "tilt-r": "--tilt-r", "lean-r": "--lean-r", "likely-r": "--likely-r", "safe-r": "--safe-r"
-  };
-  return root.getPropertyValue(colors[bucket] || "--toss").trim();
+  if (!race) return null;
+  const colorData = getRaceColor(race.demProbability, race.margin);
+  return colorData.color;
 }
 
 function ensurePanelTooltip(panel) {
@@ -931,7 +956,7 @@ async function renderStateMap() {
       .join("path")
       .attr("class", (feature) => {
         const race = getRace(FIPS_TO_STATE[String(feature.id).padStart(2, "0")]);
-        return race ? `state-shape ${bucketForRace(race)}` : "state-shape state-muted";
+        return race ? `state-shape` : "state-shape state-muted";
       })
       .attr("d", path)
       .attr("fill", (feature) => {
