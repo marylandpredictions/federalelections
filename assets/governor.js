@@ -12,6 +12,11 @@
     "Tilt R": "tilt-r", "Lean R": "lean-r", "Likely R": "likely-r", "Safe R": "safe-r"
   };
 
+  const RATING_BUCKET = {
+    "Safe D": "safe-d", "Likely D": "likely-d", "Lean D": "lean-d", "Tilt D": "tilt-d", "Toss-up": "tossup",
+    "Tilt R": "tilt-r", "Lean R": "lean-r", "Likely R": "likely-r", "Safe R": "safe-r"
+  };
+
   const MAP_COLOR_MODES = {
     rating: "Rating",
     margin: "Projected margin",
@@ -88,45 +93,24 @@
     }).join("");
   }
 
-  function ratingColor(race) {
-    const cssVar = {
-      "Safe D": "--safe-d", "Likely D": "--likely-d", "Lean D": "--lean-d", "Tilt D": "--tilt-d", "Toss-up": "--toss",
-      "Tilt R": "--tilt-r", "Lean R": "--lean-r", "Likely R": "--likely-r", "Safe R": "--safe-r"
-    }[race.modelRating || race.rating] || "--toss";
-    return getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim();
+  function ratingFromSignedValue(value, thresholds) {
+    if (!Number.isFinite(value)) return "Toss-up";
+    const abs = Math.abs(value);
+    if (abs < thresholds.tilt) return "Toss-up";
+    if (abs < thresholds.lean) return value > 0 ? "Tilt D" : "Tilt R";
+    if (abs < thresholds.likely) return value > 0 ? "Lean D" : "Lean R";
+    if (abs < thresholds.safe) return value > 0 ? "Likely D" : "Likely R";
+    return value > 0 ? "Safe D" : "Safe R";
   }
 
-  function marginColor(race) {
-    const margin = race.margin || 0;
-    if (margin > 0) {
-      return getComputedStyle(document.documentElement).getPropertyValue("--dem").trim();
-    } else if (margin < 0) {
-      return getComputedStyle(document.documentElement).getPropertyValue("--rep").trim();
-    } else {
-      return getComputedStyle(document.documentElement).getPropertyValue("--toss").trim();
+  function bucketForRace(race, mode = mapColorMode) {
+    if (!race) return "state-muted";
+    if (mode === "margin") return RATING_BUCKET[ratingFromSignedValue(race.margin, { tilt: 1, lean: 3, likely: 7, safe: 12 })] || "tossup";
+    if (mode === "probability") {
+      const probMargin = (race.demProbability - .5) * 100;
+      return RATING_BUCKET[ratingFromSignedValue(probMargin, { tilt: 2.5, lean: 10, likely: 25, safe: 45 })] || "tossup";
     }
-  }
-
-  function probabilityColor(race) {
-    const demProb = race.demProbability || 0.5;
-    if (demProb > 0.6) {
-      return getComputedStyle(document.documentElement).getPropertyValue("--dem").trim();
-    } else if (demProb < 0.4) {
-      return getComputedStyle(document.documentElement).getPropertyValue("--rep").trim();
-    } else {
-      return getComputedStyle(document.documentElement).getPropertyValue("--toss").trim();
-    }
-  }
-
-  function getColorForMode(race, mode) {
-    switch (mode) {
-      case "margin":
-        return marginColor(race);
-      case "probability":
-        return probabilityColor(race);
-      default:
-        return ratingColor(race);
-    }
+    return RATING_BUCKET[race.rating] || "tossup";
   }
 
   function renderSummary(data) {
@@ -197,14 +181,10 @@
         .join("path")
         .attr("class", (feature) => {
           const state = FIPS_TO_STATE_LOCAL[String(feature.id).padStart(2, "0")];
-          return racesByState.has(state) ? "state-shape" : "state-shape state-muted";
+          const race = racesByState.get(state);
+          return race ? `state-shape ${bucketForRace(race)}` : "state-shape state-muted";
         })
         .attr("d", path)
-        .attr("fill", (feature) => {
-          const state = FIPS_TO_STATE_LOCAL[String(feature.id).padStart(2, "0")];
-          const race = racesByState.get(state);
-          return race ? getColorForMode(race, mapColorMode) : null;
-        })
         .attr("tabindex", (feature) => {
           const state = FIPS_TO_STATE_LOCAL[String(feature.id).padStart(2, "0")];
           return racesByState.has(state) ? 0 : -1;
@@ -256,13 +236,8 @@
   function renderLegend() {
     const legend = document.getElementById("governor-map-legend");
     if (!legend) return;
-    if (mapColorMode === "rating") {
-      legend.innerHTML = Object.keys(ratings).map((rating) => `<span><i class="${ratings[rating]}"></i>${rating}</span>`).join("");
-    } else if (mapColorMode === "margin") {
-      legend.innerHTML = `<span><i style="background:var(--dem)"></i>Democratic margin</span><span><i style="background:var(--rep)"></i>Republican margin</span><span><i style="background:var(--toss)"></i>Tie</span>`;
-    } else if (mapColorMode === "probability") {
-      legend.innerHTML = `<span><i style="background:var(--dem)"></i>Democratic favored</span><span><i style="background:var(--rep)"></i>Republican favored</span><span><i style="background:var(--toss)"></i>Toss-up</span>`;
-    }
+    const ratings = ["Safe D", "Likely D", "Lean D", "Tilt D", "Toss-up", "Tilt R", "Lean R", "Likely R", "Safe R"];
+    legend.innerHTML = ratings.map((rating) => `<span><i class="${RATING_BUCKET[rating]}"></i>${rating}</span>`).join("");
   }
 
   function renderMapColorControls() {
