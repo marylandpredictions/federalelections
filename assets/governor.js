@@ -41,6 +41,40 @@
     return race.demProbability >= .5 ? "leads-dem" : "leads-rep";
   }
 
+  function candidateDisplayName(race, party) {
+    const name = party === "D" ? race.dem : race.rep;
+    const status = party === "D" ? race.demStatus : race.repStatus;
+    if (status === "unresolved" && ["Democratic field", "Republican field"].includes(name)) return party === "D" ? "Democratic field" : "Republican field";
+    return name || (party === "D" ? "Democratic field" : "Republican field");
+  }
+
+  function candidateBadge(race, party) {
+    const status = party === "D" ? race.demStatus : race.repStatus;
+    const displayParty = party === "D" ? race.demDisplayParty : race.repDisplayParty;
+    if (displayParty) return displayParty;
+    if (status === "unresolved") return party;
+    return party;
+  }
+
+  function presumptiveBadge(race, party) {
+    const status = party === "D" ? race.demStatus : race.repStatus;
+    return status === "presumptive" ? `<i class="presumptive-badge">P</i>` : "";
+  }
+
+  function extraCandidateRows(race) {
+    return (race.extraCandidates || []).map((candidate) => {
+      const party = candidate.party || "I";
+      const badgeClass = party === "D" ? "party-badge dem-badge" : party === "R" ? "party-badge rep-badge" : "ind-badge";
+      const label = party === "I" ? "Independent" : party === "D" ? "Democratic option" : "Republican option";
+      return `
+        <div class="candidate-row extra-row">
+          <span>${escapeHtml(candidate.name)} <i class="${badgeClass}">${escapeHtml(party)}</i></span>
+          <strong>${escapeHtml(label)}</strong>
+        </div>
+      `;
+    }).join("");
+  }
+
   function ratingColor(race) {
     const cssVar = {
       "Safe D": "--safe-d", "Likely D": "--likely-d", "Lean D": "--lean-d", "Tilt D": "--tilt-d", "Toss-up": "--toss",
@@ -133,6 +167,10 @@
           const state = FIPS_TO_STATE_LOCAL[String(feature.id).padStart(2, "0")];
           renderHover(document.getElementById("governor-map-hover-card"), racesByState.get(state));
         })
+        .on("click", (event, feature) => {
+          const state = FIPS_TO_STATE_LOCAL[String(feature.id).padStart(2, "0")];
+          if (racesByState.has(state)) window.location.href = `governor-race.html?state=${state}`;
+        })
         .append("title")
         .text((feature) => {
           const state = FIPS_TO_STATE_LOCAL[String(feature.id).padStart(2, "0")];
@@ -158,12 +196,14 @@
       <h3>${leader} leads with a ${oneDecimal(probability)} race win chance.</h3>
       <div class="candidate-table">
         <div class="candidate-table-head"><span>Side</span><span>Chance</span></div>
-        <div class="candidate-row dem-row"><span>${escapeHtml(race.demCandidate || "Democrat")} <i class="party-badge dem-badge">D</i></span><strong>${oneDecimal(race.demProbability)}</strong></div>
-        <div class="candidate-row rep-row"><span>${escapeHtml(race.repCandidate || "Republican")} <i class="party-badge rep-badge">R</i></span><strong>${oneDecimal(race.repProbability)}</strong></div>
+        <div class="candidate-row dem-row"><span>${escapeHtml(candidateDisplayName(race, "D"))} <i class="party-badge dem-badge">${escapeHtml(candidateBadge(race, "D"))}</i>${presumptiveBadge(race, "D")}</span><strong>${oneDecimal(race.demProbability)}</strong></div>
+        <div class="candidate-row rep-row"><span>${escapeHtml(candidateDisplayName(race, "R"))} <i class="party-badge rep-badge">${escapeHtml(candidateBadge(race, "R"))}</i>${presumptiveBadge(race, "R")}</span><strong>${oneDecimal(race.repProbability)}</strong></div>
+        ${extraCandidateRows(race)}
         <div class="candidate-margin"><span>Projected margin</span><strong>${signedMargin(race.margin)}</strong></div>
       </div>
       <p>${escapeHtml(race.status)}. Incumbent party: ${escapeHtml(race.incumbentParty)}.</p>
       <p class="meta">Inputs: ${escapeHtml(race.rating)} rating, ${escapeHtml(String(race.pvi))} PVI, ${signedMargin(race.lastMargin)} last governor margin.</p>
+      <a class="button-link" href="governor-race.html?state=${escapeHtml(race.state)}">Open race page</a>
     `;
   }
 
@@ -205,15 +245,15 @@
       const leader = race.demProbability >= .5 ? "D" : "R";
       const probability = Math.max(race.demProbability, race.repProbability);
       return `
-        <div class="race-board-row governor-race-row ${leaderClass(race)}">
+        <a class="race-board-row governor-race-row ${leaderClass(race)}" href="governor-race.html?state=${escapeHtml(race.state)}">
           <strong>${escapeHtml(race.state)}</strong>
           <span>${escapeHtml(race.displayName)}</span>
-          <span>${escapeHtml(race.demCandidate || "Democratic field")}</span>
-          <span>${escapeHtml(race.repCandidate || "Republican field")}</span>
+          <span>${escapeHtml(candidateDisplayName(race, "D"))}</span>
+          <span>${escapeHtml(candidateDisplayName(race, "R"))}</span>
           <span>${escapeHtml(race.modelRating || race.rating)}</span>
           <span>${signedMargin(race.margin)}</span>
           <span>${leader} ${oneDecimal(probability)}</span>
-        </div>
+        </a>
       `;
     }).join("");
   }

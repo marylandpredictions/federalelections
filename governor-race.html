@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Governor Race Detail | Federal Elections Analysis</title>
+  <meta name="description" content="Individual 2026 gubernatorial race detail page.">
+  <link rel="icon" href="assets/img/FEA_White.png" type="image/png">
+  <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
+  <script src="assets/theme.js"></script>
+  <link rel="stylesheet" href="assets/wiki.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <img class="brand-mark" src="assets/img/FEA_White.png" alt="Federal Elections Analysis">
+      <span><strong>Federal Elections Analysis</strong><small>Election team</small></span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="index.html">Home</a>
+      <a href="videos.html">Videos</a>
+      <a href="senate.html">Senate</a>
+      <a class="active" href="governor.html">Governors</a>
+      <a href="president.html">2028 Pres</a>
+      <a href="endorsements.html">Endorsements</a>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A8.5 8.5 0 1 1 11.21 3 6.5 6.5 0 0 0 21 12.79Z"></path></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main id="governor-race-detail-page">
+    <section class="race-detail" aria-labelledby="governor-race-name">
+      <article class="detail-panel">
+        <p class="kicker">Governor race page</p>
+        <div id="governor-race-state" class="race-title">--</div>
+        <h1 id="governor-race-name">Loading race</h1>
+        <p id="governor-race-note" class="lede"></p>
+        <div class="hero-actions">
+          <a class="button-link" href="governor.html">Back to Governors</a>
+        </div>
+      </article>
+
+      <aside class="detail-panel">
+        <span class="panel-label">Race estimate</span>
+        <h2 id="governor-race-winner">--</h2>
+        <div class="prob-track" aria-label="Governor race probability split">
+          <span id="governor-race-dem-track"></span>
+          <span id="governor-race-rep-track"></span>
+        </div>
+        <dl class="race-stats">
+          <div><dt>Democratic win</dt><dd id="governor-race-dem">--</dd></div>
+          <div><dt>Republican win</dt><dd id="governor-race-rep">--</dd></div>
+          <div><dt>Decisive race score</dt><dd id="governor-race-tipping">--</dd></div>
+          <div><dt>Rating input</dt><dd id="governor-race-rating">--</dd></div>
+          <div><dt>Projected margin</dt><dd id="governor-race-margin">--</dd></div>
+          <div><dt>Status</dt><dd id="governor-race-seat">--</dd></div>
+          <div><dt>Incumbent</dt><dd id="governor-race-incumbent">--</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="detail-panel" aria-labelledby="governor-primary-title">
+      <p class="kicker">Nomination treatment</p>
+      <h2 id="governor-primary-title">Candidate field.</h2>
+      <div class="detail-grid">
+        <div class="detail-chip"><span class="meta">Democrat</span><strong id="governor-race-dem-candidate">--</strong></div>
+        <div class="detail-chip"><span class="meta">Republican</span><strong id="governor-race-rep-candidate">--</strong></div>
+        <div class="detail-chip"><span class="meta">Primary status</span><strong id="governor-race-primary">--</strong></div>
+        <div class="detail-chip"><span class="meta">Independent handling</span><strong id="governor-race-independent">--</strong></div>
+        <div class="detail-chip"><span class="meta">Primary summary</span><strong id="governor-race-primary-summary">--</strong></div>
+      </div>
+    </section>
+
+    <section class="detail-panel" aria-labelledby="governor-inputs-title">
+      <p class="kicker">Inputs</p>
+      <h2 id="governor-inputs-title">Model inputs.</h2>
+      <div id="governor-race-input-cards" class="accordion-list"></div>
+    </section>
+
+    <section class="text-panel" aria-labelledby="governor-nav-title">
+      <p class="kicker">Navigation</p>
+      <h2 id="governor-nav-title">Return to Governors.</h2>
+      <div class="hero-actions">
+        <a class="button-link" href="governor.html">Governor forecast</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <strong>Federal Elections Analysis</strong>
+      <p>Election modeling, public analysis, endorsements, and team updates.</p>
+    </div>
+    <nav aria-label="Footer navigation">
+      <a href="index.html">Home</a>
+      <a href="videos.html">Videos</a>
+      <a href="senate.html">Senate</a>
+      <a href="governor.html">Governors</a>
+      <a href="president.html">2028 Pres</a>
+      <a href="endorsements.html">Endorsements</a>
+      <a href="calibration.html">Calibration</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="articles.html">Articles</a>
+    </nav>
+  </footer>
+
+  <script src="assets/wiki.js"></script>
+  <script src="assets/governor-race.js"></script>
+</body>
+</html>

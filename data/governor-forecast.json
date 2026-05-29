@@ -27,22 +27,23 @@
   "medianDemGovernors": 25,
   "medianRepGovernors": 25,
   "distribution": {
+    "16": 1,
     "17": 3,
     "18": 27,
-    "19": 181,
-    "20": 680,
-    "21": 1902,
-    "22": 4457,
-    "23": 7540,
-    "24": 9991,
-    "25": 9841,
-    "26": 7675,
-    "27": 4628,
-    "28": 2104,
-    "29": 732,
-    "30": 192,
-    "31": 39,
-    "32": 8
+    "19": 165,
+    "20": 662,
+    "21": 1957,
+    "22": 4452,
+    "23": 7456,
+    "24": 9938,
+    "25": 10048,
+    "26": 7774,
+    "27": 4443,
+    "28": 2118,
+    "29": 719,
+    "30": 198,
+    "31": 34,
+    "32": 5
   },
   "races": [
     {
@@ -56,16 +57,84 @@
       "demCandidate": "Doug Jones",
       "repCandidate": "Tommy Tuberville",
       "candidateEdge": 1.2,
+      "dem": "Doug Jones",
+      "rep": "Tommy Tuberville",
+      "demStatus": "presumptive",
+      "repStatus": "presumptive",
+      "primary": "unresolved",
+      "primaryDate": "2026-05-19",
+      "primarySummary": "Alabama's governor field is treated as unsettled until the state primary is complete; Jones and Tuberville are modeled as the major-party front-runners.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Alabama Governor",
-      "margin": -12.6,
+      "margin": -12.63,
       "fundamentalsMargin": -13.01,
       "ratingMargin": -18,
       "candidateAndLocal": 1.2,
+      "demographicPull": {
+        "adjustment": -0.03,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "incumbentRepublican",
+          "label": "Incumbent Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.02,
+            "white_noncollege": 0.12,
+            "black": -0.07,
+            "latino": -0.03,
+            "asian_other": -0.02,
+            "youth": -0.05,
+            "senior": 0.08
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.3621,
+            "effect": -0.08
+          },
+          {
+            "group": "black",
+            "weight": 0.1724,
+            "effect": 0.03
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1466,
+            "effect": 0.02
+          },
+          {
+            "group": "senior",
+            "weight": 0.1552,
+            "effect": -0.02
+          }
+        ]
+      },
       "modelRating": "Likely R",
-      "demProbability": 0.07378,
-      "repProbability": 0.92622,
+      "demProbability": 0.0733,
+      "repProbability": 0.9267,
+      "winnerParty": "R",
+      "winnerProbability": 0.9267,
       "competitive": false,
-      "tippingPower": 0.0232
+      "tippingPower": 0.02288
     },
     {
       "state": "AK",
@@ -78,16 +147,86 @@
       "demCandidate": "Tom Begich / Matt Claman",
       "repCandidate": "Republican field",
       "candidateEdge": 0.4,
+      "dem": "Tom Begich / Matt Claman",
+      "rep": "Republican field",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "top-four",
+      "primaryDate": "2026-08-18",
+      "extraCandidates": [
+        {
+          "name": "Gregg Brelsford",
+          "party": "I",
+          "note": "Independent listed in the candidate field"
+        },
+        {
+          "name": "Meda DeWitt",
+          "party": "I",
+          "note": "Independent listed in the candidate field"
+        }
+      ],
+      "primarySummary": "Alaska uses a nonpartisan top-four primary. Multiple Democrats, Republicans, and independents remain possible general-election options.",
+      "independent": "tracked independent candidate",
+      "caucusTarget": "none",
       "displayName": "Alaska Governor",
-      "margin": -2.4,
+      "margin": -2.43,
       "fundamentalsMargin": -2.85,
       "ratingMargin": -5,
       "candidateAndLocal": 0.4,
+      "demographicPull": {
+        "adjustment": -0.03,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.4038,
+            "effect": -0.08
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1635,
+            "effect": 0.03
+          }
+        ]
+      },
       "modelRating": "Tilt R",
-      "demProbability": 0.41114,
-      "repProbability": 0.58886,
+      "demProbability": 0.41005,
+      "repProbability": 0.58995,
+      "winnerParty": "R",
+      "winnerProbability": 0.58995,
       "competitive": true,
-      "tippingPower": 0.0542
+      "tippingPower": 0.05574
     },
     {
       "state": "AZ",
@@ -100,16 +239,85 @@
       "demCandidate": "Katie Hobbs",
       "repCandidate": "Andy Biggs / David Schweikert",
       "candidateEdge": -0.4,
+      "dem": "Katie Hobbs",
+      "rep": "Andy Biggs / David Schweikert",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-04",
+      "primarySummary": "Hobbs is the Democratic incumbent and treated as presumptive; the Republican primary remains open.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Arizona Governor",
-      "margin": 1.27,
+      "margin": 1.3,
       "fundamentalsMargin": 1.78,
       "ratingMargin": 0,
       "candidateAndLocal": -0.4,
+      "demographicPull": {
+        "adjustment": 0.03,
+        "demProfile": {
+          "key": "katie hobbs",
+          "label": "Katie Hobbs",
+          "source": "candidate",
+          "profile": "Arizona Democratic incumbent",
+          "scores": {
+            "white_college": 0.12,
+            "white_noncollege": -0.05,
+            "black": 0.06,
+            "latino": 0.08,
+            "asian_other": 0.04,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [
+            "White college",
+            "Latino"
+          ],
+          "weaknesses": [
+            "White non-college"
+          ]
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.2844,
+            "effect": -0.06
+          },
+          {
+            "group": "white_college",
+            "weight": 0.211,
+            "effect": 0.05
+          },
+          {
+            "group": "latino",
+            "weight": 0.1651,
+            "effect": 0.03
+          }
+        ]
+      },
       "modelRating": "Toss-up",
-      "demProbability": 0.54601,
-      "repProbability": 0.45399,
+      "demProbability": 0.54709,
+      "repProbability": 0.45291,
+      "winnerParty": "D",
+      "winnerProbability": 0.54709,
       "competitive": true,
-      "tippingPower": 0.05456
+      "tippingPower": 0.05542
     },
     {
       "state": "AR",
@@ -122,16 +330,79 @@
       "demCandidate": "Fredrick Love",
       "repCandidate": "Sarah Huckabee Sanders",
       "candidateEdge": -1,
+      "dem": "Fredrick Love",
+      "rep": "Sarah Huckabee Sanders",
+      "demStatus": "nominee",
+      "repStatus": "nominee",
+      "primary": "resolved",
+      "primaryDate": "2026-03-03",
+      "primarySummary": "Sanders and Love are treated as nominated after Arkansas' March primary.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Arkansas Governor",
-      "margin": -15.25,
+      "margin": -15.26,
       "fundamentalsMargin": -14.34,
       "ratingMargin": -18,
       "candidateAndLocal": -1,
+      "demographicPull": {
+        "adjustment": -0.01,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.3621,
+            "effect": -0.07
+          },
+          {
+            "group": "black",
+            "weight": 0.1724,
+            "effect": 0.03
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1466,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Safe R",
-      "demProbability": 0.02101,
-      "repProbability": 0.97899,
+      "demProbability": 0.02094,
+      "repProbability": 0.97906,
+      "winnerParty": "R",
+      "winnerProbability": 0.97906,
       "competitive": false,
-      "tippingPower": 0.01004
+      "tippingPower": 0.01042
     },
     {
       "state": "CA",
@@ -144,16 +415,96 @@
       "demCandidate": "Democratic field",
       "repCandidate": "Steve Hilton / Chad Bianco",
       "candidateEdge": 0.3,
+      "dem": "Democratic field",
+      "rep": "Steve Hilton / Chad Bianco",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "top-two",
+      "primaryDate": "2026-06-02",
+      "extraCandidates": [
+        {
+          "name": "Katie Porter",
+          "party": "D",
+          "note": "Major Democratic option"
+        },
+        {
+          "name": "Xavier Becerra",
+          "party": "D",
+          "note": "Major Democratic option"
+        },
+        {
+          "name": "Chad Bianco",
+          "party": "R",
+          "note": "Major Republican option"
+        },
+        {
+          "name": "Steve Hilton",
+          "party": "R",
+          "note": "Major Republican option"
+        }
+      ],
+      "primarySummary": "California's top-two primary has a large field; the model treats both parties as unresolved.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "California Governor",
-      "margin": 14.58,
+      "margin": 14.59,
       "fundamentalsMargin": 8.18,
       "ratingMargin": 18,
       "candidateAndLocal": 0.3,
+      "demographicPull": {
+        "adjustment": 0.01,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.3043,
+            "effect": -0.06
+          },
+          {
+            "group": "white_college",
+            "weight": 0.2174,
+            "effect": 0.04
+          }
+        ]
+      },
       "modelRating": "Likely D",
-      "demProbability": 0.95317,
-      "repProbability": 0.04683,
+      "demProbability": 0.95328,
+      "repProbability": 0.04672,
+      "winnerParty": "D",
+      "winnerProbability": 0.95328,
       "competitive": false,
-      "tippingPower": 0.01706
+      "tippingPower": 0.01668
     },
     {
       "state": "CO",
@@ -166,16 +517,79 @@
       "demCandidate": "Michael Bennet / Phil Weiser",
       "repCandidate": "Barbara Kirkmeyer / GOP field",
       "candidateEdge": 1.3,
+      "dem": "Michael Bennet / Phil Weiser",
+      "rep": "Barbara Kirkmeyer / GOP field",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-06-30",
+      "primarySummary": "Colorado's open-seat primaries remain unresolved; Bennet and Weiser are the leading Democratic names in the ledger.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Colorado Governor",
-      "margin": 14.88,
+      "margin": 14.91,
       "fundamentalsMargin": 6.11,
       "ratingMargin": 18,
       "candidateAndLocal": 1.3,
+      "demographicPull": {
+        "adjustment": 0.03,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_college",
+            "weight": 0.3158,
+            "effect": 0.05
+          },
+          {
+            "group": "white_noncollege",
+            "weight": 0.2316,
+            "effect": -0.05
+          },
+          {
+            "group": "black",
+            "weight": 0.0842,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Likely D",
-      "demProbability": 0.95643,
-      "repProbability": 0.04357,
+      "demProbability": 0.95675,
+      "repProbability": 0.04325,
+      "winnerParty": "D",
+      "winnerProbability": 0.95675,
       "competitive": false,
-      "tippingPower": 0.01454
+      "tippingPower": 0.01556
     },
     {
       "state": "CT",
@@ -188,16 +602,74 @@
       "demCandidate": "Ned Lamont",
       "repCandidate": "Ryan Fazio",
       "candidateEdge": 0.6,
+      "dem": "Ned Lamont",
+      "rep": "Ryan Fazio",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-11",
+      "primarySummary": "Lamont is the Democratic incumbent and treated as presumptive while the Republican side remains unsettled.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Connecticut Governor",
-      "margin": 14.93,
+      "margin": 14.94,
       "fundamentalsMargin": 8.32,
       "ratingMargin": 18,
       "candidateAndLocal": 0.6,
+      "demographicPull": {
+        "adjustment": 0.01,
+        "demProfile": {
+          "key": "incumbentDemocrat",
+          "label": "Incumbent Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.12,
+            "white_noncollege": -0.06,
+            "black": 0.08,
+            "latino": 0.05,
+            "asian_other": 0.05,
+            "youth": 0.02,
+            "senior": 0.04
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.35,
+            "effect": -0.08
+          },
+          {
+            "group": "white_college",
+            "weight": 0.25,
+            "effect": 0.06
+          }
+        ]
+      },
       "modelRating": "Safe D",
-      "demProbability": 0.97677,
-      "repProbability": 0.02323,
+      "demProbability": 0.97684,
+      "repProbability": 0.02316,
+      "winnerParty": "D",
+      "winnerProbability": 0.97684,
       "competitive": false,
-      "tippingPower": 0.01046
+      "tippingPower": 0.01066
     },
     {
       "state": "FL",
@@ -210,16 +682,91 @@
       "demCandidate": "Jerry Demings / David Jolly",
       "repCandidate": "Byron Donalds / GOP field",
       "candidateEdge": -0.2,
+      "dem": "Jerry Demings / David Jolly",
+      "rep": "Byron Donalds / GOP field",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-18",
+      "extraCandidates": [
+        {
+          "name": "Jason Pizzo",
+          "party": "I",
+          "note": "Independent option in the field"
+        }
+      ],
+      "primarySummary": "Florida is an open seat with both major-party primaries unresolved and one notable independent option tracked separately.",
+      "independent": "tracked independent candidate",
+      "caucusTarget": "none",
       "displayName": "Florida Governor",
-      "margin": -7.18,
+      "margin": -7.15,
       "fundamentalsMargin": -5.76,
       "ratingMargin": -10.5,
       "candidateAndLocal": -0.2,
+      "demographicPull": {
+        "adjustment": 0.03,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.2562,
+            "effect": -0.05
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1901,
+            "effect": 0.03
+          },
+          {
+            "group": "black",
+            "weight": 0.1653,
+            "effect": 0.03
+          },
+          {
+            "group": "latino",
+            "weight": 0.1488,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Lean R",
-      "demProbability": 0.22952,
-      "repProbability": 0.77048,
+      "demProbability": 0.23046,
+      "repProbability": 0.76954,
+      "winnerParty": "R",
+      "winnerProbability": 0.76954,
       "competitive": false,
-      "tippingPower": 0.04574
+      "tippingPower": 0.04684
     },
     {
       "state": "GA",
@@ -232,16 +779,84 @@
       "demCandidate": "Keisha Lance Bottoms",
       "repCandidate": "Burt Jones / Rick Jackson",
       "candidateEdge": 0.5,
+      "dem": "Keisha Lance Bottoms",
+      "rep": "Burt Jones / Rick Jackson",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-05-19",
+      "primarySummary": "Bottoms is treated as the Democratic front-runner; the Republican primary remains open.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Georgia Governor",
-      "margin": 1.1,
+      "margin": 1.13,
       "fundamentalsMargin": -1.38,
       "ratingMargin": 0,
       "candidateAndLocal": 0.5,
+      "demographicPull": {
+        "adjustment": 0.03,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.2562,
+            "effect": -0.05
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1901,
+            "effect": 0.03
+          },
+          {
+            "group": "black",
+            "weight": 0.1653,
+            "effect": 0.03
+          },
+          {
+            "group": "latino",
+            "weight": 0.1488,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Toss-up",
-      "demProbability": 0.53578,
-      "repProbability": 0.46422,
+      "demProbability": 0.53676,
+      "repProbability": 0.46324,
+      "winnerParty": "D",
+      "winnerProbability": 0.53676,
       "competitive": true,
-      "tippingPower": 0.04912
+      "tippingPower": 0.04832
     },
     {
       "state": "HI",
@@ -254,16 +869,74 @@
       "demCandidate": "Josh Green",
       "repCandidate": "Gary Cordery",
       "candidateEdge": 1,
+      "dem": "Josh Green",
+      "rep": "Gary Cordery",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-08",
+      "primarySummary": "Green is the Democratic incumbent and treated as presumptive.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Hawaii Governor",
       "margin": 17.15,
       "fundamentalsMargin": 13.68,
       "ratingMargin": 18,
       "candidateAndLocal": 1,
+      "demographicPull": {
+        "adjustment": 0,
+        "demProfile": {
+          "key": "incumbentDemocrat",
+          "label": "Incumbent Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.12,
+            "white_noncollege": -0.06,
+            "black": 0.08,
+            "latino": 0.05,
+            "asian_other": 0.05,
+            "youth": 0.02,
+            "senior": 0.04
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.3818,
+            "effect": -0.08
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1545,
+            "effect": 0.04
+          }
+        ]
+      },
       "modelRating": "Safe D",
       "demProbability": 0.98891,
       "repProbability": 0.01109,
+      "winnerParty": "D",
+      "winnerProbability": 0.98891,
       "competitive": false,
-      "tippingPower": 0.00572
+      "tippingPower": 0.00538
     },
     {
       "state": "ID",
@@ -276,16 +949,74 @@
       "demCandidate": "Terri Pickens",
       "repCandidate": "Brad Little",
       "candidateEdge": -1,
+      "dem": "Terri Pickens",
+      "rep": "Brad Little",
+      "demStatus": "nominee",
+      "repStatus": "nominee",
+      "primary": "resolved",
+      "primaryDate": "2026-05-19",
+      "primarySummary": "Little and Pickens are treated as nominated after Idaho's May primary.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Idaho Governor",
-      "margin": -15.2,
+      "margin": -15.21,
       "fundamentalsMargin": -14.18,
       "ratingMargin": -18,
       "candidateAndLocal": -1,
+      "demographicPull": {
+        "adjustment": -0.01,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.4038,
+            "effect": -0.08
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1635,
+            "effect": 0.03
+          }
+        ]
+      },
       "modelRating": "Safe R",
-      "demProbability": 0.02136,
-      "repProbability": 0.97864,
+      "demProbability": 0.0213,
+      "repProbability": 0.9787,
+      "winnerParty": "R",
+      "winnerProbability": 0.9787,
       "competitive": false,
-      "tippingPower": 0.01056
+      "tippingPower": 0.01008
     },
     {
       "state": "IL",
@@ -298,16 +1029,79 @@
       "demCandidate": "JB Pritzker",
       "repCandidate": "Darren Bailey",
       "candidateEdge": 1.1,
+      "dem": "JB Pritzker",
+      "rep": "Darren Bailey",
+      "demStatus": "nominee",
+      "repStatus": "nominee",
+      "primary": "resolved",
+      "primaryDate": "2026-03-17",
+      "primarySummary": "Pritzker and Bailey are treated as nominated after Illinois' March primary.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Illinois Governor",
       "margin": 15.22,
       "fundamentalsMargin": 7.68,
       "ratingMargin": 18,
       "candidateAndLocal": 1.1,
+      "demographicPull": {
+        "adjustment": 0,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.3298,
+            "effect": -0.07
+          },
+          {
+            "group": "white_college",
+            "weight": 0.2447,
+            "effect": 0.04
+          },
+          {
+            "group": "black",
+            "weight": 0.0851,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Safe D",
       "demProbability": 0.97876,
       "repProbability": 0.02124,
+      "winnerParty": "D",
+      "winnerProbability": 0.97876,
       "competitive": false,
-      "tippingPower": 0.011
+      "tippingPower": 0.0111
     },
     {
       "state": "IA",
@@ -320,16 +1114,78 @@
       "demCandidate": "Rob Sand",
       "repCandidate": "Randy Feenstra / GOP field",
       "candidateEdge": 2.4,
+      "dem": "Rob Sand",
+      "rep": "Randy Feenstra / GOP field",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-06-02",
+      "primarySummary": "Sand is treated as the Democratic front-runner in the open-seat race; the Republican primary remains unresolved.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Iowa Governor",
-      "margin": 0.36,
+      "margin": 0.46,
       "fundamentalsMargin": -9.14,
       "ratingMargin": 0,
       "candidateAndLocal": 2.4,
+      "demographicPull": {
+        "adjustment": 0.1,
+        "demProfile": {
+          "key": "rob sand",
+          "label": "Rob Sand",
+          "source": "candidate",
+          "profile": "Iowa statewide Democratic auditor",
+          "scores": {
+            "white_college": 0.08,
+            "white_noncollege": 0.18,
+            "black": 0.04,
+            "latino": 0.03,
+            "asian_other": 0.02,
+            "youth": 0.04,
+            "senior": 0.06
+          },
+          "strengths": [
+            "White non-college",
+            "White college"
+          ],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.4038,
+            "effect": 0.04
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1635,
+            "effect": 0.03
+          }
+        ]
+      },
       "modelRating": "Toss-up",
-      "demProbability": 0.51164,
-      "repProbability": 0.48836,
+      "demProbability": 0.51491,
+      "repProbability": 0.48509,
+      "winnerParty": "D",
+      "winnerProbability": 0.51491,
       "competitive": true,
-      "tippingPower": 0.04868
+      "tippingPower": 0.04798
     },
     {
       "state": "KS",
@@ -342,14 +1198,72 @@
       "demCandidate": "Ethan Corson / Cindy Holscher",
       "repCandidate": "Jeff Colyer / Vicki Schmidt / Scott Schwab",
       "candidateEdge": 0.5,
+      "dem": "Ethan Corson / Cindy Holscher",
+      "rep": "Jeff Colyer / Vicki Schmidt / Scott Schwab",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-04",
+      "primarySummary": "Both Kansas primaries remain unresolved in the manual ledger.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Kansas Governor",
-      "margin": -2.46,
+      "margin": -2.49,
       "fundamentalsMargin": -3.31,
       "ratingMargin": -5,
       "candidateAndLocal": 0.5,
+      "demographicPull": {
+        "adjustment": -0.03,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.4038,
+            "effect": -0.08
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1635,
+            "effect": 0.03
+          }
+        ]
+      },
       "modelRating": "Tilt R",
-      "demProbability": 0.40904,
-      "repProbability": 0.59096,
+      "demProbability": 0.40795,
+      "repProbability": 0.59205,
+      "winnerParty": "R",
+      "winnerProbability": 0.59205,
       "competitive": true,
       "tippingPower": 0.05518
     },
@@ -364,16 +1278,86 @@
       "demCandidate": "Shenna Bellows / Troy Jackson / Angus King III",
       "repCandidate": "Garrett Mason / GOP field",
       "candidateEdge": 0.4,
+      "dem": "Shenna Bellows / Troy Jackson / Angus King III",
+      "rep": "Garrett Mason / GOP field",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-06-09",
+      "extraCandidates": [
+        {
+          "name": "Rick Bennett",
+          "party": "I",
+          "note": "Independent listed in the candidate field"
+        },
+        {
+          "name": "Ed Crockett",
+          "party": "I",
+          "note": "Independent listed in the candidate field"
+        }
+      ],
+      "primarySummary": "Maine's open-seat field is unsettled and includes independent candidates.",
+      "independent": "tracked independent candidate",
+      "caucusTarget": "none",
       "displayName": "Maine Governor",
-      "margin": 8.84,
+      "margin": 8.81,
       "fundamentalsMargin": 3.79,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.4,
+      "demographicPull": {
+        "adjustment": -0.03,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.4038,
+            "effect": -0.08
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1635,
+            "effect": 0.03
+          }
+        ]
+      },
       "modelRating": "Likely D",
-      "demProbability": 0.81906,
-      "repProbability": 0.18094,
+      "demProbability": 0.81824,
+      "repProbability": 0.18176,
+      "winnerParty": "D",
+      "winnerProbability": 0.81824,
       "competitive": false,
-      "tippingPower": 0.04218
+      "tippingPower": 0.04146
     },
     {
       "state": "MD",
@@ -386,16 +1370,79 @@
       "demCandidate": "Wes Moore",
       "repCandidate": "Republican field",
       "candidateEdge": 1.5,
+      "dem": "Wes Moore",
+      "rep": "Republican field",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-06-23",
+      "primarySummary": "Moore is the Democratic incumbent and treated as presumptive.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Maryland Governor",
-      "margin": 18.2,
+      "margin": 18.23,
       "fundamentalsMargin": 15.28,
       "ratingMargin": 18,
       "candidateAndLocal": 1.5,
+      "demographicPull": {
+        "adjustment": 0.03,
+        "demProfile": {
+          "key": "incumbentDemocrat",
+          "label": "Incumbent Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.12,
+            "white_noncollege": -0.06,
+            "black": 0.08,
+            "latino": 0.05,
+            "asian_other": 0.05,
+            "youth": 0.02,
+            "senior": 0.04
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.3043,
+            "effect": -0.07
+          },
+          {
+            "group": "white_college",
+            "weight": 0.2174,
+            "effect": 0.05
+          },
+          {
+            "group": "black",
+            "weight": 0.1449,
+            "effect": 0.03
+          }
+        ]
+      },
       "modelRating": "Safe D",
       "demProbability": 0.99,
       "repProbability": 0.01,
+      "winnerParty": "D",
+      "winnerProbability": 0.99,
       "competitive": false,
-      "tippingPower": 0.00436
+      "tippingPower": 0.00428
     },
     {
       "state": "MA",
@@ -408,16 +1455,74 @@
       "demCandidate": "Maura Healey",
       "repCandidate": "Republican field",
       "candidateEdge": 1.2,
+      "dem": "Maura Healey",
+      "rep": "Republican field",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-09-01",
+      "primarySummary": "Healey is the Democratic incumbent and treated as presumptive.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Massachusetts Governor",
-      "margin": 17.71,
+      "margin": 17.73,
       "fundamentalsMargin": 14.73,
       "ratingMargin": 18,
       "candidateAndLocal": 1.2,
+      "demographicPull": {
+        "adjustment": 0.02,
+        "demProfile": {
+          "key": "incumbentDemocrat",
+          "label": "Incumbent Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.12,
+            "white_noncollege": -0.06,
+            "black": 0.08,
+            "latino": 0.05,
+            "asian_other": 0.05,
+            "youth": 0.02,
+            "senior": 0.04
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.3333,
+            "effect": -0.07
+          },
+          {
+            "group": "white_college",
+            "weight": 0.2381,
+            "effect": 0.06
+          }
+        ]
+      },
       "modelRating": "Safe D",
       "demProbability": 0.99,
       "repProbability": 0.01,
+      "winnerParty": "D",
+      "winnerProbability": 0.99,
       "competitive": false,
-      "tippingPower": 0.00492
+      "tippingPower": 0.00476
     },
     {
       "state": "MI",
@@ -430,16 +1535,83 @@
       "demCandidate": "Jocelyn Benson / Democratic field",
       "repCandidate": "Republican field",
       "candidateEdge": 0.8,
+      "dem": "Jocelyn Benson / Democratic field",
+      "rep": "Republican field",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-04",
+      "primarySummary": "Michigan is an open seat with both primaries unresolved.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Michigan Governor",
-      "margin": 5.36,
+      "margin": 5.4,
       "fundamentalsMargin": 1.74,
       "ratingMargin": 5,
       "candidateAndLocal": 0.8,
+      "demographicPull": {
+        "adjustment": 0.04,
+        "demProfile": {
+          "key": "jocelyn benson / democratic field",
+          "label": "Jocelyn Benson / Democratic field",
+          "source": "candidate",
+          "profile": "Michigan Democratic statewide-office field",
+          "scores": {
+            "white_college": 0.13,
+            "white_noncollege": -0.01,
+            "black": 0.08,
+            "latino": 0.03,
+            "asian_other": 0.04,
+            "youth": 0.04,
+            "senior": 0.02
+          },
+          "strengths": [
+            "White college",
+            "Black"
+          ],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_college",
+            "weight": 0.2447,
+            "effect": 0.06
+          },
+          {
+            "group": "white_noncollege",
+            "weight": 0.3298,
+            "effect": -0.05
+          },
+          {
+            "group": "black",
+            "weight": 0.0851,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Lean D",
-      "demProbability": 0.69172,
-      "repProbability": 0.30828,
+      "demProbability": 0.69304,
+      "repProbability": 0.30696,
+      "winnerParty": "D",
+      "winnerProbability": 0.69304,
       "competitive": true,
-      "tippingPower": 0.04946
+      "tippingPower": 0.05126
     },
     {
       "state": "MN",
@@ -452,16 +1624,79 @@
       "demCandidate": "DFL field",
       "repCandidate": "Republican field",
       "candidateEdge": 0.4,
+      "dem": "DFL field",
+      "rep": "Republican field",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-11",
+      "primarySummary": "Minnesota is an open seat and both primaries remain unresolved.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Minnesota Governor",
-      "margin": 13.74,
+      "margin": 13.77,
       "fundamentalsMargin": 5.39,
       "ratingMargin": 18,
       "candidateAndLocal": 0.4,
+      "demographicPull": {
+        "adjustment": 0.03,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_college",
+            "weight": 0.3158,
+            "effect": 0.05
+          },
+          {
+            "group": "white_noncollege",
+            "weight": 0.2316,
+            "effect": -0.05
+          },
+          {
+            "group": "black",
+            "weight": 0.0842,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Likely D",
-      "demProbability": 0.94283,
-      "repProbability": 0.05717,
+      "demProbability": 0.94322,
+      "repProbability": 0.05678,
+      "winnerParty": "D",
+      "winnerProbability": 0.94322,
       "competitive": false,
-      "tippingPower": 0.01938
+      "tippingPower": 0.01862
     },
     {
       "state": "NE",
@@ -474,16 +1709,79 @@
       "demCandidate": "Democratic field",
       "repCandidate": "Jim Pillen",
       "candidateEdge": -1,
+      "dem": "Democratic field",
+      "rep": "Jim Pillen",
+      "demStatus": "unresolved",
+      "repStatus": "presumptive",
+      "primary": "unresolved",
+      "primaryDate": "2026-05-12",
+      "primarySummary": "Pillen is the Republican incumbent and treated as presumptive.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Nebraska Governor",
-      "margin": -14.43,
+      "margin": -14.47,
       "fundamentalsMargin": -11.91,
       "ratingMargin": -18,
       "candidateAndLocal": -1,
+      "demographicPull": {
+        "adjustment": -0.04,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "incumbentRepublican",
+          "label": "Incumbent Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.02,
+            "white_noncollege": 0.12,
+            "black": -0.07,
+            "latino": -0.03,
+            "asian_other": -0.02,
+            "youth": -0.05,
+            "senior": 0.08
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.4038,
+            "effect": -0.09
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1635,
+            "effect": 0.02
+          },
+          {
+            "group": "senior",
+            "weight": 0.1731,
+            "effect": -0.02
+          }
+        ]
+      },
       "modelRating": "Safe R",
-      "demProbability": 0.02722,
-      "repProbability": 0.97278,
+      "demProbability": 0.02689,
+      "repProbability": 0.97311,
+      "winnerParty": "R",
+      "winnerProbability": 0.97311,
       "competitive": false,
-      "tippingPower": 0.01268
+      "tippingPower": 0.01262
     },
     {
       "state": "NV",
@@ -496,16 +1794,81 @@
       "demCandidate": "Democratic field",
       "repCandidate": "Joe Lombardo",
       "candidateEdge": -1.6,
+      "dem": "Democratic field",
+      "rep": "Joe Lombardo",
+      "demStatus": "unresolved",
+      "repStatus": "presumptive",
+      "primary": "unresolved",
+      "primaryDate": "2026-06-09",
+      "primarySummary": "Lombardo is the Republican incumbent and treated as presumptive.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Nevada Governor",
-      "margin": -1.6,
+      "margin": -1.64,
       "fundamentalsMargin": -3.14,
       "ratingMargin": 0,
       "candidateAndLocal": -1.6,
+      "demographicPull": {
+        "adjustment": -0.04,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "joe lombardo",
+          "label": "Joe Lombardo",
+          "source": "candidate",
+          "profile": "Nevada Republican incumbent",
+          "scores": {
+            "white_college": -0.02,
+            "white_noncollege": 0.12,
+            "black": -0.06,
+            "latino": 0.02,
+            "asian_other": -0.01,
+            "youth": -0.04,
+            "senior": 0.08
+          },
+          "strengths": [
+            "White non-college",
+            "65+",
+            "Latino"
+          ],
+          "weaknesses": [
+            "18-29"
+          ]
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.2844,
+            "effect": -0.07
+          },
+          {
+            "group": "white_college",
+            "weight": 0.211,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Tilt R",
-      "demProbability": 0.44208,
-      "repProbability": 0.55792,
+      "demProbability": 0.44065,
+      "repProbability": 0.55935,
+      "winnerParty": "R",
+      "winnerProbability": 0.55935,
       "competitive": true,
-      "tippingPower": 0.05488
+      "tippingPower": 0.05358
     },
     {
       "state": "NH",
@@ -518,16 +1881,80 @@
       "demCandidate": "Democratic field",
       "repCandidate": "Kelly Ayotte",
       "candidateEdge": -1.6,
+      "dem": "Democratic field",
+      "rep": "Kelly Ayotte",
+      "demStatus": "unresolved",
+      "repStatus": "presumptive",
+      "primary": "unresolved",
+      "primaryDate": "2026-09-08",
+      "primarySummary": "Ayotte is the Republican incumbent and treated as presumptive.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "New Hampshire Governor",
-      "margin": -7.93,
+      "margin": -8,
       "fundamentalsMargin": -3.85,
       "ratingMargin": -10.5,
       "candidateAndLocal": -1.6,
-      "modelRating": "Lean R",
-      "demProbability": 0.17532,
-      "repProbability": 0.82468,
+      "demographicPull": {
+        "adjustment": -0.07,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "kelly ayotte",
+          "label": "Kelly Ayotte",
+          "source": "candidate",
+          "profile": "New Hampshire Republican incumbent",
+          "scores": {
+            "white_college": 0.02,
+            "white_noncollege": 0.1,
+            "black": -0.05,
+            "latino": -0.02,
+            "asian_other": -0.01,
+            "youth": -0.05,
+            "senior": 0.08
+          },
+          "strengths": [
+            "White college",
+            "65+"
+          ],
+          "weaknesses": [
+            "18-29"
+          ]
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.4038,
+            "effect": -0.08
+          },
+          {
+            "group": "senior",
+            "weight": 0.1731,
+            "effect": -0.02
+          }
+        ]
+      },
+      "modelRating": "Likely R",
+      "demProbability": 0.17321,
+      "repProbability": 0.82679,
+      "winnerParty": "R",
+      "winnerProbability": 0.82679,
       "competitive": false,
-      "tippingPower": 0.04604
+      "tippingPower": 0.0443
     },
     {
       "state": "NM",
@@ -540,16 +1967,79 @@
       "demCandidate": "Democratic field",
       "repCandidate": "Republican field",
       "candidateEdge": 0.2,
+      "dem": "Democratic field",
+      "rep": "Republican field",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-06-02",
+      "primarySummary": "New Mexico is an open seat and both primaries remain unresolved.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "New Mexico Governor",
       "margin": 8.12,
       "fundamentalsMargin": 2.26,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.2,
+      "demographicPull": {
+        "adjustment": 0,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.2844,
+            "effect": -0.06
+          },
+          {
+            "group": "white_college",
+            "weight": 0.211,
+            "effect": 0.03
+          },
+          {
+            "group": "latino",
+            "weight": 0.1651,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Likely D",
       "demProbability": 0.79879,
       "repProbability": 0.20121,
+      "winnerParty": "D",
+      "winnerProbability": 0.79879,
       "competitive": false,
-      "tippingPower": 0.04294
+      "tippingPower": 0.04238
     },
     {
       "state": "NY",
@@ -562,16 +2052,74 @@
       "demCandidate": "Kathy Hochul",
       "repCandidate": "Republican field",
       "candidateEdge": 0.3,
+      "dem": "Kathy Hochul",
+      "rep": "Republican field",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-06-23",
+      "primarySummary": "Hochul is the Democratic incumbent and treated as presumptive.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "New York Governor",
-      "margin": 9.83,
+      "margin": 9.86,
       "fundamentalsMargin": 6.98,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.3,
+      "demographicPull": {
+        "adjustment": 0.03,
+        "demProfile": {
+          "key": "incumbentDemocrat",
+          "label": "Incumbent Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.12,
+            "white_noncollege": -0.06,
+            "black": 0.08,
+            "latino": 0.05,
+            "asian_other": 0.05,
+            "youth": 0.02,
+            "senior": 0.04
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.3333,
+            "effect": -0.07
+          },
+          {
+            "group": "white_college",
+            "weight": 0.2381,
+            "effect": 0.06
+          }
+        ]
+      },
       "modelRating": "Likely D",
-      "demProbability": 0.87618,
-      "repProbability": 0.12382,
+      "demProbability": 0.8769,
+      "repProbability": 0.1231,
+      "winnerParty": "D",
+      "winnerProbability": 0.8769,
       "competitive": false,
-      "tippingPower": 0.03664
+      "tippingPower": 0.03504
     },
     {
       "state": "OH",
@@ -584,16 +2132,85 @@
       "demCandidate": "Democratic field",
       "repCandidate": "Vivek Ramaswamy / GOP field",
       "candidateEdge": -0.6,
+      "dem": "Democratic field",
+      "rep": "Vivek Ramaswamy / GOP field",
+      "demStatus": "unresolved",
+      "repStatus": "presumptive",
+      "primary": "unresolved",
+      "primaryDate": "2026-05-05",
+      "primarySummary": "Ohio is an open seat; Ramaswamy is treated as the Republican front-runner while the Democratic field remains unresolved.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Ohio Governor",
-      "margin": -4.88,
+      "margin": -4.9,
       "fundamentalsMargin": -7.2,
       "ratingMargin": -5,
       "candidateAndLocal": -0.6,
+      "demographicPull": {
+        "adjustment": -0.02,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "vivek ramaswamy / gop field",
+          "label": "Vivek Ramaswamy / GOP field",
+          "source": "candidate",
+          "profile": "Ohio Republican entrepreneur front-runner",
+          "scores": {
+            "white_college": -0.09,
+            "white_noncollege": 0.17,
+            "black": -0.09,
+            "latino": -0.02,
+            "asian_other": 0.01,
+            "youth": -0.02,
+            "senior": 0.03
+          },
+          "strengths": [
+            "White non-college"
+          ],
+          "weaknesses": [
+            "White college",
+            "Black"
+          ]
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.3298,
+            "effect": -0.1
+          },
+          {
+            "group": "white_college",
+            "weight": 0.2447,
+            "effect": 0.05
+          },
+          {
+            "group": "black",
+            "weight": 0.0851,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Lean R",
-      "demProbability": 0.32411,
-      "repProbability": 0.67589,
+      "demProbability": 0.32344,
+      "repProbability": 0.67656,
+      "winnerParty": "R",
+      "winnerProbability": 0.67656,
       "competitive": true,
-      "tippingPower": 0.04954
+      "tippingPower": 0.05192
     },
     {
       "state": "OK",
@@ -606,14 +2223,72 @@
       "demCandidate": "Democratic field",
       "repCandidate": "Republican field",
       "candidateEdge": -0.4,
+      "dem": "Democratic field",
+      "rep": "Republican field",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-06-16",
+      "primarySummary": "Oklahoma is an open seat and both primaries remain unresolved.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Oklahoma Governor",
-      "margin": -12.82,
+      "margin": -12.83,
       "fundamentalsMargin": -8.95,
       "ratingMargin": -18,
       "candidateAndLocal": -0.4,
+      "demographicPull": {
+        "adjustment": -0.01,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.4038,
+            "effect": -0.08
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1635,
+            "effect": 0.03
+          }
+        ]
+      },
       "modelRating": "Likely R",
-      "demProbability": 0.07034,
-      "repProbability": 0.92966,
+      "demProbability": 0.07019,
+      "repProbability": 0.92981,
+      "winnerParty": "R",
+      "winnerProbability": 0.92981,
       "competitive": false,
       "tippingPower": 0.02378
     },
@@ -628,16 +2303,74 @@
       "demCandidate": "Tina Kotek",
       "repCandidate": "Republican field",
       "candidateEdge": 0.2,
+      "dem": "Tina Kotek",
+      "rep": "Republican field",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-05-19",
+      "primarySummary": "Kotek is the Democratic incumbent and treated as presumptive.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Oregon Governor",
-      "margin": 9.48,
+      "margin": 9.49,
       "fundamentalsMargin": 6.26,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.2,
+      "demographicPull": {
+        "adjustment": 0.01,
+        "demProfile": {
+          "key": "incumbentDemocrat",
+          "label": "Incumbent Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.12,
+            "white_noncollege": -0.06,
+            "black": 0.08,
+            "latino": 0.05,
+            "asian_other": 0.05,
+            "youth": 0.02,
+            "senior": 0.04
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.35,
+            "effect": -0.08
+          },
+          {
+            "group": "white_college",
+            "weight": 0.25,
+            "effect": 0.06
+          }
+        ]
+      },
       "modelRating": "Likely D",
-      "demProbability": 0.86769,
-      "repProbability": 0.13231,
+      "demProbability": 0.86794,
+      "repProbability": 0.13206,
+      "winnerParty": "D",
+      "winnerProbability": 0.86794,
       "competitive": false,
-      "tippingPower": 0.0388
+      "tippingPower": 0.03776
     },
     {
       "state": "PA",
@@ -650,16 +2383,79 @@
       "demCandidate": "Josh Shapiro",
       "repCandidate": "Republican field",
       "candidateEdge": 3.8,
+      "dem": "Josh Shapiro",
+      "rep": "Republican field",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-05-19",
+      "primarySummary": "Shapiro is the Democratic incumbent and treated as presumptive.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Pennsylvania Governor",
-      "margin": 17.2,
+      "margin": 17.34,
       "fundamentalsMargin": 5.57,
       "ratingMargin": 18,
       "candidateAndLocal": 3.8,
+      "demographicPull": {
+        "adjustment": 0.14,
+        "demProfile": {
+          "key": "josh shapiro",
+          "label": "Josh Shapiro",
+          "source": "candidate",
+          "profile": "high-approval Pennsylvania Democratic incumbent",
+          "scores": {
+            "white_college": 0.18,
+            "white_noncollege": 0.08,
+            "black": 0.1,
+            "latino": 0.04,
+            "asian_other": 0.05,
+            "youth": 0.03,
+            "senior": 0.12
+          },
+          "strengths": [
+            "White college",
+            "White non-college",
+            "65+"
+          ],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_college",
+            "weight": 0.3158,
+            "effect": 0.1
+          },
+          {
+            "group": "black",
+            "weight": 0.0842,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Safe D",
-      "demProbability": 0.98908,
-      "repProbability": 0.01092,
+      "demProbability": 0.98961,
+      "repProbability": 0.01039,
+      "winnerParty": "D",
+      "winnerProbability": 0.98961,
       "competitive": false,
-      "tippingPower": 0.00626
+      "tippingPower": 0.00538
     },
     {
       "state": "RI",
@@ -672,16 +2468,79 @@
       "demCandidate": "Dan McKee",
       "repCandidate": "Republican field",
       "candidateEdge": 0.5,
+      "dem": "Dan McKee",
+      "rep": "Republican field",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-09-09",
+      "primarySummary": "McKee is the Democratic incumbent and treated as presumptive.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Rhode Island Governor",
-      "margin": 15.43,
+      "margin": 15.42,
       "fundamentalsMargin": 10.07,
       "ratingMargin": 18,
       "candidateAndLocal": 0.5,
+      "demographicPull": {
+        "adjustment": -0.01,
+        "demProfile": {
+          "key": "incumbentDemocrat",
+          "label": "Incumbent Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.12,
+            "white_noncollege": -0.06,
+            "black": 0.08,
+            "latino": 0.05,
+            "asian_other": 0.05,
+            "youth": 0.02,
+            "senior": 0.04
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.4038,
+            "effect": -0.09
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1635,
+            "effect": 0.04
+          },
+          {
+            "group": "black",
+            "weight": 0.0769,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Safe D",
-      "demProbability": 0.98017,
-      "repProbability": 0.01983,
+      "demProbability": 0.98011,
+      "repProbability": 0.01989,
+      "winnerParty": "D",
+      "winnerProbability": 0.98011,
       "competitive": false,
-      "tippingPower": 0.00932
+      "tippingPower": 0.00976
     },
     {
       "state": "SC",
@@ -694,16 +2553,79 @@
       "demCandidate": "Democratic field",
       "repCandidate": "Pamela Evette / Nancy Mace / Alan Wilson",
       "candidateEdge": -0.5,
+      "dem": "Democratic field",
+      "rep": "Pamela Evette / Nancy Mace / Alan Wilson",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-06-09",
+      "primarySummary": "South Carolina is an open seat and both primaries remain unresolved.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "South Carolina Governor",
-      "margin": -7.74,
+      "margin": -7.75,
       "fundamentalsMargin": -6.51,
       "ratingMargin": -10.5,
       "candidateAndLocal": -0.5,
+      "demographicPull": {
+        "adjustment": -0.01,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.3621,
+            "effect": -0.07
+          },
+          {
+            "group": "black",
+            "weight": 0.1724,
+            "effect": 0.03
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1466,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Lean R",
-      "demProbability": 0.21248,
-      "repProbability": 0.78752,
+      "demProbability": 0.21218,
+      "repProbability": 0.78782,
+      "winnerParty": "R",
+      "winnerProbability": 0.78782,
       "competitive": false,
-      "tippingPower": 0.04486
+      "tippingPower": 0.04526
     },
     {
       "state": "SD",
@@ -716,16 +2638,79 @@
       "demCandidate": "Dan Ahlers",
       "repCandidate": "Larry Rhoden / GOP field",
       "candidateEdge": -0.8,
+      "dem": "Dan Ahlers",
+      "rep": "Larry Rhoden / GOP field",
+      "demStatus": "unresolved",
+      "repStatus": "presumptive",
+      "primary": "unresolved",
+      "primaryDate": "2026-06-02",
+      "primarySummary": "Rhoden is the Republican incumbent and treated as presumptive, though the GOP field is tracked as contested.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "South Dakota Governor",
-      "margin": -14.89,
+      "margin": -14.93,
       "fundamentalsMargin": -13.86,
       "ratingMargin": -18,
       "candidateAndLocal": -0.8,
+      "demographicPull": {
+        "adjustment": -0.04,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "incumbentRepublican",
+          "label": "Incumbent Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.02,
+            "white_noncollege": 0.12,
+            "black": -0.07,
+            "latino": -0.03,
+            "asian_other": -0.02,
+            "youth": -0.05,
+            "senior": 0.08
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.4038,
+            "effect": -0.09
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1635,
+            "effect": 0.02
+          },
+          {
+            "group": "senior",
+            "weight": 0.1731,
+            "effect": -0.02
+          }
+        ]
+      },
       "modelRating": "Safe R",
-      "demProbability": 0.02357,
-      "repProbability": 0.97643,
+      "demProbability": 0.02328,
+      "repProbability": 0.97672,
+      "winnerParty": "R",
+      "winnerProbability": 0.97672,
       "competitive": false,
-      "tippingPower": 0.01072
+      "tippingPower": 0.01062
     },
     {
       "state": "TN",
@@ -738,16 +2723,81 @@
       "demCandidate": "Democratic field",
       "repCandidate": "Marsha Blackburn / John Rose / GOP field",
       "candidateEdge": -0.8,
+      "dem": "Democratic field",
+      "rep": "Marsha Blackburn / John Rose / GOP field",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-06",
+      "extraCandidates": [
+        {
+          "name": "Misam Abidi",
+          "party": "I",
+          "note": "Independent listed in the candidate field"
+        }
+      ],
+      "primarySummary": "Tennessee is an open seat with crowded major-party and independent candidate fields.",
+      "independent": "tracked independent candidate",
+      "caucusTarget": "none",
       "displayName": "Tennessee Governor",
-      "margin": -14.38,
+      "margin": -14.4,
       "fundamentalsMargin": -12.37,
       "ratingMargin": -18,
       "candidateAndLocal": -0.8,
+      "demographicPull": {
+        "adjustment": -0.02,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.4038,
+            "effect": -0.08
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1635,
+            "effect": 0.03
+          }
+        ]
+      },
       "modelRating": "Likely R",
-      "demProbability": 0.04918,
-      "repProbability": 0.95082,
+      "demProbability": 0.04894,
+      "repProbability": 0.95106,
+      "winnerParty": "R",
+      "winnerProbability": 0.95106,
       "competitive": false,
-      "tippingPower": 0.01688
+      "tippingPower": 0.01648
     },
     {
       "state": "TX",
@@ -760,16 +2810,97 @@
       "demCandidate": "Gina Hinojosa",
       "repCandidate": "Greg Abbott",
       "candidateEdge": -1.7,
+      "dem": "Gina Hinojosa",
+      "rep": "Greg Abbott",
+      "demStatus": "nominee",
+      "repStatus": "nominee",
+      "primary": "resolved",
+      "primaryDate": "2026-03-03",
+      "primarySummary": "Abbott and Hinojosa are treated as nominated after the Texas primary.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Texas Governor",
-      "margin": -13.56,
+      "margin": -13.6,
       "fundamentalsMargin": -7.3,
       "ratingMargin": -18,
       "candidateAndLocal": -1.7,
+      "demographicPull": {
+        "adjustment": -0.04,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "greg abbott",
+          "label": "Greg Abbott",
+          "source": "candidate",
+          "profile": "Texas Republican incumbent",
+          "scores": {
+            "white_college": -0.08,
+            "white_noncollege": 0.2,
+            "black": -0.09,
+            "latino": 0.02,
+            "asian_other": -0.04,
+            "youth": -0.08,
+            "senior": 0.12
+          },
+          "strengths": [
+            "White non-college",
+            "65+",
+            "Latino"
+          ],
+          "weaknesses": [
+            "White college",
+            "18-29"
+          ]
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.2844,
+            "effect": -0.1
+          },
+          {
+            "group": "white_college",
+            "weight": 0.211,
+            "effect": 0.04
+          },
+          {
+            "group": "black",
+            "weight": 0.0734,
+            "effect": 0.02
+          },
+          {
+            "group": "youth",
+            "weight": 0.1101,
+            "effect": 0.02
+          },
+          {
+            "group": "senior",
+            "weight": 0.1193,
+            "effect": -0.02
+          }
+        ]
+      },
       "modelRating": "Likely R",
-      "demProbability": 0.03535,
-      "repProbability": 0.96465,
+      "demProbability": 0.03493,
+      "repProbability": 0.96507,
+      "winnerParty": "R",
+      "winnerProbability": 0.96507,
       "competitive": false,
-      "tippingPower": 0.01562
+      "tippingPower": 0.0161
     },
     {
       "state": "VT",
@@ -782,16 +2913,84 @@
       "demCandidate": "Amanda Janoo / Aly Richards",
       "repCandidate": "Phil Scott",
       "candidateEdge": -6.5,
+      "dem": "Amanda Janoo / Aly Richards",
+      "rep": "Phil Scott",
+      "demStatus": "unresolved",
+      "repStatus": "presumptive",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-11",
+      "primarySummary": "Scott is the Republican incumbent and treated as presumptive; Democrats have multiple declared candidates.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Vermont Governor",
-      "margin": -18.32,
+      "margin": -18.45,
       "fundamentalsMargin": -7.2,
       "ratingMargin": -18,
       "candidateAndLocal": -6.5,
+      "demographicPull": {
+        "adjustment": -0.13,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "phil scott",
+          "label": "Phil Scott",
+          "source": "candidate",
+          "profile": "popular Vermont Republican incumbent",
+          "scores": {
+            "white_college": 0.18,
+            "white_noncollege": 0.3,
+            "black": -0.02,
+            "latino": 0.01,
+            "asian_other": 0.02,
+            "youth": 0.02,
+            "senior": 0.22
+          },
+          "strengths": [
+            "White college",
+            "White non-college",
+            "65+"
+          ],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.35,
+            "effect": -0.17
+          },
+          {
+            "group": "senior",
+            "weight": 0.15,
+            "effect": -0.05
+          },
+          {
+            "group": "white_college",
+            "weight": 0.25,
+            "effect": -0.04
+          }
+        ]
+      },
       "modelRating": "Safe R",
       "demProbability": 0.01,
       "repProbability": 0.99,
+      "winnerParty": "R",
+      "winnerProbability": 0.99,
       "competitive": false,
-      "tippingPower": 0.0037
+      "tippingPower": 0.00404
     },
     {
       "state": "WI",
@@ -804,16 +3003,90 @@
       "demCandidate": "Mandela Barnes / Democratic field",
       "repCandidate": "Tom Tiffany",
       "candidateEdge": 0.4,
+      "dem": "Mandela Barnes / Democratic field",
+      "rep": "Tom Tiffany",
+      "demStatus": "unresolved",
+      "repStatus": "presumptive",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-11",
+      "primarySummary": "Wisconsin is an open seat. Tiffany is treated as the Republican front-runner; the Democratic primary remains unresolved.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Wisconsin Governor",
-      "margin": 2.56,
+      "margin": 2.59,
       "fundamentalsMargin": 3.22,
       "ratingMargin": 0,
       "candidateAndLocal": 0.4,
+      "demographicPull": {
+        "adjustment": 0.03,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "tom tiffany",
+          "label": "Tom Tiffany",
+          "source": "candidate",
+          "profile": "Wisconsin Republican congressional profile",
+          "scores": {
+            "white_college": -0.08,
+            "white_noncollege": 0.18,
+            "black": -0.08,
+            "latino": -0.03,
+            "asian_other": -0.03,
+            "youth": -0.06,
+            "senior": 0.06
+          },
+          "strengths": [
+            "White non-college"
+          ],
+          "weaknesses": [
+            "White college",
+            "18-29"
+          ]
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.2316,
+            "effect": -0.07
+          },
+          {
+            "group": "white_college",
+            "weight": 0.3158,
+            "effect": 0.06
+          },
+          {
+            "group": "black",
+            "weight": 0.0842,
+            "effect": 0.02
+          },
+          {
+            "group": "youth",
+            "weight": 0.1263,
+            "effect": 0.02
+          }
+        ]
+      },
       "modelRating": "Tilt D",
-      "demProbability": 0.58305,
-      "repProbability": 0.41695,
+      "demProbability": 0.58401,
+      "repProbability": 0.41599,
+      "winnerParty": "D",
+      "winnerProbability": 0.58401,
       "competitive": true,
-      "tippingPower": 0.04746
+      "tippingPower": 0.0483
     },
     {
       "state": "WY",
@@ -826,16 +3099,74 @@
       "demCandidate": "Gabriel Green",
       "repCandidate": "Megan Degenfelder / Eric Barlow",
       "candidateEdge": -0.8,
+      "dem": "Gabriel Green",
+      "rep": "Megan Degenfelder / Eric Barlow",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-18",
+      "primarySummary": "Wyoming is an open seat and both primaries remain unresolved.",
+      "independent": "none",
+      "caucusTarget": "none",
       "displayName": "Wyoming Governor",
-      "margin": -17.26,
+      "margin": -17.27,
       "fundamentalsMargin": -20.85,
       "ratingMargin": -18,
       "candidateAndLocal": -0.8,
+      "demographicPull": {
+        "adjustment": -0.01,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.4038,
+            "effect": -0.08
+          },
+          {
+            "group": "white_college",
+            "weight": 0.1635,
+            "effect": 0.03
+          }
+        ]
+      },
       "modelRating": "Safe R",
-      "demProbability": 0.0236,
-      "repProbability": 0.9764,
+      "demProbability": 0.02354,
+      "repProbability": 0.97646,
+      "winnerParty": "R",
+      "winnerProbability": 0.97646,
       "competitive": false,
-      "tippingPower": 0.00952
+      "tippingPower": 0.01006
     }
   ],
   "governorCountHistory": [
