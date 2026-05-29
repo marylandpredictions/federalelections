@@ -616,21 +616,69 @@ function governorElectorateWeights(state) {
   return Object.fromEntries(Object.entries(weights).map(([key, value]) => [key, Number((value / total).toFixed(4))]));
 }
 
+function stateElectorateComposition(race) {
+  const state = race.state;
+  const traits = STATE_COALITION_TRAITS[state] || [];
+  const highCollege = traits.includes("college") || traits.includes("suburban");
+  const highNoncollege = traits.includes("rural") || traits.includes("working_class") || traits.includes("appalachian") || traits.includes("frontier");
+  const highBlack = traits.includes("black_belt") || ["GA", "NC", "SC", "MS", "LA", "AL", "MD", "VA"].includes(state);
+  const highLatino = traits.includes("latino") || ["AZ", "CA", "FL", "NV", "NM", "TX"].includes(state);
+  const highAsianOther = ["CA", "HI", "NJ", "NY", "WA", "VA", "MD", "NV"].includes(state);
+  const fastGrowth = ["AZ", "FL", "GA", "NC", "NV", "TX"].includes(state);
+
+  const raceEducation = {
+    white_college: highCollege ? .27 : highNoncollege ? .14 : .2,
+    white_noncollege: highNoncollege ? .38 : highCollege ? .22 : .31,
+    black: highBlack ? .2 : .08,
+    latino: highLatino ? (fastGrowth ? .21 : .18) : .06,
+    asian_other: highAsianOther ? .12 : .05
+  };
+  const baseline = MIDTERM_LIKELY_VOTER_BASELINES[state];
+  const modeledAge = {
+    youth: traits.includes("urban") || traits.includes("college") || fastGrowth ? .13 : .09,
+    core_age: traits.includes("senior") || highNoncollege ? .7 : .75,
+    senior: traits.includes("senior") || highNoncollege ? .21 : .16
+  };
+  const ageBaseline = MIDTERM_AGE_BASELINES[state];
+  return {
+    source: baseline && ageBaseline
+      ? "Manual midterm likely-voter baseline; not fixed truth"
+      : baseline
+      ? "Manual midterm likely-voter baseline; not fixed truth"
+      : "Modeled from state turnout traits",
+    raceEducation: baseline ? baseline : raceEducation,
+    age: ageBaseline ? ageBaseline : modeledAge,
+    notes: [
+      "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+      "Age shares are a separate turnout overlay and are not added to race/education shares."
+    ]
+  };
+}
+
+function demographicWeightsForRace(race) {
+  const composition = race.electorateComposition || stateElectorateComposition(race);
+  return {
+    ...composition.raceEducation,
+    youth: composition.age.youth,
+    senior: composition.age.senior
+  };
+}
+
 function demographicPullAdjustment(race) {
-  const weights = governorElectorateWeights(race.state);
+  const weights = demographicWeightsForRace(race);
   const demProfile = governorCandidateProfile(race, "D");
   const repProfile = governorCandidateProfile(race, "R");
   const groups = Object.keys(weights).map((group) => {
-    const effect = weights[group] * ((demProfile.scores[group] || 0) - (repProfile.scores[group] || 0)) * 1.35;
+    const effect = weights[group] * ((demProfile.scores[group] || 0) - (repProfile.scores[group] || 0)) * 1.75;
     return { group, weight: weights[group], effect: Number(effect.toFixed(2)) };
   });
   const raw = groups.reduce((sum, group) => sum + group.effect, 0);
-  const saturation = Math.abs(race.pvi) > 15 ? .5 : Math.abs(race.pvi) > 8 ? .75 : 1;
+  const saturation = Math.abs(race.pvi) > 18 ? .55 : Math.abs(race.pvi) > 10 ? .75 : 1;
   return {
-    adjustment: Number(clamp(raw * saturation, -1, 1).toFixed(2)),
+    adjustment: Number(clamp(raw * saturation, -1.1, 1.1).toFixed(2)),
     demProfile,
     repProfile,
-    topGroups: groups.filter((group) => Math.abs(group.effect) >= .02).sort((a, b) => Math.abs(b.effect) - Math.abs(a.effect)).slice(0, 5)
+    topGroups: groups.filter((group) => Math.abs(group.effect) >= .03).sort((a, b) => Math.abs(b.effect) - Math.abs(a.effect)).slice(0, 5)
   };
 }
 
@@ -663,10 +711,11 @@ function buildRace(baseRace, nationalShift, sourceData) {
     independent: candidateInfo.extraCandidates?.some((candidate) => candidate.party === "I") ? "tracked independent candidate" : "none",
     caucusTarget: "none"
   };
+  const electorateComposition = stateElectorateComposition(race);
   const ratingMargin = RATING_TO_MARGIN[race.rating] ?? 0;
   const fundamentals = (race.pvi * .38) + (race.lastMargin * .24) + statusEffect(race);
   const candidateAndLocal = race.candidateEdge || 0;
-  const demographicPull = demographicPullAdjustment(race);
+  const demographicPull = demographicPullAdjustment({ ...race, electorateComposition });
   
   // Candidate history adjustment
   const candidateHistory = CANDIDATE_HISTORY[race.state] || 0;
@@ -707,6 +756,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
     fundamentalsMargin: Number(fundamentals.toFixed(2)),
     ratingMargin: Number(ratingMargin.toFixed(2)),
     candidateAndLocal: Number(candidateAndLocal.toFixed(2)),
+    electorateComposition,
     demographicPull,
     sourceInputs: {
       financeSignal,

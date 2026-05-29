@@ -21,24 +21,24 @@
     "gubernatorialNationalShift": 1.06,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-05-29T03:14:03.001Z",
+      "checkedAt": "2026-05-29T03:19:04.286Z",
+      "openFecCandidateSummary": {
+        "rows": 4061,
+        "governorStates": 0,
+        "nationalFinanceSignal": 0
+      },
       "pollfinityAverages": {
         "ok": true,
         "status": 200,
-        "ms": 652,
+        "ms": 2542,
         "url": "https://pollfinity.com/averages.json"
       },
       "ddhqGenericBallot": {
         "ok": false,
         "status": 429,
-        "ms": 2066,
+        "ms": 2810,
         "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
         "error": "<!DOCTYPE html><html lang=\"en\" data-astro-cid-nbv56vs3> <head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" con"
-      },
-      "openFecCandidateSummary": {
-        "rows": 4061,
-        "governorStates": 0,
-        "nationalFinanceSignal": 0
       }
     },
     "nationalFinance": {
@@ -62,28 +62,28 @@
   },
   "projectedDemRaceWins": 19,
   "projectedRepRaceWins": 17,
-  "averageDemGovernors": 24.62,
-  "averageRepGovernors": 25.38,
+  "averageDemGovernors": 24.61,
+  "averageRepGovernors": 25.39,
   "medianDemGovernors": 25,
   "medianRepGovernors": 25,
   "distribution": {
-    "16": 1,
-    "17": 4,
-    "18": 33,
-    "19": 146,
+    "17": 6,
+    "18": 19,
+    "19": 160,
     "20": 604,
-    "21": 1821,
-    "22": 4192,
-    "23": 7305,
-    "24": 9694,
-    "25": 10090,
-    "26": 7781,
-    "27": 4980,
-    "28": 2335,
-    "29": 770,
-    "30": 210,
-    "31": 31,
-    "32": 3
+    "21": 1842,
+    "22": 4144,
+    "23": 7354,
+    "24": 9641,
+    "25": 10152,
+    "26": 7900,
+    "27": 4835,
+    "28": 2281,
+    "29": 791,
+    "30": 216,
+    "31": 42,
+    "32": 12,
+    "33": 1
   },
   "races": [
     {
@@ -111,6 +111,25 @@
       "fundamentalsMargin": -13.01,
       "ratingMargin": -18,
       "candidateAndLocal": 1.2,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.24,
+          "white_noncollege": 0.43,
+          "black": 0.27,
+          "latino": 0.03,
+          "asian_other": 0.03
+        },
+        "age": {
+          "youth": 0.13,
+          "core_age": 0.57,
+          "senior": 0.3
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
         "adjustment": 0,
         "demProfile": {
@@ -148,23 +167,23 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.3007,
-            "effect": -0.06
+            "weight": 0.43,
+            "effect": -0.11
           },
           {
             "group": "black",
-            "weight": 0.1888,
-            "effect": 0.04
+            "weight": 0.27,
+            "effect": 0.07
           },
           {
             "group": "white_college",
-            "weight": 0.1678,
-            "effect": 0.03
+            "weight": 0.24,
+            "effect": 0.05
           },
           {
             "group": "senior",
-            "weight": 0.2098,
-            "effect": -0.02
+            "weight": 0.3,
+            "effect": -0.03
           }
         ]
       },
@@ -181,7 +200,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.92622,
       "competitive": false,
-      "tippingPower": 0.02444
+      "tippingPower": 0.0235
     },
     {
       "state": "AK",
@@ -204,12 +223,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Alaska Governor",
-      "margin": -2.41,
+      "margin": -2.4,
       "fundamentalsMargin": -2.85,
       "ratingMargin": -5,
       "candidateAndLocal": 0.4,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.31,
+          "white_noncollege": 0.42,
+          "black": 0.03,
+          "latino": 0.04,
+          "asian_other": 0.2
+        },
+        "age": {
+          "youth": 0.16,
+          "core_age": 0.63,
+          "senior": 0.21
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.01,
+        "adjustment": 0,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -245,13 +283,13 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.3066,
-            "effect": -0.06
+            "weight": 0.42,
+            "effect": -0.11
           },
           {
             "group": "white_college",
-            "weight": 0.2263,
-            "effect": 0.04
+            "weight": 0.31,
+            "effect": 0.07
           }
         ]
       },
@@ -263,12 +301,12 @@
         "pollCount": 0
       },
       "modelRating": "Tilt R",
-      "demProbability": 0.41078,
-      "repProbability": 0.58922,
+      "demProbability": 0.41114,
+      "repProbability": 0.58886,
       "winnerParty": "R",
-      "winnerProbability": 0.58922,
+      "winnerProbability": 0.58886,
       "competitive": true,
-      "tippingPower": 0.05566
+      "tippingPower": 0.0555
     },
     {
       "state": "AZ",
@@ -291,12 +329,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Arizona Governor",
-      "margin": 1.27,
+      "margin": 1.37,
       "fundamentalsMargin": 1.78,
       "ratingMargin": 0,
       "candidateAndLocal": -0.4,
+      "electorateComposition": {
+        "source": "Modeled from state turnout traits",
+        "raceEducation": {
+          "white_college": 0.27,
+          "white_noncollege": 0.22,
+          "black": 0.08,
+          "latino": 0.21,
+          "asian_other": 0.05
+        },
+        "age": {
+          "youth": 0.13,
+          "core_age": 0.75,
+          "senior": 0.16
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": 0,
+        "adjustment": 0.1,
         "demProfile": {
           "key": "katie hobbs",
           "label": "Katie Hobbs",
@@ -337,19 +394,19 @@
         },
         "topGroups": [
           {
+            "group": "white_college",
+            "weight": 0.27,
+            "effect": 0.09
+          },
+          {
             "group": "white_noncollege",
-            "weight": 0.2963,
+            "weight": 0.22,
             "effect": -0.06
           },
           {
-            "group": "white_college",
-            "weight": 0.2222,
-            "effect": 0.05
-          },
-          {
-            "group": "senior",
-            "weight": 0.1852,
-            "effect": -0.02
+            "group": "latino",
+            "weight": 0.21,
+            "effect": 0.04
           }
         ]
       },
@@ -361,12 +418,12 @@
         "pollCount": 0
       },
       "modelRating": "Toss-up",
-      "demProbability": 0.54601,
-      "repProbability": 0.45399,
+      "demProbability": 0.54961,
+      "repProbability": 0.45039,
       "winnerParty": "D",
-      "winnerProbability": 0.54601,
+      "winnerProbability": 0.54961,
       "competitive": true,
-      "tippingPower": 0.05514
+      "tippingPower": 0.05592
     },
     {
       "state": "AR",
@@ -389,12 +446,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Arkansas Governor",
-      "margin": -15.28,
+      "margin": -15.3,
       "fundamentalsMargin": -14.34,
       "ratingMargin": -18,
       "candidateAndLocal": -1,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.25,
+          "white_noncollege": 0.55,
+          "black": 0.14,
+          "latino": 0.03,
+          "asian_other": 0.03
+        },
+        "age": {
+          "youth": 0.13,
+          "core_age": 0.56,
+          "senior": 0.31
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.03,
+        "adjustment": -0.05,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -430,23 +506,23 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.3819,
-            "effect": -0.08
+            "weight": 0.55,
+            "effect": -0.14
           },
           {
             "group": "white_college",
-            "weight": 0.1736,
-            "effect": 0.03
+            "weight": 0.25,
+            "effect": 0.05
           },
           {
             "group": "black",
-            "weight": 0.0972,
-            "effect": 0.02
+            "weight": 0.14,
+            "effect": 0.03
           },
           {
             "group": "senior",
-            "weight": 0.2153,
-            "effect": -0.02
+            "weight": 0.31,
+            "effect": -0.03
           }
         ]
       },
@@ -458,12 +534,12 @@
         "pollCount": 0
       },
       "modelRating": "Safe R",
-      "demProbability": 0.0208,
-      "repProbability": 0.9792,
+      "demProbability": 0.02067,
+      "repProbability": 0.97933,
       "winnerParty": "R",
-      "winnerProbability": 0.9792,
+      "winnerProbability": 0.97933,
       "competitive": false,
-      "tippingPower": 0.00992
+      "tippingPower": 0.00958
     },
     {
       "state": "CA",
@@ -486,12 +562,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "California Governor",
-      "margin": 14.57,
+      "margin": 14.62,
       "fundamentalsMargin": 8.18,
       "ratingMargin": 18,
       "candidateAndLocal": 0.3,
+      "electorateComposition": {
+        "source": "Modeled from state turnout traits",
+        "raceEducation": {
+          "white_college": 0.27,
+          "white_noncollege": 0.22,
+          "black": 0.08,
+          "latino": 0.18,
+          "asian_other": 0.12
+        },
+        "age": {
+          "youth": 0.13,
+          "core_age": 0.75,
+          "senior": 0.16
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.01,
+        "adjustment": 0.04,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -526,19 +621,19 @@
         },
         "topGroups": [
           {
+            "group": "white_college",
+            "weight": 0.27,
+            "effect": 0.06
+          },
+          {
             "group": "white_noncollege",
-            "weight": 0.2963,
+            "weight": 0.22,
             "effect": -0.06
           },
           {
-            "group": "white_college",
-            "weight": 0.2222,
-            "effect": 0.04
-          },
-          {
-            "group": "senior",
-            "weight": 0.1852,
-            "effect": -0.02
+            "group": "latino",
+            "weight": 0.18,
+            "effect": 0.03
           }
         ]
       },
@@ -550,12 +645,12 @@
         "pollCount": 0
       },
       "modelRating": "Likely D",
-      "demProbability": 0.95306,
-      "repProbability": 0.04694,
+      "demProbability": 0.95362,
+      "repProbability": 0.04638,
       "winnerParty": "D",
-      "winnerProbability": 0.95306,
+      "winnerProbability": 0.95362,
       "competitive": false,
-      "tippingPower": 0.01604
+      "tippingPower": 0.01602
     },
     {
       "state": "CO",
@@ -578,10 +673,241 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Colorado Governor",
-      "margin": 14.9,
+      "margin": 14.94,
       "fundamentalsMargin": 6.11,
       "ratingMargin": 18,
       "candidateAndLocal": 1.3,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.47,
+          "white_noncollege": 0.31,
+          "black": 0.03,
+          "latino": 0.14,
+          "asian_other": 0.05
+        },
+        "age": {
+          "youth": 0.17,
+          "core_age": 0.6,
+          "senior": 0.23
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
+      "demographicPull": {
+        "adjustment": 0.06,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_college",
+            "weight": 0.47,
+            "effect": 0.1
+          },
+          {
+            "group": "white_noncollege",
+            "weight": 0.31,
+            "effect": -0.08
+          }
+        ]
+      },
+      "sourceInputs": {
+        "financeSignal": 0,
+        "nationalFinance": 0,
+        "candidateHistory": 0,
+        "pollMargin": 0,
+        "pollCount": 0
+      },
+      "modelRating": "Likely D",
+      "demProbability": 0.95706,
+      "repProbability": 0.04294,
+      "winnerParty": "D",
+      "winnerProbability": 0.95706,
+      "competitive": false,
+      "tippingPower": 0.01494
+    },
+    {
+      "state": "CT",
+      "incumbentParty": "D",
+      "incumbent": "Ned Lamont",
+      "status": "Incumbent running",
+      "pvi": 8,
+      "lastMargin": 12,
+      "rating": "Safe D",
+      "demCandidate": "Ned Lamont",
+      "repCandidate": "Ryan Fazio",
+      "candidateEdge": 0.6,
+      "dem": "Ned Lamont",
+      "rep": "Ryan Fazio",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-11",
+      "primarySummary": "Lamont is the Democratic incumbent and treated as presumptive while the Republican side remains unsettled.",
+      "independent": "none",
+      "caucusTarget": "none",
+      "displayName": "Connecticut Governor",
+      "margin": 15.01,
+      "fundamentalsMargin": 8.32,
+      "ratingMargin": 18,
+      "candidateAndLocal": 0.6,
+      "electorateComposition": {
+        "source": "Modeled from state turnout traits",
+        "raceEducation": {
+          "white_college": 0.27,
+          "white_noncollege": 0.22,
+          "black": 0.08,
+          "latino": 0.06,
+          "asian_other": 0.05
+        },
+        "age": {
+          "youth": 0.13,
+          "core_age": 0.75,
+          "senior": 0.16
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
+      "demographicPull": {
+        "adjustment": 0.08,
+        "demProfile": {
+          "key": "incumbentDemocrat",
+          "label": "Incumbent Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.12,
+            "white_noncollege": -0.06,
+            "black": 0.08,
+            "latino": 0.05,
+            "asian_other": 0.05,
+            "youth": 0.02,
+            "senior": 0.04
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_college",
+            "weight": 0.27,
+            "effect": 0.09
+          },
+          {
+            "group": "white_noncollege",
+            "weight": 0.22,
+            "effect": -0.06
+          }
+        ]
+      },
+      "sourceInputs": {
+        "financeSignal": 0,
+        "nationalFinance": 0,
+        "candidateHistory": 0,
+        "pollMargin": 0,
+        "pollCount": 0
+      },
+      "modelRating": "Safe D",
+      "demProbability": 0.97735,
+      "repProbability": 0.02265,
+      "winnerParty": "D",
+      "winnerProbability": 0.97735,
+      "competitive": false,
+      "tippingPower": 0.01068
+    },
+    {
+      "state": "FL",
+      "incumbentParty": "R",
+      "incumbent": "Ron DeSantis",
+      "status": "Term-limited",
+      "pvi": -5,
+      "lastMargin": -19.4,
+      "rating": "Likely R",
+      "demCandidate": "Democrat",
+      "repCandidate": "Republican",
+      "candidateEdge": -0.2,
+      "dem": "Democrat",
+      "rep": "Republican",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-18",
+      "primarySummary": "Florida is an open seat with both major-party primaries unresolved.",
+      "independent": "none",
+      "caucusTarget": "none",
+      "displayName": "Florida Governor",
+      "margin": -7.16,
+      "fundamentalsMargin": -5.76,
+      "ratingMargin": -10.5,
+      "candidateAndLocal": -0.2,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.31,
+          "white_noncollege": 0.36,
+          "black": 0.12,
+          "latino": 0.16,
+          "asian_other": 0.05
+        },
+        "age": {
+          "youth": 0.12,
+          "core_age": 0.55,
+          "senior": 0.33
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
         "adjustment": 0.02,
         "demProfile": {
@@ -618,203 +944,24 @@
         },
         "topGroups": [
           {
-            "group": "white_college",
-            "weight": 0.3357,
-            "effect": 0.05
-          },
-          {
             "group": "white_noncollege",
-            "weight": 0.2214,
-            "effect": -0.04
-          }
-        ]
-      },
-      "sourceInputs": {
-        "financeSignal": 0,
-        "nationalFinance": 0,
-        "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0
-      },
-      "modelRating": "Likely D",
-      "demProbability": 0.95664,
-      "repProbability": 0.04336,
-      "winnerParty": "D",
-      "winnerProbability": 0.95664,
-      "competitive": false,
-      "tippingPower": 0.01636
-    },
-    {
-      "state": "CT",
-      "incumbentParty": "D",
-      "incumbent": "Ned Lamont",
-      "status": "Incumbent running",
-      "pvi": 8,
-      "lastMargin": 12,
-      "rating": "Safe D",
-      "demCandidate": "Ned Lamont",
-      "repCandidate": "Ryan Fazio",
-      "candidateEdge": 0.6,
-      "dem": "Ned Lamont",
-      "rep": "Ryan Fazio",
-      "demStatus": "presumptive",
-      "repStatus": "unresolved",
-      "primary": "unresolved",
-      "primaryDate": "2026-08-11",
-      "primarySummary": "Lamont is the Democratic incumbent and treated as presumptive while the Republican side remains unsettled.",
-      "independent": "none",
-      "caucusTarget": "none",
-      "displayName": "Connecticut Governor",
-      "margin": 14.96,
-      "fundamentalsMargin": 8.32,
-      "ratingMargin": 18,
-      "candidateAndLocal": 0.6,
-      "demographicPull": {
-        "adjustment": 0.03,
-        "demProfile": {
-          "key": "incumbentDemocrat",
-          "label": "Incumbent Democrat",
-          "source": "generic",
-          "scores": {
-            "white_college": 0.12,
-            "white_noncollege": -0.06,
-            "black": 0.08,
-            "latino": 0.05,
-            "asian_other": 0.05,
-            "youth": 0.02,
-            "senior": 0.04
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
-          "scores": {
-            "white_college": -0.06,
-            "white_noncollege": 0.1,
-            "black": -0.07,
-            "latino": -0.04,
-            "asian_other": -0.03,
-            "youth": -0.04,
-            "senior": 0.05
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "topGroups": [
-          {
-            "group": "white_noncollege",
-            "weight": 0.2963,
-            "effect": -0.06
+            "weight": 0.36,
+            "effect": -0.09
           },
           {
             "group": "white_college",
-            "weight": 0.2222,
-            "effect": 0.05
+            "weight": 0.31,
+            "effect": 0.07
           },
           {
             "group": "black",
-            "weight": 0.0741,
-            "effect": 0.02
-          }
-        ]
-      },
-      "sourceInputs": {
-        "financeSignal": 0,
-        "nationalFinance": 0,
-        "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0
-      },
-      "modelRating": "Safe D",
-      "demProbability": 0.97699,
-      "repProbability": 0.02301,
-      "winnerParty": "D",
-      "winnerProbability": 0.97699,
-      "competitive": false,
-      "tippingPower": 0.01072
-    },
-    {
-      "state": "FL",
-      "incumbentParty": "R",
-      "incumbent": "Ron DeSantis",
-      "status": "Term-limited",
-      "pvi": -5,
-      "lastMargin": -19.4,
-      "rating": "Likely R",
-      "demCandidate": "Democrat",
-      "repCandidate": "Republican",
-      "candidateEdge": -0.2,
-      "dem": "Democrat",
-      "rep": "Republican",
-      "demStatus": "unresolved",
-      "repStatus": "unresolved",
-      "primary": "unresolved",
-      "primaryDate": "2026-08-18",
-      "primarySummary": "Florida is an open seat with both major-party primaries unresolved.",
-      "independent": "none",
-      "caucusTarget": "none",
-      "displayName": "Florida Governor",
-      "margin": -7.18,
-      "fundamentalsMargin": -5.76,
-      "ratingMargin": -10.5,
-      "candidateAndLocal": -0.2,
-      "demographicPull": {
-        "adjustment": 0,
-        "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
-          "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
-            "black": 0.07,
-            "latino": 0.04,
-            "asian_other": 0.03,
-            "youth": 0.03,
-            "senior": -0.01
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
-          "scores": {
-            "white_college": -0.06,
-            "white_noncollege": 0.1,
-            "black": -0.07,
-            "latino": -0.04,
-            "asian_other": -0.03,
-            "youth": -0.04,
-            "senior": 0.05
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "topGroups": [
-          {
-            "group": "white_noncollege",
-            "weight": 0.2483,
-            "effect": -0.05
-          },
-          {
-            "group": "white_college",
-            "weight": 0.2138,
+            "weight": 0.12,
             "effect": 0.03
           },
           {
-            "group": "black",
-            "weight": 0.0828,
-            "effect": 0.02
-          },
-          {
             "group": "senior",
-            "weight": 0.2276,
-            "effect": -0.02
+            "weight": 0.33,
+            "effect": -0.03
           }
         ]
       },
@@ -826,12 +973,12 @@
         "pollCount": 0
       },
       "modelRating": "Lean R",
-      "demProbability": 0.22952,
-      "repProbability": 0.77048,
+      "demProbability": 0.23015,
+      "repProbability": 0.76985,
       "winnerParty": "R",
-      "winnerProbability": 0.77048,
+      "winnerProbability": 0.76985,
       "competitive": false,
-      "tippingPower": 0.04704
+      "tippingPower": 0.0497
     },
     {
       "state": "GA",
@@ -854,12 +1001,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Georgia Governor",
-      "margin": 1.83,
+      "margin": 1.89,
       "fundamentalsMargin": -1.38,
       "ratingMargin": 0,
       "candidateAndLocal": 0.5,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.31,
+          "white_noncollege": 0.31,
+          "black": 0.3,
+          "latino": 0.04,
+          "asian_other": 0.04
+        },
+        "age": {
+          "youth": 0.15,
+          "core_age": 0.59,
+          "senior": 0.26
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": 0.03,
+        "adjustment": 0.09,
         "demProfile": {
           "key": "keisha lance bottoms",
           "label": "Keisha Lance Bottoms",
@@ -900,23 +1066,23 @@
         "topGroups": [
           {
             "group": "black",
-            "weight": 0.2128,
-            "effect": 0.06
+            "weight": 0.3,
+            "effect": 0.12
           },
           {
             "group": "white_noncollege",
-            "weight": 0.2199,
-            "effect": -0.05
+            "weight": 0.31,
+            "effect": -0.09
           },
           {
             "group": "white_college",
-            "weight": 0.2199,
-            "effect": 0.03
+            "weight": 0.31,
+            "effect": 0.06
           },
           {
             "group": "senior",
-            "weight": 0.1844,
-            "effect": -0.02
+            "weight": 0.26,
+            "effect": -0.03
           }
         ]
       },
@@ -928,12 +1094,12 @@
         "pollCount": 0
       },
       "modelRating": "Tilt D",
-      "demProbability": 0.55948,
-      "repProbability": 0.44052,
+      "demProbability": 0.56142,
+      "repProbability": 0.43858,
       "winnerParty": "D",
-      "winnerProbability": 0.55948,
+      "winnerProbability": 0.56142,
       "competitive": true,
-      "tippingPower": 0.0485
+      "tippingPower": 0.0489
     },
     {
       "state": "HI",
@@ -960,6 +1126,25 @@
       "fundamentalsMargin": 13.68,
       "ratingMargin": 18,
       "candidateAndLocal": 1,
+      "electorateComposition": {
+        "source": "Modeled from state turnout traits",
+        "raceEducation": {
+          "white_college": 0.2,
+          "white_noncollege": 0.31,
+          "black": 0.08,
+          "latino": 0.06,
+          "asian_other": 0.12
+        },
+        "age": {
+          "youth": 0.09,
+          "core_age": 0.75,
+          "senior": 0.16
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
         "adjustment": 0.02,
         "demProfile": {
@@ -997,18 +1182,13 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.2963,
-            "effect": -0.06
+            "weight": 0.31,
+            "effect": -0.09
           },
           {
             "group": "white_college",
-            "weight": 0.2222,
-            "effect": 0.05
-          },
-          {
-            "group": "black",
-            "weight": 0.0741,
-            "effect": 0.02
+            "weight": 0.2,
+            "effect": 0.06
           }
         ]
       },
@@ -1025,7 +1205,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.98899,
       "competitive": false,
-      "tippingPower": 0.0059
+      "tippingPower": 0.00548
     },
     {
       "state": "ID",
@@ -1048,12 +1228,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Idaho Governor",
-      "margin": -15.22,
+      "margin": -15.25,
       "fundamentalsMargin": -14.18,
       "ratingMargin": -18,
       "candidateAndLocal": -1,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.32,
+          "white_noncollege": 0.54,
+          "black": 0.01,
+          "latino": 0.09,
+          "asian_other": 0.04
+        },
+        "age": {
+          "youth": 0.15,
+          "core_age": 0.57,
+          "senior": 0.28
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.02,
+        "adjustment": -0.05,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -1089,18 +1288,18 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.3776,
-            "effect": -0.08
+            "weight": 0.54,
+            "effect": -0.14
           },
           {
             "group": "white_college",
-            "weight": 0.2238,
-            "effect": 0.04
+            "weight": 0.32,
+            "effect": 0.07
           },
           {
             "group": "senior",
-            "weight": 0.1958,
-            "effect": -0.02
+            "weight": 0.28,
+            "effect": -0.03
           }
         ]
       },
@@ -1112,12 +1311,12 @@
         "pollCount": 0
       },
       "modelRating": "Safe R",
-      "demProbability": 0.02123,
-      "repProbability": 0.97877,
+      "demProbability": 0.02103,
+      "repProbability": 0.97897,
       "winnerParty": "R",
-      "winnerProbability": 0.97877,
+      "winnerProbability": 0.97897,
       "competitive": false,
-      "tippingPower": 0.01022
+      "tippingPower": 0.01004
     },
     {
       "state": "IL",
@@ -1144,6 +1343,25 @@
       "fundamentalsMargin": 7.68,
       "ratingMargin": 18,
       "candidateAndLocal": 1.1,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.4,
+          "white_noncollege": 0.36,
+          "black": 0.13,
+          "latino": 0.07,
+          "asian_other": 0.04
+        },
+        "age": {
+          "youth": 0.15,
+          "core_age": 0.58,
+          "senior": 0.27
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
         "adjustment": 0.02,
         "demProfile": {
@@ -1180,24 +1398,24 @@
         },
         "topGroups": [
           {
-            "group": "white_college",
-            "weight": 0.2817,
-            "effect": 0.05
+            "group": "white_noncollege",
+            "weight": 0.36,
+            "effect": -0.09
           },
           {
-            "group": "white_noncollege",
-            "weight": 0.2535,
-            "effect": -0.05
+            "group": "white_college",
+            "weight": 0.4,
+            "effect": 0.08
           },
           {
             "group": "black",
-            "weight": 0.0915,
-            "effect": 0.02
+            "weight": 0.13,
+            "effect": 0.03
           },
           {
             "group": "senior",
-            "weight": 0.1901,
-            "effect": -0.02
+            "weight": 0.27,
+            "effect": -0.03
           }
         ]
       },
@@ -1214,7 +1432,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.9789,
       "competitive": false,
-      "tippingPower": 0.01012
+      "tippingPower": 0.01032
     },
     {
       "state": "IA",
@@ -1237,10 +1455,140 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Iowa Governor",
-      "margin": 0.31,
+      "margin": 0.29,
       "fundamentalsMargin": -9.14,
       "ratingMargin": 0,
       "candidateAndLocal": 2.4,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.32,
+          "white_noncollege": 0.58,
+          "black": 0.03,
+          "latino": 0.04,
+          "asian_other": 0.03
+        },
+        "age": {
+          "youth": 0.14,
+          "core_age": 0.55,
+          "senior": 0.31
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
+      "demographicPull": {
+        "adjustment": -0.07,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.58,
+            "effect": -0.15
+          },
+          {
+            "group": "white_college",
+            "weight": 0.32,
+            "effect": 0.07
+          },
+          {
+            "group": "senior",
+            "weight": 0.31,
+            "effect": -0.03
+          }
+        ]
+      },
+      "sourceInputs": {
+        "financeSignal": 0,
+        "nationalFinance": 0,
+        "candidateHistory": 0,
+        "pollMargin": 0,
+        "pollCount": 0
+      },
+      "modelRating": "Toss-up",
+      "demProbability": 0.50935,
+      "repProbability": 0.49065,
+      "winnerParty": "D",
+      "winnerProbability": 0.50935,
+      "competitive": true,
+      "tippingPower": 0.04776
+    },
+    {
+      "state": "KS",
+      "incumbentParty": "D",
+      "incumbent": "Laura Kelly",
+      "status": "Term-limited",
+      "pvi": -8,
+      "lastMargin": 2.2,
+      "rating": "Lean R",
+      "demCandidate": "Democrat",
+      "repCandidate": "Republican",
+      "candidateEdge": 0.5,
+      "dem": "Democrat",
+      "rep": "Republican",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-04",
+      "primarySummary": "Both Kansas primaries remain unresolved in the manual ledger.",
+      "independent": "none",
+      "caucusTarget": "none",
+      "displayName": "Kansas Governor",
+      "margin": -2.51,
+      "fundamentalsMargin": -3.31,
+      "ratingMargin": -5,
+      "candidateAndLocal": 0.5,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.34,
+          "white_noncollege": 0.49,
+          "black": 0.06,
+          "latino": 0.07,
+          "asian_other": 0.04
+        },
+        "age": {
+          "youth": 0.15,
+          "core_age": 0.57,
+          "senior": 0.28
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
         "adjustment": -0.05,
         "demProfile": {
@@ -1278,18 +1626,18 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.4,
-            "effect": -0.08
+            "weight": 0.49,
+            "effect": -0.13
           },
           {
             "group": "white_college",
-            "weight": 0.2207,
-            "effect": 0.04
+            "weight": 0.34,
+            "effect": 0.07
           },
           {
             "group": "senior",
-            "weight": 0.2138,
-            "effect": -0.02
+            "weight": 0.28,
+            "effect": -0.03
           }
         ]
       },
@@ -1300,39 +1648,497 @@
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Toss-up",
-      "demProbability": 0.51001,
-      "repProbability": 0.48999,
-      "winnerParty": "D",
-      "winnerProbability": 0.51001,
+      "modelRating": "Tilt R",
+      "demProbability": 0.40723,
+      "repProbability": 0.59277,
+      "winnerParty": "R",
+      "winnerProbability": 0.59277,
       "competitive": true,
-      "tippingPower": 0.04886
+      "tippingPower": 0.0522
     },
     {
-      "state": "KS",
+      "state": "ME",
       "incumbentParty": "D",
-      "incumbent": "Laura Kelly",
+      "incumbent": "Janet Mills",
       "status": "Term-limited",
-      "pvi": -8,
-      "lastMargin": 2.2,
-      "rating": "Lean R",
+      "pvi": 4,
+      "lastMargin": 12.8,
+      "rating": "Likely D",
       "demCandidate": "Democrat",
       "repCandidate": "Republican",
-      "candidateEdge": 0.5,
+      "candidateEdge": 0.4,
+      "dem": "Democrat",
+      "rep": "Republican",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-06-09",
+      "primarySummary": "Maine's open-seat field is unsettled.",
+      "independent": "none",
+      "caucusTarget": "none",
+      "displayName": "Maine Governor",
+      "margin": 8.77,
+      "fundamentalsMargin": 3.79,
+      "ratingMargin": 10.5,
+      "candidateAndLocal": 0.4,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.42,
+          "white_noncollege": 0.51,
+          "black": 0.01,
+          "latino": 0.02,
+          "asian_other": 0.04
+        },
+        "age": {
+          "youth": 0.11,
+          "core_age": 0.52,
+          "senior": 0.37
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
+      "demographicPull": {
+        "adjustment": -0.07,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.51,
+            "effect": -0.13
+          },
+          {
+            "group": "white_college",
+            "weight": 0.42,
+            "effect": 0.09
+          },
+          {
+            "group": "senior",
+            "weight": 0.37,
+            "effect": -0.04
+          }
+        ]
+      },
+      "sourceInputs": {
+        "financeSignal": 0,
+        "nationalFinance": 0,
+        "candidateHistory": 0,
+        "pollMargin": 0,
+        "pollCount": 0
+      },
+      "modelRating": "Likely D",
+      "demProbability": 0.81715,
+      "repProbability": 0.18285,
+      "winnerParty": "D",
+      "winnerProbability": 0.81715,
+      "competitive": false,
+      "tippingPower": 0.03982
+    },
+    {
+      "state": "MD",
+      "incumbentParty": "D",
+      "incumbent": "Wes Moore",
+      "status": "Incumbent running",
+      "pvi": 15,
+      "lastMargin": 29.9,
+      "rating": "Safe D",
+      "demCandidate": "Wes Moore",
+      "repCandidate": "Republican",
+      "candidateEdge": 1.5,
+      "dem": "Wes Moore",
+      "rep": "Republican",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-06-23",
+      "primarySummary": "Moore is the Democratic incumbent and treated as presumptive.",
+      "independent": "none",
+      "caucusTarget": "none",
+      "displayName": "Maryland Governor",
+      "margin": 18.29,
+      "fundamentalsMargin": 15.28,
+      "ratingMargin": 18,
+      "candidateAndLocal": 1.5,
+      "electorateComposition": {
+        "source": "Modeled from state turnout traits",
+        "raceEducation": {
+          "white_college": 0.27,
+          "white_noncollege": 0.22,
+          "black": 0.2,
+          "latino": 0.06,
+          "asian_other": 0.12
+        },
+        "age": {
+          "youth": 0.13,
+          "core_age": 0.75,
+          "senior": 0.16
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
+      "demographicPull": {
+        "adjustment": 0.09,
+        "demProfile": {
+          "key": "incumbentDemocrat",
+          "label": "Incumbent Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.12,
+            "white_noncollege": -0.06,
+            "black": 0.08,
+            "latino": 0.05,
+            "asian_other": 0.05,
+            "youth": 0.02,
+            "senior": 0.04
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_college",
+            "weight": 0.27,
+            "effect": 0.09
+          },
+          {
+            "group": "white_noncollege",
+            "weight": 0.22,
+            "effect": -0.06
+          },
+          {
+            "group": "black",
+            "weight": 0.2,
+            "effect": 0.05
+          }
+        ]
+      },
+      "sourceInputs": {
+        "financeSignal": 0,
+        "nationalFinance": 0,
+        "candidateHistory": 0,
+        "pollMargin": 0,
+        "pollCount": 0
+      },
+      "modelRating": "Safe D",
+      "demProbability": 0.99,
+      "repProbability": 0.01,
+      "winnerParty": "D",
+      "winnerProbability": 0.99,
+      "competitive": false,
+      "tippingPower": 0.00468
+    },
+    {
+      "state": "MA",
+      "incumbentParty": "D",
+      "incumbent": "Maura Healey",
+      "status": "Incumbent running",
+      "pvi": 14,
+      "lastMargin": 29.2,
+      "rating": "Safe D",
+      "demCandidate": "Maura Healey",
+      "repCandidate": "Republican",
+      "candidateEdge": 1.2,
+      "dem": "Maura Healey",
+      "rep": "Republican",
+      "demStatus": "presumptive",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-09-01",
+      "primarySummary": "Healey is the Democratic incumbent and treated as presumptive.",
+      "independent": "none",
+      "caucusTarget": "none",
+      "displayName": "Massachusetts Governor",
+      "margin": 17.82,
+      "fundamentalsMargin": 14.73,
+      "ratingMargin": 18,
+      "candidateAndLocal": 1.2,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.55,
+          "white_noncollege": 0.28,
+          "black": 0.07,
+          "latino": 0.06,
+          "asian_other": 0.04
+        },
+        "age": {
+          "youth": 0.15,
+          "core_age": 0.57,
+          "senior": 0.28
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
+      "demographicPull": {
+        "adjustment": 0.11,
+        "demProfile": {
+          "key": "incumbentDemocrat",
+          "label": "Incumbent Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.12,
+            "white_noncollege": -0.06,
+            "black": 0.08,
+            "latino": 0.05,
+            "asian_other": 0.05,
+            "youth": 0.02,
+            "senior": 0.04
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_college",
+            "weight": 0.55,
+            "effect": 0.17
+          },
+          {
+            "group": "white_noncollege",
+            "weight": 0.28,
+            "effect": -0.08
+          }
+        ]
+      },
+      "sourceInputs": {
+        "financeSignal": 0,
+        "nationalFinance": 0,
+        "candidateHistory": 0,
+        "pollMargin": 0,
+        "pollCount": 0
+      },
+      "modelRating": "Safe D",
+      "demProbability": 0.99,
+      "repProbability": 0.01,
+      "winnerParty": "D",
+      "winnerProbability": 0.99,
+      "competitive": false,
+      "tippingPower": 0.00494
+    },
+    {
+      "state": "MI",
+      "incumbentParty": "D",
+      "incumbent": "Gretchen Whitmer",
+      "status": "Term-limited",
+      "pvi": 0,
+      "lastMargin": 10.6,
+      "rating": "Lean D",
+      "demCandidate": "Democrat",
+      "repCandidate": "Republican",
+      "candidateEdge": 0.8,
       "dem": "Democrat",
       "rep": "Republican",
       "demStatus": "unresolved",
       "repStatus": "unresolved",
       "primary": "unresolved",
       "primaryDate": "2026-08-04",
-      "primarySummary": "Both Kansas primaries remain unresolved in the manual ledger.",
+      "primarySummary": "Michigan is an open seat with both primaries unresolved.",
       "independent": "none",
       "caucusTarget": "none",
-      "displayName": "Kansas Governor",
-      "margin": -2.48,
-      "fundamentalsMargin": -3.31,
-      "ratingMargin": -5,
-      "candidateAndLocal": 0.5,
+      "displayName": "Michigan Governor",
+      "margin": 5.56,
+      "fundamentalsMargin": 1.74,
+      "ratingMargin": 5,
+      "candidateAndLocal": 0.8,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.35,
+          "white_noncollege": 0.49,
+          "black": 0.1,
+          "latino": 0.03,
+          "asian_other": 0.03
+        },
+        "age": {
+          "youth": 0.14,
+          "core_age": 0.56,
+          "senior": 0.3
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
+      "demographicPull": {
+        "adjustment": -0.05,
+        "demProfile": {
+          "key": "standardDemocrat",
+          "label": "Standard Democrat",
+          "source": "generic",
+          "scores": {
+            "white_college": 0.06,
+            "white_noncollege": -0.05,
+            "black": 0.07,
+            "latino": 0.04,
+            "asian_other": 0.03,
+            "youth": 0.03,
+            "senior": -0.01
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "repProfile": {
+          "key": "standardRepublican",
+          "label": "Standard Republican",
+          "source": "generic",
+          "scores": {
+            "white_college": -0.06,
+            "white_noncollege": 0.1,
+            "black": -0.07,
+            "latino": -0.04,
+            "asian_other": -0.03,
+            "youth": -0.04,
+            "senior": 0.05
+          },
+          "strengths": [],
+          "weaknesses": []
+        },
+        "topGroups": [
+          {
+            "group": "white_noncollege",
+            "weight": 0.49,
+            "effect": -0.13
+          },
+          {
+            "group": "white_college",
+            "weight": 0.35,
+            "effect": 0.07
+          },
+          {
+            "group": "senior",
+            "weight": 0.3,
+            "effect": -0.03
+          }
+        ]
+      },
+      "sourceInputs": {
+        "financeSignal": 0,
+        "nationalFinance": 0,
+        "candidateHistory": 0.25,
+        "pollMargin": 0,
+        "pollCount": 0
+      },
+      "modelRating": "Lean D",
+      "demProbability": 0.69827,
+      "repProbability": 0.30173,
+      "winnerParty": "D",
+      "winnerProbability": 0.69827,
+      "competitive": true,
+      "tippingPower": 0.04812
+    },
+    {
+      "state": "MN",
+      "incumbentParty": "D",
+      "incumbent": "Tim Walz",
+      "status": "Incumbent retiring",
+      "pvi": 3,
+      "lastMargin": 7.7,
+      "rating": "Safe D",
+      "demCandidate": "Democrat",
+      "repCandidate": "Republican",
+      "candidateEdge": 0.4,
+      "dem": "Democrat",
+      "rep": "Republican",
+      "demStatus": "unresolved",
+      "repStatus": "unresolved",
+      "primary": "unresolved",
+      "primaryDate": "2026-08-11",
+      "primarySummary": "Minnesota is an open seat and both primaries remain unresolved.",
+      "independent": "none",
+      "caucusTarget": "none",
+      "displayName": "Minnesota Governor",
+      "margin": 13.72,
+      "fundamentalsMargin": 5.39,
+      "ratingMargin": 18,
+      "candidateAndLocal": 0.4,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.42,
+          "white_noncollege": 0.44,
+          "black": 0.06,
+          "latino": 0.04,
+          "asian_other": 0.04
+        },
+        "age": {
+          "youth": 0.15,
+          "core_age": 0.57,
+          "senior": 0.28
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
         "adjustment": -0.02,
         "demProfile": {
@@ -1370,473 +2176,18 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.3427,
-            "effect": -0.07
+            "weight": 0.44,
+            "effect": -0.12
           },
           {
             "group": "white_college",
-            "weight": 0.2378,
-            "effect": 0.04
-          },
-          {
-            "group": "senior",
-            "weight": 0.1958,
-            "effect": -0.02
-          }
-        ]
-      },
-      "sourceInputs": {
-        "financeSignal": 0,
-        "nationalFinance": 0,
-        "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0
-      },
-      "modelRating": "Tilt R",
-      "demProbability": 0.40832,
-      "repProbability": 0.59168,
-      "winnerParty": "R",
-      "winnerProbability": 0.59168,
-      "competitive": true,
-      "tippingPower": 0.0527
-    },
-    {
-      "state": "ME",
-      "incumbentParty": "D",
-      "incumbent": "Janet Mills",
-      "status": "Term-limited",
-      "pvi": 4,
-      "lastMargin": 12.8,
-      "rating": "Likely D",
-      "demCandidate": "Democrat",
-      "repCandidate": "Republican",
-      "candidateEdge": 0.4,
-      "dem": "Democrat",
-      "rep": "Republican",
-      "demStatus": "unresolved",
-      "repStatus": "unresolved",
-      "primary": "unresolved",
-      "primaryDate": "2026-06-09",
-      "primarySummary": "Maine's open-seat field is unsettled.",
-      "independent": "none",
-      "caucusTarget": "none",
-      "displayName": "Maine Governor",
-      "margin": 8.81,
-      "fundamentalsMargin": 3.79,
-      "ratingMargin": 10.5,
-      "candidateAndLocal": 0.4,
-      "demographicPull": {
-        "adjustment": -0.03,
-        "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
-          "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
-            "black": 0.07,
-            "latino": 0.04,
-            "asian_other": 0.03,
-            "youth": 0.03,
-            "senior": -0.01
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
-          "scores": {
-            "white_college": -0.06,
-            "white_noncollege": 0.1,
-            "black": -0.07,
-            "latino": -0.04,
-            "asian_other": -0.03,
-            "youth": -0.04,
-            "senior": 0.05
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "topGroups": [
-          {
-            "group": "white_noncollege",
-            "weight": 0.3446,
-            "effect": -0.07
-          },
-          {
-            "group": "white_college",
-            "weight": 0.2838,
-            "effect": 0.05
-          },
-          {
-            "group": "senior",
-            "weight": 0.25,
-            "effect": -0.02
-          }
-        ]
-      },
-      "sourceInputs": {
-        "financeSignal": 0,
-        "nationalFinance": 0,
-        "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0
-      },
-      "modelRating": "Likely D",
-      "demProbability": 0.81824,
-      "repProbability": 0.18176,
-      "winnerParty": "D",
-      "winnerProbability": 0.81824,
-      "competitive": false,
-      "tippingPower": 0.0401
-    },
-    {
-      "state": "MD",
-      "incumbentParty": "D",
-      "incumbent": "Wes Moore",
-      "status": "Incumbent running",
-      "pvi": 15,
-      "lastMargin": 29.9,
-      "rating": "Safe D",
-      "demCandidate": "Wes Moore",
-      "repCandidate": "Republican",
-      "candidateEdge": 1.5,
-      "dem": "Wes Moore",
-      "rep": "Republican",
-      "demStatus": "presumptive",
-      "repStatus": "unresolved",
-      "primary": "unresolved",
-      "primaryDate": "2026-06-23",
-      "primarySummary": "Moore is the Democratic incumbent and treated as presumptive.",
-      "independent": "none",
-      "caucusTarget": "none",
-      "displayName": "Maryland Governor",
-      "margin": 18.22,
-      "fundamentalsMargin": 15.28,
-      "ratingMargin": 18,
-      "candidateAndLocal": 1.5,
-      "demographicPull": {
-        "adjustment": 0.02,
-        "demProfile": {
-          "key": "incumbentDemocrat",
-          "label": "Incumbent Democrat",
-          "source": "generic",
-          "scores": {
-            "white_college": 0.12,
-            "white_noncollege": -0.06,
-            "black": 0.08,
-            "latino": 0.05,
-            "asian_other": 0.05,
-            "youth": 0.02,
-            "senior": 0.04
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
-          "scores": {
-            "white_college": -0.06,
-            "white_noncollege": 0.1,
-            "black": -0.07,
-            "latino": -0.04,
-            "asian_other": -0.03,
-            "youth": -0.04,
-            "senior": 0.05
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "topGroups": [
-          {
-            "group": "white_noncollege",
-            "weight": 0.2963,
-            "effect": -0.06
-          },
-          {
-            "group": "white_college",
-            "weight": 0.2222,
-            "effect": 0.05
-          },
-          {
-            "group": "black",
-            "weight": 0.0741,
-            "effect": 0.02
-          }
-        ]
-      },
-      "sourceInputs": {
-        "financeSignal": 0,
-        "nationalFinance": 0,
-        "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0
-      },
-      "modelRating": "Safe D",
-      "demProbability": 0.99,
-      "repProbability": 0.01,
-      "winnerParty": "D",
-      "winnerProbability": 0.99,
-      "competitive": false,
-      "tippingPower": 0.00432
-    },
-    {
-      "state": "MA",
-      "incumbentParty": "D",
-      "incumbent": "Maura Healey",
-      "status": "Incumbent running",
-      "pvi": 14,
-      "lastMargin": 29.2,
-      "rating": "Safe D",
-      "demCandidate": "Maura Healey",
-      "repCandidate": "Republican",
-      "candidateEdge": 1.2,
-      "dem": "Maura Healey",
-      "rep": "Republican",
-      "demStatus": "presumptive",
-      "repStatus": "unresolved",
-      "primary": "unresolved",
-      "primaryDate": "2026-09-01",
-      "primarySummary": "Healey is the Democratic incumbent and treated as presumptive.",
-      "independent": "none",
-      "caucusTarget": "none",
-      "displayName": "Massachusetts Governor",
-      "margin": 17.77,
-      "fundamentalsMargin": 14.73,
-      "ratingMargin": 18,
-      "candidateAndLocal": 1.2,
-      "demographicPull": {
-        "adjustment": 0.06,
-        "demProfile": {
-          "key": "incumbentDemocrat",
-          "label": "Incumbent Democrat",
-          "source": "generic",
-          "scores": {
-            "white_college": 0.12,
-            "white_noncollege": -0.06,
-            "black": 0.08,
-            "latino": 0.05,
-            "asian_other": 0.05,
-            "youth": 0.02,
-            "senior": 0.04
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
-          "scores": {
-            "white_college": -0.06,
-            "white_noncollege": 0.1,
-            "black": -0.07,
-            "latino": -0.04,
-            "asian_other": -0.03,
-            "youth": -0.04,
-            "senior": 0.05
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "topGroups": [
-          {
-            "group": "white_college",
-            "weight": 0.3846,
+            "weight": 0.42,
             "effect": 0.09
           },
           {
-            "group": "white_noncollege",
-            "weight": 0.1958,
-            "effect": -0.04
-          }
-        ]
-      },
-      "sourceInputs": {
-        "financeSignal": 0,
-        "nationalFinance": 0,
-        "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0
-      },
-      "modelRating": "Safe D",
-      "demProbability": 0.99,
-      "repProbability": 0.01,
-      "winnerParty": "D",
-      "winnerProbability": 0.99,
-      "competitive": false,
-      "tippingPower": 0.00478
-    },
-    {
-      "state": "MI",
-      "incumbentParty": "D",
-      "incumbent": "Gretchen Whitmer",
-      "status": "Term-limited",
-      "pvi": 0,
-      "lastMargin": 10.6,
-      "rating": "Lean D",
-      "demCandidate": "Democrat",
-      "repCandidate": "Republican",
-      "candidateEdge": 0.8,
-      "dem": "Democrat",
-      "rep": "Republican",
-      "demStatus": "unresolved",
-      "repStatus": "unresolved",
-      "primary": "unresolved",
-      "primaryDate": "2026-08-04",
-      "primarySummary": "Michigan is an open seat with both primaries unresolved.",
-      "independent": "none",
-      "caucusTarget": "none",
-      "displayName": "Michigan Governor",
-      "margin": 5.58,
-      "fundamentalsMargin": 1.74,
-      "ratingMargin": 5,
-      "candidateAndLocal": 0.8,
-      "demographicPull": {
-        "adjustment": -0.03,
-        "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
-          "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
-            "black": 0.07,
-            "latino": 0.04,
-            "asian_other": 0.03,
-            "youth": 0.03,
-            "senior": -0.01
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
-          "scores": {
-            "white_college": -0.06,
-            "white_noncollege": 0.1,
-            "black": -0.07,
-            "latino": -0.04,
-            "asian_other": -0.03,
-            "youth": -0.04,
-            "senior": 0.05
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "topGroups": [
-          {
-            "group": "white_noncollege",
-            "weight": 0.3403,
-            "effect": -0.07
-          },
-          {
-            "group": "white_college",
-            "weight": 0.2431,
-            "effect": 0.04
-          },
-          {
             "group": "senior",
-            "weight": 0.2083,
-            "effect": -0.02
-          }
-        ]
-      },
-      "sourceInputs": {
-        "financeSignal": 0,
-        "nationalFinance": 0,
-        "candidateHistory": 0.25,
-        "pollMargin": 0,
-        "pollCount": 0
-      },
-      "modelRating": "Lean D",
-      "demProbability": 0.69892,
-      "repProbability": 0.30108,
-      "winnerParty": "D",
-      "winnerProbability": 0.69892,
-      "competitive": true,
-      "tippingPower": 0.0496
-    },
-    {
-      "state": "MN",
-      "incumbentParty": "D",
-      "incumbent": "Tim Walz",
-      "status": "Incumbent retiring",
-      "pvi": 3,
-      "lastMargin": 7.7,
-      "rating": "Safe D",
-      "demCandidate": "Democrat",
-      "repCandidate": "Republican",
-      "candidateEdge": 0.4,
-      "dem": "Democrat",
-      "rep": "Republican",
-      "demStatus": "unresolved",
-      "repStatus": "unresolved",
-      "primary": "unresolved",
-      "primaryDate": "2026-08-11",
-      "primarySummary": "Minnesota is an open seat and both primaries remain unresolved.",
-      "independent": "none",
-      "caucusTarget": "none",
-      "displayName": "Minnesota Governor",
-      "margin": 13.73,
-      "fundamentalsMargin": 5.39,
-      "ratingMargin": 18,
-      "candidateAndLocal": 0.4,
-      "demographicPull": {
-        "adjustment": -0.01,
-        "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
-          "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
-            "black": 0.07,
-            "latino": 0.04,
-            "asian_other": 0.03,
-            "youth": 0.03,
-            "senior": -0.01
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
-          "scores": {
-            "white_college": -0.06,
-            "white_noncollege": 0.1,
-            "black": -0.07,
-            "latino": -0.04,
-            "asian_other": -0.03,
-            "youth": -0.04,
-            "senior": 0.05
-          },
-          "strengths": [],
-          "weaknesses": []
-        },
-        "topGroups": [
-          {
-            "group": "white_noncollege",
-            "weight": 0.3077,
-            "effect": -0.06
-          },
-          {
-            "group": "white_college",
-            "weight": 0.2937,
-            "effect": 0.05
-          },
-          {
-            "group": "senior",
-            "weight": 0.1958,
-            "effect": -0.02
+            "weight": 0.28,
+            "effect": -0.03
           }
         ]
       },
@@ -1848,12 +2199,12 @@
         "pollCount": 0
       },
       "modelRating": "Likely D",
-      "demProbability": 0.94269,
-      "repProbability": 0.05731,
+      "demProbability": 0.94256,
+      "repProbability": 0.05744,
       "winnerParty": "D",
-      "winnerProbability": 0.94269,
+      "winnerProbability": 0.94256,
       "competitive": false,
-      "tippingPower": 0.01822
+      "tippingPower": 0.0199
     },
     {
       "state": "NE",
@@ -1876,12 +2227,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Nebraska Governor",
-      "margin": -13.03,
+      "margin": -13.11,
       "fundamentalsMargin": -11.91,
       "ratingMargin": -18,
       "candidateAndLocal": -1,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.33,
+          "white_noncollege": 0.54,
+          "black": 0.04,
+          "latino": 0.06,
+          "asian_other": 0.03
+        },
+        "age": {
+          "youth": 0.15,
+          "core_age": 0.56,
+          "senior": 0.29
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.05,
+        "adjustment": -0.13,
         "demProfile": {
           "key": "lynne walz",
           "label": "Lynne Walz",
@@ -1922,18 +2292,18 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.375,
-            "effect": -0.09
+            "weight": 0.54,
+            "effect": -0.17
           },
           {
             "group": "white_college",
-            "weight": 0.2292,
-            "effect": 0.02
+            "weight": 0.33,
+            "effect": 0.05
           },
           {
             "group": "senior",
-            "weight": 0.2014,
-            "effect": -0.02
+            "weight": 0.29,
+            "effect": -0.05
           }
         ]
       },
@@ -1945,12 +2315,12 @@
         "pollCount": 0
       },
       "modelRating": "Likely R",
-      "demProbability": 0.04122,
-      "repProbability": 0.95878,
+      "demProbability": 0.04029,
+      "repProbability": 0.95971,
       "winnerParty": "R",
-      "winnerProbability": 0.95878,
+      "winnerProbability": 0.95971,
       "competitive": false,
-      "tippingPower": 0.01676
+      "tippingPower": 0.0175
     },
     {
       "state": "NV",
@@ -1973,12 +2343,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Nevada Governor",
-      "margin": -1.63,
+      "margin": -1.65,
       "fundamentalsMargin": -3.14,
       "ratingMargin": 0,
       "candidateAndLocal": -1.6,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.33,
+          "white_noncollege": 0.38,
+          "black": 0.08,
+          "latino": 0.16,
+          "asian_other": 0.05
+        },
+        "age": {
+          "youth": 0.16,
+          "core_age": 0.6,
+          "senior": 0.24
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.03,
+        "adjustment": -0.05,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -2021,18 +2410,18 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.2714,
-            "effect": -0.06
+            "weight": 0.38,
+            "effect": -0.11
           },
           {
             "group": "white_college",
-            "weight": 0.2357,
-            "effect": 0.03
+            "weight": 0.33,
+            "effect": 0.05
           },
           {
             "group": "senior",
-            "weight": 0.1714,
-            "effect": -0.02
+            "weight": 0.24,
+            "effect": -0.04
           }
         ]
       },
@@ -2044,12 +2433,12 @@
         "pollCount": 0
       },
       "modelRating": "Tilt R",
-      "demProbability": 0.441,
-      "repProbability": 0.559,
+      "demProbability": 0.44029,
+      "repProbability": 0.55971,
       "winnerParty": "R",
-      "winnerProbability": 0.559,
+      "winnerProbability": 0.55971,
       "competitive": true,
-      "tippingPower": 0.05434
+      "tippingPower": 0.0547
     },
     {
       "state": "NH",
@@ -2072,12 +2461,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "New Hampshire Governor",
-      "margin": -8,
+      "margin": -8.05,
       "fundamentalsMargin": -3.85,
       "ratingMargin": -10.5,
       "candidateAndLocal": -1.6,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.47,
+          "white_noncollege": 0.47,
+          "black": 0.01,
+          "latino": 0.02,
+          "asian_other": 0.03
+        },
+        "age": {
+          "youth": 0.12,
+          "core_age": 0.55,
+          "senior": 0.33
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.07,
+        "adjustment": -0.12,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -2119,18 +2527,18 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.3241,
-            "effect": -0.07
+            "weight": 0.47,
+            "effect": -0.12
           },
           {
             "group": "senior",
-            "weight": 0.2276,
-            "effect": -0.03
+            "weight": 0.33,
+            "effect": -0.05
           },
           {
             "group": "white_college",
-            "weight": 0.3241,
-            "effect": 0.02
+            "weight": 0.47,
+            "effect": 0.03
           }
         ]
       },
@@ -2142,12 +2550,12 @@
         "pollCount": 0
       },
       "modelRating": "Likely R",
-      "demProbability": 0.17321,
-      "repProbability": 0.82679,
+      "demProbability": 0.1717,
+      "repProbability": 0.8283,
       "winnerParty": "R",
-      "winnerProbability": 0.82679,
+      "winnerProbability": 0.8283,
       "competitive": false,
-      "tippingPower": 0.04528
+      "tippingPower": 0.04562
     },
     {
       "state": "NM",
@@ -2170,12 +2578,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "New Mexico Governor",
-      "margin": 8.12,
+      "margin": 8.15,
       "fundamentalsMargin": 2.26,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.2,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.3,
+          "white_noncollege": 0.3,
+          "black": 0.02,
+          "latino": 0.33,
+          "asian_other": 0.05
+        },
+        "age": {
+          "youth": 0.14,
+          "core_age": 0.56,
+          "senior": 0.3
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": 0,
+        "adjustment": 0.03,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -2211,23 +2638,23 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.2083,
-            "effect": -0.04
+            "weight": 0.3,
+            "effect": -0.08
           },
           {
             "group": "white_college",
-            "weight": 0.2083,
-            "effect": 0.03
+            "weight": 0.3,
+            "effect": 0.06
           },
           {
             "group": "latino",
-            "weight": 0.2292,
-            "effect": 0.02
+            "weight": 0.33,
+            "effect": 0.05
           },
           {
             "group": "senior",
-            "weight": 0.2083,
-            "effect": -0.02
+            "weight": 0.3,
+            "effect": -0.03
           }
         ]
       },
@@ -2239,12 +2666,12 @@
         "pollCount": 0
       },
       "modelRating": "Likely D",
-      "demProbability": 0.79879,
-      "repProbability": 0.20121,
+      "demProbability": 0.79966,
+      "repProbability": 0.20034,
       "winnerParty": "D",
-      "winnerProbability": 0.79879,
+      "winnerProbability": 0.79966,
       "competitive": false,
-      "tippingPower": 0.04358
+      "tippingPower": 0.04262
     },
     {
       "state": "NY",
@@ -2267,12 +2694,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "New York Governor",
-      "margin": 9.89,
+      "margin": 9.95,
       "fundamentalsMargin": 6.98,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.3,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.43,
+          "white_noncollege": 0.31,
+          "black": 0.12,
+          "latino": 0.1,
+          "asian_other": 0.04
+        },
+        "age": {
+          "youth": 0.13,
+          "core_age": 0.75,
+          "senior": 0.16
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": 0.06,
+        "adjustment": 0.12,
         "demProfile": {
           "key": "incumbentDemocrat",
           "label": "Incumbent Democrat",
@@ -2308,18 +2754,18 @@
         "topGroups": [
           {
             "group": "white_college",
-            "weight": 0.3071,
-            "effect": 0.07
+            "weight": 0.43,
+            "effect": 0.14
           },
           {
             "group": "white_noncollege",
-            "weight": 0.2214,
-            "effect": -0.05
+            "weight": 0.31,
+            "effect": -0.09
           },
           {
             "group": "black",
-            "weight": 0.0857,
-            "effect": 0.02
+            "weight": 0.12,
+            "effect": 0.03
           }
         ]
       },
@@ -2331,12 +2777,12 @@
         "pollCount": 0
       },
       "modelRating": "Likely D",
-      "demProbability": 0.87762,
-      "repProbability": 0.12238,
+      "demProbability": 0.87904,
+      "repProbability": 0.12096,
       "winnerParty": "D",
-      "winnerProbability": 0.87762,
+      "winnerProbability": 0.87904,
       "competitive": false,
-      "tippingPower": 0.0353
+      "tippingPower": 0.03426
     },
     {
       "state": "OH",
@@ -2359,12 +2805,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Ohio Governor",
-      "margin": -3.77,
+      "margin": -3.81,
       "fundamentalsMargin": -7.2,
       "ratingMargin": -5,
       "candidateAndLocal": -0.6,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.33,
+          "white_noncollege": 0.53,
+          "black": 0.09,
+          "latino": 0.03,
+          "asian_other": 0.02
+        },
+        "age": {
+          "youth": 0.14,
+          "core_age": 0.56,
+          "senior": 0.3
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.04,
+        "adjustment": -0.08,
         "demProfile": {
           "key": "amy acton",
           "label": "Amy Acton",
@@ -2414,18 +2879,18 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.3681,
-            "effect": -0.11
+            "weight": 0.53,
+            "effect": -0.2
           },
           {
             "group": "white_college",
-            "weight": 0.2292,
-            "effect": 0.05
+            "weight": 0.33,
+            "effect": 0.09
           },
           {
             "group": "black",
-            "weight": 0.0625,
-            "effect": 0.02
+            "weight": 0.09,
+            "effect": 0.03
           }
         ]
       },
@@ -2437,12 +2902,12 @@
         "pollCount": 0
       },
       "modelRating": "Tilt R",
-      "demProbability": 0.36223,
-      "repProbability": 0.63777,
+      "demProbability": 0.36083,
+      "repProbability": 0.63917,
       "winnerParty": "R",
-      "winnerProbability": 0.63777,
+      "winnerProbability": 0.63917,
       "competitive": true,
-      "tippingPower": 0.05304
+      "tippingPower": 0.05272
     },
     {
       "state": "OK",
@@ -2465,12 +2930,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Oklahoma Governor",
-      "margin": -12.84,
+      "margin": -12.86,
       "fundamentalsMargin": -8.95,
       "ratingMargin": -18,
       "candidateAndLocal": -0.4,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.25,
+          "white_noncollege": 0.51,
+          "black": 0.07,
+          "latino": 0.06,
+          "asian_other": 0.11
+        },
+        "age": {
+          "youth": 0.14,
+          "core_age": 0.57,
+          "senior": 0.29
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.02,
+        "adjustment": -0.04,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -2506,18 +2990,18 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.3566,
-            "effect": -0.07
+            "weight": 0.51,
+            "effect": -0.13
           },
           {
             "group": "white_college",
-            "weight": 0.1748,
-            "effect": 0.03
+            "weight": 0.25,
+            "effect": 0.05
           },
           {
             "group": "senior",
-            "weight": 0.2028,
-            "effect": -0.02
+            "weight": 0.29,
+            "effect": -0.03
           }
         ]
       },
@@ -2529,12 +3013,12 @@
         "pollCount": 0
       },
       "modelRating": "Likely R",
-      "demProbability": 0.07003,
-      "repProbability": 0.92997,
+      "demProbability": 0.06972,
+      "repProbability": 0.93028,
       "winnerParty": "R",
-      "winnerProbability": 0.92997,
+      "winnerProbability": 0.93028,
       "competitive": false,
-      "tippingPower": 0.0232
+      "tippingPower": 0.02354
     },
     {
       "state": "OR",
@@ -2557,12 +3041,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Oregon Governor",
-      "margin": 9.52,
+      "margin": 9.54,
       "fundamentalsMargin": 6.26,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.2,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.43,
+          "white_noncollege": 0.4,
+          "black": 0.02,
+          "latino": 0.08,
+          "asian_other": 0.07
+        },
+        "age": {
+          "youth": 0.14,
+          "core_age": 0.57,
+          "senior": 0.29
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": 0.04,
+        "adjustment": 0.06,
         "demProfile": {
           "key": "tina kotek",
           "label": "Tina Kotek",
@@ -2611,13 +3114,13 @@
         "topGroups": [
           {
             "group": "white_college",
-            "weight": 0.3007,
-            "effect": 0.07
+            "weight": 0.43,
+            "effect": 0.14
           },
           {
             "group": "white_noncollege",
-            "weight": 0.2797,
-            "effect": -0.06
+            "weight": 0.4,
+            "effect": -0.11
           }
         ]
       },
@@ -2629,12 +3132,12 @@
         "pollCount": 0
       },
       "modelRating": "Likely D",
-      "demProbability": 0.86869,
-      "repProbability": 0.13131,
+      "demProbability": 0.86919,
+      "repProbability": 0.13081,
       "winnerParty": "D",
-      "winnerProbability": 0.86869,
+      "winnerProbability": 0.86919,
       "competitive": false,
-      "tippingPower": 0.03844
+      "tippingPower": 0.03642
     },
     {
       "state": "PA",
@@ -2657,12 +3160,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Pennsylvania Governor",
-      "margin": 18.55,
+      "margin": 18.64,
       "fundamentalsMargin": 5.57,
       "ratingMargin": 18,
       "candidateAndLocal": 3.8,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.38,
+          "white_noncollege": 0.42,
+          "black": 0.1,
+          "latino": 0.04,
+          "asian_other": 0.02
+        },
+        "age": {
+          "youth": 0.13,
+          "core_age": 0.56,
+          "senior": 0.31
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": 0.1,
+        "adjustment": 0.19,
         "demProfile": {
           "key": "josh shapiro",
           "label": "Josh Shapiro",
@@ -2709,18 +3231,23 @@
         "topGroups": [
           {
             "group": "white_college",
-            "weight": 0.2714,
-            "effect": 0.08
+            "weight": 0.38,
+            "effect": 0.15
           },
           {
             "group": "white_noncollege",
-            "weight": 0.3,
-            "effect": -0.02
+            "weight": 0.42,
+            "effect": -0.03
           },
           {
             "group": "black",
-            "weight": 0.0714,
-            "effect": 0.02
+            "weight": 0.1,
+            "effect": 0.03
+          },
+          {
+            "group": "senior",
+            "weight": 0.31,
+            "effect": 0.03
           }
         ]
       },
@@ -2737,7 +3264,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99,
       "competitive": false,
-      "tippingPower": 0.00394
+      "tippingPower": 0.0037
     },
     {
       "state": "RI",
@@ -2760,12 +3287,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Rhode Island Governor",
-      "margin": 15.48,
+      "margin": 15.52,
       "fundamentalsMargin": 10.07,
       "ratingMargin": 18,
       "candidateAndLocal": 0.5,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.43,
+          "white_noncollege": 0.36,
+          "black": 0.06,
+          "latino": 0.11,
+          "asian_other": 0.04
+        },
+        "age": {
+          "youth": 0.13,
+          "core_age": 0.56,
+          "senior": 0.31
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": 0.05,
+        "adjustment": 0.09,
         "demProfile": {
           "key": "incumbentDemocrat",
           "label": "Incumbent Democrat",
@@ -2801,13 +3347,13 @@
         "topGroups": [
           {
             "group": "white_college",
-            "weight": 0.2986,
-            "effect": 0.07
+            "weight": 0.43,
+            "effect": 0.14
           },
           {
             "group": "white_noncollege",
-            "weight": 0.25,
-            "effect": -0.05
+            "weight": 0.36,
+            "effect": -0.1
           }
         ]
       },
@@ -2819,12 +3365,12 @@
         "pollCount": 0
       },
       "modelRating": "Safe D",
-      "demProbability": 0.98049,
-      "repProbability": 0.01951,
+      "demProbability": 0.98074,
+      "repProbability": 0.01926,
       "winnerParty": "D",
-      "winnerProbability": 0.98049,
+      "winnerProbability": 0.98074,
       "competitive": false,
-      "tippingPower": 0.00884
+      "tippingPower": 0.00896
     },
     {
       "state": "SC",
@@ -2847,12 +3393,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "South Carolina Governor",
-      "margin": -7.75,
+      "margin": -7.74,
       "fundamentalsMargin": -6.51,
       "ratingMargin": -10.5,
       "candidateAndLocal": -0.5,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.29,
+          "white_noncollege": 0.43,
+          "black": 0.24,
+          "latino": 0.02,
+          "asian_other": 0.02
+        },
+        "age": {
+          "youth": 0.13,
+          "core_age": 0.56,
+          "senior": 0.31
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.01,
+        "adjustment": 0,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -2888,23 +3453,23 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.2986,
-            "effect": -0.06
+            "weight": 0.43,
+            "effect": -0.11
           },
           {
             "group": "white_college",
-            "weight": 0.2014,
-            "effect": 0.03
+            "weight": 0.29,
+            "effect": 0.06
           },
           {
             "group": "black",
-            "weight": 0.1667,
-            "effect": 0.03
+            "weight": 0.24,
+            "effect": 0.06
           },
           {
             "group": "senior",
-            "weight": 0.2153,
-            "effect": -0.02
+            "weight": 0.31,
+            "effect": -0.03
           }
         ]
       },
@@ -2916,12 +3481,12 @@
         "pollCount": 0
       },
       "modelRating": "Lean R",
-      "demProbability": 0.21218,
-      "repProbability": 0.78782,
+      "demProbability": 0.21248,
+      "repProbability": 0.78752,
       "winnerParty": "R",
-      "winnerProbability": 0.78782,
+      "winnerProbability": 0.78752,
       "competitive": false,
-      "tippingPower": 0.04392
+      "tippingPower": 0.04634
     },
     {
       "state": "SD",
@@ -2944,12 +3509,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "South Dakota Governor",
-      "margin": -14.96,
+      "margin": -15.01,
       "fundamentalsMargin": -13.86,
       "ratingMargin": -18,
       "candidateAndLocal": -0.8,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.31,
+          "white_noncollege": 0.56,
+          "black": 0.02,
+          "latino": 0.03,
+          "asian_other": 0.08
+        },
+        "age": {
+          "youth": 0.14,
+          "core_age": 0.55,
+          "senior": 0.31
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.07,
+        "adjustment": -0.12,
         "demProfile": {
           "key": "daniel ahlers",
           "label": "Daniel Ahlers",
@@ -2990,18 +3574,18 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.3862,
-            "effect": -0.09
+            "weight": 0.56,
+            "effect": -0.18
           },
           {
             "group": "senior",
-            "weight": 0.2138,
-            "effect": -0.03
+            "weight": 0.31,
+            "effect": -0.05
           },
           {
             "group": "white_college",
-            "weight": 0.2138,
-            "effect": 0.02
+            "weight": 0.31,
+            "effect": 0.04
           }
         ]
       },
@@ -3013,12 +3597,12 @@
         "pollCount": 0
       },
       "modelRating": "Safe R",
-      "demProbability": 0.02306,
-      "repProbability": 0.97694,
+      "demProbability": 0.0227,
+      "repProbability": 0.9773,
       "winnerParty": "R",
-      "winnerProbability": 0.97694,
+      "winnerProbability": 0.9773,
       "competitive": false,
-      "tippingPower": 0.01038
+      "tippingPower": 0.01052
     },
     {
       "state": "TN",
@@ -3041,12 +3625,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Tennessee Governor",
-      "margin": -14.41,
+      "margin": -14.43,
       "fundamentalsMargin": -12.37,
       "ratingMargin": -18,
       "candidateAndLocal": -0.8,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.29,
+          "white_noncollege": 0.53,
+          "black": 0.13,
+          "latino": 0.03,
+          "asian_other": 0.02
+        },
+        "age": {
+          "youth": 0.13,
+          "core_age": 0.57,
+          "senior": 0.3
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.03,
+        "adjustment": -0.05,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -3082,23 +3685,23 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.3706,
-            "effect": -0.08
+            "weight": 0.53,
+            "effect": -0.14
           },
           {
             "group": "white_college",
-            "weight": 0.2028,
-            "effect": 0.03
+            "weight": 0.29,
+            "effect": 0.06
           },
           {
             "group": "black",
-            "weight": 0.0909,
-            "effect": 0.02
+            "weight": 0.13,
+            "effect": 0.03
           },
           {
             "group": "senior",
-            "weight": 0.2098,
-            "effect": -0.02
+            "weight": 0.3,
+            "effect": -0.03
           }
         ]
       },
@@ -3110,12 +3713,12 @@
         "pollCount": 0
       },
       "modelRating": "Likely R",
-      "demProbability": 0.04883,
-      "repProbability": 0.95117,
+      "demProbability": 0.04859,
+      "repProbability": 0.95141,
       "winnerParty": "R",
-      "winnerProbability": 0.95117,
+      "winnerProbability": 0.95141,
       "competitive": false,
-      "tippingPower": 0.01738
+      "tippingPower": 0.0172
     },
     {
       "state": "TX",
@@ -3138,12 +3741,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Texas Governor",
-      "margin": -13.6,
+      "margin": -13.63,
       "fundamentalsMargin": -7.3,
       "ratingMargin": -18,
       "candidateAndLocal": -1.7,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.29,
+          "white_noncollege": 0.37,
+          "black": 0.12,
+          "latino": 0.18,
+          "asian_other": 0.04
+        },
+        "age": {
+          "youth": 0.16,
+          "core_age": 0.6,
+          "senior": 0.24
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.04,
+        "adjustment": -0.07,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -3187,28 +3809,28 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.2643,
-            "effect": -0.09
+            "weight": 0.37,
+            "effect": -0.16
           },
           {
             "group": "white_college",
-            "weight": 0.2071,
-            "effect": 0.04
+            "weight": 0.29,
+            "effect": 0.07
           },
           {
             "group": "senior",
-            "weight": 0.1714,
-            "effect": -0.03
+            "weight": 0.24,
+            "effect": -0.05
           },
           {
             "group": "black",
-            "weight": 0.0857,
-            "effect": 0.02
+            "weight": 0.12,
+            "effect": 0.03
           },
           {
             "group": "youth",
-            "weight": 0.1143,
-            "effect": 0.02
+            "weight": 0.16,
+            "effect": 0.03
           }
         ]
       },
@@ -3220,12 +3842,12 @@
         "pollCount": 0
       },
       "modelRating": "Likely R",
-      "demProbability": 0.03493,
-      "repProbability": 0.96507,
+      "demProbability": 0.03463,
+      "repProbability": 0.96537,
       "winnerParty": "R",
-      "winnerProbability": 0.96507,
+      "winnerProbability": 0.96537,
       "competitive": false,
-      "tippingPower": 0.01602
+      "tippingPower": 0.01518
     },
     {
       "state": "VT",
@@ -3248,12 +3870,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Vermont Governor",
-      "margin": -18.44,
+      "margin": -18.59,
       "fundamentalsMargin": -7.2,
       "ratingMargin": -18,
       "candidateAndLocal": -6.5,
+      "electorateComposition": {
+        "source": "Modeled from state turnout traits",
+        "raceEducation": {
+          "white_college": 0.27,
+          "white_noncollege": 0.38,
+          "black": 0.08,
+          "latino": 0.06,
+          "asian_other": 0.05
+        },
+        "age": {
+          "youth": 0.13,
+          "core_age": 0.7,
+          "senior": 0.21
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.12,
+        "adjustment": -0.27,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -3294,18 +3935,18 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.2963,
-            "effect": -0.14
+            "weight": 0.38,
+            "effect": -0.23
           },
           {
             "group": "senior",
-            "weight": 0.1852,
-            "effect": -0.06
+            "weight": 0.21,
+            "effect": -0.08
           },
           {
             "group": "white_college",
-            "weight": 0.2222,
-            "effect": -0.04
+            "weight": 0.27,
+            "effect": -0.06
           }
         ]
       },
@@ -3322,7 +3963,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99,
       "competitive": false,
-      "tippingPower": 0.00418
+      "tippingPower": 0.00352
     },
     {
       "state": "WI",
@@ -3345,12 +3986,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Wisconsin Governor",
-      "margin": 2.51,
+      "margin": 2.47,
       "fundamentalsMargin": 3.22,
       "ratingMargin": 0,
       "candidateAndLocal": 0.4,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.38,
+          "white_noncollege": 0.48,
+          "black": 0.06,
+          "latino": 0.03,
+          "asian_other": 0.05
+        },
+        "age": {
+          "youth": 0.14,
+          "core_age": 0.56,
+          "senior": 0.3
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.05,
+        "adjustment": -0.09,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -3392,18 +4052,18 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.3333,
-            "effect": -0.1
+            "weight": 0.48,
+            "effect": -0.19
           },
           {
             "group": "white_college",
-            "weight": 0.2639,
-            "effect": 0.05
+            "weight": 0.38,
+            "effect": 0.09
           },
           {
             "group": "senior",
-            "weight": 0.2083,
-            "effect": -0.02
+            "weight": 0.3,
+            "effect": -0.04
           }
         ]
       },
@@ -3415,12 +4075,12 @@
         "pollCount": 0
       },
       "modelRating": "Tilt D",
-      "demProbability": 0.58145,
-      "repProbability": 0.41855,
+      "demProbability": 0.58017,
+      "repProbability": 0.41983,
       "winnerParty": "D",
-      "winnerProbability": 0.58145,
+      "winnerProbability": 0.58017,
       "competitive": true,
-      "tippingPower": 0.04668
+      "tippingPower": 0.0493
     },
     {
       "state": "WY",
@@ -3443,12 +4103,31 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Wyoming Governor",
-      "margin": -17.29,
+      "margin": -17.32,
       "fundamentalsMargin": -20.85,
       "ratingMargin": -18,
       "candidateAndLocal": -0.8,
+      "electorateComposition": {
+        "source": "Manual midterm likely-voter baseline; not fixed truth",
+        "raceEducation": {
+          "white_college": 0.3,
+          "white_noncollege": 0.61,
+          "black": 0.01,
+          "latino": 0.05,
+          "asian_other": 0.03
+        },
+        "age": {
+          "youth": 0.13,
+          "core_age": 0.56,
+          "senior": 0.31
+        },
+        "notes": [
+          "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+          "Age shares are a separate turnout overlay and are not added to race/education shares."
+        ]
+      },
       "demographicPull": {
-        "adjustment": -0.03,
+        "adjustment": -0.06,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -3484,18 +4163,18 @@
         "topGroups": [
           {
             "group": "white_noncollege",
-            "weight": 0.4236,
-            "effect": -0.09
+            "weight": 0.61,
+            "effect": -0.16
           },
           {
             "group": "white_college",
-            "weight": 0.2083,
-            "effect": 0.03
+            "weight": 0.3,
+            "effect": 0.06
           },
           {
             "group": "senior",
-            "weight": 0.2153,
-            "effect": -0.02
+            "weight": 0.31,
+            "effect": -0.03
           }
         ]
       },
@@ -3507,12 +4186,12 @@
         "pollCount": 0
       },
       "modelRating": "Safe R",
-      "demProbability": 0.02341,
-      "repProbability": 0.97659,
+      "demProbability": 0.02322,
+      "repProbability": 0.97678,
       "winnerParty": "R",
-      "winnerProbability": 0.97659,
+      "winnerProbability": 0.97678,
       "competitive": false,
-      "tippingPower": 0.01008
+      "tippingPower": 0.0099
     }
   ],
   "governorCountHistory": [
