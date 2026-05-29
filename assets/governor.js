@@ -12,6 +12,15 @@
     "Tilt R": "tilt-r", "Lean R": "lean-r", "Likely R": "likely-r", "Safe R": "safe-r"
   };
 
+  const MAP_COLOR_MODES = {
+    rating: "Rating",
+    margin: "Projected margin",
+    probability: "Win probability"
+  };
+
+  let mapColorMode = "rating";
+  let governorData = null;
+
   function setText(id, value) {
     const node = document.getElementById(id);
     if (node) node.textContent = value;
@@ -85,6 +94,39 @@
       "Tilt R": "--tilt-r", "Lean R": "--lean-r", "Likely R": "--likely-r", "Safe R": "--safe-r"
     }[race.modelRating || race.rating] || "--toss";
     return getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim();
+  }
+
+  function marginColor(race) {
+    const margin = race.margin || 0;
+    if (margin > 0) {
+      return getComputedStyle(document.documentElement).getPropertyValue("--dem").trim();
+    } else if (margin < 0) {
+      return getComputedStyle(document.documentElement).getPropertyValue("--rep").trim();
+    } else {
+      return getComputedStyle(document.documentElement).getPropertyValue("--toss").trim();
+    }
+  }
+
+  function probabilityColor(race) {
+    const demProb = race.demProbability || 0.5;
+    if (demProb > 0.6) {
+      return getComputedStyle(document.documentElement).getPropertyValue("--dem").trim();
+    } else if (demProb < 0.4) {
+      return getComputedStyle(document.documentElement).getPropertyValue("--rep").trim();
+    } else {
+      return getComputedStyle(document.documentElement).getPropertyValue("--toss").trim();
+    }
+  }
+
+  function getColorForMode(race, mode) {
+    switch (mode) {
+      case "margin":
+        return marginColor(race);
+      case "probability":
+        return probabilityColor(race);
+      default:
+        return ratingColor(race);
+    }
   }
 
   function renderSummary(data) {
@@ -161,7 +203,7 @@
         .attr("fill", (feature) => {
           const state = FIPS_TO_STATE_LOCAL[String(feature.id).padStart(2, "0")];
           const race = racesByState.get(state);
-          return race ? ratingColor(race) : null;
+          return race ? getColorForMode(race, mapColorMode) : null;
         })
         .attr("tabindex", (feature) => {
           const state = FIPS_TO_STATE_LOCAL[String(feature.id).padStart(2, "0")];
@@ -214,7 +256,29 @@
   function renderLegend() {
     const legend = document.getElementById("governor-map-legend");
     if (!legend) return;
-    legend.innerHTML = Object.keys(ratings).map((rating) => `<span><i class="${ratings[rating]}"></i>${rating}</span>`).join("");
+    if (mapColorMode === "rating") {
+      legend.innerHTML = Object.keys(ratings).map((rating) => `<span><i class="${ratings[rating]}"></i>${rating}</span>`).join("");
+    } else if (mapColorMode === "margin") {
+      legend.innerHTML = `<span><i style="background:var(--dem)"></i>Democratic margin</span><span><i style="background:var(--rep)"></i>Republican margin</span><span><i style="background:var(--toss)"></i>Tie</span>`;
+    } else if (mapColorMode === "probability") {
+      legend.innerHTML = `<span><i style="background:var(--dem)"></i>Democratic favored</span><span><i style="background:var(--rep)"></i>Republican favored</span><span><i style="background:var(--toss)"></i>Toss-up</span>`;
+    }
+  }
+
+  function renderMapColorControls() {
+    const container = document.getElementById("governor-map-color-controls");
+    if (!container) return;
+    container.innerHTML = Object.entries(MAP_COLOR_MODES).map(([mode, label]) => (
+      `<button type="button" class="${mode === mapColorMode ? "active" : ""}" data-map-color="${mode}">${label}</button>`
+    )).join("");
+    container.querySelectorAll("button").forEach((button) => {
+      button.addEventListener("click", () => {
+        mapColorMode = button.dataset.mapColor || "rating";
+        renderMapColorControls();
+        renderLegend();
+        if (governorData) renderMap(governorData);
+      });
+    });
   }
 
   function renderGovernorCountHistory(data) {
@@ -277,9 +341,11 @@
       const response = await fetch("data/governor-forecast.json", { cache: "no-store" });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
+      governorData = data;
       renderSummary(data);
       renderMap(data);
       renderLegend();
+      renderMapColorControls();
       renderGovernorCountHistory(data);
       renderBoard(data);
     } catch (error) {
