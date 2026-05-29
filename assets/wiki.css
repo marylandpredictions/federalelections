@@ -41,19 +41,19 @@
   --chart-hover-bg: #f7f9ff;
   --dem: #2f6db3;
   --rep: #c9493d;
-  --safe-d: #003d8e;
-  --likely-d: #0060d6;
-  --lean-d: #558ae0;
-  --tilt-d: #84b5ed;
+  --safe-d: #0D3B82;
+  --likely-d: #2163B0;
+  --lean-d: #5A9FE0;
+  --tilt-d: #A8C6F0;
   --gold: #f4a629;
   --green: #49a078;
   --ind: #8b5cf6;
-  --toss: #b2b0a4;
+  --toss: #F5F0C8;
   --no-election: #e8e6df;
-  --tilt-r: #ff6868;
-  --lean-r: #e23639;
-  --likely-r: #c91a1d;
-  --safe-r: #990011;
+  --tilt-r: #FAB8B5;
+  --lean-r: #F4837D;
+  --likely-r: #E0393E;
+  --safe-r: #B22222;
   --shadow: 0 10px 28px rgba(0, 14, 56, .16);
   --shadow-soft: 0 5px 14px rgba(0, 14, 56, .12);
   --shadow-lift: 0 14px 34px rgba(0, 14, 56, .20);
@@ -129,6 +129,10 @@ body {
 
 .state-shape {
   stroke: rgba(20, 30, 45, .72);
+}
+
+:root[data-theme="dark"] .state-shape {
+  stroke: rgba(255, 255, 255, .72);
 }
 
 .state-muted {
