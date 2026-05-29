@@ -295,7 +295,7 @@
           <span>${escapeHtml(race.displayName)}</span>
           <span>${escapeHtml(candidateDisplayName(race, "D"))}</span>
           <span>${escapeHtml(candidateDisplayName(race, "R"))}</span>
-          <span>${escapeHtml(race.modelRating || race.rating)}</span>
+          <span>${escapeHtml(race.rating)}</span>
           <span>${signedMargin(race.margin)}</span>
           <span>${leader} ${oneDecimal(probability)}</span>
         </a>
