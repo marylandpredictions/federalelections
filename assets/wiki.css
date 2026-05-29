@@ -179,6 +179,7 @@ button {
   grid-template-columns: minmax(220px, 1fr) auto;
   gap: 12px;
   align-items: center;
+  justify-content: space-between;
   padding: 12px clamp(14px, 3vw, 44px);
   border-bottom: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
   background: color-mix(in srgb, var(--chrome) 96%, transparent);
@@ -251,6 +252,31 @@ button {
   font-weight: 900;
   font-size: .9rem;
   transition: background .16s var(--ease-out), border-color .16s var(--ease-out), color .16s var(--ease-out), transform .16s var(--ease-out);
+}
+
+.donate-button {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 11px;
+  border: 1px solid #00ff00;
+  border-radius: 3px;
+  background: linear-gradient(135deg, #00ff00, #00cc00);
+  color: #000;
+  text-decoration: none;
+  font-family: "Telegraf", "Segoe UI", Arial, sans-serif;
+  font-weight: 900;
+  font-size: .9rem;
+  transition: background .16s var(--ease-out), border-color .16s var(--ease-out), color .16s var(--ease-out), transform .16s var(--ease-out), box-shadow .16s var(--ease-out);
+  box-shadow: 0 0 10px rgba(0, 255, 0, .5);
+}
+
+.donate-button:hover {
+  background: linear-gradient(135deg, #00ff00, #00dd00);
+  border-color: #00ff00;
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(0, 255, 0, .7);
 }
 
 .site-nav a:hover,
@@ -1028,19 +1054,43 @@ h3 {
   font-size: .68rem;
 }
 
+.party-dem {
+  color: var(--dem);
+  font-weight: 700;
+}
+
+.party-rep {
+  color: var(--rep);
+  font-weight: 700;
+}
+
+.party-ind {
+  color: var(--ind);
+  font-weight: 700;
+}
+
 .big-odds {
   display: grid;
   gap: 2px;
+  background: var(--party-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
   color: var(--rep);
   font-family: "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: 0;
 }
 
 .odds-panel.control-dem .big-odds {
+  background: var(--dem);
+  -webkit-background-clip: text;
+  background-clip: text;
   color: var(--dem);
 }
 
 .odds-panel.control-rep .big-odds {
+  background: var(--rep);
+  -webkit-background-clip: text;
+  background-clip: text;
   color: var(--rep);
 }
 
