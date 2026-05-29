@@ -66,8 +66,10 @@ async function main() {
   const now = Date.now();
   const livestreams = entries.filter((video) => video.kind === "livestream");
   const uploads = entries.filter((video) => video.kind === "upload").slice(0, 4);
+  
+  // Check if livestream is upcoming (published in future) or latest (published in past)
   const upcomingLivestream = livestreams.find((video) => Date.parse(video.published) > now) || null;
-  const latestLivestream = livestreams.find((video) => !upcomingLivestream || video.id !== upcomingLivestream.id) || null;
+  const latestLivestream = livestreams.find((video) => Date.parse(video.published) <= now) || null;
 
   const payload = {
     generatedAt: new Date().toISOString(),

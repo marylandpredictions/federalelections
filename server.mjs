@@ -213,7 +213,13 @@ async function handleContact(request, response) {
 
 async function serveStatic(request, response) {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
-  const requestedPath = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
+  let requestedPath = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
+  
+  // If the path doesn't have an extension, try adding .html
+  if (!extname(requestedPath)) {
+    requestedPath += ".html";
+  }
+  
   const filePath = resolve(join(root, requestedPath));
 
   if (!filePath.startsWith(root)) {
