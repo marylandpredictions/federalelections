@@ -125,8 +125,8 @@ function oneDecimal(value) {
 function candidateDisplayName(race, party) {
   const name = party === "D" ? race.dem : race.rep;
   const status = party === "D" ? race.demStatus : race.repStatus;
-  if (status === "unresolved") return party === "D" ? '<span class="gradient-democrat">Democrat</span>' : '<span class="gradient-republican">Republican</span>';
-  return name || (party === "D" ? '<span class="gradient-democrat">Democrat</span>' : '<span class="gradient-republican">Republican</span>');
+  if (status === "unresolved") return party === "D" ? "Democrat" : "Republican";
+  return name || (party === "D" ? "Democrat" : "Republican");
 }
 
 function candidateStatusBadge(race, party) {
@@ -157,13 +157,13 @@ function candidateChanceLabel(race, party) {
   const name = party === "D" ? race.dem : race.rep;
   const displayParty = party === "D" ? race.demDisplayParty : race.repDisplayParty;
   if (displayParty === "I" || String(name || "").toLowerCase().includes("independent")) return "Independent";
-  return party === "D" ? '<span class="gradient-democrat">Democrat</span>' : '<span class="gradient-republican">Republican</span>';
+  return party === "D" ? "Democrat" : "Republican";
 }
 
 function candidateForecastName(race, party) {
   const name = party === "D" ? race.dem : race.rep;
   const status = party === "D" ? race.demStatus : race.repStatus;
-  const fallback = party === "D" ? '<span class="gradient-democrat">Democratic</span> field' : '<span class="gradient-republican">Republican</span> field';
+  const fallback = party === "D" ? "Democratic field" : "Republican field";
   if (status === "unresolved") {
     if (name && !["Democrat", "Republican"].includes(name)) return name;
     return fallback;
@@ -233,8 +233,8 @@ function movementText(race) {
 }
 
 function movementPartyLabel(party) {
-  if (party === "D") return '<span class="gradient-democrat">Democrats</span>';
-  if (party === "R") return '<span class="gradient-republican">Republicans</span>';
+  if (party === "D") return "Democrats";
+  if (party === "R") return "Republicans";
   return "the race";
 }
 
@@ -657,8 +657,8 @@ function updateSummary() {
   setText("rep-control", oneDecimal(forecast.repControlProbability));
   setText("median-seats", `${forecast.medianSeats} D`);
   const favoredIsDem = forecast.demControlProbability >= forecast.repControlProbability;
-  setText("control-headline", favoredIsDem ? '<span class="gradient-democrat">Democrats</span> narrowly favored' : '<span class="gradient-republican">Republicans</span> narrowly favored');
-  const favoredSide = forecast.demControlProbability >= forecast.repControlProbability ? '<span class="gradient-democrat">Democrats</span>' : '<span class="gradient-republican">Republicans</span>';
+  setText("control-headline", favoredIsDem ? "Democrats narrowly favored" : "Republicans narrowly favored");
+  const favoredSide = forecast.demControlProbability >= forecast.repControlProbability ? "Democrats" : "Republicans";
   const favoredProbability = Math.max(forecast.demControlProbability, forecast.repControlProbability);
   const oddsNode = document.getElementById("odds-phrase");
   if (oddsNode) {
@@ -692,7 +692,7 @@ function updateSummary() {
 function updateHomeHouseSummary() {
   if (!houseForecast) return;
   const favoredIsDem = houseForecast.demControlProbability >= houseForecast.repControlProbability;
-  const favoredSide = favoredIsDem ? '<span class="gradient-democrat">Democrats</span>' : '<span class="gradient-republican">Republicans</span>';
+  const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
   const favoredProbability = Math.max(houseForecast.demControlProbability, houseForecast.repControlProbability);
   setText("home-house-status", "Live");
   setText("home-house-favored", `${favoredSide} ${pct(favoredProbability)}`);
@@ -713,7 +713,7 @@ function updateHomeGovernorSummary() {
   const demRaces = governorForecast.projectedDemRaceWins ?? governorForecast.races?.filter((race) => race.demProbability >= .5).length ?? 0;
   const repRaces = governorForecast.projectedRepRaceWins ?? Math.max(0, (governorForecast.races?.length ?? 36) - demRaces);
   const favoredIsDem = demRaces >= repRaces;
-  const favoredSide = favoredIsDem ? '<span class="gradient-democrat">Democrats</span>' : '<span class="gradient-republican">Republicans</span>';
+  const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
   setText("home-governor-run", governorForecast.runDate || governorForecast.modelDate || "--");
   setText("home-governor-favored", `${favoredSide} lead`);
   setText("home-governor-dem", demRaces);
@@ -750,7 +750,7 @@ function updateHomePresidentSummary() {
   const summary = presidentSummary();
   if (!summary) return;
   const favoredIsDem = summary.demWin >= summary.repWin;
-  const favoredSide = favoredIsDem ? '<span class="gradient-democrat">Democrats</span>' : '<span class="gradient-republican">Republicans</span>';
+  const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
   const favoredProbability = Math.max(summary.demWin, summary.repWin);
   setText("home-president-favored", `${favoredSide} ${pct(favoredProbability)}`);
   setText("home-president-dem", oneDecimal(summary.demWin));
@@ -1090,7 +1090,7 @@ function updateGovernorSummary() {
 
 function governorHoverMarkup(race) {
   if (!race) return `<span class="panel-label">State detail</span><h3>No 2026 governor race</h3><p>This state is not on the 2026 governor board.</p>`;
-  const leader = race.demProbability >= .5 ? '<span class="gradient-democrat">Democrat</span>' : '<span class="gradient-republican">Republican</span>';
+  const leader = race.demProbability >= .5 ? "Democrat" : "Republican";
   const leaderProb = Math.max(race.demProbability, race.repProbability);
   return `
     <span class="race-kicker">${escapeHtml(race.displayName)}</span>
@@ -1101,8 +1101,8 @@ function governorHoverMarkup(race) {
     <h3>${leader} has a ${oneDecimal(leaderProb)} chance.</h3>
     <div class="candidate-table" aria-label="${escapeHtml(race.displayName)} forecast">
       <div class="candidate-table-head"><span>Party</span><span>Chance</span></div>
-      <div class="candidate-row dem-row"><span><span class="gradient-democrat">Democrat</span> <i class="party-badge dem-badge">D</i></span><strong>${oneDecimal(race.demProbability)}</strong></div>
-      <div class="candidate-row rep-row"><span><span class="gradient-republican">Republican</span> <i class="party-badge rep-badge">R</i></span><strong>${oneDecimal(race.repProbability)}</strong></div>
+      <div class="candidate-row dem-row"><span>Democrat <i class="party-badge dem-badge">D</i></span><strong>${oneDecimal(race.demProbability)}</strong></div>
+      <div class="candidate-row rep-row"><span>Republican <i class="party-badge rep-badge">R</i></span><strong>${oneDecimal(race.repProbability)}</strong></div>
       <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(race.margin)}</strong></div>
     </div>
     <p>${escapeHtml(race.status)}. Incumbent party: ${escapeHtml(race.incumbentParty)}.</p>
