@@ -348,7 +348,7 @@
     }
 
     function stateColor(stateData) {
-      return PRESIDENT_RATING_COLORS[presidentRating(stateData, presidentMapColorMode)] || "var(--toss)";
+      return getRaceColor(stateData.demProbability, stateData.demMargin).color;
     }
 
     function renderFallbackMap() {
@@ -637,8 +637,7 @@
     function renderLegend() {
       const legend = document.getElementById("president-map-legend");
       if (!legend) return;
-      const ratings = ["Safe D", "Likely D", "Lean D", "Tilt D", "Toss-up", "Tilt R", "Lean R", "Likely R", "Safe R"];
-      legend.innerHTML = ratings.map((rating) => `<span><i style="background:${PRESIDENT_RATING_COLORS[rating]}"></i>${rating}</span>`).join("");
+      legend.innerHTML = spectrumLegendHtml();
     }
 
     function displayStateProbabilities() {

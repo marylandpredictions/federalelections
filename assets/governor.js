@@ -34,13 +34,22 @@
     return Math.round(value).toString(16).padStart(2, "0").toUpperCase();
   }
 
+  function mixColor(start, end, amount) {
+    return start.map((channel, index) => channel + (end[index] - channel) * amount);
+  }
+
   function scoreToHex(score) {
     const S = clamp(score, -100, 100);
-    const t = (S + 100) / 200;
-
-    const r = 178 + t * (13 - 178);
-    const g = 34 + t * (59 - 34);
-    const b = 34 + t * (130 - 34);
+    const abs = Math.abs(S);
+    const center = [248, 245, 235];
+    const dem = [13, 59, 130];
+    const rep = [178, 34, 34];
+    const endpoint = S >= 0 ? dem : rep;
+    const base = abs / 100;
+    const intensity = abs <= 50
+      ? base * 1.08
+      : .54 + Math.pow((abs - 50) / 50, .52) * .46;
+    const [r, g, b] = mixColor(center, endpoint, clamp(intensity, 0, 1));
 
     return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
   }
@@ -280,8 +289,14 @@
   function renderLegend() {
     const legend = document.getElementById("governor-map-legend");
     if (!legend) return;
-    const ratings = ["Safe D", "Likely D", "Lean D", "Tilt D", "Toss-up", "Tilt R", "Lean R", "Likely R", "Safe R"];
-    legend.innerHTML = ratings.map((rating) => `<span><i class="${RATING_BUCKET[rating]}"></i>${rating}</span>`).join("");
+    legend.innerHTML = `
+      <div class="map-spectrum-legend" aria-label="Partisan color spectrum">
+        <span class="spectrum-end spectrum-rep">Strong R</span>
+        <i></i>
+        <span class="spectrum-mid">Toss-up</span>
+        <span class="spectrum-end spectrum-dem">Strong D</span>
+      </div>
+    `;
   }
 
   function renderMapColorControls() {
