@@ -77,7 +77,7 @@ function scoreToHex(score) {
   const S = clamp(score, -100, 100);
   const abs = Math.abs(S);
   const center = [248, 245, 235];
-  const dem = [13, 59, 130];
+  const dem = [16, 48, 178];
   const rep = [178, 34, 34];
   const endpoint = S >= 0 ? dem : rep;
   const base = abs / 100;
@@ -792,7 +792,7 @@ function renderHomeRadar() {
       <a class="home-radar-row ${houseLeaderClass(district)}" href="house.html">
         <strong>${escapeHtml(district.id)}</strong>
         <span>${escapeHtml(district.label || district.rating)}</span>
-        <b>${district.winnerParty === "D" ? '<span class="party-dem">D</span>' : '<span class="party-rep">R</span>'} ${oneDecimal(district.winnerProbability)}</b>
+        <b>${district.winnerParty === "D" ? "D" : "R"} ${oneDecimal(district.winnerProbability)}</b>
         <i>${oneDecimal(district.leverage || 0)}</i>
       </a>
     `).join("");
@@ -1886,7 +1886,7 @@ function getHouseDistrict(id) {
 
 function houseDistrictMarkup(district) {
   if (!district) return "";
-  const winner = district.winnerParty === "D" ? '<span class="party-dem">Democrat</span>' : '<span class="party-rep">Republican</span>';
+  const winner = district.winnerParty === "D" ? "Democrat" : "Republican";
   const colorLabel = houseDistrictColorLabel(district);
   const inputs = district.sourceInputs || {};
   const baselineLine = [
@@ -1906,8 +1906,8 @@ function houseDistrictMarkup(district) {
     <h3>${winner} ${oneDecimal(district.winnerProbability)}</h3>
     <div class="candidate-table" aria-label="${district.id} district forecast">
       <div class="candidate-table-head"><span>Candidate</span><span>Chance</span></div>
-      <div class="candidate-row dem-row"><span>${escapeHtml(district.demCandidate || '<span class="party-dem">Democrat</span>')} <i class="party-badge dem-badge">D</i></span><strong>${oneDecimal(district.demProbability)}</strong></div>
-      <div class="candidate-row rep-row"><span>${escapeHtml(district.repCandidate || '<span class="party-rep">Republican</span>')} <i class="party-badge rep-badge">R</i></span><strong>${oneDecimal(district.repProbability)}</strong></div>
+      <div class="candidate-row dem-row"><span>${escapeHtml(district.demCandidate || "Democrat")} <i class="party-badge dem-badge">D</i></span><strong>${oneDecimal(district.demProbability)}</strong></div>
+      <div class="candidate-row rep-row"><span>${escapeHtml(district.repCandidate || "Republican")} <i class="party-badge rep-badge">R</i></span><strong>${oneDecimal(district.repProbability)}</strong></div>
       <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(district.margin)}</strong></div>
     </div>
     <div class="badge-row">
@@ -1976,7 +1976,7 @@ function renderHouseDistrictList() {
       <strong>${escapeHtml(district.id)}</strong>
       <span>${escapeHtml(district.label || (district.open ? "Open seat" : ""))}</span>
       <b class="rating-pill ${houseDistrictBucket(district)}">${escapeHtml(houseDistrictColorLabel(district))}</b>
-      <em>${district.winnerParty === "D" ? '<span class="party-dem">D</span>' : '<span class="party-rep">R</span>'} ${oneDecimal(district.winnerProbability)}</em>
+      <em>${district.winnerParty === "D" ? "D" : "R"} ${oneDecimal(district.winnerProbability)}</em>
       <i>${signedPointMargin(district.margin)}</i>
     </button>
   `).join("");
@@ -2167,7 +2167,7 @@ function renderHouseDecisiveDistricts() {
   const max = Math.max(...ranked.map((district) => district.leverage || 0), .01);
   container.innerHTML = ranked.map((district) => {
     const width = clamp(((district.leverage || 0) / max) * 100, 8, 100);
-    return `<button class="leverage-row ${houseLeaderClass(district)}" type="button" data-district="${escapeHtml(district.id)}" data-tip="${escapeHtml(houseDistrictLabel(district))}<br>${oneDecimal(district.winnerProbability)} ${district.winnerParty === "D" ? '<span class="party-dem">Democrat</span>' : '<span class="party-rep">Republican</span>'}<br>${escapeHtml(district.rating)}"><strong>${escapeHtml(district.id)}</strong><i style="width:${width}%"></i><span>${oneDecimal(district.leverage || 0)}</span></button>`;
+    return `<button class="leverage-row ${houseLeaderClass(district)}" type="button" data-district="${escapeHtml(district.id)}" data-tip="${escapeHtml(houseDistrictLabel(district))}<br>${oneDecimal(district.winnerProbability)} ${district.winnerParty === "D" ? "Democrat" : "Republican"}<br>${escapeHtml(district.rating)}"><strong>${escapeHtml(district.id)}</strong><i style="width:${width}%"></i><span>${oneDecimal(district.leverage || 0)}</span></button>`;
   }).join("");
   container.querySelectorAll(".leverage-row").forEach((node) => {
     const district = houseForecast.districts.find((item) => item.id === node.dataset.district);

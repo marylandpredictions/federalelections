@@ -42,7 +42,7 @@
     const S = clamp(score, -100, 100);
     const abs = Math.abs(S);
     const center = [248, 245, 235];
-    const dem = [13, 59, 130];
+    const dem = [16, 48, 178];
     const rep = [178, 34, 34];
     const endpoint = S >= 0 ? dem : rep;
     const base = abs / 100;
