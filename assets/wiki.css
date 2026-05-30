@@ -293,6 +293,7 @@ button {
   flex-wrap: wrap;
   justify-content: flex-end;
   align-items: center;
+  margin-left: auto;
 }
 
 .site-nav a,
@@ -330,6 +331,7 @@ button {
   font-family: "Telegraf", "Segoe UI", Arial, sans-serif;
   font-weight: 900;
   font-size: .9rem;
+  white-space: nowrap;
   transition: background .16s var(--ease-out), border-color .16s var(--ease-out), color .16s var(--ease-out), transform .16s var(--ease-out), box-shadow .16s var(--ease-out);
   box-shadow: 0 0 10px rgba(0, 204, 0, .5);
 }
@@ -364,7 +366,7 @@ button {
   position: relative;
   width: 36px;
   height: 34px;
-  display: inline-grid;
+  display: none;
   place-items: center;
   margin-left: 14px;
   padding: 0;
