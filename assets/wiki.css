@@ -769,15 +769,16 @@ h3 {
   color: var(--ink);
   text-decoration: none;
   box-shadow: var(--shadow-soft);
-  transition: border-color .16s var(--ease-out), box-shadow .16s var(--ease-out), transform .16s var(--ease-out), background .16s var(--ease-out);
+  transition: border-color .16s var(--ease-out), box-shadow .16s var(--ease-out), transform .16s var(--ease-out), background .16s var(--ease-out), filter .16s var(--ease-out);
 }
 
 .forecast-overview-card:hover,
 .forecast-overview-card:focus {
-  transform: translateY(-3px);
+  transform: translateY(-4px) scale(1.01);
   border-color: color-mix(in srgb, var(--ink) 55%, var(--line));
   background: color-mix(in srgb, var(--paper) 98%, white);
   box-shadow: var(--shadow-lift);
+  filter: brightness(1.04);
   outline: none;
 }
 
@@ -831,6 +832,12 @@ h3 {
 .forecast-overview-card i {
   font-style: normal;
   font-weight: 900;
+}
+
+.projected-seat-count {
+  margin: 6px 0 0;
+  color: color-mix(in srgb, var(--ink) 82%, var(--muted));
+  font: 900 .98rem/1.2 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .home-run-panel {
@@ -933,7 +940,7 @@ h3 {
 
 .model-strip .forecast-overview-card:hover,
 .model-strip .forecast-overview-card:focus {
-  transform: none;
+  transform: translateY(-2px);
   background: color-mix(in srgb, var(--chrome) 74%, var(--paper));
 }
 
@@ -954,6 +961,37 @@ h3 {
   border-radius: 8px;
   border-top-width: 0;
   background: color-mix(in srgb, var(--paper) 88%, transparent);
+}
+
+.chart-panel,
+.text-panel,
+.detail-panel,
+.source-panel,
+.map-panel,
+.odds-panel,
+.home-radar-row,
+.race-board-row,
+.district-list-row {
+  transition: transform .16s var(--ease-out), box-shadow .16s var(--ease-out), border-color .16s var(--ease-out), filter .16s var(--ease-out);
+}
+
+.chart-panel:hover,
+.text-panel:hover,
+.detail-panel:hover,
+.source-panel:hover,
+.map-panel:hover,
+.odds-panel:hover {
+  border-color: color-mix(in srgb, var(--ink) 48%, var(--line));
+  box-shadow: var(--shadow-lift);
+  filter: brightness(1.025);
+}
+
+.home-radar-row:hover,
+.home-radar-row:focus,
+.race-board-row:hover,
+.race-board-row:focus {
+  transform: translateX(4px);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--line) 38%, transparent);
 }
 
 @media (max-width: 1060px) {

@@ -670,11 +670,14 @@ function updateSummary() {
   setText("control-headline", favoredIsDem ? "Democrats narrowly favored" : "Republicans narrowly favored");
   const favoredSide = forecast.demControlProbability >= forecast.repControlProbability ? "Democrats" : "Republicans";
   const favoredProbability = Math.max(forecast.demControlProbability, forecast.repControlProbability);
+  const senateSeatLine = `${forecast.medianSeats} D / ${100 - forecast.medianSeats} R projected seats`;
+  setText("seat-count-headline", senateSeatLine);
   const oddsNode = document.getElementById("odds-phrase");
   if (oddsNode) {
     oddsNode.innerHTML = `<span>${favoredSide} favored</span><strong>${pct(favoredProbability)}</strong>`;
   }
   setText("home-senate-favored", `${favoredSide} ${pct(favoredProbability)}`);
+  setText("home-senate-seats", senateSeatLine);
   setText("home-senate-dem", oneDecimal(forecast.demControlProbability));
   setText("home-senate-rep", oneDecimal(forecast.repControlProbability));
   setText("home-senate-run", forecast.runDate || forecast.modelDate || "--");
@@ -704,8 +707,10 @@ function updateHomeHouseSummary() {
   const favoredIsDem = houseForecast.demControlProbability >= houseForecast.repControlProbability;
   const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
   const favoredProbability = Math.max(houseForecast.demControlProbability, houseForecast.repControlProbability);
+  const houseSeatLine = `${houseForecast.medianSeats} D / ${435 - houseForecast.medianSeats} R projected seats`;
   setText("home-house-status", "Live");
   setText("home-house-favored", `${favoredSide} ${pct(favoredProbability)}`);
+  setText("home-house-seats", houseSeatLine);
   setText("home-house-dem", oneDecimal(houseForecast.demControlProbability));
   setText("home-house-rep", oneDecimal(houseForecast.repControlProbability));
   setText("home-house-run", houseForecast.runDate || houseForecast.modelDate || "--");
@@ -1986,6 +1991,28 @@ function applyHouseViewMode() {
   if (shape) shape.hidden = !isShape;
   if (board) board.hidden = !isBoard;
   if (list) list.hidden = !isList;
+  if (toolbar) toolbar.style.display = isShape ? "" : "none";
+  if (shape) shape.style.display = isShape ? "" : "none";
+  if (board) board.style.display = isBoard ? "" : "none";
+  if (list) list.style.display = isList ? "" : "none";
+}
+
+function projectedRingPath(ring, projection) {
+  const points = ring
+    .map((point) => projection(point))
+    .filter(Boolean);
+  if (points.length < 3) return "";
+  return `${points.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`).join("")}Z`;
+}
+
+function projectedFeaturePath(feature, projection) {
+  const geometry = feature?.geometry;
+  if (!geometry) return "";
+  const polygons = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates || [];
+  return polygons
+    .flatMap((polygon) => polygon.map((ring) => projectedRingPath(ring, projection)))
+    .filter(Boolean)
+    .join("");
 }
 
 async function renderHouseShapeMap() {
@@ -2008,7 +2035,6 @@ async function renderHouseShapeMap() {
   const width = 980;
   const height = 610;
   const projection = d3.geoAlbersUsa().fitSize([width, height], geo);
-  const path = d3.geoPath(projection);
 
   container.innerHTML = "";
   const svg = d3.select(container)
@@ -2033,7 +2059,8 @@ async function renderHouseShapeMap() {
       return district ? `district-shape ${houseDistrictBucket(district)} ${houseLeaderClass(district)}` : "district-shape state-muted";
     })
     .attr("data-district", (feature) => feature.properties?.id || "")
-    .attr("d", path)
+    .attr("d", (feature) => projectedFeaturePath(feature, projection))
+    .attr("fill-rule", "evenodd")
     .attr("fill", (feature) => {
       const district = districtById.get(feature.properties?.id);
       return district ? colorForRating(houseDistrictColorLabel(district)) : null;
@@ -2132,6 +2159,7 @@ function renderHouseSummary() {
   panel?.classList.toggle("control-rep", !favoredIsDem);
   const odds = document.getElementById("house-odds-phrase");
   if (odds) odds.innerHTML = `<span>${favoredSide} favored</span><strong>${pct(favoredProbability)}</strong>`;
+  setText("house-seat-count-headline", `${houseForecast.medianSeats} D / ${435 - houseForecast.medianSeats} R projected seats`);
   setText("house-control-headline", `${favoredSide} ${controlProbabilityPhrase(favoredProbability)}`);
   setText("house-dem-control", oneDecimal(houseForecast.demControlProbability));
   setText("house-rep-control", oneDecimal(houseForecast.repControlProbability));
