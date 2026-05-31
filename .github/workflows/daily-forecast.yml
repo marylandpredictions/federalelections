@@ -41,6 +41,7 @@ jobs:
           node scripts/generate-house-forecast.mjs
           node scripts/generate-governor-forecast.mjs
           node scripts/generate-videos.mjs
+          node scripts/generate-live-results.mjs
           for dem in newsom beshear shapiro buttigieg harris aoc; do
             for rep in vance rubio desantis haley cruz; do
               node scripts/generate-president-forecast.mjs "$dem" "$rep"

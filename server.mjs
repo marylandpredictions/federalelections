@@ -3,6 +3,7 @@ import { createWriteStream } from "node:fs";
 import { mkdir, readFile } from "node:fs/promises";
 import { extname, join, resolve } from "node:path";
 import tls from "node:tls";
+import { buildLiveResults } from "./scripts/generate-live-results.mjs";
 
 async function loadLocalEnv() {
   try {
@@ -29,6 +30,9 @@ const submissionsPath = resolve(root, "data", "contact-submissions.jsonl");
 const maxBodyBytes = 24 * 1024;
 const rateLimitMs = 60_000;
 const rateLimit = new Map();
+let liveResultsCache = null;
+let liveResultsCacheAt = 0;
+const liveResultsCacheMs = 90_000;
 
 const contentTypes = {
   ".html": "text/html; charset=utf-8",
@@ -211,6 +215,28 @@ async function handleContact(request, response) {
   }
 }
 
+async function handleLiveResults(request, response) {
+  if (request.method !== "GET") {
+    sendJson(response, 405, { ok: false, error: "Method not allowed." });
+    return;
+  }
+
+  const now = Date.now();
+  if (liveResultsCache && now - liveResultsCacheAt < liveResultsCacheMs) {
+    sendJson(response, 200, liveResultsCache);
+    return;
+  }
+
+  try {
+    liveResultsCache = await buildLiveResults();
+    liveResultsCacheAt = now;
+    sendJson(response, 200, liveResultsCache);
+  } catch (error) {
+    console.error(error);
+    sendJson(response, 502, { ok: false, error: "Live results source unavailable." });
+  }
+}
+
 async function serveStatic(request, response) {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
   let requestedPath = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
@@ -242,6 +268,10 @@ createServer(async (request, response) => {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
   if (url.pathname === "/api/contact") {
     await handleContact(request, response);
+    return;
+  }
+  if (url.pathname === "/api/live-results") {
+    await handleLiveResults(request, response);
     return;
   }
   await serveStatic(request, response);
