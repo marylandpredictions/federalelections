@@ -10,6 +10,16 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     applyTheme();
+    const header = document.querySelector(".site-header");
+    const setHeaderOffset = () => {
+      if (!header) return;
+      root.style.setProperty("--header-offset", `${Math.ceil(header.getBoundingClientRect().height)}px`);
+    };
+    setHeaderOffset();
+    window.addEventListener("resize", setHeaderOffset, { passive: true });
+    if (window.ResizeObserver && header) {
+      new ResizeObserver(setHeaderOffset).observe(header);
+    }
     const desktopHover = window.matchMedia("(hover: hover) and (pointer: fine)");
     document.querySelectorAll(".nav-dropdown").forEach((dropdown) => {
       let closeTimer = null;
