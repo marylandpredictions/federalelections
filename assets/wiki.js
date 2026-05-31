@@ -17,18 +17,6 @@ const MAP_COLOR_MODES = {
   probability: "Win probability"
 };
 
-const HOUSE_COLOR_MODES = {
-  rating: "Rating",
-  margin: "Projected margin",
-  probability: "Win probability"
-};
-
-const HOUSE_PREVIEW_MODES = {
-  board: "Board",
-  map: "Shape map",
-  list: "List"
-};
-
 const CHART_ANNOTATIONS = [
   { date: "2026-05-17", label: "Model reworked" },
   { date: "2026-05-20", label: "Model reworked" }
@@ -53,14 +41,10 @@ let governorForecast = null;
 let presidentForecasts = null;
 let articles = [];
 let mapColorMode = "rating";
-let houseViewMode = "board";
-let houseColorMode = "rating";
 let selectedHouseDistrictId = null;
 
 const PRESIDENT_DEM_CANDIDATES = ["newsom", "beshear", "shapiro", "buttigieg", "harris", "aoc"];
 const PRESIDENT_REP_CANDIDATES = ["vance", "rubio", "desantis", "haley", "cruz"];
-
-const HOUSE_DISTRICT_MAP_URL = "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_119th_Congressional_Districts_no_territories/FeatureServer/0/query?where=1%3D1&outFields=DISTRICTID,STATE_ABBR,CDFIPS,NAME,PARTY&returnGeometry=true&f=geojson&outSR=4326&resultRecordCount=2000";
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -102,6 +86,22 @@ function getRaceColor(demProbability, projectedDemMargin) {
     score,
     color: scoreToHex(score)
   };
+}
+
+const RATING_SCORES = {
+  "Safe D": 100,
+  "Likely D": 66,
+  "Lean D": 40,
+  "Tilt D": 18,
+  "Toss-up": 0,
+  "Tilt R": -18,
+  "Lean R": -40,
+  "Likely R": -66,
+  "Safe R": -100
+};
+
+function colorForRating(rating) {
+  return scoreToHex(RATING_SCORES[rating] ?? 0);
 }
 
 function spectrumLegendHtml() {
@@ -1951,7 +1951,7 @@ function renderHouseCartogram() {
       type="button"
       aria-label="${escapeHtml(houseDistrictLabel(district))}, ${escapeHtml(houseDistrictColorLabel(district))}"
       data-district="${escapeHtml(district.id)}"
-      style="background:${ratingColor(district, "rating")}"
+      style="background:${colorForRating(houseDistrictColorLabel(district))}"
       title="${escapeHtml(houseDistrictLabel(district))}">
       <span>${escapeHtml(district.id.replace("-", ""))}</span>
     </button>
@@ -1963,7 +1963,7 @@ function renderHouseCartogram() {
     node.addEventListener("focus", handler);
     node.addEventListener("click", handler);
   });
-  updateHouseDistrictCard(houseForecast.districts.find((district) => district.id === selectedHouseDistrictId) || houseForecast.decisiveDistricts?.[0] || houseForecast.districts[0]);
+  updateHouseDistrictCard(houseForecast.districts.find((district) => district.id === selectedHouseDistrictId) || districts[0]);
 }
 
 function renderHouseDistrictList() {
@@ -1986,102 +1986,7 @@ function renderHouseDistrictList() {
     node.addEventListener("focus", handler);
     node.addEventListener("click", handler);
   });
-  updateHouseDistrictCard(houseForecast.districts.find((district) => district.id === selectedHouseDistrictId) || houseForecast.decisiveDistricts?.[0] || houseForecast.districts[0]);
-}
-
-function houseDistrictIdFromFeature(feature) {
-  const props = feature?.properties || {};
-  const state = props.STATE_ABBR;
-  const district = String(props.CDFIPS || "").padStart(2, "0");
-  if (!state || !district) return null;
-  return `${state}-${district === "00" ? "AL" : district}`;
-}
-
-async function renderHouseDistrictMap() {
-  const container = document.getElementById("house-district-map");
-  if (!container || !houseForecast) return;
-  container.hidden = houseViewMode !== "map";
-  if (houseViewMode !== "map") return;
-  if (!window.d3) {
-    container.innerHTML = `<p class="map-note">District shape map library unavailable.</p>`;
-    return;
-  }
-  if (container.dataset.loaded === "true") return;
-  try {
-    const geo = await d3.json(HOUSE_DISTRICT_MAP_URL);
-    const features = geo.features || [];
-    const width = 980;
-    const height = 610;
-    const projection = d3.geoAlbersUsa().fitSize([width, height], { type: "FeatureCollection", features });
-    const path = d3.geoPath(projection);
-    container.innerHTML = "";
-    const svg = d3.select(container).append("svg").attr("viewBox", `0 0 ${width} ${height}`).attr("role", "img").attr("aria-label", "House district shape map");
-    svg.selectAll("path")
-      .data(features)
-      .join("path")
-      .attr("class", (feature) => {
-        const district = houseForecast.districts.find((item) => item.id === houseDistrictIdFromFeature(feature));
-        return district ? `district-shape ${houseDistrictBucket(district)}` : "district-shape state-muted";
-      })
-      .attr("d", path)
-      .attr("fill", (feature) => {
-        const district = houseForecast.districts.find((item) => item.id === houseDistrictIdFromFeature(feature));
-        return district ? ratingColor(district, houseColorMode) : null;
-      })
-      .attr("tabindex", (feature) => houseForecast.districts.find((item) => item.id === houseDistrictIdFromFeature(feature)) ? 0 : -1)
-      .on("mouseenter focus", (event, feature) => {
-        const district = houseForecast.districts.find((item) => item.id === houseDistrictIdFromFeature(feature));
-        updateHouseDistrictCard(district);
-      })
-      .on("click keydown", (event, feature) => {
-        if (event.type === "keydown" && event.key !== "Enter") return;
-        const district = houseForecast.districts.find((item) => item.id === houseDistrictIdFromFeature(feature));
-        updateHouseDistrictCard(district);
-      })
-      .append("title")
-      .text((feature) => {
-        const district = houseForecast.districts.find((item) => item.id === houseDistrictIdFromFeature(feature));
-        return district ? `${houseDistrictLabel(district)}: ${district.rating}` : "";
-      });
-    container.dataset.loaded = "true";
-  } catch (error) {
-    container.innerHTML = `<p class="map-note">District shape map could not load. The cartogram remains available.</p>`;
-  }
-}
-
-function renderHouseViewControls() {
-  const container = document.getElementById("house-view-controls");
-  if (!container) return;
-  container.innerHTML = Object.entries(HOUSE_COLOR_MODES).map(([mode, label]) => (
-    `<button type="button" class="${mode === houseColorMode ? "active" : ""}" data-house-color="${mode}">${label}</button>`
-  )).join("");
-  container.querySelectorAll("button").forEach((button) => {
-    button.addEventListener("click", () => {
-      houseColorMode = button.dataset.houseColor || "rating";
-      renderHouseViewControls();
-      renderHouseLegend();
-      renderHouseCartogram();
-      renderHouseDistrictMap();
-      renderHouseDistrictList();
-    });
-  });
-}
-
-function renderHousePreviewControls() {
-  const container = document.getElementById("house-preview-controls");
-  if (!container) return;
-  container.innerHTML = Object.entries(HOUSE_PREVIEW_MODES).map(([mode, label]) => (
-    `<button type="button" class="${mode === houseViewMode ? "active" : ""}" data-house-preview="${mode}">${label}</button>`
-  )).join("");
-  container.querySelectorAll("button").forEach((button) => {
-    button.addEventListener("click", () => {
-      houseViewMode = button.dataset.housePreview || "board";
-      renderHousePreviewControls();
-      renderHouseCartogram();
-      renderHouseDistrictMap();
-      renderHouseDistrictList();
-    });
-  });
+  updateHouseDistrictCard(houseForecast.districts.find((district) => district.id === selectedHouseDistrictId) || districts[0]);
 }
 
 function renderHouseLegend() {

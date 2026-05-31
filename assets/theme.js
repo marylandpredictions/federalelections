@@ -10,5 +10,32 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     applyTheme();
+    const desktopHover = window.matchMedia("(hover: hover) and (pointer: fine)");
+    document.querySelectorAll(".nav-dropdown").forEach((dropdown) => {
+      let closeTimer = null;
+      const open = () => {
+        if (!desktopHover.matches) return;
+        clearTimeout(closeTimer);
+        dropdown.open = true;
+      };
+      const close = () => {
+        if (!desktopHover.matches) return;
+        closeTimer = setTimeout(() => {
+          if (!dropdown.matches(":hover") && !dropdown.contains(document.activeElement)) {
+            dropdown.open = false;
+          }
+        }, 120);
+      };
+      dropdown.addEventListener("mouseenter", open);
+      dropdown.addEventListener("focusin", open);
+      dropdown.addEventListener("mouseleave", close);
+      dropdown.addEventListener("focusout", close);
+      dropdown.querySelector("summary")?.addEventListener("click", (event) => {
+        if (desktopHover.matches) {
+          event.preventDefault();
+          dropdown.open = true;
+        }
+      });
+    });
   });
 })();
