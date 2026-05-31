@@ -71,7 +71,11 @@ const CHALLENGER_STRENGTH_DISCOUNTS = {
 };
 
 const MANUAL_HOUSE_CHALLENGER_STRENGTH = {
-  // Use entries such as "PA-07": { D: "notable" } when a challenger has prior office strength.
+  "CO-04": { D: "notable" }
+};
+
+const HOUSE_CANDIDATE_STATUS_OVERRIDES = {
+  "CO-04": { D: "presumptive", R: "presumptive" }
 };
 
 const HOUSE_PRIMARY_DATES = {
@@ -773,7 +777,7 @@ function adjustedDistricts(sourceData) {
   const nationalFinanceShift = (sourceData.fec.__national?.financeSignal || 0) * MODEL_WEIGHTS.nationalFinance;
   const baseDistricts = sourceData.mapDistricts.length >= 400 ? sourceData.mapDistricts : sourceData.cookDistricts;
   return baseDistricts.map((sourceDistrict) => {
-    const district = applyRedistrictingOverride(sourceDistrict);
+    const district = applyRedistrictingOverride(applyCandidateData(sourceDistrict, sourceData.fec[sourceDistrict.id]));
     const nomination = houseNominationInfo(district);
     const inside = sourceData.insideRatings[district.id];
     const sourceRating = district.redistrictingOverride ? district.sourceRating : inside?.rating || district.sourceRating || district.rating;
@@ -848,6 +852,33 @@ function applyRedistrictingOverride(district) {
   };
 }
 
+function applyCandidateData(district, finance) {
+  const incumbentCandidate = incumbentNameFromLabel(district.label || district.incumbent);
+  const demCandidate = isPlaceholderCandidate(district.demCandidate, "D")
+    ? (district.seatParty === "D" && !district.open ? incumbentCandidate : null) || finance?.demCandidate?.name || district.demCandidate
+    : district.demCandidate;
+  const repCandidate = isPlaceholderCandidate(district.repCandidate, "R")
+    ? (district.seatParty === "R" && !district.open ? incumbentCandidate : null) || finance?.repCandidate?.name || district.repCandidate
+    : district.repCandidate;
+  return {
+    ...district,
+    demCandidate,
+    repCandidate,
+    fecDemCandidate: finance?.demCandidate || null,
+    fecRepCandidate: finance?.repCandidate || null
+  };
+}
+
+function incumbentNameFromLabel(label) {
+  const cleaned = String(label || "")
+    .replace(/\s*\/\s*open\b.*$/i, "")
+    .replace(/\bOPEN\b|\bVACANT\b/gi, "")
+    .trim();
+  if (!cleaned || cleaned.length < 3) return null;
+  if (/^(democrat|republican|redrawn seat|open seat)$/i.test(cleaned)) return null;
+  return cleaned;
+}
+
 function isPlaceholderCandidate(name, party) {
   const normalized = String(name || "").trim().toLowerCase();
   if (!normalized) return true;
@@ -887,13 +918,16 @@ function candidateProfileForDistrict(district, party, status) {
 function houseNominationInfo(district) {
   const primaryDate = housePrimaryDate(district);
   const override = HOUSE_PRIMARY_OVERRIDES[district.id] || HOUSE_PRIMARY_OVERRIDES[district.state] || {};
+  const statusOverride = HOUSE_CANDIDATE_STATUS_OVERRIDES[district.id] || {};
   const passed = primaryHasPassed(primaryDate);
   const demKnown = !isPlaceholderCandidate(district.demCandidate, "D");
   const repKnown = !isPlaceholderCandidate(district.repCandidate, "R");
   const demIncumbent = district.seatParty === "D" && !district.open && demKnown;
   const repIncumbent = district.seatParty === "R" && !district.open && repKnown;
-  const demStatus = passed && demKnown ? "nominee" : demIncumbent ? "presumptive" : demKnown ? "filed" : "unresolved";
-  const repStatus = passed && repKnown ? "nominee" : repIncumbent ? "presumptive" : repKnown ? "filed" : "unresolved";
+  const demPresumptive = demKnown && (demIncumbent || isPresumptiveByFinance(district.fecDemCandidate));
+  const repPresumptive = repKnown && (repIncumbent || isPresumptiveByFinance(district.fecRepCandidate));
+  const demStatus = statusOverride.D || (passed && demKnown ? "nominee" : demPresumptive ? "presumptive" : demKnown ? "filed" : "unresolved");
+  const repStatus = statusOverride.R || (passed && repKnown ? "nominee" : repPresumptive ? "presumptive" : repKnown ? "filed" : "unresolved");
   const demProfile = candidateProfileForDistrict(district, "D", demStatus);
   const repProfile = candidateProfileForDistrict(district, "R", repStatus);
   const demCertainty = demStatus === "nominee" ? 1 : demStatus === "presumptive" ? .78 : demStatus === "filed" ? .5 : .2;
@@ -918,6 +952,12 @@ function houseNominationInfo(district) {
     repProfile,
     summary
   };
+}
+
+function isPresumptiveByFinance(candidate) {
+  if (!candidate) return false;
+  if (/incumbent/i.test(candidate.status || "")) return true;
+  return candidate.score >= 500_000 && (candidate.primaryShare ?? 0) >= .72;
 }
 
 function houseCandidateQualityAdjustment(district, nomination) {
@@ -970,15 +1010,16 @@ async function fetchHouseFec(status) {
     const id = `${state}-${district}`;
     const party = String(row.Cand_Party_Affiliation || "").toUpperCase();
     const side = party.startsWith("DEM") ? "dem" : party.startsWith("REP") ? "rep" : "other";
-    byDistrict[id] ||= { demReceipts: 0, repReceipts: 0, demCash: 0, repCash: 0, demDebts: 0, repDebts: 0, candidates: 0 };
+    byDistrict[id] ||= { demReceipts: 0, repReceipts: 0, demCash: 0, repCash: 0, demDebts: 0, repDebts: 0, candidates: 0, demCandidates: [], repCandidates: [] };
     byDistrict[id].candidates += 1;
     if (side === "dem") {
       const receipts = nonNegative(row.Total_Receipt);
       const cash = nonNegative(row.Cash_On_Hand_COP) || nonNegative(row.Cash_On_Hand);
-      const debts = nonNegative(row.Debts_Owed_By_Committee) || nonNegative(row.Debts_Owed);
+      const debts = nonNegative(row.Debts_Owed_By_Committee) || nonNegative(row.Debt_Owed_By_Committee) || nonNegative(row.Debts_Owed);
       byDistrict[id].demReceipts += receipts;
       byDistrict[id].demCash += cash;
       byDistrict[id].demDebts += debts;
+      byDistrict[id].demCandidates.push(candidateRecord(row, receipts, cash, debts));
       national.demReceipts += receipts;
       national.demCash += cash;
       national.demDebts += debts;
@@ -987,10 +1028,11 @@ async function fetchHouseFec(status) {
     if (side === "rep") {
       const receipts = nonNegative(row.Total_Receipt);
       const cash = nonNegative(row.Cash_On_Hand_COP) || nonNegative(row.Cash_On_Hand);
-      const debts = nonNegative(row.Debts_Owed_By_Committee) || nonNegative(row.Debts_Owed);
+      const debts = nonNegative(row.Debts_Owed_By_Committee) || nonNegative(row.Debt_Owed_By_Committee) || nonNegative(row.Debts_Owed);
       byDistrict[id].repReceipts += receipts;
       byDistrict[id].repCash += cash;
       byDistrict[id].repDebts += debts;
+      byDistrict[id].repCandidates.push(candidateRecord(row, receipts, cash, debts));
       national.repReceipts += receipts;
       national.repCash += cash;
       national.repDebts += debts;
@@ -1001,6 +1043,10 @@ async function fetchHouseFec(status) {
     const demScore = Math.log1p(value.demReceipts + value.demCash * 1.3) - Math.log1p(value.demDebts * 1.2);
     const repScore = Math.log1p(value.repReceipts + value.repCash * 1.3) - Math.log1p(value.repDebts * 1.2);
     value.financeSignal = Number(clamp((demScore - repScore) / 3.4, -1.4, 1.4).toFixed(3));
+    value.demCandidate = topCandidate(value.demCandidates);
+    value.repCandidate = topCandidate(value.repCandidates);
+    delete value.demCandidates;
+    delete value.repCandidates;
   }
   national.financeSignal = nationalFinanceSignal(national);
   byDistrict.__national = national;
@@ -1008,6 +1054,57 @@ async function fetchHouseFec(status) {
   status.openFecHouseCandidateSummary.districts = Object.keys(byDistrict).filter((id) => id !== "__national").length;
   status.openFecHouseCandidateSummary.nationalFinanceSignal = national.financeSignal;
   return byDistrict;
+}
+
+function candidateRecord(row, receipts, cash, debts) {
+  const status = String(row.Cand_Incumbent_Challenger_Open_Seat || "").toLowerCase();
+  const incumbentBonus = status.includes("incumbent") ? 9_000_000 : 0;
+  const score = receipts + cash * 1.3 - debts * 1.2 + incumbentBonus;
+  return {
+    name: publicCandidateName(row.Cand_Name),
+    fecName: row.Cand_Name || "",
+    id: row.Cand_Id || "",
+    party: row.Cand_Party_Affiliation || "",
+    status: row.Cand_Incumbent_Challenger_Open_Seat || "",
+    receipts: Number(receipts.toFixed(2)),
+    cash: Number(cash.toFixed(2)),
+    debts: Number(debts.toFixed(2)),
+    score: Number(score.toFixed(2))
+  };
+}
+
+function topCandidate(candidates) {
+  if (!Array.isArray(candidates) || !candidates.length) return null;
+  const viable = candidates.filter((candidate) => candidate.name && candidate.score > 0);
+  const pool = [...(viable.length ? viable : candidates)].sort((a, b) => b.score - a.score);
+  const top = pool[0] || null;
+  if (!top) return null;
+  const totalScore = pool.reduce((sum, candidate) => sum + Math.max(candidate.score, 0), 0);
+  return {
+    ...top,
+    primaryShare: totalScore ? Number((Math.max(top.score, 0) / totalScore).toFixed(3)) : null,
+    fieldSize: pool.length
+  };
+}
+
+function publicCandidateName(name) {
+  const cleaned = String(name || "").replace(/\s+/g, " ").trim();
+  if (!cleaned) return "";
+  if (!cleaned.includes(",")) return titleCaseName(cleaned);
+  const [last, rest = ""] = cleaned.split(",", 2);
+  return titleCaseName(`${rest} ${last}`.replace(/\b(MR|MRS|MS|DR)\.?\b/gi, "").trim());
+}
+
+function titleCaseName(name) {
+  return String(name || "")
+    .toLowerCase()
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => {
+      if (/^(jr|sr|ii|iii|iv|v)\.?$/.test(part)) return part.replace(".", "").toUpperCase();
+      return part.split("-").map((piece) => piece ? piece[0].toUpperCase() + piece.slice(1) : piece).join("-");
+    })
+    .join(" ");
 }
 
 function nonNegative(value) {

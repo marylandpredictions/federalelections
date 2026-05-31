@@ -125,10 +125,12 @@ function spectrumLegendHtml() {
 }
 
 function pct(value) {
+  if (Number.isFinite(value) && Math.round(value * 100) >= 100) return ">99%";
   return `${Math.round(value * 100)}%`;
 }
 
 function oneDecimal(value) {
+  if (Number.isFinite(value) && Number((value * 100).toFixed(1)) >= 100) return ">99%";
   return `${(value * 100).toFixed(1)}%`;
 }
 

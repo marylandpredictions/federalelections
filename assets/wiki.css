@@ -318,6 +318,17 @@ button {
   box-shadow: 0 0 5px rgba(0, 204, 0, .3);
 }
 
+.site-nav a,
+.site-nav summary {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+}
+
 .site-nav summary {
   list-style: none;
   cursor: pointer;
@@ -396,7 +407,16 @@ button {
 .site-nav a:hover,
 .site-nav summary:hover,
 .site-nav a.active,
-.site-nav summary.active,
+.site-nav summary.active {
+  color: var(--ink);
+  border-color: transparent;
+  background: transparent;
+  transform: translateY(-1px);
+  box-shadow: none;
+  filter: none;
+  text-decoration-color: #C6D2FF;
+}
+
 .button-link:hover {
   color: var(--ink);
   border-color: var(--ink);
@@ -408,8 +428,6 @@ button {
   filter: brightness(1.1);
 }
 
-.site-nav a:hover,
-.site-nav summary:hover,
 .button-link:hover {
   transform: translateY(-2px) scale(1.02);
 }
@@ -505,10 +523,12 @@ main {
 }
 
 .site-footer nav {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  justify-content: stretch;
+  gap: 8px 18px;
+  width: min(760px, 100%);
+  margin: 0 auto;
 }
 
 .site-footer a {
@@ -516,6 +536,7 @@ main {
   font-weight: 800;
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
+  padding: 2px 0;
 }
 
 .hero-grid {
@@ -4061,6 +4082,11 @@ button.race-board-row {
   .site-nav,
   .site-footer nav {
     justify-content: flex-start;
+  }
+
+  .site-footer nav {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+    margin: 0;
   }
 
   .nav-dropdown-menu {
