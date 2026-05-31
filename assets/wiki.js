@@ -1854,16 +1854,24 @@ function renderSourceStatus() {
 
 function houseDistrictBucket(district) {
   if (!district) return "tossup";
-  if (houseColorMode === "margin") return RATING_BUCKET[ratingFromSignedValue(district.margin, { tilt: 1, lean: 3, likely: 7, safe: 12 })] || "tossup";
-  if (houseColorMode === "probability") return RATING_BUCKET[ratingFromSignedValue((district.demProbability - .5) * 100, { tilt: 2.5, lean: 10, likely: 25, safe: 45 })] || "tossup";
   return RATING_BUCKET[district.rating] || "tossup";
 }
 
 function houseDistrictColorLabel(district) {
   if (!district) return "Toss-up";
-  if (houseColorMode === "margin") return ratingFromSignedValue(district.margin, { tilt: 1, lean: 3, likely: 7, safe: 12 });
-  if (houseColorMode === "probability") return ratingFromSignedValue((district.demProbability - .5) * 100, { tilt: 2.5, lean: 10, likely: 25, safe: 45 });
   return district.rating;
+}
+
+function houseRatingOrder(district) {
+  const order = Object.keys(RATING_BUCKET);
+  const index = order.indexOf(houseDistrictColorLabel(district));
+  return index === -1 ? order.indexOf("Toss-up") : index;
+}
+
+function compareHouseByCustomRating(a, b) {
+  return houseRatingOrder(a) - houseRatingOrder(b)
+    || Math.abs(a.margin) - Math.abs(b.margin)
+    || a.id.localeCompare(b.id, undefined, { numeric: true });
 }
 
 function houseLeaderClass(district) {
@@ -1937,18 +1945,13 @@ function updateHouseDistrictCard(district) {
 function renderHouseCartogram() {
   const container = document.getElementById("house-district-cartogram");
   if (!container || !houseForecast) return;
-  container.hidden = houseViewMode !== "board";
-  if (houseViewMode !== "board") return;
-  const districts = [...houseForecast.districts].sort((a, b) => {
-    const ratingDelta = Object.values(RATING_BUCKET).indexOf(houseDistrictBucket(a)) - Object.values(RATING_BUCKET).indexOf(houseDistrictBucket(b));
-    return ratingDelta || a.id.localeCompare(b.id, undefined, { numeric: true });
-  });
+  const districts = [...houseForecast.districts].sort(compareHouseByCustomRating);
   container.innerHTML = districts.map((district) => `
     <button class="district-cell ${houseDistrictBucket(district)} ${houseLeaderClass(district)}"
       type="button"
       aria-label="${escapeHtml(houseDistrictLabel(district))}, ${escapeHtml(houseDistrictColorLabel(district))}"
       data-district="${escapeHtml(district.id)}"
-      style="background:${ratingColor(district, houseColorMode)}"
+      style="background:${ratingColor(district, "rating")}"
       title="${escapeHtml(houseDistrictLabel(district))}">
       <span>${escapeHtml(district.id.replace("-", ""))}</span>
     </button>
@@ -1966,12 +1969,7 @@ function renderHouseCartogram() {
 function renderHouseDistrictList() {
   const container = document.getElementById("house-district-list");
   if (!container || !houseForecast) return;
-  container.hidden = houseViewMode !== "list";
-  if (houseViewMode !== "list") return;
-  const districts = [...houseForecast.districts].sort((a, b) => {
-    const competitiveDelta = Math.abs(a.margin) - Math.abs(b.margin);
-    return competitiveDelta || a.id.localeCompare(b.id, undefined, { numeric: true });
-  });
+  const districts = [...houseForecast.districts].sort(compareHouseByCustomRating);
   container.innerHTML = districts.map((district) => `
     <button class="district-list-row ${houseLeaderClass(district)}" type="button" data-district="${escapeHtml(district.id)}">
       <strong>${escapeHtml(district.id)}</strong>
@@ -2364,11 +2362,8 @@ function renderCalibrationPage() {
 
 function renderHousePage() {
   renderHouseSummary();
-  renderHousePreviewControls();
-  renderHouseViewControls();
   renderHouseCartogram();
   renderHouseDistrictList();
-  renderHouseDistrictMap();
   renderHouseLegend();
   renderHouseControlHistory();
   renderHouseSeatHistory();
