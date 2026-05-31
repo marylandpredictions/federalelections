@@ -81,14 +81,15 @@
       <p class="forecast-disclaimer">Temporary map note: this uses the current 119th congressional district map before all new gerrymandering and redistricting changes are finalized. It will be replaced once the updated district file is available.</p>
       <div class="house-board-layout">
         <div>
-          <div class="house-map-toolbar" aria-label="House map zoom controls">
+          <div id="house-view-mode-controls" class="map-color-controls" aria-label="House map display mode"></div>
+          <div class="house-map-toolbar" id="house-map-toolbar" aria-label="House map zoom controls">
             <button type="button" id="house-map-zoom-in">Zoom in</button>
             <button type="button" id="house-map-zoom-out">Zoom out</button>
             <button type="button" id="house-map-reset">Reset</button>
           </div>
           <div id="house-shape-map" class="house-shape-map" aria-label="Interactive House district shape map"></div>
-          <div id="house-district-cartogram" class="district-cartogram"></div>
-          <div id="house-district-list" class="district-list"></div>
+          <div id="house-district-cartogram" class="district-cartogram" hidden></div>
+          <div id="house-district-list" class="district-list" hidden></div>
           <div id="house-rating-legend" class="map-legend"></div>
         </div>
         <aside id="house-district-card" class="hover-card"></aside>

@@ -89,10 +89,11 @@ function readShp(path) {
 
     const polygons = parts.map((start, index) => {
       const end = parts[index + 1] ?? points.length;
-      const ring = points.slice(start, end);
+      let ring = points.slice(start, end);
       const first = ring[0];
       const last = ring[ring.length - 1];
       if (first && last && (first[0] !== last[0] || first[1] !== last[1])) ring.push([...first]);
+      ring = rewindForGeoJson(ring);
       return [ring];
     }).filter((polygon) => polygon[0].length >= 4);
 
@@ -103,6 +104,18 @@ function readShp(path) {
     offset += 8 + contentLength;
   }
   return geometries;
+}
+
+function ringArea(ring) {
+  let sum = 0;
+  for (let index = 0, previous = ring.length - 1; index < ring.length; previous = index, index += 1) {
+    sum += (ring[previous][0] * ring[index][1]) - (ring[index][0] * ring[previous][1]);
+  }
+  return sum / 2;
+}
+
+function rewindForGeoJson(ring) {
+  return ringArea(ring) < 0 ? [...ring].reverse() : ring;
 }
 
 function modelDistrictId(record) {

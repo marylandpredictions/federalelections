@@ -43,6 +43,7 @@ let houseShapeGeo = null;
 let houseShapeGeoPromise = null;
 let articles = [];
 let mapColorMode = "rating";
+let houseViewMode = "shape";
 let selectedHouseDistrictId = null;
 
 const PRESIDENT_DEM_CANDIDATES = ["newsom", "beshear", "shapiro", "buttigieg", "harris", "aoc"];
@@ -100,6 +101,12 @@ const RATING_SCORES = {
   "Lean R": -40,
   "Likely R": -66,
   "Safe R": -100
+};
+
+const HOUSE_VIEW_MODES = {
+  shape: "Shape map",
+  board: "Original board",
+  list: "List"
 };
 
 function colorForRating(rating) {
@@ -1951,9 +1958,39 @@ function highlightHouseShapeSelection() {
   });
 }
 
+function renderHouseViewModeControls() {
+  const container = document.getElementById("house-view-mode-controls");
+  if (!container) return;
+  container.innerHTML = Object.entries(HOUSE_VIEW_MODES).map(([mode, label]) => (
+    `<button type="button" class="${mode === houseViewMode ? "active" : ""}" data-house-view="${mode}">${label}</button>`
+  )).join("");
+  container.querySelectorAll("button").forEach((button) => {
+    button.addEventListener("click", () => {
+      houseViewMode = button.dataset.houseView || "shape";
+      renderHouseViewModeControls();
+      applyHouseViewMode();
+      if (houseViewMode === "shape") renderHouseShapeMap();
+    });
+  });
+}
+
+function applyHouseViewMode() {
+  const isShape = houseViewMode === "shape";
+  const isBoard = houseViewMode === "board";
+  const isList = houseViewMode === "list";
+  const toolbar = document.getElementById("house-map-toolbar");
+  const shape = document.getElementById("house-shape-map");
+  const board = document.getElementById("house-district-cartogram");
+  const list = document.getElementById("house-district-list");
+  if (toolbar) toolbar.hidden = !isShape;
+  if (shape) shape.hidden = !isShape;
+  if (board) board.hidden = !isBoard;
+  if (list) list.hidden = !isList;
+}
+
 async function renderHouseShapeMap() {
   const container = document.getElementById("house-shape-map");
-  if (!container || !houseForecast) return;
+  if (!container || !houseForecast || houseViewMode !== "shape") return;
   if (!window.d3) {
     container.innerHTML = `<p class="map-note">Shape map rendering needs D3 to load.</p>`;
     return;
@@ -2357,6 +2394,8 @@ function renderCalibrationPage() {
 
 function renderHousePage() {
   renderHouseSummary();
+  renderHouseViewModeControls();
+  applyHouseViewMode();
   renderHouseShapeMap();
   renderHouseCartogram();
   renderHouseDistrictList();
