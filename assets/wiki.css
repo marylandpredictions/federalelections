@@ -1944,6 +1944,54 @@ dd {
   background: var(--ind);
 }
 
+.house-signal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.house-signal-grid div {
+  min-width: 0;
+  padding: 7px;
+  border: 1px solid color-mix(in srgb, var(--line) 68%, transparent);
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--paper) 58%, transparent);
+}
+
+.house-signal-grid span,
+.house-signal-grid strong {
+  display: block;
+}
+
+.house-signal-grid span {
+  color: var(--muted);
+  font: 850 .62rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  text-transform: uppercase;
+}
+
+.house-signal-grid strong {
+  margin-top: 3px;
+  font: 950 .9rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.house-card-details {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+.house-card-details summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.house-card-details p {
+  margin: 7px 0 0;
+}
+
 .hover-card .button-link {
   margin-top: 16px;
 }

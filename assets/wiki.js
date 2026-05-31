@@ -1912,14 +1912,13 @@ function houseDistrictMarkup(district) {
   const winner = district.winnerParty === "D" ? "Democrat" : "Republican";
   const colorLabel = houseDistrictColorLabel(district);
   const inputs = district.sourceInputs || {};
-  const baselineLine = [
-    `2024 pres ${signedPointMargin(inputs.presidentialBaseline)}`,
-    `2022 House ${signedPointMargin(inputs.congressionalBaseline)}`,
-    `generic ${signedPointMargin(inputs.genericBallotShift)}`,
-    `demographic ${signedPointMargin(inputs.demographicPull?.adjustment)}`,
-    district.open ? "open seat" : "incumbent seat"
-  ].join(" / ");
+  const nomination = inputs.nomination || {};
   const quality = houseInputConfidence(district);
+  const statusText = [
+    nomination.demStatus ? `D ${nomination.demStatus}` : null,
+    nomination.repStatus ? `R ${nomination.repStatus}` : null,
+    nomination.primaryDate || null
+  ].filter(Boolean).join(" / ");
   return `
     <span class="race-kicker">${escapeHtml(houseDistrictLabel(district))}</span>
     <div class="map-card-title">
@@ -1936,10 +1935,21 @@ function houseDistrictMarkup(district) {
     <div class="badge-row">
       <span>${escapeHtml(quality.label)}</span>
       <span>${escapeHtml(houseMovementText(district))}</span>
+      ${statusText ? `<span>${escapeHtml(statusText)}</span>` : ""}
     </div>
-    <p class="meta">${escapeHtml(baselineLine)}</p>
-    <p class="meta">${escapeHtml(district.sourceBlend || "Cook")} / rating baseline ${signedPointMargin(inputs.ratingBaseline)} / contextual baseline ${signedPointMargin(inputs.contextualBaseline)}</p>
-    ${inputs.demographicPull?.topGroups?.length ? `<p class="meta">Demographic pull: ${inputs.demographicPull.topGroups.map((item) => `${escapeHtml(item.label || item.group)} ${signedPointMargin(item.effect)}`).join(" / ")}</p>` : ""}
+    <div class="house-signal-grid" aria-label="House district model signals">
+      <div><span>Rating</span><strong>${signedPointMargin(inputs.ratingBaseline)}</strong></div>
+      <div><span>Context</span><strong>${signedPointMargin(inputs.contextualBaseline)}</strong></div>
+      <div><span>Generic</span><strong>${signedPointMargin(inputs.genericBallotShift)}</strong></div>
+      <div><span>Profile</span><strong>${signedPointMargin(inputs.candidateQualityAdjustment ?? inputs.demographicPull?.adjustment)}</strong></div>
+    </div>
+    <details class="house-card-details">
+      <summary>Model detail</summary>
+      <p>${escapeHtml(district.sourceBlend || "Cook")} / ${district.open ? "open seat" : "incumbent seat"}</p>
+      <p>2024 pres ${signedPointMargin(inputs.presidentialBaseline)} / 2022 House ${signedPointMargin(inputs.congressionalBaseline)} / demographic ${signedPointMargin(inputs.demographicPull?.adjustment)}</p>
+      ${nomination.summary ? `<p>${escapeHtml(nomination.summary)}</p>` : ""}
+      ${inputs.demographicPull?.topGroups?.length ? `<p>Demographic pull: ${inputs.demographicPull.topGroups.map((item) => `${escapeHtml(item.label || item.group)} ${signedPointMargin(item.effect)}`).join(" / ")}</p>` : ""}
+    </details>
   `;
 }
 
@@ -2291,7 +2301,8 @@ function renderHouseSourceStatus() {
     ["RealClearPolling", status.realClearPoliticsGenericBallot || status.realClearPollingHousePolls, summary.realClearGenericReachable || summary.realClearHousePollsReachable ? "Reference page reachable" : "Blocked or not loaded"],
     ["OpenFEC House", status.openFecHouseCandidateSummary, `${summary.fecDistricts ?? 0} districts`],
     ["Generic ballot", status.senateGenericPollingFallback || status.votehubGenericBallot, `${summary.genericPolling?.sources?.length ?? 0} sources / D ${summary.genericPolling?.margin?.toFixed?.(1) ?? "--"}`],
-    ["Census districts", status.censusDistrictBoundaries, houseForecast.mapBasis?.districtShapeMapStatus || "--"]
+    ["Census districts", status.censusDistrictBoundaries, houseForecast.mapBasis?.districtShapeMapStatus || "--"],
+    ["Redistricting layer", { ok: Boolean(summary.redistricting) }, `${summary.redistricting?.overriddenDistricts?.length ?? 0} local district overrides / ${Object.keys(summary.redistricting?.states || {}).length} states tracked`]
   ];
   container.innerHTML = rows.map(([label, item, detail]) => {
     const ok = Boolean(item?.ok);

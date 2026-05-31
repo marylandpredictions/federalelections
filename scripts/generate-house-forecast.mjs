@@ -52,6 +52,8 @@ const MODEL_WEIGHTS = {
   districtPolls: .18,
   finance: .22,
   nationalFinance: .35,
+  nominationCertainty: .32,
+  candidateQuality: .42,
   incumbencyOpenPenalty: .45,
   seatPartyIncumbency: .45,
   districtFundamentals: .07,
@@ -70,6 +72,81 @@ const CHALLENGER_STRENGTH_DISCOUNTS = {
 
 const MANUAL_HOUSE_CHALLENGER_STRENGTH = {
   // Use entries such as "PA-07": { D: "notable" } when a challenger has prior office strength.
+};
+
+const HOUSE_PRIMARY_DATES = {
+  AR: "2026-03-03",
+  NC: "2026-03-03",
+  TX: "2026-03-03",
+  MS: "2026-03-10",
+  IL: "2026-03-17",
+  IN: "2026-05-05",
+  OH: "2026-05-05",
+  NE: "2026-05-12",
+  WV: "2026-05-12",
+  LA: "2026-05-16",
+  AL: "2026-05-19",
+  GA: "2026-05-19",
+  ID: "2026-05-19",
+  KY: "2026-05-19",
+  OR: "2026-05-19",
+  PA: "2026-05-19",
+  CA: "2026-06-02",
+  SD: "2026-06-02",
+  IA: "2026-06-02",
+  NJ: "2026-06-02",
+  MT: "2026-06-02",
+  NM: "2026-06-02",
+  SC: "2026-06-09",
+  ME: "2026-06-09",
+  NV: "2026-06-09",
+  ND: "2026-06-09",
+  OK: "2026-06-16",
+  MD: "2026-06-23",
+  NY: "2026-06-23",
+  UT: "2026-06-23",
+  CO: "2026-06-30",
+  AZ: "2026-07-21",
+  KS: "2026-08-04",
+  MI: "2026-08-04",
+  MO: "2026-08-04",
+  VA: "2026-08-04",
+  WA: "2026-08-04",
+  TN: "2026-08-06",
+  HI: "2026-08-08",
+  CT: "2026-08-11",
+  MN: "2026-08-11",
+  VT: "2026-08-11",
+  WI: "2026-08-11",
+  WY: "2026-08-18",
+  AK: "2026-08-18",
+  FL: "2026-08-18",
+  MA: "2026-09-01",
+  DE: "2026-09-15",
+  NH: "2026-09-08",
+  RI: "2026-09-08"
+};
+
+const HOUSE_PRIMARY_OVERRIDES = {
+  "TX": { runoffDate: "2026-05-26", primarySummary: "Texas held a March 3 primary and May 26 runoff where needed." },
+  "LA": {
+    primaryDate: "2026-11-03",
+    primarySummary: "Louisiana's May House primaries were suspended after Louisiana v. Callais; House races are modeled under Act 2 / SB 121 unless litigation changes the map."
+  },
+  "AL-01": { primaryDate: "2026-08-11", primarySummary: "Alabama CD-1 primary timing is affected by pending map litigation and state scheduling orders." },
+  "AL-02": { primaryDate: "2026-08-11", primarySummary: "Alabama CD-2 primary timing is affected by pending map litigation and state scheduling orders." },
+  "AL-06": { primaryDate: "2026-08-11", primarySummary: "Alabama CD-6 primary timing is affected by pending map litigation and state scheduling orders." },
+  "AL-07": { primaryDate: "2026-08-11", primarySummary: "Alabama CD-7 primary timing is affected by pending map litigation and state scheduling orders." }
+};
+
+const HOUSE_CANDIDATE_PROFILE_SCORES = {
+  incumbent: { quality: .55, uncertainty: -.45 },
+  resolvedNominee: { quality: .18, uncertainty: -.35 },
+  presumptiveNominee: { quality: .1, uncertainty: -.18 },
+  openSeatKnown: { quality: 0, uncertainty: .15 },
+  unresolved: { quality: -.1, uncertainty: .45 },
+  placeholder: { quality: -.28, uncertainty: .72 },
+  strongChallenger: { quality: .22, uncertainty: -.1 }
 };
 
 const STATE_COALITION_TRAITS = {
@@ -132,6 +209,203 @@ const STATUS_TO_RATING = {
 
 const RATING_ORDER = ["Safe D", "Likely D", "Lean D", "Tilt D", "Toss-up", "Tilt R", "Lean R", "Likely R", "Safe R"];
 const STATELESS_DISTRICTS = new Set(["DC-AL"]);
+
+const REDISTRICTING_STATE_STATUS = {
+  AL: {
+    status: "litigation-pending",
+    modelTreatment: "2024 court map retained for now",
+    effectiveFor2026: false,
+    note: "Alabama's request to revert to its 2023 congressional map was blocked on May 26, 2026; the court map remains the baseline while appeals continue.",
+    source: "NCSL mid-decade tracker; AP/Axios May 2026 coverage"
+  },
+  CA: {
+    status: "new-2026-map",
+    modelTreatment: "2026 enacted map",
+    effectiveFor2026: true,
+    note: "California's Proposition 50 map is treated as the 2026 baseline.",
+    source: "NCSL mid-decade tracker"
+  },
+  FL: {
+    status: "new-2026-map",
+    modelTreatment: "2026 enacted map with litigation watch",
+    effectiveFor2026: true,
+    note: "Florida enacted a new 2026 congressional map; state litigation remains a watch item.",
+    source: "NCSL mid-decade tracker"
+  },
+  GA: {
+    status: "future-cycle-watch",
+    modelTreatment: "current map for 2026",
+    effectiveFor2026: false,
+    note: "Georgia's official redistricting steps are for 2028, not the 2026 House election.",
+    source: "NCSL mid-decade tracker"
+  },
+  IN: {
+    status: "failed-redraw",
+    modelTreatment: "2021 map retained",
+    effectiveFor2026: false,
+    note: "Indiana lawmakers voted down new maps; current maps remain in effect for 2026.",
+    source: "NCSL mid-decade tracker"
+  },
+  LA: {
+    status: "new-2026-map",
+    modelTreatment: "Act 2 / SB 121 local override",
+    effectiveFor2026: true,
+    note: "Louisiana enacted Act 2 / SB 121 on May 29, 2026 after Louisiana v. Callais; the model forces a 5R-1D seat-rating baseline until public rating feeds fully catch up.",
+    source: "Louisiana Legislature SB121; Louisiana redistricting files; AP May 29, 2026"
+  },
+  MD: {
+    status: "failed-redraw",
+    modelTreatment: "current map for 2026",
+    effectiveFor2026: false,
+    note: "Maryland redistricting legislation died; no new 2026 congressional map is modeled.",
+    source: "NCSL mid-decade tracker"
+  },
+  MO: {
+    status: "new-2026-map",
+    modelTreatment: "2025 enacted map with referendum watch",
+    effectiveFor2026: true,
+    note: "Missouri's 2025 map is modeled as active while referendum and signature litigation continue.",
+    source: "NCSL mid-decade tracker"
+  },
+  NC: {
+    status: "new-2026-map",
+    modelTreatment: "2025 enacted map",
+    effectiveFor2026: true,
+    note: "North Carolina's October 2025 congressional map is treated as active for 2026.",
+    source: "NCSL mid-decade tracker"
+  },
+  NY: {
+    status: "failed-redraw",
+    modelTreatment: "current map for 2026",
+    effectiveFor2026: false,
+    note: "A state court redraw order was stayed and dismissed; current New York maps remain in effect.",
+    source: "NCSL mid-decade tracker"
+  },
+  OH: {
+    status: "new-2026-map",
+    modelTreatment: "2025 adopted map",
+    effectiveFor2026: true,
+    note: "Ohio's October 2025 map is treated as active for 2026.",
+    source: "NCSL mid-decade tracker"
+  },
+  SC: {
+    status: "failed-redraw",
+    modelTreatment: "2022 map retained",
+    effectiveFor2026: false,
+    note: "South Carolina redistricting legislation died in the Senate; 2022 congressional maps remain the 2026 baseline.",
+    source: "NCSL mid-decade tracker"
+  },
+  TN: {
+    status: "new-2026-map",
+    modelTreatment: "2026 enacted map",
+    effectiveFor2026: true,
+    note: "Tennessee's May 2026 congressional map is treated as active for 2026.",
+    source: "NCSL mid-decade tracker"
+  },
+  TX: {
+    status: "new-2026-map",
+    modelTreatment: "2025 enacted map, Supreme Court stay in place",
+    effectiveFor2026: true,
+    note: "Texas's 2025 map is treated as active for 2026 after the Supreme Court stayed the lower-court injunction.",
+    source: "NCSL mid-decade tracker"
+  },
+  UT: {
+    status: "new-2026-map",
+    modelTreatment: "court-adopted 2025 map",
+    effectiveFor2026: true,
+    note: "Utah's court-adopted 2025 map is treated as active for 2026.",
+    source: "NCSL mid-decade tracker"
+  },
+  VA: {
+    status: "failed-redraw",
+    modelTreatment: "2021 court map retained",
+    effectiveFor2026: false,
+    note: "Virginia's attempted 2026 congressional map was overturned; the 2021 court map is used.",
+    source: "NCSL mid-decade tracker"
+  },
+  WA: {
+    status: "failed-redraw",
+    modelTreatment: "current map for 2026",
+    effectiveFor2026: false,
+    note: "Washington's redistricting proposal died; no new 2026 congressional map is modeled.",
+    source: "NCSL mid-decade tracker"
+  }
+};
+
+const DISTRICT_REDISTRICTING_OVERRIDES = {
+  "LA-01": {
+    sourceRating: "Safe R",
+    rating: "Safe R",
+    presidentialMargin: -38.2,
+    congressionalMargin: -42.8,
+    fundamentalMargin: -40.3,
+    label: "Steve Scalise",
+    incumbent: "Steve Scalise",
+    seatParty: "R",
+    redistrictingNote: "Act 2 / SB 121 keeps LA-01 as a strongly Republican seat."
+  },
+  "LA-02": {
+    sourceRating: "Safe D",
+    rating: "Safe D",
+    presidentialMargin: 31.6,
+    congressionalMargin: 39.6,
+    fundamentalMargin: 35.2,
+    label: "Troy Carter / Cleo Fields drawn in",
+    incumbent: "Troy Carter",
+    demCandidate: "Troy Carter / Cleo Fields",
+    repCandidate: "Republican",
+    seatParty: "D",
+    redistrictingNote: "Act 2 / SB 121 preserves one Democratic-leaning New Orleans-Baton Rouge seat while drawing Cleo Fields into the remaining Democratic district."
+  },
+  "LA-03": {
+    sourceRating: "Safe R",
+    rating: "Safe R",
+    presidentialMargin: -45,
+    congressionalMargin: -51.9,
+    fundamentalMargin: -48.1,
+    label: "Clay Higgins",
+    incumbent: "Clay Higgins",
+    seatParty: "R",
+    redistrictingNote: "Act 2 / SB 121 keeps LA-03 as a strongly Republican seat."
+  },
+  "LA-04": {
+    sourceRating: "Safe R",
+    rating: "Safe R",
+    presidentialMargin: -52.4,
+    congressionalMargin: -100,
+    fundamentalMargin: -68,
+    label: "Mike Johnson",
+    incumbent: "Mike Johnson",
+    seatParty: "R",
+    redistrictingNote: "Act 2 / SB 121 keeps LA-04 as a strongly Republican seat."
+  },
+  "LA-05": {
+    sourceRating: "Safe R",
+    rating: "Safe R",
+    presidentialMargin: -36.4,
+    congressionalMargin: -37,
+    fundamentalMargin: -36.7,
+    label: "Julia Letlow / open",
+    incumbent: "Julia Letlow",
+    open: true,
+    seatParty: "R",
+    redistrictingNote: "Act 2 / SB 121 keeps LA-05 as a strongly Republican seat."
+  },
+  "LA-06": {
+    sourceRating: "Safe R",
+    rating: "Safe R",
+    presidentialMargin: -24.5,
+    congressionalMargin: -31,
+    fundamentalMargin: -27.4,
+    label: "Cleo Fields seat redrawn / open-equivalent",
+    incumbent: "Redrawn seat",
+    demCandidate: "Democrat",
+    repCandidate: "Republican",
+    open: true,
+    seatParty: "R",
+    redistrictingNote: "Act 2 / SB 121 eliminates the prior second Democratic-leaning majority-Black seat; LA-06 is modeled as Republican-leaning unless litigation changes the map."
+  }
+};
 
 function modelDateKey() {
   if (/^\d{4}-\d{2}-\d{2}$/.test(process.env.MODEL_DATE || "")) return process.env.MODEL_DATE;
@@ -498,9 +772,11 @@ function adjustedDistricts(sourceData) {
   const genericShift = clamp(sourceData.genericPolling.margin * MODEL_WEIGHTS.genericBallot, -MODEL_WEIGHTS.genericBallotCap, MODEL_WEIGHTS.genericBallotCap);
   const nationalFinanceShift = (sourceData.fec.__national?.financeSignal || 0) * MODEL_WEIGHTS.nationalFinance;
   const baseDistricts = sourceData.mapDistricts.length >= 400 ? sourceData.mapDistricts : sourceData.cookDistricts;
-  return baseDistricts.map((district) => {
+  return baseDistricts.map((sourceDistrict) => {
+    const district = applyRedistrictingOverride(sourceDistrict);
+    const nomination = houseNominationInfo(district);
     const inside = sourceData.insideRatings[district.id];
-    const sourceRating = inside?.rating || district.sourceRating || district.rating;
+    const sourceRating = district.redistrictingOverride ? district.sourceRating : inside?.rating || district.sourceRating || district.rating;
     const ratingMargin = RATING_TO_MARGIN[sourceRating] ?? 0;
     const contextMargin = contextualDistrictMargin(district, ratingMargin);
     const baselineMargin = ratingMargin * .88 + contextMargin * MODEL_WEIGHTS.districtFundamentals;
@@ -510,8 +786,10 @@ function adjustedDistricts(sourceData) {
     const openPenalty = district.open ? (baselineMargin > 0 ? -MODEL_WEIGHTS.incumbencyOpenPenalty : MODEL_WEIGHTS.incumbencyOpenPenalty) : 0;
     const financeSignal = sourceData.fec[district.id]?.financeSignal ?? 0;
     const demographicPull = houseDemographicPull(district, challengerStrength);
-    const margin = baselineMargin * MODEL_WEIGHTS.ratingBaseline + genericShift + nationalFinanceShift + MODEL_WEIGHTS.historicalMidterm + incumbencyAdjustment + openPenalty + demographicPull.adjustment + financeSignal * MODEL_WEIGHTS.finance;
-    const error = Math.max(RATING_TO_ERROR[sourceRating] ?? 8, inside ? RATING_TO_ERROR[inside.rating] ?? 8 : 0);
+    const candidateQualityAdjustment = houseCandidateQualityAdjustment(district, nomination);
+    const nominationAdjustment = nomination.marginAdjustment * MODEL_WEIGHTS.nominationCertainty;
+    const margin = baselineMargin * MODEL_WEIGHTS.ratingBaseline + genericShift + nationalFinanceShift + MODEL_WEIGHTS.historicalMidterm + incumbencyAdjustment + openPenalty + demographicPull.adjustment + financeSignal * MODEL_WEIGHTS.finance + candidateQualityAdjustment + nominationAdjustment;
+    const error = Math.max(RATING_TO_ERROR[sourceRating] ?? 8, inside ? RATING_TO_ERROR[inside.rating] ?? 8 : 0) + nomination.errorAdjustment;
     const demProbability = logistic(margin, error);
     return {
       ...district,
@@ -535,13 +813,119 @@ function adjustedDistricts(sourceData) {
         ratingBaseline: Number(ratingMargin.toFixed(2)),
         openPenalty: Number(openPenalty.toFixed(2)),
         incumbencyAdjustment: Number(incumbencyAdjustment.toFixed(2)),
+        nomination,
+        candidateQualityAdjustment: Number(candidateQualityAdjustment.toFixed(2)),
+        nominationAdjustment: Number(nominationAdjustment.toFixed(2)),
         demographicPull,
         challengerStrength,
         finance: sourceData.fec[district.id] || null
       },
-      sourceBlend: inside ? `${district.ratingSource} + table cross-check` : district.ratingSource
+      primaryDate: nomination.primaryDate,
+      primaryStatus: nomination.status,
+      primarySummary: nomination.summary,
+      demStatus: nomination.demStatus,
+      repStatus: nomination.repStatus,
+      demProfile: nomination.demProfile,
+      repProfile: nomination.repProfile,
+      sourceBlend: district.redistrictingOverride ? district.ratingSource : inside ? `${district.ratingSource} + table cross-check` : district.ratingSource
     };
   });
+}
+
+function applyRedistrictingOverride(district) {
+  const stateStatus = REDISTRICTING_STATE_STATUS[district.state] || null;
+  const override = DISTRICT_REDISTRICTING_OVERRIDES[district.id];
+  if (!override && !stateStatus) return district;
+  return {
+    ...district,
+    ...(override || {}),
+    ratingSource: override ? `${district.ratingSource}; local redistricting override` : district.ratingSource,
+    redistrictingStatus: stateStatus?.status || "current",
+    redistrictingTreatment: stateStatus?.modelTreatment || "current map",
+    redistrictingEffectiveFor2026: Boolean(stateStatus?.effectiveFor2026),
+    redistrictingNote: override?.redistrictingNote || stateStatus?.note || null,
+    redistrictingOverride: Boolean(override)
+  };
+}
+
+function isPlaceholderCandidate(name, party) {
+  const normalized = String(name || "").trim().toLowerCase();
+  if (!normalized) return true;
+  if (party === "D" && ["democrat", "democratic candidate"].includes(normalized)) return true;
+  if (party === "R" && ["republican", "republican candidate"].includes(normalized)) return true;
+  return /\/|tbd|unknown|placeholder/.test(normalized);
+}
+
+function housePrimaryDate(district) {
+  const override = HOUSE_PRIMARY_OVERRIDES[district.id] || HOUSE_PRIMARY_OVERRIDES[district.state] || {};
+  return override.primaryDate || HOUSE_PRIMARY_DATES[district.state] || null;
+}
+
+function primaryHasPassed(date) {
+  return Boolean(date && date <= MODEL_DATE_KEY);
+}
+
+function candidateProfileForDistrict(district, party, status) {
+  const candidateName = party === "D" ? district.demCandidate : district.repCandidate;
+  const placeholder = isPlaceholderCandidate(candidateName, party);
+  const incumbent = district.seatParty === party && !district.open;
+  const challengerStrength = districtChallengerStrength(district);
+  let key = placeholder ? "placeholder" : status === "nominee" ? "resolvedNominee" : status === "presumptive" ? "presumptiveNominee" : district.open ? "openSeatKnown" : "unresolved";
+  if (incumbent) key = "incumbent";
+  if (!incumbent && challengerStrength !== "none" && ((party === "D" && district.seatParty === "R") || (party === "R" && district.seatParty === "D"))) key = "strongChallenger";
+  return {
+    key,
+    name: candidateName || (party === "D" ? "Democrat" : "Republican"),
+    party,
+    placeholder,
+    incumbent,
+    strength: challengerStrength,
+    ...HOUSE_CANDIDATE_PROFILE_SCORES[key]
+  };
+}
+
+function houseNominationInfo(district) {
+  const primaryDate = housePrimaryDate(district);
+  const override = HOUSE_PRIMARY_OVERRIDES[district.id] || HOUSE_PRIMARY_OVERRIDES[district.state] || {};
+  const passed = primaryHasPassed(primaryDate);
+  const demKnown = !isPlaceholderCandidate(district.demCandidate, "D");
+  const repKnown = !isPlaceholderCandidate(district.repCandidate, "R");
+  const demIncumbent = district.seatParty === "D" && !district.open && demKnown;
+  const repIncumbent = district.seatParty === "R" && !district.open && repKnown;
+  const demStatus = passed && demKnown ? "nominee" : demIncumbent ? "presumptive" : demKnown ? "filed" : "unresolved";
+  const repStatus = passed && repKnown ? "nominee" : repIncumbent ? "presumptive" : repKnown ? "filed" : "unresolved";
+  const demProfile = candidateProfileForDistrict(district, "D", demStatus);
+  const repProfile = candidateProfileForDistrict(district, "R", repStatus);
+  const demCertainty = demStatus === "nominee" ? 1 : demStatus === "presumptive" ? .78 : demStatus === "filed" ? .5 : .2;
+  const repCertainty = repStatus === "nominee" ? 1 : repStatus === "presumptive" ? .78 : repStatus === "filed" ? .5 : .2;
+  const marginAdjustment = clamp((demCertainty - repCertainty) * .55, -.45, .45);
+  const unknownCount = (demStatus === "unresolved" ? 1 : 0) + (repStatus === "unresolved" ? 1 : 0);
+  const errorAdjustment = passed ? Math.max(0, unknownCount * .35) : .75 + unknownCount * .45;
+  const status = passed ? "resolved-or-filed" : "pending";
+  const summary = override.primarySummary || (primaryDate
+    ? `${passed ? "Primary date has passed" : "Primary scheduled"} for ${primaryDate}; known candidates are treated as ${passed ? "nominees unless the source still has placeholders" : "filed or presumptive candidates"}.`
+    : "Primary date not entered; candidate status is inferred from incumbency and available candidate names.");
+  return {
+    status,
+    primaryDate,
+    demStatus,
+    repStatus,
+    demCertainty: Number(demCertainty.toFixed(2)),
+    repCertainty: Number(repCertainty.toFixed(2)),
+    marginAdjustment: Number(marginAdjustment.toFixed(2)),
+    errorAdjustment: Number(errorAdjustment.toFixed(2)),
+    demProfile,
+    repProfile,
+    summary
+  };
+}
+
+function houseCandidateQualityAdjustment(district, nomination) {
+  const demQuality = nomination.demProfile?.quality || 0;
+  const repQuality = nomination.repProfile?.quality || 0;
+  const demUncertainty = nomination.demProfile?.uncertainty || 0;
+  const repUncertainty = nomination.repProfile?.uncertainty || 0;
+  return clamp(((demQuality - repQuality) * MODEL_WEIGHTS.candidateQuality) + ((repUncertainty - demUncertainty) * .12), -.75, .75);
 }
 
 function districtChallengerStrength(district) {
@@ -815,6 +1199,29 @@ function ratingSummary(districts) {
   }));
 }
 
+function redistrictingSummary(districts) {
+  const overriddenDistricts = districts
+    .filter((district) => district.redistrictingOverride)
+    .map((district) => district.id);
+  const states = Object.fromEntries(Object.entries(REDISTRICTING_STATE_STATUS).map(([state, value]) => [state, value]));
+  const seatRatingsByState = {};
+  for (const district of districts) {
+    if (!REDISTRICTING_STATE_STATUS[district.state]) continue;
+    seatRatingsByState[district.state] ||= { D: 0, R: 0, tossup: 0, districts: 0 };
+    seatRatingsByState[district.state].districts += 1;
+    if (district.rating.endsWith("D")) seatRatingsByState[district.state].D += 1;
+    else if (district.rating.endsWith("R")) seatRatingsByState[district.state].R += 1;
+    else seatRatingsByState[district.state].tossup += 1;
+  }
+  return {
+    reviewedAt: new Date().toISOString(),
+    sourceNote: "State statuses are maintained locally so stale public rating feeds do not silently drive the House model after mid-decade map changes.",
+    states,
+    overriddenDistricts,
+    seatRatingsByState
+  };
+}
+
 function readPreviousForecast() {
   try {
     return JSON.parse(readFileSync(OUTPUT_URL, "utf8"));
@@ -878,8 +1285,9 @@ async function writeHouseForecast() {
     mapBasis: {
       display: "district cartogram",
       boundarySource: "Census 2025 cartographic boundary files for the 119th congressional districts",
-      districtShapeMapStatus: sourceData.censusDistrictBoundaryPageReachable ? "boundary source reachable; local GeoJSON not bundled yet" : "boundary source not reached during this run",
-      redistrictingTreatment: "Current district-by-district ratings and margins are used directly; no separate redistricting bonus is added on top of the seat ratings."
+      districtShapeMapStatus: sourceData.censusDistrictBoundaryPageReachable ? "boundary source reachable; local GeoJSON bundled for pre-redraw 119th shapes only" : "boundary source not reached during this run",
+      redistrictingTreatment: "District-by-district ratings and margins are used directly, with local redistricting overrides where public rating feeds lag enacted or court-ordered maps.",
+      redistrictingShapeWarning: "The visible shape map may lag enacted 2026 redistricting in states with new maps. Forecast ratings use the redistricting override layer even when the temporary map geometry has not been replaced."
     },
     sourceStatus: sourceData.status,
     sourceSummary: {
@@ -894,7 +1302,8 @@ async function writeHouseForecast() {
       raceToTheWhGenericReachable: sourceData.raceToTheWhGenericReachable,
       realClearGenericReachable: sourceData.realClearGenericReachable,
       realClearHousePollsReachable: sourceData.realClearHousePollsReachable,
-      censusDistrictBoundaryPageReachable: sourceData.censusDistrictBoundaryPageReachable
+      censusDistrictBoundaryPageReachable: sourceData.censusDistrictBoundaryPageReachable,
+      redistricting: redistrictingSummary(districts)
     },
     ratingSummary: ratingSummary(districts),
     controlHistory: appendControlHistory(model),
