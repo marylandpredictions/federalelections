@@ -5,6 +5,30 @@ const repCandidateId = process.argv[3] || "vance";
 const FORECAST_URL = new URL(`../data/president-forecast-${demCandidateId}-${repCandidateId}.json`, import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const previousForecast = readPreviousForecast();
+const MODEL_TIME_ZONE = "America/Chicago";
+
+function modelDateKey(date = new Date()) {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(process.env.MODEL_DATE || "")) return process.env.MODEL_DATE;
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: MODEL_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function modelRunDateLabel(date = new Date()) {
+  const modelDate = process.env.MODEL_DATE;
+  const source = /^\d{4}-\d{2}-\d{2}$/.test(modelDate || "") ? new Date(`${modelDate}T12:00:00`) : date;
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: MODEL_TIME_ZONE,
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  }).format(source);
+}
 
 function decodeHtml(value) {
   return String(value || "")
@@ -754,7 +778,8 @@ const SETTINGS = {
   nationalErrorSD: 4.8,
   stateErrorSD: 5.2,
   correlation: 0.6,
-  runDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+  modelDate: modelDateKey(),
+  runDate: modelRunDateLabel()
 };
 
 const STATE_NAMES = {
@@ -1562,6 +1587,8 @@ function buildForecast(demCandidate, repCandidate, fundamentals, pollingData = n
   
   return {
     date: SETTINGS.runDate,
+    modelDate: SETTINGS.modelDate,
+    generatedAt: new Date().toISOString(),
     demCandidate: demCandidate.id,
     repCandidate: repCandidate.id,
     demCandidateName: demCandidate.name,

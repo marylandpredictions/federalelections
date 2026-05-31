@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const previousForecast = readPreviousForecast();
+const MODEL_TIME_ZONE = "America/Chicago";
 
 async function fetchText(url, label, status, options = {}) {
   const startedAt = Date.now();
@@ -536,13 +537,26 @@ function clamp(value, min, max) {
 }
 
 function localDateKey(date = new Date()) {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(process.env.MODEL_DATE || "")) return process.env.MODEL_DATE;
   const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: MODEL_TIME_ZONE,
     year: "numeric",
     month: "2-digit",
     day: "2-digit"
   }).formatToParts(date);
   const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
   return `${values.year}-${values.month}-${values.day}`;
+}
+
+function localRunDateLabel(date = new Date()) {
+  const modelDate = process.env.MODEL_DATE;
+  const source = /^\d{4}-\d{2}-\d{2}$/.test(modelDate || "") ? new Date(`${modelDate}T12:00:00`) : date;
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: MODEL_TIME_ZONE,
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  }).format(source);
 }
 
 function candidateProfileKey(name) {
@@ -826,7 +840,8 @@ async function buildForecast() {
   const forecast = {
     model: "2026 gubernatorial forecast",
     modelDate: localDateKey(),
-    runDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    generatedAt: new Date().toISOString(),
+    runDate: localRunDateLabel(),
     settings: SETTINGS,
     sourceSummary: {
       genericBallotMargin: senateSignals.genericBallotMargin,
