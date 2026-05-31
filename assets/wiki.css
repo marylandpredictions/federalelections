@@ -2623,6 +2623,10 @@ button.race-board-row {
   font-weight: 900;
 }
 
+.governor-race-row {
+  grid-template-columns: 48px minmax(130px, 1.1fr) minmax(100px, .75fr) minmax(92px, .6fr) 78px 96px minmax(150px, 1fr);
+}
+
 .path-summary {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3122,6 +3126,9 @@ button.race-board-row {
 .contact-links {
   display: grid;
   gap: 10px;
+  align-self: start;
+  align-content: start;
+  grid-auto-rows: min-content;
 }
 
 .contact-links .outline-card {
@@ -3130,7 +3137,9 @@ button.race-board-row {
 
 .social-card {
   display: grid;
-  gap: 14px;
+  gap: 12px;
+  align-content: start;
+  padding-bottom: 16px;
 }
 
 .social-icon-grid {

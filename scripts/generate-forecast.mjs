@@ -4,7 +4,7 @@ const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const previousForecast = readPreviousForecast();
 
 const SETTINGS = {
-  simulations: 40000,
+  simulations: 100000,
   safeDemSeats: 34,
   demControlThreshold: 51,
   runDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),

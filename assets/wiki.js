@@ -1173,6 +1173,7 @@ function governorHoverMarkup(race) {
       <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(race.margin)}</strong></div>
     </div>
     <p>${escapeHtml(race.status)}. Incumbent party: ${escapeHtml(race.incumbentParty)}.</p>
+    ${renderMovementPanel(race)}
     <p class="meta">Tipping power: ${oneDecimal(race.tippingPower || 0)}</p>
   `;
 }
@@ -1293,13 +1294,14 @@ function renderGovernorRaceBoard() {
     const leader = race.demProbability >= .5 ? "D" : "R";
     const probability = Math.max(race.demProbability, race.repProbability);
     return `
-      <div class="race-board-row ${governorLeaderClass(race)}">
+      <div class="race-board-row governor-race-row ${governorLeaderClass(race)}">
         <strong>${escapeHtml(race.state)}</strong>
         <span>${escapeHtml(race.displayName)}</span>
         <span>${escapeHtml(race.status)}</span>
         <span>${escapeHtml(race.rating)}</span>
         <span>${signedPointMargin(race.margin)}</span>
         <span>${leader} ${oneDecimal(probability)}</span>
+        <span>${escapeHtml(movementText(race))}</span>
       </div>
     `;
   }).join("");

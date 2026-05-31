@@ -225,7 +225,7 @@ async function fetchAllSources() {
 }
 
 const SETTINGS = {
-  simulations: 50000,
+  simulations: 100000,
   electionDate: "2026-11-03",
   currentDemGovernors: 24,
   currentRepGovernors: 26,
@@ -796,8 +796,54 @@ function appendHistory(forecast) {
   return history.slice(-365);
 }
 
+function governorMovementDrivers(race) {
+  const previousRace = previousForecast?.races?.find((item) => item.state === race.state);
+  if (!previousRace) return [{ label: "First saved run", detail: "No previous generated race file to compare." }];
+  const drivers = [];
+  const addDriver = (label, value, detail) => {
+    if (!Number.isFinite(value) || Math.abs(value) < .05) return;
+    drivers.push({ label, change: Number(value.toFixed(2)), detail });
+  };
+  addDriver("Polling", (race.sourceInputs?.pollMargin ?? 0) - (previousRace.sourceInputs?.pollMargin ?? 0), "Weighted governor polling margin changed.");
+  addDriver("Projected margin", race.margin - previousRace.margin, "Combined governor model margin changed.");
+  addDriver("Finance", (race.sourceInputs?.financeSignal ?? 0) - (previousRace.sourceInputs?.financeSignal ?? 0), "OpenFEC finance signal changed.");
+  addDriver("Generic ballot", (race.sourceInputs?.nationalFinance ?? 0) - (previousRace.sourceInputs?.nationalFinance ?? 0), "Shared national environment changed.");
+  addDriver("Demographic pull", (race.demographicPull?.adjustment ?? 0) - (previousRace.demographicPull?.adjustment ?? 0), "Candidate coalition profile changed.");
+  if (race.rating !== previousRace.rating) drivers.push({ label: "Rating", change: null, detail: `${previousRace.rating} to ${race.rating}` });
+  return drivers
+    .sort((a, b) => Math.abs(b.change || 0) - Math.abs(a.change || 0))
+    .slice(0, 5);
+}
+
+function buildRaceHistory(race, key) {
+  const current = { date: key, dem: race.demProbability, rep: race.repProbability };
+  const previousRace = previousForecast?.races?.find((item) => item.state === race.state);
+  const stored = Array.isArray(previousRace?.history) ? previousRace.history : [];
+  const withoutToday = stored.filter((point) => point.date !== current.date && point.date <= key);
+  return [...withoutToday, current].sort((a, b) => a.date.localeCompare(b.date)).slice(-180);
+}
+
+function probabilityMovement(history) {
+  if (!Array.isArray(history) || history.length < 2) {
+    return { sinceLastRun: 0, sinceWeek: 0, previousDate: null, weekDate: null };
+  }
+  const latest = history.at(-1);
+  const previous = history.at(-2);
+  const latestDate = new Date(`${latest.date}T00:00:00Z`);
+  const weekCutoff = new Date(latestDate);
+  weekCutoff.setUTCDate(weekCutoff.getUTCDate() - 7);
+  const weekPoint = [...history].reverse().find((point) => new Date(`${point.date}T00:00:00Z`) <= weekCutoff) || history[0];
+  return {
+    sinceLastRun: Number(((latest.dem - previous.dem) * 100).toFixed(1)),
+    sinceWeek: Number(((latest.dem - weekPoint.dem) * 100).toFixed(1)),
+    previousDate: previous.date,
+    weekDate: weekPoint.date
+  };
+}
+
 async function buildForecast() {
   const sourceData = await fetchAllSources();
+  const modelDate = localDateKey();
   const senateSignals = readSenateSignals();
   const nationalShift = clamp(senateSignals.genericBallotMargin * 0.18, -1.8, 1.8);
   const modeledRaces = GOVERNOR_RACES.map((race) => buildRace(race, nationalShift, sourceData));
@@ -830,6 +876,9 @@ async function buildForecast() {
     if (race.demProbability >= .5) demWinningRaceTotal += 1;
     else repWinningRaceTotal += 1;
     race.tippingPower = Number((decisive[race.state] / SETTINGS.simulations).toFixed(5));
+    race.movementDrivers = governorMovementDrivers(race);
+    race.history = buildRaceHistory(race, modelDate);
+    race.movement = probabilityMovement(race.history);
   }
   for (const [count, simulations] of Object.entries(distribution)) {
     demCountTotal += Number(count) * simulations;
@@ -839,7 +888,7 @@ async function buildForecast() {
   const medianDemGovernors = demCounts[Math.floor(demCounts.length / 2)];
   const forecast = {
     model: "2026 gubernatorial forecast",
-    modelDate: localDateKey(),
+    modelDate,
     generatedAt: new Date().toISOString(),
     runDate: localRunDateLabel(),
     settings: SETTINGS,
@@ -857,6 +906,7 @@ async function buildForecast() {
     medianDemGovernors,
     medianRepGovernors: 50 - medianDemGovernors,
     distribution,
+    stateHistory: Object.fromEntries(modeledRaces.map((race) => [race.state, race.history])),
     races: modeledRaces.sort((a, b) => STATE_NAMES[a.state].localeCompare(STATE_NAMES[b.state]))
   };
   forecast.governorCountHistory = appendHistory(forecast);

@@ -5,7 +5,7 @@ const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const previousForecast = readPreviousForecast();
 
 const SETTINGS = {
-  simulations: 30000,
+  simulations: 100000,
   controlThreshold: 218,
   updateTime: "around 6:20 AM Central",
   updateZone: "America/Chicago",
