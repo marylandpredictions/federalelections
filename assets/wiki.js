@@ -788,7 +788,7 @@ function renderHomeRadar() {
   if (senate && forecast) {
     const races = [...forecast.races]
       .filter((race) => race.competitive || race.tippingPower > .05)
-      .sort((a, b) => b.tippingPower - a.tippingPower)
+      .sort((a, b) => a.winnerProbability - b.winnerProbability)
       .slice(0, 6);
     senate.innerHTML = races.map((race) => {
       const leader = candidateForecastName(race, race.winnerParty);
@@ -797,7 +797,7 @@ function renderHomeRadar() {
           <strong>${escapeHtml(race.state)}</strong>
           <span>${escapeHtml(race.displayName.replace(" Senate", ""))}</span>
           <b>${escapeHtml(leader)} ${oneDecimal(race.winnerProbability)}</b>
-          <i>Impact ${oneDecimal(race.tippingPower)}</i>
+          <i>${escapeHtml(race.rating || "Watch")}</i>
         </a>
       `;
     }).join("");
@@ -805,13 +805,16 @@ function renderHomeRadar() {
 
   const house = document.getElementById("home-house-radar");
   if (house && houseForecast) {
-    const districts = [...(houseForecast.decisiveDistricts || [])].slice(0, 6);
+    const districts = [...(houseForecast.districts || houseForecast.decisiveDistricts || [])]
+      .filter((district) => district.competitive || district.winnerProbability < .75)
+      .sort((a, b) => a.winnerProbability - b.winnerProbability)
+      .slice(0, 6);
     house.innerHTML = districts.map((district) => `
       <a class="home-radar-row ${houseLeaderClass(district)}" href="house.html">
         <strong>${escapeHtml(district.id)}</strong>
         <span>${escapeHtml(district.label || district.rating)}</span>
         <b>${district.winnerParty === "D" ? "D" : "R"} ${oneDecimal(district.winnerProbability)}</b>
-        <i>Impact ${oneDecimal(district.leverage || 0)}</i>
+        <i>${escapeHtml(district.rating || "Watch")}</i>
       </a>
     `).join("");
   }
@@ -820,7 +823,7 @@ function renderHomeRadar() {
   if (governors && governorForecast) {
     const races = [...governorForecast.races]
       .filter((race) => race.competitive || race.tippingPower > .05)
-      .sort((a, b) => b.tippingPower - a.tippingPower)
+      .sort((a, b) => Math.max(a.demProbability, a.repProbability) - Math.max(b.demProbability, b.repProbability))
       .slice(0, 6);
     governors.innerHTML = races.map((race) => {
       const leader = race.demProbability >= .5 ? "D" : "R";
@@ -830,7 +833,7 @@ function renderHomeRadar() {
           <strong>${escapeHtml(race.state)}</strong>
           <span>${escapeHtml(race.displayName.replace(" Governor", ""))}</span>
           <b>${leader} ${oneDecimal(probability)}</b>
-          <i>Impact ${oneDecimal(race.tippingPower || 0)}</i>
+          <i>${escapeHtml(race.rating || "Watch")}</i>
         </a>
       `;
     }).join("");

@@ -61,6 +61,23 @@ function videoFromEntry(entry) {
   };
 }
 
+async function livestreamStatusFromWatchPage(video) {
+  try {
+    const response = await fetch(video.url, {
+      headers: { "User-Agent": "Mozilla/5.0 Federal Elections Analysis video updater" }
+    });
+    if (!response.ok) return video.status;
+    const html = await response.text();
+    if (/"isUpcoming"\s*:\s*true/.test(html) || /LIVE_STREAM_OFFLINE/.test(html)) return "upcoming";
+    if (/"isLiveNow"\s*:\s*true/.test(html) || /LIVE_NOW/.test(html)) return "live";
+    const timestamp = html.match(/"startTimestamp"\s*:\s*"([^"]+)"/)?.[1];
+    if (timestamp && Date.parse(timestamp) > Date.now()) return "upcoming";
+  } catch {
+    return video.status;
+  }
+  return video.status;
+}
+
 async function main() {
   const response = await fetch(RSS_URL, {
     headers: { "User-Agent": "Federal Elections Analysis video updater" }
@@ -73,9 +90,12 @@ async function main() {
 
   const livestreams = entries.filter((video) => video.kind === "livestream");
   const uploads = entries.filter((video) => video.kind === "upload").slice(0, 4);
+  for (const video of livestreams) {
+    video.status = await livestreamStatusFromWatchPage(video);
+  }
 
   const upcomingLivestream = livestreams.find((video) => video.status === "upcoming") || null;
-  const latestLivestream = livestreams.find((video) => video.status !== "upcoming") || null;
+  const latestLivestream = livestreams.find((video) => video.status === "replay" || video.status === "live") || null;
 
   const payload = {
     generatedAt: new Date().toISOString(),

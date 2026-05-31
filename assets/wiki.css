@@ -1003,6 +1003,13 @@ h3 {
   font-size: clamp(1.3rem, 2.2vw, 2rem);
 }
 
+.home-section-note {
+  max-width: 720px;
+  margin: 8px 0 0 188px;
+  color: var(--muted);
+  font: 800 .92rem/1.35 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
 .model-strip .forecast-overview-card {
   min-height: 196px;
   border: 1px solid var(--line);
@@ -1140,7 +1147,7 @@ h3 {
 .team-action-grid .forecast-overview-card {
   min-height: 132px;
   border-radius: 8px;
-  border-top: 0;
+  border-top: 1px solid var(--line);
   background: var(--chrome);
 }
 
@@ -1176,8 +1183,8 @@ h3 {
 
 .home-radar-row {
   display: grid;
-  grid-template-columns: 58px minmax(0, 1fr) 116px 112px;
-  gap: 10px;
+  grid-template-columns: 58px minmax(150px, 1fr) 108px 92px;
+  gap: 12px;
   align-items: center;
   padding: 12px;
   border-bottom: 1px solid var(--line);
@@ -1219,6 +1226,11 @@ h3 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.home-radar-row i {
+  color: var(--muted);
+  text-align: right;
 }
 
 .home-radar-row:hover,
@@ -2577,8 +2589,8 @@ button.leverage-row {
 button.race-board-row {
   width: 100%;
   background: transparent;
-  border-top: 0;
-  border-right: 0;
+  border-top: 1px solid var(--line);
+  border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   text-align: left;
 }
@@ -4339,6 +4351,10 @@ button.race-board-row {
     grid-template-columns: 1fr;
   }
 
+  .home-section-note {
+    margin-left: 0;
+  }
+
   .home-video-feature {
     grid-template-columns: 1fr;
   }
@@ -4349,7 +4365,7 @@ button.race-board-row {
   }
 
   .home-radar-row {
-    grid-template-columns: 42px minmax(0, 1fr) 108px;
+    grid-template-columns: 42px minmax(0, 1fr) 92px;
   }
 
   .home-radar-row i {
