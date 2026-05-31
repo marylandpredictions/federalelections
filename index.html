@@ -21,9 +21,15 @@
     <nav class="site-nav" aria-label="Primary navigation">
       <a class="active" href="/">Home</a>
       <a href="/videos">Videos</a>
-      <a href="/senate">Senate</a>
-      <a href="/governor">Governors</a>
-      <a href="/president">2028 Pres</a>
+      <details class="nav-dropdown">
+        <summary>Forecasts</summary>
+        <div class="nav-dropdown-menu">
+          <a href="/senate">Senate</a>
+          <a href="/house">House</a>
+          <a href="/governor">Governors</a>
+          <a href="/president">2028 Pres</a>
+        </div>
+      </details>
       <a href="/endorsements">Endorsements</a>
     </nav>
     <div class="site-nav-right">
@@ -43,6 +49,7 @@
         <p class="lede">Forecast dashboards, race signals, endorsements, videos, and team updates in one place.</p>
         <div class="hero-actions">
           <a class="button-link" href="senate.html">Senate</a>
+          <a class="button-link" href="house.html">House</a>
           <a class="button-link" href="governor.html">Governors</a>
           <a class="button-link" href="president.html">2028 president</a>
           <a class="button-link" href="endorsements.html">Endorsements</a>
@@ -55,9 +62,11 @@
         <p class="kicker">Latest run</p>
         <dl>
           <div><dt>Senate</dt><dd id="home-senate-run">--</dd></div>
+          <div><dt>House</dt><dd id="home-house-run">--</dd></div>
           <div><dt>Governors</dt><dd id="home-governor-run">--</dd></div>
           <div><dt>President</dt><dd id="home-president-run">--</dd></div>
           <div><dt>Senate median</dt><dd id="home-senate-median">--</dd></div>
+          <div><dt>House median</dt><dd id="home-house-median">--</dd></div>
           <div><dt>President avg EV</dt><dd id="home-president-ev">--</dd></div>
         </dl>
         <p class="forecast-disclaimer">Forecasts are automated estimates, not guarantees. Daily generation can take up to 20 minutes because the system separately builds 60+ matchup and race files before publishing updated data.</p>
@@ -76,6 +85,13 @@
         <b id="home-senate-favored">--</b>
         <small><i id="home-senate-dem">--</i> D / <i id="home-senate-rep">--</i> R</small>
         <small id="home-senate-note">--</small>
+      </a>
+      <a class="forecast-overview-card" id="home-house-card" href="house.html">
+        <span id="home-house-status">Live</span>
+        <strong>House</strong>
+        <b id="home-house-favored">--</b>
+        <small><i id="home-house-dem">--</i> D / <i id="home-house-rep">--</i> R</small>
+        <small id="home-house-note">--</small>
       </a>
       <a class="forecast-overview-card" id="home-president-card" href="president.html">
         <span>Live</span>
@@ -101,6 +117,10 @@
       <article class="chart-panel">
         <span class="chart-label">Senate watch</span>
         <div id="home-senate-radar" class="home-radar-list"></div>
+      </article>
+      <article class="chart-panel">
+        <span class="chart-label">House watch</span>
+        <div id="home-house-radar" class="home-radar-list"></div>
       </article>
       <article class="chart-panel">
         <span class="chart-label">Governor watch</span>
@@ -171,6 +191,7 @@
       <a href="/">Home</a>
       <a href="/videos">Videos</a>
       <a href="/senate">Senate</a>
+      <a href="/house">House</a>
       <a href="/governor">Governors</a>
       <a href="/president">2028 Pres</a>
       <a href="/endorsements">Endorsements</a>
@@ -178,9 +199,9 @@
       <a href="/about">About</a>
       <a href="/contact">Contact</a>
       <a href="/articles">Articles</a>
-          <a href="terms.html">Terms</a>
+      <a href="terms.html">Terms</a>
       <a href="privacy.html">Privacy</a>
-</nav>
+    </nav>
   </footer>
 
   <script src="assets/wiki.js"></script>

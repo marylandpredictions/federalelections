@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>House Forecast Offline | Federal Elections Analysis</title>
-  <meta name="description" content="The Federal Elections Analysis House forecast frontend is not currently public.">
+  <title>House | Federal Elections Analysis</title>
+  <meta name="description" content="2026 House forecast page for Federal Elections Analysis.">
   <link rel="icon" href="assets/img/FEA_White.png" type="image/png">
   <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
@@ -20,9 +20,15 @@
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="/">Home</a>
       <a href="/videos">Videos</a>
-      <a href="/senate">Senate</a>
-      <a href="/governor">Governors</a>
-      <a href="/president">2028 Pres</a>
+      <details class="nav-dropdown">
+        <summary class="active">Forecasts</summary>
+        <div class="nav-dropdown-menu">
+          <a href="/senate">Senate</a>
+          <a class="active" href="/house">House</a>
+          <a href="/governor">Governors</a>
+          <a href="/president">2028 Pres</a>
+        </div>
+      </details>
       <a href="/endorsements">Endorsements</a>
     </nav>
     <div class="site-nav-right">
@@ -35,11 +41,84 @@
   </header>
 
   <main>
-    <section class="text-panel image-panel">
-      <p class="kicker">House</p>
-      <h1>House forecast frontend is offline.</h1>
-      <p class="lede">The House data pipeline and saved history remain in the project, but the public-facing House page is not currently displayed.</p>
-      <p><a class="button-link" href="/">Back to home</a></p>
+    <section class="hero-grid" aria-labelledby="house-title">
+      <div class="hero-main">
+        <p class="kicker">House</p>
+        <h1 id="house-title">2026 House forecast.</h1>
+        <p class="lede">District-level control estimates, saved daily history, and the current path to 218 seats.</p>
+        <p class="model-credit">Model built and maintained by gamerdoglover.</p>
+        <div class="hero-actions">
+          <a class="button-link" href="house-method.html">Method</a>
+        </div>
+      </div>
+      <aside class="odds-panel" id="house-odds-panel" aria-label="House control probability">
+        <div>
+          <p class="kicker">Chamber control</p>
+          <div class="big-odds" id="house-odds-phrase">--</div>
+          <p id="house-control-headline">--</p>
+        </div>
+        <div class="control-bar" aria-hidden="true">
+          <span id="house-dem-control-bar"></span>
+          <span id="house-rep-control-bar"></span>
+        </div>
+        <dl>
+          <div><dt>Democratic control</dt><dd id="house-dem-control">--</dd></div>
+          <div><dt>Republican control</dt><dd id="house-rep-control">--</dd></div>
+          <div><dt>Median outcome</dt><dd id="house-median-seats">--</dd></div>
+          <div><dt>Run</dt><dd id="house-run-date">--</dd></div>
+        </dl>
+        <p class="forecast-disclaimer">Forecasts are automated estimates, not guarantees. The House model uses district ratings, national environment, candidate and seat status, and saved daily runs.</p>
+      </aside>
+    </section>
+
+    <section class="map-panel" aria-labelledby="house-map-title">
+      <div class="section-head">
+        <div>
+          <p class="kicker">Districts</p>
+          <h2 id="house-map-title">House district map.</h2>
+        </div>
+      </div>
+      <div class="house-board-layout">
+        <div>
+          <div id="house-preview-controls" class="map-color-controls" aria-label="District preview type"></div>
+          <div id="house-view-controls" class="map-color-controls" aria-label="District color mode"></div>
+          <div id="house-district-cartogram" class="district-cartogram"></div>
+          <div id="house-district-map" class="district-map" hidden></div>
+          <div id="house-district-list" class="district-list" hidden></div>
+          <div id="house-rating-legend" class="map-legend"></div>
+        </div>
+        <aside id="house-district-card" class="hover-card"></aside>
+      </div>
+    </section>
+
+    <section class="dashboard-grid" aria-label="House forecast status">
+      <article class="chart-panel chart-wide">
+        <span class="chart-label">National House control probability over time</span>
+        <div id="house-control-history-chart" class="history-chart"></div>
+      </article>
+      <article class="chart-panel chart-wide">
+        <span class="chart-label">Projected House seats over time</span>
+        <div id="house-seat-history-chart" class="history-chart"></div>
+      </article>
+      <article class="chart-panel">
+        <span class="chart-label">Seat distribution</span>
+        <div id="house-seat-histogram" class="seat-histogram"></div>
+      </article>
+      <article class="chart-panel">
+        <span class="chart-label">Closest districts</span>
+        <div id="house-decisive-districts" class="leverage-chart"></div>
+      </article>
+    </section>
+
+    <section class="text-panel" aria-labelledby="house-path-title">
+      <p class="kicker">Path to control</p>
+      <h2 id="house-path-title">What control simulations have in common.</h2>
+      <div id="house-control-path" class="path-summary"></div>
+    </section>
+
+    <section class="source-panel">
+      <p class="kicker">Run status</p>
+      <div id="house-source-status" class="source-status-grid"></div>
     </section>
   </main>
 
@@ -52,6 +131,7 @@
       <a href="/">Home</a>
       <a href="/videos">Videos</a>
       <a href="/senate">Senate</a>
+      <a href="/house">House</a>
       <a href="/governor">Governors</a>
       <a href="/president">2028 Pres</a>
       <a href="/endorsements">Endorsements</a>
@@ -59,9 +139,12 @@
       <a href="/about">About</a>
       <a href="/contact">Contact</a>
       <a href="/articles">Articles</a>
-          <a href="terms.html">Terms</a>
+      <a href="terms.html">Terms</a>
       <a href="privacy.html">Privacy</a>
-</nav>
+    </nav>
   </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="assets/wiki.js"></script>
 </body>
 </html>

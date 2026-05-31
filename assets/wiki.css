@@ -297,6 +297,7 @@ button {
 }
 
 .site-nav a,
+.site-nav summary,
 .button-link {
   min-height: 36px;
   display: inline-flex;
@@ -315,6 +316,55 @@ button {
   font-size: .9rem;
   transition: background .16s var(--ease-out), border-color .16s var(--ease-out), color .16s var(--ease-out), transform .16s var(--ease-out), box-shadow .16s var(--ease-out), filter .16s var(--ease-out);
   box-shadow: 0 0 5px rgba(0, 204, 0, .3);
+}
+
+.site-nav summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.site-nav summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown summary::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-left: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform .16s var(--ease-out);
+}
+
+.nav-dropdown[open] summary::after {
+  transform: translateY(2px) rotate(225deg);
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 50%;
+  min-width: 180px;
+  display: grid;
+  gap: 6px;
+  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--chrome) 97%, transparent);
+  box-shadow: var(--shadow);
+  transform: translateX(-50%);
+  z-index: 60;
+}
+
+.nav-dropdown-menu a {
+  width: 100%;
+  justify-content: flex-start;
 }
 
 .donate-button {
@@ -344,7 +394,9 @@ button {
 }
 
 .site-nav a:hover,
+.site-nav summary:hover,
 .site-nav a.active,
+.site-nav summary.active,
 .button-link:hover {
   color: var(--ink);
   border-color: var(--ink);
@@ -357,6 +409,7 @@ button {
 }
 
 .site-nav a:hover,
+.site-nav summary:hover,
 .button-link:hover {
   transform: translateY(-2px) scale(1.02);
 }
@@ -3846,6 +3899,11 @@ button.race-board-row {
   .site-nav,
   .site-footer nav {
     justify-content: flex-start;
+  }
+
+  .nav-dropdown-menu {
+    left: 0;
+    transform: none;
   }
 
   .hero-main {

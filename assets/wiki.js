@@ -25,6 +25,7 @@ const HOUSE_COLOR_MODES = {
 
 const HOUSE_PREVIEW_MODES = {
   board: "Board",
+  map: "Shape map",
   list: "List"
 };
 
@@ -2062,6 +2063,7 @@ function renderHouseViewControls() {
       renderHouseViewControls();
       renderHouseLegend();
       renderHouseCartogram();
+      renderHouseDistrictMap();
       renderHouseDistrictList();
     });
   });
@@ -2078,6 +2080,7 @@ function renderHousePreviewControls() {
       houseViewMode = button.dataset.housePreview || "board";
       renderHousePreviewControls();
       renderHouseCartogram();
+      renderHouseDistrictMap();
       renderHouseDistrictList();
     });
   });
@@ -2086,8 +2089,7 @@ function renderHousePreviewControls() {
 function renderHouseLegend() {
   const legend = document.getElementById("house-rating-legend");
   if (!legend) return;
-  const ratings = ["Safe D", "Likely D", "Lean D", "Tilt D", "Toss-up", "Tilt R", "Lean R", "Likely R", "Safe R"];
-  legend.innerHTML = ratings.map((rating) => `<span><i class="${RATING_BUCKET[rating]}"></i>${rating}</span>`).join("");
+  legend.innerHTML = spectrumLegendHtml();
 }
 
 function renderHouseSummary() {

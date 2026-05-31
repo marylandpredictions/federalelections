@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>House Method Offline | Federal Elections Analysis</title>
-  <meta name="description" content="The Federal Elections Analysis House method page is not currently public.">
+  <title>House Method | Federal Elections Analysis</title>
+  <meta name="description" content="2026 House method notes for Federal Elections Analysis.">
   <link rel="icon" href="assets/img/FEA_White.png" type="image/png">
   <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
@@ -20,23 +20,56 @@
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="/">Home</a>
       <a href="/videos">Videos</a>
-      <a href="/senate">Senate</a>
-      <a href="/governor">Governors</a>
-      <a href="/president">2028 Pres</a>
+      <details class="nav-dropdown">
+        <summary class="active">Forecasts</summary>
+        <div class="nav-dropdown-menu">
+          <a href="/senate">Senate</a>
+          <a class="active" href="/house">House</a>
+          <a href="/governor">Governors</a>
+          <a href="/president">2028 Pres</a>
+        </div>
+      </details>
       <a href="/endorsements">Endorsements</a>
+    </nav>
+    <div class="site-nav-right">
+      <a href="https://gofund.me/50724cf21" target="_blank" rel="noopener" class="donate-button">$ Donate</a>
       <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
         <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
         <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A8.5 8.5 0 1 1 11.21 3 6.5 6.5 0 0 0 21 12.79Z"></path></svg>
       </button>
-    </nav>
+    </div>
   </header>
 
   <main>
-    <section class="text-panel image-panel">
-      <p class="kicker">House method</p>
-      <h1>House method frontend is offline.</h1>
-      <p class="lede">Backend generation, data files, and history can continue to be maintained while the public House pages stay hidden.</p>
-      <p><a class="button-link" href="/">Back to home</a></p>
+    <section class="text-panel image-panel compact-page-head">
+      <p class="kicker">House</p>
+      <h1>Method.</h1>
+      <p class="lede">How the House model turns district inputs, national signals, and simulation error into a control forecast.</p>
+      <p class="model-credit">Model built and maintained by gamerdoglover.</p>
+    </section>
+
+    <section class="dashboard-grid" aria-label="House method">
+      <article class="chart-panel">
+        <span class="chart-label">Inputs</span>
+        <dl class="method-list">
+          <div><dt>Ratings</dt><dd>District ratings for the full 435-seat board, with public handicappers used as the main baseline.</dd></div>
+          <div><dt>Polling</dt><dd>Generic-ballot blend from the same public adapters used by the Senate model. District polling is blended only when stable district rows are available.</dd></div>
+          <div><dt>Districts</dt><dd>Open seats, presidential baseline, congressional baseline, rating bucket error, state-level correlation, national error, and current district status.</dd></div>
+        </dl>
+      </article>
+      <article class="chart-panel">
+        <span class="chart-label">Map basis</span>
+        <dl class="method-list">
+          <div><dt>Primary display</dt><dd>435-district cartogram with a shape-map fallback when the district GeoJSON loads.</dd></div>
+          <div><dt>Boundary source</dt><dd>Current 119th congressional district boundaries through the public district boundary service.</dd></div>
+          <div><dt>Redistricting</dt><dd>Handled through individual district inputs; no extra top-line party bonus is added after seats are modeled.</dd></div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="source-panel">
+      <p class="kicker">Run status</p>
+      <div id="house-source-status" class="source-status-grid"></div>
     </section>
   </main>
 
@@ -49,6 +82,7 @@
       <a href="/">Home</a>
       <a href="/videos">Videos</a>
       <a href="/senate">Senate</a>
+      <a href="/house">House</a>
       <a href="/governor">Governors</a>
       <a href="/president">2028 Pres</a>
       <a href="/endorsements">Endorsements</a>
@@ -56,9 +90,11 @@
       <a href="/about">About</a>
       <a href="/contact">Contact</a>
       <a href="/articles">Articles</a>
-          <a href="terms.html">Terms</a>
+      <a href="terms.html">Terms</a>
       <a href="privacy.html">Privacy</a>
-</nav>
+    </nav>
   </footer>
+
+  <script src="assets/wiki.js"></script>
 </body>
 </html>
