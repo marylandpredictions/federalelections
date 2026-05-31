@@ -39,6 +39,8 @@ let forecast = null;
 let houseForecast = null;
 let governorForecast = null;
 let presidentForecasts = null;
+let houseShapeGeo = null;
+let houseShapeGeoPromise = null;
 let articles = [];
 let mapColorMode = "rating";
 let selectedHouseDistrictId = null;
@@ -1940,6 +1942,94 @@ function updateHouseDistrictCard(district) {
   if (district?.id) selectedHouseDistrictId = district.id;
   const card = document.getElementById("house-district-card");
   if (card) card.innerHTML = houseDistrictMarkup(district);
+  highlightHouseShapeSelection();
+}
+
+function highlightHouseShapeSelection() {
+  document.querySelectorAll("#house-shape-map .district-shape").forEach((node) => {
+    node.classList.toggle("is-selected", Boolean(selectedHouseDistrictId && node.dataset.district === selectedHouseDistrictId));
+  });
+}
+
+async function renderHouseShapeMap() {
+  const container = document.getElementById("house-shape-map");
+  if (!container || !houseForecast) return;
+  if (!window.d3) {
+    container.innerHTML = `<p class="map-note">Shape map rendering needs D3 to load.</p>`;
+    return;
+  }
+
+  let geo;
+  try {
+    geo = houseShapeGeo || await loadHouseDistrictShapes();
+  } catch (error) {
+    container.innerHTML = `<p class="map-note">House district shape map could not load. ${escapeHtml(error.message || "")}</p>`;
+    return;
+  }
+
+  const districtById = new Map(houseForecast.districts.map((district) => [district.id, district]));
+  const width = 980;
+  const height = 610;
+  const projection = d3.geoAlbersUsa().fitSize([width, height], geo);
+  const path = d3.geoPath(projection);
+
+  container.innerHTML = "";
+  const svg = d3.select(container)
+    .append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("role", "img")
+    .attr("aria-label", "Interactive 119th Congressional District shape map");
+  const layer = svg.append("g");
+
+  const zoom = d3.zoom()
+    .scaleExtent([1, 8])
+    .on("zoom", (event) => {
+      layer.attr("transform", event.transform);
+    });
+  svg.call(zoom);
+
+  layer.selectAll("path")
+    .data(geo.features || [])
+    .join("path")
+    .attr("class", (feature) => {
+      const district = districtById.get(feature.properties?.id);
+      return district ? `district-shape ${houseDistrictBucket(district)} ${houseLeaderClass(district)}` : "district-shape state-muted";
+    })
+    .attr("data-district", (feature) => feature.properties?.id || "")
+    .attr("d", path)
+    .attr("fill", (feature) => {
+      const district = districtById.get(feature.properties?.id);
+      return district ? colorForRating(houseDistrictColorLabel(district)) : null;
+    })
+    .attr("tabindex", (feature) => districtById.has(feature.properties?.id) ? 0 : -1)
+    .attr("aria-label", (feature) => {
+      const district = districtById.get(feature.properties?.id);
+      return district ? `${houseDistrictLabel(district)}, ${houseDistrictColorLabel(district)}` : `${feature.properties?.stateName || "District"} not modeled`;
+    })
+    .on("mouseenter focus", (event, feature) => {
+      const district = districtById.get(feature.properties?.id);
+      if (district) updateHouseDistrictCard(district);
+    })
+    .on("click keydown", (event, feature) => {
+      if (event.type === "keydown" && event.key !== "Enter" && event.key !== " ") return;
+      const district = districtById.get(feature.properties?.id);
+      if (district) updateHouseDistrictCard(district);
+    })
+    .append("title")
+    .text((feature) => {
+      const district = districtById.get(feature.properties?.id);
+      return district ? `${houseDistrictLabel(district)}: ${houseDistrictColorLabel(district)}` : `${feature.properties?.stateName || "District"} not modeled`;
+    });
+
+  const zoomStep = 1.45;
+  const zoomIn = document.getElementById("house-map-zoom-in");
+  const zoomOut = document.getElementById("house-map-zoom-out");
+  const reset = document.getElementById("house-map-reset");
+  if (zoomIn) zoomIn.onclick = () => svg.transition().duration(180).call(zoom.scaleBy, zoomStep);
+  if (zoomOut) zoomOut.onclick = () => svg.transition().duration(180).call(zoom.scaleBy, 1 / zoomStep);
+  if (reset) reset.onclick = () => svg.transition().duration(180).call(zoom.transform, d3.zoomIdentity);
+
+  highlightHouseShapeSelection();
 }
 
 function renderHouseCartogram() {
@@ -2267,6 +2357,7 @@ function renderCalibrationPage() {
 
 function renderHousePage() {
   renderHouseSummary();
+  renderHouseShapeMap();
   renderHouseCartogram();
   renderHouseDistrictList();
   renderHouseLegend();
@@ -2960,6 +3051,18 @@ async function loadHouseForecast() {
   } catch {
     return null;
   }
+}
+
+async function loadHouseDistrictShapes() {
+  if (!houseShapeGeoPromise) {
+    houseShapeGeoPromise = fetch("data/house-districts-119.geojson", { cache: "no-store" })
+      .then((response) => {
+        if (!response.ok) throw new Error(`House district shapes returned ${response.status}`);
+        return response.json();
+      });
+  }
+  houseShapeGeo = await houseShapeGeoPromise;
+  return houseShapeGeo;
 }
 
 async function loadGovernorForecast() {
