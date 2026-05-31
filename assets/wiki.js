@@ -190,12 +190,13 @@ function leaderClassForRace(race) {
 }
 
 function extraCandidateRows(race) {
+  const mainCandidateKeys = new Set([race.dem, race.rep].map((name) => String(name || "").toLowerCase().trim()).filter(Boolean));
   const latestExtra = new Map((race.extraHistory?.at(-1) ? Object.entries(race.extraHistory.at(-1)) : []).filter(([key]) => key !== "date"));
-  return (race.extraCandidates || []).map((candidate) => {
+  return (race.extraCandidates || []).filter((candidate) => !mainCandidateKeys.has(String(candidate.name || "").toLowerCase().trim())).map((candidate) => {
     const party = candidate.party || "D";
     const badgeClass = party === "D" ? "party-badge dem-badge" : party === "R" ? "party-badge rep-badge" : "ind-badge";
     const modeledShare = latestExtra.get(candidate.name);
-    const label = Number.isFinite(modeledShare) ? oneDecimal(modeledShare) : Number.isFinite(candidate.probabilityShare) ? oneDecimal(candidate.probabilityShare) : party === "D" ? "Democratic alternative" : party === "R" ? "Republican alternative" : "Independent";
+    const label = Number.isFinite(modeledShare) ? `${oneDecimal(modeledShare)} path` : Number.isFinite(candidate.probabilityShare) ? `${oneDecimal(candidate.probabilityShare)} path` : party === "D" ? "Democratic alternative" : party === "R" ? "Republican alternative" : "Independent path";
     return `
       <div class="candidate-row extra-row">
         <span>${escapeHtml(candidate.name)} <i class="${badgeClass}">${party}</i></span>
@@ -1067,6 +1068,27 @@ function renderSeatHistogramInto(container, model = forecast, options = {}) {
     const share = sims ? value / sims : 0;
     const height = maxCount ? clamp((value / maxCount), .02, 1) : .02;
     return `<button class="seat-bin" type="button" data-tip="${seat} Democratic seats<br>${pct(share)} of simulations"><i style="--bar-scale:${height}"></i><span>${seat}</span></button>`;
+  }).join("");
+  bindPanelTooltipFor(container, ".seat-bin", (node) => node.dataset.tip);
+}
+
+function renderGovernorDistributionInto(container, model = governorForecast, options = {}) {
+  const counts = model?.distribution || {};
+  const seats = Object.keys(counts).map(Number).sort((a, b) => a - b);
+  if (!seats.length) return;
+  const center = model?.medianDemGovernors || 25;
+  const minSeat = Math.max(options.minSeat ?? 12, Math.min(...seats, center - 8));
+  const maxSeat = Math.min(options.maxSeat ?? 38, Math.max(...seats, center + 8));
+  const maxCount = Math.max(...Object.values(counts));
+  const sims = model?.settings?.simulations || Object.values(counts).reduce((a, b) => a + b, 0);
+  const binCount = maxSeat - minSeat + 1;
+  container.style.gridTemplateColumns = `repeat(${binCount}, minmax(0, 1fr))`;
+  container.innerHTML = Array.from({ length: binCount }, (_, i) => {
+    const seat = minSeat + i;
+    const value = counts[seat] || 0;
+    const share = sims ? value / sims : 0;
+    const height = maxCount ? clamp((value / maxCount), .02, 1) : .02;
+    return `<button class="seat-bin" type="button" data-tip="${seat} Democratic governor races<br>${pct(share)} of simulations"><i style="--bar-scale:${height}"></i><span>${seat}</span></button>`;
   }).join("");
   bindPanelTooltipFor(container, ".seat-bin", (node) => node.dataset.tip);
 }
@@ -2479,6 +2501,20 @@ function articleUrl(article) {
   return `article.html?slug=${encodeURIComponent(article.slug)}`;
 }
 
+function articleLeadImage(article) {
+  const raw = article.image || article.thumbnail || article.heroImage || article.coverImage || null;
+  if (!raw) return null;
+  if (typeof raw === "string") return { url: raw, alt: article.title || "Article image" };
+  return raw;
+}
+
+function articleLeadImageMarkup(article, className = "article-lead-image") {
+  const image = articleLeadImage(article);
+  const url = safeArticleImageUrl(image?.url || image?.src);
+  if (!url) return "";
+  return `<img class="${className}" src="${escapeHtml(url)}" alt="${escapeHtml(image.alt || article.title || "Article image")}" loading="lazy">`;
+}
+
 function renderTopArticle() {
   const container = document.getElementById("top-article");
   if (!container) return;
@@ -2493,6 +2529,7 @@ function renderTopArticle() {
   }
   const article = sortedArticles().find((item) => item.featured) || sortedArticles()[0];
   container.innerHTML = `
+    ${articleLeadImageMarkup(article, "article-teaser-image")}
     <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections Analysis")}</p>
     <h2 id="top-article-title"><a href="${articleUrl(article)}">${escapeHtml(article.title)}</a></h2>
     <p>${escapeHtml(article.dek || "")}</p>
@@ -2506,6 +2543,7 @@ function renderHomeArticleList() {
   const list = sortedArticles().slice(0, 4);
   container.innerHTML = list.length ? list.map((article) => `
     <a href="${articleUrl(article)}">
+      ${articleLeadImageMarkup(article, "home-article-thumb")}
       <strong>${escapeHtml(article.title)}</strong>
       <span>${escapeHtml(article.date)}</span>
     </a>
@@ -2518,6 +2556,7 @@ function renderArticlesList() {
   const list = sortedArticles();
   container.innerHTML = list.length ? list.map((article) => `
     <article class="article-card">
+      ${articleLeadImageMarkup(article, "article-card-image")}
       <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections Analysis")}</p>
       <h2><a href="${articleUrl(article)}">${escapeHtml(article.title)}</a></h2>
       <p>${escapeHtml(article.dek || "")}</p>
@@ -2540,6 +2579,7 @@ function renderArticlePage() {
     <h1>${escapeHtml(article.title)}</h1>
     <p class="lede">${escapeHtml(article.dek || "")}</p>
     <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections Analysis")}</p>
+    ${articleLeadImageMarkup(article, "article-hero-image")}
     <div id="article-body" class="article-body"></div>
     <p><a class="button-link" href="articles.html">Back to articles</a></p>
   `;
@@ -2676,6 +2716,10 @@ function embedTitle(embed) {
   if (embed.type === "president-matchup-strength") return "Candidate and matchup strength";
   if (embed.type === "president-candidate-strength") return "Candidate strength";
   if (embed.type === "president-average") return "2028 matchup average";
+  if (embed.type === "governor-history") return "Governor race count history";
+  if (embed.type === "governor-seat-distribution") return "Governor race distribution";
+  if (["governor-race-preview", "governor-state-preview"].includes(embed.type)) return `${embed.state} governor preview`;
+  if (embed.type === "governor-leverage") return "Most decisive governor races";
   if (embed.type === "seat-distribution") return "Seat distribution";
   if (embed.type === "leverage") return "Most decisive races";
   return "Forecast chart";
@@ -3096,6 +3140,62 @@ function renderEmbed(target, embed) {
   if (embed.type === "president-average") {
     target.className = "article-embed-target matchup-strength";
     renderPresidentAverageInto(target);
+    return;
+  }
+  if (embed.type === "governor-history") {
+    target.className = "article-embed-target history-chart";
+    if (!governorForecast) {
+      target.innerHTML = `<p>Governor forecast not loaded.</p>`;
+      return;
+    }
+    const points = governorForecast.governorCountHistory?.length
+      ? governorForecast.governorCountHistory.map((point) => ({ date: point.date, dem: point.demGovernors, rep: point.repGovernors }))
+      : [{ date: governorForecast.modelDate, dem: governorForecast.projectedDemRaceWins, rep: governorForecast.projectedRepRaceWins }];
+    renderLineChart(target, points, {
+      label: embed.title || "Governor race count history",
+      pointHtml: (point) => `${point.date}<br>D ${Math.round(point.dem)} / R ${Math.round(point.rep)}`,
+      domain: [10, 40],
+      ticks: [35, 30, 25, 20, 15],
+      midline: 25,
+      band: 2,
+      valueFormat: (value) => String(Math.round(value)),
+      endLabel: (party, value) => `${party === "dem" ? "D" : "R"} ${Math.round(value)}`,
+      hoverLabel: (party, value) => `${party === "dem" ? "D" : "R"} ${Math.round(value)}`,
+      value: (point) => point.dem,
+      electionDate: governorForecast.settings?.electionDate || "2026-11-03",
+      mobileZoomControls: true
+    });
+    return;
+  }
+  if (embed.type === "governor-seat-distribution") {
+    target.className = "article-embed-target seat-histogram";
+    if (!governorForecast) {
+      target.innerHTML = `<p>Governor forecast not loaded.</p>`;
+      return;
+    }
+    renderGovernorDistributionInto(target, governorForecast);
+    return;
+  }
+  if (["governor-race-preview", "governor-state-preview"].includes(embed.type)) {
+    const state = String(embed.state || "").toUpperCase();
+    const race = governorForecast?.races?.find((item) => item.state === state);
+    target.className = "article-embed-target state-preview-embed";
+    target.innerHTML = race ? governorHoverMarkup(race) : `<p>Governor race not found.</p>`;
+    return;
+  }
+  if (embed.type === "governor-leverage") {
+    target.className = "article-embed-target leverage-chart";
+    if (!governorForecast) {
+      target.innerHTML = `<p>Governor forecast not loaded.</p>`;
+      return;
+    }
+    const ranked = [...governorForecast.races].sort((a, b) => b.tippingPower - a.tippingPower).slice(0, embed.limit || 10);
+    const max = Math.max(...ranked.map((race) => race.tippingPower || 0), .01);
+    target.innerHTML = ranked.map((race) => {
+      const width = clamp(((race.tippingPower || 0) / max) * 100, 8, 100);
+      return `<button class="leverage-row ${governorLeaderClass(race)}" type="button" data-tip="${escapeHtml(race.displayName)}<br>${oneDecimal(race.tippingPower)} tipping power<br>${escapeHtml(race.rating)}"><strong>${escapeHtml(race.state)}</strong><i style="width:${width}%"></i><span>${oneDecimal(race.tippingPower || 0)}</span></button>`;
+    }).join("");
+    bindPanelTooltipFor(target, ".leverage-row", (node) => node.dataset.tip);
     return;
   }
   if (embed.type === "leverage") {

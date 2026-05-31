@@ -30,9 +30,14 @@
   --paper-2: #c6d4ff;
   --ink: #050814;
   --muted: #25315a;
-  --line: #6179cf;
+  --line: #d6d9e2;
   --party-gradient: linear-gradient(100deg, var(--dem) 0%, #f4f7ff 48%, var(--rep) 100%);
   --party-gradient-strong: linear-gradient(105deg, var(--dem) 0%, #6f87d8 42%, var(--rep) 100%);
+  --box-gradient:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 14%, transparent) 0%, transparent 42%, color-mix(in srgb, var(--rep) 12%, transparent) 100%),
+    color-mix(in srgb, var(--paper) 92%, transparent);
+  --box-gradient-hover:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 20%, transparent) 0%, color-mix(in srgb, var(--paper) 92%, transparent) 48%, color-mix(in srgb, var(--rep) 18%, transparent) 100%);
   --chart-bg: #edf2ff;
   --chart-runway: #dfe7ff;
   --chart-grid: #9aabe6;
@@ -82,9 +87,14 @@
   --paper-2: #10265e;
   --ink: #ffffff;
   --muted: #c7d2ff;
-  --line: #ffffff;
+  --line: #d6d9e2;
   --party-gradient: linear-gradient(100deg, #84b6e3 0%, #ffffff 48%, #ff8a80 100%);
   --party-gradient-strong: linear-gradient(105deg, var(--dem) 0%, #9fb2ff 42%, var(--rep) 100%);
+  --box-gradient:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 22%, transparent) 0%, transparent 44%, color-mix(in srgb, var(--rep) 18%, transparent) 100%),
+    color-mix(in srgb, var(--paper) 92%, transparent);
+  --box-gradient-hover:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 30%, transparent) 0%, color-mix(in srgb, var(--paper) 82%, transparent) 48%, color-mix(in srgb, var(--rep) 26%, transparent) 100%);
   --no-election: #172654;
   --chart-bg: #071848;
   --chart-runway: #0e235d;
@@ -106,7 +116,7 @@
     --paper-2: #10265e;
     --ink: #ffffff;
     --muted: #c7d2ff;
-    --line: #ffffff;
+    --line: #d6d9e2;
     --party-gradient: linear-gradient(100deg, #84b6e3 0%, #ffffff 48%, #ff8a80 100%);
     --party-gradient-strong: linear-gradient(105deg, var(--dem) 0%, #9fb2ff 42%, var(--rep) 100%);
     --no-election: #172654;
@@ -226,7 +236,7 @@ button {
   gap: 12px;
   align-items: center;
   padding: 12px clamp(14px, 3vw, 44px);
-  border-bottom: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-bottom: 1px solid var(--line);
   background: color-mix(in srgb, var(--chrome) 96%, transparent);
   backdrop-filter: blur(16px);
   box-shadow: 0 10px 28px rgba(0, 0, 0, .18);
@@ -250,6 +260,7 @@ button {
   align-items: center;
   width: fit-content;
   text-decoration: none;
+  transition: transform .18s var(--ease-out), filter .18s var(--ease-out);
 }
 
 .brand-mark {
@@ -261,6 +272,19 @@ button {
   border-radius: 0;
   background: transparent;
   object-fit: contain;
+  transition: transform .18s var(--ease-out), filter .18s var(--ease-out);
+}
+
+.brand:hover,
+.brand:focus {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+  outline: none;
+}
+
+.brand:hover .brand-mark,
+.brand:focus .brand-mark {
+  transform: scale(1.04);
 }
 
 .brand strong,
@@ -325,7 +349,7 @@ button {
 
 .site-nav a,
 .site-nav summary {
-  border-color: transparent;
+  border-color: var(--line);
   background: transparent;
   box-shadow: none;
   text-decoration: underline;
@@ -352,8 +376,8 @@ button {
   width: 7px;
   height: 7px;
   margin-left: 8px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   transform: translateY(-2px) rotate(45deg);
   transition: transform .16s var(--ease-out);
 }
@@ -389,7 +413,7 @@ button {
   align-items: center;
   justify-content: center;
   padding: 7px 11px;
-  border: 1px solid #00cc00;
+  border: 1px solid var(--line);
   border-radius: 3px;
   background: linear-gradient(135deg, #00cc00, #009900);
   color: #fff;
@@ -404,7 +428,7 @@ button {
 
 .donate-button:hover {
   background: linear-gradient(135deg, #00dd00, #00aa00);
-  border-color: #00dd00;
+  border-color: var(--line);
   transform: translateY(-1px);
   box-shadow: 0 0 15px rgba(0, 204, 0, .7);
 }
@@ -414,7 +438,7 @@ button {
 .site-nav a.active,
 .site-nav summary.active {
   color: var(--ink);
-  border-color: transparent;
+  border-color: var(--line);
   background: transparent;
   transform: translateY(-1px);
   box-shadow: none;
@@ -424,7 +448,7 @@ button {
 
 .button-link:hover {
   color: var(--ink);
-  border-color: var(--ink);
+  border-color: var(--line);
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--dem) 24%, transparent), color-mix(in srgb, var(--rep) 20%, transparent)),
     var(--paper-2);
@@ -459,13 +483,13 @@ button {
   left: -10px;
   top: 6px;
   bottom: 6px;
-  border-left: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+  border-left: 1px solid var(--line);
 }
 
 .theme-toggle:hover,
 .theme-toggle:focus {
   color: var(--ink);
-  border-color: var(--ink);
+  border-color: var(--line);
   background: var(--paper-2);
   transform: translateY(-1px);
   outline: none;
@@ -512,7 +536,7 @@ main {
   gap: 18px;
   align-items: center;
   padding: 22px clamp(14px, 3vw, 44px);
-  border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-top: 1px solid var(--line);
   background: var(--chrome);
   color: var(--ink);
 }
@@ -605,7 +629,7 @@ main {
   padding: clamp(22px, 4vw, 44px);
   position: relative;
   overflow: hidden;
-  border-top: 6px solid var(--ink);
+  border-top: 1px solid var(--line);
 }
 
 .home-hero {
@@ -759,7 +783,7 @@ h3 {
   min-height: 116px;
   padding: 14px;
   border: 1px solid var(--line);
-  border-top: 4px solid var(--ink);
+  border-top: 1px solid var(--line);
   border-radius: 4px;
   background: color-mix(in srgb, var(--paper) 92%, transparent);
   color: var(--ink);
@@ -771,14 +795,14 @@ h3 {
 .forecast-family-card:hover,
 .forecast-family-card:focus {
   transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--ink) 55%, var(--line));
+  border-color: var(--line);
   background: color-mix(in srgb, var(--paper) 98%, white);
   box-shadow: var(--shadow-lift);
   outline: none;
 }
 
 .forecast-family-card.active {
-  border-top-color: var(--dem);
+  border-top-color: var(--line);
 }
 
 .forecast-family-card span {
@@ -812,9 +836,10 @@ h3 {
   min-height: 172px;
   padding: 16px;
   border: 1px solid var(--line);
-  border-top: 5px solid var(--ink);
+  border-top: 1px solid var(--line);
   border-radius: 4px;
-  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  background: var(--box-gradient);
+  background-size: 160% 160%;
   color: var(--ink);
   text-decoration: none;
   box-shadow: var(--shadow-soft);
@@ -824,23 +849,24 @@ h3 {
 .forecast-overview-card:hover,
 .forecast-overview-card:focus {
   transform: translateY(-4px) scale(1.01);
-  border-color: color-mix(in srgb, var(--ink) 55%, var(--line));
-  background: color-mix(in srgb, var(--paper) 98%, white);
+  border-color: var(--line);
+  background: var(--box-gradient-hover);
+  background-position: 100% 50%;
   box-shadow: var(--shadow-lift);
   filter: brightness(1.04);
   outline: none;
 }
 
 .forecast-overview-card.active {
-  border-top-color: var(--dem);
+  border-top-color: var(--line);
 }
 
 .forecast-overview-card.control-dem {
-  border-top-color: var(--dem);
+  border-top-color: var(--line);
 }
 
 .forecast-overview-card.control-rep {
-  border-top-color: var(--rep);
+  border-top-color: var(--line);
 }
 
 .forecast-overview-card.control-dem b {
@@ -891,7 +917,7 @@ h3 {
 
 .home-run-panel {
   padding: 16px;
-  border-top: 6px solid var(--ink);
+  border-top: 1px solid var(--line);
   min-width: 0;
 }
 
@@ -964,7 +990,7 @@ h3 {
   align-items: end;
   margin-top: 28px;
   padding: 0 2px 10px;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 58%, transparent);
+  border-bottom: 1px solid var(--line);
 }
 
 .home-section-head span {
@@ -1009,7 +1035,7 @@ h3 {
 .signal-board .chart-panel {
   border-radius: 8px;
   border-top-width: 0;
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  background: var(--box-gradient);
 }
 
 .chart-panel,
@@ -1030,7 +1056,8 @@ h3 {
 .source-panel:hover,
 .map-panel:hover,
 .odds-panel:hover {
-  border-color: color-mix(in srgb, var(--ink) 48%, var(--line));
+  transform: translateY(-2px);
+  border-color: var(--line);
   box-shadow: var(--shadow-lift);
   filter: brightness(1.025);
 }
@@ -1063,7 +1090,7 @@ h3 {
 .source-status-card:hover,
 .source-status-card:focus-within {
   transform: translateY(-4px);
-  border-color: #C6D2FF;
+  border-color: var(--line);
   box-shadow: 0 18px 34px rgba(0, 0, 0, .24), 0 0 0 1px color-mix(in srgb, #C6D2FF 34%, transparent);
 }
 
@@ -1072,7 +1099,7 @@ h3 {
 .district-list-row:hover,
 .district-list-row:focus {
   transform: translateX(5px);
-  border-color: #C6D2FF;
+  border-color: var(--line);
 }
 
 .map-color-controls button:hover,
@@ -1081,6 +1108,7 @@ h3 {
 .house-map-toolbar button:focus {
   transform: translateY(-2px);
   filter: brightness(1.08);
+  box-shadow: 0 0 18px color-mix(in srgb, #C6D2FF 36%, transparent);
 }
 
 @media (max-width: 1060px) {
@@ -1096,7 +1124,7 @@ h3 {
 .diagnostics-board {
   margin-top: 14px;
   padding: 14px;
-  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border: 1px solid var(--line);
   border-radius: 10px;
   background: color-mix(in srgb, var(--chrome) 42%, transparent);
 }
@@ -1152,20 +1180,20 @@ h3 {
   align-items: center;
   padding: 10px 2px;
   border-bottom: 1px solid var(--line);
-  border-left: 5px solid var(--toss);
+  border-left: 1px solid var(--line);
   transition: background .14s var(--ease-out), transform .14s var(--ease-out), padding-left .14s var(--ease-out);
 }
 
 .home-radar-row.leads-dem {
-  border-left-color: var(--dem);
+  border-left-color: var(--line);
 }
 
 .home-radar-row.leads-rep {
-  border-left-color: var(--rep);
+  border-left-color: var(--line);
 }
 
 .home-radar-row.leads-ind {
-  border-left-color: var(--ind);
+  border-left-color: var(--line);
 }
 
 .home-radar-row strong,
@@ -1207,6 +1235,17 @@ h3 {
   padding: 11px 2px;
   border-bottom: 1px solid var(--line);
   transition: background .14s var(--ease-out), transform .14s var(--ease-out), padding-left .14s var(--ease-out);
+}
+
+.home-article-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  margin-bottom: 7px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--paper-2);
 }
 
 .home-article-list a:hover,
@@ -1293,17 +1332,17 @@ h3 {
   flex-direction: column;
   justify-content: space-between;
   padding: 16px;
-  border-top: 6px solid var(--rep);
+  border-top: 1px solid var(--line);
   min-width: 0;
   overflow: hidden;
 }
 
 .odds-panel.control-dem {
-  border-top-color: var(--dem);
+  border-top-color: var(--line);
 }
 
 .odds-panel.control-rep {
-  border-top-color: var(--rep);
+  border-top-color: var(--line);
 }
 
 .slate-panel {
@@ -1312,7 +1351,7 @@ h3 {
   padding: 14px;
   justify-content: start;
   gap: 18px;
-  border-top-color: var(--green);
+  border-top-color: var(--line);
 }
 
 .slate-panel .big-odds strong {
@@ -1415,7 +1454,7 @@ h3 {
 .method-list li:hover,
 .source-card:hover {
   background: color-mix(in srgb, var(--paper) 88%, white);
-  border-color: color-mix(in srgb, var(--ink) 20%, var(--line));
+  border-color: var(--line);
 }
 
 dt {
@@ -1462,7 +1501,7 @@ dd {
 .map-panel {
   margin-top: 10px;
   padding: clamp(14px, 2.5vw, 24px);
-  border-top: 4px solid var(--dem);
+  border-top: 1px solid var(--line);
 }
 
 .map-color-controls {
@@ -1486,7 +1525,7 @@ dd {
 .map-color-controls button:hover,
 .map-color-controls button:focus,
 .map-color-controls button.active {
-  border-color: var(--ink);
+  border-color: var(--line);
   background: var(--paper-2);
   color: var(--ink);
 }
@@ -1503,7 +1542,7 @@ dd {
   align-items: end;
   margin-bottom: 14px;
   padding-bottom: 10px;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  border-bottom: 1px solid var(--line);
 }
 
 .section-head p:last-child,
@@ -1548,14 +1587,14 @@ dd {
 
 .house-map-toolbar button:hover,
 .house-map-toolbar button:focus {
-  border-color: var(--ink);
+  border-color: var(--line);
   background: var(--paper-2);
   outline: none;
 }
 
 .house-shape-map {
   min-height: 520px;
-  border: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  border: 1px solid var(--line);
   background:
     radial-gradient(circle at 24% 20%, color-mix(in srgb, var(--dem) 10%, transparent), transparent 34%),
     color-mix(in srgb, var(--paper) 84%, transparent);
@@ -1639,7 +1678,7 @@ dd {
 .district-cell {
   aspect-ratio: 1;
   min-width: 0;
-  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border: 1px solid var(--line);
   border-radius: 2px;
   padding: 0;
   color: transparent;
@@ -1684,9 +1723,9 @@ dd {
   align-items: center;
   border: 0;
   border-bottom: 1px solid var(--line);
-  border-left: 5px solid var(--toss);
+  border-left: 1px solid var(--line);
   padding: 8px 10px;
-  background: transparent;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--paper) 84%, transparent), transparent);
   color: var(--ink);
   text-align: left;
   appearance: none;
@@ -1694,11 +1733,11 @@ dd {
 }
 
 .district-list-row.leads-dem {
-  border-left-color: var(--dem);
+  border-left-color: var(--line);
 }
 
 .district-list-row.leads-rep {
-  border-left-color: var(--rep);
+  border-left-color: var(--line);
 }
 
 .district-list-row:hover,
@@ -1806,7 +1845,7 @@ dd {
 .map-legend i {
   width: 18px;
   height: 12px;
-  border: 1px solid rgba(255, 255, 255, .25);
+  border: 1px solid var(--line);
 }
 
 .map-spectrum-legend {
@@ -1824,7 +1863,7 @@ dd {
   grid-area: bar;
   width: 100%;
   height: 14px;
-  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border: 1px solid var(--line);
   border-radius: 999px;
   background: linear-gradient(90deg, #b22222 0%, #d37a73 27%, #f8f5eb 50%, #718be0 73%, #1030b2 100%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35);
@@ -1941,7 +1980,7 @@ dd {
 }
 
 .candidate-row {
-  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-top: 1px solid var(--line);
   font: 800 .82rem/1.2 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
@@ -1979,7 +2018,7 @@ dd {
   width: 13px;
   height: 13px;
   color: var(--muted);
-  border: 1px solid color-mix(in srgb, var(--muted) 55%, transparent);
+  border: 1px solid var(--line);
   background: color-mix(in srgb, var(--paper) 85%, white);
   font-size: .5rem;
 }
@@ -2020,7 +2059,7 @@ dd {
   margin-right: 3px;
   border-radius: 4px;
   color: var(--muted);
-  border: 1px solid color-mix(in srgb, var(--muted) 55%, transparent);
+  border: 1px solid var(--line);
   background: color-mix(in srgb, var(--paper) 85%, white);
   font: 900 .6rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
@@ -2029,7 +2068,7 @@ dd {
 .candidate-key b:nth-of-type(2) {
   margin-left: 8px;
   color: white;
-  border-color: transparent;
+  border-color: var(--line);
   background: var(--ind);
 }
 
@@ -2043,7 +2082,7 @@ dd {
 .house-signal-grid div {
   min-width: 0;
   padding: 7px;
-  border: 1px solid color-mix(in srgb, var(--line) 68%, transparent);
+  border: 1px solid var(--line);
   border-radius: 5px;
   background: color-mix(in srgb, var(--paper) 58%, transparent);
 }
@@ -2137,7 +2176,7 @@ dd {
 
 .confidence-note {
   margin-top: 12px;
-  border-top-color: var(--gold);
+  border-top-color: var(--line);
 }
 
 .confidence-note h2 {
@@ -2150,7 +2189,7 @@ dd {
 .text-panel,
 .detail-panel {
   padding: clamp(14px, 2.4vw, 22px);
-  border-top: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  border-top: 1px solid var(--line);
 }
 
 .chart-panel + .chart-panel,
@@ -2347,14 +2386,14 @@ dd {
   align-items: center;
   border: 0;
   border-bottom: 1px solid var(--line);
-  border-left: 4px solid var(--dem);
+  border-left: 1px solid var(--line);
   background: transparent;
   padding: 7px 0 7px 8px;
   text-align: left;
 }
 
 .matchup-pair-row.rep {
-  border-left-color: var(--rep);
+  border-left-color: var(--line);
 }
 
 .president-state-list {
@@ -2482,7 +2521,7 @@ button.leverage-row {
 }
 
 .race-board-panel {
-  border-top-color: var(--ink);
+  border-top-color: var(--line);
 }
 
 .battleground-list {
@@ -2499,7 +2538,8 @@ button.leverage-row {
   align-items: center;
   padding: 11px 4px;
   border-bottom: 1px solid var(--line);
-  border-left: 6px solid var(--toss);
+  border-left: 1px solid var(--line);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--paper) 70%, transparent), transparent);
   color: var(--ink);
   text-decoration: none;
   transition: background .14s var(--ease-out), transform .14s var(--ease-out), padding-left .14s var(--ease-out), box-shadow .14s var(--ease-out), filter .14s var(--ease-out);
@@ -2515,15 +2555,15 @@ button.race-board-row {
 }
 
 .race-board-row.leads-dem {
-  border-left-color: var(--dem);
+  border-left-color: var(--line);
 }
 
 .race-board-row.leads-rep {
-  border-left-color: var(--rep);
+  border-left-color: var(--line);
 }
 
 .race-board-row.leads-ind {
-  border-left-color: var(--ind);
+  border-left-color: var(--line);
 }
 
 .race-board-row strong {
@@ -2573,7 +2613,7 @@ button.race-board-row {
   align-items: center;
   padding: 9px 10px;
   border: 1px solid var(--line);
-  border-left: 5px solid var(--toss);
+  border-left: 1px solid var(--line);
   border-radius: 3px;
   background: color-mix(in srgb, var(--paper-2) 72%, transparent);
   color: var(--ink);
@@ -2581,11 +2621,11 @@ button.race-board-row {
 }
 
 .path-chip.leads-dem {
-  border-left-color: var(--dem);
+  border-left-color: var(--line);
 }
 
 .path-chip.leads-rep {
-  border-left-color: var(--rep);
+  border-left-color: var(--line);
 }
 
 .path-chip strong,
@@ -2630,7 +2670,7 @@ button.race-board-row {
 
 .movement-panel {
   border: 1px solid var(--line);
-  border-top: 4px solid var(--toss);
+  border-top: 1px solid var(--line);
   border-radius: 3px;
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--paper) 82%, white), color-mix(in srgb, var(--paper-2) 76%, transparent));
@@ -2656,15 +2696,15 @@ button.race-board-row {
 }
 
 .movement-panel.moved-dem {
-  border-top-color: var(--dem);
+  border-top-color: var(--line);
 }
 
 .movement-panel.moved-rep {
-  border-top-color: var(--rep);
+  border-top-color: var(--line);
 }
 
 .movement-panel.moved-ind {
-  border-top-color: var(--ind);
+  border-top-color: var(--line);
 }
 
 .movement-panel.moved-dem .movement-arrow {
@@ -2681,11 +2721,11 @@ button.race-board-row {
 
 .movement-arrow::before {
   content: "";
-  width: 0;
-  height: 0;
-  border-left: 11px solid transparent;
-  border-right: 11px solid transparent;
-  border-bottom: 18px solid #fff;
+  width: 22px;
+  height: 18px;
+  border: 0;
+  background: #fff;
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
   transform: translateY(-1px);
 }
 
@@ -2722,22 +2762,22 @@ button.race-board-row {
 
 .movement-driver-list li {
   border: 1px solid var(--line);
-  border-left: 5px solid var(--toss);
+  border-left: 1px solid var(--line);
   border-radius: 3px;
   padding: 10px;
   background: color-mix(in srgb, var(--paper-2) 78%, transparent);
 }
 
 .movement-driver-list li.toward-dem {
-  border-left-color: var(--dem);
+  border-left-color: var(--line);
 }
 
 .movement-driver-list li.toward-rep {
-  border-left-color: var(--rep);
+  border-left-color: var(--line);
 }
 
 .movement-driver-list li.toward-ind {
-  border-left-color: var(--ind);
+  border-left-color: var(--line);
 }
 
 .movement-driver-label {
@@ -2825,17 +2865,17 @@ button.race-board-row {
 .backtest-card {
   padding: 14px;
   border: 1px solid var(--line);
-  border-top: 4px solid var(--toss);
+  border-top: 1px solid var(--line);
   border-radius: 3px;
   background: color-mix(in srgb, var(--paper-2) 72%, transparent);
 }
 
 .backtest-card.is-ok {
-  border-top-color: var(--dem);
+  border-top-color: var(--line);
 }
 
 .backtest-card.is-warn {
-  border-top-color: var(--toss);
+  border-top-color: var(--line);
 }
 
 .backtest-card strong {
@@ -2878,7 +2918,7 @@ button.race-board-row {
   grid-template-columns: minmax(0, 88px) minmax(0, 1fr);
   gap: 9px;
   padding: 7px 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  border-bottom: 1px solid var(--line);
 }
 
 .map-card-factors dt {
@@ -2975,7 +3015,7 @@ button.race-board-row {
 
 .race-selector a.active,
 .race-selector a:hover {
-  border-color: var(--gold);
+  border-color: var(--line);
   background: color-mix(in srgb, var(--gold) 10%, transparent);
 }
 
@@ -3001,9 +3041,10 @@ button.race-board-row {
   min-height: 150px;
   padding: 16px;
   border: 1px solid var(--line);
-  border-top: 4px solid var(--ink);
+  border-top: 1px solid var(--line);
   border-radius: 4px;
-  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  background: var(--box-gradient);
+  box-shadow: var(--shadow-soft);
 }
 
 .outline-card h3 {
@@ -3031,9 +3072,9 @@ button.race-board-row {
   gap: 12px;
   padding: 18px;
   border: 1px solid var(--line);
-  border-top: 4px solid var(--rep);
+  border-top: 1px solid var(--line);
   border-radius: 4px;
-  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  background: var(--box-gradient);
   box-shadow: var(--shadow-soft);
 }
 
@@ -3082,7 +3123,7 @@ button.race-board-row {
 
 .form-row input:focus,
 .form-row textarea:focus {
-  border-color: var(--rep);
+  border-color: var(--line);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--rep) 18%, transparent);
 }
 
@@ -3123,7 +3164,8 @@ button.race-board-row {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  background: var(--box-gradient);
+  background-size: 160% 160%;
   color: var(--ink);
   text-decoration: none;
   box-shadow: var(--shadow-soft);
@@ -3133,8 +3175,9 @@ button.race-board-row {
 .endorsement-card:hover,
 .endorsement-card:focus {
   transform: translateY(-3px);
-  border-color: var(--ink);
-  background: color-mix(in srgb, var(--chrome) 58%, var(--paper));
+  border-color: var(--line);
+  background: var(--box-gradient-hover);
+  background-position: 100% 50%;
   box-shadow: var(--shadow-lift);
   outline: none;
 }
@@ -3201,7 +3244,7 @@ button.race-board-row {
 
 .placeholder-photo span {
   padding: 8px 10px;
-  border: 1px solid color-mix(in srgb, var(--ink) 24%, transparent);
+  border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--muted);
   font: 850 .72rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
@@ -3243,7 +3286,7 @@ button.race-board-row {
   min-height: 24px;
   margin-top: 5px;
   padding: 5px 8px;
-  border: 1px solid currentColor;
+  border: 1px solid var(--line);
   border-radius: 5px;
   font: 950 .68rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: .08em;
@@ -3274,7 +3317,7 @@ button.race-board-row {
   gap: 7px;
   width: 100%;
   min-height: 38px;
-  border: 1px solid #7ee787;
+  border: 1px solid var(--line);
   border-radius: 6px;
   background:
     linear-gradient(100deg, rgba(126, 231, 135, .16), rgba(13, 72, 47, .76), rgba(126, 231, 135, .12)),
@@ -3345,7 +3388,7 @@ button.race-board-row {
   gap: 9px;
   width: fit-content;
   padding: 8px 12px;
-  border: 1px solid #ff2a2a;
+  border: 1px solid var(--line);
   border-radius: 4px;
   background: #4d070b;
   color: #fff;
@@ -3371,7 +3414,7 @@ button.race-board-row {
   width: 100%;
   aspect-ratio: 16 / 9;
   border: 1px solid var(--line);
-  border-top: 4px solid var(--ink);
+  border-top: 1px solid var(--line);
   border-radius: 4px;
   background: var(--paper-2);
 }
@@ -3414,7 +3457,7 @@ button.race-board-row {
 
 .source-status-card:hover {
   background: color-mix(in srgb, var(--paper) 88%, white);
-  border-color: color-mix(in srgb, var(--ink) 18%, var(--line));
+  border-color: var(--line);
   transform: translateY(-1px);
 }
 
@@ -3424,11 +3467,11 @@ button.race-board-row {
 }
 
 .source-status-card.is-ok {
-  border-top: 4px solid var(--green);
+  border-top: 1px solid var(--line);
 }
 
 .source-status-card.is-warn {
-  border-top: 4px solid var(--gold);
+  border-top: 1px solid var(--line);
 }
 
 .article-teaser h2,
@@ -3457,18 +3500,47 @@ button.race-board-row {
 .article-card {
   padding: clamp(14px, 2.4vw, 22px);
   border: 1px solid var(--line);
-  border-top: 4px solid var(--ink);
+  border-top: 1px solid var(--line);
   border-radius: 4px;
-  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  background: var(--box-gradient);
+  background-size: 160% 160%;
   box-shadow: var(--shadow-soft);
   transition: background .16s var(--ease-out), box-shadow .16s var(--ease-out), transform .16s var(--ease-out), border-color .16s var(--ease-out), filter .16s var(--ease-out);
+}
+
+.article-teaser-image,
+.article-card-image,
+.article-hero-image {
+  width: 100%;
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--paper-2);
+}
+
+.article-teaser-image {
+  aspect-ratio: 16 / 9;
+  margin-bottom: 12px;
+}
+
+.article-card-image {
+  aspect-ratio: 16 / 9;
+  margin-bottom: 14px;
+}
+
+.article-hero-image {
+  max-width: 960px;
+  aspect-ratio: 16 / 9;
+  margin: 18px 0 22px;
 }
 
 .article-card:hover,
 .article-card:focus-within {
   transform: translateY(-3px) scale(1.01);
-  background: color-mix(in srgb, var(--paper) 98%, white);
-  border-color: color-mix(in srgb, var(--ink) 24%, var(--line));
+  background: var(--box-gradient-hover);
+  background-position: 100% 50%;
+  border-color: var(--line);
   box-shadow: var(--shadow-lift), 0 0 20px rgba(244, 185, 66, .2);
   filter: brightness(1.05);
 }
@@ -3494,7 +3566,7 @@ button.race-board-row {
   width: 100%;
   height: auto;
   border: 1px solid var(--line);
-  border-top: 4px solid var(--ink);
+  border-top: 1px solid var(--line);
   border-radius: 3px;
   background: color-mix(in srgb, var(--paper-2) 80%, white);
 }
@@ -3528,7 +3600,7 @@ button.race-board-row {
   width: 100%;
   max-width: 100%;
   border: 1px solid var(--line);
-  border-top: 4px solid var(--ink);
+  border-top: 1px solid var(--line);
   border-radius: 3px;
   background: color-mix(in srgb, var(--paper-2) 80%, white);
 }
@@ -3597,7 +3669,7 @@ button.race-board-row {
   display: block;
   padding: 10px;
   border: 1px solid var(--line);
-  border-top: 4px solid var(--ink);
+  border-top: 1px solid var(--line);
   border-radius: 3px;
   background: color-mix(in srgb, var(--paper-2) 86%, white);
 }
@@ -3651,7 +3723,7 @@ button.race-board-row {
 
 .history-chart {
   margin-top: 16px;
-  border: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
+  border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--chart-bg);
   overflow: hidden;
@@ -3976,7 +4048,7 @@ button.race-board-row {
   position: absolute;
   z-index: 30;
   padding: 8px 10px;
-  border: 1px solid color-mix(in srgb, var(--line) 88%, var(--ink));
+  border: 1px solid var(--line);
   border-radius: 4px;
   background: color-mix(in srgb, var(--paper) 98%, white);
   color: var(--ink);
@@ -4000,8 +4072,8 @@ button.race-board-row {
   bottom: -6px;
   width: 10px;
   height: 10px;
-  border-right: 1px solid color-mix(in srgb, var(--line) 88%, var(--ink));
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 88%, var(--ink));
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   background: color-mix(in srgb, var(--paper) 98%, white);
   transform: translateX(-50%) rotate(45deg);
 }
@@ -4010,8 +4082,8 @@ button.race-board-row {
   top: -6px;
   bottom: auto;
   border: 0;
-  border-left: 1px solid color-mix(in srgb, var(--line) 88%, var(--ink));
-  border-top: 1px solid color-mix(in srgb, var(--line) 88%, var(--ink));
+  border-left: 1px solid var(--line);
+  border-top: 1px solid var(--line);
 }
 
 .detail-grid {
@@ -4035,7 +4107,7 @@ button.race-board-row {
 }
 
 .detail-chip.independent-candidate {
-  border-color: color-mix(in srgb, var(--ind) 65%, transparent);
+  border-color: var(--line);
   background: color-mix(in srgb, var(--ind) 20%, var(--paper-2));
 }
 

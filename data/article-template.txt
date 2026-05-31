@@ -11,6 +11,10 @@ Copy this object, paste it at the top of the array after the opening [, then add
   "dek": "One or two sentence summary that appears on the homepage and article list.",
   "author": "Capitol Forecast",
   "featured": true,
+  "image": {
+    "url": "assets/img/article-example.jpg",
+    "alt": "Short description for the article lead image"
+  },
   "content": [
     { "type": "paragraph", "text": "First paragraph." },
     { "type": "embed", "embed": { "type": "control-history", "title": "National chamber control probability", "size": "small" } },
@@ -19,6 +23,10 @@ Copy this object, paste it at the top of the array after the opening [, then add
     { "type": "embed", "embed": { "type": "state-preview", "state": "OH", "size": "small", "mode": "rating" } },
     { "type": "embed", "embed": { "type": "house-district-preview", "district": "WI-03", "size": "small" } },
     { "type": "embed", "embed": { "type": "house-district-history", "district": "WI-03", "title": "Wisconsin 3 probability history", "size": "small" } },
+    { "type": "embed", "embed": { "type": "governor-history", "title": "Governor race count history", "size": "small" } },
+    { "type": "embed", "embed": { "type": "governor-seat-distribution", "title": "Governor race distribution", "size": "small" } },
+    { "type": "embed", "embed": { "type": "governor-race-preview", "state": "MI", "size": "small" } },
+    { "type": "embed", "embed": { "type": "governor-leverage", "title": "Most decisive governor races", "size": "small", "limit": 10 } },
     { "type": "embed", "embed": { "type": "president-average", "title": "2028 matchup average", "size": "small" } },
     { "type": "embed", "embed": { "type": "president-state-preview", "state": "PA", "dem": "beshear", "rep": "vance", "size": "small", "mode": "rating" } },
     { "type": "image", "url": "https://example.com/image.jpg", "alt": "Short description of the image", "caption": "Optional caption.", "size": "medium" },
@@ -30,6 +38,8 @@ Copy this object, paste it at the top of the array after the opening [, then add
 Rules:
 - Keep slug lowercase with dashes only.
 - Only one article needs featured: true. The newest featured article appears on the homepage.
+- Add a top-level "image" object for the article thumbnail/front image. It appears on the homepage teaser, articles page, and article page.
+- Top-level image URLs can be https links or local files under assets/. You can also use "thumbnail", "heroImage", or "coverImage", but "image" is preferred.
 - Use straight quotes, not curly quotes, inside JSON.
 - Each content block must be separated by commas.
 - Use paragraph blocks where you want text: { "type": "paragraph", "text": "Your paragraph." }
@@ -47,6 +57,11 @@ Rules:
   - "house-district", "house-race", and "district-preview": aliases for "house-district-preview".
   - "house-district-history": a House district probability history. Requires "district": "WI-03" or another district id.
   - "house-closest": closest House districts by simulated leverage. Optional "limit": 10.
+  - "governor-history": Democratic and Republican governor race count history.
+  - "governor-seat-distribution": simulated Democratic governor race count distribution.
+  - "governor-race-preview": a narrow governor race preview card. Requires "state": "MI" or another two-letter state code.
+  - "governor-state-preview": alias for "governor-race-preview".
+  - "governor-leverage": most decisive governor races by tipping power. Optional "limit": 10.
   - "president-average": average Democratic and Republican win probability across all saved 2028 matchups.
   - "president-win-history": national 2028 win probability for a matchup. Optional "dem": "beshear" and "rep": "vance".
   - "president-ev-history": expected Electoral College votes for a matchup. Optional "dem": "beshear" and "rep": "vance".
