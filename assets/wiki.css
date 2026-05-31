@@ -349,7 +349,7 @@ button {
 
 .site-nav a,
 .site-nav summary {
-  border-color: var(--line);
+  border-color: transparent;
   background: transparent;
   box-shadow: none;
   text-decoration: underline;
@@ -438,7 +438,7 @@ button {
 .site-nav a.active,
 .site-nav summary.active {
   color: var(--ink);
-  border-color: var(--line);
+  border-color: transparent;
   background: transparent;
   transform: translateY(-1px);
   box-shadow: none;
@@ -974,13 +974,12 @@ h3 {
 .model-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
+  gap: 12px;
   margin-top: 8px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--line);
-  box-shadow: var(--shadow-soft);
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .home-section-head {
@@ -1006,11 +1005,10 @@ h3 {
 
 .model-strip .forecast-overview-card {
   min-height: 196px;
-  border: 0;
-  border-radius: 0;
-  border-top: 0;
-  background: color-mix(in srgb, var(--paper) 92%, transparent);
-  box-shadow: none;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--box-gradient);
+  box-shadow: var(--shadow-soft);
 }
 
 .model-strip .forecast-overview-card:hover,
@@ -1028,13 +1026,13 @@ h3 {
 .signal-board {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 14px;
-  margin-top: 8px;
+  gap: 18px;
+  margin-top: 10px;
 }
 
 .signal-board .chart-panel {
   border-radius: 8px;
-  border-top-width: 0;
+  border-top-width: 1px;
   background: var(--box-gradient);
 }
 
@@ -1164,7 +1162,10 @@ h3 {
   display: grid;
   gap: 0;
   margin-top: 12px;
-  border-top: 1px solid var(--line);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--paper) 62%, transparent);
 }
 
 .home-radar-row,
@@ -1175,13 +1176,18 @@ h3 {
 
 .home-radar-row {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) 96px 58px;
+  grid-template-columns: 58px minmax(0, 1fr) 116px 112px;
   gap: 10px;
   align-items: center;
-  padding: 10px 2px;
+  padding: 12px;
   border-bottom: 1px solid var(--line);
-  border-left: 1px solid var(--line);
+  border-left: 0;
   transition: background .14s var(--ease-out), transform .14s var(--ease-out), padding-left .14s var(--ease-out);
+}
+
+.home-radar-row:last-child,
+.home-article-list a:last-child {
+  border-bottom: 0;
 }
 
 .home-radar-row.leads-dem {
@@ -1225,14 +1231,14 @@ h3 {
 
 .home-radar-row:hover,
 .home-radar-row:focus {
-  padding-left: 6px;
+  padding-left: 16px;
   transform: translateX(2px);
 }
 
 .home-article-list a {
   display: grid;
   gap: 5px;
-  padding: 11px 2px;
+  padding: 12px;
   border-bottom: 1px solid var(--line);
   transition: background .14s var(--ease-out), transform .14s var(--ease-out), padding-left .14s var(--ease-out);
 }
@@ -1250,8 +1256,31 @@ h3 {
 
 .home-article-list a:hover,
 .home-article-list a:focus {
-  padding-left: 6px;
+  padding-left: 16px;
   transform: translateX(2px);
+}
+
+.home-latest-video {
+  margin-top: 10px;
+}
+
+.home-video-feature {
+  display: grid;
+  grid-template-columns: minmax(280px, .95fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.home-video-feature iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #000;
+}
+
+.home-video-feature h3 {
+  font-size: clamp(1.3rem, 2.5vw, 2.35rem);
 }
 
 .home-article-list strong {
@@ -2165,7 +2194,7 @@ dd {
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1.25fr 1fr;
-  gap: 12px;
+  gap: 18px;
   margin-top: 12px;
   align-items: start;
 }
@@ -3087,6 +3116,42 @@ button.race-board-row {
   min-height: 0;
 }
 
+.social-card {
+  display: grid;
+  gap: 14px;
+}
+
+.social-icon-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.social-icon-link {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
+  transition: transform .16s var(--ease-out), box-shadow .16s var(--ease-out), filter .16s var(--ease-out);
+}
+
+.social-icon-link:hover,
+.social-icon-link:focus {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
+  filter: brightness(1.08);
+  outline: none;
+}
+
+.social-icon-link img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
 .form-row {
   display: grid;
   gap: 7px;
@@ -3380,6 +3445,10 @@ button.race-board-row {
 
 .video-feature {
   margin-top: 14px;
+}
+
+.video-section {
+  margin-top: 18px;
 }
 
 .video-section-label {
@@ -4270,13 +4339,17 @@ button.race-board-row {
     grid-template-columns: 1fr;
   }
 
+  .home-video-feature {
+    grid-template-columns: 1fr;
+  }
+
   .diagnostics-board,
   .team-action-grid {
     padding: 10px;
   }
 
   .home-radar-row {
-    grid-template-columns: 42px minmax(0, 1fr) 82px;
+    grid-template-columns: 42px minmax(0, 1fr) 108px;
   }
 
   .home-radar-row i {

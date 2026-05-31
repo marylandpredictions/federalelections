@@ -797,7 +797,7 @@ function renderHomeRadar() {
           <strong>${escapeHtml(race.state)}</strong>
           <span>${escapeHtml(race.displayName.replace(" Senate", ""))}</span>
           <b>${escapeHtml(leader)} ${oneDecimal(race.winnerProbability)}</b>
-          <i>${oneDecimal(race.tippingPower)}</i>
+          <i>Impact ${oneDecimal(race.tippingPower)}</i>
         </a>
       `;
     }).join("");
@@ -811,7 +811,7 @@ function renderHomeRadar() {
         <strong>${escapeHtml(district.id)}</strong>
         <span>${escapeHtml(district.label || district.rating)}</span>
         <b>${district.winnerParty === "D" ? "D" : "R"} ${oneDecimal(district.winnerProbability)}</b>
-        <i>${oneDecimal(district.leverage || 0)}</i>
+        <i>Impact ${oneDecimal(district.leverage || 0)}</i>
       </a>
     `).join("");
   }
@@ -830,7 +830,7 @@ function renderHomeRadar() {
           <strong>${escapeHtml(race.state)}</strong>
           <span>${escapeHtml(race.displayName.replace(" Governor", ""))}</span>
           <b>${leader} ${oneDecimal(probability)}</b>
-          <i>${oneDecimal(race.tippingPower || 0)}</i>
+          <i>Impact ${oneDecimal(race.tippingPower || 0)}</i>
         </a>
       `;
     }).join("");
@@ -861,6 +861,31 @@ function renderHomeRadar() {
         <i>${escapeHtml(String(row.meta))}</i>
       </a>
     `).join("");
+  }
+}
+
+async function renderHomeLatestVideo() {
+  const container = document.getElementById("home-latest-video");
+  if (!container) return;
+  try {
+    const response = await fetch("data/videos.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`Video data returned ${response.status}`);
+    const data = await response.json();
+    const video = (data.latestUploads || [])[0] || data.latestLivestream;
+    if (!video?.id) {
+      container.innerHTML = `<p class="meta">No public video found.</p>`;
+      return;
+    }
+    container.innerHTML = `
+      <iframe src="https://www.youtube-nocookie.com/embed/${escapeHtml(video.id)}" title="${escapeHtml(video.title || "Federal Elections Analysis video")}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      <div>
+        <p class="kicker">Latest upload</p>
+        <h3>${escapeHtml(video.title || "Federal Elections Analysis video")}</h3>
+        <p><a class="button-link" href="${escapeHtml(video.url || `https://www.youtube.com/watch?v=${video.id}`)}" target="_blank" rel="noreferrer">Watch on YouTube</a></p>
+      </div>
+    `;
+  } catch {
+    container.innerHTML = `<p class="meta">Video data unavailable.</p>`;
   }
 }
 
@@ -3307,6 +3332,7 @@ async function init() {
     updateHomeGovernorSummary();
     renderHousePage();
     renderGovernorPage();
+    renderHomeLatestVideo();
     renderHomeRadar();
     renderHomeDiagnostics();
     renderTopArticle();
@@ -3334,6 +3360,7 @@ async function init() {
   renderHousePage();
   renderGovernorPage();
   renderBattlegroundList();
+  renderHomeLatestVideo();
   renderHomeRadar();
   renderHomeDiagnostics();
   renderTopArticle();

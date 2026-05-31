@@ -31,8 +31,12 @@ function isMembersOnly(video) {
   return /\bmembers?[- ]only\b|\bmember exclusive\b|\bpaid members\b/i.test(video.title);
 }
 
-function isLivestream(video) {
+function looksLikeLivestream(video) {
   return /\blive\b|livestream|live stream/i.test(video.title);
+}
+
+function looksUpcoming(video) {
+  return /\bupcoming\b|\bscheduled\b|\bpreview\b|\bstarts\b|\btonight\b|\btomorrow\b/i.test(`${video.title} ${video.description || ""}`);
 }
 
 function videoFromEntry(entry) {
@@ -40,7 +44,10 @@ function videoFromEntry(entry) {
   const title = tag(entry, "title");
   const published = tag(entry, "published");
   const updated = tag(entry, "updated");
+  const description = tag(entry, "media:description");
   const url = attr(entry, "link", "href") || `https://www.youtube.com/watch?v=${id}`;
+  const livestream = looksLikeLivestream({ title, description });
+  const upcoming = livestream && (Date.parse(published) > Date.now() || looksUpcoming({ title, description }));
   return {
     id,
     title,
@@ -49,7 +56,8 @@ function videoFromEntry(entry) {
     url,
     embedUrl: `https://www.youtube-nocookie.com/embed/${id}`,
     thumbnail: attr(entry, "media:thumbnail", "url"),
-    kind: isLivestream({ title }) ? "livestream" : "upload"
+    kind: livestream ? "livestream" : "upload",
+    status: upcoming ? "upcoming" : livestream ? "replay" : "upload"
   };
 }
 
@@ -63,13 +71,11 @@ async function main() {
     .map((match) => videoFromEntry(match[0]))
     .filter((video) => video.id && video.title && !isMembersOnly(video));
 
-  const now = Date.now();
   const livestreams = entries.filter((video) => video.kind === "livestream");
   const uploads = entries.filter((video) => video.kind === "upload").slice(0, 4);
-  
-  // Check if livestream is upcoming (published in future) or latest (published in past)
-  const upcomingLivestream = livestreams.find((video) => Date.parse(video.published) > now) || null;
-  const latestLivestream = livestreams.find((video) => Date.parse(video.published) <= now) || null;
+
+  const upcomingLivestream = livestreams.find((video) => video.status === "upcoming") || null;
+  const latestLivestream = livestreams.find((video) => video.status !== "upcoming") || null;
 
   const payload = {
     generatedAt: new Date().toISOString(),

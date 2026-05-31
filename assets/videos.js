@@ -30,15 +30,17 @@ async function renderVideos() {
     const response = await fetch("data/videos.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`Video data returned ${response.status}`);
     const data = await response.json();
+    const upcomingStream = data.upcomingLivestream?.status === "upcoming" ? data.upcomingLivestream : null;
+    const latestReplay = data.latestLivestream?.status === "upcoming" ? null : data.latestLivestream;
 
     if (upcoming) {
-      upcoming.innerHTML = data.upcomingLivestream
-        ? videoEmbed(data.upcomingLivestream)
+      upcoming.innerHTML = upcomingStream
+        ? videoEmbed(upcomingStream)
         : `<h2>No upcoming livestream announced.</h2><p>When the next public stream is scheduled, it will appear here automatically.</p>`;
     }
     if (latestLive) {
-      latestLive.innerHTML = data.latestLivestream
-        ? videoEmbed(data.latestLivestream)
+      latestLive.innerHTML = latestReplay
+        ? videoEmbed(latestReplay)
         : `<p class="meta">No recent public livestream found.</p>`;
     }
     if (uploads) {
