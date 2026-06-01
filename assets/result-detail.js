@@ -237,10 +237,15 @@ function stateBounds(features) {
 function geometryPath(geometry, bounds, width, height) {
   const lonRange = Math.max(.1, bounds.maxLon - bounds.minLon);
   const latRange = Math.max(.1, bounds.maxLat - bounds.minLat);
-  const pad = 10;
+  const pad = 16;
+  const usableWidth = width - pad * 2;
+  const usableHeight = height - pad * 2;
+  const scale = Math.min(usableWidth / lonRange, usableHeight / latRange);
+  const offsetX = (width - lonRange * scale) / 2;
+  const offsetY = (height - latRange * scale) / 2;
   const project = ([lon, lat]) => [
-    pad + ((lon - bounds.minLon) / lonRange) * (width - pad * 2),
-    pad + ((bounds.maxLat - lat) / latRange) * (height - pad * 2)
+    offsetX + (lon - bounds.minLon) * scale,
+    offsetY + (bounds.maxLat - lat) * scale
   ];
   return coordinateRings(geometry).map((ring) => {
     const points = ring.map(project);
@@ -268,7 +273,7 @@ async function countyShapeMap(race) {
         ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.percentReporting)} reporting`
         : `${feature.properties?.NAME || "County"} County: waiting for reported votes`;
       return `
-        <path d="${geometryPath(feature.geometry, bounds, width, height)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}">
+        <path d="${geometryPath(feature.geometry, bounds, width, height)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-county-title="${escapeHtml(title)}">
           <title>${escapeHtml(title)}</title>
         </path>
       `;
@@ -277,12 +282,37 @@ async function countyShapeMap(race) {
       <svg class="result-county-map" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.stateName || race.state || "State")} county results map">
         ${paths}
       </svg>
-      <p class="result-map-caption">County shapes color by the current local leader once votes are reported.</p>
+      <p class="result-map-caption" data-default-map-caption="County shapes color by the current local leader once votes are reported.">County shapes color by the current local leader once votes are reported.</p>
     `;
   } catch (error) {
     console.warn(error);
     return regionMap(race);
   }
+}
+
+function bindCountyHover() {
+  const canvas = page.querySelector(".result-map-canvas");
+  const caption = canvas?.querySelector(".result-map-caption");
+  if (!canvas || !caption) return;
+  const defaultText = caption.dataset.defaultMapCaption || caption.textContent;
+  canvas.querySelectorAll(".result-county-map path").forEach((path) => {
+    path.addEventListener("mouseenter", () => {
+      caption.textContent = path.dataset.countyTitle || defaultText;
+      caption.classList.add("is-live");
+    });
+    path.addEventListener("mouseleave", () => {
+      caption.textContent = defaultText;
+      caption.classList.remove("is-live");
+    });
+    path.addEventListener("focus", () => {
+      caption.textContent = path.dataset.countyTitle || defaultText;
+      caption.classList.add("is-live");
+    });
+    path.addEventListener("blur", () => {
+      caption.textContent = defaultText;
+      caption.classList.remove("is-live");
+    });
+  });
 }
 
 function countyCandidateCells(county) {
@@ -367,6 +397,7 @@ async function renderRace(race) {
       ${countyRows(race)}
     </section>
   `;
+  bindCountyHover();
 }
 
 async function fetchRace() {

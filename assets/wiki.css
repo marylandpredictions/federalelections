@@ -215,6 +215,16 @@ body {
   to { transform: scaleX(1); opacity: 1; }
 }
 
+@keyframes result-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes result-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 a,
 button {
   color: inherit;
@@ -3267,6 +3277,14 @@ button.race-board-row {
 
 .result-state-card {
   padding: 10px;
+  animation: result-rise .42s ease both;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.result-state-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, #c6d2ff 70%, var(--line));
+  box-shadow: 0 18px 42px color-mix(in srgb, #000 28%, transparent), 0 0 24px color-mix(in srgb, #c6d2ff 12%, transparent);
 }
 
 .result-state-head {
@@ -3550,13 +3568,14 @@ button.race-board-row {
 .result-night-shell {
   min-height: calc(100vh - 140px);
   display: grid;
-  grid-template-columns: minmax(360px, .9fr) minmax(360px, 1fr);
+  grid-template-columns: minmax(340px, .82fr) minmax(460px, 1.18fr);
   gap: 18px;
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 4px;
   background: color-mix(in srgb, #02081d 82%, var(--paper));
   box-shadow: var(--shadow-soft);
+  animation: result-rise .46s ease both;
 }
 
 .result-night-left {
@@ -3591,10 +3610,11 @@ button.race-board-row {
 
 .result-map-panel {
   display: grid;
-  grid-template-rows: auto minmax(300px, 1fr);
+  grid-template-rows: auto minmax(420px, 1fr);
   gap: 10px;
   align-self: stretch;
-  min-height: 430px;
+  min-height: 560px;
+  animation: result-fade .5s ease both;
 }
 
 .result-map-tabs span,
@@ -3622,7 +3642,7 @@ button.race-board-row {
   place-items: center;
   align-content: center;
   gap: 12px;
-  min-height: 360px;
+  min-height: 500px;
 }
 
 .result-map-canvas img {
@@ -3634,8 +3654,8 @@ button.race-board-row {
 }
 
 .result-county-map {
-  width: min(92%, 620px);
-  max-height: 430px;
+  width: min(96%, 720px);
+  max-height: 500px;
   display: block;
   overflow: visible;
 }
@@ -3643,12 +3663,18 @@ button.race-board-row {
 .result-county-map path {
   stroke: color-mix(in srgb, #fff 58%, transparent);
   stroke-width: .7;
+  cursor: pointer;
   vector-effect: non-scaling-stroke;
-  transition: fill .18s ease, filter .18s ease;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: fill .18s ease, filter .18s ease, transform .18s ease, stroke-width .18s ease;
 }
 
-.result-county-map path:hover {
+.result-county-map path:hover,
+.result-county-map path:focus {
   filter: brightness(1.35);
+  stroke-width: 1.2;
+  transform: scale(1.012);
 }
 
 .result-county-map path.is-waiting {
@@ -3695,6 +3721,12 @@ button.race-board-row {
   color: var(--muted);
   font: 800 .78rem/1.25 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-align: center;
+  transition: color .18s ease, transform .18s ease;
+}
+
+.result-map-caption.is-live {
+  color: var(--ink);
+  transform: translateY(-1px);
 }
 
 .result-map-empty {
@@ -3800,6 +3832,14 @@ button.race-board-row {
   border: 1px solid var(--line);
   border-radius: 4px;
   background: color-mix(in srgb, var(--paper) 72%, transparent);
+  animation: result-fade .36s ease both;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.result-full-candidate:hover {
+  transform: translateX(3px);
+  border-color: color-mix(in srgb, #c6d2ff 74%, var(--line));
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
 }
 
 .result-full-candidate.called {
@@ -3942,6 +3982,13 @@ button.race-board-row {
   border: 1px solid var(--line);
   border-radius: 4px;
   background: color-mix(in srgb, var(--paper) 70%, transparent);
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.county-result-row:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, #c6d2ff 70%, var(--line));
+  background: color-mix(in srgb, var(--paper) 84%, transparent);
 }
 
 .county-result-row small {
@@ -5045,6 +5092,11 @@ button.race-board-row {
   .home-radar-row:focus,
   .home-article-list a:hover,
   .home-article-list a:focus,
+  .result-state-card:hover,
+  .result-race-row:hover,
+  .result-race-row:focus,
+  .result-full-candidate:hover,
+  .county-result-row:hover,
   .site-nav a:hover,
   .button-link:hover {
     transform: none;
@@ -5055,6 +5107,7 @@ button.race-board-row {
   .hero-grid,
   .home-hero-shell,
   .map-wrap,
+  .result-night-shell,
   .house-board-layout,
   .dashboard-grid,
   .page-grid,
@@ -5109,6 +5162,19 @@ button.race-board-row {
 
   .result-detail-card {
     position: static;
+  }
+
+  .result-map-panel {
+    min-height: 460px;
+  }
+
+  .result-map-canvas {
+    min-height: 390px;
+  }
+
+  .result-county-map {
+    width: min(98%, 680px);
+    max-height: 390px;
   }
 }
 
@@ -5376,6 +5442,19 @@ button.race-board-row {
   .result-full-candidate,
   .county-result-row {
     grid-template-columns: 1fr;
+  }
+
+  .result-map-panel {
+    min-height: 380px;
+  }
+
+  .result-map-canvas {
+    min-height: 320px;
+  }
+
+  .result-county-map {
+    width: 100%;
+    max-height: 320px;
   }
 
   .county-candidate-cells {
