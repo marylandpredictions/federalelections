@@ -225,6 +225,21 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes call-pulse {
+  0%, 100% { box-shadow: 0 0 0 color-mix(in srgb, #49d38a 0%, transparent); }
+  50% { box-shadow: 0 0 16px color-mix(in srgb, #49d38a 36%, transparent); }
+}
+
+@keyframes called-glow {
+  0%, 100% { box-shadow: 0 0 18px color-mix(in srgb, #49d38a 12%, transparent); }
+  50% { box-shadow: 0 0 30px color-mix(in srgb, #49d38a 24%, transparent); }
+}
+
+@keyframes call-slide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 a,
 button {
   color: inherit;
@@ -3506,7 +3521,7 @@ button.race-board-row {
 .result-race-row {
   width: 100%;
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr) auto;
+  grid-template-columns: 30px minmax(0, 1fr) auto auto;
   gap: 7px;
   align-items: center;
   padding: 7px 6px;
@@ -3532,6 +3547,21 @@ button.race-board-row {
     color-mix(in srgb, var(--paper) 78%, transparent);
   box-shadow: 0 0 18px color-mix(in srgb, #C6D2FF 24%, transparent);
   outline: none;
+}
+
+.result-race-row.has-call {
+  border-color: color-mix(in srgb, #49d38a 70%, var(--line));
+  box-shadow: inset 3px 0 0 #49d38a, 0 0 18px color-mix(in srgb, #49d38a 12%, transparent);
+}
+
+.result-race-call {
+  padding: 4px 6px;
+  border: 1px solid color-mix(in srgb, #49d38a 72%, var(--line));
+  border-radius: 999px;
+  color: #49d38a;
+  font: 950 .58rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  text-transform: uppercase;
+  animation: call-pulse 1.65s ease-in-out infinite;
 }
 
 .result-race-copy {
@@ -4213,6 +4243,31 @@ button.race-board-row {
 .result-full-candidate.called {
   border-color: color-mix(in srgb, #49d38a 54%, var(--line));
   box-shadow: 0 0 20px color-mix(in srgb, #49d38a 14%, transparent);
+  animation: called-glow 1.8s ease-in-out infinite;
+}
+
+.result-call-alert {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 11px 12px;
+  border: 1px solid color-mix(in srgb, #49d38a 64%, var(--line));
+  border-radius: 6px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, #49d38a 18%, transparent), color-mix(in srgb, var(--paper) 76%, transparent));
+  box-shadow: 0 0 28px color-mix(in srgb, #49d38a 13%, transparent);
+  animation: call-slide .36s var(--ease-out) both;
+}
+
+.result-call-alert span {
+  color: #49d38a;
+  font: 950 .66rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  text-transform: uppercase;
+}
+
+.result-call-alert strong {
+  font: 950 .9rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .result-full-candidate-name {

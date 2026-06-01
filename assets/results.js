@@ -74,13 +74,18 @@ function flattenRaces(data = liveResultsData) {
 }
 
 function leadingCandidate(race) {
-  return (race.candidates || [])[0] || null;
+  const candidates = [...(race.candidates || [])];
+  if (candidates.some((candidate) => Number(candidate.votes || 0) || Number(candidate.percent || 0))) {
+    return candidates.sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))[0] || null;
+  }
+  return candidates[0] || null;
 }
 
 function raceCard(race) {
   const leader = leadingCandidate(race);
+  const hasCall = Boolean((race.calls || []).length || (race.candidates || []).some((candidate) => candidate.callLabel));
   return `
-    <a class="result-race-row" href="result.html?id=${encodeURIComponent(race.id)}">
+    <a class="result-race-row ${hasCall ? "has-call" : ""}" href="result.html?id=${encodeURIComponent(race.id)}">
       <span class="result-election-marker ${markerClass(race.marker)}" title="${escapeHtml(race.marker?.label || "Election")}">
         <i>${escapeHtml(race.marker?.short || "G")}</i>
       </span>
@@ -88,6 +93,7 @@ function raceCard(race) {
         <strong>${escapeHtml(race.electionName)}</strong>
         <small>${escapeHtml(leader?.name || "No votes reported yet")}${race.otherCandidateCount ? ` + ${race.otherCandidateCount} candidate${race.otherCandidateCount === 1 ? "" : "s"}` : ""}</small>
       </span>
+      ${hasCall ? `<span class="result-race-call">Called</span>` : ""}
       <span class="result-date">${escapeHtml(dateLabel(race.electionDate))}</span>
     </a>
   `;
@@ -137,19 +143,21 @@ async function loadResults(forceLive = false) {
   if (statusLabel) statusLabel.textContent = forceLive ? "Refreshing..." : "Loading results...";
   if (refreshButton) refreshButton.disabled = true;
   try {
-    liveResultsData = forceLive
-      ? await fetchResults("/api/live-results")
-      : await fetchResults("data/live-results.json");
-    if (!flattenRaces(liveResultsData).length && !forceLive) {
+    let source = "cache";
+    try {
+      liveResultsData = await fetchResults("/api/live-results");
+      source = "live";
+    } catch {
+      liveResultsData = await fetchResults("data/live-results.json");
+    }
+    if (!flattenRaces(liveResultsData).length && source !== "live") {
       try {
         liveResultsData = await fetchResults("/api/live-results");
-        renderMeta(liveResultsData, "live");
+        source = "live";
       } catch {
-        renderMeta(liveResultsData, "cache");
       }
-    } else {
-      renderMeta(liveResultsData, forceLive ? "live" : "cache");
     }
+    renderMeta(liveResultsData, source);
     renderGroups();
   } catch (error) {
     if (previousData) {
@@ -171,3 +179,4 @@ searchInput?.addEventListener("input", renderGroups);
 refreshButton?.addEventListener("click", () => loadResults(true));
 
 loadResults();
+setInterval(() => loadResults(false), 30000);

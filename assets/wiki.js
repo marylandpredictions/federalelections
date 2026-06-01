@@ -104,7 +104,7 @@ const RATING_SCORES = {
 };
 
 const HOUSE_VIEW_MODES = {
-  shape: "Shape map",
+  shape: "Map",
   board: "Original board",
   list: "List"
 };
@@ -724,7 +724,7 @@ function updateSummary() {
     panel.classList.toggle("control-dem", favoredIsDem);
     panel.classList.toggle("control-rep", !favoredIsDem);
   });
-  setText("update-time", `Updates daily at ${forecast.updateTime || "6:20 AM Central"}`);
+  setText("update-time", "Fires daily");
 
   const demBar = document.getElementById("dem-control-bar");
   const repBar = document.getElementById("rep-control-bar");

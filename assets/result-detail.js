@@ -253,7 +253,31 @@ function markerClass(marker) {
 }
 
 function leadingCandidate(race) {
-  return (race.candidates || [])[0] || null;
+  return sortedCandidates(race)[0] || null;
+}
+
+function hasReportedVotes(candidates) {
+  return candidates.some((candidate) => Number(candidate.votes || 0) > 0 || Number(candidate.percent || 0) > 0);
+}
+
+function sortedCandidates(race) {
+  const candidates = [...(race?.candidates || [])];
+  if (hasReportedVotes(candidates)) {
+    return candidates.sort((a, b) => (
+      Number(b.percent || 0) - Number(a.percent || 0)
+      || Number(b.votes || 0) - Number(a.votes || 0)
+      || String(a.name || "").localeCompare(String(b.name || ""))
+    ));
+  }
+  const featuredNames = (race?.featuredCandidateNames || []).map((name) => String(name).toLowerCase());
+  if (!featuredNames.length) return candidates;
+  return candidates.sort((a, b) => {
+    const aRank = featuredNames.indexOf(String(a.name || "").toLowerCase());
+    const bRank = featuredNames.indexOf(String(b.name || "").toLowerCase());
+    const aValue = aRank === -1 ? Number.POSITIVE_INFINITY : aRank;
+    const bValue = bRank === -1 ? Number.POSITIVE_INFINITY : bRank;
+    return aValue - bValue;
+  });
 }
 
 function candidateFill(race, candidate) {
@@ -274,6 +298,30 @@ function callBadge(candidate, race) {
     .replace(/^Projected winner$/i, "Projected")
     .replace(/^Advanced to general election$/i, "Advanced");
   return `<span class="result-call-badge">${escapeHtml(compactLabel)}</span>`;
+}
+
+function raceCallBanner(race) {
+  const calls = race.calls || [];
+  if (!calls.length) return "";
+  const labels = calls.map((call) => {
+    const candidate = (race.candidates || []).find((item) => String(item.name || "").toLowerCase() === String(call.candidate || "").toLowerCase());
+    const label = callLabelForDisplay(call, race);
+    return `${candidate?.name || call.candidate || "Candidate"} ${label.toLowerCase()}`;
+  });
+  return `
+    <div class="result-call-alert" role="status">
+      <span>Race call</span>
+      <strong>${escapeHtml(labels.join(" / "))}</strong>
+    </div>
+  `;
+}
+
+function callLabelForDisplay(call, race) {
+  if (call.label) return call.label;
+  const scope = `${race.electionScope || race.electionName || ""}`.toLowerCase();
+  if (call.status === "projected") return "Projected winner";
+  if (call.status === "advances" || call.status === "advanced" || scope.includes("primary")) return "Advances";
+  return "Winner";
 }
 
 function candidateRow(candidate, race, maxPercent) {
@@ -301,17 +349,9 @@ function candidateRow(candidate, race, maxPercent) {
 }
 
 function candidateRows(race) {
-  const candidates = race.candidates || [];
+  const candidates = sortedCandidates(race);
   const maxPercent = Math.max(1, ...candidates.map((candidate) => Number(candidate.percent || 0)));
-  const featuredNames = (race.featuredCandidateNames || []).map((name) => String(name).toLowerCase());
-  const featuredCandidates = featuredNames.length
-    ? featuredNames
-      .map((name) => candidates.find((candidate) => String(candidate.name || "").toLowerCase() === name))
-      .filter(Boolean)
-    : [];
-  const topList = featuredCandidates.length
-    ? [...featuredCandidates, ...candidates.filter((candidate) => !featuredNames.includes(String(candidate.name || "").toLowerCase()))].slice(0, 5)
-    : candidates.slice(0, 5);
+  const topList = candidates.slice(0, 5);
   const topNames = new Set(topList.map((candidate) => String(candidate.name || "").toLowerCase()));
   const otherCandidates = candidates.filter((candidate) => !topNames.has(String(candidate.name || "").toLowerCase()));
   const topCandidates = topList.map((candidate) => candidateRow(candidate, race, maxPercent)).join("");
@@ -391,7 +431,7 @@ function regionMap(race) {
     const label = leader
       ? `${county.name}: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.percentReporting)} reporting`
       : `${county.name}: waiting for reported votes`;
-    const style = leader ? ` style="--tile-color:${candidateFill(leader)}"` : "";
+    const style = leader ? ` style="--tile-color:${candidateFill(race, leader)}"` : "";
     return `
       <span class="result-region-tile ${leader ? "" : "is-waiting"}"${style} title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
         ${escapeHtml(regionAbbreviation(county.name))}
@@ -565,7 +605,7 @@ async function districtShapeMap(race) {
     ));
     if (!feature) return "";
     const leader = leadingCandidate(race);
-    const fill = leader && Number(leader.votes || 0) ? candidateFill(leader) : "#566274";
+    const fill = leader && Number(leader.votes || 0) ? candidateFill(race, leader) : "#566274";
     const bounds = stateBounds([feature]);
     const { width, height, lonScale } = mapDimensions(bounds, 700, 500);
     return `
@@ -602,7 +642,7 @@ async function countyShapeMap(race) {
     const paths = visibleFeatures.map((feature) => {
       const county = lookup.get(feature.id) || lookup.get(String(feature.properties?.NAME || "").toLowerCase());
       const leader = county ? regionLeader(county) : null;
-      const fill = leader ? candidateFill(leader) : "#566274";
+      const fill = leader ? candidateFill(race, leader) : "#566274";
       const title = county && leader
         ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.percentReporting)} reporting`
         : `${feature.properties?.NAME || "County"} County: waiting for reported votes`;
@@ -768,6 +808,8 @@ async function renderRace(race) {
           </div>
         </div>
 
+        ${raceCallBanner(race)}
+
         <div class="result-full-candidates">
           ${candidateRows(race)}
         </div>
@@ -795,7 +837,7 @@ async function renderRace(race) {
       </aside>
     </section>
 
-    <p class="forecast-disclaimer result-call-note">Race calls appear only when Federal Elections Analysis has made a call or projection. Races without that label remain uncalled.</p>
+    <p class="forecast-disclaimer result-call-note">Race calls appear only when Federal Elections Analysis has made a call or projection. Races without that label remain uncalled. This page checks for updates automatically.</p>
 
     <section class="result-county-panel">
       <div class="section-head">
@@ -814,16 +856,22 @@ async function renderRace(race) {
 
 async function fetchRace() {
   if (!raceId) throw new Error("Missing race id.");
+  try {
+    const liveResponse = await fetch(`/api/live-results/race?id=${encodeURIComponent(raceId)}`, { cache: "no-store" });
+    if (liveResponse.ok) return liveResponse.json();
+  } catch {
+    // Static deployments do not have the live API; fall back to generated JSON.
+  }
   const staticResponse = await fetch(`data/live-results-races/${encodeURIComponent(raceId)}.json`, { cache: "no-store" });
-  if (staticResponse.ok) return staticResponse.json();
-  const liveResponse = await fetch(`/api/live-results/race?id=${encodeURIComponent(raceId)}`, { cache: "no-store" });
-  if (!liveResponse.ok) throw new Error(`Race detail returned ${liveResponse.status}`);
-  return liveResponse.json();
+  if (!staticResponse.ok) throw new Error(`Race detail returned ${staticResponse.status}`);
+  return staticResponse.json();
 }
 
-fetchRace()
-  .then(renderRace)
-  .catch((error) => {
+async function loadRaceDetail() {
+  try {
+    const race = await fetchRace();
+    await renderRace(race);
+  } catch (error) {
     page.innerHTML = `
       <section class="text-panel">
         <p class="kicker">Race results</p>
@@ -833,4 +881,8 @@ fetchRace()
       </section>
     `;
     console.error(error);
-  });
+  }
+}
+
+loadRaceDetail();
+setInterval(loadRaceDetail, 30000);
