@@ -675,6 +675,11 @@ function updateSummary() {
   const favoredProbability = Math.max(forecast.demControlProbability, forecast.repControlProbability);
   const senateSeatLine = `${forecast.medianSeats} D / ${100 - forecast.medianSeats} R projected seats`;
   setText("seat-count-headline", senateSeatLine);
+  setText("senate-map-seatbar-label", senateSeatLine);
+  const mapSeatbarDem = document.getElementById("senate-map-seatbar-dem");
+  const mapSeatbarRep = document.getElementById("senate-map-seatbar-rep");
+  if (mapSeatbarDem) mapSeatbarDem.style.width = `${forecast.medianSeats}%`;
+  if (mapSeatbarRep) mapSeatbarRep.style.width = `${100 - forecast.medianSeats}%`;
   const oddsNode = document.getElementById("odds-phrase");
   if (oddsNode) {
     oddsNode.innerHTML = `<span>${favoredSide} favored</span><strong>${pct(favoredProbability)}</strong>`;

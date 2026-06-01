@@ -148,6 +148,33 @@ function regionLeader(county) {
   }, null);
 }
 
+function countyTopCandidates(county, limit = 3) {
+  return [...(county.candidates || [])]
+    .sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))
+    .slice(0, limit);
+}
+
+function countyTooltipMarkup(county, titlePrefix = "") {
+  const rows = countyTopCandidates(county, 3);
+  const title = titlePrefix || `${county.name} County`;
+  return `
+    <strong>${escapeHtml(title)}</strong>
+    <table>
+      <thead><tr><th></th><th>Votes</th><th>Pct</th></tr></thead>
+      <tbody>
+        ${rows.map((candidate) => `
+          <tr>
+            <td>${escapeHtml(candidate.name)} (${escapeHtml(candidate.partyCode || partyCode(candidate.party) || "O")})</td>
+            <td>${numberLabel(candidate.votes)}</td>
+            <td>${percentLabel(candidate.percent)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+    <small>${percentLabel(county.percentReporting)} reporting</small>
+  `;
+}
+
 function regionAbbreviation(name) {
   const cleaned = String(name || "").replace(/[^a-z0-9\s]/gi, " ").trim();
   if (!cleaned) return "--";
@@ -212,6 +239,12 @@ function countyLookup(race) {
   return lookup;
 }
 
+function shouldFilterToJurisdiction(race, features, lookup) {
+  if (race.district || race.municipality) return true;
+  const matchedCounties = features.filter((feature) => lookup.has(feature.id) || lookup.has(String(feature.properties?.NAME || "").toLowerCase())).length;
+  return matchedCounties > 0 && matchedCounties < features.length;
+}
+
 function coordinateRings(geometry) {
   if (!geometry) return [];
   if (geometry.type === "Polygon") return geometry.coordinates;
@@ -262,18 +295,23 @@ async function countyShapeMap(race) {
     const features = (geojson.features || []).filter((feature) => feature.properties?.STATE === fips);
     if (!features.length) return regionMap(race);
     const lookup = countyLookup(race);
-    const bounds = stateBounds(features);
+    const visibleFeatures = shouldFilterToJurisdiction(race, features, lookup)
+      ? features.filter((feature) => lookup.has(feature.id) || lookup.has(String(feature.properties?.NAME || "").toLowerCase()))
+      : features;
+    if (!visibleFeatures.length) return regionMap(race);
+    const bounds = stateBounds(visibleFeatures);
     const width = 620;
     const height = 430;
-    const paths = features.map((feature) => {
+    const paths = visibleFeatures.map((feature) => {
       const county = lookup.get(feature.id) || lookup.get(String(feature.properties?.NAME || "").toLowerCase());
       const leader = county ? regionLeader(county) : null;
       const fill = leader ? candidateFill(leader) : "#3b4354";
       const title = county && leader
         ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.percentReporting)} reporting`
         : `${feature.properties?.NAME || "County"} County: waiting for reported votes`;
+      const tooltip = county ? countyTooltipMarkup(county, `${feature.properties?.NAME || county.name} County`) : "";
       return `
-        <path d="${geometryPath(feature.geometry, bounds, width, height)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-county-title="${escapeHtml(title)}">
+        <path d="${geometryPath(feature.geometry, bounds, width, height)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
           <title>${escapeHtml(title)}</title>
         </path>
       `;
@@ -294,29 +332,42 @@ function bindCountyHover() {
   const canvas = page.querySelector(".result-map-canvas");
   const caption = canvas?.querySelector(".result-map-caption");
   if (!canvas || !caption) return;
+  const tooltip = canvas.querySelector(".result-county-tooltip");
   const defaultText = caption.dataset.defaultMapCaption || caption.textContent;
   canvas.querySelectorAll(".result-county-map path").forEach((path) => {
-    path.addEventListener("mouseenter", () => {
+    const show = (event) => {
       caption.textContent = path.dataset.countyTitle || defaultText;
       caption.classList.add("is-live");
-    });
-    path.addEventListener("mouseleave", () => {
+      if (tooltip && path.dataset.countyTooltip) {
+        tooltip.innerHTML = path.dataset.countyTooltip;
+        tooltip.classList.add("visible");
+        moveTooltip(event, canvas, tooltip);
+      }
+    };
+    const hide = () => {
       caption.textContent = defaultText;
       caption.classList.remove("is-live");
-    });
-    path.addEventListener("focus", () => {
-      caption.textContent = path.dataset.countyTitle || defaultText;
-      caption.classList.add("is-live");
-    });
-    path.addEventListener("blur", () => {
-      caption.textContent = defaultText;
-      caption.classList.remove("is-live");
-    });
+      tooltip?.classList.remove("visible");
+    };
+    path.addEventListener("mouseenter", show);
+    path.addEventListener("mousemove", (event) => moveTooltip(event, canvas, tooltip));
+    path.addEventListener("mouseleave", hide);
+    path.addEventListener("focus", show);
+    path.addEventListener("blur", hide);
   });
 }
 
+function moveTooltip(event, canvas, tooltip) {
+  if (!event || !canvas || !tooltip) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = Math.min(rect.width - tooltip.offsetWidth - 8, Math.max(8, event.clientX - rect.left + 14));
+  const y = Math.min(rect.height - tooltip.offsetHeight - 8, Math.max(8, event.clientY - rect.top + 14));
+  tooltip.style.left = `${x}px`;
+  tooltip.style.top = `${y}px`;
+}
+
 function countyCandidateCells(county) {
-  const candidates = (county.candidates || []).slice(0, 3);
+  const candidates = countyTopCandidates(county, 3);
   return candidates.map((candidate) => `
     <span>
       <strong>${escapeHtml(candidate.name)}</strong>
@@ -380,6 +431,7 @@ async function renderRace(race) {
         </div>
         <div class="result-map-canvas">
           ${mapMarkup}
+          <div class="result-county-tooltip" aria-hidden="true"></div>
         </div>
       </aside>
     </section>

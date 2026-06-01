@@ -240,7 +240,7 @@ button {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 10000;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   gap: 12px;
@@ -540,15 +540,29 @@ main {
 }
 
 .site-footer {
+  position: relative;
   display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto auto;
+  grid-template-columns: minmax(96px, .18fr) minmax(0, 1fr);
   gap: 18px;
   align-items: center;
   padding: 22px clamp(14px, 3vw, 44px);
   border-top: 1px solid var(--line);
   background: var(--chrome);
   color: var(--ink);
+}
+
+.site-footer::before {
+  content: "";
+  align-self: end;
+  justify-self: start;
+  width: 86px;
+  height: 48px;
+  background: url("img/FEA_Icon.png") left bottom / contain no-repeat;
+}
+
+.site-footer > div,
+.site-footer > nav {
+  grid-column: 2;
 }
 
 .site-footer strong {
@@ -568,7 +582,7 @@ main {
   justify-content: stretch;
   gap: 18px;
   width: min(820px, 100%);
-  margin: 0 auto;
+  margin: 0 0 0 auto;
 }
 
 .site-footer a {
@@ -1825,6 +1839,42 @@ dd {
   min-height: 430px;
   width: 100%;
   overflow: hidden;
+}
+
+.senate-map-seatbar {
+  position: relative;
+  display: flex;
+  height: 34px;
+  overflow: hidden;
+  margin: 0 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--paper) 78%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff 8%, transparent);
+}
+
+.senate-map-seatbar span {
+  display: block;
+  height: 100%;
+  transition: width .42s var(--ease-out);
+}
+
+.senate-map-seatbar span:first-child {
+  background: linear-gradient(90deg, #1030b2, #4f74ff);
+}
+
+.senate-map-seatbar span:nth-child(2) {
+  background: linear-gradient(90deg, #ff5c66, #b22222);
+}
+
+.senate-map-seatbar b {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font: 950 .86rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, .62);
 }
 
 #senate-map svg,
@@ -3638,6 +3688,7 @@ button.race-board-row {
 }
 
 .result-map-canvas {
+  position: relative;
   display: grid;
   place-items: center;
   align-content: center;
@@ -3727,6 +3778,63 @@ button.race-board-row {
 .result-map-caption.is-live {
   color: var(--ink);
   transform: translateY(-1px);
+}
+
+.result-county-tooltip {
+  position: absolute;
+  z-index: 5;
+  min-width: 220px;
+  max-width: min(310px, calc(100% - 18px));
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: color-mix(in srgb, #02081d 94%, var(--paper));
+  color: var(--ink);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .35);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity .12s ease, transform .12s ease;
+}
+
+.result-county-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.result-county-tooltip strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: .78rem;
+}
+
+.result-county-tooltip table {
+  width: 100%;
+  border-collapse: collapse;
+  font: 800 .68rem/1.12 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.result-county-tooltip th,
+.result-county-tooltip td {
+  padding: 2px 4px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 62%, transparent);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.result-county-tooltip th:first-child,
+.result-county-tooltip td:first-child {
+  max-width: 148px;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+
+.result-county-tooltip small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-weight: 800;
 }
 
 .result-map-empty {
@@ -5097,6 +5205,8 @@ button.race-board-row {
   .result-race-row:focus,
   .result-full-candidate:hover,
   .county-result-row:hover,
+  .result-county-map path:hover,
+  .result-county-map path:focus,
   .site-nav a:hover,
   .button-link:hover {
     transform: none;
@@ -5465,6 +5575,16 @@ button.race-board-row {
 @media (max-width: 430px) {
   .site-header {
     padding-inline: 9px;
+  }
+
+  .site-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .site-footer::before,
+  .site-footer > div,
+  .site-footer > nav {
+    grid-column: 1;
   }
 
   .brand small {
