@@ -3437,11 +3437,9 @@ button.race-board-row {
 }
 
 .results-groups {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 10px;
+  column-count: 5;
+  column-gap: 10px;
   margin-top: 12px;
-  align-items: start;
 }
 
 .result-state-card,
@@ -3456,6 +3454,11 @@ button.race-board-row {
 
 .result-state-card {
   padding: 10px;
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 10px;
+  break-inside: avoid;
+  vertical-align: top;
   animation: result-rise .42s ease both;
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
@@ -3866,6 +3869,8 @@ button.race-board-row {
 
 .result-map-frame {
   --result-map-zoom: 1;
+  --result-map-pan-x: 0px;
+  --result-map-pan-y: 0px;
   width: min(94%, 860px);
   min-height: min(540px, 70vh);
   display: grid;
@@ -3877,6 +3882,13 @@ button.race-board-row {
     radial-gradient(circle at 22% 18%, color-mix(in srgb, #fff 8%, transparent), transparent 32%),
     linear-gradient(145deg, color-mix(in srgb, #182755 82%, transparent), color-mix(in srgb, #0c1639 92%, transparent));
   box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff 8%, transparent), 0 18px 46px color-mix(in srgb, #000 22%, transparent);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.result-map-frame.is-panning {
+  cursor: grabbing;
 }
 
 .result-map-canvas img {
@@ -3893,7 +3905,7 @@ button.race-board-row {
   height: auto;
   display: block;
   overflow: visible;
-  transform: scale(var(--result-map-zoom, 1));
+  transform: translate(var(--result-map-pan-x, 0), var(--result-map-pan-y, 0)) scale(var(--result-map-zoom, 1));
   transform-origin: center;
   transition: transform .18s var(--ease-out);
 }
@@ -5773,7 +5785,7 @@ button.race-board-row {
   }
 
   .results-groups {
-    grid-template-columns: 1fr;
+    column-count: 1;
   }
 
   .result-race-row {

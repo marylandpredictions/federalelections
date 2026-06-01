@@ -518,8 +518,13 @@ function bindMapZoom() {
   if (!frame) return;
   const controls = page.querySelectorAll("[data-map-zoom]");
   let zoom = 1;
+  let panX = 0;
+  let panY = 0;
+  let pointerStart = null;
   const apply = () => {
     frame.style.setProperty("--result-map-zoom", zoom.toFixed(2));
+    frame.style.setProperty("--result-map-pan-x", `${panX.toFixed(1)}px`);
+    frame.style.setProperty("--result-map-pan-y", `${panY.toFixed(1)}px`);
     controls.forEach((control) => {
       const mode = control.dataset.mapZoom;
       control.disabled = (mode === "in" && zoom >= 2.5) || (mode === "out" && zoom <= 1);
@@ -530,7 +535,11 @@ function bindMapZoom() {
       const mode = control.dataset.mapZoom;
       if (mode === "in") zoom = Math.min(2.5, zoom + .25);
       if (mode === "out") zoom = Math.max(1, zoom - .25);
-      if (mode === "reset") zoom = 1;
+      if (mode === "reset") {
+        zoom = 1;
+        panX = 0;
+        panY = 0;
+      }
       apply();
     });
   });
@@ -539,6 +548,26 @@ function bindMapZoom() {
     zoom = event.deltaY < 0 ? Math.min(2.75, zoom + .18) : Math.max(.8, zoom - .18);
     apply();
   }, { passive: false });
+  frame.addEventListener("pointerdown", (event) => {
+    if (event.button !== undefined && event.button !== 0) return;
+    pointerStart = { x: event.clientX, y: event.clientY, panX, panY };
+    frame.setPointerCapture?.(event.pointerId);
+    frame.classList.add("is-panning");
+  });
+  frame.addEventListener("pointermove", (event) => {
+    if (!pointerStart) return;
+    event.preventDefault();
+    panX = pointerStart.panX + event.clientX - pointerStart.x;
+    panY = pointerStart.panY + event.clientY - pointerStart.y;
+    apply();
+  });
+  const endPan = (event) => {
+    pointerStart = null;
+    frame.releasePointerCapture?.(event.pointerId);
+    frame.classList.remove("is-panning");
+  };
+  frame.addEventListener("pointerup", endPan);
+  frame.addEventListener("pointercancel", endPan);
   apply();
 }
 
