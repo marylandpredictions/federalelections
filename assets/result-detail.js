@@ -3,6 +3,7 @@ const raceId = new URLSearchParams(window.location.search).get("id");
 let countyMapDataPromise = null;
 let districtMapDataPromise = null;
 let analysisNotesPromise = null;
+let governorForecastPromise = null;
 
 const REDISTRICTED_RESULT_STATES = new Set(["AL", "LA", "NC", "OH", "TX", "UT"]);
 const MANUAL_INCUMBENTS_BY_RACE = {
@@ -195,6 +196,12 @@ function percentLabel(value) {
   return Number.isFinite(number) ? `${number.toFixed(1)}%` : "0.0%";
 }
 
+function signedPointMargin(value) {
+  const number = Number(value || 0);
+  if (!Number.isFinite(number) || Math.abs(number) < .05) return "Even";
+  return `${number > 0 ? "D" : "R"}+${Math.abs(number).toFixed(1)} pts`;
+}
+
 function dateLabel(value) {
   if (!value) return "Date TBA";
   const date = new Date(value);
@@ -332,6 +339,50 @@ function noteExternalEmbedMarkup(value) {
       ${caption}
     </figure>
   `;
+}
+
+async function loadGovernorForecast() {
+  if (!governorForecastPromise) {
+    governorForecastPromise = fetch("data/governor-forecast.json", { cache: "no-store" })
+      .then((response) => response.ok ? response.json() : null)
+      .catch(() => null);
+  }
+  return governorForecastPromise;
+}
+
+function governorPreviewMarkup(race, title = "") {
+  if (!race) return `<p class="meta">Governor forecast preview is not available.</p>`;
+  const leader = race.demProbability >= .5 ? "Democrat" : "Republican";
+  const leaderProb = Math.max(race.demProbability || 0, race.repProbability || 0);
+  const ratingClass = race.demProbability >= .5 ? "leads-dem" : "leads-rep";
+  return `
+    <section class="analysis-note-forecast ${ratingClass}">
+      <span class="chart-label">${escapeHtml(title || `${race.displayName} forecast preview`)}</span>
+      <div class="map-card-title">
+        <div class="state-code">${escapeHtml(race.state)}</div>
+        <span class="rating-pill">${escapeHtml(race.rating || "Rating")}</span>
+      </div>
+      <h3>${leader} ${percentLabel(leaderProb * 100)} chance</h3>
+      <div class="candidate-table" aria-label="${escapeHtml(race.displayName)} forecast preview">
+        <div class="candidate-table-head"><span>Party</span><span>Chance</span></div>
+        <div class="candidate-row dem-row"><span>Democrat <i class="party-badge dem-badge">D</i></span><strong>${percentLabel((race.demProbability || 0) * 100)}</strong></div>
+        <div class="candidate-row rep-row"><span>Republican <i class="party-badge rep-badge">R</i></span><strong>${percentLabel((race.repProbability || 0) * 100)}</strong></div>
+        <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(race.margin)}</strong></div>
+      </div>
+      <p>${escapeHtml(race.status || "Governor race")}. Incumbent party: ${escapeHtml(race.incumbentParty || "Unknown")}.</p>
+    </section>
+  `;
+}
+
+async function noteEmbedMarkup(value) {
+  const block = typeof value === "string" ? { url: value } : (value?.embed || value || {});
+  if (["governor-race-preview", "governor-state-preview"].includes(block.type)) {
+    const forecast = await loadGovernorForecast();
+    const state = String(block.state || "").toUpperCase();
+    const race = forecast?.races?.find((item) => item.state === state);
+    return governorPreviewMarkup(race, block.title);
+  }
+  return noteExternalEmbedMarkup(block);
 }
 
 function isIncumbentCandidate(race, candidate) {
@@ -844,7 +895,7 @@ async function loadAnalysisNotes() {
   return analysisNotesPromise;
 }
 
-function analysisNoteMarkup(notes) {
+async function analysisNoteMarkup(notes) {
   if (!Array.isArray(notes) || !notes.length) {
     notes = [{
       date: "",
@@ -874,7 +925,7 @@ function analysisNoteMarkup(notes) {
       </div>
     `;
   };
-  const media = latest.image ? noteImageMarkup(latest.image) : latest.embed ? noteExternalEmbedMarkup(latest.embed) : "";
+  const media = latest.image ? noteImageMarkup(latest.image) : latest.embed ? await noteEmbedMarkup(latest.embed) : "";
   return `
     <section class="analysis-note-panel">
       <div class="analysis-note-copy">
@@ -1043,7 +1094,7 @@ async function renderRace(race) {
           </div>
           <div class="result-county-tooltip" aria-hidden="true"></div>
         </div>
-        ${analysisNoteMarkup(analystNotes)}
+        ${await analysisNoteMarkup(analystNotes)}
       </aside>
     </section>
 

@@ -8,8 +8,8 @@
     "Allowed note fields: date, author, role, text, image, embed.",
     "Use either image or embed, not both, for simplicity.",
     "Image can be a URL string or an object like { \"url\": \"https://...\", \"alt\": \"Short description\", \"caption\": \"Optional caption\", \"size\": \"small\" }.",
-    "Embed can be a URL string or an object like { \"url\": \"https://www.youtube.com/watch?v=...\", \"title\": \"Optional title\", \"caption\": \"Optional caption\", \"height\": 320, \"size\": \"small\" }.",
-    "Supported embed links match article embeds: YouTube, Vimeo player, Google Docs/Drive, Datawrapper, Flourish, and Observable.",
+    "Embed can be a URL string, an external embed object like { \"url\": \"https://www.youtube.com/watch?v=...\", \"title\": \"Optional title\", \"caption\": \"Optional caption\", \"height\": 320, \"size\": \"small\" }, or an internal forecast object like { \"type\": \"governor-race-preview\", \"state\": \"CA\", \"title\": \"California governor forecast\" }.",
+    "Supported external embed links match article embeds: YouTube, Vimeo player, Google Docs/Drive, Datawrapper, Flourish, and Observable.",
     "Authors named FEA Analysis Desk, Federal Elections Analysis, Nathan Wang, or gamerdoglover automatically get their saved profile image."
   ],
   "raceKey": {
@@ -51,9 +51,13 @@
         "date": "2026-06-01",
         "author": "gamerdoglover",
         "role": "Head of Data Science",
-        "text": "California uses a nonpartisan primary system, where the top two candidates advance to general election. Xavier Becerra currently leads in polling against the second runner-up, Steve Hilton, who is endorsed by Donald Trump. Billionaire and 2020 Presidential Candidate Tom Steyer also holds third place. ",
+        "text": "California uses a nonpartisan primary system, where the top two candidates advance to general election. Xavier Becerra currently leads in polling against the second runner-up, Steve Hilton, who is endorsed by Donald Trump. Billionaire and 2020 Presidential Candidate Tom Steyer also holds third place. Well Democrats have the possibility to lock Republicans out of the race, if Steve Hilton advances to general, the forecast largely favors Democrats in the deep blue state.",
         "image": "",
-        "embed": ""
+        "embed": {
+          "type": "governor-race-preview",
+          "state": "CA",
+          "title": "California governor forecast preview"
+        }
       }
     ],
     "79779": [],
