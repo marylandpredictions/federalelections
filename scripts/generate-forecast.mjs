@@ -50,8 +50,8 @@ const RATING_TO_MARGIN = {
 };
 
 const RATING_TO_ERROR = {
-  "Safe D": 5.2, "Likely D": 5.8, "Lean D": 6.2, "Tilt D": 6.5, "Toss-up": 8.8,
-  "Tilt R": 6.5, "Lean R": 6.2, "Likely R": 5.8, "Safe R": 5.2
+  "Safe D": 4.85, "Likely D": 5.4, "Lean D": 5.8, "Tilt D": 6.1, "Toss-up": 8.2,
+  "Tilt R": 6.1, "Lean R": 5.8, "Likely R": 5.4, "Safe R": 4.85
 };
 
 const RATING_BUCKET = {
@@ -691,21 +691,7 @@ function logistic(margin, error) {
 }
 
 function calibrateProbability(rawProbability) {
-  // Conservative calibration for current cycle forecasts only
-  // Very subtle adjustment to reduce overconfidence without significantly changing predictions
-  if (rawProbability < 0.5) {
-    return rawProbability * 0.96; // Minimal pull up for underdogs
-  } else if (rawProbability < 0.6) {
-    return rawProbability * 0.98; // Very slight adjustment for 50-60% bucket
-  } else if (rawProbability < 0.7) {
-    return rawProbability * 0.985; // Very slight adjustment for 60-70% bucket
-  } else if (rawProbability < 0.8) {
-    return rawProbability * 0.99; // Minimal adjustment for 70-80% bucket
-  } else if (rawProbability < 0.9) {
-    return rawProbability * 0.995; // Minimal adjustment for 80-90% bucket
-  } else {
-    return rawProbability * 0.998; // Minimal adjustment for 90-100% bucket
-  }
+  return Number(clamp(0.5 + (rawProbability - 0.5) * 1.055, 0.001, 0.999).toFixed(6));
 }
 
 function sourceQualityForPoll(poll) {
@@ -1147,9 +1133,9 @@ function runModel(sourceData) {
   const demSeatsAll = [];
 
   for (let sim = 0; sim < SETTINGS.simulations; sim += 1) {
-    const nationalSwing = normalRandom() * 4.2;
-    const nationalPollingError = normalRandom() * 1.7;
-    const turnoutMiss = normalRandom() * 1.4;
+    const nationalSwing = normalRandom() * 3.9;
+    const nationalPollingError = normalRandom() * 1.55;
+    const turnoutMiss = normalRandom() * 1.3;
     const regionSwings = {};
     const regionalPollingErrors = {};
     let demSeats = SETTINGS.safeDemSeats;
@@ -1158,10 +1144,10 @@ function runModel(sourceData) {
     for (const race of enriched) {
       const region = race.region || REGION_BY_STATE[race.state] || "National";
       if (!regionSwings[region]) {
-        regionSwings[region] = normalRandom() * 2.1 * (regionScale[region] || 1);
+        regionSwings[region] = normalRandom() * 1.95 * (regionScale[region] || 1);
       }
       if (!regionalPollingErrors[region]) {
-        regionalPollingErrors[region] = nationalPollingError * .45 + normalRandom() * 1.35 * (regionScale[region] || 1);
+        regionalPollingErrors[region] = nationalPollingError * .42 + normalRandom() * 1.25 * (regionScale[region] || 1);
       }
 
       const primaryShock = race.primaryRisk > 0 ? normalRandom() * race.primaryRisk : 0;

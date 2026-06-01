@@ -126,11 +126,13 @@ function spectrumLegendHtml() {
 
 function pct(value) {
   if (Number.isFinite(value) && value >= .999) return ">99%";
+  if (Number.isFinite(value) && value <= .001) return "<1%";
   return `${Math.round(value * 100)}%`;
 }
 
 function oneDecimal(value) {
   if (Number.isFinite(value) && value >= .999) return ">99%";
+  if (Number.isFinite(value) && value <= .001) return "<1%";
   return `${(value * 100).toFixed(1)}%`;
 }
 

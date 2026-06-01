@@ -34,15 +34,15 @@ const RATING_TO_MARGIN = {
 };
 
 const RATING_TO_ERROR = {
-  "Safe D": 5.1,
-  "Likely D": 6,
-  "Lean D": 6.5,
-  "Tilt D": 7,
-  "Toss-up": 9.8,
-  "Tilt R": 7,
-  "Lean R": 6.5,
-  "Likely R": 6,
-  "Safe R": 5.1
+  "Safe D": 5.5,
+  "Likely D": 6.45,
+  "Lean D": 7,
+  "Tilt D": 7.55,
+  "Toss-up": 10.6,
+  "Tilt R": 7.55,
+  "Lean R": 7,
+  "Likely R": 6.45,
+  "Safe R": 5.5
 };
 
 const MODEL_WEIGHTS = {
@@ -58,8 +58,8 @@ const MODEL_WEIGHTS = {
   seatPartyIncumbency: .45,
   districtFundamentals: .07,
   historicalMidterm: 1.0,
-  stateCorrelationSd: 1.3,
-  nationalEnvironmentSd: 3.1
+  stateCorrelationSd: 1.45,
+  nationalEnvironmentSd: 3.35
 };
 
 const CHALLENGER_STRENGTH_DISCOUNTS = {
@@ -1352,7 +1352,7 @@ function normalRandom() {
 }
 
 function logistic(margin, error) {
-  return 1 / (1 + Math.exp(-margin / Math.max(error, .1) * 1.7));
+  return 1 / (1 + Math.exp(-margin / Math.max(error, .1) * 1.55));
 }
 
 function clamp(value, min, max) {

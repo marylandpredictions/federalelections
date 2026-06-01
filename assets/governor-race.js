@@ -16,11 +16,13 @@
 
   function pct(value) {
     if (Number.isFinite(Number(value)) && Number(value) >= .999) return ">99%";
+    if (Number.isFinite(Number(value)) && Number(value) <= .001) return "<1%";
     return `${Math.round((Number(value) || 0) * 100)}%`;
   }
 
   function oneDecimal(value) {
     if (Number.isFinite(Number(value)) && Number(value) >= .999) return ">99%";
+    if (Number.isFinite(Number(value)) && Number(value) <= .001) return "<1%";
     return `${((Number(value) || 0) * 100).toFixed(1)}%`;
   }
 

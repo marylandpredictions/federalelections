@@ -299,8 +299,8 @@ const RATING_TO_MARGIN = {
 };
 
 const RATING_TO_ERROR = {
-  "Safe D": 7.5, "Likely D": 8.5, "Lean D": 9.5, "Tilt D": 10.5, "Toss-up": 11,
-  "Tilt R": 10.5, "Lean R": 9.5, "Likely R": 8.5, "Safe R": 7.5
+  "Safe D": 6.4, "Likely D": 7.3, "Lean D": 8.2, "Tilt D": 9.2, "Toss-up": 9.8,
+  "Tilt R": 9.2, "Lean R": 8.2, "Likely R": 7.3, "Safe R": 6.4
 };
 
 const MODEL_WEIGHTS = {
@@ -757,6 +757,10 @@ function ratingFromProbability(probability, margin) {
   return "Toss-up";
 }
 
+function governorRaceError(race) {
+  return clamp((RATING_TO_ERROR[race.rating] ?? 8.8) + (race.status.includes("Term-limited") || race.status.includes("retiring") ? .85 : 0), 5.6, 12);
+}
+
 function statusEffect(race) {
   if (race.status.includes("Incumbent")) return race.incumbentParty === "D" ? 2.4 : -2.4;
   if (race.status.includes("Term-limited") || race.status.includes("retiring")) return race.incumbentParty === "D" ? -.8 : .8;
@@ -808,9 +812,9 @@ function buildRace(baseRace, nationalShift, sourceData) {
     pollMargin = governorPoll.margin * .5;
   }
   
-  const margin = (ratingMargin * .58) + (fundamentals * .34) + candidateAndLocal + nationalShift + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin;
-  const error = clamp((RATING_TO_ERROR[race.rating] ?? 9.5) + (race.status.includes("Term-limited") || race.status.includes("retiring") ? 1.2 : 0), 6.5, 13.5);
-  const demProbability = clamp(normalCdf(margin, 0, error), 0.01, 0.99);
+  const margin = (ratingMargin * .64) + (fundamentals * .38) + candidateAndLocal + nationalShift + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin;
+  const error = governorRaceError(race);
+  const demProbability = clamp(normalCdf(margin, 0, error), 0.001, 0.999);
   const winnerParty = demProbability >= .5 ? "D" : "R";
   return {
     ...race,
@@ -911,7 +915,7 @@ async function buildForecast() {
     let demGovernors = SETTINGS.demNotUp;
     const sampled = [];
     for (const race of modeledRaces) {
-      const error = clamp((RATING_TO_ERROR[race.rating] ?? 9.5) + (race.status.includes("Term-limited") || race.status.includes("retiring") ? 1.2 : 0), 6.5, 13.5);
+      const error = governorRaceError(race);
       const sampledMargin = sampleNormal(race.margin, error);
       const demWin = sampledMargin > 0;
       if (demWin) demGovernors += 1;
