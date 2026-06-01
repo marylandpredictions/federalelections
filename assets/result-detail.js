@@ -299,6 +299,27 @@ function stateBounds(features) {
   return bounds;
 }
 
+function expandedBounds(bounds, factor = .35) {
+  const lonPad = (bounds.maxLon - bounds.minLon) * factor;
+  const latPad = (bounds.maxLat - bounds.minLat) * factor;
+  return {
+    minLon: bounds.minLon - lonPad,
+    minLat: bounds.minLat - latPad,
+    maxLon: bounds.maxLon + lonPad,
+    maxLat: bounds.maxLat + latPad
+  };
+}
+
+function boundsOverlap(a, b) {
+  return a.minLon <= b.maxLon && a.maxLon >= b.minLon && a.minLat <= b.maxLat && a.maxLat >= b.minLat;
+}
+
+function contextFeatures(features, activeFeatures, activeBounds, factor = .35) {
+  const expanded = expandedBounds(activeBounds, factor);
+  const activeSet = new Set(activeFeatures);
+  return features.filter((feature) => !activeSet.has(feature) && boundsOverlap(stateBounds([feature]), expanded));
+}
+
 function mapDimensions(bounds, maxWidth = 700, maxHeight = 520) {
   const lonRange = Math.max(.1, bounds.maxLon - bounds.minLon);
   const latRange = Math.max(.1, bounds.maxLat - bounds.minLat);
@@ -355,14 +376,20 @@ async function districtShapeMap(race) {
     ));
     if (!feature) return "";
     const leader = leadingCandidate(race);
-    const fill = leader && Number(leader.votes || 0) ? candidateFill(leader) : "#3b4354";
-    const bounds = stateBounds([feature]);
+    const fill = leader && Number(leader.votes || 0) ? candidateFill(leader) : "#566274";
+    const activeBounds = stateBounds([feature]);
+    const nearby = contextFeatures(geojson.features || [], [feature], activeBounds, .65).slice(0, 34);
+    const bounds = stateBounds([feature, ...nearby]);
     const { width, height, lonScale } = mapDimensions(bounds, 700, 500);
+    const contextPaths = nearby.map((item) => (
+      `<path class="map-context" d="${geometryPath(item.geometry, bounds, width, height, lonScale)}"></path>`
+    )).join("");
     return `
       <svg class="result-county-map result-district-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.electionName || "House district")} map">
+        ${contextPaths}
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}"></path>
       </svg>
-      <p class="result-map-caption" data-default-map-caption="District shape from the 119th Congressional District file. County results below still list county-level returns when available.">District shape from the 119th Congressional District file. County results below still list county-level returns when available.</p>
+      <p class="result-map-caption" data-default-map-caption="District shape from the 119th Congressional District file, with nearby districts shown as context. County results below still list county-level returns when available.">District shape from the 119th Congressional District file, with nearby districts shown as context. County results below still list county-level returns when available.</p>
     `;
   } catch (error) {
     console.warn(error);
@@ -379,19 +406,27 @@ async function countyShapeMap(race) {
   if (!fips) return regionMap(race);
   try {
     const geojson = await loadCountyMapData();
-    const features = (geojson.features || []).filter((feature) => feature.properties?.STATE === fips);
+    const allFeatures = geojson.features || [];
+    const features = allFeatures.filter((feature) => feature.properties?.STATE === fips);
     if (!features.length) return regionMap(race);
     const lookup = countyLookup(race);
     const visibleFeatures = shouldFilterToJurisdiction(race, features, lookup)
       ? features.filter((feature) => lookup.has(feature.id) || lookup.has(String(feature.properties?.NAME || "").toLowerCase()))
       : features;
     if (!visibleFeatures.length) return regionMap(race);
-    const bounds = stateBounds(visibleFeatures);
+    const activeBounds = stateBounds(visibleFeatures);
+    const nearby = contextFeatures(allFeatures, visibleFeatures, activeBounds, .45)
+      .filter((feature) => feature.properties?.STATE !== fips)
+      .slice(0, 90);
+    const bounds = stateBounds([...visibleFeatures, ...nearby]);
     const { width, height, lonScale } = mapDimensions(bounds);
+    const contextPaths = nearby.map((feature) => (
+      `<path class="map-context" d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}"></path>`
+    )).join("");
     const paths = visibleFeatures.map((feature) => {
       const county = lookup.get(feature.id) || lookup.get(String(feature.properties?.NAME || "").toLowerCase());
       const leader = county ? regionLeader(county) : null;
-      const fill = leader ? candidateFill(leader) : "#3b4354";
+      const fill = leader ? candidateFill(leader) : "#566274";
       const title = county && leader
         ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.percentReporting)} reporting`
         : `${feature.properties?.NAME || "County"} County: waiting for reported votes`;
@@ -403,9 +438,10 @@ async function countyShapeMap(race) {
     }).join("");
     return `
       <svg class="result-county-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.stateName || race.state || "State")} county results map">
+        ${contextPaths}
         ${paths}
       </svg>
-      <p class="result-map-caption" data-default-map-caption="County shapes color by the current local leader once votes are reported.">County shapes color by the current local leader once votes are reported.</p>
+      <p class="result-map-caption" data-default-map-caption="County shapes color by the current local leader once votes are reported. Nearby outside-state counties are shown in gray for context.">County shapes color by the current local leader once votes are reported. Nearby outside-state counties are shown in gray for context.</p>
     `;
   } catch (error) {
     console.warn(error);
@@ -419,7 +455,7 @@ function bindCountyHover() {
   if (!canvas || !caption) return;
   const tooltip = canvas.querySelector(".result-county-tooltip");
   const defaultText = caption.dataset.defaultMapCaption || caption.textContent;
-  canvas.querySelectorAll(".result-county-map path").forEach((path) => {
+  canvas.querySelectorAll(".result-county-map path:not(.map-context)").forEach((path) => {
     const show = (event) => {
       caption.textContent = path.dataset.countyTitle || defaultText;
       caption.classList.add("is-live");
@@ -481,6 +517,36 @@ function countyRows(race) {
   `;
 }
 
+function bindMapZoom() {
+  const frame = page.querySelector(".result-map-frame");
+  if (!frame) return;
+  const controls = page.querySelectorAll("[data-map-zoom]");
+  let zoom = 1;
+  const apply = () => {
+    frame.style.setProperty("--result-map-zoom", zoom.toFixed(2));
+    controls.forEach((control) => {
+      const mode = control.dataset.mapZoom;
+      control.disabled = (mode === "in" && zoom >= 2.5) || (mode === "out" && zoom <= 1);
+    });
+  };
+  controls.forEach((control) => {
+    control.addEventListener("click", () => {
+      const mode = control.dataset.mapZoom;
+      if (mode === "in") zoom = Math.min(2.5, zoom + .25);
+      if (mode === "out") zoom = Math.max(1, zoom - .25);
+      if (mode === "reset") zoom = 1;
+      apply();
+    });
+  });
+  frame.addEventListener("wheel", (event) => {
+    if (!event.ctrlKey && !event.metaKey) return;
+    event.preventDefault();
+    zoom = event.deltaY < 0 ? Math.min(2.5, zoom + .15) : Math.max(1, zoom - .15);
+    apply();
+  }, { passive: false });
+  apply();
+}
+
 async function renderRace(race) {
   const leader = leadingCandidate(race);
   const mapMarkup = await countyShapeMap(race);
@@ -513,15 +579,20 @@ async function renderRace(race) {
       <aside class="result-map-panel">
         <div class="result-map-tabs">
           <a href="/results.html">Results</a>
+          <button type="button" data-map-zoom="out">-</button>
+          <button type="button" data-map-zoom="in">+</button>
+          <button type="button" data-map-zoom="reset">Reset</button>
         </div>
         <div class="result-map-canvas">
-          ${mapMarkup}
+          <div class="result-map-frame">
+            ${mapMarkup}
+          </div>
           <div class="result-county-tooltip" aria-hidden="true"></div>
         </div>
       </aside>
     </section>
 
-    <p class="forecast-disclaimer result-call-note">Race calls shown here are manual Federal Elections Analysis calls from local config. API-provided winner flags are ignored.</p>
+    <p class="forecast-disclaimer result-call-note">Race calls appear only when Federal Elections Analysis has made a call or projection. Races without that label remain uncalled.</p>
 
     <section class="result-county-panel">
       <div class="section-head">
@@ -535,6 +606,7 @@ async function renderRace(race) {
     </section>
   `;
   bindCountyHover();
+  bindMapZoom();
 }
 
 async function fetchRace() {

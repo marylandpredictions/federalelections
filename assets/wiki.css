@@ -3816,8 +3816,16 @@ button.race-board-row {
   animation: result-fade .5s ease both;
 }
 
+.result-map-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
 .result-map-tabs span,
-.result-map-tabs a {
+.result-map-tabs a,
+.result-map-tabs button {
   display: inline-grid;
   place-items: center;
   min-height: 34px;
@@ -3831,7 +3839,17 @@ button.race-board-row {
   transition: transform .18s ease, box-shadow .18s ease;
 }
 
-.result-map-tabs a:hover {
+.result-map-tabs button {
+  cursor: pointer;
+}
+
+.result-map-tabs button:disabled {
+  opacity: .48;
+  cursor: default;
+}
+
+.result-map-tabs a:hover,
+.result-map-tabs button:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 0 18px color-mix(in srgb, #c6d2ff 22%, transparent);
 }
@@ -3843,6 +3861,21 @@ button.race-board-row {
   align-content: center;
   gap: 12px;
   min-height: 560px;
+}
+
+.result-map-frame {
+  --result-map-zoom: 1;
+  width: min(96%, 900px);
+  min-height: min(540px, 70vh);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #d6d9e2;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 22% 18%, color-mix(in srgb, #fff 8%, transparent), transparent 32%),
+    linear-gradient(145deg, color-mix(in srgb, #182755 82%, transparent), color-mix(in srgb, #0c1639 92%, transparent));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff 8%, transparent), 0 18px 46px color-mix(in srgb, #000 22%, transparent);
 }
 
 .result-map-canvas img {
@@ -3859,6 +3892,9 @@ button.race-board-row {
   height: auto;
   display: block;
   overflow: visible;
+  transform: scale(var(--result-map-zoom, 1));
+  transform-origin: center;
+  transition: transform .18s var(--ease-out);
 }
 
 .result-county-map path {
@@ -3879,7 +3915,15 @@ button.race-board-row {
 }
 
 .result-county-map path.is-waiting {
-  fill: #3b4354;
+  fill: #566274;
+}
+
+.result-county-map path.map-context {
+  fill: #6f788a;
+  opacity: .48;
+  pointer-events: none;
+  stroke: color-mix(in srgb, #fff 40%, transparent);
+  stroke-width: .45;
 }
 
 .result-district-map path {
