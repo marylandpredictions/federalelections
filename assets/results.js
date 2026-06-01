@@ -108,7 +108,7 @@ function renderGroups() {
           <p class="kicker">${escapeHtml(group.state)}</p>
           <h2>${escapeHtml(group.stateName)}</h2>
         </div>
-        <a href="https://civicapi.org/results" target="_blank" rel="noreferrer">${numberLabel(group.featuredCount)} featured / ${numberLabel(group.totalAvailable)} total</a>
+        <span>${numberLabel(group.featuredCount)} tracked</span>
       </div>
       <div class="result-race-list">
         ${group.races.length ? group.races.map(raceCard).join("") : `<p class="meta">No matching featured races in this group.</p>`}

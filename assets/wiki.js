@@ -125,12 +125,12 @@ function spectrumLegendHtml() {
 }
 
 function pct(value) {
-  if (Number.isFinite(value) && value > .99) return ">99%";
+  if (Number.isFinite(value) && value >= .999) return ">99%";
   return `${Math.round(value * 100)}%`;
 }
 
 function oneDecimal(value) {
-  if (Number.isFinite(value) && value > .99) return ">99%";
+  if (Number.isFinite(value) && value >= .999) return ">99%";
   return `${(value * 100).toFixed(1)}%`;
 }
 
@@ -537,6 +537,18 @@ function setText(id, value) {
   if (node) node.textContent = value;
 }
 
+function setMapProbBar(prefix, demProbability, repProbability, label = "Control") {
+  const demBar = document.getElementById(`${prefix}-map-probbar-dem`);
+  const repBar = document.getElementById(`${prefix}-map-probbar-rep`);
+  const text = document.getElementById(`${prefix}-map-probbar-label`);
+  const dem = Number(demProbability || 0);
+  const rep = Number(repProbability || 0);
+  const total = Math.max(.0001, dem + rep);
+  if (demBar) demBar.style.width = `${(dem / total) * 100}%`;
+  if (repBar) repBar.style.width = `${(rep / total) * 100}%`;
+  if (text) text.textContent = `${label}: D ${oneDecimal(dem)} / R ${oneDecimal(rep)}`;
+}
+
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
@@ -680,6 +692,7 @@ function updateSummary() {
   const mapSeatbarRep = document.getElementById("senate-map-seatbar-rep");
   if (mapSeatbarDem) mapSeatbarDem.style.width = `${forecast.medianSeats}%`;
   if (mapSeatbarRep) mapSeatbarRep.style.width = `${100 - forecast.medianSeats}%`;
+  setMapProbBar("senate", forecast.demControlProbability, forecast.repControlProbability, "Control");
   const oddsNode = document.getElementById("odds-phrase");
   if (oddsNode) {
     oddsNode.innerHTML = `<span>${favoredSide} favored</span><strong>${pct(favoredProbability)}</strong>`;
@@ -1173,6 +1186,7 @@ function updateGovernorSummary() {
     demBar.style.width = `${demProb * 100}%`;
     repBar.style.width = `${repProb * 100}%`;
   }
+  setMapProbBar("governor", demProb, repProb, "Majority");
   const panel = document.querySelector("#governor-odds-phrase")?.closest(".odds-panel");
   if (panel) {
     panel.classList.toggle("control-dem", favoredIsDem);
@@ -2260,6 +2274,7 @@ function renderHouseSummary() {
     demBar.style.width = `${houseForecast.demControlProbability * 100}%`;
     repBar.style.width = `${houseForecast.repControlProbability * 100}%`;
   }
+  setMapProbBar("house", houseForecast.demControlProbability, houseForecast.repControlProbability, "Control");
 }
 
 function renderHouseSeatHistogram() {

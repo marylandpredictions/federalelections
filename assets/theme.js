@@ -20,6 +20,23 @@
     if (window.ResizeObserver && header) {
       new ResizeObserver(setHeaderOffset).observe(header);
     }
+    document.querySelectorAll(".site-footer").forEach((footer) => {
+      if (!footer.querySelector(".footer-logo-link")) {
+        const logo = document.createElement("a");
+        logo.className = "footer-logo-link";
+        logo.href = "/";
+        logo.setAttribute("aria-label", "Federal Elections Analysis home");
+        logo.innerHTML = '<img src="assets/img/FEA_Icon.png" alt=""><span>Federal Elections Analysis</span>';
+        footer.prepend(logo);
+      }
+      const copyHost = footer.querySelector(":scope > div");
+      if (copyHost && !copyHost.querySelector(".footer-copyright")) {
+        const copyright = document.createElement("p");
+        copyright.className = "footer-copyright";
+        copyright.textContent = "Federal Elections Analysis ©";
+        copyHost.append(copyright);
+      }
+    });
     const desktopHover = window.matchMedia("(hover: hover) and (pointer: fine)");
     document.querySelectorAll(".nav-dropdown").forEach((dropdown) => {
       let closeTimer = null;

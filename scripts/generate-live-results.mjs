@@ -10,13 +10,25 @@ const manualCalls = readManualCalls();
 const featuredCandidates = readFeaturedCandidates();
 
 const FEATURED_GROUPS = [
-  { state: "CA", name: "California", queries: ["California Governor", "California US House", "California Los Angeles Mayor"] },
+  { state: "CA", name: "California", queries: ["California Governor", "California Lieutenant Governor", "California Insurance Commissioner", "California Superintendent Public Instruction", "California US House", "California Los Angeles Mayor"] },
   { state: "IA", name: "Iowa", queries: ["Iowa US Senate", "Iowa US House", "Iowa Governor"] },
   { state: "MT", name: "Montana", queries: ["Montana US Senate", "Montana US House", "Montana Governor"] },
   { state: "NJ", name: "New Jersey", queries: ["New Jersey US Senate", "New Jersey US House", "New Jersey Governor"] },
   { state: "NM", name: "New Mexico", queries: ["New Mexico US Senate", "New Mexico US House", "New Mexico Governor"] },
   { state: "SD", name: "South Dakota", queries: ["South Dakota US Senate", "South Dakota US House", "South Dakota Governor"] }
 ];
+
+const REQUIRED_RACES_BY_STATE = {
+  CA: [79777, 79779, 79778, 79881, 79893, 79932, 79884, 79896, 79907, 79909, 79916, 79924, 79938],
+  IA: [79945, 79944, 80211, 80210],
+  MT: [80460, 80458, 80452],
+  NJ: [81058, 81057, 81046, 81048, 81055],
+  NM: [80691, 80690, 81014, 81015],
+  SD: [80461, 80512]
+};
+
+const MANUAL_RACES = {
+};
 
 const TYPE_PRIORITY = {
   "US Senate": 100,
@@ -113,7 +125,7 @@ function electionMarkerFor(race, candidates = []) {
   const scope = `${race.election_scope || race.electionScope || race.election_type || race.electionType || ""}`.toLowerCase();
   const parties = new Set(candidates.map((candidate) => partyCode(candidate.party)).filter(Boolean));
   if (name.includes("open primary") || (scope.includes("primary") && parties.has("D") && parties.has("R"))) {
-    return { kind: "open-primary", label: "Primary", short: "D/R" };
+    return { kind: "open-primary", label: "Primary", short: "P" };
   }
   if (name.includes("democratic primary") || (scope.includes("primary") && parties.size === 1 && parties.has("D"))) {
     return { kind: "dem-primary", label: "Democratic primary", short: "D" };
@@ -253,14 +265,35 @@ async function fetchGroup(group) {
     .filter((race) => electionYear(race.election_date) === 2026)
     .map((race) => normalizeRace(race, group))
     .sort((a, b) => racePriority(b) - racePriority(a) || String(a.electionName).localeCompare(String(b.electionName)));
+  const requiredIds = REQUIRED_RACES_BY_STATE[group.state] || [];
+  const requiredRaces = [];
+  for (const id of requiredIds) {
+    if (MANUAL_RACES[String(id)]) {
+      requiredRaces.push(MANUAL_RACES[String(id)]);
+      continue;
+    }
+    try {
+      const detailRace = await fetchRaceDetail(id);
+      requiredRaces.push({
+        ...detailRace,
+        stateName: group.name,
+        counties: undefined
+      });
+    } catch (error) {
+      const cachedRace = races.find((race) => String(race.id) === String(id));
+      if (cachedRace) requiredRaces.push(cachedRace);
+      else console.warn(`Could not load required ${group.state} result race ${id}: ${error.message}`);
+    }
+  }
+  const selectedRaces = requiredRaces.length ? requiredRaces : races.slice(0, 7);
 
   return {
     state: group.state,
     stateName: group.name,
     sourceQuery: (group.queries || [group.query]).join(" / "),
     totalAvailable: Math.max(races.length, ...searches.map(({ data }) => Number(data.count || 0))),
-    featuredCount: Math.min(races.length, 7),
-    races: races.slice(0, 7)
+    featuredCount: selectedRaces.length,
+    races: selectedRaces
   };
 }
 
@@ -308,7 +341,7 @@ async function writeRaceDetails(data) {
   let written = 0;
   for (const race of races) {
     try {
-      const detail = await buildRaceResultDetail(race.id);
+      const detail = MANUAL_RACES[String(race.id)] || await buildRaceResultDetail(race.id);
       writeFileSync(new URL(`${race.id}.json`, DETAIL_DIR_URL), JSON.stringify(detail, null, 2), "utf8");
       written += 1;
     } catch (error) {

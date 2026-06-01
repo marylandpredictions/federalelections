@@ -113,6 +113,11 @@
       </div>
       <div class="map-wrap">
         <div>
+          <div class="forecast-map-probbar" aria-label="Presidential matchup probabilities">
+            <span id="president-map-probbar-dem"></span>
+            <span id="president-map-probbar-rep"></span>
+            <b id="president-map-probbar-label">--</b>
+          </div>
           <div id="president-map"></div>
           <div id="president-map-legend" class="map-legend" aria-label="Race rating legend"></div>
           <p id="president-map-note" class="map-note"></p>
@@ -291,6 +296,12 @@
       const repBar = document.getElementById('rep-win-bar');
       demBar.style.width = `${demProb * 100}%`;
       repBar.style.width = `${repProb * 100}%`;
+      const mapDemBar = document.getElementById('president-map-probbar-dem');
+      const mapRepBar = document.getElementById('president-map-probbar-rep');
+      const mapBarLabel = document.getElementById('president-map-probbar-label');
+      if (mapDemBar) mapDemBar.style.width = `${demProb * 100}%`;
+      if (mapRepBar) mapRepBar.style.width = `${repProb * 100}%`;
+      if (mapBarLabel) mapBarLabel.textContent = `Win probability: ${demLast} ${(demProb * 100).toFixed(1)}% / ${repLast} ${(repProb * 100).toFixed(1)}%`;
     }
 
     function candidateLastName(name) {

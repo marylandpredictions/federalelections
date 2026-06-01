@@ -1,6 +1,9 @@
 const page = document.getElementById("result-page");
 const raceId = new URLSearchParams(window.location.search).get("id");
 let countyMapDataPromise = null;
+let districtMapDataPromise = null;
+
+const REDISTRICTED_RESULT_STATES = new Set(["AL", "LA", "NC", "OH", "TX", "UT"]);
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -63,6 +66,12 @@ function partyClass(partyCodeValue) {
   return "party-other";
 }
 
+function candidateInitials(name) {
+  const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "?";
+  return parts.slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+}
+
 function markerClass(marker) {
   return `marker-${marker?.kind || "general"}`;
 }
@@ -95,7 +104,7 @@ function candidateRow(candidate, race, maxPercent) {
   return `
     <article class="result-full-candidate ${candidate.callLabel ? "called" : ""}">
       <div class="result-full-candidate-name">
-        <span class="result-party-dot ${partyClass(code)}">${escapeHtml(code || "O")}</span>
+        <span class="result-candidate-avatar ${partyClass(code)}">${escapeHtml(candidateInitials(candidate.name))}</span>
         <div>
           <strong>${escapeHtml(candidate.name)}</strong>
           <small>${escapeHtml(displayParty(candidate.party) || "Other")}</small>
@@ -230,6 +239,16 @@ async function loadCountyMapData() {
   return countyMapDataPromise;
 }
 
+async function loadDistrictMapData() {
+  if (!districtMapDataPromise) {
+    districtMapDataPromise = fetch("data/house-districts-119.geojson", { cache: "force-cache" }).then((response) => {
+      if (!response.ok) throw new Error(`District map returned ${response.status}`);
+      return response.json();
+    });
+  }
+  return districtMapDataPromise;
+}
+
 function countyLookup(race) {
   const lookup = new Map();
   for (const county of race.counties || []) {
@@ -237,6 +256,19 @@ function countyLookup(race) {
     lookup.set(String(county.name || "").toLowerCase(), county);
   }
   return lookup;
+}
+
+function raceDistrictNumber(race) {
+  if (race.district) {
+    const parsed = Number(String(race.district).replace(/\D/g, ""));
+    if (Number.isFinite(parsed) && parsed > 0) return parsed;
+  }
+  const match = String(race.electionName || "").match(/\bDistrict\s+(\d+)\b/i) || String(race.electionName || "").match(/\bHouse\s+(\d+)\b/i);
+  return match ? Number(match[1]) : null;
+}
+
+function isHouseRace(race) {
+  return /house/i.test(`${race.type || ""} ${race.electionName || ""}`) && raceDistrictNumber(race);
 }
 
 function shouldFilterToJurisdiction(race, features, lookup) {
@@ -267,8 +299,27 @@ function stateBounds(features) {
   return bounds;
 }
 
-function geometryPath(geometry, bounds, width, height) {
+function mapDimensions(bounds, maxWidth = 700, maxHeight = 520) {
   const lonRange = Math.max(.1, bounds.maxLon - bounds.minLon);
+  const latRange = Math.max(.1, bounds.maxLat - bounds.minLat);
+  const midLat = ((bounds.minLat + bounds.maxLat) / 2) * Math.PI / 180;
+  const correctedLonRange = Math.max(.1, lonRange * Math.max(.35, Math.cos(midLat)));
+  const aspect = correctedLonRange / latRange;
+  let width = maxWidth;
+  let height = Math.round(width / aspect);
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = Math.round(height * aspect);
+  }
+  return {
+    width: Math.max(260, width),
+    height: Math.max(240, height),
+    lonScale: Math.max(.35, Math.cos(midLat))
+  };
+}
+
+function geometryPath(geometry, bounds, width, height, lonScale = 1) {
+  const lonRange = Math.max(.1, (bounds.maxLon - bounds.minLon) * lonScale);
   const latRange = Math.max(.1, bounds.maxLat - bounds.minLat);
   const pad = 16;
   const usableWidth = width - pad * 2;
@@ -277,7 +328,7 @@ function geometryPath(geometry, bounds, width, height) {
   const offsetX = (width - lonRange * scale) / 2;
   const offsetY = (height - latRange * scale) / 2;
   const project = ([lon, lat]) => [
-    offsetX + (lon - bounds.minLon) * scale,
+    offsetX + ((lon - bounds.minLon) * lonScale) * scale,
     offsetY + (bounds.maxLat - lat) * scale
   ];
   return coordinateRings(geometry).map((ring) => {
@@ -287,7 +338,43 @@ function geometryPath(geometry, bounds, width, height) {
   }).join("");
 }
 
+async function districtShapeMap(race) {
+  if (REDISTRICTED_RESULT_STATES.has(String(race.state || "").toUpperCase())) {
+    return `
+      <div class="result-map-empty">District map unavailable while updated post-redistricting boundaries are being added.</div>
+      <p class="result-map-caption">This district has changed or may change through the 2025-26 redistricting cycle, so the older GeoJSON shape is not shown.</p>
+    `;
+  }
+  const districtNumber = raceDistrictNumber(race);
+  if (!districtNumber) return "";
+  try {
+    const geojson = await loadDistrictMapData();
+    const feature = (geojson.features || []).find((item) => (
+      String(item.properties?.state || "").toUpperCase() === String(race.state || "").toUpperCase()
+      && Number(item.properties?.district) === districtNumber
+    ));
+    if (!feature) return "";
+    const leader = leadingCandidate(race);
+    const fill = leader && Number(leader.votes || 0) ? candidateFill(leader) : "#3b4354";
+    const bounds = stateBounds([feature]);
+    const { width, height, lonScale } = mapDimensions(bounds, 700, 500);
+    return `
+      <svg class="result-county-map result-district-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.electionName || "House district")} map">
+        <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}"></path>
+      </svg>
+      <p class="result-map-caption" data-default-map-caption="District shape from the 119th Congressional District file. County results below still list county-level returns when available.">District shape from the 119th Congressional District file. County results below still list county-level returns when available.</p>
+    `;
+  } catch (error) {
+    console.warn(error);
+    return "";
+  }
+}
+
 async function countyShapeMap(race) {
+  if (isHouseRace(race)) {
+    const districtMarkup = await districtShapeMap(race);
+    if (districtMarkup) return districtMarkup;
+  }
   const fips = stateFips(race.state);
   if (!fips) return regionMap(race);
   try {
@@ -300,8 +387,7 @@ async function countyShapeMap(race) {
       : features;
     if (!visibleFeatures.length) return regionMap(race);
     const bounds = stateBounds(visibleFeatures);
-    const width = 620;
-    const height = 430;
+    const { width, height, lonScale } = mapDimensions(bounds);
     const paths = visibleFeatures.map((feature) => {
       const county = lookup.get(feature.id) || lookup.get(String(feature.properties?.NAME || "").toLowerCase());
       const leader = county ? regionLeader(county) : null;
@@ -311,12 +397,12 @@ async function countyShapeMap(race) {
         : `${feature.properties?.NAME || "County"} County: waiting for reported votes`;
       const tooltip = county ? countyTooltipMarkup(county, `${feature.properties?.NAME || county.name} County`) : "";
       return `
-        <path d="${geometryPath(feature.geometry, bounds, width, height)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
+        <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
         </path>
       `;
     }).join("");
     return `
-      <svg class="result-county-map" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.stateName || race.state || "State")} county results map">
+      <svg class="result-county-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.stateName || race.state || "State")} county results map">
         ${paths}
       </svg>
       <p class="result-map-caption" data-default-map-caption="County shapes color by the current local leader once votes are reported.">County shapes color by the current local leader once votes are reported.</p>

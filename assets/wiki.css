@@ -542,7 +542,7 @@ main {
 .site-footer {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(96px, .18fr) minmax(0, 1fr);
+  grid-template-columns: minmax(150px, .2fr) minmax(0, 1fr);
   gap: 18px;
   align-items: center;
   padding: 22px clamp(14px, 3vw, 44px);
@@ -552,12 +552,30 @@ main {
 }
 
 .site-footer::before {
-  content: "";
-  align-self: end;
-  justify-self: start;
-  width: 86px;
-  height: 48px;
-  background: url("img/FEA_Icon.png") left bottom / contain no-repeat;
+  content: none;
+}
+
+.footer-logo-link {
+  grid-column: 1;
+  display: grid;
+  justify-items: start;
+  gap: 7px;
+  width: fit-content;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.footer-logo-link img {
+  width: 132px;
+  height: auto;
+  display: block;
+}
+
+.footer-logo-link span {
+  max-width: 150px;
+  color: var(--muted);
+  font: 950 .76rem/1.05 "Telegraf", "Segoe UI", Arial, sans-serif;
+  text-transform: uppercase;
 }
 
 .site-footer > div,
@@ -573,6 +591,11 @@ main {
 .site-footer p {
   margin: 5px 0 0;
   color: var(--muted);
+}
+
+.footer-copyright {
+  color: var(--ink);
+  font-weight: 900;
 }
 
 .site-footer nav,
@@ -664,7 +687,7 @@ main {
 .home-hero-shell .home-hero {
   grid-column: auto;
   min-height: 430px;
-  border: 0;
+  border: 1px solid #d6d9e2;
   border-radius: 8px;
   background: var(--paper);
   box-shadow: var(--shadow);
@@ -941,7 +964,9 @@ h3 {
 
 .home-run-panel {
   padding: 16px;
-  border-top: 1px solid var(--line);
+  border: 1px solid #d6d9e2;
+  border-radius: 8px;
+  background: var(--box-gradient);
   min-width: 0;
 }
 
@@ -1350,6 +1375,7 @@ h3 {
 
 .home-video-feature h3 strong {
   font-weight: 950;
+  color: var(--ink);
 }
 
 .video-section-label-upload {
@@ -1917,6 +1943,42 @@ dd {
   color: #fff;
   font: 950 .86rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-shadow: 0 1px 6px rgba(0, 0, 0, .62);
+}
+
+.forecast-map-probbar {
+  position: relative;
+  display: flex;
+  height: 30px;
+  overflow: hidden;
+  margin: 0 0 12px;
+  border: 1px solid #d6d9e2;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--paper) 76%, transparent);
+  box-shadow: inset 0 0 22px color-mix(in srgb, #000 18%, transparent);
+}
+
+.forecast-map-probbar span {
+  display: block;
+  height: 100%;
+  transition: width .42s var(--ease-out);
+}
+
+.forecast-map-probbar span:first-child {
+  background: linear-gradient(90deg, #0d2cad, #2f74ff);
+}
+
+.forecast-map-probbar span:nth-child(2) {
+  background: linear-gradient(90deg, #ff7b7b, #e03a3e);
+}
+
+.forecast-map-probbar b {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font: 950 .74rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, .5);
 }
 
 #senate-map svg,
@@ -3321,10 +3383,12 @@ button.race-board-row {
 
 .results-shell {
   margin-top: 12px;
-  padding: 12px;
+  padding: 10px;
   border: 1px solid var(--line);
   border-radius: 4px;
-  background: var(--box-gradient);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--dem) 16%, transparent), transparent 50%, color-mix(in srgb, var(--rep) 10%, transparent)),
+    color-mix(in srgb, var(--paper) 78%, transparent);
   box-shadow: var(--shadow-soft);
 }
 
@@ -3374,7 +3438,7 @@ button.race-board-row {
 
 .results-groups {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 10px;
   margin-top: 12px;
 }
@@ -3414,17 +3478,9 @@ button.race-board-row {
   font-size: 1.05rem;
 }
 
-.result-state-head a {
+.result-state-head span {
   color: var(--accent);
   font: 900 .78rem/1.2 "Telegraf", "Segoe UI", Arial, sans-serif;
-  text-decoration: none;
-}
-
-.result-state-head a:hover,
-.result-state-head a:focus {
-  text-decoration: underline;
-  text-decoration-color: #C6D2FF;
-  text-underline-offset: 4px;
 }
 
 .result-race-list {
@@ -3439,9 +3495,11 @@ button.race-board-row {
   gap: 7px;
   align-items: center;
   padding: 7px 6px;
-  border: 1px solid transparent;
+  border: 1px solid color-mix(in srgb, var(--line) 44%, transparent);
   border-radius: 4px;
-  background: transparent;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 7%, transparent), color-mix(in srgb, var(--rep) 5%, transparent)),
+    color-mix(in srgb, var(--paper) 48%, transparent);
   color: var(--ink);
   text-align: left;
   cursor: pointer;
@@ -3453,8 +3511,10 @@ button.race-board-row {
 .result-race-row:focus,
 .result-race-row.active {
   transform: translateX(3px);
-  border-color: var(--line);
-  background: color-mix(in srgb, var(--paper) 70%, transparent);
+  border-color: #d6d9e2;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 16%, transparent), color-mix(in srgb, var(--rep) 12%, transparent)),
+    color-mix(in srgb, var(--paper) 78%, transparent);
   box-shadow: 0 0 18px color-mix(in srgb, #C6D2FF 24%, transparent);
   outline: none;
 }
@@ -3503,6 +3563,12 @@ button.race-board-row {
   white-space: nowrap;
 }
 
+.result-election-marker.marker-open-primary {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, #1030b2 38%, transparent), color-mix(in srgb, #e03a3e 32%, transparent)),
+    color-mix(in srgb, var(--paper) 82%, transparent);
+}
+
 .result-election-marker-large {
   width: 48px;
   height: 48px;
@@ -3546,6 +3612,19 @@ button.race-board-row {
   font: 950 .56rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: 0;
   box-shadow: 0 0 0 1px color-mix(in srgb, #fff 50%, transparent);
+}
+
+.result-candidate-avatar {
+  width: 30px;
+  height: 30px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, #fff 56%, transparent);
+  border-radius: 999px;
+  color: #fff;
+  font: 950 .62rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  letter-spacing: 0;
+  box-shadow: 0 0 18px color-mix(in srgb, #000 20%, transparent);
 }
 
 .party-dem {
@@ -3679,16 +3758,21 @@ button.race-board-row {
   gap: 10px;
 }
 
+.result-detail-body main,
+.results-board-body main {
+  width: min(1540px, calc(100% - 24px));
+}
+
 .result-night-shell {
-  min-height: calc(100vh - 140px);
+  min-height: calc(100vh - 122px);
   display: grid;
-  grid-template-columns: minmax(340px, .82fr) minmax(460px, 1.18fr);
-  gap: 18px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  background: color-mix(in srgb, #02081d 82%, var(--paper));
-  box-shadow: var(--shadow-soft);
+  grid-template-columns: minmax(320px, .58fr) minmax(560px, 1.42fr);
+  gap: clamp(16px, 3vw, 42px);
+  padding: clamp(6px, 1.4vw, 18px) 0 18px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   animation: result-rise .46s ease both;
 }
 
@@ -3724,10 +3808,10 @@ button.race-board-row {
 
 .result-map-panel {
   display: grid;
-  grid-template-rows: auto minmax(420px, 1fr);
+  grid-template-rows: auto minmax(460px, 1fr);
   gap: 10px;
   align-self: stretch;
-  min-height: 560px;
+  min-height: 620px;
   animation: result-fade .5s ease both;
 }
 
@@ -3757,7 +3841,7 @@ button.race-board-row {
   place-items: center;
   align-content: center;
   gap: 12px;
-  min-height: 500px;
+  min-height: 560px;
 }
 
 .result-map-canvas img {
@@ -3769,8 +3853,9 @@ button.race-board-row {
 }
 
 .result-county-map {
-  width: min(96%, 720px);
-  max-height: 500px;
+  width: auto;
+  max-width: 96%;
+  height: auto;
   display: block;
   overflow: visible;
 }
@@ -3794,6 +3879,10 @@ button.race-board-row {
 
 .result-county-map path.is-waiting {
   fill: #3b4354;
+}
+
+.result-district-map path {
+  stroke-width: 1.15;
 }
 
 .result-region-map {
@@ -3991,19 +4080,21 @@ button.race-board-row {
 
 .result-full-candidates {
   display: grid;
-  gap: 7px;
+  gap: 8px;
   margin-top: 0;
 }
 
 .result-full-candidate {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 96px;
+  grid-template-columns: minmax(0, 1fr) 88px;
   gap: 10px;
   align-items: center;
-  padding: 9px;
+  padding: 9px 10px;
   border: 1px solid var(--line);
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--paper) 72%, transparent);
+  border-radius: 7px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 10%, transparent), color-mix(in srgb, var(--rep) 7%, transparent)),
+    color-mix(in srgb, var(--paper) 72%, transparent);
   animation: result-fade .36s ease both;
   transition: transform .18s ease, border-color .18s ease, background .18s ease;
 }
@@ -4021,7 +4112,7 @@ button.race-board-row {
 
 .result-full-candidate-name {
   display: grid;
-  grid-template-columns: 24px minmax(0, 1fr) auto;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
   gap: 9px;
   align-items: center;
 }
@@ -5349,8 +5440,9 @@ button.race-board-row {
   }
 
   .result-county-map {
-    width: min(98%, 680px);
-    max-height: 390px;
+    width: auto;
+    max-width: 98%;
+    height: auto;
   }
 }
 
@@ -5370,6 +5462,12 @@ button.race-board-row {
   .site-footer nav {
     grid-template-columns: repeat(2, minmax(120px, 1fr));
     margin: 0;
+  }
+
+  .footer-logo-link,
+  .site-footer > div,
+  .site-footer > nav {
+    grid-column: 1;
   }
 
   .nav-dropdown-menu {
@@ -5629,8 +5727,9 @@ button.race-board-row {
   }
 
   .result-county-map {
-    width: 100%;
-    max-height: 320px;
+    width: auto;
+    max-width: 100%;
+    height: auto;
   }
 
   .county-candidate-cells {
