@@ -2,7 +2,6 @@ const page = document.getElementById("result-page");
 const raceId = new URLSearchParams(window.location.search).get("id");
 let countyMapDataPromise = null;
 let districtMapDataPromise = null;
-let analysisNotesPromise = null;
 let governorForecastPromise = null;
 
 const REDISTRICTED_RESULT_STATES = new Set(["AL", "LA", "NC", "OH", "TX", "UT"]);
@@ -887,12 +886,10 @@ function countyRows(race) {
 }
 
 async function loadAnalysisNotes() {
-  if (!analysisNotesPromise) {
-    analysisNotesPromise = fetch("data/result-analysis-notes.json", { cache: "no-store" })
-      .then((response) => response.ok ? response.json() : { races: {} })
-      .catch(() => ({ races: {} }));
-  }
-  return analysisNotesPromise;
+  const cacheBust = Date.now();
+  return fetch(`data/result-analysis-notes.json?v=${cacheBust}`, { cache: "no-store" })
+    .then((response) => response.ok ? response.json() : { races: {} })
+    .catch(() => ({ races: {} }));
 }
 
 async function analysisNoteMarkup(notes) {
