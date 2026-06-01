@@ -784,7 +784,10 @@ function analysisNoteMarkup(notes) {
     return `
       <div class="analysis-note-byline">
         <span class="analysis-note-avatar ${profile ? "has-image" : ""}">${avatar}</span>
-        <small>${escapeHtml(author)}${note.role ? `, ${escapeHtml(note.role)}` : ""}${note.date ? ` | ${escapeHtml(note.date)}` : ""}</small>
+        <span>
+          ${note.date ? `<strong>${escapeHtml(note.date)}</strong>` : ""}
+          <small>${escapeHtml(author)}${note.role ? `, ${escapeHtml(note.role)}` : ""}</small>
+        </span>
       </div>
     `;
   };
@@ -795,10 +798,10 @@ function analysisNoteMarkup(notes) {
     : "";
   return `
     <section class="analysis-note-panel">
-      <div>
+      <div class="analysis-note-copy">
         <p class="kicker">Latest analyst comment</p>
-        <p>${escapeHtml(latest.text || "No note text entered.")}</p>
         ${analystByline(latest)}
+        <p>${escapeHtml(latest.text || "No note text entered.")}</p>
       </div>
       ${media}
       ${history.length ? `
@@ -961,13 +964,13 @@ async function renderRace(race) {
           </div>
           <div class="result-county-tooltip" aria-hidden="true"></div>
         </div>
+        ${analysisNoteMarkup(analystNotes)}
       </aside>
     </section>
 
     <p class="forecast-disclaimer result-call-note">Race calls appear only when Federal Elections Analysis has made a call or projection. Races without that label remain uncalled. This page checks for updates automatically.</p>
 
     ${voteHistoryChart(race)}
-    ${analysisNoteMarkup(analystNotes)}
 
     <section class="result-county-panel">
       <div class="section-head">

@@ -3861,10 +3861,10 @@ button.race-board-row {
 
 .result-map-panel {
   display: grid;
-  grid-template-rows: auto minmax(460px, 1fr);
-  gap: 10px;
+  grid-template-rows: auto minmax(390px, 1fr) auto;
+  gap: 12px;
   align-self: stretch;
-  min-height: 620px;
+  min-height: 660px;
   padding-left: clamp(8px, 1.8vw, 26px);
   animation: result-fade .5s ease both;
 }
@@ -4428,10 +4428,29 @@ button.race-board-row {
   align-items: start;
 }
 
+.result-map-panel .analysis-note-panel {
+  width: min(94%, 860px);
+  justify-self: center;
+  margin-top: 0;
+  padding: 12px;
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, #fff 4%, transparent), transparent 42%, color-mix(in srgb, var(--rep) 8%, transparent)),
+    color-mix(in srgb, var(--chart-bg) 92%, #020817);
+}
+
 .analysis-note-panel p {
-  margin: 4px 0 8px;
+  margin: 9px 0 0;
   color: var(--ink);
-  font: 850 1rem/1.42 "Telegraf", "Segoe UI", Arial, sans-serif;
+  font: 850 .96rem/1.42 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.analysis-note-panel p.kicker {
+  margin: 0;
+  color: var(--muted);
+  font: 900 .66rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
 }
 
 .analysis-note-panel small,
@@ -4444,7 +4463,7 @@ button.race-board-row {
   display: flex;
   gap: 10px;
   align-items: center;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .analysis-note-avatar {
@@ -4461,6 +4480,23 @@ button.race-board-row {
   color: var(--ink);
   font: 950 .68rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   overflow: hidden;
+}
+
+.analysis-note-byline span:last-child {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.analysis-note-byline strong {
+  color: #ff4b5f;
+  font: 950 .78rem/1.05 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.analysis-note-byline small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .analysis-note-avatar img {
