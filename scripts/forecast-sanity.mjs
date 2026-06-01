@@ -9,6 +9,7 @@ export function forecastSanityWarnings(items, options = {}) {
     rating = (item) => item.rating || item.modelRating || item.baselineRating,
     baseline = (item) => item.ratingMargin ?? item.baselineMargin ?? item.sourceInputs?.ratingBaseline ?? item.sourceInputs?.contextualBaseline,
     pollMargin = (item) => item.pollMargin ?? item.sourceInputs?.pollMargin,
+    pollCount = (item) => item.pollCount ?? item.sourceInputs?.pollCount,
     candidateAdjustment = (item) => item.candidateAndLocal ?? item.candidateQualityAdjustment ?? item.sourceInputs?.candidateQualityAdjustment,
     partisanship = (item) => item.pvi ?? item.presidentialMargin ?? item.sourceInputs?.presidentialBaseline,
     limit = 100
@@ -43,6 +44,7 @@ export function forecastSanityWarnings(items, options = {}) {
     const ratingSide = / D$/.test(raceRating) ? "D" : / R$/.test(raceRating) ? "R" : null;
     const base = Number(baseline(item));
     const poll = Number(pollMargin(item));
+    const polls = Number(pollCount(item));
     const candidate = Number(candidateAdjustment(item));
     const partisan = Number(partisanship(item));
 
@@ -67,7 +69,7 @@ export function forecastSanityWarnings(items, options = {}) {
     if (Number.isFinite(base) && Math.abs(raceMargin - base) < .08 && Math.abs(base) > 2) {
       add(item, "margin-copied-from-baseline", "Projected margin is nearly identical to the rating or baseline margin.");
     }
-    if (Number.isFinite(poll) && Math.abs(poll - raceMargin) > 11 && absMargin < 18) {
+    if (Number.isFinite(poll) && Number.isFinite(polls) && polls > 0 && Math.abs(poll - raceMargin) > 11 && absMargin < 18) {
       add(item, "poll-model-divergence", "Race polling and projected margin diverge by more than 11 points.");
     }
     if (Number.isFinite(candidate) && Number.isFinite(partisan) && Math.abs(candidate) > Math.max(2.25, Math.abs(partisan) * .55)) {

@@ -1,7 +1,7 @@
 {
   "model": "2026 gubernatorial forecast",
   "modelDate": "2026-06-01",
-  "generatedAt": "2026-06-01T19:25:03.049Z",
+  "generatedAt": "2026-06-01T20:39:29.296Z",
   "runDate": "Jun 1, 2026",
   "settings": {
     "simulations": 100000,
@@ -22,7 +22,7 @@
     "gubernatorialNationalShift": 1.08,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-06-01T19:25:00.960Z",
+      "checkedAt": "2026-06-01T20:39:27.712Z",
       "governorFinance": {
         "ok": true,
         "states": 1,
@@ -31,13 +31,13 @@
       "pollfinityAverages": {
         "ok": true,
         "status": 200,
-        "ms": 699,
+        "ms": 238,
         "url": "https://pollfinity.com/averages.json"
       },
       "ddhqGenericBallot": {
         "ok": false,
         "status": 429,
-        "ms": 1301,
+        "ms": 863,
         "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
         "error": "<!DOCTYPE html><html lang=\"en\" data-astro-cid-nbv56vs3> <head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" con"
       }
@@ -61,458 +61,282 @@
       "financeSignal": 0
     }
   },
-  "modelWarnings": [
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "PA",
-      "name": "Pennsylvania Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 17.88,
-      "demProbability": 0.9974,
-      "rating": "Safe D"
-    },
-    {
-      "model": "governor",
-      "code": "candidate-adjustment-large",
-      "severity": "review",
-      "id": "PA",
-      "name": "Pennsylvania Governor",
-      "message": "Candidate adjustment is large relative to state or district partisanship.",
-      "margin": 17.88,
-      "demProbability": 0.9974,
-      "rating": "Safe D"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "AR",
-      "name": "Arkansas Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": -17.46,
-      "demProbability": 0.0032,
-      "rating": "Safe R"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "ID",
-      "name": "Idaho Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": -17.38,
-      "demProbability": 0.0033,
-      "rating": "Safe R"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "SD",
-      "name": "South Dakota Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": -17.11,
-      "demProbability": 0.0037,
-      "rating": "Safe R"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "TN",
-      "name": "Tennessee Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": -16.18,
-      "demProbability": 0.0128,
-      "rating": "Safe R"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "RI",
-      "name": "Rhode Island Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 16.04,
-      "demProbability": 0.9939,
-      "rating": "Safe D"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "IL",
-      "name": "Illinois Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 15.38,
-      "demProbability": 0.9919,
-      "rating": "Safe D"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "CT",
-      "name": "Connecticut Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 15.33,
-      "demProbability": 0.9917,
-      "rating": "Safe D"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "NE",
-      "name": "Nebraska Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": -15.07,
-      "demProbability": 0.0093,
-      "rating": "Safe R"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "CA",
-      "name": "California Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 14.98,
-      "demProbability": 0.9806,
-      "rating": "Safe D"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "AL",
-      "name": "Alabama Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": -14.89,
-      "demProbability": 0.02,
-      "rating": "Safe R"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "CO",
-      "name": "Colorado Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 14.87,
-      "demProbability": 0.9799,
-      "rating": "Safe D"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "TX",
-      "name": "Texas Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": -14.45,
-      "demProbability": 0.012,
-      "rating": "Safe R"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "OK",
-      "name": "Oklahoma Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": -14.24,
-      "demProbability": 0.0248,
-      "rating": "Safe R"
-    },
-    {
-      "model": "governor",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "MN",
-      "name": "Minnesota Governor",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 13.8,
-      "demProbability": 0.9715,
-      "rating": "Safe D"
-    }
-  ],
+  "modelWarnings": [],
   "projectedDemRaceWins": 18,
   "projectedRepRaceWins": 18,
-  "averageDemGovernors": 24.18,
-  "averageRepGovernors": 25.82,
+  "averageDemGovernors": 24.26,
+  "averageRepGovernors": 25.74,
   "medianDemGovernors": 24,
   "medianRepGovernors": 26,
   "distribution": {
-    "17": 5,
-    "18": 26,
-    "19": 236,
-    "20": 1349,
-    "21": 4330,
-    "22": 10666,
-    "23": 18205,
-    "24": 22693,
-    "25": 20122,
-    "26": 13214,
-    "27": 6388,
-    "28": 2148,
-    "29": 513,
-    "30": 96,
-    "31": 9
+    "17": 11,
+    "18": 82,
+    "19": 427,
+    "20": 1693,
+    "21": 4800,
+    "22": 10309,
+    "23": 16950,
+    "24": 20662,
+    "25": 19569,
+    "26": 13874,
+    "27": 7397,
+    "28": 3101,
+    "29": 889,
+    "30": 198,
+    "31": 33,
+    "32": 5
   },
   "stateHistory": {
     "AL": [
       {
         "date": "2026-06-01",
-        "dem": 0.02001,
-        "rep": 0.97999
+        "dem": 0.05092,
+        "rep": 0.94908
       }
     ],
     "AK": [
       {
         "date": "2026-06-01",
-        "dem": 0.35781,
-        "rep": 0.64219
+        "dem": 0.38783,
+        "rep": 0.61217
       }
     ],
     "AZ": [
       {
         "date": "2026-06-01",
-        "dem": 0.55777,
-        "rep": 0.44223
+        "dem": 0.5526,
+        "rep": 0.4474
       }
     ],
     "AR": [
       {
         "date": "2026-06-01",
-        "dem": 0.00319,
-        "rep": 0.99681
+        "dem": 0.01168,
+        "rep": 0.98832
       }
     ],
     "CA": [
       {
         "date": "2026-06-01",
-        "dem": 0.98059,
-        "rep": 0.01941
+        "dem": 0.96059,
+        "rep": 0.03941
       }
     ],
     "CO": [
       {
         "date": "2026-06-01",
-        "dem": 0.97989,
-        "rep": 0.02011
+        "dem": 0.96059,
+        "rep": 0.03941
       }
     ],
     "CT": [
       {
         "date": "2026-06-01",
-        "dem": 0.99169,
-        "rep": 0.00831
+        "dem": 0.9814,
+        "rep": 0.0186
       }
     ],
     "FL": [
       {
         "date": "2026-06-01",
-        "dem": 0.15928,
-        "rep": 0.84072
+        "dem": 0.20962,
+        "rep": 0.79038
       }
     ],
     "GA": [
       {
         "date": "2026-06-01",
-        "dem": 0.54657,
-        "rep": 0.45343
+        "dem": 0.55819,
+        "rep": 0.44181
       }
     ],
     "HI": [
       {
         "date": "2026-06-01",
-        "dem": 0.99773,
-        "rep": 0.00227
+        "dem": 0.99158,
+        "rep": 0.00842
       }
     ],
     "ID": [
       {
         "date": "2026-06-01",
-        "dem": 0.00331,
-        "rep": 0.99669
+        "dem": 0.01159,
+        "rep": 0.98841
       }
     ],
     "IL": [
       {
         "date": "2026-06-01",
-        "dem": 0.99185,
-        "rep": 0.00815
+        "dem": 0.98224,
+        "rep": 0.01776
       }
     ],
     "IA": [
       {
         "date": "2026-06-01",
-        "dem": 0.42247,
-        "rep": 0.57753
+        "dem": 0.46748,
+        "rep": 0.53252
       }
     ],
     "KS": [
       {
         "date": "2026-06-01",
-        "dem": 0.35304,
-        "rep": 0.64696
+        "dem": 0.37776,
+        "rep": 0.62224
       }
     ],
     "ME": [
       {
         "date": "2026-06-01",
-        "dem": 0.85765,
-        "rep": 0.14235
+        "dem": 0.82166,
+        "rep": 0.17834
       }
     ],
     "MD": [
       {
         "date": "2026-06-01",
-        "dem": 0.99884,
-        "rep": 0.00116
+        "dem": 0.99474,
+        "rep": 0.00526
       }
     ],
     "MA": [
       {
         "date": "2026-06-01",
-        "dem": 0.99844,
-        "rep": 0.00156
+        "dem": 0.99346,
+        "rep": 0.00654
       }
     ],
     "MI": [
       {
         "date": "2026-06-01",
-        "dem": 0.72216,
-        "rep": 0.27784
+        "dem": 0.70456,
+        "rep": 0.29544
       }
     ],
     "MN": [
       {
         "date": "2026-06-01",
-        "dem": 0.97153,
-        "rep": 0.02847
+        "dem": 0.84917,
+        "rep": 0.15083
       }
     ],
     "NE": [
       {
         "date": "2026-06-01",
-        "dem": 0.00927,
-        "rep": 0.99073
+        "dem": 0.02577,
+        "rep": 0.97423
       }
     ],
     "NV": [
       {
         "date": "2026-06-01",
-        "dem": 0.4152,
-        "rep": 0.5848
+        "dem": 0.42758,
+        "rep": 0.57242
       }
     ],
     "NH": [
       {
         "date": "2026-06-01",
-        "dem": 0.12586,
-        "rep": 0.87414
+        "dem": 0.15727,
+        "rep": 0.84273
       }
     ],
     "NM": [
       {
         "date": "2026-06-01",
-        "dem": 0.83546,
-        "rep": 0.16454
+        "dem": 0.81909,
+        "rep": 0.18091
       }
     ],
     "NY": [
       {
         "date": "2026-06-01",
-        "dem": 0.91877,
-        "rep": 0.08123
+        "dem": 0.88652,
+        "rep": 0.11348
       }
     ],
     "OH": [
       {
         "date": "2026-06-01",
-        "dem": 0.27895,
-        "rep": 0.72105
+        "dem": 0.33882,
+        "rep": 0.66118
       }
     ],
     "OK": [
       {
         "date": "2026-06-01",
-        "dem": 0.02477,
-        "rep": 0.97523
+        "dem": 0.04887,
+        "rep": 0.95113
       }
     ],
     "OR": [
       {
         "date": "2026-06-01",
-        "dem": 0.90831,
-        "rep": 0.09169
+        "dem": 0.87698,
+        "rep": 0.12302
       }
     ],
     "PA": [
       {
         "date": "2026-06-01",
-        "dem": 0.99739,
-        "rep": 0.00261
+        "dem": 0.98995,
+        "rep": 0.01005
       }
     ],
     "RI": [
       {
         "date": "2026-06-01",
-        "dem": 0.99391,
-        "rep": 0.00609
+        "dem": 0.98402,
+        "rep": 0.01598
       }
     ],
     "SC": [
       {
         "date": "2026-06-01",
-        "dem": 0.14114,
-        "rep": 0.85886
+        "dem": 0.18331,
+        "rep": 0.81669
       }
     ],
     "SD": [
       {
         "date": "2026-06-01",
-        "dem": 0.00375,
-        "rep": 0.99625
+        "dem": 0.01295,
+        "rep": 0.98705
       }
     ],
     "TN": [
       {
         "date": "2026-06-01",
-        "dem": 0.0128,
-        "rep": 0.9872
+        "dem": 0.0318,
+        "rep": 0.9682
       }
     ],
     "TX": [
       {
         "date": "2026-06-01",
-        "dem": 0.01199,
-        "rep": 0.98801
+        "dem": 0.02451,
+        "rep": 0.97549
       }
     ],
     "VT": [
       {
         "date": "2026-06-01",
-        "dem": 0.00179,
-        "rep": 0.99821
+        "dem": 0.00545,
+        "rep": 0.99455
       }
     ],
     "WI": [
       {
         "date": "2026-06-01",
-        "dem": 0.59229,
-        "rep": 0.40771
+        "dem": 0.5856,
+        "rep": 0.4144
       }
     ],
     "WY": [
       {
         "date": "2026-06-01",
-        "dem": 0.00242,
-        "rep": 0.99758
+        "dem": 0.01303,
+        "rep": 0.98697
       }
     ]
   },
@@ -538,8 +362,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Alabama Governor",
-      "margin": -14.89,
-      "fundamentalsMargin": -13.01,
+      "margin": -11.86,
+      "fundamentalsMargin": -10.38,
       "ratingMargin": -18,
       "candidateAndLocal": 1.2,
       "electorateComposition": {
@@ -626,25 +450,19 @@
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Safe R",
-      "demProbability": 0.02001,
-      "repProbability": 0.97999,
+      "modelRating": "Likely R",
+      "demProbability": 0.05092,
+      "repProbability": 0.94908,
       "winnerParty": "R",
-      "winnerProbability": 0.97999,
+      "winnerProbability": 0.94908,
       "competitive": false,
-      "tippingPower": 0.01145,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.7,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.01946,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.02001,
-          "rep": 0.97999
+          "dem": 0.05092,
+          "rep": 0.94908
         }
       ],
       "movement": {
@@ -675,8 +493,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Alaska Governor",
-      "margin": -3.3,
-      "fundamentalsMargin": -2.85,
+      "margin": -2.58,
+      "fundamentalsMargin": -2.27,
       "ratingMargin": -5,
       "candidateAndLocal": 0.4,
       "electorateComposition": {
@@ -754,24 +572,18 @@
         "pollCount": 0
       },
       "modelRating": "Tilt R",
-      "demProbability": 0.35781,
-      "repProbability": 0.64219,
+      "demProbability": 0.38783,
+      "repProbability": 0.61217,
       "winnerParty": "R",
-      "winnerProbability": 0.64219,
+      "winnerProbability": 0.61217,
       "competitive": true,
-      "tippingPower": 0.06859,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.49,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.05671,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.35781,
-          "rep": 0.64219
+          "dem": 0.38783,
+          "rep": 0.61217
         }
       ],
       "movement": {
@@ -802,8 +614,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Arizona Governor",
-      "margin": 1.42,
-      "fundamentalsMargin": 1.78,
+      "margin": 1.3,
+      "fundamentalsMargin": 1.83,
       "ratingMargin": 0,
       "candidateAndLocal": -0.4,
       "electorateComposition": {
@@ -911,18 +723,18 @@
         "pollCount": 0
       },
       "modelRating": "Toss-up",
-      "demProbability": 0.55777,
-      "repProbability": 0.44223,
+      "demProbability": 0.5526,
+      "repProbability": 0.4474,
       "winnerParty": "D",
-      "winnerProbability": 0.55777,
+      "winnerProbability": 0.5526,
       "competitive": true,
-      "tippingPower": 0.06896,
+      "tippingPower": 0.05636,
       "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.55777,
-          "rep": 0.44223
+          "dem": 0.5526,
+          "rep": 0.4474
         }
       ],
       "movement": {
@@ -953,8 +765,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Arkansas Governor",
-      "margin": -17.46,
-      "fundamentalsMargin": -14.34,
+      "margin": -14.51,
+      "fundamentalsMargin": -12.18,
       "ratingMargin": -18,
       "candidateAndLocal": -1,
       "electorateComposition": {
@@ -1042,24 +854,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe R",
-      "demProbability": 0.00319,
-      "repProbability": 0.99681,
+      "demProbability": 0.01168,
+      "repProbability": 0.98832,
       "winnerParty": "R",
-      "winnerProbability": 0.99681,
+      "winnerProbability": 0.98832,
       "competitive": false,
-      "tippingPower": 0.00244,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.52,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00661,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.00319,
-          "rep": 0.99681
+          "dem": 0.01168,
+          "rep": 0.98832
         }
       ],
       "movement": {
@@ -1077,23 +883,23 @@
       "pvi": 12,
       "lastMargin": 18.4,
       "rating": "Safe D",
-      "demCandidate": "Democrat",
-      "repCandidate": "Republican",
-      "candidateEdge": 0.3,
-      "dem": "Democrat",
-      "rep": "Republican",
-      "demStatus": "unresolved",
-      "repStatus": "unresolved",
+      "demCandidate": "Xavier Becerra",
+      "repCandidate": "Steve Hilton",
+      "candidateEdge": 0.2,
+      "dem": "Xavier Becerra",
+      "rep": "Steve Hilton",
+      "demStatus": "front-runner",
+      "repStatus": "front-runner",
       "primary": "top-two",
       "primaryDate": "2026-06-02",
-      "primarySummary": "California's top-two primary has a large field; the model treats both parties as unresolved.",
+      "primarySummary": "California's top-two primary has a large field. Becerra and Hilton are tracked as the leading Democratic and Republican options before votes are reported.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "California Governor",
-      "margin": 14.98,
-      "fundamentalsMargin": 8.18,
+      "margin": 12.74,
+      "fundamentalsMargin": 6.59,
       "ratingMargin": 18,
-      "candidateAndLocal": 0.3,
+      "candidateAndLocal": 0.2,
       "electorateComposition": {
         "source": "Modeled from state turnout traits",
         "raceEducation": {
@@ -1114,54 +920,68 @@
         ]
       },
       "demographicPull": {
-        "adjustment": 0.04,
+        "adjustment": 0.1,
         "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
+          "key": "xavier becerra",
+          "label": "Xavier Becerra",
+          "source": "candidate",
+          "profile": "California Democratic statewide federal official",
           "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
-            "black": 0.07,
-            "latino": 0.04,
-            "asian_other": 0.03,
-            "youth": 0.03,
-            "senior": -0.01
+            "white_college": 0.1,
+            "white_noncollege": -0.04,
+            "black": 0.08,
+            "latino": 0.16,
+            "asian_other": 0.07,
+            "youth": 0.04,
+            "senior": 0.02
           },
-          "strengths": [],
-          "weaknesses": []
+          "strengths": [
+            "Latino",
+            "White college",
+            "Asian/other"
+          ],
+          "weaknesses": [
+            "White non-college"
+          ]
         },
         "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
+          "key": "steve hilton",
+          "label": "Steve Hilton",
+          "source": "candidate",
+          "profile": "California conservative media candidate",
           "scores": {
-            "white_college": -0.06,
-            "white_noncollege": 0.1,
-            "black": -0.07,
-            "latino": -0.04,
+            "white_college": -0.09,
+            "white_noncollege": 0.15,
+            "black": -0.08,
+            "latino": -0.03,
             "asian_other": -0.03,
-            "youth": -0.04,
-            "senior": 0.05
+            "youth": -0.05,
+            "senior": 0.07
           },
-          "strengths": [],
-          "weaknesses": []
+          "strengths": [
+            "White non-college",
+            "Senior"
+          ],
+          "weaknesses": [
+            "White college",
+            "Black"
+          ]
         },
         "topGroups": [
           {
             "group": "white_college",
             "weight": 0.27,
-            "effect": 0.06
+            "effect": 0.09
           },
           {
             "group": "white_noncollege",
             "weight": 0.22,
-            "effect": -0.06
+            "effect": -0.07
           },
           {
             "group": "latino",
             "weight": 0.18,
-            "effect": 0.03
+            "effect": 0.06
           }
         ]
       },
@@ -1173,25 +993,19 @@
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Safe D",
-      "demProbability": 0.98059,
-      "repProbability": 0.01941,
+      "modelRating": "Likely D",
+      "demProbability": 0.96059,
+      "repProbability": 0.03941,
       "winnerParty": "D",
-      "winnerProbability": 0.98059,
+      "winnerProbability": 0.96059,
       "competitive": false,
-      "tippingPower": 0.01041,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -1.06,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.01579,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.98059,
-          "rep": 0.01941
+          "dem": 0.96059,
+          "rep": 0.03941
         }
       ],
       "movement": {
@@ -1209,23 +1023,23 @@
       "pvi": 6,
       "lastMargin": 19.3,
       "rating": "Safe D",
-      "demCandidate": "Democrat",
+      "demCandidate": "Phil Weiser",
       "repCandidate": "Republican",
-      "candidateEdge": 1.3,
-      "dem": "Democrat",
+      "candidateEdge": 1,
+      "dem": "Phil Weiser",
       "rep": "Republican",
-      "demStatus": "unresolved",
+      "demStatus": "front-runner",
       "repStatus": "unresolved",
       "primary": "unresolved",
       "primaryDate": "2026-06-30",
-      "primarySummary": "Colorado's open-seat primaries remain unresolved.",
+      "primarySummary": "Weiser is tracked as the leading Democratic option in Colorado's open-seat race; the Republican side remains unresolved.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Colorado Governor",
-      "margin": 14.87,
-      "fundamentalsMargin": 6.11,
+      "margin": 12.74,
+      "fundamentalsMargin": 4.71,
       "ratingMargin": 18,
-      "candidateAndLocal": 1.3,
+      "candidateAndLocal": 1,
       "electorateComposition": {
         "source": "Manual midterm likely-voter baseline; not fixed truth",
         "raceEducation": {
@@ -1246,21 +1060,25 @@
         ]
       },
       "demographicPull": {
-        "adjustment": 0.06,
+        "adjustment": 0.15,
         "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
+          "key": "phil weiser",
+          "label": "Phil Weiser",
+          "source": "candidate",
+          "profile": "Colorado Democratic attorney general",
           "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
-            "black": 0.07,
-            "latino": 0.04,
-            "asian_other": 0.03,
+            "white_college": 0.14,
+            "white_noncollege": -0.02,
+            "black": 0.08,
+            "latino": 0.06,
+            "asian_other": 0.06,
             "youth": 0.03,
-            "senior": -0.01
+            "senior": 0.04
           },
-          "strengths": [],
+          "strengths": [
+            "White college",
+            "Latino"
+          ],
           "weaknesses": []
         },
         "repProfile": {
@@ -1283,12 +1101,12 @@
           {
             "group": "white_college",
             "weight": 0.47,
-            "effect": 0.1
+            "effect": 0.16
           },
           {
             "group": "white_noncollege",
             "weight": 0.31,
-            "effect": -0.08
+            "effect": -0.07
           }
         ]
       },
@@ -1300,25 +1118,19 @@
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Safe D",
-      "demProbability": 0.97989,
-      "repProbability": 0.02011,
+      "modelRating": "Likely D",
+      "demProbability": 0.96059,
+      "repProbability": 0.03941,
       "winnerParty": "D",
-      "winnerProbability": 0.97989,
+      "winnerProbability": 0.96059,
       "competitive": false,
-      "tippingPower": 0.01123,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -1.41,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.01527,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.97989,
-          "rep": 0.02011
+          "dem": 0.96059,
+          "rep": 0.03941
         }
       ],
       "movement": {
@@ -1349,8 +1161,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Connecticut Governor",
-      "margin": 15.33,
-      "fundamentalsMargin": 8.32,
+      "margin": 13.34,
+      "fundamentalsMargin": 7.28,
       "ratingMargin": 18,
       "candidateAndLocal": 0.6,
       "electorateComposition": {
@@ -1428,24 +1240,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe D",
-      "demProbability": 0.99169,
-      "repProbability": 0.00831,
+      "demProbability": 0.9814,
+      "repProbability": 0.0186,
       "winnerParty": "D",
-      "winnerProbability": 0.99169,
+      "winnerProbability": 0.9814,
       "competitive": false,
-      "tippingPower": 0.00581,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -1.11,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00954,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.99169,
-          "rep": 0.00831
+          "dem": 0.9814,
+          "rep": 0.0186
         }
       ],
       "movement": {
@@ -1476,8 +1282,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Florida Governor",
-      "margin": -8.13,
-      "fundamentalsMargin": -5.76,
+      "margin": -6.58,
+      "fundamentalsMargin": -4.39,
       "ratingMargin": -10.5,
       "candidateAndLocal": -0.2,
       "electorateComposition": {
@@ -1564,25 +1370,19 @@
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Likely R",
-      "demProbability": 0.15928,
-      "repProbability": 0.84072,
+      "modelRating": "Lean R",
+      "demProbability": 0.20962,
+      "repProbability": 0.79038,
       "winnerParty": "R",
-      "winnerProbability": 0.84072,
+      "winnerProbability": 0.79038,
       "competitive": false,
-      "tippingPower": 0.04742,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.12,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04765,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.15928,
-          "rep": 0.84072
+          "dem": 0.20962,
+          "rep": 0.79038
         }
       ],
       "movement": {
@@ -1613,8 +1413,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Georgia Governor",
-      "margin": 1.25,
-      "fundamentalsMargin": -1.38,
+      "margin": 1.56,
+      "fundamentalsMargin": -0.89,
       "ratingMargin": 0,
       "candidateAndLocal": 0.5,
       "electorateComposition": {
@@ -1706,25 +1506,19 @@
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Toss-up",
-      "demProbability": 0.54657,
-      "repProbability": 0.45343,
+      "modelRating": "Tilt D",
+      "demProbability": 0.55819,
+      "repProbability": 0.44181,
       "winnerParty": "D",
-      "winnerProbability": 0.54657,
+      "winnerProbability": 0.55819,
       "competitive": true,
-      "tippingPower": 0.06155,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.59,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.05149,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.54657,
-          "rep": 0.45343
+          "dem": 0.55819,
+          "rep": 0.44181
         }
       ],
       "movement": {
@@ -1755,8 +1549,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Hawaii Governor",
-      "margin": 18.16,
-      "fundamentalsMargin": 13.68,
+      "margin": 15.3,
+      "fundamentalsMargin": 11.57,
       "ratingMargin": 18,
       "candidateAndLocal": 1,
       "electorateComposition": {
@@ -1834,24 +1628,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe D",
-      "demProbability": 0.99773,
-      "repProbability": 0.00227,
+      "demProbability": 0.99158,
+      "repProbability": 0.00842,
       "winnerParty": "D",
-      "winnerProbability": 0.99773,
+      "winnerProbability": 0.99158,
       "competitive": false,
-      "tippingPower": 0.00185,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.65,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00482,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.99773,
-          "rep": 0.00227
+          "dem": 0.99158,
+          "rep": 0.00842
         }
       ],
       "movement": {
@@ -1882,8 +1670,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Idaho Governor",
-      "margin": -17.38,
-      "fundamentalsMargin": -14.18,
+      "margin": -14.53,
+      "fundamentalsMargin": -12.23,
       "ratingMargin": -18,
       "candidateAndLocal": -1,
       "electorateComposition": {
@@ -1966,24 +1754,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe R",
-      "demProbability": 0.00331,
-      "repProbability": 0.99669,
+      "demProbability": 0.01159,
+      "repProbability": 0.98841,
       "winnerParty": "R",
-      "winnerProbability": 0.99669,
+      "winnerProbability": 0.98841,
       "competitive": false,
-      "tippingPower": 0.0025,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.5,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.0064,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.00331,
-          "rep": 0.99669
+          "dem": 0.01159,
+          "rep": 0.98841
         }
       ],
       "movement": {
@@ -2014,8 +1796,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Illinois Governor",
-      "margin": 15.38,
-      "fundamentalsMargin": 7.68,
+      "margin": 13.46,
+      "fundamentalsMargin": 6.69,
       "ratingMargin": 18,
       "candidateAndLocal": 1.1,
       "electorateComposition": {
@@ -2103,24 +1885,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe D",
-      "demProbability": 0.99185,
-      "repProbability": 0.00815,
+      "demProbability": 0.98224,
+      "repProbability": 0.01776,
       "winnerParty": "D",
-      "winnerProbability": 0.99185,
+      "winnerProbability": 0.98224,
       "competitive": false,
-      "tippingPower": 0.00577,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -1.26,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00942,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.99185,
-          "rep": 0.00815
+          "dem": 0.98224,
+          "rep": 0.01776
         }
       ],
       "movement": {
@@ -2138,23 +1914,23 @@
       "pvi": -6,
       "lastMargin": -18.6,
       "rating": "Toss-up",
-      "demCandidate": "Democrat",
-      "repCandidate": "Republican",
-      "candidateEdge": 2.4,
-      "dem": "Democrat",
-      "rep": "Republican",
-      "demStatus": "unresolved",
-      "repStatus": "unresolved",
+      "demCandidate": "Rob Sand",
+      "repCandidate": "Randy Feenstra",
+      "candidateEdge": 2.1,
+      "dem": "Rob Sand",
+      "rep": "Randy Feenstra",
+      "demStatus": "presumptive",
+      "repStatus": "front-runner",
       "primary": "unresolved",
       "primaryDate": "2026-06-02",
-      "primarySummary": "Iowa is an open seat and both primaries remain unresolved.",
+      "primarySummary": "Sand is treated as the Democratic presumptive nominee. Feenstra is tracked as the leading Republican option until primary results resolve the race.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Iowa Governor",
-      "margin": -2.08,
-      "fundamentalsMargin": -9.14,
+      "margin": -0.87,
+      "fundamentalsMargin": -7.79,
       "ratingMargin": 0,
-      "candidateAndLocal": 2.4,
+      "candidateAndLocal": 2.1,
       "electorateComposition": {
         "source": "Manual midterm likely-voter baseline; not fixed truth",
         "raceEducation": {
@@ -2175,54 +1951,59 @@
         ]
       },
       "demographicPull": {
-        "adjustment": -0.07,
+        "adjustment": 0.12,
         "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
+          "key": "rob sand",
+          "label": "Rob Sand",
+          "source": "candidate",
+          "profile": "Iowa statewide Democratic auditor",
           "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
-            "black": 0.07,
-            "latino": 0.04,
-            "asian_other": 0.03,
-            "youth": 0.03,
-            "senior": -0.01
+            "white_college": 0.08,
+            "white_noncollege": 0.18,
+            "black": 0.04,
+            "latino": 0.03,
+            "asian_other": 0.02,
+            "youth": 0.04,
+            "senior": 0.06
           },
-          "strengths": [],
+          "strengths": [
+            "White non-college",
+            "White college"
+          ],
           "weaknesses": []
         },
         "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
+          "key": "randy feenstra",
+          "label": "Randy Feenstra",
+          "source": "candidate",
+          "profile": "Iowa Republican congressional profile",
           "scores": {
-            "white_college": -0.06,
-            "white_noncollege": 0.1,
+            "white_college": -0.04,
+            "white_noncollege": 0.15,
             "black": -0.07,
-            "latino": -0.04,
-            "asian_other": -0.03,
-            "youth": -0.04,
-            "senior": 0.05
+            "latino": -0.03,
+            "asian_other": -0.02,
+            "youth": -0.05,
+            "senior": 0.08
           },
-          "strengths": [],
-          "weaknesses": []
+          "strengths": [
+            "White non-college",
+            "Senior"
+          ],
+          "weaknesses": [
+            "White college"
+          ]
         },
         "topGroups": [
-          {
-            "group": "white_noncollege",
-            "weight": 0.58,
-            "effect": -0.15
-          },
           {
             "group": "white_college",
             "weight": 0.32,
             "effect": 0.07
           },
           {
-            "group": "senior",
-            "weight": 0.31,
-            "effect": -0.03
+            "group": "white_noncollege",
+            "weight": 0.58,
+            "effect": 0.03
           }
         ]
       },
@@ -2234,25 +2015,19 @@
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Tilt R",
-      "demProbability": 0.42247,
-      "repProbability": 0.57753,
+      "modelRating": "Toss-up",
+      "demProbability": 0.46748,
+      "repProbability": 0.53252,
       "winnerParty": "R",
-      "winnerProbability": 0.57753,
+      "winnerProbability": 0.53252,
       "competitive": true,
-      "tippingPower": 0.06166,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -2.01,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.05135,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.42247,
-          "rep": 0.57753
+          "dem": 0.46748,
+          "rep": 0.53252
         }
       ],
       "movement": {
@@ -2283,8 +2058,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Kansas Governor",
-      "margin": -3.41,
-      "fundamentalsMargin": -3.31,
+      "margin": -2.82,
+      "fundamentalsMargin": -3.12,
       "ratingMargin": -5,
       "candidateAndLocal": 0.5,
       "electorateComposition": {
@@ -2367,24 +2142,18 @@
         "pollCount": 0
       },
       "modelRating": "Tilt R",
-      "demProbability": 0.35304,
-      "repProbability": 0.64696,
+      "demProbability": 0.37776,
+      "repProbability": 0.62224,
       "winnerParty": "R",
-      "winnerProbability": 0.64696,
+      "winnerProbability": 0.62224,
       "competitive": true,
-      "tippingPower": 0.06777,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.48,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.05663,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.35304,
-          "rep": 0.64696
+          "dem": 0.37776,
+          "rep": 0.62224
         }
       ],
       "movement": {
@@ -2415,8 +2184,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Maine Governor",
-      "margin": 8.72,
-      "fundamentalsMargin": 3.79,
+      "margin": 7.51,
+      "fundamentalsMargin": 2.86,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.4,
       "electorateComposition": {
@@ -2498,25 +2267,19 @@
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Likely D",
-      "demProbability": 0.85765,
-      "repProbability": 0.14235,
+      "modelRating": "Lean D",
+      "demProbability": 0.82166,
+      "repProbability": 0.17834,
       "winnerParty": "D",
-      "winnerProbability": 0.85765,
+      "winnerProbability": 0.82166,
       "competitive": false,
-      "tippingPower": 0.04482,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.85,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04372,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.85765,
-          "rep": 0.14235
+          "dem": 0.82166,
+          "rep": 0.17834
         }
       ],
       "movement": {
@@ -2547,8 +2310,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Maryland Governor",
-      "margin": 19.49,
-      "fundamentalsMargin": 15.28,
+      "margin": 16.37,
+      "fundamentalsMargin": 12.88,
       "ratingMargin": 18,
       "candidateAndLocal": 1.5,
       "electorateComposition": {
@@ -2631,24 +2394,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe D",
-      "demProbability": 0.99884,
-      "repProbability": 0.00116,
+      "demProbability": 0.99474,
+      "repProbability": 0.00526,
       "winnerParty": "D",
-      "winnerProbability": 0.99884,
+      "winnerProbability": 0.99474,
       "competitive": false,
-      "tippingPower": 0.00123,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.5,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00326,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.99884,
-          "rep": 0.00116
+          "dem": 0.99474,
+          "rep": 0.00526
         }
       ],
       "movement": {
@@ -2679,8 +2436,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Massachusetts Governor",
-      "margin": 18.92,
-      "fundamentalsMargin": 14.73,
+      "margin": 15.88,
+      "fundamentalsMargin": 12.42,
       "ratingMargin": 18,
       "candidateAndLocal": 1.2,
       "electorateComposition": {
@@ -2758,24 +2515,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe D",
-      "demProbability": 0.99844,
-      "repProbability": 0.00156,
+      "demProbability": 0.99346,
+      "repProbability": 0.00654,
       "winnerParty": "D",
-      "winnerProbability": 0.99844,
+      "winnerProbability": 0.99346,
       "competitive": false,
-      "tippingPower": 0.0014,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.58,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00383,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.99844,
-          "rep": 0.00156
+          "dem": 0.99346,
+          "rep": 0.00654
         }
       ],
       "movement": {
@@ -2793,23 +2544,23 @@
       "pvi": 0,
       "lastMargin": 10.6,
       "rating": "Lean D",
-      "demCandidate": "Democrat",
+      "demCandidate": "Jocelyn Benson",
       "repCandidate": "Republican",
-      "candidateEdge": 0.8,
-      "dem": "Democrat",
+      "candidateEdge": 0.9,
+      "dem": "Jocelyn Benson",
       "rep": "Republican",
-      "demStatus": "unresolved",
+      "demStatus": "front-runner",
       "repStatus": "unresolved",
       "primary": "unresolved",
       "primaryDate": "2026-08-04",
-      "primarySummary": "Michigan is an open seat with both primaries unresolved.",
+      "primarySummary": "Benson is tracked as the leading Democratic option in Michigan's open-seat race; the Republican primary remains unresolved.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Michigan Governor",
-      "margin": 5.33,
-      "fundamentalsMargin": 1.74,
+      "margin": 4.87,
+      "fundamentalsMargin": 1.11,
       "ratingMargin": 5,
-      "candidateAndLocal": 0.8,
+      "candidateAndLocal": 0.9,
       "electorateComposition": {
         "source": "Manual midterm likely-voter baseline; not fixed truth",
         "raceEducation": {
@@ -2830,21 +2581,25 @@
         ]
       },
       "demographicPull": {
-        "adjustment": -0.05,
+        "adjustment": 0.07,
         "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
+          "key": "jocelyn benson",
+          "label": "Jocelyn Benson",
+          "source": "candidate",
+          "profile": "Michigan Democratic secretary of state",
           "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
-            "black": 0.07,
+            "white_college": 0.13,
+            "white_noncollege": -0.01,
+            "black": 0.09,
             "latino": 0.04,
-            "asian_other": 0.03,
-            "youth": 0.03,
-            "senior": -0.01
+            "asian_other": 0.04,
+            "youth": 0.04,
+            "senior": 0.03
           },
-          "strengths": [],
+          "strengths": [
+            "White college",
+            "Black"
+          ],
           "weaknesses": []
         },
         "repProfile": {
@@ -2865,19 +2620,19 @@
         },
         "topGroups": [
           {
-            "group": "white_noncollege",
-            "weight": 0.49,
-            "effect": -0.13
-          },
-          {
             "group": "white_college",
             "weight": 0.35,
-            "effect": 0.07
+            "effect": 0.12
           },
           {
-            "group": "senior",
-            "weight": 0.3,
-            "effect": -0.03
+            "group": "white_noncollege",
+            "weight": 0.49,
+            "effect": -0.09
+          },
+          {
+            "group": "black",
+            "weight": 0.1,
+            "effect": 0.03
           }
         ]
       },
@@ -2890,24 +2645,18 @@
         "pollCount": 0
       },
       "modelRating": "Lean D",
-      "demProbability": 0.72216,
-      "repProbability": 0.27784,
+      "demProbability": 0.70456,
+      "repProbability": 0.29544,
       "winnerParty": "D",
-      "winnerProbability": 0.72216,
+      "winnerProbability": 0.70456,
       "competitive": true,
-      "tippingPower": 0.06262,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.61,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.05133,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.72216,
-          "rep": 0.27784
+          "dem": 0.70456,
+          "rep": 0.29544
         }
       ],
       "movement": {
@@ -2924,7 +2673,7 @@
       "status": "Incumbent retiring",
       "pvi": 3,
       "lastMargin": 7.7,
-      "rating": "Safe D",
+      "rating": "Likely D",
       "demCandidate": "Democrat",
       "repCandidate": "Republican",
       "candidateEdge": 0.4,
@@ -2934,13 +2683,13 @@
       "repStatus": "unresolved",
       "primary": "unresolved",
       "primaryDate": "2026-08-11",
-      "primarySummary": "Minnesota is an open seat and both primaries remain unresolved.",
+      "primarySummary": "Minnesota is an open seat and the model is not assigning a presumptive major-party nominee yet.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Minnesota Governor",
-      "margin": 13.8,
-      "fundamentalsMargin": 5.39,
-      "ratingMargin": 18,
+      "margin": 8.42,
+      "fundamentalsMargin": 4.81,
+      "ratingMargin": 10.5,
       "candidateAndLocal": 0.4,
       "electorateComposition": {
         "source": "Manual midterm likely-voter baseline; not fixed truth",
@@ -3021,25 +2770,30 @@
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Safe D",
-      "demProbability": 0.97153,
-      "repProbability": 0.02847,
+      "modelRating": "Likely D",
+      "demProbability": 0.84917,
+      "repProbability": 0.15083,
       "winnerParty": "D",
-      "winnerProbability": 0.97153,
+      "winnerProbability": 0.84917,
       "competitive": false,
-      "tippingPower": 0.01466,
+      "tippingPower": 0.03885,
       "movementDrivers": [
         {
           "label": "Projected margin",
-          "change": -1.22,
+          "change": -0.23,
           "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.08,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.97153,
-          "rep": 0.02847
+          "dem": 0.84917,
+          "rep": 0.15083
         }
       ],
       "movement": {
@@ -3070,8 +2824,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Nebraska Governor",
-      "margin": -15.07,
-      "fundamentalsMargin": -11.91,
+      "margin": -12.46,
+      "fundamentalsMargin": -10.08,
       "ratingMargin": -18,
       "candidateAndLocal": -1,
       "electorateComposition": {
@@ -3159,24 +2913,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe R",
-      "demProbability": 0.00927,
-      "repProbability": 0.99073,
+      "demProbability": 0.02577,
+      "repProbability": 0.97423,
       "winnerParty": "R",
-      "winnerProbability": 0.99073,
+      "winnerProbability": 0.97423,
       "competitive": false,
-      "tippingPower": 0.00649,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.42,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.0129,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.00927,
-          "rep": 0.99073
+          "dem": 0.02577,
+          "rep": 0.97423
         }
       ],
       "movement": {
@@ -3207,8 +2955,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Nevada Governor",
-      "margin": -2.1,
-      "fundamentalsMargin": -3.14,
+      "margin": -1.79,
+      "fundamentalsMargin": -3.01,
       "ratingMargin": 0,
       "candidateAndLocal": -1.6,
       "electorateComposition": {
@@ -3298,24 +3046,18 @@
         "pollCount": 0
       },
       "modelRating": "Tilt R",
-      "demProbability": 0.4152,
-      "repProbability": 0.5848,
+      "demProbability": 0.42758,
+      "repProbability": 0.57242,
       "winnerParty": "R",
-      "winnerProbability": 0.5848,
+      "winnerProbability": 0.57242,
       "competitive": true,
-      "tippingPower": 0.06435,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.33,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.05475,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.4152,
-          "rep": 0.5848
+          "dem": 0.42758,
+          "rep": 0.57242
         }
       ],
       "movement": {
@@ -3346,8 +3088,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "New Hampshire Governor",
-      "margin": -8.37,
-      "fundamentalsMargin": -3.85,
+      "margin": -7.34,
+      "fundamentalsMargin": -3.38,
       "ratingMargin": -10.5,
       "candidateAndLocal": -1.6,
       "electorateComposition": {
@@ -3436,24 +3178,18 @@
         "pollCount": 0
       },
       "modelRating": "Likely R",
-      "demProbability": 0.12586,
-      "repProbability": 0.87414,
+      "demProbability": 0.15727,
+      "repProbability": 0.84273,
       "winnerParty": "R",
-      "winnerProbability": 0.87414,
+      "winnerProbability": 0.84273,
       "competitive": false,
-      "tippingPower": 0.04715,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.46,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04422,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.12586,
-          "rep": 0.87414
+          "dem": 0.15727,
+          "rep": 0.84273
         }
       ],
       "movement": {
@@ -3471,23 +3207,23 @@
       "pvi": 4,
       "lastMargin": 6.4,
       "rating": "Likely D",
-      "demCandidate": "Democrat",
+      "demCandidate": "Deb Haaland",
       "repCandidate": "Republican",
-      "candidateEdge": 0.2,
-      "dem": "Democrat",
+      "candidateEdge": 0.6,
+      "dem": "Deb Haaland",
       "rep": "Republican",
-      "demStatus": "unresolved",
+      "demStatus": "front-runner",
       "repStatus": "unresolved",
       "primary": "unresolved",
       "primaryDate": "2026-06-02",
-      "primarySummary": "New Mexico is an open seat and both primaries remain unresolved.",
+      "primarySummary": "Haaland is tracked as the leading Democratic option in New Mexico's open-seat race; the Republican primary remains unresolved.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "New Mexico Governor",
-      "margin": 7.95,
-      "fundamentalsMargin": 2.26,
+      "margin": 7.43,
+      "fundamentalsMargin": 1.71,
       "ratingMargin": 10.5,
-      "candidateAndLocal": 0.2,
+      "candidateAndLocal": 0.6,
       "electorateComposition": {
         "source": "Manual midterm likely-voter baseline; not fixed truth",
         "raceEducation": {
@@ -3508,21 +3244,26 @@
         ]
       },
       "demographicPull": {
-        "adjustment": 0.03,
+        "adjustment": 0.12,
         "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
+          "key": "deb haaland",
+          "label": "Deb Haaland",
+          "source": "candidate",
+          "profile": "New Mexico Democratic former Interior secretary",
           "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
+            "white_college": 0.1,
+            "white_noncollege": -0.02,
             "black": 0.07,
-            "latino": 0.04,
-            "asian_other": 0.03,
-            "youth": 0.03,
-            "senior": -0.01
+            "latino": 0.12,
+            "asian_other": 0.05,
+            "youth": 0.05,
+            "senior": 0.02
           },
-          "strengths": [],
+          "strengths": [
+            "Latino",
+            "White college",
+            "Youth"
+          ],
           "weaknesses": []
         },
         "repProfile": {
@@ -3543,24 +3284,19 @@
         },
         "topGroups": [
           {
-            "group": "white_noncollege",
-            "weight": 0.3,
-            "effect": -0.08
+            "group": "latino",
+            "weight": 0.33,
+            "effect": 0.09
           },
           {
             "group": "white_college",
             "weight": 0.3,
-            "effect": 0.06
+            "effect": 0.08
           },
           {
-            "group": "latino",
-            "weight": 0.33,
-            "effect": 0.05
-          },
-          {
-            "group": "senior",
+            "group": "white_noncollege",
             "weight": 0.3,
-            "effect": -0.03
+            "effect": -0.06
           }
         ]
       },
@@ -3573,24 +3309,18 @@
         "pollCount": 0
       },
       "modelRating": "Lean D",
-      "demProbability": 0.83546,
-      "repProbability": 0.16454,
+      "demProbability": 0.81909,
+      "repProbability": 0.18091,
       "winnerParty": "D",
-      "winnerProbability": 0.83546,
+      "winnerProbability": 0.81909,
       "competitive": false,
-      "tippingPower": 0.04981,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.93,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04297,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.83546,
-          "rep": 0.16454
+          "dem": 0.81909,
+          "rep": 0.18091
         }
       ],
       "movement": {
@@ -3621,8 +3351,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "New York Governor",
-      "margin": 10.2,
-      "fundamentalsMargin": 6.98,
+      "margin": 8.82,
+      "fundamentalsMargin": 6.27,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.3,
       "electorateComposition": {
@@ -3705,24 +3435,18 @@
         "pollCount": 0
       },
       "modelRating": "Likely D",
-      "demProbability": 0.91877,
-      "repProbability": 0.08123,
+      "demProbability": 0.88652,
+      "repProbability": 0.11348,
       "winnerParty": "D",
-      "winnerProbability": 0.91877,
+      "winnerProbability": 0.88652,
       "competitive": false,
-      "tippingPower": 0.03276,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.67,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.03518,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.91877,
-          "rep": 0.08123
+          "dem": 0.88652,
+          "rep": 0.11348
         }
       ],
       "movement": {
@@ -3753,8 +3477,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Ohio Governor",
-      "margin": -5.3,
-      "fundamentalsMargin": -7.2,
+      "margin": -3.76,
+      "fundamentalsMargin": -5.47,
       "ratingMargin": -5,
       "candidateAndLocal": -0.6,
       "electorateComposition": {
@@ -3850,25 +3574,19 @@
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Lean R",
-      "demProbability": 0.27895,
-      "repProbability": 0.72105,
+      "modelRating": "Tilt R",
+      "demProbability": 0.33882,
+      "repProbability": 0.66118,
       "winnerParty": "R",
-      "winnerProbability": 0.72105,
+      "winnerProbability": 0.66118,
       "competitive": true,
-      "tippingPower": 0.06285,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.91,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.05447,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.27895,
-          "rep": 0.72105
+          "dem": 0.33882,
+          "rep": 0.66118
         }
       ],
       "movement": {
@@ -3899,8 +3617,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Oklahoma Governor",
-      "margin": -14.24,
-      "fundamentalsMargin": -8.95,
+      "margin": -12.01,
+      "fundamentalsMargin": -7.45,
       "ratingMargin": -18,
       "candidateAndLocal": -0.4,
       "electorateComposition": {
@@ -3982,19 +3700,19 @@
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Safe R",
-      "demProbability": 0.02477,
-      "repProbability": 0.97523,
+      "modelRating": "Likely R",
+      "demProbability": 0.04887,
+      "repProbability": 0.95113,
       "winnerParty": "R",
-      "winnerProbability": 0.97523,
+      "winnerProbability": 0.95113,
       "competitive": false,
-      "tippingPower": 0.0132,
+      "tippingPower": 0.01829,
       "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.02477,
-          "rep": 0.97523
+          "dem": 0.04887,
+          "rep": 0.95113
         }
       ],
       "movement": {
@@ -4025,8 +3743,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Oregon Governor",
-      "margin": 9.71,
-      "fundamentalsMargin": 6.26,
+      "margin": 8.47,
+      "fundamentalsMargin": 5.73,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.2,
       "electorateComposition": {
@@ -4117,24 +3835,18 @@
         "pollCount": 0
       },
       "modelRating": "Likely D",
-      "demProbability": 0.90831,
-      "repProbability": 0.09169,
+      "demProbability": 0.87698,
+      "repProbability": 0.12302,
       "winnerParty": "D",
-      "winnerProbability": 0.90831,
+      "winnerProbability": 0.87698,
       "competitive": false,
-      "tippingPower": 0.03793,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.72,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.03835,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.90831,
-          "rep": 0.09169
+          "dem": 0.87698,
+          "rep": 0.12302
         }
       ],
       "movement": {
@@ -4154,7 +3866,7 @@
       "rating": "Safe D",
       "demCandidate": "Josh Shapiro",
       "repCandidate": "Stacy Garrity",
-      "candidateEdge": 3.8,
+      "candidateEdge": 2.2,
       "dem": "Josh Shapiro",
       "rep": "Stacy Garrity",
       "demStatus": "nominee",
@@ -4165,10 +3877,10 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Pennsylvania Governor",
-      "margin": 17.88,
-      "fundamentalsMargin": 5.57,
+      "margin": 14.88,
+      "fundamentalsMargin": 4.72,
       "ratingMargin": 18,
-      "candidateAndLocal": 3.8,
+      "candidateAndLocal": 2.2,
       "electorateComposition": {
         "source": "Manual midterm likely-voter baseline; not fixed truth",
         "raceEducation": {
@@ -4265,24 +3977,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe D",
-      "demProbability": 0.99739,
-      "repProbability": 0.00261,
+      "demProbability": 0.98995,
+      "repProbability": 0.01005,
       "winnerParty": "D",
-      "winnerProbability": 0.99739,
+      "winnerProbability": 0.98995,
       "competitive": false,
-      "tippingPower": 0.00209,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -2.07,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00551,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.99739,
-          "rep": 0.00261
+          "dem": 0.98995,
+          "rep": 0.01005
         }
       ],
       "movement": {
@@ -4313,8 +4019,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Rhode Island Governor",
-      "margin": 16.04,
-      "fundamentalsMargin": 10.07,
+      "margin": 13.73,
+      "fundamentalsMargin": 8.59,
       "ratingMargin": 18,
       "candidateAndLocal": 0.5,
       "electorateComposition": {
@@ -4392,24 +4098,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe D",
-      "demProbability": 0.99391,
-      "repProbability": 0.00609,
+      "demProbability": 0.98402,
+      "repProbability": 0.01598,
       "winnerParty": "D",
-      "winnerProbability": 0.99391,
+      "winnerProbability": 0.98402,
       "competitive": false,
-      "tippingPower": 0.00429,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.97,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00867,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.99391,
-          "rep": 0.00609
+          "dem": 0.98402,
+          "rep": 0.01598
         }
       ],
       "movement": {
@@ -4428,22 +4128,22 @@
       "lastMargin": -17.8,
       "rating": "Likely R",
       "demCandidate": "Democrat",
-      "repCandidate": "Republican",
-      "candidateEdge": -0.5,
+      "repCandidate": "Alan Wilson",
+      "candidateEdge": -0.7,
       "dem": "Democrat",
-      "rep": "Republican",
+      "rep": "Alan Wilson",
       "demStatus": "unresolved",
-      "repStatus": "unresolved",
+      "repStatus": "front-runner",
       "primary": "unresolved",
       "primaryDate": "2026-06-09",
-      "primarySummary": "South Carolina is an open seat and both primaries remain unresolved.",
+      "primarySummary": "Wilson is tracked as the leading Republican option in South Carolina's open-seat race; the Democratic primary remains unresolved.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "South Carolina Governor",
-      "margin": -8.76,
-      "fundamentalsMargin": -6.51,
+      "margin": -7.36,
+      "fundamentalsMargin": -5.12,
       "ratingMargin": -10.5,
-      "candidateAndLocal": -0.5,
+      "candidateAndLocal": -0.7,
       "electorateComposition": {
         "source": "Manual midterm likely-voter baseline; not fixed truth",
         "raceEducation": {
@@ -4464,7 +4164,7 @@
         ]
       },
       "demographicPull": {
-        "adjustment": 0,
+        "adjustment": -0.06,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -4482,31 +4182,32 @@
           "weaknesses": []
         },
         "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
+          "key": "alan wilson",
+          "label": "Alan Wilson",
+          "source": "candidate",
+          "profile": "South Carolina Republican attorney general",
           "scores": {
-            "white_college": -0.06,
-            "white_noncollege": 0.1,
-            "black": -0.07,
-            "latino": -0.04,
-            "asian_other": -0.03,
+            "white_college": -0.03,
+            "white_noncollege": 0.13,
+            "black": -0.08,
+            "latino": -0.03,
+            "asian_other": -0.02,
             "youth": -0.04,
-            "senior": 0.05
+            "senior": 0.08
           },
-          "strengths": [],
-          "weaknesses": []
+          "strengths": [
+            "White non-college",
+            "Senior"
+          ],
+          "weaknesses": [
+            "Black"
+          ]
         },
         "topGroups": [
           {
             "group": "white_noncollege",
             "weight": 0.43,
-            "effect": -0.11
-          },
-          {
-            "group": "white_college",
-            "weight": 0.29,
-            "effect": 0.06
+            "effect": -0.14
           },
           {
             "group": "black",
@@ -4514,9 +4215,14 @@
             "effect": 0.06
           },
           {
+            "group": "white_college",
+            "weight": 0.29,
+            "effect": 0.05
+          },
+          {
             "group": "senior",
             "weight": 0.31,
-            "effect": -0.03
+            "effect": -0.05
           }
         ]
       },
@@ -4528,25 +4234,19 @@
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Likely R",
-      "demProbability": 0.14114,
-      "repProbability": 0.85886,
+      "modelRating": "Lean R",
+      "demProbability": 0.18331,
+      "repProbability": 0.81669,
       "winnerParty": "R",
-      "winnerProbability": 0.85886,
+      "winnerProbability": 0.81669,
       "competitive": false,
-      "tippingPower": 0.04505,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.14,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04397,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.14114,
-          "rep": 0.85886
+          "dem": 0.18331,
+          "rep": 0.81669
         }
       ],
       "movement": {
@@ -4577,8 +4277,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "South Dakota Governor",
-      "margin": -17.11,
-      "fundamentalsMargin": -13.86,
+      "margin": -14.26,
+      "fundamentalsMargin": -11.82,
       "ratingMargin": -18,
       "candidateAndLocal": -0.8,
       "electorateComposition": {
@@ -4666,24 +4366,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe R",
-      "demProbability": 0.00375,
-      "repProbability": 0.99625,
+      "demProbability": 0.01295,
+      "repProbability": 0.98705,
       "winnerParty": "R",
-      "winnerProbability": 0.99625,
+      "winnerProbability": 0.98705,
       "competitive": false,
-      "tippingPower": 0.00276,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.48,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00688,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.00375,
-          "rep": 0.99625
+          "dem": 0.01295,
+          "rep": 0.98705
         }
       ],
       "movement": {
@@ -4702,22 +4396,22 @@
       "lastMargin": -32.7,
       "rating": "Safe R",
       "demCandidate": "Democrat",
-      "repCandidate": "Republican",
-      "candidateEdge": -0.8,
+      "repCandidate": "Andy Ogles",
+      "candidateEdge": -1,
       "dem": "Democrat",
-      "rep": "Republican",
+      "rep": "Andy Ogles",
       "demStatus": "unresolved",
-      "repStatus": "unresolved",
+      "repStatus": "front-runner",
       "primary": "unresolved",
       "primaryDate": "2026-08-06",
-      "primarySummary": "Tennessee is an open seat with crowded major-party candidate fields.",
+      "primarySummary": "Ogles is tracked as the leading Republican option in Tennessee's open-seat race; the Democratic primary remains unresolved.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Tennessee Governor",
-      "margin": -16.18,
-      "fundamentalsMargin": -12.37,
+      "margin": -13.45,
+      "fundamentalsMargin": -9.85,
       "ratingMargin": -18,
-      "candidateAndLocal": -0.8,
+      "candidateAndLocal": -1,
       "electorateComposition": {
         "source": "Manual midterm likely-voter baseline; not fixed truth",
         "raceEducation": {
@@ -4738,7 +4432,7 @@
         ]
       },
       "demographicPull": {
-        "adjustment": -0.05,
+        "adjustment": -0.09,
         "demProfile": {
           "key": "standardDemocrat",
           "label": "Standard Democrat",
@@ -4756,41 +4450,47 @@
           "weaknesses": []
         },
         "repProfile": {
-          "key": "standardRepublican",
-          "label": "Standard Republican",
-          "source": "generic",
+          "key": "andy ogles",
+          "label": "Andy Ogles",
+          "source": "candidate",
+          "profile": "Tennessee conservative congressional Republican",
           "scores": {
-            "white_college": -0.06,
-            "white_noncollege": 0.1,
-            "black": -0.07,
+            "white_college": -0.08,
+            "white_noncollege": 0.18,
+            "black": -0.09,
             "latino": -0.04,
             "asian_other": -0.03,
-            "youth": -0.04,
-            "senior": 0.05
+            "youth": -0.06,
+            "senior": 0.06
           },
-          "strengths": [],
-          "weaknesses": []
+          "strengths": [
+            "White non-college"
+          ],
+          "weaknesses": [
+            "White college",
+            "Black"
+          ]
         },
         "topGroups": [
           {
             "group": "white_noncollege",
             "weight": 0.53,
-            "effect": -0.14
+            "effect": -0.21
           },
           {
             "group": "white_college",
             "weight": 0.29,
-            "effect": 0.06
+            "effect": 0.07
           },
           {
             "group": "black",
             "weight": 0.13,
-            "effect": 0.03
+            "effect": 0.04
           },
           {
             "group": "senior",
             "weight": 0.3,
-            "effect": -0.03
+            "effect": -0.04
           }
         ]
       },
@@ -4802,25 +4502,19 @@
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Safe R",
-      "demProbability": 0.0128,
-      "repProbability": 0.9872,
+      "modelRating": "Likely R",
+      "demProbability": 0.0318,
+      "repProbability": 0.9682,
       "winnerParty": "R",
-      "winnerProbability": 0.9872,
+      "winnerProbability": 0.9682,
       "competitive": false,
-      "tippingPower": 0.00749,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.19,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.01341,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.0128,
-          "rep": 0.9872
+          "dem": 0.0318,
+          "rep": 0.9682
         }
       ],
       "movement": {
@@ -4851,8 +4545,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Texas Governor",
-      "margin": -14.45,
-      "fundamentalsMargin": -7.3,
+      "margin": -12.6,
+      "fundamentalsMargin": -6.4,
       "ratingMargin": -18,
       "candidateAndLocal": -1.7,
       "electorateComposition": {
@@ -4953,24 +4647,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe R",
-      "demProbability": 0.01199,
-      "repProbability": 0.98801,
+      "demProbability": 0.02451,
+      "repProbability": 0.97549,
       "winnerParty": "R",
-      "winnerProbability": 0.98801,
+      "winnerProbability": 0.97549,
       "competitive": false,
-      "tippingPower": 0.00815,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.54,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.01235,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.01199,
-          "rep": 0.98801
+          "dem": 0.02451,
+          "rep": 0.97549
         }
       ],
       "movement": {
@@ -5001,8 +4689,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Vermont Governor",
-      "margin": -18.64,
-      "fundamentalsMargin": -7.2,
+      "margin": -16.29,
+      "fundamentalsMargin": -5.06,
       "ratingMargin": -18,
       "candidateAndLocal": -6.5,
       "electorateComposition": {
@@ -5090,24 +4778,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe R",
-      "demProbability": 0.00179,
-      "repProbability": 0.99821,
+      "demProbability": 0.00545,
+      "repProbability": 0.99455,
       "winnerParty": "R",
-      "winnerProbability": 0.99821,
+      "winnerProbability": 0.99455,
       "competitive": false,
-      "tippingPower": 0.00168,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 1.31,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00329,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.00179,
-          "rep": 0.99821
+          "dem": 0.00545,
+          "rep": 0.99455
         }
       ],
       "movement": {
@@ -5125,23 +4807,23 @@
       "pvi": 0,
       "lastMargin": 3.4,
       "rating": "Toss-up",
-      "demCandidate": "Democrat",
+      "demCandidate": "Sara Rodriguez",
       "repCandidate": "Tom Tiffany",
-      "candidateEdge": 0.4,
-      "dem": "Democrat",
+      "candidateEdge": 0.5,
+      "dem": "Sara Rodriguez",
       "rep": "Tom Tiffany",
-      "demStatus": "unresolved",
+      "demStatus": "front-runner",
       "repStatus": "presumptive",
       "primary": "unresolved",
       "primaryDate": "2026-08-11",
-      "primarySummary": "Wisconsin is an open seat. Tiffany is treated as the Republican front-runner; the Democratic primary remains unresolved.",
+      "primarySummary": "Wisconsin is an open seat. Rodriguez is tracked as the leading Democratic option and Tiffany is treated as the Republican front-runner.",
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Wisconsin Governor",
-      "margin": 2.49,
-      "fundamentalsMargin": 3.22,
+      "margin": 2.3,
+      "fundamentalsMargin": 3.01,
       "ratingMargin": 0,
-      "candidateAndLocal": 0.4,
+      "candidateAndLocal": 0.5,
       "electorateComposition": {
         "source": "Manual midterm likely-voter baseline; not fixed truth",
         "raceEducation": {
@@ -5162,21 +4844,25 @@
         ]
       },
       "demographicPull": {
-        "adjustment": -0.09,
+        "adjustment": 0.01,
         "demProfile": {
-          "key": "standardDemocrat",
-          "label": "Standard Democrat",
-          "source": "generic",
+          "key": "sara rodriguez",
+          "label": "Sara Rodriguez",
+          "source": "candidate",
+          "profile": "Wisconsin Democratic lieutenant governor",
           "scores": {
-            "white_college": 0.06,
-            "white_noncollege": -0.05,
-            "black": 0.07,
-            "latino": 0.04,
-            "asian_other": 0.03,
-            "youth": 0.03,
-            "senior": -0.01
+            "white_college": 0.12,
+            "white_noncollege": -0.01,
+            "black": 0.08,
+            "latino": 0.07,
+            "asian_other": 0.05,
+            "youth": 0.04,
+            "senior": 0.03
           },
-          "strengths": [],
+          "strengths": [
+            "White college",
+            "Latino"
+          ],
           "weaknesses": []
         },
         "repProfile": {
@@ -5205,17 +4891,12 @@
           {
             "group": "white_noncollege",
             "weight": 0.48,
-            "effect": -0.19
+            "effect": -0.16
           },
           {
             "group": "white_college",
             "weight": 0.38,
-            "effect": 0.09
-          },
-          {
-            "group": "senior",
-            "weight": 0.3,
-            "effect": -0.04
+            "effect": 0.13
           }
         ]
       },
@@ -5228,24 +4909,18 @@
         "pollCount": 0
       },
       "modelRating": "Tilt D",
-      "demProbability": 0.59229,
-      "repProbability": 0.40771,
+      "demProbability": 0.5856,
+      "repProbability": 0.4144,
       "winnerParty": "D",
-      "winnerProbability": 0.59229,
+      "winnerProbability": 0.5856,
       "competitive": true,
-      "tippingPower": 0.05998,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.12,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.0499,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.59229,
-          "rep": 0.40771
+          "dem": 0.5856,
+          "rep": 0.4144
         }
       ],
       "movement": {
@@ -5276,8 +4951,8 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Wyoming Governor",
-      "margin": -20.43,
-      "fundamentalsMargin": -20.85,
+      "margin": -16.13,
+      "fundamentalsMargin": -16.7,
       "ratingMargin": -18,
       "candidateAndLocal": -0.8,
       "electorateComposition": {
@@ -5360,24 +5035,18 @@
         "pollCount": 0
       },
       "modelRating": "Safe R",
-      "demProbability": 0.00242,
-      "repProbability": 0.99758,
+      "demProbability": 0.01303,
+      "repProbability": 0.98697,
       "winnerParty": "R",
-      "winnerProbability": 0.99758,
+      "winnerProbability": 0.98697,
       "competitive": false,
-      "tippingPower": 0.00183,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -1.2,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.0064,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.00242,
-          "rep": 0.99758
+          "dem": 0.01303,
+          "rep": 0.98697
         }
       ],
       "movement": {

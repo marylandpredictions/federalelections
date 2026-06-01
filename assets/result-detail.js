@@ -319,14 +319,21 @@ function pollCloseIso(race) {
 
 function pollCloseLabel(iso) {
   if (!iso) return "Poll closing time TBA";
-  const ms = new Date(iso).getTime() - Date.now();
+  const closeDate = new Date(iso);
+  const ms = closeDate.getTime() - Date.now();
   if (!Number.isFinite(ms)) return "Poll closing time TBA";
   if (ms <= 0) return "Polls closed";
   const totalMinutes = Math.ceil(ms / 60000);
-  const days = Math.floor(totalMinutes / 1440);
+  if (totalMinutes > 180) {
+    const time = new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone: "America/New_York"
+    }).format(closeDate);
+    return `Polls close at ${time} EST`;
+  }
   const hours = Math.floor((totalMinutes % 1440) / 60);
   const minutes = totalMinutes % 60;
-  if (days > 0) return `Polls close in ${days}d ${hours}h`;
   if (hours > 0) return `Polls close in ${hours}h ${minutes}m`;
   return `Polls close in ${minutes}m`;
 }
