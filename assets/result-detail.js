@@ -157,6 +157,17 @@ const CANDIDATE_PHOTO_SETS = {
   }
 };
 
+const ANALYST_PROFILES = {
+  "nathan-wang": {
+    name: "Nathan Wang",
+    image: "assets/img/analysts/nathan-wang.png"
+  },
+  "gamerdoglover": {
+    name: "gamerdoglover",
+    image: "assets/img/analysts/gamerdoglover.png"
+  }
+};
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -224,15 +235,19 @@ function candidateInitials(name) {
   return parts.slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
+function slugifyName(value) {
+  return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
 function candidatePhotoUrl(race, candidate) {
   const photoSet = CANDIDATE_PHOTO_SETS[String(race?.id)];
   if (!photoSet) return "";
-  const slug = String(candidate?.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const slug = slugifyName(candidate?.name);
   return photoSet.photos[slug] ? `${photoSet.base}/${photoSet.photos[slug]}` : "";
 }
 
 function candidatePhotoColor(race, candidate) {
-  const slug = String(candidate?.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const slug = slugifyName(candidate?.name);
   return CANDIDATE_PHOTO_SETS[String(race?.id)]?.colors?.[slug] || "";
 }
 
@@ -758,8 +773,23 @@ function analysisNoteMarkup(notes) {
     }];
   }
   const [latest, ...history] = notes;
+  const analystByline = (note) => {
+    const author = note.author || "Federal Elections Analysis";
+    const authorSlug = slugifyName(author);
+    const profileKey = Object.keys(ANALYST_PROFILES).find((key) => authorSlug.includes(key));
+    const profile = profileKey ? ANALYST_PROFILES[profileKey] : null;
+    const avatar = profile
+      ? `<img src="${escapeHtml(profile.image)}" alt="">`
+      : escapeHtml(candidateInitials(author));
+    return `
+      <div class="analysis-note-byline">
+        <span class="analysis-note-avatar ${profile ? "has-image" : ""}">${avatar}</span>
+        <small>${escapeHtml(author)}${note.role ? `, ${escapeHtml(note.role)}` : ""}${note.date ? ` | ${escapeHtml(note.date)}` : ""}</small>
+      </div>
+    `;
+  };
   const media = latest.image
-    ? `<img src="${escapeHtml(latest.image)}" alt="">`
+    ? `<figure class="analysis-note-media"><img src="${escapeHtml(latest.image)}" alt=""></figure>`
     : latest.embed
     ? `<div class="analysis-note-embed">${latest.embed}</div>`
     : "";
@@ -768,7 +798,7 @@ function analysisNoteMarkup(notes) {
       <div>
         <p class="kicker">Latest analyst comment</p>
         <p>${escapeHtml(latest.text || "No note text entered.")}</p>
-        <small>${escapeHtml(latest.author || "Federal Elections Analysis")}${latest.role ? `, ${escapeHtml(latest.role)}` : ""}${latest.date ? ` | ${escapeHtml(latest.date)}` : ""}</small>
+        ${analystByline(latest)}
       </div>
       ${media}
       ${history.length ? `
@@ -777,7 +807,7 @@ function analysisNoteMarkup(notes) {
           ${history.map((note) => `
             <article>
               <p>${escapeHtml(note.text || "")}</p>
-              <small>${escapeHtml(note.author || "Federal Elections Analysis")}${note.role ? `, ${escapeHtml(note.role)}` : ""}${note.date ? ` | ${escapeHtml(note.date)}` : ""}</small>
+              ${analystByline(note)}
             </article>
           `).join("")}
         </details>
