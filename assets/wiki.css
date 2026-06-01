@@ -3597,7 +3597,8 @@ button.race-board-row {
   min-height: 430px;
 }
 
-.result-map-tabs span {
+.result-map-tabs span,
+.result-map-tabs a {
   display: inline-grid;
   place-items: center;
   min-height: 34px;
@@ -3607,6 +3608,13 @@ button.race-board-row {
   background: #f8fafc;
   color: #07102b;
   font: 950 .82rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  text-decoration: none;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.result-map-tabs a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px color-mix(in srgb, #c6d2ff 22%, transparent);
 }
 
 .result-map-canvas {
@@ -3623,6 +3631,28 @@ button.race-board-row {
   object-fit: contain;
   filter: grayscale(1) brightness(.72) contrast(1.1);
   opacity: .88;
+}
+
+.result-county-map {
+  width: min(92%, 620px);
+  max-height: 430px;
+  display: block;
+  overflow: visible;
+}
+
+.result-county-map path {
+  stroke: color-mix(in srgb, #fff 58%, transparent);
+  stroke-width: .7;
+  vector-effect: non-scaling-stroke;
+  transition: fill .18s ease, filter .18s ease;
+}
+
+.result-county-map path:hover {
+  filter: brightness(1.35);
+}
+
+.result-county-map path.is-waiting {
+  fill: #3b4354;
 }
 
 .result-region-map {

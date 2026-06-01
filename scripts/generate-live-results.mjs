@@ -4,8 +4,10 @@ import { pathToFileURL } from "node:url";
 const OUTPUT_URL = new URL("../data/live-results.json", import.meta.url);
 const DETAIL_DIR_URL = new URL("../data/live-results-races/", import.meta.url);
 const CALLS_URL = new URL("../data/result-calls.json", import.meta.url);
+const FEATURED_CANDIDATES_URL = new URL("../data/result-featured-candidates.json", import.meta.url);
 const CIVIC_BASE = "https://civicapi.org/api/v2";
 const manualCalls = readManualCalls();
+const featuredCandidates = readFeaturedCandidates();
 
 const FEATURED_GROUPS = [
   { state: "CA", name: "California", queries: ["California Governor", "California US House", "California Los Angeles Mayor"] },
@@ -52,6 +54,24 @@ function readManualCalls() {
   } catch {
     return { races: {} };
   }
+}
+
+function readFeaturedCandidates() {
+  try {
+    return JSON.parse(readFileSync(FEATURED_CANDIDATES_URL, "utf8"));
+  } catch {
+    return { races: {} };
+  }
+}
+
+function featuredNamesForRace(raceId) {
+  return featuredCandidates.races?.[String(raceId)] || [];
+}
+
+function featuredRank(raceId, candidateName) {
+  const names = featuredNamesForRace(raceId).map((name) => String(name).toLowerCase());
+  const index = names.indexOf(String(candidateName || "").toLowerCase());
+  return index === -1 ? Number.POSITIVE_INFINITY : index;
 }
 
 function slugify(value) {
@@ -106,10 +126,11 @@ function electionMarkerFor(race, candidates = []) {
 }
 
 function normalizeCandidate(candidate) {
+  const party = /no party preference/i.test(candidate.party || "") ? "Independent" : (candidate.party || "");
   const normalized = {
     name: candidate.name || "Unknown",
-    party: candidate.party || "",
-    partyCode: partyCode(candidate.party),
+    party,
+    partyCode: partyCode(party),
     color: candidate.color || "",
     votes: Number(candidate.votes || 0),
     percent: Number(candidate.percent || 0),
@@ -129,8 +150,14 @@ function racePriority(race) {
 }
 
 function normalizeRace(race, group) {
-  const candidates = (race.candidates || []).map(normalizeCandidate)
-    .sort((a, b) => b.votes - a.votes || b.percent - a.percent);
+  const candidateHasVotes = (race.candidates || []).some((candidate) => Number(candidate.votes || 0) || Number(candidate.percent || 0));
+  const candidates = (race.candidates || []).map((candidate, index) => ({ ...normalizeCandidate(candidate), sourceOrder: index }))
+    .sort((a, b) => {
+      if (candidateHasVotes) return b.votes - a.votes || b.percent - a.percent;
+      const rankDelta = featuredRank(race.id, a.name) - featuredRank(race.id, b.name);
+      return Number.isFinite(rankDelta) ? rankDelta : a.sourceOrder - b.sourceOrder;
+    })
+    .map(({ sourceOrder, ...candidate }) => candidate);
   const calledCandidates = candidates.map((candidate) => withManualCall(candidate, race));
   const leader = candidates[0] || null;
   const marker = electionMarkerFor(race, candidates);
@@ -159,6 +186,7 @@ function normalizeRace(race, group) {
     leaderPartyCode: leader?.partyCode || "",
     otherCandidateCount: Math.max(0, candidates.length - 1),
     calls: (manualCalls.races?.[String(race.id)]?.calls || []).map((call) => ({ ...call })),
+    featuredCandidateNames: featuredNamesForRace(race.id),
     candidates: calledCandidates
   };
 }
@@ -262,7 +290,7 @@ export async function buildLiveResults() {
     provider: {
       name: "civicAPI",
       url: "https://civicapi.org/",
-      attribution: "Live race data provided by civicAPI where available. Race calls are from the listed provider, not Federal Elections Analysis."
+      attribution: "Live race data provided by civicAPI where available. Race calls are manual Federal Elections Analysis calls from local config."
     },
     refreshSeconds: 90,
     groups,

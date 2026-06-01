@@ -1,5 +1,6 @@
 const page = document.getElementById("result-page");
 const raceId = new URLSearchParams(window.location.search).get("id");
+let countyMapDataPromise = null;
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -50,6 +51,11 @@ function partyCode(party) {
   return party ? party.slice(0, 1).toUpperCase() : "";
 }
 
+function displayParty(party) {
+  const value = String(party || "").trim();
+  return /no party preference/i.test(value) ? "Independent" : value;
+}
+
 function partyClass(partyCodeValue) {
   if (partyCodeValue === "D") return "party-dem";
   if (partyCodeValue === "R") return "party-rep";
@@ -92,7 +98,7 @@ function candidateRow(candidate, race, maxPercent) {
         <span class="result-party-dot ${partyClass(code)}">${escapeHtml(code || "O")}</span>
         <div>
           <strong>${escapeHtml(candidate.name)}</strong>
-          <small>${escapeHtml(candidate.party || "Other")}</small>
+          <small>${escapeHtml(displayParty(candidate.party) || "Other")}</small>
         </div>
         ${callBadge(candidate, race)}
       </div>
@@ -108,8 +114,18 @@ function candidateRow(candidate, race, maxPercent) {
 function candidateRows(race) {
   const candidates = race.candidates || [];
   const maxPercent = Math.max(1, ...candidates.map((candidate) => Number(candidate.percent || 0)));
-  const topCandidates = candidates.slice(0, 5).map((candidate) => candidateRow(candidate, race, maxPercent)).join("");
-  const otherCandidates = candidates.slice(5);
+  const featuredNames = (race.featuredCandidateNames || []).map((name) => String(name).toLowerCase());
+  const featuredCandidates = featuredNames.length
+    ? featuredNames
+      .map((name) => candidates.find((candidate) => String(candidate.name || "").toLowerCase() === name))
+      .filter(Boolean)
+    : [];
+  const topList = featuredCandidates.length
+    ? [...featuredCandidates, ...candidates.filter((candidate) => !featuredNames.includes(String(candidate.name || "").toLowerCase()))].slice(0, 5)
+    : candidates.slice(0, 5);
+  const topNames = new Set(topList.map((candidate) => String(candidate.name || "").toLowerCase()));
+  const otherCandidates = candidates.filter((candidate) => !topNames.has(String(candidate.name || "").toLowerCase()));
+  const topCandidates = topList.map((candidate) => candidateRow(candidate, race, maxPercent)).join("");
   if (!otherCandidates.length) return topCandidates;
   return `
     ${topCandidates}
@@ -161,8 +177,112 @@ function regionMap(race) {
     <div class="result-region-map" aria-label="${escapeHtml(race.stateName || race.state || "Race")} county result map">
       ${regions}
     </div>
-    <p class="result-map-caption">County/region tiles color by the current local leader once votes are reported.</p>
+    <p class="result-map-caption">County tiles color by the current local leader once votes are reported.</p>
   `;
+}
+
+function stateFips(state) {
+  const codes = {
+    CA: "06",
+    IA: "19",
+    MT: "30",
+    NJ: "34",
+    NM: "35",
+    SD: "46"
+  };
+  return codes[String(state || "").toUpperCase()] || "";
+}
+
+async function loadCountyMapData() {
+  if (!countyMapDataPromise) {
+    countyMapDataPromise = fetch("data/result-counties.geojson", { cache: "force-cache" }).then((response) => {
+      if (!response.ok) throw new Error(`County map returned ${response.status}`);
+      return response.json();
+    });
+  }
+  return countyMapDataPromise;
+}
+
+function countyLookup(race) {
+  const lookup = new Map();
+  for (const county of race.counties || []) {
+    if (county.fips) lookup.set(String(county.fips).padStart(5, "0"), county);
+    lookup.set(String(county.name || "").toLowerCase(), county);
+  }
+  return lookup;
+}
+
+function coordinateRings(geometry) {
+  if (!geometry) return [];
+  if (geometry.type === "Polygon") return geometry.coordinates;
+  if (geometry.type === "MultiPolygon") return geometry.coordinates.flat();
+  return [];
+}
+
+function stateBounds(features) {
+  const bounds = { minLon: Infinity, minLat: Infinity, maxLon: -Infinity, maxLat: -Infinity };
+  for (const feature of features) {
+    for (const ring of coordinateRings(feature.geometry)) {
+      for (const [lon, lat] of ring) {
+        bounds.minLon = Math.min(bounds.minLon, lon);
+        bounds.maxLon = Math.max(bounds.maxLon, lon);
+        bounds.minLat = Math.min(bounds.minLat, lat);
+        bounds.maxLat = Math.max(bounds.maxLat, lat);
+      }
+    }
+  }
+  return bounds;
+}
+
+function geometryPath(geometry, bounds, width, height) {
+  const lonRange = Math.max(.1, bounds.maxLon - bounds.minLon);
+  const latRange = Math.max(.1, bounds.maxLat - bounds.minLat);
+  const pad = 10;
+  const project = ([lon, lat]) => [
+    pad + ((lon - bounds.minLon) / lonRange) * (width - pad * 2),
+    pad + ((bounds.maxLat - lat) / latRange) * (height - pad * 2)
+  ];
+  return coordinateRings(geometry).map((ring) => {
+    const points = ring.map(project);
+    if (!points.length) return "";
+    return `M${points.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join("L")}Z`;
+  }).join("");
+}
+
+async function countyShapeMap(race) {
+  const fips = stateFips(race.state);
+  if (!fips) return regionMap(race);
+  try {
+    const geojson = await loadCountyMapData();
+    const features = (geojson.features || []).filter((feature) => feature.properties?.STATE === fips);
+    if (!features.length) return regionMap(race);
+    const lookup = countyLookup(race);
+    const bounds = stateBounds(features);
+    const width = 620;
+    const height = 430;
+    const paths = features.map((feature) => {
+      const county = lookup.get(feature.id) || lookup.get(String(feature.properties?.NAME || "").toLowerCase());
+      const leader = county ? regionLeader(county) : null;
+      const fill = leader ? candidateFill(leader) : "#3b4354";
+      const title = county && leader
+        ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.percentReporting)} reporting`
+        : `${feature.properties?.NAME || "County"} County: waiting for reported votes`;
+      return `
+        <path d="${geometryPath(feature.geometry, bounds, width, height)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}">
+          <title>${escapeHtml(title)}</title>
+        </path>
+      `;
+    }).join("");
+    return `
+      <svg class="result-county-map" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.stateName || race.state || "State")} county results map">
+        ${paths}
+      </svg>
+      <p class="result-map-caption">County shapes color by the current local leader once votes are reported.</p>
+    `;
+  } catch (error) {
+    console.warn(error);
+    return regionMap(race);
+  }
 }
 
 function countyCandidateCells(county) {
@@ -195,8 +315,9 @@ function countyRows(race) {
   `;
 }
 
-function renderRace(race) {
+async function renderRace(race) {
   const leader = leadingCandidate(race);
+  const mapMarkup = await countyShapeMap(race);
   document.title = `${race.electionName} | Federal Elections Analysis`;
   page.innerHTML = `
     <section class="result-night-shell">
@@ -219,16 +340,16 @@ function renderRace(race) {
         <div class="result-night-meta">
           <span>${percentLabel(race.percentReporting)} reporting</span>
           <span>Last updated ${escapeHtml(timeLabel(race.lastUpdated))}</span>
-          <span>${numberLabel((race.counties || []).length)} reporting regions</span>
+          <span>${numberLabel((race.counties || []).length)} counties</span>
         </div>
       </div>
 
       <aside class="result-map-panel">
         <div class="result-map-tabs">
-          <span>Results</span>
+          <a href="/results.html">Results</a>
         </div>
         <div class="result-map-canvas">
-          ${regionMap(race)}
+          ${mapMarkup}
         </div>
       </aside>
     </section>
