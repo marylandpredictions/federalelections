@@ -1,0 +1,103 @@
+{
+  "description": "Configured online gubernatorial campaign-finance sources. These are state-regulated sources, not FEC federal committee data.",
+  "scope": "Competitive 2026 gubernatorial races first. Add safe-state portals only when they materially affect the model or become machine-readable.",
+  "instructions": [
+    "Each state entry points to the official state campaign-finance tracker or search portal.",
+    "If the portal exposes a stable CSV, JSON, or HTML detail page, set url to that direct endpoint and add regex extractors.",
+    "If the official source is a search/PDF portal, leave extractors empty; the model will record reachability and fall back to data/governor-finance.json until normalized numbers are available.",
+    "Extractor regexes should capture only the dollar number in group 1."
+  ],
+  "sources": {
+    "AK": {
+      "enabled": true,
+      "priority": "competitive",
+      "sourceName": "Alaska Public Offices Commission campaign disclosure",
+      "sourceUrl": "https://aws.state.ak.us/ApocReports/",
+      "url": "https://aws.state.ak.us/ApocReports/",
+      "race": "Alaska Governor",
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Republican"
+      },
+      "extractors": {}
+    },
+    "AZ": {
+      "enabled": true,
+      "priority": "competitive",
+      "sourceName": "Arizona Secretary of State See The Money",
+      "sourceUrl": "https://seethemoney.az.gov/",
+      "url": "https://seethemoney.az.gov/",
+      "race": "Arizona Governor",
+      "candidates": {
+        "dem": "Katie Hobbs",
+        "rep": "Republican"
+      },
+      "extractors": {}
+    },
+    "GA": {
+      "enabled": true,
+      "priority": "competitive",
+      "sourceName": "Georgia Government Transparency and Campaign Finance Commission",
+      "sourceUrl": "https://media.ethics.ga.gov/search/campaign/Campaign_ByName.aspx",
+      "url": "https://media.ethics.ga.gov/search/campaign/Campaign_ByName.aspx",
+      "race": "Georgia Governor",
+      "candidates": {
+        "dem": "Keisha Lance Bottoms",
+        "rep": "Burt Jones / Rick Jackson"
+      },
+      "extractors": {}
+    },
+    "IA": {
+      "enabled": true,
+      "priority": "competitive",
+      "sourceName": "Iowa Ethics and Campaign Disclosure Board",
+      "sourceUrl": "https://webapp.iecdb.iowa.gov/PublicView/",
+      "url": "https://webapp.iecdb.iowa.gov/PublicView/",
+      "race": "Iowa Governor",
+      "candidates": {
+        "dem": "Rob Sand",
+        "rep": "Randy Feenstra"
+      },
+      "extractors": {}
+    },
+    "MI": {
+      "enabled": true,
+      "priority": "competitive",
+      "sourceName": "Michigan campaign finance disclosure",
+      "sourceUrl": "https://cfrsearch.nictusa.com/",
+      "url": "https://cfrsearch.nictusa.com/",
+      "race": "Michigan Governor",
+      "candidates": {
+        "dem": "Jocelyn Benson",
+        "rep": "Republican"
+      },
+      "extractors": {}
+    },
+    "NV": {
+      "enabled": true,
+      "priority": "competitive",
+      "sourceName": "Nevada Secretary of State campaign finance disclosure",
+      "sourceUrl": "https://www.nvsos.gov/SOSCandidateServices/AnonymousAccess/CEFDSearchUU/Search.aspx",
+      "url": "https://www.nvsos.gov/SOSCandidateServices/AnonymousAccess/CEFDSearchUU/Search.aspx",
+      "race": "Nevada Governor",
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Joe Lombardo"
+      },
+      "extractors": {}
+    },
+    "WI": {
+      "enabled": true,
+      "priority": "competitive",
+      "sourceName": "Wisconsin Campaign Finance Information System",
+      "sourceUrl": "https://cfis.wi.gov/",
+      "url": "https://cfis.wi.gov/",
+      "race": "Wisconsin Governor",
+      "candidates": {
+        "dem": "Sara Rodriguez",
+        "rep": "Tom Tiffany"
+      },
+      "extractors": {}
+    }
+  }
+}

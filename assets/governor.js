@@ -360,8 +360,8 @@
         <a class="race-board-row governor-race-row ${leaderClass(race)}" href="governor-race.html?state=${escapeHtml(race.state)}">
           <strong>${escapeHtml(race.state)}</strong>
           <span>${escapeHtml(race.displayName)}</span>
-          <span>${escapeHtml(candidateDisplayName(race, "D"))}</span>
-          <span>${escapeHtml(candidateDisplayName(race, "R"))}</span>
+          <span>${escapeHtml(candidateDisplayName(race, "D"))}${presumptiveBadge(race, "D")}</span>
+          <span>${escapeHtml(candidateDisplayName(race, "R"))}${presumptiveBadge(race, "R")}</span>
           <span>${escapeHtml(race.rating)}</span>
           <span>${signedMargin(race.margin)}</span>
           <span>${leader} ${oneDecimal(probability)}</span>
