@@ -101,21 +101,22 @@ function callBadge(candidate, race) {
 function candidateRow(candidate, race, maxPercent) {
   const code = candidate.partyCode || partyCode(candidate.party);
   const width = Math.max(2, (Number(candidate.percent || 0) / maxPercent) * 100);
+  const fill = candidateFill(candidate);
   return `
-    <article class="result-full-candidate ${candidate.callLabel ? "called" : ""}">
+    <article class="result-full-candidate ${candidate.callLabel ? "called" : ""}" style="--candidate-color:${escapeHtml(fill)}">
       <div class="result-full-candidate-name">
         <span class="result-candidate-avatar ${partyClass(code)}">${escapeHtml(candidateInitials(candidate.name))}</span>
         <div>
           <strong>${escapeHtml(candidate.name)}</strong>
-          <small>${escapeHtml(displayParty(candidate.party) || "Other")}</small>
         </div>
         ${callBadge(candidate, race)}
       </div>
-      <div class="result-full-bar" aria-hidden="true"><i style="width:${width}%"></i></div>
+      <span class="result-party-label">${escapeHtml(displayParty(candidate.party) || "Other")}</span>
+      <span class="result-vote-label">${numberLabel(candidate.votes)}</span>
       <div class="result-full-numbers">
         <b>${percentLabel(candidate.percent)}</b>
-        <span>${numberLabel(candidate.votes)} votes</span>
       </div>
+      <div class="result-full-bar" aria-hidden="true"><i style="width:${width}%"></i></div>
     </article>
   `;
 }
@@ -135,8 +136,17 @@ function candidateRows(race) {
   const topNames = new Set(topList.map((candidate) => String(candidate.name || "").toLowerCase()));
   const otherCandidates = candidates.filter((candidate) => !topNames.has(String(candidate.name || "").toLowerCase()));
   const topCandidates = topList.map((candidate) => candidateRow(candidate, race, maxPercent)).join("");
-  if (!otherCandidates.length) return topCandidates;
+  const head = `
+    <div class="result-candidate-table-head">
+      <span>Candidate</span>
+      <span>Party</span>
+      <span>Votes</span>
+      <span>Pct</span>
+    </div>
+  `;
+  if (!otherCandidates.length) return `${head}${topCandidates}`;
   return `
+    ${head}
     ${topCandidates}
     <details class="result-other-candidates">
       <summary>Show ${numberLabel(otherCandidates.length)} other candidates</summary>
@@ -377,19 +387,13 @@ async function districtShapeMap(race) {
     if (!feature) return "";
     const leader = leadingCandidate(race);
     const fill = leader && Number(leader.votes || 0) ? candidateFill(leader) : "#566274";
-    const activeBounds = stateBounds([feature]);
-    const nearby = contextFeatures(geojson.features || [], [feature], activeBounds, .65).slice(0, 34);
-    const bounds = stateBounds([feature, ...nearby]);
+    const bounds = stateBounds([feature]);
     const { width, height, lonScale } = mapDimensions(bounds, 700, 500);
-    const contextPaths = nearby.map((item) => (
-      `<path class="map-context" d="${geometryPath(item.geometry, bounds, width, height, lonScale)}"></path>`
-    )).join("");
     return `
       <svg class="result-county-map result-district-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.electionName || "House district")} map">
-        ${contextPaths}
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}"></path>
       </svg>
-      <p class="result-map-caption" data-default-map-caption="District shape from the 119th Congressional District file, with nearby districts shown as context. County results below still list county-level returns when available.">District shape from the 119th Congressional District file, with nearby districts shown as context. County results below still list county-level returns when available.</p>
+      <p class="result-map-caption" data-default-map-caption="District shape from the 119th Congressional District file. County results below still list county-level returns when available.">District shape from the 119th Congressional District file. County results below still list county-level returns when available.</p>
     `;
   } catch (error) {
     console.warn(error);
@@ -414,15 +418,8 @@ async function countyShapeMap(race) {
       ? features.filter((feature) => lookup.has(feature.id) || lookup.has(String(feature.properties?.NAME || "").toLowerCase()))
       : features;
     if (!visibleFeatures.length) return regionMap(race);
-    const activeBounds = stateBounds(visibleFeatures);
-    const nearby = contextFeatures(allFeatures, visibleFeatures, activeBounds, .45)
-      .filter((feature) => feature.properties?.STATE !== fips)
-      .slice(0, 90);
-    const bounds = stateBounds([...visibleFeatures, ...nearby]);
+    const bounds = stateBounds(visibleFeatures);
     const { width, height, lonScale } = mapDimensions(bounds);
-    const contextPaths = nearby.map((feature) => (
-      `<path class="map-context" d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}"></path>`
-    )).join("");
     const paths = visibleFeatures.map((feature) => {
       const county = lookup.get(feature.id) || lookup.get(String(feature.properties?.NAME || "").toLowerCase());
       const leader = county ? regionLeader(county) : null;
@@ -438,10 +435,9 @@ async function countyShapeMap(race) {
     }).join("");
     return `
       <svg class="result-county-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.stateName || race.state || "State")} county results map">
-        ${contextPaths}
         ${paths}
       </svg>
-      <p class="result-map-caption" data-default-map-caption="County shapes color by the current local leader once votes are reported. Nearby outside-state counties are shown in gray for context.">County shapes color by the current local leader once votes are reported. Nearby outside-state counties are shown in gray for context.</p>
+      <p class="result-map-caption" data-default-map-caption="County shapes color by the current local leader once votes are reported.">County shapes color by the current local leader once votes are reported.</p>
     `;
   } catch (error) {
     console.warn(error);
@@ -539,9 +535,8 @@ function bindMapZoom() {
     });
   });
   frame.addEventListener("wheel", (event) => {
-    if (!event.ctrlKey && !event.metaKey) return;
     event.preventDefault();
-    zoom = event.deltaY < 0 ? Math.min(2.5, zoom + .15) : Math.max(1, zoom - .15);
+    zoom = event.deltaY < 0 ? Math.min(2.75, zoom + .18) : Math.max(.8, zoom - .18);
     apply();
   }, { passive: false });
   apply();

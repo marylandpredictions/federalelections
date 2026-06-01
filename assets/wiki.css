@@ -3767,8 +3767,8 @@ button.race-board-row {
 .result-night-shell {
   min-height: calc(100vh - 122px);
   display: grid;
-  grid-template-columns: minmax(320px, .58fr) minmax(560px, 1.42fr);
-  gap: clamp(16px, 3vw, 42px);
+  grid-template-columns: minmax(520px, 1.05fr) minmax(500px, .95fr);
+  gap: clamp(22px, 4vw, 64px);
   padding: clamp(6px, 1.4vw, 18px) 0 18px;
   border: 0;
   border-radius: 0;
@@ -3813,6 +3813,7 @@ button.race-board-row {
   gap: 10px;
   align-self: stretch;
   min-height: 620px;
+  padding-left: clamp(8px, 1.8vw, 26px);
   animation: result-fade .5s ease both;
 }
 
@@ -3865,7 +3866,7 @@ button.race-board-row {
 
 .result-map-frame {
   --result-map-zoom: 1;
-  width: min(96%, 900px);
+  width: min(94%, 860px);
   min-height: min(540px, 70vh);
   display: grid;
   place-items: center;
@@ -3919,11 +3920,7 @@ button.race-board-row {
 }
 
 .result-county-map path.map-context {
-  fill: #6f788a;
-  opacity: .48;
-  pointer-events: none;
-  stroke: color-mix(in srgb, #fff 40%, transparent);
-  stroke-width: .45;
+  display: none;
 }
 
 .result-district-map path {
@@ -4125,29 +4122,60 @@ button.race-board-row {
 
 .result-full-candidates {
   display: grid;
-  gap: 8px;
+  gap: 0;
   margin-top: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, #d6d9e2 74%, transparent);
+  border-radius: 10px;
+  background: #020b22;
+  box-shadow: 0 20px 46px color-mix(in srgb, #000 22%, transparent);
+}
+
+.result-candidate-table-head,
+.result-full-candidate {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.3fr) minmax(88px, .5fr) minmax(88px, .45fr) minmax(80px, .38fr);
+  align-items: center;
+}
+
+.result-candidate-table-head {
+  padding: 12px 14px 12px 20px;
+  border-bottom: 1px solid color-mix(in srgb, #d6d9e2 20%, transparent);
+  color: color-mix(in srgb, #fff 62%, transparent);
+  font: 950 .74rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.result-candidate-table-head span:nth-child(3),
+.result-candidate-table-head span:nth-child(4) {
+  text-align: right;
 }
 
 .result-full-candidate {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 88px;
-  gap: 10px;
-  align-items: center;
-  padding: 9px 10px;
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--dem) 10%, transparent), color-mix(in srgb, var(--rep) 7%, transparent)),
-    color-mix(in srgb, var(--paper) 72%, transparent);
+  position: relative;
+  gap: 14px;
+  padding: 12px 14px 12px 20px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, #d6d9e2 18%, transparent);
+  border-radius: 0;
+  background: #020b22;
   animation: result-fade .36s ease both;
   transition: transform .18s ease, border-color .18s ease, background .18s ease;
 }
 
+.result-full-candidate::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: var(--candidate-color, #7a6fe8);
+}
+
 .result-full-candidate:hover {
-  transform: translateX(3px);
-  border-color: color-mix(in srgb, #c6d2ff 74%, var(--line));
-  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  transform: none;
+  border-color: transparent;
+  background: color-mix(in srgb, #1030b2 12%, #020b22);
 }
 
 .result-full-candidate.called {
@@ -4169,6 +4197,17 @@ button.race-board-row {
   font-size: .72rem;
 }
 
+.result-party-label,
+.result-vote-label {
+  color: color-mix(in srgb, #fff 86%, transparent);
+  font: 900 .92rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.result-vote-label,
+.result-full-numbers {
+  text-align: right;
+}
+
 .result-call-badge {
   padding: 0;
   border: 0;
@@ -4181,15 +4220,16 @@ button.race-board-row {
 }
 
 .result-other-candidates {
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--paper) 56%, transparent);
+  border: 0;
+  border-radius: 0;
+  background: #020b22;
   overflow: hidden;
 }
 
 .result-other-candidates summary {
   cursor: pointer;
-  padding: 9px 10px;
+  padding: 12px 14px 12px 20px;
+  border-top: 1px solid color-mix(in srgb, #d6d9e2 18%, transparent);
   color: var(--ink);
   font: 950 .78rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   list-style: none;
@@ -4212,13 +4252,13 @@ button.race-board-row {
 .result-full-candidates-secondary {
   max-height: 330px;
   overflow: auto;
-  padding: 0 8px 8px;
+  padding: 0;
   scrollbar-width: thin;
 }
 
 .result-full-bar {
   grid-column: 1 / -1;
-  height: 10px;
+  height: 4px;
   overflow: hidden;
   border-radius: 999px;
   background: color-mix(in srgb, var(--line) 28%, transparent);
@@ -4228,12 +4268,10 @@ button.race-board-row {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #1030b2, #ff2a4f);
+  background: var(--candidate-color, linear-gradient(90deg, #1030b2, #ff2a4f));
 }
 
 .result-full-numbers {
-  grid-column: 2;
-  grid-row: 1;
   display: grid;
   justify-items: end;
   gap: 2px;
@@ -4244,8 +4282,7 @@ button.race-board-row {
 }
 
 .result-full-numbers span {
-  color: var(--muted);
-  font-weight: 800;
+  display: none;
 }
 
 .result-status-list {
@@ -5758,9 +5795,21 @@ button.race-board-row {
   }
 
   .result-title-lockup,
-  .result-full-candidate,
   .county-result-row {
     grid-template-columns: 1fr;
+  }
+
+  .result-candidate-table-head {
+    display: none;
+  }
+
+  .result-full-candidate {
+    grid-template-columns: minmax(0, 1fr) 72px;
+  }
+
+  .result-party-label,
+  .result-vote-label {
+    display: none;
   }
 
   .result-map-panel {
