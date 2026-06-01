@@ -1,4 +1,5 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { forecastSanityWarnings } from "./forecast-sanity.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const previousForecast = readPreviousForecast();
@@ -675,10 +676,14 @@ function clamp(value, min, max) {
 }
 
 function pct(value) {
+  if (Number.isFinite(value) && value === 1) return ">99%";
+  if (Number.isFinite(value) && value === 0) return "<1%";
   return `${Math.round(value * 100)}%`;
 }
 
 function oneDecimal(value) {
+  if (Number.isFinite(value) && value === 1) return ">99%";
+  if (Number.isFinite(value) && value === 0) return "<1%";
   return `${(value * 100).toFixed(1)}%`;
 }
 
@@ -1079,13 +1084,29 @@ function baselineMargin(race) {
   const fundamentals = race.pvi * .24 + race.pastSenate * .20;
   const signals = race.money * .9 + race.candidate * 1.05 + race.approval * .75;
   const pollSignal = pollWeightMetrics(race);
-  const pollBlend = pollSignal === null ? 0 : pollSignal.margin * pollSignal.blendWeight;
+  const elasticity = stateElasticity(race);
+  const pollBlend = pollSignal === null ? 0 : clamp(pollSignal.margin * pollSignal.blendWeight, -3.2 * elasticity, 3.2 * elasticity);
   const fundamentalsBlend = pollSignal === null ? 1 : MODEL_WEIGHTS.fundamentalsWithPolls;
   const incumbentPenalty = incumbencyAdjustment(race);
-  const nationalPolling = race.nationalPolling || 0;
+  const nationalPolling = clamp((race.nationalPolling || 0) * clamp(elasticity, .76, 1.18), -1.25, 1.25);
   const demographicPull = demographicPullAdjustment(race).adjustment;
-  return (rating * .48 + fundamentals * fundamentalsBlend + signals + incumbentPenalty + caucusDiscount(race)) +
+  const rawMargin = (rating * .45 + fundamentals * fundamentalsBlend + signals + incumbentPenalty + caucusDiscount(race)) +
     pollBlend + nationalPolling + demographicPull + candidateHistoryAdjustment(race) + primaryScenarioAdjustment(race) + rcvBaselineAdjustment(race);
+  return senateMarginGuardrail(race, rawMargin, pollSignal, rating, fundamentals);
+}
+
+function senateMarginGuardrail(race, rawMargin, pollSignal, ratingMargin, fundamentals) {
+  const anchor = ratingMargin * .55 + fundamentals * .45;
+  const anchorWeight = pollSignal ? .08 : .16;
+  let margin = rawMargin * (1 - anchorWeight) + anchor * anchorWeight;
+  const ratingSide = Math.sign(ratingMargin);
+  if (ratingSide && Math.sign(margin) !== ratingSide && Math.abs(ratingMargin) >= 9.5 && (!pollSignal || Math.sign(pollSignal.margin) !== Math.sign(margin))) {
+    margin = ratingSide * Math.max(6.5, Math.abs(margin) * .45);
+  }
+  if (/^Safe/.test(race.rating) && Math.abs(margin) < 11 && (!pollSignal || Math.sign(pollSignal.margin) === ratingSide)) {
+    margin = ratingSide * 11;
+  }
+  return Number(margin.toFixed(3));
 }
 
 function runModel(sourceData) {
@@ -2408,6 +2429,14 @@ async function writeForecast() {
       ]))
     },
     calibration: buildCalibrationReport(sourceData, model),
+    modelWarnings: forecastSanityWarnings(model.races, {
+      model: "senate",
+      id: (race) => race.state,
+      name: (race) => race.displayName,
+      baseline: (race) => RATING_TO_MARGIN[race.rating],
+      partisanship: (race) => race.pvi,
+      candidateAdjustment: (race) => race.candidate
+    }),
     controlHistory: appendControlHistory(model),
     seatHistory: appendSeatHistory(model),
     ...model

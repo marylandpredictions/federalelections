@@ -125,14 +125,14 @@ function spectrumLegendHtml() {
 }
 
 function pct(value) {
-  if (Number.isFinite(value) && value >= .999) return ">99%";
-  if (Number.isFinite(value) && value <= .001) return "<1%";
+  if (Number.isFinite(value) && value === 1) return ">99%";
+  if (Number.isFinite(value) && value === 0) return "<1%";
   return `${Math.round(value * 100)}%`;
 }
 
 function oneDecimal(value) {
-  if (Number.isFinite(value) && value >= .999) return ">99%";
-  if (Number.isFinite(value) && value <= .001) return "<1%";
+  if (Number.isFinite(value) && value === 1) return ">99%";
+  if (Number.isFinite(value) && value === 0) return "<1%";
   return `${(value * 100).toFixed(1)}%`;
 }
 
@@ -2639,7 +2639,7 @@ function renderTopArticle() {
 function renderHomeArticleList() {
   const container = document.getElementById("home-article-list");
   if (!container) return;
-  const list = sortedArticles().slice(0, 4);
+  const list = sortedArticles().slice(0, 6);
   container.innerHTML = list.length ? list.map((article) => `
     <a href="${articleUrl(article)}">
       ${articleLeadImageMarkup(article, "home-article-thumb")}

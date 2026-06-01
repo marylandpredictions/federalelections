@@ -6,7 +6,6 @@ const DETAIL_DIR_URL = new URL("../data/live-results-races/", import.meta.url);
 const CALLS_URL = new URL("../data/result-calls.json", import.meta.url);
 const FEATURED_CANDIDATES_URL = new URL("../data/result-featured-candidates.json", import.meta.url);
 const CIVIC_BASE = "https://civicapi.org/api/v2";
-const manualCalls = readManualCalls();
 const featuredCandidates = readFeaturedCandidates();
 
 const FEATURED_GROUPS = [
@@ -94,6 +93,7 @@ function slugify(value) {
 }
 
 function callForCandidate(raceId, candidateName) {
+  const manualCalls = readManualCalls();
   const raceCalls = manualCalls.races?.[String(raceId)]?.calls || [];
   return raceCalls.find((call) => String(call.candidate || "").toLowerCase() === String(candidateName || "").toLowerCase()) || null;
 }

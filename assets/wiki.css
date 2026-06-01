@@ -240,6 +240,11 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes gradient-slide {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+
 a,
 button {
   color: inherit;
@@ -1242,8 +1247,7 @@ h3 {
   grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr);
 }
 
-.home-radar-list,
-.home-article-list {
+.home-radar-list {
   display: grid;
   gap: 0;
   margin-top: 12px;
@@ -1251,6 +1255,13 @@ h3 {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: color-mix(in srgb, var(--paper) 62%, transparent);
+}
+
+.home-article-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .home-radar-row,
@@ -1270,8 +1281,7 @@ h3 {
   transition: background .14s var(--ease-out), transform .14s var(--ease-out), padding-left .14s var(--ease-out);
 }
 
-.home-radar-row:last-child,
-.home-article-list a:last-child {
+.home-radar-row:last-child {
   border-bottom: 0;
 }
 
@@ -1327,9 +1337,7 @@ h3 {
 }
 
 .home-radar-row:hover,
-.home-radar-row:focus,
-.home-article-list a:hover,
-.home-article-list a:focus {
+.home-radar-row:focus {
   background: color-mix(in srgb, var(--gold) 12%, transparent);
   outline: none;
 }
@@ -1344,8 +1352,12 @@ h3 {
   display: grid;
   gap: 5px;
   padding: 12px;
-  border-bottom: 1px solid var(--line);
-  transition: background .14s var(--ease-out), transform .14s var(--ease-out), padding-left .14s var(--ease-out);
+  border: 0;
+  border-radius: 6px;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--dem) 10%, transparent), color-mix(in srgb, var(--rep) 8%, transparent)),
+    color-mix(in srgb, var(--paper) 52%, transparent);
+  transition: background .14s var(--ease-out), transform .14s var(--ease-out), box-shadow .14s var(--ease-out);
 }
 
 .home-article-thumb {
@@ -1361,8 +1373,12 @@ h3 {
 
 .home-article-list a:hover,
 .home-article-list a:focus {
-  padding-left: 16px;
-  transform: translateX(2px);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--dem) 16%, transparent), color-mix(in srgb, var(--rep) 14%, transparent)),
+    color-mix(in srgb, var(--paper) 66%, transparent);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px color-mix(in srgb, #000 24%, transparent), 0 0 18px color-mix(in srgb, #C6D2FF 18%, transparent);
+  outline: none;
 }
 
 .home-latest-video {
@@ -4290,6 +4306,24 @@ button.race-board-row {
   font-weight: 950;
 }
 
+.result-map-tabs .result-back-link {
+  margin-right: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.result-map-tabs .result-back-link:hover,
+.result-map-tabs .result-back-link:focus {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: #c6d2ff;
+  text-underline-offset: 4px;
+}
+
 .result-party-label,
 .result-vote-label {
   color: color-mix(in srgb, #fff 86%, transparent);
@@ -4593,6 +4627,13 @@ button.race-board-row {
   filter: drop-shadow(0 0 8px color-mix(in srgb, currentColor 18%, transparent));
 }
 
+.result-vote-history-empty p {
+  margin: 22px 0 14px;
+  color: var(--muted);
+  font: 900 1rem/1.35 "Telegraf", "Segoe UI", Arial, sans-serif;
+  text-align: center;
+}
+
 .vote-history-legend {
   display: flex;
   flex-wrap: wrap;
@@ -4743,7 +4784,10 @@ button.race-board-row {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: var(--box-gradient);
+  background:
+    radial-gradient(circle at 18% 0%, color-mix(in srgb, #1030b2 28%, transparent), transparent 36%),
+    linear-gradient(150deg, color-mix(in srgb, var(--dem) 20%, transparent), color-mix(in srgb, var(--rep) 12%, transparent) 62%, color-mix(in srgb, #7ee787 10%, transparent)),
+    var(--box-gradient);
   background-size: 160% 160%;
   color: var(--ink);
   text-decoration: none;
@@ -4755,7 +4799,10 @@ button.race-board-row {
 .endorsement-card:focus {
   transform: translateY(-3px);
   border-color: var(--line);
-  background: var(--box-gradient-hover);
+  background:
+    radial-gradient(circle at 78% 0%, color-mix(in srgb, #ff2a4f 22%, transparent), transparent 34%),
+    linear-gradient(145deg, color-mix(in srgb, var(--dem) 28%, transparent), color-mix(in srgb, var(--rep) 18%, transparent) 62%, color-mix(in srgb, #7ee787 14%, transparent)),
+    var(--box-gradient-hover);
   background-position: 100% 50%;
   box-shadow: var(--shadow-lift);
   outline: none;
@@ -4838,7 +4885,8 @@ button.race-board-row {
   padding: 14px;
   position: relative;
   z-index: 1;
-  background: var(--paper);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--paper) 78%, transparent), color-mix(in srgb, var(--dem) 8%, var(--paper)));
 }
 
 .endorsement-info h2 {
@@ -4899,13 +4947,19 @@ button.race-board-row {
   border: 1px solid var(--line);
   border-radius: 6px;
   background:
-    linear-gradient(100deg, rgba(126, 231, 135, .16), rgba(13, 72, 47, .76), rgba(126, 231, 135, .12)),
+    linear-gradient(100deg, rgba(126, 231, 135, .18), rgba(13, 72, 47, .76), rgba(126, 231, 135, .12)),
     #092f24;
+  background-size: 180% 180%;
   color: #a9f5c5;
   box-shadow: 0 0 0 1px rgba(126, 231, 135, .28), 0 0 18px rgba(126, 231, 135, .36);
   font: 900 .82rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: .08em;
   text-transform: uppercase;
+}
+
+.endorsement-card:hover .endorsement-badge,
+.endorsement-card:focus .endorsement-badge {
+  animation: gradient-slide 1.9s ease infinite alternate;
 }
 
 .endorsement-badge span {
@@ -5891,6 +5945,7 @@ button.race-board-row {
 
   .home-radar-grid,
   .home-news-grid,
+  .home-article-list,
   .signal-board,
   .team-action-grid {
     grid-template-columns: 1fr;

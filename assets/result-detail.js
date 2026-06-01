@@ -304,6 +304,41 @@ function normalizedExternalEmbedUrl(value) {
   }
 }
 
+const POLL_CLOSE_UTC_BY_STATE = {
+  CA: "2026-06-03T03:00:00Z",
+  IA: "2026-06-03T01:00:00Z",
+  MT: "2026-06-03T02:00:00Z",
+  NJ: "2026-06-03T00:00:00Z",
+  NM: "2026-06-03T01:00:00Z",
+  SD: "2026-06-03T01:00:00Z"
+};
+
+function pollCloseIso(race) {
+  return POLL_CLOSE_UTC_BY_STATE[String(race.state || "").toUpperCase()] || "";
+}
+
+function pollCloseLabel(iso) {
+  if (!iso) return "Poll closing time TBA";
+  const ms = new Date(iso).getTime() - Date.now();
+  if (!Number.isFinite(ms)) return "Poll closing time TBA";
+  if (ms <= 0) return "Polls closed";
+  const totalMinutes = Math.ceil(ms / 60000);
+  const days = Math.floor(totalMinutes / 1440);
+  const hours = Math.floor((totalMinutes % 1440) / 60);
+  const minutes = totalMinutes % 60;
+  if (days > 0) return `Polls close in ${days}d ${hours}h`;
+  if (hours > 0) return `Polls close in ${hours}h ${minutes}m`;
+  return `Polls close in ${minutes}m`;
+}
+
+function bindPollCountdown() {
+  const nodes = page.querySelectorAll("[data-poll-close]");
+  const update = () => nodes.forEach((node) => {
+    node.textContent = pollCloseLabel(node.dataset.pollClose);
+  });
+  update();
+}
+
 function noteImageMarkup(value) {
   const block = typeof value === "string" ? { url: value } : (value || {});
   const url = safeMediaUrl(block.url || block.src);
@@ -471,6 +506,27 @@ function callLabelForDisplay(call, race) {
   if (call.status === "projected") return "Projected winner";
   if (call.status === "advances" || call.status === "advanced" || scope.includes("primary")) return "Advances";
   return "Winner";
+}
+
+async function loadResultCalls() {
+  const cacheBust = Date.now();
+  return fetch(`data/result-calls.json?v=${cacheBust}`, { cache: "no-store" })
+    .then((response) => response.ok ? response.json() : { races: {} })
+    .catch(() => ({ races: {} }));
+}
+
+async function applyLocalRaceCalls(race) {
+  const callsData = await loadResultCalls();
+  const calls = callsData.races?.[String(race.id)]?.calls || [];
+  const updatedCandidates = (race.candidates || []).map((candidate) => {
+    const call = calls.find((item) => String(item.candidate || "").toLowerCase() === String(candidate.name || "").toLowerCase());
+    return call ? { ...candidate, callStatus: call.status || "", callLabel: callLabelForDisplay(call, race), winner: false } : { ...candidate, callStatus: "", callLabel: "" };
+  });
+  return {
+    ...race,
+    calls,
+    candidates: updatedCandidates
+  };
 }
 
 function candidateRow(candidate, race, maxPercent) {
@@ -948,7 +1004,19 @@ async function analysisNoteMarkup(notes) {
 
 function voteHistoryChart(race) {
   const points = Array.isArray(race.voteHistory) ? race.voteHistory : [];
-  if (!points.length) return "";
+  if (!points.length || !points.some((point) => (point.candidates || []).some((candidate) => Number(candidate.votes || 0) > 0))) {
+    return `
+      <section class="result-vote-history-panel result-vote-history-empty">
+        <div class="section-head">
+          <div>
+            <p class="kicker">Vote history</p>
+            <h2>Votes reported over time.</h2>
+          </div>
+        </div>
+        <p>Vote history will appear once results begin updating.</p>
+      </section>
+    `;
+  }
   const candidates = sortedCandidates(race).slice(0, 5);
   const width = 760;
   const height = 220;
@@ -1050,6 +1118,7 @@ async function renderRace(race) {
   const mapMarkup = await countyShapeMap(race);
   const notesData = await loadAnalysisNotes();
   const analystNotes = notesData.races?.[String(race.id)] || [];
+  const closeIso = pollCloseIso(race);
   document.title = `${race.electionName} | Federal Elections Analysis`;
   page.innerHTML = `
     <section class="result-night-shell">
@@ -1074,13 +1143,14 @@ async function renderRace(race) {
         <div class="result-night-meta">
           <span>${percentLabel(race.percentReporting)} reporting</span>
           <span>Last updated ${escapeHtml(timeLabel(race.lastUpdated))}</span>
+          <span data-poll-close="${escapeHtml(closeIso)}">${escapeHtml(pollCloseLabel(closeIso))}</span>
           <span>${numberLabel((race.counties || []).length)} counties</span>
         </div>
       </div>
 
       <aside class="result-map-panel">
         <div class="result-map-tabs">
-          <a href="/results.html">Results</a>
+          <a class="result-back-link" href="/results.html">&lt;- Back to all races</a>
           <button type="button" data-map-zoom="out">-</button>
           <button type="button" data-map-zoom="in">+</button>
           <button type="button" data-map-zoom="reset">Reset</button>
@@ -1112,6 +1182,7 @@ async function renderRace(race) {
   `;
   bindCountyHover();
   bindMapZoom();
+  bindPollCountdown();
 }
 
 async function fetchRace() {
@@ -1129,7 +1200,7 @@ async function fetchRace() {
 
 async function loadRaceDetail() {
   try {
-    const race = await fetchRace();
+    const race = await applyLocalRaceCalls(await fetchRace());
     await renderRace(race);
   } catch (error) {
     page.innerHTML = `

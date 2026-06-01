@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
+import { forecastSanityWarnings } from "./forecast-sanity.mjs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const GOVERNOR_FINANCE_URL = new URL("../data/governor-finance.json", import.meta.url);
@@ -812,7 +813,8 @@ function buildRace(baseRace, nationalShift, sourceData) {
     pollMargin = governorPoll.margin * .5;
   }
   
-  const margin = (ratingMargin * .64) + (fundamentals * .38) + candidateAndLocal + nationalShift + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin;
+  const rawMargin = (ratingMargin * .58) + (fundamentals * .48) + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin;
+  const margin = governorMarginGuardrail(race, rawMargin, ratingMargin, fundamentals, governorPoll);
   const error = governorRaceError(race);
   const demProbability = clamp(normalCdf(margin, 0, error), 0.001, 0.999);
   const winnerParty = demProbability >= .5 ? "D" : "R";
@@ -842,6 +844,30 @@ function buildRace(baseRace, nationalShift, sourceData) {
     winnerProbability: Number(Math.max(demProbability, 1 - demProbability).toFixed(5)),
     competitive: demProbability > 0.25 && demProbability < 0.75
   };
+}
+
+function governorStateElasticity(race) {
+  const traits = STATE_COALITION_TRAITS[race.state] || [];
+  let elasticity = .72;
+  if (Math.abs(race.pvi) < 5) elasticity += .18;
+  if (traits.includes("suburban") || traits.includes("sunbelt")) elasticity += .08;
+  if (traits.includes("rural") || traits.includes("frontier")) elasticity -= .08;
+  if (race.status.includes("Incumbent")) elasticity -= .08;
+  return clamp(elasticity, .5, 1.02);
+}
+
+function governorMarginGuardrail(race, rawMargin, ratingMargin, fundamentals, governorPoll) {
+  const anchor = ratingMargin * .46 + fundamentals * .54;
+  const anchorWeight = governorPoll?.polls ? .08 : .18;
+  let margin = rawMargin * (1 - anchorWeight) + anchor * anchorWeight;
+  const ratingSide = Math.sign(ratingMargin);
+  if (ratingSide && Math.sign(margin) !== ratingSide && Math.abs(ratingMargin) >= 9.5 && !governorPoll?.polls) {
+    margin = ratingSide * Math.max(6.5, Math.abs(margin) * .45);
+  }
+  if (/^Safe/.test(race.rating) && Math.abs(margin) < 11 && !governorPoll?.polls) {
+    margin = ratingSide * 11;
+  }
+  return Number(margin.toFixed(3));
 }
 
 function appendHistory(forecast) {
@@ -955,6 +981,14 @@ async function buildForecast() {
       dataSources: sourceData.status,
       nationalFinance: sourceData.fec?.__national || null
     },
+    modelWarnings: forecastSanityWarnings(modeledRaces, {
+      model: "governor",
+      id: (race) => race.state,
+      name: (race) => race.displayName,
+      baseline: (race) => race.ratingMargin,
+      partisanship: (race) => race.pvi,
+      candidateAdjustment: (race) => race.candidateAndLocal
+    }),
     projectedDemRaceWins: demWinningRaceTotal,
     projectedRepRaceWins: repWinningRaceTotal,
     averageDemGovernors: Number((demCountTotal / SETTINGS.simulations).toFixed(2)),

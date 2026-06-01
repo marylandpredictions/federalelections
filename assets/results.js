@@ -32,6 +32,33 @@ function dateLabel(value) {
   return new Intl.DateTimeFormat("en-US", { month: "numeric", day: "numeric", year: "numeric" }).format(date);
 }
 
+const POLL_CLOSE_UTC_BY_STATE = {
+  CA: "2026-06-03T03:00:00Z",
+  IA: "2026-06-03T01:00:00Z",
+  MT: "2026-06-03T02:00:00Z",
+  NJ: "2026-06-03T00:00:00Z",
+  NM: "2026-06-03T01:00:00Z",
+  SD: "2026-06-03T01:00:00Z"
+};
+
+function pollCloseLabel(race) {
+  const iso = race.pollCloseAt || POLL_CLOSE_UTC_BY_STATE[race.state];
+  if (!iso) return "";
+  const target = new Date(iso);
+  if (Number.isNaN(target.getTime())) return "";
+  const diff = target.getTime() - Date.now();
+  if (diff <= 0) return "Polls closed";
+  const totalMinutes = Math.ceil(diff / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours >= 24) {
+    const days = Math.floor(hours / 24);
+    const remainder = hours % 24;
+    return `Polls close in ${days}d ${remainder}h`;
+  }
+  return `Polls close in ${hours}h ${String(minutes).padStart(2, "0")}m`;
+}
+
 function timeLabel(value) {
   if (!value) return "Awaiting first data pull";
   const date = new Date(value);
@@ -84,6 +111,7 @@ function leadingCandidate(race) {
 function raceCard(race) {
   const leader = leadingCandidate(race);
   const hasCall = Boolean((race.calls || []).length || (race.candidates || []).some((candidate) => candidate.callLabel));
+  const closeLabel = pollCloseLabel(race);
   return `
     <a class="result-race-row ${hasCall ? "has-call" : ""}" href="result.html?id=${encodeURIComponent(race.id)}">
       <span class="result-election-marker ${markerClass(race.marker)}" title="${escapeHtml(race.marker?.label || "Election")}">
@@ -94,7 +122,7 @@ function raceCard(race) {
         <small>${escapeHtml(leader?.name || "No votes reported yet")}${race.otherCandidateCount ? ` + ${race.otherCandidateCount} candidate${race.otherCandidateCount === 1 ? "" : "s"}` : ""}</small>
       </span>
       ${hasCall ? `<span class="result-race-call">Called</span>` : ""}
-      <span class="result-date">${escapeHtml(dateLabel(race.electionDate))}</span>
+      <span class="result-date">${escapeHtml(closeLabel || dateLabel(race.electionDate))}</span>
     </a>
   `;
 }
@@ -138,6 +166,51 @@ async function fetchResults(url) {
   return response.json();
 }
 
+function displayCallLabel(call, race) {
+  if (call.label) return call.label;
+  const status = String(call.status || "").toLowerCase();
+  const multiWinner = Number(race.winners || race.advancingCount || 1) > 1 || /open primary|top-two/i.test(race.type || race.electionName || "");
+  if (status.includes("advance")) return status.includes("projected") ? "Projected advance" : "Advances";
+  if (status.includes("project")) return multiWinner ? "Projected advance" : "Projected winner";
+  if (status.includes("win") || status.includes("call")) return multiWinner ? "Advanced to general election" : "Winner";
+  return multiWinner ? "Advances" : "Projected winner";
+}
+
+async function loadManualCalls() {
+  const response = await fetch(`data/result-calls.json?v=${Date.now()}`, { cache: "no-store" });
+  if (!response.ok) return { races: {} };
+  return response.json();
+}
+
+async function applyManualCalls(data) {
+  const callsData = await loadManualCalls().catch(() => ({ races: {} }));
+  const callRaces = callsData.races || {};
+  return {
+    ...data,
+    groups: (data.groups || []).map((group) => ({
+      ...group,
+      races: (group.races || []).map((race) => {
+        const calls = callRaces[String(race.id)]?.calls || [];
+        if (!calls.length) {
+          return {
+            ...race,
+            calls: [],
+            candidates: (race.candidates || []).map((candidate) => ({ ...candidate, callLabel: "" }))
+          };
+        }
+        return {
+          ...race,
+          calls,
+          candidates: (race.candidates || []).map((candidate) => {
+            const call = calls.find((item) => String(item.candidate || "").toLowerCase() === String(candidate.name || "").toLowerCase());
+            return call ? { ...candidate, callLabel: displayCallLabel(call, race) } : { ...candidate, callLabel: "" };
+          })
+        };
+      })
+    }))
+  };
+}
+
 async function loadResults(forceLive = false) {
   const previousData = liveResultsData;
   if (statusLabel) statusLabel.textContent = forceLive ? "Refreshing..." : "Loading results...";
@@ -157,6 +230,7 @@ async function loadResults(forceLive = false) {
       } catch {
       }
     }
+    liveResultsData = await applyManualCalls(liveResultsData);
     renderMeta(liveResultsData, source);
     renderGroups();
   } catch (error) {

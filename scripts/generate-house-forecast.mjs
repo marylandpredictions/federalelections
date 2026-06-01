@@ -1,4 +1,5 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { forecastSanityWarnings } from "./forecast-sanity.mjs";
 
 const OUTPUT_URL = new URL("../data/house-forecast.json", import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
@@ -53,10 +54,10 @@ const MODEL_WEIGHTS = {
   finance: .22,
   nationalFinance: .35,
   nominationCertainty: .32,
-  candidateQuality: .42,
+  candidateQuality: .36,
   incumbencyOpenPenalty: .45,
   seatPartyIncumbency: .45,
-  districtFundamentals: .07,
+  districtFundamentals: .16,
   historicalMidterm: 1.0,
   stateCorrelationSd: 1.45,
   nationalEnvironmentSd: 3.35
@@ -773,7 +774,7 @@ async function fetchHouseSources() {
 }
 
 function adjustedDistricts(sourceData) {
-  const genericShift = clamp(sourceData.genericPolling.margin * MODEL_WEIGHTS.genericBallot, -MODEL_WEIGHTS.genericBallotCap, MODEL_WEIGHTS.genericBallotCap);
+  const genericShift = clamp(sourceData.genericPolling.margin * .56, -4.7, 4.7);
   const nationalFinanceShift = (sourceData.fec.__national?.financeSignal || 0) * MODEL_WEIGHTS.nationalFinance;
   const baseDistricts = sourceData.mapDistricts.length >= 400 ? sourceData.mapDistricts : sourceData.cookDistricts;
   return baseDistricts.map((sourceDistrict) => {
@@ -783,7 +784,7 @@ function adjustedDistricts(sourceData) {
     const sourceRating = district.redistrictingOverride ? district.sourceRating : inside?.rating || district.sourceRating || district.rating;
     const ratingMargin = RATING_TO_MARGIN[sourceRating] ?? 0;
     const contextMargin = contextualDistrictMargin(district, ratingMargin);
-    const baselineMargin = ratingMargin * .88 + contextMargin * MODEL_WEIGHTS.districtFundamentals;
+    const baselineMargin = ratingMargin * .78 + contextMargin * MODEL_WEIGHTS.districtFundamentals;
     const incumbentParty = district.seatParty === "D" ? 1 : district.seatParty === "R" ? -1 : 0;
     const challengerStrength = districtChallengerStrength(district);
     const incumbencyAdjustment = district.open ? 0 : incumbentParty * MODEL_WEIGHTS.seatPartyIncumbency * (1 - (CHALLENGER_STRENGTH_DISCOUNTS[challengerStrength] || 0));
@@ -792,7 +793,8 @@ function adjustedDistricts(sourceData) {
     const demographicPull = houseDemographicPull(district, challengerStrength);
     const candidateQualityAdjustment = houseCandidateQualityAdjustment(district, nomination);
     const nominationAdjustment = nomination.marginAdjustment * MODEL_WEIGHTS.nominationCertainty;
-    const margin = baselineMargin * MODEL_WEIGHTS.ratingBaseline + genericShift + nationalFinanceShift + MODEL_WEIGHTS.historicalMidterm + incumbencyAdjustment + openPenalty + demographicPull.adjustment + financeSignal * MODEL_WEIGHTS.finance + candidateQualityAdjustment + nominationAdjustment;
+    const rawMargin = baselineMargin * MODEL_WEIGHTS.ratingBaseline + genericShift + nationalFinanceShift + MODEL_WEIGHTS.historicalMidterm + incumbencyAdjustment + openPenalty + demographicPull.adjustment + financeSignal * MODEL_WEIGHTS.finance + candidateQualityAdjustment + nominationAdjustment;
+    const margin = houseMarginGuardrail(district, rawMargin, ratingMargin, contextMargin, sourceRating);
     const error = Math.max(RATING_TO_ERROR[sourceRating] ?? 8, inside ? RATING_TO_ERROR[inside.rating] ?? 8 : 0) + nomination.errorAdjustment;
     const demProbability = logistic(margin, error);
     return {
@@ -834,6 +836,19 @@ function adjustedDistricts(sourceData) {
       sourceBlend: district.redistrictingOverride ? district.ratingSource : inside ? `${district.ratingSource} + table cross-check` : district.ratingSource
     };
   });
+}
+
+function houseMarginGuardrail(district, rawMargin, ratingMargin, contextMargin, sourceRating) {
+  const anchor = ratingMargin * .58 + contextMargin * .42;
+  let margin = rawMargin * .86 + anchor * .14;
+  const ratingSide = Math.sign(ratingMargin);
+  if (ratingSide && Math.sign(margin) !== ratingSide && Math.abs(ratingMargin) >= 9.5) {
+    margin = ratingSide * Math.max(7.5, Math.abs(margin) * .42);
+  }
+  if (/^Safe/.test(sourceRating || "") && Math.abs(margin) < 12) {
+    margin = ratingSide * 12;
+  }
+    return margin;
 }
 
 function applyRedistrictingOverride(district) {
@@ -1403,6 +1418,14 @@ async function writeHouseForecast() {
       redistricting: redistrictingSummary(districts)
     },
     ratingSummary: ratingSummary(districts),
+    modelWarnings: forecastSanityWarnings(model.districts, {
+      model: "house",
+      id: (district) => district.id,
+      name: (district) => district.displayName || district.id,
+      baseline: (district) => district.sourceInputs?.ratingBaseline,
+      partisanship: (district) => district.sourceInputs?.presidentialBaseline,
+      candidateAdjustment: (district) => district.sourceInputs?.candidateQualityAdjustment
+    }),
     controlHistory: appendControlHistory(model),
     seatHistory: appendSeatHistory(model),
     ...model

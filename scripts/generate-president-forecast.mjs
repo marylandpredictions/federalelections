@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
+import { forecastSanityWarnings } from "./forecast-sanity.mjs";
 
 const demCandidateId = process.argv[2] || "newsom";
 const repCandidateId = process.argv[3] || "vance";
@@ -1453,7 +1454,23 @@ function calculateStateMargin(state, demCandidate, repCandidate, fundamentals, p
     }
   }
 
-  return baseline.demMargin + trendAdjustment + currentCycleAdjustment + migrationAdjustment + modifiers + (fundamentalsAdjustment * elasticity) + pollingAdjustment;
+  const rawMargin = baseline.demMargin + trendAdjustment + currentCycleAdjustment + migrationAdjustment + modifiers + (fundamentalsAdjustment * elasticity) + pollingAdjustment;
+  return presidentialMarginGuardrail(state, rawMargin, baseline.demMargin, pollingData);
+}
+
+function presidentialMarginGuardrail(state, rawMargin, baselineMargin, pollingData) {
+  const hasStatePolls = Boolean(pollingData?.byState?.[state]?.length);
+  const absBaseline = Math.abs(baselineMargin);
+  const anchorWeight = hasStatePolls ? .06 : absBaseline > 18 ? .2 : .12;
+  let margin = rawMargin * (1 - anchorWeight) + baselineMargin * anchorWeight;
+  const baselineSide = Math.sign(baselineMargin);
+  if (baselineSide && Math.sign(margin) !== baselineSide && absBaseline >= 14 && !hasStatePolls) {
+    margin = baselineSide * Math.max(8, Math.abs(margin) * .4);
+  }
+  if (absBaseline >= 25 && Math.abs(margin) < 16 && !hasStatePolls) {
+    margin = baselineSide * 16;
+  }
+  return Number(margin.toFixed(3));
 }
 
 function generateCorrelatedError(stateCount, correlation) {
@@ -1569,6 +1586,7 @@ function buildForecast(demCandidate, repCandidate, fundamentals, pollingData = n
       demProbability: wins / SETTINGS.simulations,
       ev: PRESIDENTIAL_BASELINES[state].ev,
       demMargin: calculateStateMargin(state, demCandidate, repCandidate, fundamentals),
+      baselineMargin: PRESIDENTIAL_BASELINES[state].demMargin,
       electorateComposition: demographicPull.electorateComposition,
       demographicPull
     };
@@ -1611,6 +1629,15 @@ function buildForecast(demCandidate, repCandidate, fundamentals, pollingData = n
     },
     states: stateProbabilities,
     historicalBacktest,
+    modelWarnings: forecastSanityWarnings(Object.entries(stateProbabilities).map(([state, stateData]) => ({ state, ...stateData })), {
+      model: "president",
+      id: (item) => item.state,
+      name: (item) => `${demCandidate.name} vs ${repCandidate.name} in ${item.state}`,
+      margin: (item) => item.demMargin,
+      demProbability: (item) => item.demProbability,
+      baseline: (item) => item.baselineMargin,
+      partisanship: (item) => item.baselineMargin
+    }),
     modelInputs: {
       longTermTrendStates: Object.keys(STATE_LONG_TERM_TRENDS).length,
       stateVolatilityStates: Object.keys(STATE_VOLATILITY).length,
