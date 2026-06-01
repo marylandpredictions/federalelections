@@ -23,6 +23,139 @@ const MANUAL_INCUMBENTS_BY_RACE = {
   "81057": ["Cory Booker"]
 };
 
+const CANDIDATE_PHOTO_SETS = {
+  "79779": {
+    base: "assets/img/candidates/california-lieutenant-governor",
+    photos: {
+      "josh-fryday": "josh-fryday.png",
+      "fiona-ma": "fiona-ma.png",
+      "michael-tubbs": "michael-tubbs.png",
+      "oliver-ma": "oliver-ma.png",
+      "david-fennell": "david-fennell.png",
+      "gloria-romero": "gloria-romero.png"
+    },
+    colors: {
+      "josh-fryday": "#0091ff",
+      "fiona-ma": "#52ca2b",
+      "michael-tubbs": "#6263f5",
+      "oliver-ma": "#28d7db",
+      "david-fennell": "#d97a18",
+      "gloria-romero": "#e4d000"
+    }
+  },
+  "79884": {
+    base: "assets/img/candidates/california-us-house-11",
+    photos: {
+      "saikat-chakrabarti": "saikat-chakrabarti.png",
+      "connie-chan": "connie-chan.png",
+      "scott-wiener": "scott-wiener.png"
+    },
+    colors: {
+      "saikat-chakrabarti": "#6b42d8",
+      "connie-chan": "#0091ff",
+      "scott-wiener": "#25d6d6"
+    }
+  },
+  "79896": {
+    base: "assets/img/candidates/california-us-house-22",
+    photos: {
+      "jasmeet-bains": "jasmeet-bains.png",
+      "randy-villegas": "randy-villegas.png",
+      "david-g-valadao": "david-g-valadao.png"
+    },
+    colors: {
+      "jasmeet-bains": "#4361ff",
+      "randy-villegas": "#26d6d6",
+      "david-g-valadao": "#d86f19"
+    }
+  },
+  "79907": {
+    base: "assets/img/candidates/california-us-house-32",
+    photos: {
+      "jake-levine": "jake-levine.png",
+      "marena-lin": "marena-lin.png",
+      "brad-sherman": "brad-sherman.png",
+      "larry-thompson": "larry-thompson.png"
+    },
+    colors: {
+      "jake-levine": "#0091ff",
+      "marena-lin": "#25d6d6",
+      "brad-sherman": "#5360f6",
+      "larry-thompson": "#8dde18"
+    }
+  },
+  "79932": {
+    base: "assets/img/candidates/california-us-house-7",
+    photos: {
+      "doris-matsui": "doris-matsui.png",
+      "mai-vang": "mai-vang.png"
+    },
+    colors: {
+      "doris-matsui": "#0091ff",
+      "mai-vang": "#25d6d6"
+    }
+  },
+  "79916": {
+    base: "assets/img/candidates/california-us-house-40",
+    photos: {
+      "joe-kerr": "joe-kerr.png",
+      "esther-kim-varet": "esther-kim-varet.png",
+      "ken-calvert": "ken-calvert.png",
+      "young-kim": "young-kim.png"
+    },
+    colors: {
+      "joe-kerr": "#0091ff",
+      "esther-kim-varet": "#5560f6",
+      "ken-calvert": "#c56517",
+      "young-kim": "#dec30f"
+    }
+  },
+  "79777": {
+    base: "assets/img/candidates/california-governor",
+    photos: {
+      "antonio-villaraigosa": "villaraigosa.png",
+      "tony-k-thurmond": "thurmond.png",
+      "eric-swalwell": "swalwell.png",
+      "tom-steyer": "steyer.png",
+      "katie-porter": "porter.png",
+      "matt-mahan": "mahan.png",
+      "xavier-becerra": "becerra.png",
+      "steve-hilton": "hilton.png",
+      "chad-bianco": "bianco.png"
+    },
+    colors: {
+      "antonio-villaraigosa": "#24dcae",
+      "tony-k-thurmond": "#1493f6",
+      "eric-swalwell": "#99e600",
+      "tom-steyer": "#4fc92a",
+      "katie-porter": "#5765ff",
+      "matt-mahan": "#2fdde0",
+      "xavier-becerra": "#1493f6",
+      "steve-hilton": "#bf0000",
+      "chad-bianco": "#d97112"
+    }
+  },
+  "79881": {
+    base: "assets/img/candidates/california-superintendent",
+    photos: {
+      "richard-barrera": "richard-barrera.png",
+      "nichelle-m-henderson": "nichelle-henderson.png",
+      "al-muratsuchi": "al-muratsuchi.png",
+      "josh-newman": "josh-newman.png",
+      "anthony-rendon": "anthony-rendon.png",
+      "sonja-shaw": "sonja-shaw.png"
+    },
+    colors: {
+      "richard-barrera": "#0091ff",
+      "nichelle-m-henderson": "#5560f6",
+      "al-muratsuchi": "#25d6d6",
+      "josh-newman": "#0091ff",
+      "anthony-rendon": "#8dde18",
+      "sonja-shaw": "#e6c900"
+    }
+  }
+};
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -91,80 +224,15 @@ function candidateInitials(name) {
 }
 
 function candidatePhotoUrl(race, candidate) {
-  const photoSets = {
-    "79779": {
-      base: "assets/img/candidates/california-lieutenant-governor",
-      photos: {
-        "josh-fryday": "josh-fryday.png",
-        "fiona-ma": "fiona-ma.png",
-        "michael-tubbs": "michael-tubbs.png",
-        "oliver-ma": "oliver-ma.png",
-        "david-fennell": "david-fennell.png",
-        "gloria-romero": "gloria-romero.png"
-      }
-    },
-    "79884": {
-      base: "assets/img/candidates/california-us-house-11",
-      photos: {
-        "saikat-chakrabarti": "saikat-chakrabarti.png",
-        "connie-chan": "connie-chan.png",
-        "scott-wiener": "scott-wiener.png"
-      }
-    },
-    "79896": {
-      base: "assets/img/candidates/california-us-house-22",
-      photos: {
-        "jasmeet-bains": "jasmeet-bains.png",
-        "randy-villegas": "randy-villegas.png",
-        "david-g-valadao": "david-g-valadao.png"
-      }
-    },
-    "79907": {
-      base: "assets/img/candidates/california-us-house-32",
-      photos: {
-        "jake-levine": "jake-levine.png",
-        "marena-lin": "marena-lin.png",
-        "brad-sherman": "brad-sherman.png",
-        "larry-thompson": "larry-thompson.png"
-      }
-    },
-    "79932": {
-      base: "assets/img/candidates/california-us-house-7",
-      photos: {
-        "doris-matsui": "doris-matsui.png",
-        "mai-vang": "mai-vang.png"
-      }
-    },
-    "79777": {
-      base: "assets/img/candidates/california-governor",
-      photos: {
-        "antonio-villaraigosa": "villaraigosa.png",
-        "tony-k-thurmond": "thurmond.png",
-        "eric-swalwell": "swalwell.png",
-        "tom-steyer": "steyer.png",
-        "katie-porter": "porter.png",
-        "matt-mahan": "mahan.png",
-        "xavier-becerra": "becerra.png",
-        "steve-hilton": "hilton.png",
-        "chad-bianco": "bianco.png"
-      }
-    },
-    "79881": {
-      base: "assets/img/candidates/california-superintendent",
-      photos: {
-        "richard-barrera": "richard-barrera.png",
-        "nichelle-m-henderson": "nichelle-henderson.png",
-        "al-muratsuchi": "al-muratsuchi.png",
-        "josh-newman": "josh-newman.png",
-        "anthony-rendon": "anthony-rendon.png",
-        "sonja-shaw": "sonja-shaw.png"
-      }
-    }
-  };
-  const photoSet = photoSets[String(race?.id)];
+  const photoSet = CANDIDATE_PHOTO_SETS[String(race?.id)];
   if (!photoSet) return "";
   const slug = String(candidate?.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   return photoSet.photos[slug] ? `${photoSet.base}/${photoSet.photos[slug]}` : "";
+}
+
+function candidatePhotoColor(race, candidate) {
+  const slug = String(candidate?.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return CANDIDATE_PHOTO_SETS[String(race?.id)]?.colors?.[slug] || "";
 }
 
 function isIncumbentCandidate(race, candidate) {
@@ -188,7 +256,9 @@ function leadingCandidate(race) {
   return (race.candidates || [])[0] || null;
 }
 
-function candidateFill(candidate) {
+function candidateFill(race, candidate) {
+  const photoColor = candidatePhotoColor(race, candidate);
+  if (photoColor) return photoColor;
   const color = String(candidate?.color || "").trim();
   if (/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(color)) return color;
   const code = candidate?.partyCode || partyCode(candidate?.party);
@@ -209,7 +279,7 @@ function callBadge(candidate, race) {
 function candidateRow(candidate, race, maxPercent) {
   const code = candidate.partyCode || partyCode(candidate.party);
   const width = Math.max(2, (Number(candidate.percent || 0) / maxPercent) * 100);
-  const fill = candidateFill(candidate);
+  const fill = candidateFill(race, candidate);
   const photo = candidatePhotoUrl(race, candidate);
   return `
     <article class="result-full-candidate ${candidate.callLabel ? "called" : ""}" style="--candidate-color:${escapeHtml(fill)}">

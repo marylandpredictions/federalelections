@@ -686,12 +686,23 @@ function updateSummary() {
   const favoredSide = forecast.demControlProbability >= forecast.repControlProbability ? "Democrats" : "Republicans";
   const favoredProbability = Math.max(forecast.demControlProbability, forecast.repControlProbability);
   const senateSeatLine = `${forecast.medianSeats} D / ${100 - forecast.medianSeats} R projected seats`;
+  const senateDemSeats = Number(forecast.medianSeats || 0);
+  const senateRepSeats = Math.max(0, 100 - senateDemSeats);
   setText("seat-count-headline", senateSeatLine);
-  setText("senate-map-seatbar-label", senateSeatLine);
+  const senateSeatbarLabel = document.getElementById("senate-map-seatbar-label");
+  if (senateSeatbarLabel) {
+    senateSeatbarLabel.innerHTML = `<em>${senateDemSeats} D</em><em>${senateRepSeats} R</em>`;
+  }
   const mapSeatbarDem = document.getElementById("senate-map-seatbar-dem");
   const mapSeatbarRep = document.getElementById("senate-map-seatbar-rep");
-  if (mapSeatbarDem) mapSeatbarDem.style.width = `${forecast.medianSeats}%`;
-  if (mapSeatbarRep) mapSeatbarRep.style.width = `${100 - forecast.medianSeats}%`;
+  if (mapSeatbarDem) {
+    mapSeatbarDem.style.width = `${senateDemSeats}%`;
+    mapSeatbarDem.style.setProperty("--seat-units", Math.max(1, senateDemSeats));
+  }
+  if (mapSeatbarRep) {
+    mapSeatbarRep.style.width = `${senateRepSeats}%`;
+    mapSeatbarRep.style.setProperty("--seat-units", Math.max(1, senateRepSeats));
+  }
   setMapProbBar("senate", forecast.demControlProbability, forecast.repControlProbability, "Control");
   const oddsNode = document.getElementById("odds-phrase");
   if (oddsNode) {
@@ -2262,12 +2273,28 @@ function renderHouseSummary() {
   panel?.classList.toggle("control-rep", !favoredIsDem);
   const odds = document.getElementById("house-odds-phrase");
   if (odds) odds.innerHTML = `<span>${favoredSide} favored</span><strong>${pct(favoredProbability)}</strong>`;
-  setText("house-seat-count-headline", `${houseForecast.medianSeats} D / ${435 - houseForecast.medianSeats} R projected seats`);
+  const houseDemSeats = Number(houseForecast.medianSeats || 0);
+  const houseRepSeats = Math.max(0, 435 - houseDemSeats);
+  setText("house-seat-count-headline", `${houseDemSeats} D / ${houseRepSeats} R projected seats`);
   setText("house-control-headline", `${favoredSide} ${controlProbabilityPhrase(favoredProbability)}`);
   setText("house-dem-control", oneDecimal(houseForecast.demControlProbability));
   setText("house-rep-control", oneDecimal(houseForecast.repControlProbability));
-  setText("house-median-seats", `${houseForecast.medianSeats} D / ${435 - houseForecast.medianSeats} R`);
+  setText("house-median-seats", `${houseDemSeats} D / ${houseRepSeats} R`);
   setText("house-run-date", houseForecast.runDate || houseForecast.modelDate || "--");
+  const houseSeatbarLabel = document.getElementById("house-map-seatbar-label");
+  if (houseSeatbarLabel) {
+    houseSeatbarLabel.innerHTML = `<em>${houseDemSeats} D</em><em>${houseRepSeats} R</em>`;
+  }
+  const houseSeatbarDem = document.getElementById("house-map-seatbar-dem");
+  const houseSeatbarRep = document.getElementById("house-map-seatbar-rep");
+  if (houseSeatbarDem) {
+    houseSeatbarDem.style.width = `${(houseDemSeats / 435) * 100}%`;
+    houseSeatbarDem.style.setProperty("--seat-units", Math.max(1, houseDemSeats));
+  }
+  if (houseSeatbarRep) {
+    houseSeatbarRep.style.width = `${(houseRepSeats / 435) * 100}%`;
+    houseSeatbarRep.style.setProperty("--seat-units", Math.max(1, houseRepSeats));
+  }
   const demBar = document.getElementById("house-dem-control-bar");
   const repBar = document.getElementById("house-rep-control-bar");
   if (demBar && repBar) {
