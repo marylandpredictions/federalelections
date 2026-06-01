@@ -61,46 +61,108 @@ function markerClass(marker) {
   return `marker-${marker?.kind || "general"}`;
 }
 
-function civicMapUrl(race) {
-  const mapPath = race.maps?.[0]?.map;
-  if (!mapPath) return "";
-  if (/^https?:\/\//i.test(mapPath)) return mapPath;
-  return `https://civicapi.org/${mapPath.replace(/^\/+/, "")}`;
-}
-
 function leadingCandidate(race) {
   return (race.candidates || [])[0] || null;
 }
 
+function candidateFill(candidate) {
+  const color = String(candidate?.color || "").trim();
+  if (/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(color)) return color;
+  const code = candidate?.partyCode || partyCode(candidate?.party);
+  if (code === "D") return "#1030b2";
+  if (code === "R") return "#e03a3e";
+  if (code === "I") return "#2f9f83";
+  return "#7a6fe8";
+}
+
 function callBadge(candidate, race) {
   if (!candidate.callLabel) return "";
-  return `<span class="result-call-badge">${escapeHtml(candidate.callLabel)}</span>`;
+  const compactLabel = String(candidate.callLabel)
+    .replace(/^Projected winner$/i, "Projected")
+    .replace(/^Advanced to general election$/i, "Advanced");
+  return `<span class="result-call-badge">${escapeHtml(compactLabel)}</span>`;
+}
+
+function candidateRow(candidate, race, maxPercent) {
+  const code = candidate.partyCode || partyCode(candidate.party);
+  const width = Math.max(2, (Number(candidate.percent || 0) / maxPercent) * 100);
+  return `
+    <article class="result-full-candidate ${candidate.callLabel ? "called" : ""}">
+      <div class="result-full-candidate-name">
+        <span class="result-party-dot ${partyClass(code)}">${escapeHtml(code || "O")}</span>
+        <div>
+          <strong>${escapeHtml(candidate.name)}</strong>
+          <small>${escapeHtml(candidate.party || "Other")}</small>
+        </div>
+        ${callBadge(candidate, race)}
+      </div>
+      <div class="result-full-bar" aria-hidden="true"><i style="width:${width}%"></i></div>
+      <div class="result-full-numbers">
+        <b>${percentLabel(candidate.percent)}</b>
+        <span>${numberLabel(candidate.votes)} votes</span>
+      </div>
+    </article>
+  `;
 }
 
 function candidateRows(race) {
   const candidates = race.candidates || [];
   const maxPercent = Math.max(1, ...candidates.map((candidate) => Number(candidate.percent || 0)));
-  return candidates.slice(0, 8).map((candidate) => {
-    const code = candidate.partyCode || partyCode(candidate.party);
-    const width = Math.max(2, (Number(candidate.percent || 0) / maxPercent) * 100);
+  const topCandidates = candidates.slice(0, 5).map((candidate) => candidateRow(candidate, race, maxPercent)).join("");
+  const otherCandidates = candidates.slice(5);
+  if (!otherCandidates.length) return topCandidates;
+  return `
+    ${topCandidates}
+    <details class="result-other-candidates">
+      <summary>Show ${numberLabel(otherCandidates.length)} other candidates</summary>
+      <div class="result-full-candidates result-full-candidates-secondary">
+        ${otherCandidates.map((candidate) => candidateRow(candidate, race, maxPercent)).join("")}
+      </div>
+    </details>
+  `;
+}
+
+function regionLeader(county) {
+  const candidates = county.candidates || [];
+  const totalVotes = candidates.reduce((sum, candidate) => sum + Number(candidate.votes || 0), 0);
+  if (!totalVotes) return null;
+  return candidates.reduce((leader, candidate) => {
+    if (!leader) return candidate;
+    return Number(candidate.votes || 0) > Number(leader.votes || 0) ? candidate : leader;
+  }, null);
+}
+
+function regionAbbreviation(name) {
+  const cleaned = String(name || "").replace(/[^a-z0-9\s]/gi, " ").trim();
+  if (!cleaned) return "--";
+  const words = cleaned.split(/\s+/).filter(Boolean);
+  if (words.length > 1) return words.map((word) => word[0]).join("").slice(0, 3).toUpperCase();
+  return cleaned.slice(0, 3).toUpperCase();
+}
+
+function regionMap(race) {
+  const counties = race.counties || [];
+  if (!counties.length) {
+    return `<div class="result-map-empty">County-level map data is not available for this race yet.</div>`;
+  }
+  const regions = counties.map((county) => {
+    const leader = regionLeader(county);
+    const label = leader
+      ? `${county.name}: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.percentReporting)} reporting`
+      : `${county.name}: waiting for reported votes`;
+    const style = leader ? ` style="--tile-color:${candidateFill(leader)}"` : "";
     return `
-      <article class="result-full-candidate ${candidate.callLabel ? "called" : ""}">
-        <div class="result-full-candidate-name">
-          <span class="result-party-dot ${partyClass(code)}">${escapeHtml(code)}</span>
-          <div>
-            <strong>${escapeHtml(candidate.name)}</strong>
-            <small>${escapeHtml(candidate.party || "Other")}</small>
-          </div>
-          ${callBadge(candidate, race)}
-        </div>
-        <div class="result-full-bar" aria-hidden="true"><i style="width:${width}%"></i></div>
-        <div class="result-full-numbers">
-          <b>${percentLabel(candidate.percent)}</b>
-          <span>${numberLabel(candidate.votes)} votes</span>
-        </div>
-      </article>
+      <span class="result-region-tile ${leader ? "" : "is-waiting"}"${style} title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
+        ${escapeHtml(regionAbbreviation(county.name))}
+      </span>
     `;
   }).join("");
+  return `
+    <div class="result-region-map" aria-label="${escapeHtml(race.stateName || race.state || "Race")} county result map">
+      ${regions}
+    </div>
+    <p class="result-map-caption">County/region tiles color by the current local leader once votes are reported.</p>
+  `;
 }
 
 function countyCandidateCells(county) {
@@ -135,7 +197,6 @@ function countyRows(race) {
 
 function renderRace(race) {
   const leader = leadingCandidate(race);
-  const mapUrl = civicMapUrl(race);
   document.title = `${race.electionName} | Federal Elections Analysis`;
   page.innerHTML = `
     <section class="result-night-shell">
@@ -167,10 +228,7 @@ function renderRace(race) {
           <span>Results</span>
         </div>
         <div class="result-map-canvas">
-          ${mapUrl ? `<img src="${escapeHtml(mapUrl)}" alt="${escapeHtml(race.stateName || race.state || "Race")} results map">` : `<span>No map available</span>`}
-        </div>
-        <div class="result-map-controls" aria-hidden="true">
-          <span>-</span><span>+</span><span>Home</span>
+          ${regionMap(race)}
         </div>
       </aside>
     </section>
