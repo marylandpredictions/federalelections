@@ -1,4 +1,3 @@
-const sourceLabel = document.getElementById("results-source-label");
 const updatedLabel = document.getElementById("results-updated");
 const statusLabel = document.getElementById("results-status");
 const groupsNode = document.getElementById("results-groups");
@@ -55,6 +54,10 @@ function partyClass(partyCode) {
   return "party-other";
 }
 
+function markerClass(marker) {
+  return `marker-${marker?.kind || "general"}`;
+}
+
 function raceMatches(race, query) {
   if (!query) return true;
   const haystack = [
@@ -80,14 +83,16 @@ function raceCard(race) {
   const leader = leadingCandidate(race);
   const isSelected = String(selectedRaceId) === String(race.id);
   return `
-    <button class="result-race-row ${isSelected ? "active" : ""}" type="button" data-race-id="${escapeHtml(race.id)}">
-      <span class="result-party-dot ${partyClass(leader?.partyCode || race.leaderPartyCode)}">${escapeHtml(leader?.partyCode || race.leaderPartyCode || "")}</span>
+    <a class="result-race-row ${isSelected ? "active" : ""}" href="result.html?id=${encodeURIComponent(race.id)}" data-race-id="${escapeHtml(race.id)}">
+      <span class="result-election-marker ${markerClass(race.marker)}" title="${escapeHtml(race.marker?.label || "Election")}">
+        <i>${escapeHtml(race.marker?.short || "G")}</i>
+      </span>
       <span class="result-race-copy">
         <strong>${escapeHtml(race.electionName)}</strong>
         <small>${escapeHtml(leader?.name || "No votes reported yet")}${race.otherCandidateCount ? ` + ${race.otherCandidateCount} candidate${race.otherCandidateCount === 1 ? "" : "s"}` : ""}</small>
       </span>
       <span class="result-date">${escapeHtml(dateLabel(race.electionDate))}</span>
-    </button>
+    </a>
   `;
 }
 
@@ -115,7 +120,7 @@ function renderGroups() {
   `).join("");
 
   groupsNode.querySelectorAll("[data-race-id]").forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("mouseenter", () => {
       selectedRaceId = button.dataset.raceId;
       renderGroups();
       renderDetail();
@@ -173,6 +178,7 @@ function renderDetail() {
       <strong>${escapeHtml(leader?.name || "No leader yet")}</strong>
       <span>${leader ? `${percentLabel(leader.percent)} / ${numberLabel(leader.votes)} votes` : "Awaiting returns"}</span>
     </div>
+    <p><a class="button-link" href="result.html?id=${encodeURIComponent(race.id)}">Open full results</a></p>
     <div class="result-candidate-table">
       <div class="result-candidate-head"><span>Candidate</span><span></span><span>Votes</span><span>Share</span></div>
       ${candidateRows(race) || `<p class="meta">No candidate vote rows reported yet.</p>`}
@@ -182,7 +188,6 @@ function renderDetail() {
 }
 
 function renderMeta(data, source) {
-  if (sourceLabel) sourceLabel.textContent = data.provider?.name || "Election API";
   if (updatedLabel) updatedLabel.textContent = timeLabel(data.generatedAt);
   if (statusLabel) {
     const errorCount = data.errors?.length || 0;

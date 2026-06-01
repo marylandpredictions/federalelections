@@ -1,8 +1,11 @@
-import { writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 const OUTPUT_URL = new URL("../data/live-results.json", import.meta.url);
+const DETAIL_DIR_URL = new URL("../data/live-results-races/", import.meta.url);
+const CALLS_URL = new URL("../data/result-calls.json", import.meta.url);
 const CIVIC_BASE = "https://civicapi.org/api/v2";
+const manualCalls = readManualCalls();
 
 const FEATURED_GROUPS = [
   { state: "CA", name: "California", queries: ["California Governor", "California US House", "California Los Angeles Mayor"] },
@@ -43,16 +46,79 @@ function partyCode(party) {
   return party ? party.slice(0, 1).toUpperCase() : "";
 }
 
-function normalizeCandidate(candidate) {
+function readManualCalls() {
+  try {
+    return JSON.parse(readFileSync(CALLS_URL, "utf8"));
+  } catch {
+    return { races: {} };
+  }
+}
+
+function slugify(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function callForCandidate(raceId, candidateName) {
+  const raceCalls = manualCalls.races?.[String(raceId)]?.calls || [];
+  return raceCalls.find((call) => String(call.candidate || "").toLowerCase() === String(candidateName || "").toLowerCase()) || null;
+}
+
+function callLabelFor(race, call) {
+  if (!call) return "";
+  if (call.label) return call.label;
+  const scope = `${race.election_scope || race.electionType || race.electionName || ""}`.toLowerCase();
+  const electionName = `${race.election_name || race.electionName || ""}`.toLowerCase();
+  if (call.status === "projected") return "Projected winner";
+  if (call.status === "advances" || scope.includes("primary") || electionName.includes("primary")) return "Advances";
+  if (call.status === "advanced") return "Advanced to general election";
+  return "Winner";
+}
+
+function withManualCall(candidate, race) {
+  const call = callForCandidate(race.id, candidate.name);
   return {
+    ...candidate,
+    apiWinner: Boolean(candidate.winner),
+    winner: false,
+    callStatus: call?.status || "",
+    callLabel: callLabelFor(race, call)
+  };
+}
+
+function electionMarkerFor(race, candidates = []) {
+  const name = `${race.election_name || race.electionName || ""}`.toLowerCase();
+  const scope = `${race.election_scope || race.electionScope || race.election_type || race.electionType || ""}`.toLowerCase();
+  const parties = new Set(candidates.map((candidate) => partyCode(candidate.party)).filter(Boolean));
+  if (name.includes("open primary") || (scope.includes("primary") && parties.has("D") && parties.has("R"))) {
+    return { kind: "open-primary", label: "Primary", short: "D/R" };
+  }
+  if (name.includes("democratic primary") || (scope.includes("primary") && parties.size === 1 && parties.has("D"))) {
+    return { kind: "dem-primary", label: "Democratic primary", short: "D" };
+  }
+  if (name.includes("republican primary") || (scope.includes("primary") && parties.size === 1 && parties.has("R"))) {
+    return { kind: "rep-primary", label: "Republican primary", short: "R" };
+  }
+  if (scope.includes("primary")) return { kind: "primary", label: "Primary", short: "P" };
+  return { kind: "general", label: "General election", short: "G" };
+}
+
+function normalizeCandidate(candidate) {
+  const normalized = {
     name: candidate.name || "Unknown",
     party: candidate.party || "",
     partyCode: partyCode(candidate.party),
     color: candidate.color || "",
     votes: Number(candidate.votes || 0),
     percent: Number(candidate.percent || 0),
-    winner: Boolean(candidate.winner)
+    winner: false,
+    apiWinner: Boolean(candidate.winner),
+    callStatus: "",
+    callLabel: ""
   };
+  return normalized;
 }
 
 function racePriority(race) {
@@ -65,7 +131,9 @@ function racePriority(race) {
 function normalizeRace(race, group) {
   const candidates = (race.candidates || []).map(normalizeCandidate)
     .sort((a, b) => b.votes - a.votes || b.percent - a.percent);
+  const calledCandidates = candidates.map((candidate) => withManualCall(candidate, race));
   const leader = candidates[0] || null;
+  const marker = electionMarkerFor(race, candidates);
   return {
     id: race.id,
     source: "civicAPI",
@@ -77,15 +145,54 @@ function normalizeRace(race, group) {
     municipality: race.municipality ?? null,
     electionName: race.election_name || `${group.name} ${race.type || "Race"}`,
     electionType: race.election_type || "",
+    electionScope: race.election_scope || race.election_type || "",
     electionDate: isoDate(race.election_date),
+    pollsOpen: isoDate(race.polls_open),
+    pollsClose: isoDate(race.polls_close),
+    lastUpdated: isoDate(race.last_updated),
     percentReporting: Number(race.percent_reporting || 0),
     hasBreakdown: Boolean(race.has_breakdown),
     hasMap: Boolean(race.has_map),
+    marker,
     leaderName: leader?.name || "",
     leaderParty: leader?.party || "",
     leaderPartyCode: leader?.partyCode || "",
     otherCandidateCount: Math.max(0, candidates.length - 1),
-    candidates
+    calls: (manualCalls.races?.[String(race.id)]?.calls || []).map((call) => ({ ...call })),
+    candidates: calledCandidates
+  };
+}
+
+function normalizeRegionResults(regionResults, race) {
+  if (!regionResults || typeof regionResults !== "object") return [];
+  return Object.entries(regionResults).map(([key, region]) => {
+    const candidates = (region.candidates || []).map((candidate) => withManualCall(normalizeCandidate(candidate), race))
+      .sort((a, b) => b.votes - a.votes || b.percent - a.percent);
+    return {
+      id: key,
+      name: region.name || key.replace(/_/g, " "),
+      type: region.type || "County",
+      fips: region.fips || "",
+      percentReporting: Number(region.percent_reporting || 0),
+      candidates
+    };
+  }).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+async function fetchRaceDetail(id) {
+  const detail = await fetchJson(`${CIVIC_BASE}/race/${id}`);
+  const group = {
+    state: detail.province,
+    name: detail.province || "Race"
+  };
+  const race = normalizeRace({ id, ...detail, type: detail.election_type, election_type: detail.election_scope }, group);
+  return {
+    ...race,
+    electionType: detail.election_type || race.electionType,
+    electionScope: detail.election_scope || race.electionScope,
+    registeredVoters: detail.registered_voters || null,
+    maps: detail.maps || [],
+    counties: normalizeRegionResults(detail.region_results, { id, ...detail })
   };
 }
 
@@ -163,8 +270,29 @@ export async function buildLiveResults() {
   };
 }
 
+export async function buildRaceResultDetail(id) {
+  return fetchRaceDetail(id);
+}
+
+async function writeRaceDetails(data) {
+  mkdirSync(DETAIL_DIR_URL, { recursive: true });
+  const races = data.groups.flatMap((group) => group.races || []);
+  let written = 0;
+  for (const race of races) {
+    try {
+      const detail = await buildRaceResultDetail(race.id);
+      writeFileSync(new URL(`${race.id}.json`, DETAIL_DIR_URL), JSON.stringify(detail, null, 2), "utf8");
+      written += 1;
+    } catch (error) {
+      console.warn(`Could not write race detail for ${race.id}: ${error.message}`);
+    }
+  }
+  return written;
+}
+
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const data = await buildLiveResults();
   writeFileSync(OUTPUT_URL, JSON.stringify(data, null, 2), "utf8");
-  console.log(`Wrote live results for ${data.groups.reduce((sum, group) => sum + group.races.length, 0)} featured races`);
+  const detailCount = await writeRaceDetails(data);
+  console.log(`Wrote live results for ${data.groups.reduce((sum, group) => sum + group.races.length, 0)} featured races and ${detailCount} detail files`);
 }

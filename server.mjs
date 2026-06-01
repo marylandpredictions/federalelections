@@ -3,7 +3,7 @@ import { createWriteStream } from "node:fs";
 import { mkdir, readFile } from "node:fs/promises";
 import { extname, join, resolve } from "node:path";
 import tls from "node:tls";
-import { buildLiveResults } from "./scripts/generate-live-results.mjs";
+import { buildLiveResults, buildRaceResultDetail } from "./scripts/generate-live-results.mjs";
 
 async function loadLocalEnv() {
   try {
@@ -237,6 +237,24 @@ async function handleLiveResults(request, response) {
   }
 }
 
+async function handleLiveResultRace(request, response, url) {
+  if (request.method !== "GET") {
+    sendJson(response, 405, { ok: false, error: "Method not allowed." });
+    return;
+  }
+  const id = url.searchParams.get("id");
+  if (!/^\d+$/.test(id || "")) {
+    sendJson(response, 400, { ok: false, error: "Missing race id." });
+    return;
+  }
+  try {
+    sendJson(response, 200, await buildRaceResultDetail(id));
+  } catch (error) {
+    console.error(error);
+    sendJson(response, 502, { ok: false, error: "Live race detail source unavailable." });
+  }
+}
+
 async function serveStatic(request, response) {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
   let requestedPath = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
@@ -272,6 +290,10 @@ createServer(async (request, response) => {
   }
   if (url.pathname === "/api/live-results") {
     await handleLiveResults(request, response);
+    return;
+  }
+  if (url.pathname === "/api/live-results/race") {
+    await handleLiveResultRace(request, response, url);
     return;
   }
   await serveStatic(request, response);
