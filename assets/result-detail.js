@@ -103,6 +103,38 @@ function candidatePhotoUrl(race, candidate) {
         "gloria-romero": "gloria-romero.png"
       }
     },
+    "79884": {
+      base: "assets/img/candidates/california-us-house-11",
+      photos: {
+        "saikat-chakrabarti": "saikat-chakrabarti.png",
+        "connie-chan": "connie-chan.png",
+        "scott-wiener": "scott-wiener.png"
+      }
+    },
+    "79896": {
+      base: "assets/img/candidates/california-us-house-22",
+      photos: {
+        "jasmeet-bains": "jasmeet-bains.png",
+        "randy-villegas": "randy-villegas.png",
+        "david-g-valadao": "david-g-valadao.png"
+      }
+    },
+    "79907": {
+      base: "assets/img/candidates/california-us-house-32",
+      photos: {
+        "jake-levine": "jake-levine.png",
+        "marena-lin": "marena-lin.png",
+        "brad-sherman": "brad-sherman.png",
+        "larry-thompson": "larry-thompson.png"
+      }
+    },
+    "79932": {
+      base: "assets/img/candidates/california-us-house-7",
+      photos: {
+        "doris-matsui": "doris-matsui.png",
+        "mai-vang": "mai-vang.png"
+      }
+    },
     "79777": {
       base: "assets/img/candidates/california-governor",
       photos: {
