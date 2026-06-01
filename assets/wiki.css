@@ -4408,6 +4408,106 @@ button.race-board-row {
     var(--chart-bg);
 }
 
+.analysis-note-panel,
+.result-vote-history-panel {
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 9%, transparent), transparent 50%, color-mix(in srgb, var(--rep) 8%, transparent)),
+    var(--chart-bg);
+  box-shadow: var(--shadow-soft);
+  animation: result-fade .35s var(--ease-out) both;
+}
+
+.analysis-note-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, .26fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.analysis-note-panel p {
+  margin: 4px 0 8px;
+  color: var(--ink);
+  font: 850 1rem/1.42 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.analysis-note-panel small,
+.analysis-note-history small {
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.analysis-note-panel img,
+.analysis-note-embed {
+  width: 100%;
+  max-height: 210px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.analysis-note-history {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.analysis-note-history summary {
+  cursor: pointer;
+  color: var(--muted);
+  font: 900 .78rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  text-transform: uppercase;
+}
+
+.analysis-note-history article {
+  margin-top: 10px;
+  padding: 9px;
+  border: 1px solid color-mix(in srgb, var(--line) 62%, transparent);
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--paper) 56%, transparent);
+}
+
+.result-vote-history-panel svg {
+  width: 100%;
+  display: block;
+  margin-top: 8px;
+}
+
+.result-vote-history-panel line {
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+}
+
+.result-vote-history-panel path {
+  filter: drop-shadow(0 0 8px color-mix(in srgb, currentColor 18%, transparent));
+}
+
+.vote-history-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 8px;
+}
+
+.vote-history-legend span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: var(--muted);
+  font: 850 .72rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.vote-history-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--candidate-color);
+}
+
 .county-results-table {
   display: grid;
   gap: 7px;
@@ -5891,6 +5991,7 @@ button.race-board-row {
   }
 
   .result-title-lockup,
+  .analysis-note-panel,
   .county-result-row {
     grid-template-columns: 1fr;
   }

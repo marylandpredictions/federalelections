@@ -1,7 +1,7 @@
 {
   "model": "2026 gubernatorial forecast",
   "modelDate": "2026-06-01",
-  "generatedAt": "2026-06-01T14:13:23.316Z",
+  "generatedAt": "2026-06-01T15:37:41.378Z",
   "runDate": "Jun 1, 2026",
   "settings": {
     "simulations": 100000,
@@ -14,7 +14,7 @@
       "Manual 2026 gubernatorial race ledger with candidates, incumbency, PVI, and last gubernatorial margin",
       "Cook Political Report, Inside Elections, Sabato's Crystal Ball, WH, VoteHub, and RCP rating references",
       "Current Senate model generic ballot signal as a broad midterm environment input",
-      "OpenFEC candidate finance bulk files"
+      "Manual state-level gubernatorial campaign finance file"
     ]
   },
   "sourceSummary": {
@@ -22,53 +22,69 @@
     "gubernatorialNationalShift": 1.08,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-06-01T14:13:11.832Z",
+      "checkedAt": "2026-06-01T15:37:39.924Z",
+      "governorFinance": {
+        "ok": true,
+        "states": 1,
+        "nationalFinanceSignal": 0
+      },
       "pollfinityAverages": {
         "ok": true,
         "status": 200,
-        "ms": 1211,
+        "ms": 174,
         "url": "https://pollfinity.com/averages.json"
       },
       "ddhqGenericBallot": {
         "ok": false,
         "status": 429,
-        "ms": 1698,
+        "ms": 678,
         "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
         "error": "<!DOCTYPE html><html lang=\"en\" data-astro-cid-nbv56vs3> <head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" con"
-      },
-      "openFecCandidateSummary": {
-        "ok": false,
-        "status": "fetch-error",
-        "ms": 10712,
-        "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
-        "error": "fetch failed"
       }
     },
-    "nationalFinance": null
+    "nationalFinance": {
+      "demReceipts": 0,
+      "repReceipts": 0,
+      "demCash": 0,
+      "repCash": 0,
+      "demDebts": 0,
+      "repDebts": 0,
+      "demDisbursements": 0,
+      "repDisbursements": 0,
+      "demIndividual": 0,
+      "repIndividual": 0,
+      "otherReceipts": 0,
+      "otherCash": 0,
+      "otherDebts": 0,
+      "otherDisbursements": 0,
+      "otherIndividual": 0,
+      "financeSignal": 0
+    }
   },
   "projectedDemRaceWins": 19,
   "projectedRepRaceWins": 17,
-  "averageDemGovernors": 24.63,
-  "averageRepGovernors": 25.37,
+  "averageDemGovernors": 24.62,
+  "averageRepGovernors": 25.38,
   "medianDemGovernors": 25,
   "medianRepGovernors": 25,
   "distribution": {
-    "17": 9,
-    "18": 54,
-    "19": 285,
-    "20": 1149,
-    "21": 3644,
-    "22": 8225,
-    "23": 14601,
-    "24": 19555,
-    "25": 20066,
-    "26": 15800,
-    "27": 9811,
-    "28": 4590,
-    "29": 1699,
-    "30": 416,
-    "31": 87,
-    "32": 8,
+    "16": 1,
+    "17": 12,
+    "18": 61,
+    "19": 278,
+    "20": 1166,
+    "21": 3630,
+    "22": 8358,
+    "23": 14645,
+    "24": 19549,
+    "25": 19988,
+    "26": 15816,
+    "27": 9770,
+    "28": 4581,
+    "29": 1572,
+    "30": 474,
+    "31": 83,
+    "32": 15,
     "33": 1
   },
   "stateHistory": {
@@ -429,6 +445,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -440,7 +457,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.92602,
       "competitive": false,
-      "tippingPower": 0.02405,
+      "tippingPower": 0.02325,
       "movementDrivers": [],
       "history": [
         {
@@ -549,6 +566,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -560,7 +578,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.58842,
       "competitive": true,
-      "tippingPower": 0.05379,
+      "tippingPower": 0.05404,
       "movementDrivers": [],
       "history": [
         {
@@ -680,6 +698,26 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": {
+          "demReceipts": 0,
+          "repReceipts": 0,
+          "demCash": 0,
+          "repCash": 0,
+          "demDebts": 0,
+          "repDebts": 0,
+          "demDisbursements": 0,
+          "repDisbursements": 0,
+          "demIndividual": 0,
+          "repIndividual": 0,
+          "otherReceipts": 0,
+          "otherCash": 0,
+          "otherDebts": 0,
+          "otherDisbursements": 0,
+          "otherIndividual": 0,
+          "source": "Not entered yet",
+          "demFinanceLabel": "Democratic side",
+          "repFinanceLabel": "Republican side"
+        },
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -691,7 +729,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.55005,
       "competitive": true,
-      "tippingPower": 0.0531,
+      "tippingPower": 0.05238,
       "movementDrivers": [],
       "history": [
         {
@@ -810,6 +848,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -821,7 +860,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.97925,
       "competitive": false,
-      "tippingPower": 0.0098,
+      "tippingPower": 0.00939,
       "movementDrivers": [],
       "history": [
         {
@@ -935,6 +974,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -946,7 +986,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.95375,
       "competitive": false,
-      "tippingPower": 0.01611,
+      "tippingPower": 0.01617,
       "movementDrivers": [],
       "history": [
         {
@@ -1055,6 +1095,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -1066,7 +1107,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.95719,
       "competitive": false,
-      "tippingPower": 0.01587,
+      "tippingPower": 0.01567,
       "movementDrivers": [],
       "history": [
         {
@@ -1175,6 +1216,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -1186,7 +1228,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.97743,
       "competitive": false,
-      "tippingPower": 0.01034,
+      "tippingPower": 0.01091,
       "movementDrivers": [],
       "history": [
         {
@@ -1305,6 +1347,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -1316,7 +1359,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.76948,
       "competitive": false,
-      "tippingPower": 0.04791,
+      "tippingPower": 0.04713,
       "movementDrivers": [],
       "history": [
         {
@@ -1440,6 +1483,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0.7,
         "pollMargin": 0,
@@ -1451,7 +1495,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.56181,
       "competitive": true,
-      "tippingPower": 0.0486,
+      "tippingPower": 0.04997,
       "movementDrivers": [],
       "history": [
         {
@@ -1560,6 +1604,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -1571,7 +1616,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.98903,
       "competitive": false,
-      "tippingPower": 0.00598,
+      "tippingPower": 0.00535,
       "movementDrivers": [],
       "history": [
         {
@@ -1685,6 +1730,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -1696,7 +1742,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.97889,
       "competitive": false,
-      "tippingPower": 0.01023,
+      "tippingPower": 0.01036,
       "movementDrivers": [],
       "history": [
         {
@@ -1815,6 +1861,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -1826,7 +1873,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.97898,
       "competitive": false,
-      "tippingPower": 0.01036,
+      "tippingPower": 0.01025,
       "movementDrivers": [],
       "history": [
         {
@@ -1940,6 +1987,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -1951,7 +1999,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.50974,
       "competitive": true,
-      "tippingPower": 0.04848,
+      "tippingPower": 0.04923,
       "movementDrivers": [],
       "history": [
         {
@@ -2065,6 +2113,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -2076,7 +2125,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.59234,
       "competitive": true,
-      "tippingPower": 0.05483,
+      "tippingPower": 0.05468,
       "movementDrivers": [],
       "history": [
         {
@@ -2190,6 +2239,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -2201,7 +2251,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.81748,
       "competitive": false,
-      "tippingPower": 0.04164,
+      "tippingPower": 0.04078,
       "movementDrivers": [],
       "history": [
         {
@@ -2315,6 +2365,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -2326,7 +2377,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99,
       "competitive": false,
-      "tippingPower": 0.00397,
+      "tippingPower": 0.00434,
       "movementDrivers": [],
       "history": [
         {
@@ -2435,6 +2486,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -2446,7 +2498,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99,
       "competitive": false,
-      "tippingPower": 0.00501,
+      "tippingPower": 0.00508,
       "movementDrivers": [],
       "history": [
         {
@@ -2560,6 +2612,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0.25,
         "pollMargin": 0,
@@ -2571,7 +2624,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.69866,
       "competitive": true,
-      "tippingPower": 0.05025,
+      "tippingPower": 0.04851,
       "movementDrivers": [],
       "history": [
         {
@@ -2685,6 +2738,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -2696,7 +2750,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.94272,
       "competitive": false,
-      "tippingPower": 0.01925,
+      "tippingPower": 0.0186,
       "movementDrivers": [],
       "history": [
         {
@@ -2815,6 +2869,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 1.45,
         "pollMargin": 0,
@@ -2826,7 +2881,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.95957,
       "competitive": false,
-      "tippingPower": 0.01791,
+      "tippingPower": 0.01705,
       "movementDrivers": [],
       "history": [
         {
@@ -2947,6 +3002,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -2958,7 +3014,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.55928,
       "competitive": true,
-      "tippingPower": 0.0536,
+      "tippingPower": 0.05473,
       "movementDrivers": [],
       "history": [
         {
@@ -3078,6 +3134,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -3089,7 +3146,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.82794,
       "competitive": false,
-      "tippingPower": 0.04504,
+      "tippingPower": 0.0451,
       "movementDrivers": [],
       "history": [
         {
@@ -3208,6 +3265,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -3219,7 +3277,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.80001,
       "competitive": false,
-      "tippingPower": 0.0441,
+      "tippingPower": 0.04413,
       "movementDrivers": [],
       "history": [
         {
@@ -3333,6 +3391,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -3344,7 +3403,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.87933,
       "competitive": false,
-      "tippingPower": 0.03473,
+      "tippingPower": 0.03434,
       "movementDrivers": [],
       "history": [
         {
@@ -3472,6 +3531,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 1.15,
         "pollMargin": 0,
@@ -3483,7 +3543,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.63875,
       "competitive": true,
-      "tippingPower": 0.05404,
+      "tippingPower": 0.05146,
       "movementDrivers": [],
       "history": [
         {
@@ -3597,6 +3657,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -3608,7 +3669,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.93009,
       "competitive": false,
-      "tippingPower": 0.02318,
+      "tippingPower": 0.02289,
       "movementDrivers": [],
       "history": [
         {
@@ -3730,6 +3791,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -3741,7 +3803,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.86949,
       "competitive": false,
-      "tippingPower": 0.03735,
+      "tippingPower": 0.03882,
       "movementDrivers": [],
       "history": [
         {
@@ -3871,6 +3933,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 1.25,
         "pollMargin": 0,
@@ -3882,7 +3945,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99,
       "competitive": false,
-      "tippingPower": 0.00389,
+      "tippingPower": 0.00377,
       "movementDrivers": [],
       "history": [
         {
@@ -3991,6 +4054,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -4002,7 +4066,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.98081,
       "competitive": false,
-      "tippingPower": 0.00847,
+      "tippingPower": 0.00879,
       "movementDrivers": [],
       "history": [
         {
@@ -4121,6 +4185,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -4132,7 +4197,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.78716,
       "competitive": false,
-      "tippingPower": 0.04457,
+      "tippingPower": 0.04449,
       "movementDrivers": [],
       "history": [
         {
@@ -4251,6 +4316,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -4262,7 +4328,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.97722,
       "competitive": false,
-      "tippingPower": 0.01089,
+      "tippingPower": 0.0113,
       "movementDrivers": [],
       "history": [
         {
@@ -4381,6 +4447,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -4392,7 +4459,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.95127,
       "competitive": false,
-      "tippingPower": 0.01709,
+      "tippingPower": 0.01802,
       "movementDrivers": [],
       "history": [
         {
@@ -4524,6 +4591,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -4535,7 +4603,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.96525,
       "competitive": false,
-      "tippingPower": 0.01463,
+      "tippingPower": 0.01597,
       "movementDrivers": [],
       "history": [
         {
@@ -4654,6 +4722,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -4665,7 +4734,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99,
       "competitive": false,
-      "tippingPower": 0.00356,
+      "tippingPower": 0.00367,
       "movementDrivers": [],
       "history": [
         {
@@ -4785,6 +4854,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -4796,7 +4866,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.58055,
       "competitive": true,
-      "tippingPower": 0.04795,
+      "tippingPower": 0.05007,
       "movementDrivers": [],
       "history": [
         {
@@ -4910,6 +4980,7 @@
       },
       "sourceInputs": {
         "financeSignal": 0,
+        "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
@@ -4921,7 +4992,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.9767,
       "competitive": false,
-      "tippingPower": 0.00943,
+      "tippingPower": 0.00931,
       "movementDrivers": [],
       "history": [
         {

@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
+const GOVERNOR_FINANCE_URL = new URL("../data/governor-finance.json", import.meta.url);
 const previousForecast = readPreviousForecast();
 const MODEL_TIME_ZONE = "America/Chicago";
 
@@ -78,6 +79,10 @@ function toNumber(value) {
   return Number.isFinite(number) ? number : 0;
 }
 
+function nonNegative(value) {
+  return Math.max(0, toNumber(value));
+}
+
 function rowNumber(row, names) {
   for (const name of names) {
     if (row[name] !== undefined && row[name] !== "") return toNumber(row[name]);
@@ -97,6 +102,51 @@ function decodeHtml(value) {
 
 function stateSlug(state) {
   return STATE_NAMES[state]?.toLowerCase().replace(/\s+/g, "-") || state.toLowerCase();
+}
+
+function readGovernorFinance(status) {
+  try {
+    const data = JSON.parse(readFileSync(GOVERNOR_FINANCE_URL, "utf8"));
+    const byState = {};
+    const national = {
+      demReceipts: 0, repReceipts: 0,
+      demCash: 0, repCash: 0,
+      demDebts: 0, repDebts: 0,
+      demDisbursements: 0, repDisbursements: 0,
+      demIndividual: 0, repIndividual: 0,
+      otherReceipts: 0, otherCash: 0, otherDebts: 0, otherDisbursements: 0, otherIndividual: 0
+    };
+    for (const [state, value] of Object.entries(data.races || {})) {
+      if (!STATE_NAMES[state]) continue;
+      const record = {
+        demReceipts: nonNegative(value.demReceipts),
+        repReceipts: nonNegative(value.repReceipts),
+        demCash: nonNegative(value.demCash),
+        repCash: nonNegative(value.repCash),
+        demDebts: nonNegative(value.demDebts),
+        repDebts: nonNegative(value.repDebts),
+        demDisbursements: nonNegative(value.demDisbursements),
+        repDisbursements: nonNegative(value.repDisbursements),
+        demIndividual: nonNegative(value.demIndividual),
+        repIndividual: nonNegative(value.repIndividual),
+        otherReceipts: nonNegative(value.otherReceipts),
+        otherCash: nonNegative(value.otherCash),
+        otherDebts: nonNegative(value.otherDebts),
+        otherDisbursements: nonNegative(value.otherDisbursements),
+        otherIndividual: nonNegative(value.otherIndividual),
+        source: value.source || "Manual governor-finance file"
+      };
+      byState[state] = record;
+      for (const key of Object.keys(national)) national[key] += record[key] || 0;
+    }
+    national.financeSignal = nationalFinanceSignal(national);
+    byState.__national = national;
+    status.governorFinance = { ok: true, states: Object.keys(byState).filter((state) => state !== "__national").length, nationalFinanceSignal: national.financeSignal };
+    return byState;
+  } catch (error) {
+    status.governorFinance = { ok: false, error: error.message };
+    return {};
+  }
 }
 
 async function fetchFec(status) {
@@ -216,12 +266,12 @@ async function fetchPollfinityAverages(status) {
 
 async function fetchAllSources() {
   const status = { checkedAt: new Date().toISOString() };
-  const [fec, ddhqGeneric, pollfinity] = await Promise.all([
-    fetchFec(status),
+  const [governorFinance, ddhqGeneric, pollfinity] = await Promise.all([
+    Promise.resolve(readGovernorFinance(status)),
     fetchDdhqGenericBallot(status),
     fetchPollfinityAverages(status)
   ]);
-  return { fec, ddhqGeneric, pollfinity, status };
+  return { fec: governorFinance, ddhqGeneric, pollfinity, status };
 }
 
 const SETTINGS = {
@@ -235,7 +285,7 @@ const SETTINGS = {
     "Manual 2026 gubernatorial race ledger with candidates, incumbency, PVI, and last gubernatorial margin",
     "Cook Political Report, Inside Elections, Sabato's Crystal Ball, WH, VoteHub, and RCP rating references",
     "Current Senate model generic ballot signal as a broad midterm environment input",
-    "OpenFEC candidate finance bulk files"
+    "Manual state-level gubernatorial campaign finance file"
   ]
 };
 
@@ -737,9 +787,10 @@ function buildRace(baseRace, nationalShift, sourceData) {
   // Finance integration
   let financeSignal = 0;
   let nationalFinance = 0;
+  let raceFec = null;
   const fec = sourceData?.fec?.[race.state];
   if (fec) {
-    const raceFec = financeSideForRace(fec, race);
+    raceFec = financeSideForRace(fec, race);
     const demEfficiency = (raceFec.demCash + raceFec.demIndividual * .45 - raceFec.demDebts * .7) / Math.sqrt(1 + Math.max(raceFec.demDisbursements, 1));
     const repEfficiency = (raceFec.repCash + raceFec.repIndividual * .45 - raceFec.repDebts * .7) / Math.sqrt(1 + Math.max(raceFec.repDisbursements, 1));
     const efficiencySignal = clamp((demEfficiency - repEfficiency) / 1800, -1.35, 1.35);
@@ -774,6 +825,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
     demographicPull,
     sourceInputs: {
       financeSignal,
+      finance: raceFec,
       nationalFinance,
       candidateHistory,
       pollMargin,

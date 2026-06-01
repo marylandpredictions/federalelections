@@ -2,6 +2,7 @@ const page = document.getElementById("result-page");
 const raceId = new URLSearchParams(window.location.search).get("id");
 let countyMapDataPromise = null;
 let districtMapDataPromise = null;
+let analysisNotesPromise = null;
 
 const REDISTRICTED_RESULT_STATES = new Set(["AL", "LA", "NC", "OH", "TX", "UT"]);
 const MANUAL_INCUMBENTS_BY_RACE = {
@@ -482,6 +483,10 @@ function countyLookup(race) {
   const lookup = new Map();
   for (const county of race.counties || []) {
     if (county.fips) lookup.set(String(county.fips).padStart(5, "0"), county);
+    if (String(race.state || "").toUpperCase() === "SD" && /oglala lakota/i.test(county.name || "")) {
+      lookup.set("46113", { ...county, fips: "46113" });
+      lookup.set("shannon", county);
+    }
     lookup.set(String(county.name || "").toLowerCase(), county);
   }
   return lookup;
@@ -732,6 +737,96 @@ function countyRows(race) {
   `;
 }
 
+async function loadAnalysisNotes() {
+  if (!analysisNotesPromise) {
+    analysisNotesPromise = fetch("data/result-analysis-notes.json", { cache: "no-store" })
+      .then((response) => response.ok ? response.json() : { races: {} })
+      .catch(() => ({ races: {} }));
+  }
+  return analysisNotesPromise;
+}
+
+function analysisNoteMarkup(notes) {
+  if (!Array.isArray(notes) || !notes.length) {
+    notes = [{
+      date: "",
+      author: "Federal Elections Analysis",
+      role: "Analysis desk",
+      text: "No analyst comment has been posted for this race yet.",
+      image: "",
+      embed: ""
+    }];
+  }
+  const [latest, ...history] = notes;
+  const media = latest.image
+    ? `<img src="${escapeHtml(latest.image)}" alt="">`
+    : latest.embed
+    ? `<div class="analysis-note-embed">${latest.embed}</div>`
+    : "";
+  return `
+    <section class="analysis-note-panel">
+      <div>
+        <p class="kicker">Latest analyst comment</p>
+        <p>${escapeHtml(latest.text || "No note text entered.")}</p>
+        <small>${escapeHtml(latest.author || "Federal Elections Analysis")}${latest.role ? `, ${escapeHtml(latest.role)}` : ""}${latest.date ? ` | ${escapeHtml(latest.date)}` : ""}</small>
+      </div>
+      ${media}
+      ${history.length ? `
+        <details class="analysis-note-history">
+          <summary>Previous analyst comments</summary>
+          ${history.map((note) => `
+            <article>
+              <p>${escapeHtml(note.text || "")}</p>
+              <small>${escapeHtml(note.author || "Federal Elections Analysis")}${note.role ? `, ${escapeHtml(note.role)}` : ""}${note.date ? ` | ${escapeHtml(note.date)}` : ""}</small>
+            </article>
+          `).join("")}
+        </details>
+      ` : ""}
+    </section>
+  `;
+}
+
+function voteHistoryChart(race) {
+  const points = Array.isArray(race.voteHistory) ? race.voteHistory : [];
+  if (!points.length) return "";
+  const candidates = sortedCandidates(race).slice(0, 5);
+  const width = 760;
+  const height = 220;
+  const pad = { left: 42, right: 18, top: 18, bottom: 32 };
+  const maxVotes = Math.max(1, ...points.flatMap((point) => (point.candidates || []).map((candidate) => Number(candidate.votes || 0))));
+  const xFor = (index) => points.length === 1 ? pad.left : pad.left + (index / (points.length - 1)) * (width - pad.left - pad.right);
+  const yFor = (votes) => height - pad.bottom - (Number(votes || 0) / maxVotes) * (height - pad.top - pad.bottom);
+  const paths = candidates.map((candidate) => {
+    const color = candidateFill(race, candidate);
+    const d = points.map((point, index) => {
+      const item = (point.candidates || []).find((entry) => entry.name === candidate.name);
+      return `${index ? "L" : "M"}${xFor(index).toFixed(1)},${yFor(item?.votes || 0).toFixed(1)}`;
+    }).join(" ");
+    return `<path d="${d}" fill="none" stroke="${escapeHtml(color)}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`;
+  }).join("");
+  const legend = candidates.map((candidate) => `
+    <span style="--candidate-color:${escapeHtml(candidateFill(race, candidate))}">
+      <i></i>${escapeHtml(candidate.name)}
+    </span>
+  `).join("");
+  return `
+    <section class="result-vote-history-panel">
+      <div class="section-head">
+        <div>
+          <p class="kicker">Vote history</p>
+          <h2>Votes reported over time.</h2>
+        </div>
+      </div>
+      <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Vote history chart">
+        <line x1="${pad.left}" y1="${height - pad.bottom}" x2="${width - pad.right}" y2="${height - pad.bottom}"></line>
+        <line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${height - pad.bottom}"></line>
+        ${paths}
+      </svg>
+      <div class="vote-history-legend">${legend}</div>
+    </section>
+  `;
+}
+
 function bindMapZoom() {
   const frame = page.querySelector(".result-map-frame");
   if (!frame) return;
@@ -793,6 +888,8 @@ function bindMapZoom() {
 async function renderRace(race) {
   const leader = leadingCandidate(race);
   const mapMarkup = await countyShapeMap(race);
+  const notesData = await loadAnalysisNotes();
+  const analystNotes = notesData.races?.[String(race.id)] || [];
   document.title = `${race.electionName} | Federal Elections Analysis`;
   page.innerHTML = `
     <section class="result-night-shell">
@@ -838,6 +935,9 @@ async function renderRace(race) {
     </section>
 
     <p class="forecast-disclaimer result-call-note">Race calls appear only when Federal Elections Analysis has made a call or projection. Races without that label remain uncalled. This page checks for updates automatically.</p>
+
+    ${voteHistoryChart(race)}
+    ${analysisNoteMarkup(analystNotes)}
 
     <section class="result-county-panel">
       <div class="section-head">

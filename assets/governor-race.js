@@ -76,10 +76,20 @@
       `<li>Republican profile: ${escapeHtml(profileLabel(demographic.repProfile))}</li>`,
       ...((demographic.topGroups || []).map((item) => `<li>${escapeHtml(groupLabel(item.group))}: ${signedPointMargin(item.effect || 0)}</li>`))
     ].join("") : `<li>No separate demographic-pull adjustment saved for this race.</li>`;
+    const finance = race.sourceInputs?.finance;
+    const financeRows = finance ? [
+      `<li>Finance signal: ${signedPointMargin(race.sourceInputs?.financeSignal || 0)}</li>`,
+      `<li>${escapeHtml(finance.demFinanceLabel || "Democratic side")} receipts: $${Math.round(finance.demReceipts || 0).toLocaleString()}</li>`,
+      `<li>${escapeHtml(finance.repFinanceLabel || "Republican side")} receipts: $${Math.round(finance.repReceipts || 0).toLocaleString()}</li>`,
+      `<li>${escapeHtml(finance.demFinanceLabel || "Democratic side")} cash: $${Math.round(finance.demCash || 0).toLocaleString()}</li>`,
+      `<li>${escapeHtml(finance.repFinanceLabel || "Republican side")} cash: $${Math.round(finance.repCash || 0).toLocaleString()}</li>`,
+      `<li>Source: ${escapeHtml(finance.source || "Manual governor-finance file")}</li>`
+    ].join("") : `<li>No manual governor finance has been entered for this race yet.</li>`;
     const snapshotCards = [
       ["Rating", race.rating, "Manual race-rating input before model adjustment"],
       ["Fundamentals", signedPointMargin(race.fundamentalsMargin), "PVI, prior gubernatorial result, and incumbency"],
       ["Candidate/local", signedPointMargin(race.candidateAndLocal), "Manual candidate-quality and local context adjustment"],
+      ["Finance", signedPointMargin(race.sourceInputs?.financeSignal || 0), "Manual state-level campaign finance input"],
       ["Demographic pull", signedPointMargin(race.demographicPull?.adjustment || 0), "Candidate profile interaction with state electorate"],
       ["Model margin", signedPointMargin(race.margin), "Final projected vote margin"],
       ["Model rating", race.modelRating || race.rating, "Probability-derived rating"]
@@ -99,6 +109,7 @@
         ${extras}
       </ul></details>
       <details><summary>Demographic pull</summary><ul>${demographicRows}</ul></details>
+      <details><summary>Finance</summary><ul>${financeRows}</ul></details>
       <details><summary>Fundamentals</summary><ul>
         <li>PVI: ${escapeHtml(String(race.pvi))}</li>
         <li>Last gubernatorial margin: ${signedPointMargin(race.lastMargin)}</li>

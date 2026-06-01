@@ -219,6 +219,35 @@ function normalizeRegionResults(regionResults, race) {
   }).sort((a, b) => a.name.localeCompare(b.name));
 }
 
+function voteHistoryPoint(race) {
+  return {
+    at: new Date().toISOString(),
+    reporting: Number(race.percentReporting || 0),
+    candidates: (race.candidates || []).map((candidate) => ({
+      name: candidate.name,
+      party: candidate.party,
+      partyCode: candidate.partyCode,
+      votes: Number(candidate.votes || 0),
+      percent: Number(candidate.percent || 0),
+      color: candidate.color || ""
+    }))
+  };
+}
+
+function appendVoteHistory(race) {
+  let stored = [];
+  try {
+    const previous = JSON.parse(readFileSync(new URL(`${race.id}.json`, DETAIL_DIR_URL), "utf8"));
+    stored = Array.isArray(previous.voteHistory) ? previous.voteHistory : [];
+  } catch {
+    stored = [];
+  }
+  const point = voteHistoryPoint(race);
+  const pointKey = point.at.slice(0, 16);
+  const withoutCurrentMinute = stored.filter((item) => String(item.at || "").slice(0, 16) !== pointKey);
+  return [...withoutCurrentMinute, point].slice(-240);
+}
+
 async function fetchRaceDetail(id) {
   const detail = await fetchJson(`${CIVIC_BASE}/race/${id}`);
   const group = {
@@ -342,6 +371,7 @@ async function writeRaceDetails(data) {
   for (const race of races) {
     try {
       const detail = MANUAL_RACES[String(race.id)] || await buildRaceResultDetail(race.id);
+      detail.voteHistory = appendVoteHistory(detail);
       writeFileSync(new URL(`${race.id}.json`, DETAIL_DIR_URL), JSON.stringify(detail, null, 2), "utf8");
       written += 1;
     } catch (error) {
