@@ -3174,13 +3174,14 @@ button.race-board-row {
 }
 
 .results-hero {
+  min-height: 220px;
   background:
     linear-gradient(135deg, rgba(16, 48, 178, .72), rgba(255, 42, 79, .28)),
     var(--box-gradient);
 }
 
 .results-status-panel dd {
-  font-size: 1.05rem;
+  font-size: .95rem;
 }
 
 .results-refresh-button {
@@ -3189,9 +3190,14 @@ button.race-board-row {
   border-color: var(--line);
 }
 
+.results-refresh-button:disabled {
+  opacity: .62;
+  cursor: wait;
+}
+
 .results-shell {
   margin-top: 12px;
-  padding: 18px;
+  padding: 12px;
   border: 1px solid var(--line);
   border-radius: 4px;
   background: var(--box-gradient);
@@ -3203,7 +3209,7 @@ button.race-board-row {
   justify-content: space-between;
   gap: 16px;
   align-items: end;
-  padding-bottom: 14px;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -3244,8 +3250,9 @@ button.race-board-row {
 
 .results-groups {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .result-state-card,
@@ -3259,7 +3266,7 @@ button.race-board-row {
 }
 
 .result-state-card {
-  padding: 14px;
+  padding: 10px;
 }
 
 .result-state-head {
@@ -3267,12 +3274,12 @@ button.race-board-row {
   justify-content: space-between;
   gap: 12px;
   align-items: start;
-  margin-bottom: 12px;
+  margin-bottom: 7px;
 }
 
 .result-state-head h2 {
   margin: 0;
-  font-size: 1.28rem;
+  font-size: 1.05rem;
 }
 
 .result-state-head a {
@@ -3290,16 +3297,16 @@ button.race-board-row {
 
 .result-race-list {
   display: grid;
-  gap: 7px;
+  gap: 4px;
 }
 
 .result-race-row {
   width: 100%;
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) auto;
-  gap: 9px;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  gap: 7px;
   align-items: center;
-  padding: 10px 8px;
+  padding: 7px 6px;
   border: 1px solid transparent;
   border-radius: 4px;
   background: transparent;
@@ -3326,13 +3333,13 @@ button.race-board-row {
 }
 
 .result-race-copy strong {
-  font: 900 .92rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  font: 900 .78rem/1.12 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .result-race-copy small,
 .result-date {
   color: var(--muted);
-  font: 750 .74rem/1.15 "Telegraf", "Segoe UI", Arial, sans-serif;
+  font: 750 .66rem/1.12 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .result-date {
@@ -3340,8 +3347,8 @@ button.race-board-row {
 }
 
 .result-election-marker {
-  width: 34px;
-  height: 34px;
+  width: 26px;
+  height: 26px;
   display: inline-grid;
   place-items: center;
   border: 1px solid var(--line);
@@ -3353,8 +3360,8 @@ button.race-board-row {
 .result-election-marker i {
   display: inline-grid;
   place-items: center;
-  min-width: 20px;
-  height: 20px;
+  min-width: 18px;
+  height: 18px;
   border-radius: 999px;
   color: #fff;
   font: 950 .62rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
@@ -3362,14 +3369,14 @@ button.race-board-row {
 }
 
 .result-election-marker-large {
-  width: 62px;
-  height: 62px;
-  border-radius: 14px;
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
 }
 
 .result-election-marker-large i {
-  min-width: 38px;
-  height: 38px;
+  min-width: 34px;
+  height: 34px;
   font-size: .78rem;
 }
 
@@ -3382,7 +3389,7 @@ button.race-board-row {
 }
 
 .marker-open-primary i {
-  background: linear-gradient(90deg, #1030b2 0 46%, #f3f6ff 46% 54%, #e03a3e 54% 100%);
+  background: linear-gradient(135deg, #1030b2 0%, #6f54df 48%, #e03a3e 100%);
 }
 
 .marker-primary i {
@@ -3532,7 +3539,106 @@ button.race-board-row {
 
 .result-page-shell {
   display: grid;
+  gap: 10px;
+}
+
+.result-night-shell {
+  min-height: calc(100vh - 140px);
+  display: grid;
+  grid-template-columns: minmax(360px, .9fr) minmax(360px, 1fr);
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: color-mix(in srgb, #02081d 82%, var(--paper));
+  box-shadow: var(--shadow-soft);
+}
+
+.result-night-left {
+  display: grid;
+  align-content: start;
   gap: 14px;
+}
+
+.result-title-lockup p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.result-night-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  color: var(--muted);
+  font: 800 .78rem/1.2 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.result-night-meta span::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  margin-right: 7px;
+  border-radius: 999px;
+  background: #49d38a;
+}
+
+.result-map-panel {
+  display: grid;
+  grid-template-rows: auto minmax(320px, 1fr) auto;
+  gap: 10px;
+  align-self: stretch;
+  min-height: 520px;
+}
+
+.result-map-tabs span {
+  display: inline-grid;
+  place-items: center;
+  min-height: 34px;
+  padding: 8px 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #07102b;
+  font: 950 .82rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.result-map-canvas {
+  display: grid;
+  place-items: center;
+  min-height: 420px;
+}
+
+.result-map-canvas img {
+  width: min(78%, 520px);
+  max-height: 520px;
+  object-fit: contain;
+  filter: grayscale(1) brightness(.72) contrast(1.1);
+  opacity: .88;
+}
+
+.result-map-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.result-map-controls span {
+  min-width: 34px;
+  min-height: 34px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.result-call-note {
+  margin: 0;
+  padding: 0 4px;
 }
 
 .result-full-hero,
@@ -3561,7 +3667,7 @@ button.race-board-row {
 
 .result-title-lockup h1 {
   margin: 0;
-  font-size: clamp(2.2rem, 6vw, 4.6rem);
+  font-size: clamp(1.7rem, 3.8vw, 2.55rem);
 }
 
 .result-reporting-card,
@@ -3595,16 +3701,16 @@ button.race-board-row {
 
 .result-full-candidates {
   display: grid;
-  gap: 8px;
-  margin-top: 12px;
+  gap: 7px;
+  margin-top: 0;
 }
 
 .result-full-candidate {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(120px, .42fr) minmax(110px, .28fr);
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 96px;
+  gap: 10px;
   align-items: center;
-  padding: 12px;
+  padding: 9px;
   border: 1px solid var(--line);
   border-radius: 4px;
   background: color-mix(in srgb, var(--paper) 72%, transparent);
@@ -3617,8 +3723,8 @@ button.race-board-row {
 
 .result-full-candidate-name {
   display: grid;
-  grid-template-columns: 22px minmax(0, 1fr) auto;
-  gap: 10px;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 9px;
   align-items: center;
 }
 
@@ -3626,6 +3732,7 @@ button.race-board-row {
   display: block;
   color: var(--muted);
   font-weight: 800;
+  font-size: .72rem;
 }
 
 .result-call-badge {
@@ -3639,6 +3746,7 @@ button.race-board-row {
 }
 
 .result-full-bar {
+  grid-column: 1 / -1;
   height: 10px;
   overflow: hidden;
   border-radius: 999px;
@@ -3653,13 +3761,15 @@ button.race-board-row {
 }
 
 .result-full-numbers {
+  grid-column: 2;
+  grid-row: 1;
   display: grid;
   justify-items: end;
   gap: 2px;
 }
 
 .result-full-numbers b {
-  font-size: 1.15rem;
+  font-size: 1rem;
 }
 
 .result-full-numbers span {
@@ -3691,7 +3801,7 @@ button.race-board-row {
 }
 
 .result-county-panel {
-  padding: 16px;
+  padding: 12px;
 }
 
 .county-results-table {
@@ -3702,10 +3812,10 @@ button.race-board-row {
 
 .county-result-row {
   display: grid;
-  grid-template-columns: minmax(160px, .32fr) minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: minmax(130px, .26fr) minmax(0, 1fr);
+  gap: 10px;
   align-items: start;
-  padding: 12px;
+  padding: 9px;
   border: 1px solid var(--line);
   border-radius: 4px;
   background: color-mix(in srgb, var(--paper) 70%, transparent);
@@ -3719,13 +3829,13 @@ button.race-board-row {
 
 .county-candidate-cells {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
 }
 
 .county-candidate-cells span {
   min-width: 0;
-  padding: 8px;
+  padding: 6px;
   border: 1px solid color-mix(in srgb, var(--line) 74%, transparent);
   border-radius: 4px;
 }

@@ -1,12 +1,10 @@
 const updatedLabel = document.getElementById("results-updated");
 const statusLabel = document.getElementById("results-status");
 const groupsNode = document.getElementById("results-groups");
-const detailNode = document.getElementById("results-detail");
 const searchInput = document.getElementById("results-search");
 const refreshButton = document.getElementById("results-refresh");
 
 let liveResultsData = null;
-let selectedRaceId = null;
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -81,9 +79,8 @@ function leadingCandidate(race) {
 
 function raceCard(race) {
   const leader = leadingCandidate(race);
-  const isSelected = String(selectedRaceId) === String(race.id);
   return `
-    <a class="result-race-row ${isSelected ? "active" : ""}" href="result.html?id=${encodeURIComponent(race.id)}" data-race-id="${escapeHtml(race.id)}">
+    <a class="result-race-row" href="result.html?id=${encodeURIComponent(race.id)}">
       <span class="result-election-marker ${markerClass(race.marker)}" title="${escapeHtml(race.marker?.label || "Election")}">
         <i>${escapeHtml(race.marker?.short || "G")}</i>
       </span>
@@ -118,73 +115,6 @@ function renderGroups() {
       </div>
     </section>
   `).join("");
-
-  groupsNode.querySelectorAll("[data-race-id]").forEach((button) => {
-    button.addEventListener("mouseenter", () => {
-      selectedRaceId = button.dataset.raceId;
-      renderGroups();
-      renderDetail();
-    });
-  });
-}
-
-function candidateRows(race) {
-  const candidates = race.candidates || [];
-  const maxPercent = Math.max(1, ...candidates.map((candidate) => Number(candidate.percent || 0)));
-  return candidates.slice(0, 8).map((candidate) => {
-    const width = Math.max(3, (Number(candidate.percent || 0) / maxPercent) * 100);
-    return `
-      <div class="result-candidate-row ${candidate.winner ? "called" : ""}">
-        <div>
-          <span class="result-party-dot ${partyClass(candidate.partyCode)}">${escapeHtml(candidate.partyCode)}</span>
-          <strong>${escapeHtml(candidate.name)}</strong>
-          <small>${escapeHtml(candidate.party || "Other")}</small>
-        </div>
-        <div class="result-candidate-bar" aria-hidden="true"><i style="width:${width}%"></i></div>
-        <span>${numberLabel(candidate.votes)}</span>
-        <b>${percentLabel(candidate.percent)}</b>
-      </div>
-    `;
-  }).join("");
-}
-
-function renderDetail() {
-  if (!detailNode || !liveResultsData) return;
-  const races = flattenRaces();
-  const race = races.find((item) => String(item.id) === String(selectedRaceId)) || races[0];
-  selectedRaceId = race?.id || null;
-
-  if (!race) {
-    detailNode.innerHTML = `
-      <p class="kicker">Race detail</p>
-      <h2>No results loaded yet.</h2>
-      <p class="lede">The page will populate after the live-results generator reaches the election API.</p>
-    `;
-    return;
-  }
-
-  const leader = leadingCandidate(race);
-  detailNode.innerHTML = `
-    <p class="kicker">${escapeHtml(race.stateName)} ${escapeHtml(race.type)}</p>
-    <div class="result-detail-title">
-      <div>
-        <h2>${escapeHtml(race.electionName)}</h2>
-        <p>${escapeHtml(race.electionType || "Election")} | ${escapeHtml(dateLabel(race.electionDate))}</p>
-      </div>
-      <span class="rating-pill">${percentLabel(race.percentReporting)} in</span>
-    </div>
-    <div class="result-leader-line">
-      <span class="result-party-dot ${partyClass(leader?.partyCode)}">${escapeHtml(leader?.partyCode || "")}</span>
-      <strong>${escapeHtml(leader?.name || "No leader yet")}</strong>
-      <span>${leader ? `${percentLabel(leader.percent)} / ${numberLabel(leader.votes)} votes` : "Awaiting returns"}</span>
-    </div>
-    <p><a class="button-link" href="result.html?id=${encodeURIComponent(race.id)}">Open full results</a></p>
-    <div class="result-candidate-table">
-      <div class="result-candidate-head"><span>Candidate</span><span></span><span>Votes</span><span>Share</span></div>
-      ${candidateRows(race) || `<p class="meta">No candidate vote rows reported yet.</p>`}
-    </div>
-    <p class="forecast-disclaimer">${escapeHtml(liveResultsData.provider?.attribution || "")}</p>
-  `;
 }
 
 function renderMeta(data, source) {
@@ -203,7 +133,9 @@ async function fetchResults(url) {
 }
 
 async function loadResults(forceLive = false) {
-  if (statusLabel) statusLabel.textContent = "Loading results...";
+  const previousData = liveResultsData;
+  if (statusLabel) statusLabel.textContent = forceLive ? "Refreshing..." : "Loading results...";
+  if (refreshButton) refreshButton.disabled = true;
   try {
     liveResultsData = forceLive
       ? await fetchResults("/api/live-results")
@@ -219,12 +151,19 @@ async function loadResults(forceLive = false) {
       renderMeta(liveResultsData, forceLive ? "live" : "cache");
     }
     renderGroups();
-    renderDetail();
   } catch (error) {
-    if (statusLabel) statusLabel.textContent = "Live results unavailable";
-    if (groupsNode) groupsNode.innerHTML = `<p class="meta">No results data could be loaded.</p>`;
-    if (detailNode) detailNode.innerHTML = `<p class="meta">No race selected.</p>`;
+    if (previousData) {
+      liveResultsData = previousData;
+      renderMeta(liveResultsData, "cache");
+      renderGroups();
+      if (statusLabel) statusLabel.textContent = "Refresh failed; showing cached races";
+    } else {
+      if (statusLabel) statusLabel.textContent = "Live results unavailable";
+      if (groupsNode) groupsNode.innerHTML = `<p class="meta">No results data could be loaded.</p>`;
+    }
     console.error(error);
+  } finally {
+    if (refreshButton) refreshButton.disabled = false;
   }
 }
 

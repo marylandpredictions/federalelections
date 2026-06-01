@@ -61,6 +61,13 @@ function markerClass(marker) {
   return `marker-${marker?.kind || "general"}`;
 }
 
+function civicMapUrl(race) {
+  const mapPath = race.maps?.[0]?.map;
+  if (!mapPath) return "";
+  if (/^https?:\/\//i.test(mapPath)) return mapPath;
+  return `https://civicapi.org/${mapPath.replace(/^\/+/, "")}`;
+}
+
 function leadingCandidate(race) {
   return (race.candidates || [])[0] || null;
 }
@@ -73,7 +80,7 @@ function callBadge(candidate, race) {
 function candidateRows(race) {
   const candidates = race.candidates || [];
   const maxPercent = Math.max(1, ...candidates.map((candidate) => Number(candidate.percent || 0)));
-  return candidates.map((candidate) => {
+  return candidates.slice(0, 8).map((candidate) => {
     const code = candidate.partyCode || partyCode(candidate.party);
     const width = Math.max(2, (Number(candidate.percent || 0) / maxPercent) * 100);
     return `
@@ -97,7 +104,7 @@ function candidateRows(race) {
 }
 
 function countyCandidateCells(county) {
-  const candidates = (county.candidates || []).slice(0, 4);
+  const candidates = (county.candidates || []).slice(0, 3);
   return candidates.map((candidate) => `
     <span>
       <strong>${escapeHtml(candidate.name)}</strong>
@@ -128,46 +135,47 @@ function countyRows(race) {
 
 function renderRace(race) {
   const leader = leadingCandidate(race);
+  const mapUrl = civicMapUrl(race);
   document.title = `${race.electionName} | Federal Elections Analysis`;
   page.innerHTML = `
-    <section class="result-full-hero">
-      <div class="result-title-lockup">
-        <span class="result-election-marker result-election-marker-large ${markerClass(race.marker)}">
-          <i>${escapeHtml(race.marker?.short || "G")}</i>
-        </span>
-        <div>
-          <p class="kicker">${escapeHtml(race.marker?.label || "Election results")}</p>
-          <h1>${escapeHtml(race.electionName)}</h1>
-          <p class="lede">${escapeHtml(race.stateName || race.state || "United States")} | ${escapeHtml(dateLabel(race.electionDate))}</p>
+    <section class="result-night-shell">
+      <div class="result-night-left">
+        <div class="result-title-lockup">
+          <span class="result-election-marker result-election-marker-large ${markerClass(race.marker)}">
+            <i>${escapeHtml(race.marker?.short || "G")}</i>
+          </span>
+          <div>
+            <p class="kicker">${escapeHtml(race.marker?.label || "Election results")}</p>
+            <h1>${escapeHtml(race.electionName)}</h1>
+            <p>${escapeHtml(race.stateName || race.state || "United States")} | ${escapeHtml(dateLabel(race.electionDate))}</p>
+          </div>
         </div>
-      </div>
-      <aside class="result-reporting-card">
-        <span class="panel-label">Reporting</span>
-        <strong>${percentLabel(race.percentReporting)}</strong>
-        <small>Last updated ${escapeHtml(timeLabel(race.lastUpdated))}</small>
-      </aside>
-    </section>
 
-    <section class="result-full-grid">
-      <article class="result-topline-card">
-        <p class="kicker">Statewide topline</p>
-        <h2>${leader ? `${escapeHtml(leader.name)} leads` : "No votes reported"}</h2>
         <div class="result-full-candidates">
           ${candidateRows(race)}
         </div>
-        <p class="forecast-disclaimer">Race calls shown here are manual Federal Elections Analysis calls from local config. API-provided winner flags are ignored.</p>
-      </article>
 
-      <aside class="result-topline-card">
-        <p class="kicker">Race status</p>
-        <dl class="result-status-list">
-          <div><dt>Election type</dt><dd>${escapeHtml(race.electionScope || race.electionType || "Election")}</dd></div>
-          <div><dt>Reporting</dt><dd>${percentLabel(race.percentReporting)}</dd></div>
-          <div><dt>Total candidates</dt><dd>${numberLabel((race.candidates || []).length)}</dd></div>
-          <div><dt>Regions</dt><dd>${numberLabel((race.counties || []).length)}</dd></div>
-        </dl>
+        <div class="result-night-meta">
+          <span>${percentLabel(race.percentReporting)} reporting</span>
+          <span>Last updated ${escapeHtml(timeLabel(race.lastUpdated))}</span>
+          <span>${numberLabel((race.counties || []).length)} reporting regions</span>
+        </div>
+      </div>
+
+      <aside class="result-map-panel">
+        <div class="result-map-tabs">
+          <span>Results</span>
+        </div>
+        <div class="result-map-canvas">
+          ${mapUrl ? `<img src="${escapeHtml(mapUrl)}" alt="${escapeHtml(race.stateName || race.state || "Race")} results map">` : `<span>No map available</span>`}
+        </div>
+        <div class="result-map-controls" aria-hidden="true">
+          <span>-</span><span>+</span><span>Home</span>
+        </div>
       </aside>
     </section>
+
+    <p class="forecast-disclaimer result-call-note">Race calls shown here are manual Federal Elections Analysis calls from local config. API-provided winner flags are ignored.</p>
 
     <section class="result-county-panel">
       <div class="section-head">
