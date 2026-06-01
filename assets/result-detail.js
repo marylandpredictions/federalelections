@@ -312,7 +312,6 @@ async function countyShapeMap(race) {
       const tooltip = county ? countyTooltipMarkup(county, `${feature.properties?.NAME || county.name} County`) : "";
       return `
         <path d="${geometryPath(feature.geometry, bounds, width, height)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
-          <title>${escapeHtml(title)}</title>
         </path>
       `;
     }).join("");

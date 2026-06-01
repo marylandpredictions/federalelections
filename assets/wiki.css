@@ -953,8 +953,15 @@ h3 {
 
 .home-run-panel div {
   padding: 11px;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  border: 1px solid #d6d9e2;
+  background: var(--box-gradient);
+  transition: transform .16s var(--ease-out), box-shadow .16s var(--ease-out), background .16s var(--ease-out);
+}
+
+.home-run-panel div:hover {
+  transform: translateY(-2px);
+  background: var(--box-gradient-hover);
+  box-shadow: 0 14px 30px color-mix(in srgb, #000 24%, transparent);
 }
 
 .home-run-panel dt {
@@ -1056,15 +1063,18 @@ h3 {
 
 .signal-board {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;
   margin-top: 10px;
 }
 
 .signal-board .chart-panel {
+  min-height: 100%;
   border-radius: 8px;
   border-top-width: 1px;
-  background: var(--box-gradient);
+  background:
+    linear-gradient(150deg, color-mix(in srgb, var(--dem) 22%, transparent), transparent 48%, color-mix(in srgb, var(--rep) 18%, transparent)),
+    color-mix(in srgb, var(--paper) 86%, transparent);
 }
 
 .chart-panel,
@@ -1165,14 +1175,18 @@ h3 {
   margin-top: 8px;
   padding: 14px;
   border-radius: 10px;
-  background: color-mix(in srgb, var(--chrome) 32%, transparent);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 18%, transparent), color-mix(in srgb, var(--rep) 12%, transparent)),
+    color-mix(in srgb, var(--chrome) 32%, transparent);
 }
 
 .team-action-grid .forecast-overview-card {
   min-height: 132px;
   border-radius: 8px;
-  border-top: 1px solid var(--line);
-  background: var(--chrome);
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 28%, transparent), color-mix(in srgb, var(--paper) 74%, transparent) 45%, color-mix(in srgb, var(--rep) 24%, transparent)),
+    color-mix(in srgb, var(--paper) 82%, transparent);
 }
 
 .team-action-grid .forecast-overview-card:hover,
@@ -1207,7 +1221,7 @@ h3 {
 
 .home-radar-row {
   display: grid;
-  grid-template-columns: 58px minmax(150px, 1fr) 108px 92px;
+  grid-template-columns: minmax(68px, .9fr) minmax(104px, .9fr) minmax(98px, .8fr);
   gap: 12px;
   align-items: center;
   padding: 12px;
@@ -1236,7 +1250,11 @@ h3 {
 .home-radar-row strong,
 .home-radar-row b,
 .home-radar-row i {
-  font: 900 .8rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 950 .82rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
   font-style: normal;
 }
 
@@ -1253,8 +1271,19 @@ h3 {
 }
 
 .home-radar-row i {
-  color: var(--muted);
   text-align: right;
+}
+
+.home-radar-row .metric-dem {
+  color: var(--dem);
+}
+
+.home-radar-row .metric-rep {
+  color: var(--rep);
+}
+
+.home-radar-row .metric-toss {
+  color: color-mix(in srgb, var(--ink) 76%, var(--gold));
 }
 
 .home-radar-row:hover,
@@ -1317,6 +1346,19 @@ h3 {
 
 .home-video-feature h3 {
   font-size: clamp(1.3rem, 2.5vw, 2.35rem);
+}
+
+.home-video-feature h3 strong {
+  font-weight: 950;
+}
+
+.video-section-label-upload {
+  width: fit-content;
+  margin-bottom: 12px;
+  border-color: color-mix(in srgb, var(--rep) 72%, #fff);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--rep) 72%, #290006), color-mix(in srgb, var(--dem) 28%, #150010));
+  color: #fff;
 }
 
 .home-article-list strong {
@@ -2291,6 +2333,9 @@ dd {
 .detail-panel {
   padding: clamp(14px, 2.4vw, 22px);
   border-top: 1px solid var(--line);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--dem) 13%, transparent), transparent 42%, color-mix(in srgb, var(--rep) 10%, transparent)),
+    color-mix(in srgb, var(--paper) 90%, transparent);
 }
 
 .chart-panel + .chart-panel,
@@ -2333,6 +2378,12 @@ dd {
   display: grid;
   gap: 8px;
   margin-top: 14px;
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  border-radius: 6px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 10%, transparent), color-mix(in srgb, var(--rep) 8%, transparent)),
+    color-mix(in srgb, var(--paper-2) 58%, transparent);
 }
 
 .seat-histogram {
@@ -2720,9 +2771,22 @@ button.race-board-row {
   border: 1px solid var(--line);
   border-left: 1px solid var(--line);
   border-radius: 3px;
-  background: color-mix(in srgb, var(--paper-2) 72%, transparent);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 10%, transparent), color-mix(in srgb, var(--rep) 8%, transparent)),
+    color-mix(in srgb, var(--paper-2) 72%, transparent);
   color: var(--ink);
   text-decoration: none;
+  transition: transform .16s var(--ease-out), box-shadow .16s var(--ease-out), border-color .16s var(--ease-out), background .16s var(--ease-out);
+}
+
+.path-chip:hover,
+.path-chip:focus,
+.path-stat-grid div:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, #c6d2ff 74%, var(--line));
+  background: var(--box-gradient-hover);
+  box-shadow: 0 12px 26px color-mix(in srgb, #000 22%, transparent);
+  outline: none;
 }
 
 .path-chip.leads-dem {
@@ -4768,7 +4832,9 @@ button.race-board-row {
   margin-top: 16px;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: var(--chart-bg);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 10%, transparent), transparent 48%, color-mix(in srgb, var(--rep) 9%, transparent)),
+    var(--chart-bg);
   overflow: hidden;
   max-width: 100%;
   min-width: 0;

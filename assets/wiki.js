@@ -788,24 +788,39 @@ function updateHomePresidentSummary() {
   }
 }
 
+function metricTone(partyOrValue) {
+  if (partyOrValue === "D" || Number(partyOrValue) > 0) return "metric-dem";
+  if (partyOrValue === "R" || Number(partyOrValue) < 0) return "metric-rep";
+  return "metric-toss";
+}
+
+function radarRow({ className, href, id, probability, probabilityParty, margin, marginParty }) {
+  return `
+    <a class="home-radar-row ${className || ""}" href="${escapeHtml(href)}">
+      <strong>${escapeHtml(id)}</strong>
+      <b class="${metricTone(probabilityParty)}">${escapeHtml(probability)}</b>
+      <i class="${metricTone(marginParty)}">${escapeHtml(margin)}</i>
+    </a>
+  `;
+}
+
 function renderHomeRadar() {
+  const rowLimit = 5;
   const senate = document.getElementById("home-senate-radar");
   if (senate && forecast) {
     const races = [...forecast.races]
       .filter((race) => race.competitive || race.tippingPower > .05)
       .sort((a, b) => a.winnerProbability - b.winnerProbability)
-      .slice(0, 6);
-    senate.innerHTML = races.map((race) => {
-      const leader = candidateForecastName(race, race.winnerParty);
-      return `
-        <a class="home-radar-row ${leaderClassForRace(race)}" href="race.html?state=${race.state}">
-          <strong>${escapeHtml(race.state)}</strong>
-          <span>${escapeHtml(race.displayName.replace(" Senate", ""))}</span>
-          <b>${escapeHtml(leader)} ${oneDecimal(race.winnerProbability)}</b>
-          <i>${escapeHtml(race.rating || "Watch")}</i>
-        </a>
-      `;
-    }).join("");
+      .slice(0, rowLimit);
+    senate.innerHTML = races.map((race) => radarRow({
+      className: leaderClassForRace(race),
+      href: `race.html?state=${race.state}`,
+      id: race.state,
+      probability: `${race.winnerParty} ${oneDecimal(race.winnerProbability)}`,
+      probabilityParty: race.winnerParty,
+      margin: signedPointMargin(race.margin),
+      marginParty: race.margin
+    })).join("");
   }
 
   const house = document.getElementById("home-house-radar");
@@ -813,15 +828,16 @@ function renderHomeRadar() {
     const districts = [...(houseForecast.districts || houseForecast.decisiveDistricts || [])]
       .filter((district) => district.competitive || district.winnerProbability < .75)
       .sort((a, b) => a.winnerProbability - b.winnerProbability)
-      .slice(0, 6);
-    house.innerHTML = districts.map((district) => `
-      <a class="home-radar-row ${houseLeaderClass(district)}" href="house.html">
-        <strong>${escapeHtml(district.id)}</strong>
-        <span>${escapeHtml(district.label || district.rating)}</span>
-        <b>${district.winnerParty === "D" ? "D" : "R"} ${oneDecimal(district.winnerProbability)}</b>
-        <i>${escapeHtml(district.rating || "Watch")}</i>
-      </a>
-    `).join("");
+      .slice(0, rowLimit);
+    house.innerHTML = districts.map((district) => radarRow({
+      className: houseLeaderClass(district),
+      href: "house.html",
+      id: district.id,
+      probability: `${district.winnerParty === "D" ? "D" : "R"} ${oneDecimal(district.winnerProbability)}`,
+      probabilityParty: district.winnerParty,
+      margin: signedPointMargin(district.margin),
+      marginParty: district.margin
+    })).join("");
   }
 
   const governors = document.getElementById("home-governor-radar");
@@ -829,18 +845,19 @@ function renderHomeRadar() {
     const races = [...governorForecast.races]
       .filter((race) => race.competitive || race.tippingPower > .05)
       .sort((a, b) => Math.max(a.demProbability, a.repProbability) - Math.max(b.demProbability, b.repProbability))
-      .slice(0, 6);
+      .slice(0, rowLimit);
     governors.innerHTML = races.map((race) => {
       const leader = race.demProbability >= .5 ? "D" : "R";
       const probability = Math.max(race.demProbability, race.repProbability);
-      return `
-        <a class="home-radar-row ${governorLeaderClass(race)}" href="governor.html">
-          <strong>${escapeHtml(race.state)}</strong>
-          <span>${escapeHtml(race.displayName.replace(" Governor", ""))}</span>
-          <b>${leader} ${oneDecimal(probability)}</b>
-          <i>${escapeHtml(race.rating || "Watch")}</i>
-        </a>
-      `;
+      return radarRow({
+        className: governorLeaderClass(race),
+        href: "governor.html",
+        id: race.state,
+        probability: `${leader} ${oneDecimal(probability)}`,
+        probabilityParty: leader,
+        margin: signedPointMargin(race.margin),
+        marginParty: race.margin
+      });
     }).join("");
   }
 
@@ -850,25 +867,28 @@ function renderHomeRadar() {
     const rows = [
       ...summary.sortedDem.slice(0, 3).map((item) => ({
         type: "leads-dem",
-        label: `${presidentCandidateShortName(item.demCandidateName)} over ${presidentCandidateShortName(item.repCandidateName)}`,
+        id: `${presidentCandidateShortName(item.demCandidateName)}-${presidentCandidateShortName(item.repCandidateName)}`,
         value: oneDecimal(item.national?.demWinProbability || 0),
-        meta: `${item.electoralCollege?.demExpectedEV || "--"} EV`
+        party: "D",
+        margin: (item.national?.demPopularVote || 0) - (item.national?.repPopularVote || 0)
       })),
       ...summary.sortedRep.slice(0, 3).map((item) => ({
         type: "leads-rep",
-        label: `${presidentCandidateShortName(item.repCandidateName)} over ${presidentCandidateShortName(item.demCandidateName)}`,
+        id: `${presidentCandidateShortName(item.repCandidateName)}-${presidentCandidateShortName(item.demCandidateName)}`,
         value: oneDecimal(item.national?.repWinProbability || 0),
-        meta: `${item.electoralCollege?.repExpectedEV || "--"} EV`
+        party: "R",
+        margin: (item.national?.demPopularVote || 0) - (item.national?.repPopularVote || 0)
       }))
-    ];
-    president.innerHTML = rows.map((row) => `
-      <a class="home-radar-row ${row.type}" href="president.html">
-        <strong>2028</strong>
-        <span>${escapeHtml(row.label)}</span>
-        <b>${row.value}</b>
-        <i>${escapeHtml(String(row.meta))}</i>
-      </a>
-    `).join("");
+    ].slice(0, rowLimit);
+    president.innerHTML = rows.map((row) => radarRow({
+      className: row.type,
+      href: "president.html",
+      id: row.id,
+      probability: `${row.party} ${row.value}`,
+      probabilityParty: row.party,
+      margin: signedPointMargin(row.margin),
+      marginParty: row.margin
+    })).join("");
   }
 }
 
@@ -887,8 +907,8 @@ async function renderHomeLatestVideo() {
     container.innerHTML = `
       <iframe src="https://www.youtube-nocookie.com/embed/${escapeHtml(video.id)}" title="${escapeHtml(video.title || "Federal Elections Analysis video")}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
       <div>
-        <p class="kicker">Latest upload</p>
-        <h3>${escapeHtml(video.title || "Federal Elections Analysis video")}</h3>
+        <span class="video-section-label video-section-label-upload">Latest upload</span>
+        <h3><strong>${escapeHtml(video.title || "Federal Elections Analysis video")}</strong></h3>
         <p><a class="button-link" href="${escapeHtml(video.url || `https://www.youtube.com/watch?v=${video.id}`)}" target="_blank" rel="noreferrer">Watch on YouTube</a></p>
       </div>
     `;
