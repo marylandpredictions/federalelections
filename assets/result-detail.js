@@ -4,6 +4,24 @@ let countyMapDataPromise = null;
 let districtMapDataPromise = null;
 
 const REDISTRICTED_RESULT_STATES = new Set(["AL", "LA", "NC", "OH", "TX", "UT"]);
+const MANUAL_INCUMBENTS_BY_RACE = {
+  "79881": ["Tony K. Thurmond"],
+  "79883": ["Mark DeSaulnier"],
+  "79886": ["Adam Gray"],
+  "79896": ["David G. Valadao"],
+  "79907": ["Brad Sherman"],
+  "79909": ["Jimmy Gomez"],
+  "79916": ["Ken Calvert", "Young Kim"],
+  "79932": ["Doris Matsui"],
+  "79938": ["Karen Ruth Bass"],
+  "80203": ["Mariannette Miller-Meeks"],
+  "80461": ["Larry Rhoden"],
+  "80512": ["Mike Rounds"],
+  "81014": ["Ben R Lujan"],
+  "81044": ["Frank Pallone Jr.."],
+  "81048": ["Rob Menendez"],
+  "81057": ["Cory Booker"]
+};
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -72,6 +90,64 @@ function candidateInitials(name) {
   return parts.slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
+function candidatePhotoUrl(race, candidate) {
+  const photoSets = {
+    "79779": {
+      base: "assets/img/candidates/california-lieutenant-governor",
+      photos: {
+        "josh-fryday": "josh-fryday.png",
+        "fiona-ma": "fiona-ma.png",
+        "michael-tubbs": "michael-tubbs.png",
+        "oliver-ma": "oliver-ma.png",
+        "david-fennell": "david-fennell.png",
+        "gloria-romero": "gloria-romero.png"
+      }
+    },
+    "79777": {
+      base: "assets/img/candidates/california-governor",
+      photos: {
+        "antonio-villaraigosa": "villaraigosa.png",
+        "tony-k-thurmond": "thurmond.png",
+        "eric-swalwell": "swalwell.png",
+        "tom-steyer": "steyer.png",
+        "katie-porter": "porter.png",
+        "matt-mahan": "mahan.png",
+        "xavier-becerra": "becerra.png",
+        "steve-hilton": "hilton.png",
+        "chad-bianco": "bianco.png"
+      }
+    },
+    "79881": {
+      base: "assets/img/candidates/california-superintendent",
+      photos: {
+        "richard-barrera": "richard-barrera.png",
+        "nichelle-m-henderson": "nichelle-henderson.png",
+        "al-muratsuchi": "al-muratsuchi.png",
+        "josh-newman": "josh-newman.png",
+        "anthony-rendon": "anthony-rendon.png",
+        "sonja-shaw": "sonja-shaw.png"
+      }
+    }
+  };
+  const photoSet = photoSets[String(race?.id)];
+  if (!photoSet) return "";
+  const slug = String(candidate?.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return photoSet.photos[slug] ? `${photoSet.base}/${photoSet.photos[slug]}` : "";
+}
+
+function isIncumbentCandidate(race, candidate) {
+  const manualNames = MANUAL_INCUMBENTS_BY_RACE[String(race?.id)] || [];
+  const candidateName = String(candidate?.name || "").toLowerCase();
+  return Boolean(candidate?.incumbent || candidate?.isIncumbent || candidate?.is_incumbent)
+    || manualNames.some((name) => name.toLowerCase() === candidateName);
+}
+
+function incumbentMark(race, candidate) {
+  return isIncumbentCandidate(race, candidate)
+    ? `<span class="result-incumbent-mark" title="Incumbent" aria-label="Incumbent">*</span>`
+    : "";
+}
+
 function markerClass(marker) {
   return `marker-${marker?.kind || "general"}`;
 }
@@ -102,12 +178,13 @@ function candidateRow(candidate, race, maxPercent) {
   const code = candidate.partyCode || partyCode(candidate.party);
   const width = Math.max(2, (Number(candidate.percent || 0) / maxPercent) * 100);
   const fill = candidateFill(candidate);
+  const photo = candidatePhotoUrl(race, candidate);
   return `
     <article class="result-full-candidate ${candidate.callLabel ? "called" : ""}" style="--candidate-color:${escapeHtml(fill)}">
       <div class="result-full-candidate-name">
-        <span class="result-candidate-avatar ${partyClass(code)}">${escapeHtml(candidateInitials(candidate.name))}</span>
+        <span class="result-candidate-avatar ${partyClass(code)}">${photo ? `<img src="${escapeHtml(photo)}" alt="">` : escapeHtml(candidateInitials(candidate.name))}</span>
         <div>
-          <strong>${escapeHtml(candidate.name)}</strong>
+          <strong>${escapeHtml(candidate.name)}${incumbentMark(race, candidate)}</strong>
         </div>
         ${callBadge(candidate, race)}
       </div>
