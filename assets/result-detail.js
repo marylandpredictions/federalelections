@@ -158,6 +158,14 @@ const CANDIDATE_PHOTO_SETS = {
 };
 
 const ANALYST_PROFILES = {
+  "fea-analysis-desk": {
+    name: "FEA Analysis Desk",
+    image: "assets/img/FEA_Icon.png"
+  },
+  "federal-elections-analysis": {
+    name: "Federal Elections Analysis",
+    image: "assets/img/FEA_Icon.png"
+  },
   "nathan-wang": {
     name: "Nathan Wang",
     image: "assets/img/analysts/nathan-wang.png"
@@ -249,6 +257,81 @@ function candidatePhotoUrl(race, candidate) {
 function candidatePhotoColor(race, candidate) {
   const slug = slugifyName(candidate?.name);
   return CANDIDATE_PHOTO_SETS[String(race?.id)]?.colors?.[slug] || "";
+}
+
+function safeMediaUrl(value) {
+  const url = String(value || "").trim();
+  if (!url) return "";
+  if (/^(https?:)?\/\//i.test(url) || /^assets\//i.test(url) || /^data\/article-images\//i.test(url)) return url;
+  return "";
+}
+
+function normalizedExternalEmbedUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  try {
+    const url = new URL(raw, window.location.href);
+    const host = url.hostname.replace(/^www\./, "").toLowerCase();
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      const videoId = url.searchParams.get("v");
+      if (videoId && /^[a-zA-Z0-9_-]{6,}$/.test(videoId)) return `https://www.youtube.com/embed/${videoId}`;
+      if (url.pathname.startsWith("/embed/")) return url.href;
+    }
+    if (host === "youtu.be") {
+      const videoId = url.pathname.replace("/", "");
+      if (videoId && /^[a-zA-Z0-9_-]{6,}$/.test(videoId)) return `https://www.youtube.com/embed/${videoId}`;
+    }
+    const allowedHosts = new Set([
+      "youtube.com",
+      "player.vimeo.com",
+      "docs.google.com",
+      "drive.google.com",
+      "datawrapper.dwcdn.net",
+      "flo.uri.sh",
+      "public.flourish.studio",
+      "observablehq.com"
+    ]);
+    if (!allowedHosts.has(host) || url.protocol !== "https:") return "";
+    return url.href;
+  } catch {
+    return "";
+  }
+}
+
+function noteImageMarkup(value) {
+  const block = typeof value === "string" ? { url: value } : (value || {});
+  const url = safeMediaUrl(block.url || block.src);
+  if (!url) return "";
+  const size = ["small", "medium", "large", "full"].includes(block.size) ? block.size : "medium";
+  const caption = block.caption ? `<figcaption>${escapeHtml(block.caption)}</figcaption>` : "";
+  return `
+    <figure class="analysis-note-media analysis-note-media-${escapeHtml(size)}">
+      <img src="${escapeHtml(url)}" alt="${escapeHtml(block.alt || block.caption || "")}" loading="lazy">
+      ${caption}
+    </figure>
+  `;
+}
+
+function noteExternalEmbedMarkup(value) {
+  const block = typeof value === "string" ? { url: value } : (value?.embed || value || {});
+  const url = normalizedExternalEmbedUrl(block.url || block.src);
+  if (!url) return "";
+  const size = ["small", "medium", "large", "full"].includes(block.size) ? block.size : "large";
+  const height = Math.min(900, Math.max(180, Number(block.height) || 320));
+  const caption = block.caption ? `<figcaption>${escapeHtml(block.caption)}</figcaption>` : "";
+  return `
+    <figure class="analysis-note-embed analysis-note-embed-${escapeHtml(size)}">
+      <iframe
+        src="${escapeHtml(url)}"
+        title="${escapeHtml(block.title || block.alt || "Analyst note embed")}"
+        height="${height}"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>
+      ${caption}
+    </figure>
+  `;
 }
 
 function isIncumbentCandidate(race, candidate) {
@@ -791,11 +874,7 @@ function analysisNoteMarkup(notes) {
       </div>
     `;
   };
-  const media = latest.image
-    ? `<figure class="analysis-note-media"><img src="${escapeHtml(latest.image)}" alt=""></figure>`
-    : latest.embed
-    ? `<div class="analysis-note-embed">${latest.embed}</div>`
-    : "";
+  const media = latest.image ? noteImageMarkup(latest.image) : latest.embed ? noteExternalEmbedMarkup(latest.embed) : "";
   return `
     <section class="analysis-note-panel">
       <div class="analysis-note-copy">
