@@ -955,7 +955,7 @@ function pollsAreOpen(race) {
 }
 
 function automaticUncontestedCalls(race) {
-  if (!pollsAreOpen(race)) return [];
+  if (!pollsAreClosed(race)) return [];
   const realCandidates = (race.candidates || []).filter(isRealCandidate);
   if (realCandidates.length !== 1) return [];
   return [{
@@ -1549,9 +1549,7 @@ function bindMapZoom() {
   let pointerStart = null;
   const apply = () => {
     resultMapViewState = { zoom, panX, panY };
-    frame.style.setProperty("--result-map-zoom", zoom.toFixed(2));
-    frame.style.setProperty("--result-map-pan-x", `${panX.toFixed(1)}px`);
-    frame.style.setProperty("--result-map-pan-y", `${panY.toFixed(1)}px`);
+    applyMapViewportState();
     controls.forEach((control) => {
       const mode = control.dataset.mapZoom;
       control.disabled = (mode === "in" && zoom >= 2.5) || (mode === "out" && zoom <= 1);
@@ -1605,11 +1603,7 @@ function bindMapColorMode() {
   let mode = "percent";
   const apply = () => {
     frame.dataset.marginMode = mode;
-    frame.querySelectorAll("[data-fill-percent]").forEach((node) => {
-      const fill = mode === "votes" ? node.dataset.fillVotes : node.dataset.fillPercent;
-      if (node.tagName.toLowerCase() === "path") node.setAttribute("fill", fill || "#566274");
-      else node.style.setProperty("--tile-color", fill || "#566274");
-    });
+    applyMapMarginColors();
     controls.forEach((control) => {
       control.classList.toggle("active", control.dataset.mapColor === mode);
       control.setAttribute("aria-pressed", String(control.dataset.mapColor === mode));
@@ -1622,6 +1616,91 @@ function bindMapColorMode() {
     });
   });
   apply();
+}
+
+function raceDetailUpdateKey(race) {
+  return JSON.stringify({
+    reporting: race.percentReporting,
+    candidates: (race.candidates || []).map((candidate) => [
+      candidate.name,
+      candidate.votes,
+      candidate.percent,
+      candidate.callLabel || ""
+    ]),
+    calls: (race.calls || []).map((call) => [call.candidate, call.status, call.label || ""]),
+    counties: (race.counties || []).map((county) => [
+      county.name,
+      county.percentReporting,
+      (county.candidates || []).map((candidate) => [candidate.name, candidate.votes, candidate.percent])
+    ]),
+    voteHistory: (race.voteHistory || []).length
+  });
+}
+
+function applyMapViewportState() {
+  const frame = page.querySelector(".result-map-frame");
+  if (!frame) return;
+  const { zoom, panX, panY } = resultMapViewState;
+  frame.style.setProperty("--result-map-zoom", zoom.toFixed(2));
+  frame.style.setProperty("--result-map-pan-x", `${panX.toFixed(1)}px`);
+  frame.style.setProperty("--result-map-pan-y", `${panY.toFixed(1)}px`);
+}
+
+function applyMapMarginColors() {
+  const frame = page.querySelector(".result-map-frame");
+  if (!frame) return;
+  const mode = frame.dataset.marginMode === "votes" ? "votes" : "percent";
+  frame.querySelectorAll("[data-fill-percent]").forEach((node) => {
+    const fill = mode === "votes" ? node.dataset.fillVotes : node.dataset.fillPercent;
+    if (node.tagName.toLowerCase() === "path") node.setAttribute("fill", fill || "#566274");
+    else node.style.setProperty("--tile-color", fill || "#566274");
+  });
+}
+
+async function patchRaceDetail(race) {
+  const reporting = Math.max(0, Math.min(100, Number(race.percentReporting || 0)));
+  const reportingStat = page.querySelector(".result-reporting-stat");
+  if (reportingStat) reportingStat.textContent = `${percentLabel(race.percentReporting)} reporting`;
+  const reportingBar = page.querySelector(".result-reporting-bar i");
+  if (reportingBar) reportingBar.style.width = `${reporting}%`;
+
+  const lastUpdatedNode = page.querySelector("[data-result-last-updated]");
+  if (lastUpdatedNode) lastUpdatedNode.textContent = `Last updated ${timeLabel(race.lastUpdated)}`;
+  const countyCountNode = page.querySelector("[data-result-county-count]");
+  if (countyCountNode) countyCountNode.textContent = `${numberLabel((race.counties || []).length)} counties`;
+
+  const countyPanelReporting = page.querySelector(".result-county-panel .section-head p");
+  if (countyPanelReporting) countyPanelReporting.textContent = `${percentLabel(race.percentReporting)} statewide reporting.`;
+
+  const candidatesNode = page.querySelector(".result-full-candidates");
+  if (candidatesNode) candidatesNode.innerHTML = candidateRows(race);
+
+  const callSlot = page.querySelector("[data-result-call-slot]");
+  if (callSlot) callSlot.innerHTML = raceCallBanner(race);
+
+  const mapFrame = page.querySelector(".result-map-frame");
+  if (mapFrame) {
+    const marginMode = mapFrame.dataset.marginMode || "percent";
+    mapFrame.innerHTML = await countyShapeMap(race);
+    mapFrame.dataset.marginMode = marginMode;
+    applyMapViewportState();
+    applyMapMarginColors();
+    bindCountyHover();
+  }
+
+  const countyPanel = page.querySelector(".result-county-panel");
+  const countyContent = countyPanel?.querySelector(".county-results-table, .meta");
+  if (countyContent) countyContent.outerHTML = countyRows(race).trim();
+
+  const historyPanel = page.querySelector(".result-vote-history-panel, .result-vote-history-empty");
+  if (historyPanel) {
+    const replacement = document.createElement("div");
+    replacement.innerHTML = voteHistoryChart(race).trim();
+    const nextPanel = replacement.firstElementChild;
+    if (nextPanel) historyPanel.replaceWith(nextPanel);
+  }
+
+  bindPollCountdown();
 }
 
 async function renderRace(race) {
@@ -1648,12 +1727,12 @@ async function renderRace(race) {
           </div>
         </div>
 
-        ${raceCallBanner(race)}
+        <div data-result-call-slot>${raceCallBanner(race)}</div>
 
         <div class="result-night-meta result-night-meta-top">
           <span data-poll-close="${escapeHtml(closeIso)}" class="result-poll-close-stat">${escapeHtml(pollCloseLabel(closeIso))}</span>
-          <span>Last updated ${escapeHtml(timeLabel(race.lastUpdated))}</span>
-          <span>${numberLabel((race.counties || []).length)} counties</span>
+          <span data-result-last-updated>Last updated ${escapeHtml(timeLabel(race.lastUpdated))}</span>
+          <span data-result-county-count>${numberLabel((race.counties || []).length)} counties</span>
         </div>
         <div class="result-reporting-label-row">
           <span class="result-reporting-stat">${percentLabel(race.percentReporting)} reporting</span>
@@ -1718,11 +1797,29 @@ async function fetchRace() {
   return staticResponse.json();
 }
 
+let raceDetailInitialized = false;
+let raceDetailUpdateKeyCache = "";
+
 async function loadRaceDetail() {
   try {
     const race = await applyLocalRaceCalls(await fetchRace());
-    await renderRace(race);
+    const updateKey = raceDetailUpdateKey(race);
+    if (raceDetailInitialized && updateKey === raceDetailUpdateKeyCache) {
+      const lastUpdatedNode = page.querySelector("[data-result-last-updated]");
+      if (lastUpdatedNode) lastUpdatedNode.textContent = `Last updated ${timeLabel(race.lastUpdated)}`;
+      bindPollCountdown();
+      return;
+    }
+    if (!raceDetailInitialized) {
+      await renderRace(race);
+      raceDetailInitialized = true;
+    } else {
+      await patchRaceDetail(race);
+    }
+    raceDetailUpdateKeyCache = updateKey;
   } catch (error) {
+    raceDetailInitialized = false;
+    raceDetailUpdateKeyCache = "";
     page.innerHTML = `
       <section class="text-panel">
         <p class="kicker">Race results</p>

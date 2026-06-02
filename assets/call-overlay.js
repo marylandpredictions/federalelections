@@ -201,9 +201,24 @@
     return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   }
 
+  function candidateNameParts(name) {
+    return String(name || "")
+      .replace(/"[^"]*"/g, " ")
+      .replace(/\([^)]*\)/g, " ")
+      .replace(/[.,]/g, " ")
+      .split(/\s+/)
+      .map((part) => part.replace(/[^A-Za-z-]/g, ""))
+      .filter(Boolean);
+  }
+
   function initials(name) {
-    const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
-    return parts.slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "?";
+    const parts = candidateNameParts(name);
+    if (!parts.length) return "?";
+    if (parts.length === 1) {
+      const word = parts[0];
+      return (word.length >= 2 ? word.slice(0, 2) : word.slice(0, 1)).toUpperCase();
+    }
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
   }
 
   function percentLabel(value) {
@@ -261,7 +276,7 @@
   }
 
   function automaticUncontestedCalls(race) {
-    if (!pollsAreOpen(race)) return [];
+    if (!pollsAreClosed(race)) return [];
     const realCandidates = (race.candidates || []).filter(isRealCandidate);
     if (realCandidates.length !== 1) return [];
     return [{

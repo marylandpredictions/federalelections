@@ -156,14 +156,33 @@ function raceCard(race) {
   `;
 }
 
+function resultsListUpdateKey(data, query = "") {
+  return JSON.stringify({
+    query,
+    races: flattenRaces(data).map((race) => [
+      race.id,
+      race.leaderName,
+      race.percentReporting,
+      (race.calls || []).length,
+      (race.candidates || []).slice(0, 2).map((candidate) => [candidate.name, candidate.percent, candidate.callLabel || ""])
+    ])
+  });
+}
+
+let resultsListUpdateKeyCache = "";
+
 function renderGroups() {
   if (!groupsNode || !liveResultsData) return;
   const query = searchInput?.value?.trim() || "";
+  const updateKey = resultsListUpdateKey(liveResultsData, query);
+  if (updateKey === resultsListUpdateKeyCache && groupsNode.dataset.rendered === "true") return;
+  resultsListUpdateKeyCache = updateKey;
   const groups = (liveResultsData.groups || []).map((group) => ({
     ...group,
     races: (group.races || []).filter((race) => raceMatches(race, query))
   }));
 
+  groupsNode.dataset.rendered = "true";
   groupsNode.innerHTML = groups.map((group) => `
     <section class="result-state-card">
       <div class="result-state-head">
@@ -225,7 +244,7 @@ function pollsAreOpen(race) {
 }
 
 function automaticUncontestedCalls(race) {
-  if (!pollsAreOpen(race)) return [];
+  if (!pollsAreClosed(race)) return [];
   const realCandidates = (race.candidates || []).filter(isRealCandidate);
   if (realCandidates.length !== 1) return [];
   return [{

@@ -30,6 +30,15 @@ const REQUIRED_RACES_BY_STATE = {
 const MANUAL_RACES = {
 };
 
+const POLL_CLOSE_UTC_BY_STATE = {
+  CA: "2026-06-03T03:00:00Z",
+  IA: "2026-06-03T01:00:00Z",
+  MT: "2026-06-03T02:00:00Z",
+  NJ: "2026-06-03T00:00:00Z",
+  NM: "2026-06-03T01:00:00Z",
+  SD: "2026-06-03T01:00:00Z"
+};
+
 const TYPE_PRIORITY = {
   "US Senate": 100,
   Senate: 96,
@@ -106,7 +115,8 @@ function isRealCandidate(candidate) {
 }
 
 function pollsAreClosed(race) {
-  const iso = isoDate(race.pollsClose || race.polls_close);
+  const iso = isoDate(race.pollsClose || race.polls_close)
+    || POLL_CLOSE_UTC_BY_STATE[String(race.province || race.state || "").toUpperCase()];
   if (!iso) return false;
   const date = new Date(iso);
   return Number.isFinite(date.getTime()) && Date.now() >= date.getTime();
@@ -120,7 +130,7 @@ function pollsAreOpen(race) {
 }
 
 function automaticUncontestedCalls(race, candidates = []) {
-  if (!pollsAreOpen(race)) return [];
+  if (!pollsAreClosed(race)) return [];
   const realCandidates = candidates.filter(isRealCandidate);
   if (realCandidates.length !== 1) return [];
   return [{
