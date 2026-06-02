@@ -5,6 +5,7 @@ const searchInput = document.getElementById("results-search");
 const refreshButton = document.getElementById("results-refresh");
 
 let liveResultsData = null;
+const FAVORITE_RACES_KEY = "fea.favoriteResultRaces.v1";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -119,6 +120,43 @@ function flattenRaces(data = liveResultsData) {
   return (data?.groups || []).flatMap((group) => group.races || []);
 }
 
+function readFavoriteRaces() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(FAVORITE_RACES_KEY) || "[]");
+    return Array.isArray(parsed) ? parsed.filter((race) => race && race.id && !race.archived) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeFavoriteRaces(races) {
+  try {
+    localStorage.setItem(FAVORITE_RACES_KEY, JSON.stringify(races.filter((race) => race && race.id && !race.archived)));
+  } catch {
+  }
+}
+
+function favoriteRaceSummary(race) {
+  return {
+    id: String(race.id),
+    electionName: race.electionName || "Election results",
+    state: race.state || "",
+    stateName: race.stateName || "",
+    electionDate: race.electionDate || "",
+    archived: Boolean(race.archived)
+  };
+}
+
+function isRaceFavorite(raceId) {
+  return readFavoriteRaces().some((race) => String(race.id) === String(raceId));
+}
+
+function setRaceFavorite(race, favorite) {
+  const id = String(race.id);
+  const existing = readFavoriteRaces().filter((item) => String(item.id) !== id);
+  writeFavoriteRaces(favorite ? [favoriteRaceSummary(race), ...existing].slice(0, 20) : existing);
+}
+
 function leadingCandidate(race) {
   const candidates = [...(race.candidates || [])];
   if (candidates.some((candidate) => Number(candidate.votes || 0) || Number(candidate.percent || 0))) {
@@ -139,20 +177,24 @@ function raceCard(race) {
   const leader = leadingCandidate(race);
   const hasCall = Boolean((race.calls || []).length || (race.candidates || []).some((candidate) => candidate.callLabel));
   const closeLabel = pollCloseLabel(race);
+  const favorite = isRaceFavorite(race.id);
   return `
-    <a class="result-race-row ${hasCall ? "has-call" : ""}" href="result.html?id=${encodeURIComponent(race.id)}">
-      <span class="result-election-marker ${markerClass(race.marker)}" title="${escapeHtml(race.marker?.label || "Election")}">
-        <i>${escapeHtml(race.marker?.short || "G")}</i>
-      </span>
-      <span class="result-race-copy">
-        <strong>${escapeHtml(race.electionName)}</strong>
-        <small>${escapeHtml(leader?.name || "No votes reported yet")}${race.otherCandidateCount ? ` + ${race.otherCandidateCount} candidate${race.otherCandidateCount === 1 ? "" : "s"}` : ""}</small>
-      </span>
-      <span class="result-race-meta">
-        ${hasCall ? `<span class="result-race-call">Called</span>` : ""}
-        <span class="result-date">${escapeHtml(closeLabel || dateLabel(race.electionDate))}</span>
-      </span>
-    </a>
+    <article class="result-race-tile ${favorite ? "is-favorite" : ""}">
+      <a class="result-race-row ${hasCall ? "has-call" : ""}" href="result.html?id=${encodeURIComponent(race.id)}">
+        <span class="result-election-marker ${markerClass(race.marker)}" title="${escapeHtml(race.marker?.label || "Election")}">
+          <i>${escapeHtml(race.marker?.short || "G")}</i>
+        </span>
+        <span class="result-race-copy">
+          <strong>${escapeHtml(race.electionName)}</strong>
+          <small>${escapeHtml(leader?.name || "No votes reported yet")}${race.otherCandidateCount ? ` + ${race.otherCandidateCount} candidate${race.otherCandidateCount === 1 ? "" : "s"}` : ""}</small>
+        </span>
+        <span class="result-race-meta">
+          ${hasCall ? `<span class="result-race-call">Called</span>` : ""}
+          <span class="result-date">${escapeHtml(closeLabel || dateLabel(race.electionDate))}</span>
+        </span>
+      </a>
+      <button class="result-favorite-button" type="button" data-favorite-race="${escapeHtml(race.id)}" aria-pressed="${favorite}" aria-label="${favorite ? "Remove saved race" : "Save race"}">${favorite ? "★" : "☆"}</button>
+    </article>
   `;
 }
 
@@ -164,6 +206,7 @@ function resultsListUpdateKey(data, query = "") {
       race.leaderName,
       race.percentReporting,
       (race.calls || []).length,
+      (race.calls || []).map((call) => call.calledAt || ""),
       (race.candidates || []).slice(0, 2).map((candidate) => [candidate.name, candidate.percent, candidate.callLabel || ""])
     ])
   });
@@ -183,7 +226,25 @@ function renderGroups() {
   }));
 
   groupsNode.dataset.rendered = "true";
-  groupsNode.innerHTML = groups.map((group) => `
+  const racesById = new Map(flattenRaces(liveResultsData).map((race) => [String(race.id), race]));
+  const favoriteRaces = readFavoriteRaces()
+    .map((favorite) => racesById.get(String(favorite.id)) || favorite)
+    .filter((race) => race && !race.archived && raceMatches(race, query));
+  const favoritesMarkup = favoriteRaces.length ? `
+    <section class="result-state-card result-favorites-card">
+      <div class="result-state-head">
+        <div>
+          <p class="kicker">Saved</p>
+          <h2>Favorited races</h2>
+        </div>
+        <span>${numberLabel(favoriteRaces.length)} saved</span>
+      </div>
+      <div class="result-race-list">
+        ${favoriteRaces.map(raceCard).join("")}
+      </div>
+    </section>
+  ` : "";
+  groupsNode.innerHTML = `${favoritesMarkup}${groups.map((group) => `
     <section class="result-state-card">
       <div class="result-state-head">
         <div>
@@ -196,7 +257,8 @@ function renderGroups() {
         ${group.races.length ? group.races.map(raceCard).join("") : `<p class="meta">No matching featured races in this group.</p>`}
       </div>
     </section>
-  `).join("");
+  `).join("")}`;
+  bindFavoriteButtons();
 }
 
 function renderMeta(data, source) {
@@ -244,15 +306,29 @@ function pollsAreOpen(race) {
 }
 
 function automaticUncontestedCalls(race) {
-  if (!pollsAreClosed(race)) return [];
+  if (!pollsAreOpen(race)) return [];
   const realCandidates = (race.candidates || []).filter(isRealCandidate);
   if (realCandidates.length !== 1) return [];
+  const calledAt = validElectionIso(race?.pollsOpen || race?.pollOpenAt) || POLL_OPEN_UTC_BY_STATE[race.state] || validElectionIso(race?.pollsClose || race?.pollCloseAt) || POLL_CLOSE_UTC_BY_STATE[race.state] || "";
   return [{
     candidate: realCandidates[0].name,
     status: "winner",
     label: "Winner",
-    automatic: true
+    automatic: true,
+    calledAt
   }];
+}
+
+function bindFavoriteButtons() {
+  groupsNode?.querySelectorAll("[data-favorite-race]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const race = flattenRaces(liveResultsData).find((item) => String(item.id) === String(button.dataset.favoriteRace));
+      if (!race) return;
+      setRaceFavorite(race, !isRaceFavorite(race.id));
+      resultsListUpdateKeyCache = "";
+      renderGroups();
+    });
+  });
 }
 
 async function loadManualCalls() {

@@ -3573,6 +3573,11 @@ button.race-board-row {
   gap: 4px;
 }
 
+.result-race-tile {
+  position: relative;
+  display: grid;
+}
+
 .result-race-row {
   width: 100%;
   display: grid;
@@ -3607,6 +3612,40 @@ button.race-board-row {
 .result-race-row.has-call {
   border-color: color-mix(in srgb, #49d38a 70%, var(--line));
   box-shadow: inset 3px 0 0 #49d38a, 0 0 18px color-mix(in srgb, #49d38a 12%, transparent);
+}
+
+.result-race-tile.is-favorite .result-race-row {
+  border-color: color-mix(in srgb, #ffd166 62%, var(--line));
+  box-shadow: inset 3px 0 0 #ffd166, 0 0 18px color-mix(in srgb, #ffd166 12%, transparent);
+}
+
+.result-race-tile .result-race-meta {
+  padding-right: 22px;
+}
+
+.result-favorite-button {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, #ffd166 70%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, #020b22 82%, transparent);
+  color: #ffd166;
+  font: 950 .82rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  cursor: pointer;
+  transition: transform .16s var(--ease-out), box-shadow .16s var(--ease-out), background .16s var(--ease-out);
+}
+
+.result-favorite-button:hover,
+.result-favorite-button:focus {
+  transform: translateY(-1px) scale(1.04);
+  background: color-mix(in srgb, #ffd166 12%, #020b22);
+  box-shadow: 0 0 16px color-mix(in srgb, #ffd166 28%, transparent);
+  outline: none;
 }
 
 .result-race-call {
@@ -3936,12 +3975,96 @@ button.race-board-row {
 
 .result-map-panel {
   display: grid;
-  grid-template-rows: auto minmax(390px, 1fr) auto;
+  grid-template-rows: auto auto minmax(390px, 1fr) auto;
   gap: 12px;
   align-self: stretch;
   min-height: 660px;
   padding-left: clamp(8px, 1.8vw, 26px);
   animation: result-fade .5s ease both;
+}
+
+.result-favorite-panel {
+  display: grid;
+  gap: 9px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 12%, transparent), color-mix(in srgb, var(--rep) 8%, transparent)),
+    #020b22;
+}
+
+.result-favorite-panel > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.result-favorite-panel .kicker {
+  margin: 0;
+}
+
+.result-favorite-toggle {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  border: 1px solid color-mix(in srgb, #ffd166 62%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, #ffd166 8%, transparent);
+  color: #ffd166;
+  font: 950 .76rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  cursor: pointer;
+}
+
+.result-favorite-panel nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.result-favorite-panel nav a {
+  max-width: 230px;
+  display: inline-grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+  padding: 7px 9px;
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-radius: 999px;
+  color: var(--ink);
+  text-decoration: none;
+  background: color-mix(in srgb, var(--paper) 46%, transparent);
+  transition: border-color .16s var(--ease-out), background .16s var(--ease-out), transform .16s var(--ease-out);
+}
+
+.result-favorite-panel nav a:hover,
+.result-favorite-panel nav a:focus,
+.result-favorite-panel nav a.active {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, #ffd166 64%, var(--line));
+  background: color-mix(in srgb, #ffd166 10%, var(--paper));
+  outline: none;
+}
+
+.result-favorite-panel nav span {
+  color: #ffd166;
+  font: 950 .68rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.result-favorite-panel nav strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: .78rem;
+}
+
+.result-favorite-panel nav p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 800;
 }
 
 .result-map-tabs {

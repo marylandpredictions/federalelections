@@ -1,5 +1,6 @@
 const page = document.getElementById("result-page");
 const raceId = new URLSearchParams(window.location.search).get("id");
+const FAVORITE_RACES_KEY = "fea.favoriteResultRaces.v1";
 let countyMapDataPromise = null;
 let districtMapDataPromise = null;
 let governorForecastPromise = null;
@@ -278,6 +279,43 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function readFavoriteRaces() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(FAVORITE_RACES_KEY) || "[]");
+    return Array.isArray(parsed) ? parsed.filter((race) => race && race.id && !race.archived) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeFavoriteRaces(races) {
+  try {
+    localStorage.setItem(FAVORITE_RACES_KEY, JSON.stringify(races.filter((race) => race && race.id && !race.archived)));
+  } catch {
+  }
+}
+
+function favoriteRaceSummary(race) {
+  return {
+    id: String(race.id),
+    electionName: race.electionName || "Election results",
+    state: race.state || "",
+    stateName: race.stateName || "",
+    electionDate: race.electionDate || "",
+    archived: Boolean(race.archived)
+  };
+}
+
+function isRaceFavorite(id) {
+  return readFavoriteRaces().some((race) => String(race.id) === String(id));
+}
+
+function setRaceFavorite(race, favorite) {
+  const id = String(race.id);
+  const existing = readFavoriteRaces().filter((item) => String(item.id) !== id);
+  writeFavoriteRaces(favorite ? [favoriteRaceSummary(race), ...existing].slice(0, 20) : existing);
 }
 
 function numberLabel(value) {
@@ -904,6 +942,8 @@ function raceCallBanner(race) {
   const photo = primary ? candidatePhotoUrl(race, primary) : "";
   const fill = primary ? candidateFill(race, primary) : "#49d38a";
   const callLabel = primary?.callLabel || "Race call";
+  const latestCallTime = Math.max(...calls.map((call) => Date.parse(call.calledAt || "") || 0), 0);
+  const callTime = latestCallTime ? timeLabel(latestCallTime) : "";
   const avatars = bannerCandidates.slice(0, 3).map((candidate) => {
     const avatarPhoto = candidatePhotoUrl(race, candidate);
     return `
@@ -917,7 +957,7 @@ function raceCallBanner(race) {
       <div class="result-call-copy">
         <span>${escapeHtml(callLabel)} <i aria-hidden="true">&#8594;</i></span>
         <strong>${escapeHtml(callDeckText(race, bannerCandidates))}</strong>
-        <small>Race called by Federal Elections Analysis.</small>
+        <small>Race called by Federal Elections Analysis${callTime ? ` at ${escapeHtml(callTime)}` : ""}.</small>
       </div>
       <div class="result-call-avatars" aria-hidden="true">
         ${avatars || (photo ? `<span class="result-call-avatar"><img src="${escapeHtml(photo)}" alt=""></span>` : "")}
@@ -955,14 +995,16 @@ function pollsAreOpen(race) {
 }
 
 function automaticUncontestedCalls(race) {
-  if (!pollsAreClosed(race)) return [];
+  if (!pollsAreOpen(race)) return [];
   const realCandidates = (race.candidates || []).filter(isRealCandidate);
   if (realCandidates.length !== 1) return [];
+  const calledAt = pollOpenIso(race) || pollCloseIso(race) || "";
   return [{
     candidate: realCandidates[0].name,
     status: "winner",
     label: "Winner",
-    automatic: true
+    automatic: true,
+    calledAt
   }];
 }
 
@@ -1627,7 +1669,7 @@ function raceDetailUpdateKey(race) {
       candidate.percent,
       candidate.callLabel || ""
     ]),
-    calls: (race.calls || []).map((call) => [call.candidate, call.status, call.label || ""]),
+    calls: (race.calls || []).map((call) => [call.candidate, call.status, call.label || "", call.calledAt || ""]),
     counties: (race.counties || []).map((county) => [
       county.name,
       county.percentReporting,
@@ -1678,6 +1720,9 @@ async function patchRaceDetail(race) {
   const callSlot = page.querySelector("[data-result-call-slot]");
   if (callSlot) callSlot.innerHTML = raceCallBanner(race);
 
+  const favoritePanel = page.querySelector("[data-favorite-race-panel]");
+  if (favoritePanel) favoritePanel.outerHTML = favoriteRacePanelMarkup(race);
+
   const mapFrame = page.querySelector(".result-map-frame");
   if (mapFrame) {
     const marginMode = mapFrame.dataset.marginMode || "percent";
@@ -1701,6 +1746,43 @@ async function patchRaceDetail(race) {
   }
 
   bindPollCountdown();
+  bindFavoriteRaceControls(race);
+}
+
+function favoriteRacePanelMarkup(race) {
+  const favorite = isRaceFavorite(race.id);
+  const saved = readFavoriteRaces().filter((item) => !item.archived);
+  const savedLinks = saved.length ? saved.map((item) => `
+    <a class="${String(item.id) === String(race.id) ? "active" : ""}" href="result.html?id=${encodeURIComponent(item.id)}">
+      <span>${escapeHtml(item.state || "US")}</span>
+      <strong>${escapeHtml(item.electionName || "Election results")}</strong>
+    </a>
+  `).join("") : `<p>No saved races yet.</p>`;
+  return `
+    <section class="result-favorite-panel" data-favorite-race-panel>
+      <div>
+        <p class="kicker">Saved races</p>
+        <button type="button" class="result-favorite-toggle" data-current-race-favorite aria-pressed="${favorite}">
+          <span>${favorite ? "★" : "☆"}</span>
+          ${favorite ? "Saved" : "Save this race"}
+        </button>
+      </div>
+      <nav aria-label="Saved result races">
+        ${savedLinks}
+      </nav>
+    </section>
+  `;
+}
+
+function bindFavoriteRaceControls(race) {
+  page.querySelector("[data-current-race-favorite]")?.addEventListener("click", () => {
+    setRaceFavorite(race, !isRaceFavorite(race.id));
+    const panel = page.querySelector("[data-favorite-race-panel]");
+    if (panel) {
+      panel.outerHTML = favoriteRacePanelMarkup(race);
+      bindFavoriteRaceControls(race);
+    }
+  });
 }
 
 async function renderRace(race) {
@@ -1747,6 +1829,7 @@ async function renderRace(race) {
       </div>
 
       <aside class="result-map-panel">
+        ${favoriteRacePanelMarkup(race)}
         <div class="result-map-tabs">
           <button type="button" data-map-color="percent">% Margin</button>
           <button type="button" data-map-color="votes">Vote Margin</button>
@@ -1782,6 +1865,7 @@ async function renderRace(race) {
   bindMapZoom();
   bindMapColorMode();
   bindPollCountdown();
+  bindFavoriteRaceControls(race);
 }
 
 async function fetchRace() {

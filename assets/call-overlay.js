@@ -238,6 +238,17 @@
     return Number.isFinite(number) ? number.toLocaleString("en-US") : "0";
   }
 
+  function callTimeLabel(timestamp) {
+    if (!timestamp) return "";
+    const date = new Date(timestamp);
+    if (!Number.isFinite(date.getTime())) return "";
+    return new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZoneName: "short"
+    }).format(date);
+  }
+
   function candidateColor(candidate, race) {
     const slug = slugify(candidate?.name);
     const mappedColor = PHOTO_SETS[String(race?.id)]?.colors?.[slug];
@@ -276,14 +287,20 @@
   }
 
   function automaticUncontestedCalls(race) {
-    if (!pollsAreClosed(race)) return [];
+    if (!pollsAreOpen(race)) return [];
     const realCandidates = (race.candidates || []).filter(isRealCandidate);
     if (realCandidates.length !== 1) return [];
+    const calledAt = validElectionIso(race?.pollsOpen || race?.pollOpenAt)
+      || POLL_OPEN_UTC_BY_STATE[String(race?.state || "").toUpperCase()]
+      || validElectionIso(race?.pollsClose || race?.pollCloseAt)
+      || POLL_CLOSE_UTC_BY_STATE[String(race?.state || "").toUpperCase()]
+      || "";
     return [{
       candidate: realCandidates[0].name,
       status: "winner",
       label: "Winner",
-      automatic: true
+      automatic: true,
+      calledAt
     }];
   }
 
@@ -465,6 +482,7 @@
     const avatars = callEvent.calledCandidates.map((item) => avatarMarkup(item, callEvent.race)).join("");
     const raceName = callEvent.race?.electionName || "Election race";
     const reporting = percentLabel(callEvent.race?.percentReporting);
+    const calledAt = callTimeLabel(Math.max(...callEvent.calls.map((call) => Date.parse(call.calledAt || "") || 0), 0));
     return `
       <article class="broadcast-call-card" style="--candidate-color:${escapeHtml(color)}">
         <div class="broadcast-call-topline">
@@ -475,7 +493,7 @@
           <div class="broadcast-call-copy">
             <p>${escapeHtml(raceName)}</p>
             <h1>${escapeHtml(callEvent.text)}</h1>
-            <small>Race called by Federal Elections Analysis. ${escapeHtml(reporting)} reporting.</small>
+            <small>Race called by Federal Elections Analysis${calledAt ? ` at ${escapeHtml(calledAt)}` : ""}. ${escapeHtml(reporting)} reporting.</small>
           </div>
           <div class="broadcast-call-avatars">${avatars}</div>
         </div>
