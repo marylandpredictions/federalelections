@@ -8,6 +8,8 @@ let resultMapViewState = {
   panX: 0,
   panY: 0
 };
+const PROFILE_BG_COLOR_CACHE = new Map();
+const PROFILE_BG_COLOR_PROMISES = new Map();
 
 const REDISTRICTED_RESULT_STATES = new Set(["AL", "LA", "NC", "OH", "TX", "UT"]);
 const MANUAL_INCUMBENTS_BY_RACE = {
@@ -363,6 +365,84 @@ function candidatePhotoColor(race, candidate) {
   return CANDIDATE_PHOTO_SETS[String(race?.id)]?.colors?.[slug] || GLOBAL_CANDIDATE_PHOTOS[slug]?.color || "";
 }
 
+function rgbToHex(r, g, b) {
+  const channel = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, "0");
+  return `#${channel(r)}${channel(g)}${channel(b)}`;
+}
+
+function quantizeChannel(value, step = 24) {
+  return Math.max(0, Math.min(255, Math.round(value / step) * step));
+}
+
+function dominantEdgeColorFromImage(image) {
+  const width = Math.max(48, Math.min(160, image.naturalWidth || image.width || 64));
+  const height = Math.max(48, Math.min(160, image.naturalHeight || image.height || 64));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  if (!context) return "";
+  context.drawImage(image, 0, 0, width, height);
+  const { data } = context.getImageData(0, 0, width, height);
+  const edgeX = Math.max(6, Math.round(width * .16));
+  const edgeY = Math.max(6, Math.round(height * .16));
+  const buckets = new Map();
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const onEdge = x < edgeX || x >= width - edgeX || y < edgeY || y >= height - edgeY;
+      if (!onEdge) continue;
+      const index = (y * width + x) * 4;
+      const alpha = data[index + 3];
+      if (alpha < 220) continue;
+      const r = data[index];
+      const g = data[index + 1];
+      const b = data[index + 2];
+      const key = `${quantizeChannel(r)}-${quantizeChannel(g)}-${quantizeChannel(b)}`;
+      const bucket = buckets.get(key) || { count: 0, r: 0, g: 0, b: 0 };
+      bucket.count += 1;
+      bucket.r += r;
+      bucket.g += g;
+      bucket.b += b;
+      buckets.set(key, bucket);
+    }
+  }
+  let winner = null;
+  for (const bucket of buckets.values()) {
+    if (!winner || bucket.count > winner.count) winner = bucket;
+  }
+  if (!winner || winner.count < 30) return "";
+  return rgbToHex(winner.r / winner.count, winner.g / winner.count, winner.b / winner.count);
+}
+
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.decoding = "async";
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+    image.src = url;
+  });
+}
+
+async function candidatePhotoExtractedColor(race, candidate) {
+  const photoUrl = candidatePhotoUrl(race, candidate);
+  if (!photoUrl) return "";
+  if (PROFILE_BG_COLOR_CACHE.has(photoUrl)) return PROFILE_BG_COLOR_CACHE.get(photoUrl) || "";
+  if (!PROFILE_BG_COLOR_PROMISES.has(photoUrl)) {
+    const promise = loadImage(photoUrl)
+      .then((image) => dominantEdgeColorFromImage(image))
+      .catch(() => "")
+      .then((color) => {
+        const safeColor = isHexColor(color) ? color : "";
+        PROFILE_BG_COLOR_CACHE.set(photoUrl, safeColor);
+        PROFILE_BG_COLOR_PROMISES.delete(photoUrl);
+        return safeColor;
+      });
+    PROFILE_BG_COLOR_PROMISES.set(photoUrl, promise);
+  }
+  return PROFILE_BG_COLOR_PROMISES.get(photoUrl) || "";
+}
+
 function simplifiedSlug(value) {
   return slugifyName(value)
     .split("-")
@@ -386,9 +466,27 @@ function candidateCustomColor(race, candidate) {
   if (!candidate) return "";
   const profileColor = candidatePhotoColor(race, candidate);
   if (isHexColor(profileColor)) return profileColor;
+  const extractedColor = PROFILE_BG_COLOR_CACHE.get(candidatePhotoUrl(race, candidate)) || "";
+  if (isHexColor(extractedColor)) return extractedColor;
   const directColor = String(candidate?.color || "").trim();
   if (isHexColor(directColor)) return directColor;
   return "";
+}
+
+async function primeCandidatePhotoBgColors(race) {
+  const seen = new Set();
+  const candidates = [
+    ...(race?.candidates || []),
+    ...((race?.counties || []).flatMap((county) => county?.candidates || []))
+  ].filter(Boolean);
+  const tasks = [];
+  for (const candidate of candidates) {
+    const photoUrl = candidatePhotoUrl(race, candidate);
+    if (!photoUrl || seen.has(photoUrl)) continue;
+    seen.add(photoUrl);
+    tasks.push(candidatePhotoExtractedColor(race, candidate));
+  }
+  await Promise.all(tasks);
 }
 
 function safeMediaUrl(value) {
@@ -1470,6 +1568,7 @@ function bindMapColorMode() {
 }
 
 async function renderRace(race) {
+  await primeCandidatePhotoBgColors(race);
   const leader = leadingCandidate(race);
   const mapMarkup = await countyShapeMap(race);
   const notesData = await loadAnalysisNotes();
