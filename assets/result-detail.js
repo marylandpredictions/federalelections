@@ -363,10 +363,32 @@ function candidatePhotoColor(race, candidate) {
   return CANDIDATE_PHOTO_SETS[String(race?.id)]?.colors?.[slug] || GLOBAL_CANDIDATE_PHOTOS[slug]?.color || "";
 }
 
+function simplifiedSlug(value) {
+  return slugifyName(value)
+    .split("-")
+    .filter((part) => part && part.length > 1 && !["jr", "sr", "ii", "iii", "iv", "v"].includes(part))
+    .join("-");
+}
+
 function raceCandidateBySlug(race, candidate) {
   const slug = slugifyName(candidate?.name);
-  if (!slug) return null;
-  return (race?.candidates || []).find((raceCandidate) => slugifyName(raceCandidate?.name) === slug) || null;
+  const slimSlug = simplifiedSlug(candidate?.name);
+  if (!slug && !slimSlug) return null;
+  return (race?.candidates || []).find((raceCandidate) => {
+    const raceSlug = slugifyName(raceCandidate?.name);
+    if (slug && raceSlug === slug) return true;
+    if (!slimSlug) return false;
+    return simplifiedSlug(raceCandidate?.name) === slimSlug;
+  }) || null;
+}
+
+function candidateCustomColor(race, candidate) {
+  if (!candidate) return "";
+  const profileColor = candidatePhotoColor(race, candidate);
+  if (isHexColor(profileColor)) return profileColor;
+  const directColor = String(candidate?.color || "").trim();
+  if (isHexColor(directColor)) return directColor;
+  return "";
 }
 
 function safeMediaUrl(value) {
@@ -624,12 +646,13 @@ function sortedCandidatesForCounty(race) {
 }
 
 function candidateFill(race, candidate) {
-  const photoColor = candidatePhotoColor(race, candidate);
-  if (isHexColor(photoColor)) return photoColor;
+  const profileColor = candidatePhotoColor(race, candidate);
+  if (isHexColor(profileColor)) return profileColor;
   const color = String(candidate?.color || "").trim();
   if (isHexColor(color)) return color;
-  const raceCandidateColor = String(raceCandidateBySlug(race, candidate)?.color || "").trim();
-  if (isHexColor(raceCandidateColor)) return raceCandidateColor;
+  const matchedRaceCandidate = raceCandidateBySlug(race, candidate);
+  const matchedColor = candidateCustomColor(race, matchedRaceCandidate);
+  if (isHexColor(matchedColor)) return matchedColor;
   const code = candidate?.partyCode || partyCode(candidate?.party);
   if (code === "D") return "#1030b2";
   if (code === "R") return "#e03a3e";
