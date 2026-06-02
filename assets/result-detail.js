@@ -995,10 +995,10 @@ function pollsAreOpen(race) {
 }
 
 function automaticUncontestedCalls(race) {
-  if (!pollsAreOpen(race)) return [];
+  if (!pollsAreClosed(race)) return [];
   const realCandidates = (race.candidates || []).filter(isRealCandidate);
   if (realCandidates.length !== 1) return [];
-  const calledAt = pollOpenIso(race) || pollCloseIso(race) || "";
+  const calledAt = pollCloseIso(race) || "";
   return [{
     candidate: realCandidates[0].name,
     status: "winner",
@@ -1826,10 +1826,10 @@ async function renderRace(race) {
         <div class="result-full-candidates">
           ${candidateRows(race)}
         </div>
+        ${favoriteRacePanelMarkup(race)}
       </div>
 
       <aside class="result-map-panel">
-        ${favoriteRacePanelMarkup(race)}
         <div class="result-map-tabs">
           <button type="button" data-map-color="percent">% Margin</button>
           <button type="button" data-map-color="votes">Vote Margin</button>

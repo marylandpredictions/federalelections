@@ -287,12 +287,10 @@
   }
 
   function automaticUncontestedCalls(race) {
-    if (!pollsAreOpen(race)) return [];
+    if (!pollsAreClosed(race)) return [];
     const realCandidates = (race.candidates || []).filter(isRealCandidate);
     if (realCandidates.length !== 1) return [];
-    const calledAt = validElectionIso(race?.pollsOpen || race?.pollOpenAt)
-      || POLL_OPEN_UTC_BY_STATE[String(race?.state || "").toUpperCase()]
-      || validElectionIso(race?.pollsClose || race?.pollCloseAt)
+    const calledAt = validElectionIso(race?.pollsClose || race?.pollCloseAt)
       || POLL_CLOSE_UTC_BY_STATE[String(race?.state || "").toUpperCase()]
       || "";
     return [{

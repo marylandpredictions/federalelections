@@ -306,10 +306,10 @@ function pollsAreOpen(race) {
 }
 
 function automaticUncontestedCalls(race) {
-  if (!pollsAreOpen(race)) return [];
+  if (!pollsAreClosed(race)) return [];
   const realCandidates = (race.candidates || []).filter(isRealCandidate);
   if (realCandidates.length !== 1) return [];
-  const calledAt = validElectionIso(race?.pollsOpen || race?.pollOpenAt) || POLL_OPEN_UTC_BY_STATE[race.state] || validElectionIso(race?.pollsClose || race?.pollCloseAt) || POLL_CLOSE_UTC_BY_STATE[race.state] || "";
+  const calledAt = validElectionIso(race?.pollsClose || race?.pollCloseAt) || POLL_CLOSE_UTC_BY_STATE[race.state] || "";
   return [{
     candidate: realCandidates[0].name,
     status: "winner",
