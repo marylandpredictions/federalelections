@@ -338,10 +338,24 @@ function partyClass(partyCodeValue) {
   return "party-other";
 }
 
+function candidateNameParts(name) {
+  return String(name || "")
+    .replace(/"[^"]*"/g, " ")
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/[.,]/g, " ")
+    .split(/\s+/)
+    .map((part) => part.replace(/[^A-Za-z-]/g, ""))
+    .filter(Boolean);
+}
+
 function candidateInitials(name) {
-  const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+  const parts = candidateNameParts(name);
   if (!parts.length) return "?";
-  return parts.slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+  if (parts.length === 1) {
+    const word = parts[0];
+    return (word.length >= 2 ? word.slice(0, 2) : word.slice(0, 1)).toUpperCase();
+  }
+  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
 function isHexColor(value) {
