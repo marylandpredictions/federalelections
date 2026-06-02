@@ -337,8 +337,17 @@ function candidateInitials(name) {
   return parts.slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
+function isHexColor(value) {
+  return /^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(String(value || "").trim());
+}
+
 function slugifyName(value) {
-  return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 function candidatePhotoUrl(race, candidate) {
@@ -352,6 +361,12 @@ function candidatePhotoUrl(race, candidate) {
 function candidatePhotoColor(race, candidate) {
   const slug = slugifyName(candidate?.name);
   return CANDIDATE_PHOTO_SETS[String(race?.id)]?.colors?.[slug] || GLOBAL_CANDIDATE_PHOTOS[slug]?.color || "";
+}
+
+function raceCandidateBySlug(race, candidate) {
+  const slug = slugifyName(candidate?.name);
+  if (!slug) return null;
+  return (race?.candidates || []).find((raceCandidate) => slugifyName(raceCandidate?.name) === slug) || null;
 }
 
 function safeMediaUrl(value) {
@@ -610,9 +625,11 @@ function sortedCandidatesForCounty(race) {
 
 function candidateFill(race, candidate) {
   const photoColor = candidatePhotoColor(race, candidate);
-  if (photoColor) return photoColor;
+  if (isHexColor(photoColor)) return photoColor;
   const color = String(candidate?.color || "").trim();
-  if (/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(color)) return color;
+  if (isHexColor(color)) return color;
+  const raceCandidateColor = String(raceCandidateBySlug(race, candidate)?.color || "").trim();
+  if (isHexColor(raceCandidateColor)) return raceCandidateColor;
   const code = candidate?.partyCode || partyCode(candidate?.party);
   if (code === "D") return "#1030b2";
   if (code === "R") return "#e03a3e";
@@ -1247,7 +1264,8 @@ async function analysisNoteMarkup(notes) {
       role: "Analysis desk",
       text: "No analyst comment has been posted for this race yet.",
       image: "",
-      embed: ""
+      embed: "",
+      isPlaceholder: true
     }];
   }
   const [latest, ...history] = notes;
@@ -1259,9 +1277,10 @@ async function analysisNoteMarkup(notes) {
     const avatar = profile
       ? `<img src="${escapeHtml(profile.image)}" alt="">`
       : escapeHtml(candidateInitials(author));
+    const placeholderClass = note.isPlaceholder ? " is-placeholder" : "";
     return `
       <div class="analysis-note-byline">
-        <span class="analysis-note-avatar ${profile ? "has-image" : ""}">${avatar}</span>
+        <span class="analysis-note-avatar ${profile ? "has-image" : ""}${placeholderClass}">${avatar}</span>
         <span>
           ${note.date ? `<strong>${escapeHtml(note.date)}</strong>` : ""}
           <small>${escapeHtml(author)}${note.role ? `, ${escapeHtml(note.role)}` : ""}</small>

@@ -2251,7 +2251,7 @@ dd {
   margin-left: 4px;
   border-radius: 4px;
   color: white;
-  font: 900 .75rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  font: 900 .92rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   font-style: normal;
   vertical-align: middle;
 }
@@ -2269,12 +2269,12 @@ dd {
 }
 
 .candidate-row i.presumptive-badge {
-  width: 13px;
-  height: 13px;
+  width: 15px;
+  height: 15px;
   color: var(--muted);
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--paper) 85%, white);
-  font-size: .5rem;
+  font-size: .62rem;
 }
 
 .dem-row strong {
@@ -6685,4 +6685,15 @@ button.race-board-row {
 .analysis-note-avatar:not(.has-image) {
   background: white;
   border-color: var(--line);
+}
+
+.analysis-note-avatar.is-placeholder {
+  background: white;
+  border-color: var(--line);
+}
+
+.analysis-note-avatar.is-placeholder img {
+  width: 72%;
+  height: 72%;
+  object-fit: contain;
 }
