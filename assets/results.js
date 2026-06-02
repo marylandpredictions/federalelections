@@ -42,7 +42,7 @@ const POLL_CLOSE_UTC_BY_STATE = {
 };
 
 function pollCloseLabel(race) {
-  const iso = race.pollCloseAt || POLL_CLOSE_UTC_BY_STATE[race.state];
+  const iso = race.pollsClose || race.pollCloseAt || POLL_CLOSE_UTC_BY_STATE[race.state];
   if (!iso) return "";
   const target = new Date(iso);
   if (Number.isNaN(target.getTime())) return "";
@@ -187,6 +187,30 @@ function displayCallLabel(call, race) {
   return multiWinner ? "Advances" : "Projected winner";
 }
 
+function isRealCandidate(candidate) {
+  const name = String(candidate?.name || "").trim();
+  return Boolean(name) && !/^write-?in$/i.test(name);
+}
+
+function pollsAreClosed(race) {
+  const iso = race?.pollsClose || race?.pollCloseAt || POLL_CLOSE_UTC_BY_STATE[race.state];
+  if (!iso) return false;
+  const date = new Date(iso);
+  return Number.isFinite(date.getTime()) && Date.now() >= date.getTime();
+}
+
+function automaticUncontestedCalls(race) {
+  if (!pollsAreClosed(race)) return [];
+  const realCandidates = (race.candidates || []).filter(isRealCandidate);
+  if (realCandidates.length !== 1) return [];
+  return [{
+    candidate: realCandidates[0].name,
+    status: "winner",
+    label: "Winner",
+    automatic: true
+  }];
+}
+
 async function loadManualCalls() {
   const response = await fetch(`data/result-calls.json?v=${Date.now()}`, { cache: "no-store" });
   if (!response.ok) return { races: {} };
@@ -201,7 +225,8 @@ async function applyManualCalls(data) {
     groups: (data.groups || []).map((group) => ({
       ...group,
       races: (group.races || []).map((race) => {
-        const calls = callRaces[String(race.id)]?.calls || [];
+        const manualCalls = callRaces[String(race.id)]?.calls || [];
+        const calls = manualCalls.length ? manualCalls : automaticUncontestedCalls(race);
         if (!calls.length) {
           return {
             ...race,

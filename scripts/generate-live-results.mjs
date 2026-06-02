@@ -98,6 +98,30 @@ function callForCandidate(raceId, candidateName) {
   return raceCalls.find((call) => String(call.candidate || "").toLowerCase() === String(candidateName || "").toLowerCase()) || null;
 }
 
+function isRealCandidate(candidate) {
+  const name = String(candidate?.name || "").trim();
+  return Boolean(name) && !/^write-?in$/i.test(name);
+}
+
+function pollsAreClosed(race) {
+  const iso = race.pollsClose || race.polls_close;
+  if (!iso) return false;
+  const date = new Date(iso);
+  return Number.isFinite(date.getTime()) && Date.now() >= date.getTime();
+}
+
+function automaticUncontestedCalls(race, candidates = []) {
+  if (!pollsAreClosed(race)) return [];
+  const realCandidates = candidates.filter(isRealCandidate);
+  if (realCandidates.length !== 1) return [];
+  return [{
+    candidate: realCandidates[0].name,
+    status: "winner",
+    label: "Winner",
+    automatic: true
+  }];
+}
+
 function callLabelFor(race, call) {
   if (!call) return "";
   if (call.label) return call.label;
@@ -171,6 +195,14 @@ function normalizeRace(race, group) {
     })
     .map(({ sourceOrder, ...candidate }) => candidate);
   const calledCandidates = candidates.map((candidate) => withManualCall(candidate, race));
+  const explicitCalls = manualCalls.races?.[String(race.id)]?.calls || [];
+  const calls = explicitCalls.length ? explicitCalls : automaticUncontestedCalls(race, candidates);
+  const finalCandidates = calls.length && !explicitCalls.length
+    ? calledCandidates.map((candidate) => {
+      const call = calls.find((item) => String(item.candidate || "").toLowerCase() === String(candidate.name || "").toLowerCase());
+      return call ? { ...candidate, callStatus: call.status || "", callLabel: callLabelFor(race, call) } : candidate;
+    })
+    : calledCandidates;
   const leader = candidates[0] || null;
   const marker = electionMarkerFor(race, candidates);
   return {
@@ -197,9 +229,9 @@ function normalizeRace(race, group) {
     leaderParty: leader?.party || "",
     leaderPartyCode: leader?.partyCode || "",
     otherCandidateCount: Math.max(0, candidates.length - 1),
-    calls: (manualCalls.races?.[String(race.id)]?.calls || []).map((call) => ({ ...call })),
+    calls: calls.map((call) => ({ ...call })),
     featuredCandidateNames: featuredNamesForRace(race.id),
-    candidates: calledCandidates
+    candidates: finalCandidates
   };
 }
 

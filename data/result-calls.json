@@ -38,6 +38,8 @@
       "advanced": "Use when a top-two/open-primary advance is final. Label shown: Advanced to general election."
     },
     "optionalLabel": "You can add a custom label field to any call if you need exact wording, for example { \"candidate\": \"Name\", \"status\": \"projected\", \"label\": \"Projected winner\" }.",
+    "optionalCalledAt": "You can add calledAt in ISO format, for example \"2026-06-02T20:45:00-05:00\". The OBS overlay uses this to decide which call is newest.",
+    "obsOverlay": "For livestreams, add call-overlay.html as an OBS Browser Source. Suggested size: 1920x300, transparent background enabled. It checks this file automatically.",
     "important": "Do not put example calls inside the real races object unless you want them live on the site."
   },
   "raceIdGuide": {
@@ -74,25 +76,25 @@
     "80512": "South Dakota US Senate Republican Primary"
   },
   "races": {
-	          "79777": {
-          "calls": [
-            {
-              "candidate": "Xavier Becerra",
-              "status": "advances"
-            },
-            {
-              "candidate": "Steve Hilton",
-              "status": "advances"
-            }
-          ]
+    "79777": {
+      "calls": [
+        {
+          "candidate": "Xavier Becerra",
+          "status": "advances"
+        },
+        {
+          "candidate": "Steve Hilton",
+          "status": "advances"
         }
-        "79944": {
-          "calls": [
-            {
-              "candidate": "Rob Sand",
-              "status": "projected"
-            }
-          ]
+      ]
+    },
+    "79944": {
+      "calls": [
+        {
+          "candidate": "Rob Sand",
+          "status": "projected"
         }
-      }
+      ]
+    }
+  }
 }

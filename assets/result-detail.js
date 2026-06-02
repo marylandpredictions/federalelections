@@ -375,7 +375,7 @@ const POLL_CLOSE_UTC_BY_STATE = {
 };
 
 function pollCloseIso(race) {
-  return POLL_CLOSE_UTC_BY_STATE[String(race.state || "").toUpperCase()] || "";
+  return race?.pollsClose || POLL_CLOSE_UTC_BY_STATE[String(race.state || "").toUpperCase()] || "";
 }
 
 function pollCloseLabel(iso) {
@@ -645,6 +645,30 @@ function callLabelForDisplay(call, race) {
   return "Winner";
 }
 
+function isRealCandidate(candidate) {
+  const name = String(candidate?.name || "").trim();
+  return Boolean(name) && !/^write-?in$/i.test(name);
+}
+
+function pollsAreClosed(race) {
+  const iso = race?.pollsClose || pollCloseIso(race);
+  if (!iso) return false;
+  const date = new Date(iso);
+  return Number.isFinite(date.getTime()) && Date.now() >= date.getTime();
+}
+
+function automaticUncontestedCalls(race) {
+  if (!pollsAreClosed(race)) return [];
+  const realCandidates = (race.candidates || []).filter(isRealCandidate);
+  if (realCandidates.length !== 1) return [];
+  return [{
+    candidate: realCandidates[0].name,
+    status: "winner",
+    label: "Winner",
+    automatic: true
+  }];
+}
+
 async function loadResultCalls() {
   const cacheBust = Date.now();
   return fetch(`data/result-calls.json?v=${cacheBust}`, { cache: "no-store" })
@@ -654,7 +678,8 @@ async function loadResultCalls() {
 
 async function applyLocalRaceCalls(race) {
   const callsData = await loadResultCalls();
-  const calls = callsData.races?.[String(race.id)]?.calls || [];
+  const manualCalls = callsData.races?.[String(race.id)]?.calls || [];
+  const calls = manualCalls.length ? manualCalls : automaticUncontestedCalls(race);
   const updatedCandidates = (race.candidates || []).map((candidate) => {
     const call = calls.find((item) => String(item.candidate || "").toLowerCase() === String(candidate.name || "").toLowerCase());
     return call ? { ...candidate, callStatus: call.status || "", callLabel: callLabelForDisplay(call, race), winner: false } : { ...candidate, callStatus: "", callLabel: "" };
