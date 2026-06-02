@@ -2,7 +2,119 @@
   const root = document.getElementById("call-overlay");
   const params = new URLSearchParams(window.location.search);
   const raceFilter = params.get("race");
-  let lastSignature = "";
+  const shownCalls = new Set();
+  const queuedCalls = [];
+  let isShowingCall = false;
+  let tickerSignature = "";
+  let callsDataCache = null;
+  let resultsDataCache = null;
+
+  const PHOTO_SETS = {
+    "79777": {
+      base: "assets/img/candidates/california-governor",
+      photos: {
+        "antonio-villaraigosa": "villaraigosa.png",
+        "tony-k-thurmond": "thurmond.png",
+        "eric-swalwell": "swalwell.png",
+        "tom-steyer": "steyer.png",
+        "katie-porter": "porter.png",
+        "matt-mahan": "mahan.png",
+        "xavier-becerra": "becerra.png",
+        "steve-hilton": "hilton.png",
+        "chad-bianco": "bianco.png"
+      },
+      colors: {
+        "antonio-villaraigosa": "#24dcae",
+        "tony-k-thurmond": "#1493f6",
+        "eric-swalwell": "#99e600",
+        "tom-steyer": "#4fc92a",
+        "katie-porter": "#5765ff",
+        "matt-mahan": "#2fdde0",
+        "xavier-becerra": "#1493f6",
+        "steve-hilton": "#bf0000",
+        "chad-bianco": "#d97112"
+      }
+    },
+    "79779": {
+      base: "assets/img/candidates/california-lieutenant-governor",
+      photos: {
+        "josh-fryday": "josh-fryday.png",
+        "fiona-ma": "fiona-ma.png",
+        "michael-tubbs": "michael-tubbs.png",
+        "oliver-ma": "oliver-ma.png",
+        "david-fennell": "david-fennell.png",
+        "gloria-romero": "gloria-romero.png"
+      },
+      colors: {
+        "josh-fryday": "#0091ff",
+        "fiona-ma": "#52ca2b",
+        "michael-tubbs": "#6263f5",
+        "oliver-ma": "#28d7db",
+        "david-fennell": "#d97a18",
+        "gloria-romero": "#e4d000"
+      }
+    },
+    "79881": {
+      base: "assets/img/candidates/california-superintendent",
+      photos: {
+        "richard-barrera": "richard-barrera.png",
+        "nichelle-m-henderson": "nichelle-henderson.png",
+        "al-muratsuchi": "al-muratsuchi.png",
+        "josh-newman": "josh-newman.png",
+        "anthony-rendon": "anthony-rendon.png",
+        "sonja-shaw": "sonja-shaw.png"
+      },
+      colors: {
+        "richard-barrera": "#0091ff",
+        "nichelle-m-henderson": "#5560f6",
+        "al-muratsuchi": "#25d6d6",
+        "josh-newman": "#0091ff",
+        "anthony-rendon": "#8dde18",
+        "sonja-shaw": "#e6c900"
+      }
+    },
+    "79884": {
+      base: "assets/img/candidates/california-us-house-11",
+      photos: {
+        "saikat-chakrabarti": "saikat-chakrabarti.png",
+        "connie-chan": "connie-chan.png",
+        "scott-wiener": "scott-wiener.png"
+      }
+    },
+    "79896": {
+      base: "assets/img/candidates/california-us-house-22",
+      photos: {
+        "jasmeet-bains": "jasmeet-bains.png",
+        "randy-villegas": "randy-villegas.png",
+        "david-g-valadao": "david-g-valadao.png"
+      }
+    },
+    "79907": {
+      base: "assets/img/candidates/california-us-house-32",
+      photos: {
+        "jake-levine": "jake-levine.png",
+        "marena-lin": "marena-lin.png",
+        "brad-sherman": "brad-sherman.png",
+        "larry-thompson": "larry-thompson.png"
+      }
+    },
+    "79916": {
+      base: "assets/img/candidates/california-us-house-40",
+      photos: {
+        "joe-kerr": "joe-kerr.png",
+        "esther-kim-varet": "esther-kim-varet.png",
+        "ken-calvert": "ken-calvert.png",
+        "young-kim": "young-kim.png"
+      }
+    },
+    "79932": {
+      base: "assets/img/candidates/california-us-house-7",
+      photos: {
+        "doris-matsui": "doris-matsui.png",
+        "mai-vang": "mai-vang.png"
+      }
+    }
+  };
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -22,12 +134,32 @@
     return parts.slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "?";
   }
 
-  function candidateColor(candidate) {
-    const color = String(candidate?.color || "").trim();
+  function percentLabel(value) {
+    const number = Number(value || 0);
+    return Number.isFinite(number) ? `${number.toFixed(1)}%` : "0.0%";
+  }
+
+  function numberLabel(value) {
+    const number = Number(value || 0);
+    return Number.isFinite(number) ? number.toLocaleString("en-US") : "0";
+  }
+
+  function candidateColor(candidate, race) {
+    const slug = slugify(candidate?.name);
+    const mappedColor = PHOTO_SETS[String(race?.id)]?.colors?.[slug];
+    const color = String(mappedColor || candidate?.color || "").trim();
     if (/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(color)) return color;
     if (candidate?.partyCode === "R") return "#e03a3e";
     if (candidate?.partyCode === "D") return "#1030b2";
-    return "#2f74ff";
+    if (candidate?.partyCode === "I") return "#2ec6a3";
+    return "#7c6cff";
+  }
+
+  function candidatePhoto(candidate, race) {
+    const slug = slugify(candidate?.name);
+    const set = PHOTO_SETS[String(race?.id)];
+    if (set?.photos?.[slug]) return `${set.base}/${set.photos[slug]}`;
+    return `assets/img/candidates/live-results/${slug}.png`;
   }
 
   function isRealCandidate(candidate) {
@@ -82,78 +214,229 @@
     return `${names.slice(0, -1).join(", ")}, and ${names.at(-1)} ${verb} in ${raceName}.`;
   }
 
-  async function fetchJson(url) {
-    const response = await fetch(`${url}?v=${Date.now()}`, { cache: "no-store" });
-    if (!response.ok) throw new Error(`${url} returned ${response.status}`);
-    return response.json();
+  function fetchJson(url) {
+    return fetch(`${url}?v=${Date.now()}`, { cache: "no-store" }).then((response) => {
+      if (!response.ok) throw new Error(`${url} returned ${response.status}`);
+      return response.json();
+    });
   }
 
   function flattenRaces(data) {
-    return (data.groups || []).flatMap((group) => group.races || []);
+    return (data?.groups || []).flatMap((group) => group.races || []);
   }
 
-  function latestCall(callsData, races) {
-    const manualEntries = Object.entries(callsData.races || [])
+  function raceCandidatesForCalls(race, calls) {
+    return calls.map((call) => ({
+      call,
+      candidate: (race?.candidates || []).find((candidate) => (
+        String(candidate.name || "").toLowerCase() === String(call.candidate || "").toLowerCase()
+      )) || { name: call.candidate, partyCode: "" }
+    }));
+  }
+
+  function collectCalls(callsData, races) {
+    const entries = Object.entries(callsData?.races || {})
       .filter(([raceId]) => !raceFilter || String(raceId) === String(raceFilter))
-      .flatMap(([raceId, value]) => (value.calls || []).map((call, index) => ({ raceId, call, index })));
-    const manuallyCalledRaceIds = new Set(manualEntries.map((entry) => String(entry.raceId)));
+      .map(([raceId, value]) => {
+        const race = races.find((item) => String(item.id) === String(raceId));
+        const calls = Array.isArray(value?.calls) ? value.calls : [];
+        return { raceId, race, calls, automatic: false };
+      })
+      .filter((entry) => entry.calls.length);
+
+    const manuallyCalledRaceIds = new Set(entries.map((entry) => String(entry.raceId)));
     const autoEntries = races
       .filter((race) => !raceFilter || String(race.id) === String(raceFilter))
       .filter((race) => !manuallyCalledRaceIds.has(String(race.id)))
-      .flatMap((race) => automaticUncontestedCalls(race).map((call, index) => ({ raceId: String(race.id), call, index })));
-    const entries = [...manualEntries, ...autoEntries];
-    if (!entries.length) return null;
-    entries.sort((a, b) => {
-      const aTime = Date.parse(a.call.calledAt || "") || 0;
-      const bTime = Date.parse(b.call.calledAt || "") || 0;
-      return bTime - aTime || b.index - a.index;
-    });
-    const newestRaceId = entries[0].raceId;
-    const race = races.find((item) => String(item.id) === String(newestRaceId));
-    const raceCalls = entries.filter((entry) => entry.raceId === newestRaceId);
-    const calledCandidates = raceCalls.map((entry) => ({
-      call: entry.call,
-      candidate: (race?.candidates || []).find((candidate) => String(candidate.name || "").toLowerCase() === String(entry.call.candidate || "").toLowerCase())
-    }));
-    return { race, calledCandidates };
+      .map((race) => ({ raceId: String(race.id), race, calls: automaticUncontestedCalls(race), automatic: true }))
+      .filter((entry) => entry.calls.length);
+
+    return [...entries, ...autoEntries].map((entry) => {
+      const calledCandidates = raceCandidatesForCalls(entry.race, entry.calls);
+      const latestTime = Math.max(...entry.calls.map((call) => Date.parse(call.calledAt || "") || 0), 0);
+      const signature = `${entry.raceId}:${entry.calls.map((call) => `${call.candidate}:${call.status}:${call.calledAt || ""}`).join("|")}`;
+      return {
+        ...entry,
+        calledCandidates,
+        latestTime,
+        signature,
+        text: callText(entry.race, calledCandidates),
+        label: labelFor(entry.calls[0] || {}, entry.race)
+      };
+    }).sort((a, b) => b.latestTime - a.latestTime || String(b.raceId).localeCompare(String(a.raceId)));
   }
 
-  function render(data) {
-    if (!data) {
-      root.innerHTML = `<div class="call-overlay-empty"></div>`;
-      return;
-    }
-    const { race, calledCandidates } = data;
-    const primary = calledCandidates[0]?.candidate || { name: calledCandidates[0]?.call?.candidate || "Candidate" };
-    const label = labelFor(calledCandidates[0]?.call || {}, race);
-    const color = candidateColor(primary);
-    const photo = `assets/img/candidates/live-results/${slugify(primary.name)}.png`;
-    const signature = `${race?.id || ""}:${calledCandidates.map((item) => `${item.call.candidate}:${item.call.status}:${item.call.calledAt || ""}`).join("|")}`;
-    if (signature === lastSignature) return;
-    lastSignature = signature;
+  function ensureLayout() {
+    if (root.dataset.ready) return;
     root.innerHTML = `
-      <section class="call-overlay-card" style="--candidate-color:${escapeHtml(color)}">
-        <div class="call-overlay-copy">
-          <span class="call-overlay-label">${escapeHtml(label)} <i aria-hidden="true">&#10003;</i></span>
-          <h1 class="call-overlay-title">${escapeHtml(callText(race, calledCandidates))}</h1>
-          <p class="call-overlay-subtitle">Race called by Federal Elections Analysis.</p>
+      <section class="broadcast-overlay-stage">
+        <div id="broadcast-call-slot" class="broadcast-call-slot" aria-live="polite"></div>
+        <div class="broadcast-ticker-shell">
+          <div class="broadcast-ticker-brand">
+            <span>FEA</span>
+            <strong>LIVE</strong>
+          </div>
+          <div class="broadcast-ticker-viewport">
+            <div id="broadcast-ticker-track" class="broadcast-ticker-track"></div>
+          </div>
+          <div id="broadcast-ticker-clock" class="broadcast-ticker-clock"></div>
         </div>
-        <span class="call-overlay-avatar">
-          <img src="${escapeHtml(photo)}" alt="" onerror="this.remove(); this.parentNode.textContent='${escapeHtml(initials(primary.name))}'">
-        </span>
       </section>
+    `;
+    root.dataset.ready = "true";
+    updateClock();
+    setInterval(updateClock, 10000);
+  }
+
+  function updateClock() {
+    const clock = document.getElementById("broadcast-ticker-clock");
+    if (!clock) return;
+    clock.textContent = new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone: "America/New_York"
+    }).format(new Date());
+  }
+
+  function tickerItems(calls, races) {
+    const items = [];
+    calls.slice(0, 8).forEach((call) => {
+      items.push({ tag: "Race call", text: call.text });
+    });
+    races
+      .filter((race) => !raceFilter || String(race.id) === String(raceFilter))
+      .slice()
+      .sort((a, b) => Number(b.percentReporting || 0) - Number(a.percentReporting || 0))
+      .slice(0, 12)
+      .forEach((race) => {
+        const candidates = [...(race.candidates || [])].sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0));
+        const leader = candidates[0];
+        if (leader && (Number(leader.votes || 0) || Number(race.percentReporting || 0))) {
+          items.push({
+            tag: race.state || "Update",
+            text: `${race.electionName}: ${leader.name} ${percentLabel(leader.percent)} with ${percentLabel(race.percentReporting)} reporting`
+          });
+        } else {
+          items.push({
+            tag: race.state || "Status",
+            text: `${race.electionName}: awaiting reported results`
+          });
+        }
+      });
+    if (!items.length) {
+      items.push({ tag: "FEA Live", text: "Race calls and result updates will appear here during election coverage." });
+    }
+    return items;
+  }
+
+  function updateTicker(calls, races) {
+    const track = document.getElementById("broadcast-ticker-track");
+    if (!track) return;
+    const items = tickerItems(calls, races);
+    const signature = items.map((item) => `${item.tag}:${item.text}`).join("||");
+    if (signature === tickerSignature) return;
+    tickerSignature = signature;
+    const html = items.map((item) => `
+      <span class="broadcast-ticker-item">
+        <b>${escapeHtml(item.tag)}</b>
+        <span>${escapeHtml(item.text)}</span>
+      </span>
+    `).join("");
+    track.innerHTML = `<div class="broadcast-ticker-loop">${html}</div><div class="broadcast-ticker-loop" aria-hidden="true">${html}</div>`;
+  }
+
+  function avatarMarkup(item, race) {
+    const candidate = item.candidate || { name: item.call.candidate };
+    const color = candidateColor(candidate, race);
+    const photo = candidatePhoto(candidate, race);
+    const fallback = initials(candidate.name);
+    return `
+      <span class="broadcast-call-avatar" style="--candidate-color:${escapeHtml(color)}">
+        <b>${escapeHtml(fallback)}</b>
+        <img src="${escapeHtml(photo)}" alt="" data-fallback="${escapeHtml(fallback)}">
+      </span>
     `;
   }
 
+  function renderCallCard(callEvent) {
+    const primary = callEvent.calledCandidates[0]?.candidate || { name: "Candidate" };
+    const color = candidateColor(primary, callEvent.race);
+    const avatars = callEvent.calledCandidates.map((item) => avatarMarkup(item, callEvent.race)).join("");
+    const raceName = callEvent.race?.electionName || "Election race";
+    const reporting = percentLabel(callEvent.race?.percentReporting);
+    return `
+      <article class="broadcast-call-card" style="--candidate-color:${escapeHtml(color)}">
+        <div class="broadcast-call-topline">
+          <span>${escapeHtml(callEvent.label)}</span>
+          <i aria-hidden="true">&#10003;</i>
+        </div>
+        <div class="broadcast-call-body">
+          <div class="broadcast-call-copy">
+            <p>${escapeHtml(raceName)}</p>
+            <h1>${escapeHtml(callEvent.text)}</h1>
+            <small>Race called by Federal Elections Analysis. ${escapeHtml(reporting)} reporting.</small>
+          </div>
+          <div class="broadcast-call-avatars">${avatars}</div>
+        </div>
+      </article>
+    `;
+  }
+
+  function bindImageFallbacks(card) {
+    card.querySelectorAll("img[data-fallback]").forEach((img) => {
+      img.addEventListener("error", () => {
+        img.remove();
+      }, { once: true });
+    });
+  }
+
+  function playQueue() {
+    if (isShowingCall || !queuedCalls.length) return;
+    const slot = document.getElementById("broadcast-call-slot");
+    if (!slot) return;
+    isShowingCall = true;
+    const next = queuedCalls.shift();
+    slot.innerHTML = renderCallCard(next);
+    const card = slot.querySelector(".broadcast-call-card");
+    bindImageFallbacks(card);
+    requestAnimationFrame(() => card.classList.add("is-live"));
+    setTimeout(() => {
+      card.classList.add("is-exiting");
+      setTimeout(() => {
+        slot.innerHTML = "";
+        isShowingCall = false;
+        playQueue();
+      }, 700);
+    }, 8500);
+  }
+
+  function queueNewCalls(calls) {
+    calls.slice().reverse().forEach((call) => {
+      if (shownCalls.has(call.signature)) return;
+      shownCalls.add(call.signature);
+      queuedCalls.push(call);
+    });
+    playQueue();
+  }
+
   async function update() {
+    ensureLayout();
     try {
       const [callsData, resultsData] = await Promise.all([
         fetchJson("data/result-calls.json"),
         fetchJson("data/live-results.json")
       ]);
-      render(latestCall(callsData, flattenRaces(resultsData)));
+      callsDataCache = callsData;
+      resultsDataCache = resultsData;
+      const races = flattenRaces(resultsData);
+      const calls = collectCalls(callsData, races);
+      updateTicker(calls, races);
+      queueNewCalls(calls);
     } catch (error) {
       console.error(error);
+      const races = flattenRaces(resultsDataCache);
+      const calls = collectCalls(callsDataCache, races);
+      updateTicker(calls, races);
     }
   }
 

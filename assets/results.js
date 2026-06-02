@@ -132,8 +132,10 @@ function raceCard(race) {
         <strong>${escapeHtml(race.electionName)}</strong>
         <small>${escapeHtml(leader?.name || "No votes reported yet")}${race.otherCandidateCount ? ` + ${race.otherCandidateCount} candidate${race.otherCandidateCount === 1 ? "" : "s"}` : ""}</small>
       </span>
-      ${hasCall ? `<span class="result-race-call">Called</span>` : ""}
-      <span class="result-date">${escapeHtml(closeLabel || dateLabel(race.electionDate))}</span>
+      <span class="result-race-meta">
+        ${hasCall ? `<span class="result-race-call">Called</span>` : ""}
+        <span class="result-date">${escapeHtml(closeLabel || dateLabel(race.electionDate))}</span>
+      </span>
     </a>
   `;
 }
