@@ -198,6 +198,47 @@ function raceCard(race) {
   `;
 }
 
+function resultGroupCard(group) {
+  return `
+    <section class="result-state-card">
+      <div class="result-state-head">
+        <div>
+          <p class="kicker">${escapeHtml(group.state)}</p>
+          <h2>${escapeHtml(group.stateName)}</h2>
+        </div>
+        <span>${numberLabel(group.featuredCount)} tracked</span>
+      </div>
+      <div class="result-race-list">
+        ${group.races.length ? group.races.map(raceCard).join("") : `<p class="meta">No matching featured races in this group.</p>`}
+      </div>
+    </section>
+  `;
+}
+
+function resultsColumnCount() {
+  const width = groupsNode?.clientWidth || window.innerWidth || 0;
+  if (width >= 1280) return 5;
+  if (width >= 1020) return 4;
+  if (width >= 760) return 3;
+  if (width >= 520) return 2;
+  return 1;
+}
+
+function groupWeight(group) {
+  return 1.25 + Math.max(1, group.races?.length || 0);
+}
+
+function masonryGroupsMarkup(cards) {
+  const count = Math.min(resultsColumnCount(), Math.max(1, cards.length));
+  const columns = Array.from({ length: count }, () => ({ weight: 0, cards: [] }));
+  cards.forEach((card) => {
+    const target = columns.reduce((smallest, column) => column.weight < smallest.weight ? column : smallest, columns[0]);
+    target.cards.push(card.html);
+    target.weight += card.weight;
+  });
+  return columns.map((column) => `<div class="results-group-column">${column.cards.join("")}</div>`).join("");
+}
+
 function resultsListUpdateKey(data, query = "") {
   return JSON.stringify({
     query,
@@ -230,34 +271,28 @@ function renderGroups() {
   const favoriteRaces = readFavoriteRaces()
     .map((favorite) => racesById.get(String(favorite.id)) || favorite)
     .filter((race) => race && !race.archived && raceMatches(race, query));
-  const favoritesMarkup = favoriteRaces.length ? `
-    <section class="result-state-card result-favorites-card">
-      <div class="result-state-head">
-        <div>
-          <p class="kicker">Saved</p>
-          <h2>Favorited races</h2>
-        </div>
-        <span>${numberLabel(favoriteRaces.length)} saved</span>
-      </div>
-      <div class="result-race-list">
-        ${favoriteRaces.map(raceCard).join("")}
-      </div>
-    </section>
-  ` : "";
-  groupsNode.innerHTML = `${favoritesMarkup}${groups.map((group) => `
-    <section class="result-state-card">
-      <div class="result-state-head">
-        <div>
-          <p class="kicker">${escapeHtml(group.state)}</p>
-          <h2>${escapeHtml(group.stateName)}</h2>
-        </div>
-        <span>${numberLabel(group.featuredCount)} tracked</span>
-      </div>
-      <div class="result-race-list">
-        ${group.races.length ? group.races.map(raceCard).join("") : `<p class="meta">No matching featured races in this group.</p>`}
-      </div>
-    </section>
-  `).join("")}`;
+  const cards = [];
+  if (favoriteRaces.length) {
+    cards.push({
+      weight: groupWeight({ races: favoriteRaces }),
+      html: `
+        <section class="result-state-card result-favorites-card">
+          <div class="result-state-head">
+            <div>
+              <p class="kicker">Saved</p>
+              <h2>Favorited races</h2>
+            </div>
+            <span>${numberLabel(favoriteRaces.length)} saved</span>
+          </div>
+          <div class="result-race-list">
+            ${favoriteRaces.map(raceCard).join("")}
+          </div>
+        </section>
+      `
+    });
+  }
+  groups.forEach((group) => cards.push({ weight: groupWeight(group), html: resultGroupCard(group) }));
+  groupsNode.innerHTML = masonryGroupsMarkup(cards);
   bindFavoriteButtons();
 }
 
@@ -407,6 +442,11 @@ async function loadResults(forceLive = false) {
 
 searchInput?.addEventListener("input", renderGroups);
 refreshButton?.addEventListener("click", () => loadResults(true));
+window.addEventListener("resize", () => {
+  if (!liveResultsData) return;
+  resultsListUpdateKeyCache = "";
+  renderGroups();
+}, { passive: true });
 
 loadResults();
 setInterval(() => loadResults(false), 30000);
