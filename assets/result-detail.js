@@ -464,10 +464,10 @@ function raceCandidateBySlug(race, candidate) {
 
 function candidateCustomColor(race, candidate) {
   if (!candidate) return "";
-  const profileColor = candidatePhotoColor(race, candidate);
-  if (isHexColor(profileColor)) return profileColor;
   const extractedColor = PROFILE_BG_COLOR_CACHE.get(candidatePhotoUrl(race, candidate)) || "";
   if (isHexColor(extractedColor)) return extractedColor;
+  const profileColor = candidatePhotoColor(race, candidate);
+  if (isHexColor(profileColor)) return profileColor;
   const directColor = String(candidate?.color || "").trim();
   if (isHexColor(directColor)) return directColor;
   return "";
@@ -744,10 +744,8 @@ function sortedCandidatesForCounty(race) {
 }
 
 function candidateFill(race, candidate) {
-  const profileColor = candidatePhotoColor(race, candidate);
-  if (isHexColor(profileColor)) return profileColor;
-  const color = String(candidate?.color || "").trim();
-  if (isHexColor(color)) return color;
+  const customColor = candidateCustomColor(race, candidate);
+  if (isHexColor(customColor)) return customColor;
   const matchedRaceCandidate = raceCandidateBySlug(race, candidate);
   const matchedColor = candidateCustomColor(race, matchedRaceCandidate);
   if (isHexColor(matchedColor)) return matchedColor;
