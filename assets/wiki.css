@@ -4959,34 +4959,12 @@ button.race-board-row {
   text-transform: uppercase;
 }
 
-.analysis-note-history-list {
-  display: grid;
-  gap: 10px;
-  max-height: 360px;
-  margin-top: 10px;
-  padding-right: 6px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
-
 .analysis-note-history article {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(160px, .28fr);
-  gap: 12px;
-  align-items: start;
+  margin-top: 10px;
   padding: 9px;
   border: 1px solid color-mix(in srgb, var(--line) 62%, transparent);
   border-radius: 5px;
   background: #020b22;
-}
-
-.analysis-note-history-copy p {
-  margin-top: 8px;
-}
-
-.analysis-note-history article .analysis-note-media img,
-.analysis-note-history article .analysis-note-embed iframe {
-  max-height: 160px;
 }
 
 .result-vote-history-panel svg {
@@ -6635,7 +6613,6 @@ button.race-board-row {
 
   .result-title-lockup,
   .analysis-note-panel,
-  .analysis-note-history article,
   .county-result-row {
     grid-template-columns: 1fr;
   }
