@@ -339,8 +339,7 @@ async function fetchAllSources() {
     fetchPollfinityAverages(status)
   ]);
   const governorFinance = mergeGovernorFinance(manualGovernorFinance, onlineGovernorFinance, status);
-  const federalSignals = readFederalForecastSignals(status);
-  return { governorFinance, fec: governorFinance, ddhqGeneric, pollfinity, federalSignals, status };
+  return { governorFinance, fec: governorFinance, ddhqGeneric, pollfinity, status };
 }
 
 const SETTINGS = {
@@ -354,8 +353,7 @@ const SETTINGS = {
     "Manual 2026 gubernatorial race ledger with candidates, incumbency, PVI, and last gubernatorial margin",
     "Cook Political Report, Inside Elections, Sabato's Crystal Ball, WH, VoteHub, and RCP rating references",
     "Current Senate model generic ballot signal as a broad midterm environment input",
-    "State-level gubernatorial campaign finance file plus configured online state portals for competitive races",
-    "Subtle cross-model state signal from Senate, House, and 2028 presidential forecasts"
+    "State-level gubernatorial campaign finance file plus configured online state portals for competitive races"
   ]
 };
 
@@ -522,7 +520,7 @@ const GOVERNOR_RACES = [
   { state: "NH", incumbentParty: "R", incumbent: "Kelly Ayotte", status: "Incumbent running", pvi: 2, lastMargin: -9.2, rating: "Likely R", demCandidate: "Democrat", repCandidate: "Kelly Ayotte", candidateEdge: -1.6 },
   { state: "NM", incumbentParty: "D", incumbent: "Michelle Lujan Grisham", status: "Term-limited", pvi: 4, lastMargin: 6.4, rating: "Likely D", demCandidate: "Deb Haaland", repCandidate: "Republican", candidateEdge: .6 },
   { state: "NY", incumbentParty: "D", incumbent: "Kathy Hochul", status: "Incumbent running", pvi: 8, lastMargin: 6.4, rating: "Safe D", demCandidate: "Kathy Hochul", repCandidate: "Republican", candidateEdge: .3 },
-  { state: "OH", incumbentParty: "R", incumbent: "Mike DeWine", status: "Term-limited", pvi: -5, lastMargin: -25.4, rating: "Lean R", demCandidate: "Amy Acton", repCandidate: "Vivek Ramaswamy", candidateEdge: -.6 },
+  { state: "OH", incumbentParty: "R", incumbent: "Mike DeWine", status: "Term-limited", pvi: -5, lastMargin: -25.4, rating: "Toss-up", demCandidate: "Amy Acton", repCandidate: "Vivek Ramaswamy", candidateEdge: -.4 },
   { state: "OK", incumbentParty: "R", incumbent: "Kevin Stitt", status: "Term-limited", pvi: -17, lastMargin: -13.7, rating: "Safe R", demCandidate: "Democrat", repCandidate: "Republican", candidateEdge: -.4 },
   { state: "OR", incumbentParty: "D", incumbent: "Tina Kotek", status: "Incumbent running", pvi: 8, lastMargin: 3.4, rating: "Likely D", demCandidate: "Tina Kotek", repCandidate: "Christine Drazan", candidateEdge: .2 },
   { state: "PA", incumbentParty: "D", incumbent: "Josh Shapiro", status: "Incumbent running", pvi: -1, lastMargin: 14.8, rating: "Safe D", demCandidate: "Josh Shapiro", repCandidate: "Stacy Garrity", candidateEdge: 2.2 },
@@ -636,65 +634,6 @@ function readSenateSignals() {
   } catch {
     return { genericBallotMargin: 0, approvalNet: null };
   }
-}
-
-function readJson(url) {
-  try {
-    return JSON.parse(readFileSync(url, "utf8"));
-  } catch {
-    return null;
-  }
-}
-
-function readFederalForecastSignals(status) {
-  const byState = {};
-  const add = (state, margin, weight, source) => {
-    const value = Number(margin);
-    if (!STATE_NAMES[state] || !Number.isFinite(value)) return;
-    if (!byState[state]) byState[state] = { weightedMargin: 0, weight: 0, sources: [] };
-    byState[state].weightedMargin += value * weight;
-    byState[state].weight += weight;
-    byState[state].sources.push(source);
-  };
-
-  const senate = readJson(new URL("../data/forecast.json", import.meta.url));
-  for (const race of senate?.races || []) {
-    add(race.state, race.margin, 1.2, "2026 Senate model");
-  }
-
-  const house = readJson(new URL("../data/house-forecast.json", import.meta.url));
-  const houseBuckets = {};
-  for (const district of house?.districts || []) {
-    if (!district.state || !Number.isFinite(Number(district.margin))) continue;
-    if (!houseBuckets[district.state]) houseBuckets[district.state] = [];
-    houseBuckets[district.state].push(Number(district.margin));
-  }
-  for (const [state, margins] of Object.entries(houseBuckets)) {
-    add(state, margins.reduce((sum, value) => sum + value, 0) / margins.length, .55, "2026 House district model average");
-  }
-
-  const presidentFiles = ["shapiro-vance", "harris-vance", "newsom-vance"].map((id) => readJson(new URL(`../data/president-forecast-${id}.json`, import.meta.url))).filter(Boolean);
-  const presidentialBuckets = {};
-  for (const forecast of presidentFiles) {
-    for (const [state, stateData] of Object.entries(forecast.states || {})) {
-      if (!Number.isFinite(Number(stateData.demMargin))) continue;
-      if (!presidentialBuckets[state]) presidentialBuckets[state] = [];
-      presidentialBuckets[state].push(Number(stateData.demMargin));
-    }
-  }
-  for (const [state, margins] of Object.entries(presidentialBuckets)) {
-    add(state, margins.reduce((sum, value) => sum + value, 0) / margins.length, .45, "2028 presidential model sample");
-  }
-
-  const normalized = {};
-  for (const [state, value] of Object.entries(byState)) {
-    normalized[state] = {
-      margin: Number((value.weightedMargin / Math.max(value.weight, .01)).toFixed(2)),
-      sources: [...new Set(value.sources)]
-    };
-  }
-  status.federalForecastSignals = { states: Object.keys(normalized).length };
-  return normalized;
 }
 
 function erf(value) {
@@ -943,9 +882,6 @@ function buildRace(baseRace, nationalShift, sourceData) {
   if (sourceData?.fec?.__national) {
     nationalFinance = sourceData.fec.__national.financeSignal * MODEL_WEIGHTS.nationalFinance;
   }
-  const federalSignal = sourceData?.federalSignals?.[race.state]?.margin || 0;
-  const federalSignalAdjustment = clamp(federalSignal * .08, -1.2, 1.2);
-  
   // Polling integration
   let pollMargin = 0;
   const governorPoll = sourceData?.pollfinity?.governorPolls?.[race.state];
@@ -953,7 +889,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
     pollMargin = governorPoll.margin * .5;
   }
   
-  const rawMargin = (ratingMargin * .52) + (fundamentals * .38) + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + federalSignalAdjustment + pollMargin;
+  const rawMargin = (ratingMargin * .52) + (fundamentals * .38) + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin;
   const margin = governorMarginGuardrail(race, rawMargin, ratingMargin, fundamentals, governorPoll);
   const error = governorRaceError(race);
   const demProbability = clamp(normalCdf(margin, 0, error), 0.001, 0.999);
@@ -973,8 +909,6 @@ function buildRace(baseRace, nationalShift, sourceData) {
       financeSignal,
       finance: raceFec,
       nationalFinance,
-      federalForecastSignal: Number(federalSignalAdjustment.toFixed(2)),
-      federalForecastSignalSources: sourceData?.federalSignals?.[race.state]?.sources || [],
       candidateHistory,
       pollMargin,
       pollCount: governorPoll?.polls || 0
@@ -1048,7 +982,6 @@ function governorMovementDrivers(race) {
   addDriver("Projected margin", race.margin - previousRace.margin, "Combined governor model margin changed.");
   addDriver("Finance", (race.sourceInputs?.financeSignal ?? 0) - (previousRace.sourceInputs?.financeSignal ?? 0), "State campaign-finance signal changed.");
   addDriver("Generic ballot", (race.sourceInputs?.nationalFinance ?? 0) - (previousRace.sourceInputs?.nationalFinance ?? 0), "Shared national environment changed.");
-  addDriver("Federal pull", (race.sourceInputs?.federalForecastSignal ?? 0) - (previousRace.sourceInputs?.federalForecastSignal ?? 0), "Same-state signal from other FEA models changed.");
   addDriver("Demographic pull", (race.demographicPull?.adjustment ?? 0) - (previousRace.demographicPull?.adjustment ?? 0), "Candidate coalition profile changed.");
   if (race.rating !== previousRace.rating) drivers.push({ label: "Rating", change: null, detail: `${previousRace.rating} to ${race.rating}` });
   return drivers
@@ -1143,8 +1076,7 @@ async function buildForecast() {
       approvalNet: senateSignals.approvalNet,
       dataSources: sourceData.status,
       nationalFinance: sourceData.governorFinance?.__national || null,
-      financeNote: "Gubernatorial finance is state-regulated. The model checks configured official state portals for competitive races and uses normalized state-level finance records when machine-readable totals are available. Federal FEC data is not treated as a governor finance source.",
-      federalForecastSignals: sourceData.federalSignals || {}
+      financeNote: "Gubernatorial finance is state-regulated. The model checks configured official state portals for competitive races and uses normalized state-level finance records when machine-readable totals are available. Federal FEC data is not treated as a governor finance source."
     },
     modelWarnings: forecastSanityWarnings(modeledRaces, {
       model: "governor",

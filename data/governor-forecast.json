@@ -1,7 +1,7 @@
 {
   "model": "2026 gubernatorial forecast",
   "modelDate": "2026-06-01",
-  "generatedAt": "2026-06-01T21:32:53.614Z",
+  "generatedAt": "2026-06-02T00:03:13.330Z",
   "runDate": "Jun 1, 2026",
   "settings": {
     "simulations": 100000,
@@ -14,8 +14,7 @@
       "Manual 2026 gubernatorial race ledger with candidates, incumbency, PVI, and last gubernatorial margin",
       "Cook Political Report, Inside Elections, Sabato's Crystal Ball, WH, VoteHub, and RCP rating references",
       "Current Senate model generic ballot signal as a broad midterm environment input",
-      "State-level gubernatorial campaign finance file plus configured online state portals for competitive races",
-      "Subtle cross-model state signal from Senate, House, and 2028 presidential forecasts"
+      "State-level gubernatorial campaign finance file plus configured online state portals for competitive races"
     ]
   },
   "sourceSummary": {
@@ -23,7 +22,7 @@
     "gubernatorialNationalShift": 1.08,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-06-01T21:32:47.467Z",
+      "checkedAt": "2026-06-02T00:03:08.677Z",
       "governorFinance": {
         "ok": true,
         "states": 0,
@@ -37,57 +36,57 @@
       "pollfinityAverages": {
         "ok": true,
         "status": 200,
-        "ms": 125,
+        "ms": 424,
         "url": "https://pollfinity.com/averages.json"
       },
       "ddhqGenericBallot": {
         "ok": false,
         "status": 429,
-        "ms": 776,
+        "ms": 900,
         "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
         "error": "<!DOCTYPE html><html lang=\"en\" data-astro-cid-nbv56vs3> <head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" con"
       },
       "governorFinanceSourceAK": {
         "ok": true,
         "status": 200,
-        "ms": 2526,
+        "ms": 1686,
         "url": "https://aws.state.ak.us/ApocReports/"
       },
       "governorFinanceSourceAZ": {
         "ok": true,
         "status": 200,
-        "ms": 457,
+        "ms": 435,
         "url": "https://seethemoney.az.gov/"
       },
       "governorFinanceSourceGA": {
         "ok": true,
         "status": 200,
-        "ms": 315,
+        "ms": 401,
         "url": "https://media.ethics.ga.gov/search/campaign/Campaign_ByName.aspx"
       },
       "governorFinanceSourceIA": {
         "ok": true,
         "status": 200,
-        "ms": 276,
+        "ms": 371,
         "url": "https://webapp.iecdb.iowa.gov/PublicView/"
       },
       "governorFinanceSourceMI": {
         "ok": false,
         "status": "fetch-error",
-        "ms": 1249,
+        "ms": 295,
         "url": "https://cfrsearch.nictusa.com/",
         "error": "fetch failed"
       },
       "governorFinanceSourceNV": {
         "ok": true,
         "status": 200,
-        "ms": 113,
+        "ms": 159,
         "url": "https://www.nvsos.gov/SOSCandidateServices/AnonymousAccess/CEFDSearchUU/Search.aspx"
       },
       "governorFinanceSourceWI": {
         "ok": true,
         "status": 200,
-        "ms": 446,
+        "ms": 517,
         "url": "https://cfis.wi.gov/"
       },
       "governorOnlineFinance": {
@@ -148,9 +147,6 @@
           "manualStates": 0,
           "onlineStates": 0
         }
-      },
-      "federalForecastSignals": {
-        "states": 36
       }
     },
     "nationalFinance": {
@@ -171,309 +167,30 @@
       "otherIndividual": 0,
       "financeSignal": 0
     },
-    "financeNote": "Gubernatorial finance is state-regulated. The model checks configured official state portals for competitive races and uses normalized state-level finance records when machine-readable totals are available. Federal FEC data is not treated as a governor finance source.",
-    "federalForecastSignals": {
-      "AL": {
-        "margin": -15.18,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "AK": {
-        "margin": -2.8,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "AR": {
-        "margin": -17.66,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "CO": {
-        "margin": 14.67,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "FL": {
-        "margin": -11.31,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "GA": {
-        "margin": 5.35,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "ID": {
-        "margin": -20.43,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "IL": {
-        "margin": 16.98,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "IA": {
-        "margin": -6.66,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "KS": {
-        "margin": -11.1,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "ME": {
-        "margin": 8.05,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "MA": {
-        "margin": 23.92,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "MI": {
-        "margin": 3.68,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "MN": {
-        "margin": 6.19,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "NE": {
-        "margin": -8,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "NH": {
-        "margin": 9.69,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "NM": {
-        "margin": 16.88,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "OH": {
-        "margin": -1.99,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "OK": {
-        "margin": -22.04,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "OR": {
-        "margin": 16.7,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "RI": {
-        "margin": 22.17,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "SC": {
-        "margin": -10.71,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "SD": {
-        "margin": -19.16,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "TN": {
-        "margin": -17.66,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "TX": {
-        "margin": -2.34,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "WY": {
-        "margin": -24.28,
-        "sources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "HI": {
-        "margin": 26.64,
-        "sources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "MD": {
-        "margin": 26.29,
-        "sources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "NV": {
-        "margin": 3.49,
-        "sources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "NY": {
-        "margin": 19.36,
-        "sources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "PA": {
-        "margin": 2.83,
-        "sources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "VT": {
-        "margin": 30.38,
-        "sources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "WI": {
-        "margin": -0.29,
-        "sources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "AZ": {
-        "margin": 1.42,
-        "sources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "CA": {
-        "margin": 25.55,
-        "sources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      },
-      "CT": {
-        "margin": 23.11,
-        "sources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ]
-      }
-    }
+    "financeNote": "Gubernatorial finance is state-regulated. The model checks configured official state portals for competitive races and uses normalized state-level finance records when machine-readable totals are available. Federal FEC data is not treated as a governor finance source."
   },
   "modelWarnings": [],
   "projectedDemRaceWins": 18,
   "projectedRepRaceWins": 18,
-  "averageDemGovernors": 23.64,
-  "averageRepGovernors": 26.36,
+  "averageDemGovernors": 24,
+  "averageRepGovernors": 26,
   "medianDemGovernors": 24,
   "medianRepGovernors": 26,
   "distribution": {
-    "18": 23,
-    "19": 237,
-    "20": 1552,
-    "21": 6000,
-    "22": 14584,
-    "23": 23724,
-    "24": 25030,
-    "25": 17948,
-    "26": 8232,
-    "27": 2281,
-    "28": 360,
-    "29": 28,
-    "30": 1
+    "17": 2,
+    "18": 11,
+    "19": 193,
+    "20": 1113,
+    "21": 4356,
+    "22": 11465,
+    "23": 20591,
+    "24": 24572,
+    "25": 20553,
+    "26": 11578,
+    "27": 4424,
+    "28": 999,
+    "29": 135,
+    "30": 8
   },
   "stateHistory": {
     "AL": [
@@ -486,15 +203,15 @@
     "AK": [
       {
         "date": "2026-06-01",
-        "dem": 0.38007,
-        "rep": 0.61993
+        "dem": 0.38783,
+        "rep": 0.61217
       }
     ],
     "AZ": [
       {
         "date": "2026-06-01",
-        "dem": 0.55636,
-        "rep": 0.44364
+        "dem": 0.5526,
+        "rep": 0.4474
       }
     ],
     "AR": [
@@ -535,8 +252,8 @@
     "GA": [
       {
         "date": "2026-06-01",
-        "dem": 0.57117,
-        "rep": 0.42883
+        "dem": 0.55819,
+        "rep": 0.44181
       }
     ],
     "HI": [
@@ -563,8 +280,8 @@
     "IA": [
       {
         "date": "2026-06-01",
-        "dem": 0.4512,
-        "rep": 0.5488
+        "dem": 0.46748,
+        "rep": 0.53252
       }
     ],
     "KS": [
@@ -598,15 +315,15 @@
     "MI": [
       {
         "date": "2026-06-01",
-        "dem": 0.71369,
-        "rep": 0.28631
+        "dem": 0.70456,
+        "rep": 0.29544
       }
     ],
     "MN": [
       {
         "date": "2026-06-01",
-        "dem": 0.86053,
-        "rep": 0.13947
+        "dem": 0.84917,
+        "rep": 0.15083
       }
     ],
     "NE": [
@@ -619,22 +336,22 @@
     "NV": [
       {
         "date": "2026-06-01",
-        "dem": 0.43676,
-        "rep": 0.56324
+        "dem": 0.42758,
+        "rep": 0.57242
       }
     ],
     "NH": [
       {
         "date": "2026-06-01",
-        "dem": 0.17911,
-        "rep": 0.82089
+        "dem": 0.15727,
+        "rep": 0.84273
       }
     ],
     "NM": [
       {
         "date": "2026-06-01",
-        "dem": 0.84911,
-        "rep": 0.15089
+        "dem": 0.81909,
+        "rep": 0.18091
       }
     ],
     "NY": [
@@ -647,8 +364,8 @@
     "OH": [
       {
         "date": "2026-06-01",
-        "dem": 0.03305,
-        "rep": 0.96695
+        "dem": 0.46066,
+        "rep": 0.53934
       }
     ],
     "OK": [
@@ -668,8 +385,8 @@
     "PA": [
       {
         "date": "2026-06-01",
-        "dem": 0.9907,
-        "rep": 0.0093
+        "dem": 0.98995,
+        "rep": 0.01005
       }
     ],
     "RI": [
@@ -703,22 +420,22 @@
     "TX": [
       {
         "date": "2026-06-01",
-        "dem": 0.02316,
-        "rep": 0.97684
+        "dem": 0.02451,
+        "rep": 0.97549
       }
     ],
     "VT": [
       {
         "date": "2026-06-01",
-        "dem": 0.00838,
-        "rep": 0.99162
+        "dem": 0.00545,
+        "rep": 0.99455
       }
     ],
     "WI": [
       {
         "date": "2026-06-01",
-        "dem": 0.58491,
-        "rep": 0.41509
+        "dem": 0.5856,
+        "rep": 0.4144
       }
     ],
     "WY": [
@@ -835,12 +552,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -1.2,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -851,7 +562,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00233,
+      "tippingPower": 0.00188,
       "movementDrivers": [],
       "history": [
         {
@@ -888,7 +599,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Alaska Governor",
-      "margin": -2.76,
+      "margin": -2.58,
       "fundamentalsMargin": -2.27,
       "ratingMargin": -5,
       "candidateAndLocal": 0.4,
@@ -962,29 +673,29 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -0.22,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
       },
       "modelRating": "Tilt R",
-      "demProbability": 0.38007,
-      "repProbability": 0.61993,
+      "demProbability": 0.38783,
+      "repProbability": 0.61217,
       "winnerParty": "R",
-      "winnerProbability": 0.61993,
+      "winnerProbability": 0.61217,
       "competitive": true,
-      "tippingPower": 0.094,
-      "movementDrivers": [],
+      "tippingPower": 0.09063,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.18,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.38007,
-          "rep": 0.61993
+          "dem": 0.38783,
+          "rep": 0.61217
         }
       ],
       "movement": {
@@ -1015,7 +726,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Arizona Governor",
-      "margin": 1.39,
+      "margin": 1.3,
       "fundamentalsMargin": 1.83,
       "ratingMargin": 0,
       "candidateAndLocal": -0.4,
@@ -1100,28 +811,29 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 0.11,
-        "federalForecastSignalSources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
       },
       "modelRating": "Toss-up",
-      "demProbability": 0.55636,
-      "repProbability": 0.44364,
+      "demProbability": 0.5526,
+      "repProbability": 0.4474,
       "winnerParty": "D",
-      "winnerProbability": 0.55636,
+      "winnerProbability": 0.5526,
       "competitive": true,
-      "tippingPower": 0.09041,
-      "movementDrivers": [],
+      "tippingPower": 0.08458,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": -0.09,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.55636,
-          "rep": 0.44364
+          "dem": 0.5526,
+          "rep": 0.4474
         }
       ],
       "movement": {
@@ -1236,12 +948,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -1.2,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -1252,7 +958,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00087,
+      "tippingPower": 0.0009,
       "movementDrivers": [],
       "history": [
         {
@@ -1382,11 +1088,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 1.2,
-        "federalForecastSignalSources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -1397,7 +1098,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99538,
       "competitive": false,
-      "tippingPower": 0.00408,
+      "tippingPower": 0.00383,
       "movementDrivers": [],
       "history": [
         {
@@ -1512,12 +1213,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 1.17,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -1528,7 +1223,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.98875,
       "competitive": false,
-      "tippingPower": 0.00983,
+      "tippingPower": 0.00815,
       "movementDrivers": [],
       "history": [
         {
@@ -1639,11 +1334,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 1.2,
-        "federalForecastSignalSources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -1654,7 +1344,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99559,
       "competitive": false,
-      "tippingPower": 0.00486,
+      "tippingPower": 0.00445,
       "movementDrivers": [],
       "history": [
         {
@@ -1775,12 +1465,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -0.9,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -1791,7 +1475,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.97625,
       "competitive": false,
-      "tippingPower": 0.01496,
+      "tippingPower": 0.01359,
       "movementDrivers": [],
       "history": [
         {
@@ -1828,7 +1512,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Georgia Governor",
-      "margin": 1.91,
+      "margin": 1.56,
       "fundamentalsMargin": -0.89,
       "ratingMargin": 0,
       "candidateAndLocal": 0.5,
@@ -1917,29 +1601,29 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 0.43,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0.7,
         "pollMargin": 0,
         "pollCount": 0
       },
       "modelRating": "Tilt D",
-      "demProbability": 0.57117,
-      "repProbability": 0.42883,
+      "demProbability": 0.55819,
+      "repProbability": 0.44181,
       "winnerParty": "D",
-      "winnerProbability": 0.57117,
+      "winnerProbability": 0.55819,
       "competitive": true,
-      "tippingPower": 0.08404,
-      "movementDrivers": [],
+      "tippingPower": 0.07766,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": -0.35,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.57117,
-          "rep": 0.42883
+          "dem": 0.55819,
+          "rep": 0.44181
         }
       ],
       "movement": {
@@ -2044,11 +1728,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 1.2,
-        "federalForecastSignalSources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -2059,7 +1738,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00132,
+      "tippingPower": 0.00125,
       "movementDrivers": [],
       "history": [
         {
@@ -2175,12 +1854,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -1.2,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -2191,7 +1864,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00121,
+      "tippingPower": 0.00111,
       "movementDrivers": [],
       "history": [
         {
@@ -2312,12 +1985,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 1.2,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -2328,7 +1995,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99379,
       "competitive": false,
-      "tippingPower": 0.00619,
+      "tippingPower": 0.00593,
       "movementDrivers": [],
       "history": [
         {
@@ -2365,7 +2032,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Iowa Governor",
-      "margin": -1.31,
+      "margin": -0.87,
       "fundamentalsMargin": -7.79,
       "ratingMargin": 0,
       "candidateAndLocal": 2.1,
@@ -2449,29 +2116,29 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -0.53,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
       },
       "modelRating": "Toss-up",
-      "demProbability": 0.4512,
-      "repProbability": 0.5488,
+      "demProbability": 0.46748,
+      "repProbability": 0.53252,
       "winnerParty": "R",
-      "winnerProbability": 0.5488,
+      "winnerProbability": 0.53252,
       "competitive": true,
-      "tippingPower": 0.08394,
-      "movementDrivers": [],
+      "tippingPower": 0.07791,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.44,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.4512,
-          "rep": 0.5488
+          "dem": 0.46748,
+          "rep": 0.53252
         }
       ],
       "movement": {
@@ -2581,12 +2248,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -0.89,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -2597,7 +2258,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.95958,
       "competitive": false,
-      "tippingPower": 0.02069,
+      "tippingPower": 0.01897,
       "movementDrivers": [],
       "history": [
         {
@@ -2713,12 +2374,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 0.64,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -2729,7 +2384,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.96912,
       "competitive": false,
-      "tippingPower": 0.01856,
+      "tippingPower": 0.01769,
       "movementDrivers": [],
       "history": [
         {
@@ -2845,11 +2500,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 1.2,
-        "federalForecastSignalSources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -2860,7 +2510,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00084,
+      "tippingPower": 0.00078,
       "movementDrivers": [],
       "history": [
         {
@@ -2971,12 +2621,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 1.2,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -2987,7 +2631,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00105,
+      "tippingPower": 0.00093,
       "movementDrivers": [],
       "history": [
         {
@@ -3024,7 +2668,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Michigan Governor",
-      "margin": 5.11,
+      "margin": 4.87,
       "fundamentalsMargin": 1.11,
       "ratingMargin": 5,
       "candidateAndLocal": 0.9,
@@ -3107,29 +2751,29 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 0.29,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0.25,
         "pollMargin": 0,
         "pollCount": 0
       },
       "modelRating": "Lean D",
-      "demProbability": 0.71369,
-      "repProbability": 0.28631,
+      "demProbability": 0.70456,
+      "repProbability": 0.29544,
       "winnerParty": "D",
-      "winnerProbability": 0.71369,
+      "winnerProbability": 0.70456,
       "competitive": true,
-      "tippingPower": 0.08355,
-      "movementDrivers": [],
+      "tippingPower": 0.07991,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": -0.24,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.71369,
-          "rep": 0.28631
+          "dem": 0.70456,
+          "rep": 0.29544
         }
       ],
       "movement": {
@@ -3160,7 +2804,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Minnesota Governor",
-      "margin": 8.82,
+      "margin": 8.42,
       "fundamentalsMargin": 4.81,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.4,
@@ -3239,29 +2883,29 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 0.5,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
       },
       "modelRating": "Likely D",
-      "demProbability": 0.86053,
-      "repProbability": 0.13947,
+      "demProbability": 0.84917,
+      "repProbability": 0.15083,
       "winnerParty": "D",
-      "winnerProbability": 0.86053,
+      "winnerProbability": 0.84917,
       "competitive": false,
-      "tippingPower": 0.05992,
-      "movementDrivers": [],
+      "tippingPower": 0.05891,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": -0.4,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.86053,
-          "rep": 0.13947
+          "dem": 0.84917,
+          "rep": 0.15083
         }
       ],
       "movement": {
@@ -3376,12 +3020,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -0.64,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 1.45,
         "pollMargin": 0,
         "pollCount": 0
@@ -3392,7 +3030,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99808,
       "competitive": false,
-      "tippingPower": 0.00226,
+      "tippingPower": 0.0019,
       "movementDrivers": [],
       "history": [
         {
@@ -3429,7 +3067,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Nevada Governor",
-      "margin": -1.56,
+      "margin": -1.79,
       "fundamentalsMargin": -3.01,
       "ratingMargin": 0,
       "candidateAndLocal": -1.6,
@@ -3515,28 +3153,29 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 0.28,
-        "federalForecastSignalSources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
       },
       "modelRating": "Tilt R",
-      "demProbability": 0.43676,
-      "repProbability": 0.56324,
+      "demProbability": 0.42758,
+      "repProbability": 0.57242,
       "winnerParty": "R",
-      "winnerProbability": 0.56324,
+      "winnerProbability": 0.57242,
       "competitive": true,
-      "tippingPower": 0.09194,
-      "movementDrivers": [],
+      "tippingPower": 0.08527,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": -0.23,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.43676,
-          "rep": 0.56324
+          "dem": 0.42758,
+          "rep": 0.57242
         }
       ],
       "movement": {
@@ -3567,7 +3206,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "New Hampshire Governor",
-      "margin": -6.71,
+      "margin": -7.34,
       "fundamentalsMargin": -3.38,
       "ratingMargin": -10.5,
       "candidateAndLocal": -1.6,
@@ -3652,29 +3291,29 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 0.78,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Lean R",
-      "demProbability": 0.17911,
-      "repProbability": 0.82089,
+      "modelRating": "Likely R",
+      "demProbability": 0.15727,
+      "repProbability": 0.84273,
       "winnerParty": "R",
-      "winnerProbability": 0.82089,
+      "winnerProbability": 0.84273,
       "competitive": false,
-      "tippingPower": 0.08015,
-      "movementDrivers": [],
+      "tippingPower": 0.06858,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": -0.63,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.17911,
-          "rep": 0.82089
+          "dem": 0.15727,
+          "rep": 0.84273
         }
       ],
       "movement": {
@@ -3705,7 +3344,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "New Mexico Governor",
-      "margin": 8.42,
+      "margin": 7.43,
       "fundamentalsMargin": 1.71,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.6,
@@ -3789,29 +3428,29 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 1.2,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Likely D",
-      "demProbability": 0.84911,
-      "repProbability": 0.15089,
+      "modelRating": "Lean D",
+      "demProbability": 0.81909,
+      "repProbability": 0.18091,
       "winnerParty": "D",
-      "winnerProbability": 0.84911,
+      "winnerProbability": 0.81909,
       "competitive": false,
-      "tippingPower": 0.06518,
-      "movementDrivers": [],
+      "tippingPower": 0.06729,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": -0.99,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.84911,
-          "rep": 0.15089
+          "dem": 0.81909,
+          "rep": 0.18091
         }
       ],
       "movement": {
@@ -3921,11 +3560,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 1.2,
-        "federalForecastSignalSources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -3936,7 +3570,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99459,
       "competitive": false,
-      "tippingPower": 0.00582,
+      "tippingPower": 0.00555,
       "movementDrivers": [],
       "history": [
         {
@@ -3959,10 +3593,10 @@
       "status": "Term-limited",
       "pvi": -5,
       "lastMargin": -25.4,
-      "rating": "Lean R",
+      "rating": "Toss-up",
       "demCandidate": "Amy Acton",
       "repCandidate": "Vivek Ramaswamy",
-      "candidateEdge": -0.6,
+      "candidateEdge": -0.4,
       "dem": "Amy Acton",
       "rep": "Vivek Ramaswamy",
       "demStatus": "nominee",
@@ -3973,10 +3607,10 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Ohio Governor",
-      "margin": -16.63,
+      "margin": -1.05,
       "fundamentalsMargin": -5.47,
-      "ratingMargin": -5,
-      "candidateAndLocal": -0.6,
+      "ratingMargin": 0,
+      "candidateAndLocal": -0.4,
       "electorateComposition": {
         "source": "Manual midterm likely-voter baseline; not fixed truth",
         "raceEducation": {
@@ -4066,29 +3700,34 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -0.16,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 1.15,
         "pollMargin": 0,
         "pollCount": 0
       },
-      "modelRating": "Safe R",
-      "demProbability": 0.03305,
-      "repProbability": 0.96695,
+      "modelRating": "Toss-up",
+      "demProbability": 0.46066,
+      "repProbability": 0.53934,
       "winnerParty": "R",
-      "winnerProbability": 0.96695,
-      "competitive": false,
-      "tippingPower": 0.01683,
-      "movementDrivers": [],
+      "winnerProbability": 0.53934,
+      "competitive": true,
+      "tippingPower": 0.07834,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 15.58,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Lean R to Toss-up"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.03305,
-          "rep": 0.96695
+          "dem": 0.46066,
+          "rep": 0.53934
         }
       ],
       "movement": {
@@ -4198,12 +3837,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -1.2,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -4214,7 +3847,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99611,
       "competitive": false,
-      "tippingPower": 0.00346,
+      "tippingPower": 0.00339,
       "movementDrivers": [],
       "history": [
         {
@@ -4338,12 +3971,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 1.2,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -4354,7 +3981,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.98615,
       "competitive": false,
-      "tippingPower": 0.01047,
+      "tippingPower": 0.01009,
       "movementDrivers": [],
       "history": [
         {
@@ -4391,7 +4018,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Pennsylvania Governor",
-      "margin": 15.06,
+      "margin": 14.88,
       "fundamentalsMargin": 4.72,
       "ratingMargin": 18,
       "candidateAndLocal": 2.2,
@@ -4486,28 +4113,29 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 0.23,
-        "federalForecastSignalSources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 1.25,
         "pollMargin": 0,
         "pollCount": 0
       },
       "modelRating": "Safe D",
-      "demProbability": 0.9907,
-      "repProbability": 0.0093,
+      "demProbability": 0.98995,
+      "repProbability": 0.01005,
       "winnerParty": "D",
-      "winnerProbability": 0.9907,
+      "winnerProbability": 0.98995,
       "competitive": false,
-      "tippingPower": 0.00925,
-      "movementDrivers": [],
+      "tippingPower": 0.00871,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": -0.18,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.9907,
-          "rep": 0.0093
+          "dem": 0.98995,
+          "rep": 0.01005
         }
       ],
       "movement": {
@@ -4612,12 +4240,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 1.2,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -4628,7 +4250,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99664,
       "competitive": false,
-      "tippingPower": 0.00399,
+      "tippingPower": 0.00383,
       "movementDrivers": [],
       "history": [
         {
@@ -4755,12 +4377,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -0.86,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -4771,7 +4387,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.98272,
       "competitive": false,
-      "tippingPower": 0.01175,
+      "tippingPower": 0.01098,
       "movementDrivers": [],
       "history": [
         {
@@ -4892,12 +4508,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -1.2,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -4908,7 +4518,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.0012,
+      "tippingPower": 0.00098,
       "movementDrivers": [],
       "history": [
         {
@@ -5035,12 +4645,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -1.2,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -5051,7 +4655,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00217,
+      "tippingPower": 0.0021,
       "movementDrivers": [],
       "history": [
         {
@@ -5088,7 +4692,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Texas Governor",
-      "margin": -12.75,
+      "margin": -12.6,
       "fundamentalsMargin": -6.4,
       "ratingMargin": -18,
       "candidateAndLocal": -1.7,
@@ -5185,29 +4789,29 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -0.19,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
       },
       "modelRating": "Safe R",
-      "demProbability": 0.02316,
-      "repProbability": 0.97684,
+      "demProbability": 0.02451,
+      "repProbability": 0.97549,
       "winnerParty": "R",
-      "winnerProbability": 0.97684,
+      "winnerProbability": 0.97549,
       "competitive": false,
-      "tippingPower": 0.01967,
-      "movementDrivers": [],
+      "tippingPower": 0.01843,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.15,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.02316,
-          "rep": 0.97684
+          "dem": 0.02451,
+          "rep": 0.97549
         }
       ],
       "movement": {
@@ -5238,7 +4842,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Vermont Governor",
-      "margin": -15.31,
+      "margin": -16.29,
       "fundamentalsMargin": -5.06,
       "ratingMargin": -18,
       "candidateAndLocal": -6.5,
@@ -5322,28 +4926,29 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": 1.2,
-        "federalForecastSignalSources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
       },
       "modelRating": "Safe R",
-      "demProbability": 0.00838,
-      "repProbability": 0.99162,
+      "demProbability": 0.00545,
+      "repProbability": 0.99455,
       "winnerParty": "R",
-      "winnerProbability": 0.99162,
+      "winnerProbability": 0.99455,
       "competitive": false,
-      "tippingPower": 0.00809,
-      "movementDrivers": [],
+      "tippingPower": 0.00544,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": -0.98,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.00838,
-          "rep": 0.99162
+          "dem": 0.00545,
+          "rep": 0.99455
         }
       ],
       "movement": {
@@ -5374,7 +4979,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Wisconsin Governor",
-      "margin": 2.28,
+      "margin": 2.3,
       "fundamentalsMargin": 3.01,
       "ratingMargin": 0,
       "candidateAndLocal": 0.5,
@@ -5458,28 +5063,23 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -0.02,
-        "federalForecastSignalSources": [
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
       },
       "modelRating": "Tilt D",
-      "demProbability": 0.58491,
-      "repProbability": 0.41509,
+      "demProbability": 0.5856,
+      "repProbability": 0.4144,
       "winnerParty": "D",
-      "winnerProbability": 0.58491,
+      "winnerProbability": 0.5856,
       "competitive": true,
-      "tippingPower": 0.08313,
+      "tippingPower": 0.07817,
       "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.58491,
-          "rep": 0.41509
+          "dem": 0.5856,
+          "rep": 0.4144
         }
       ],
       "movement": {
@@ -5589,12 +5189,6 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "federalForecastSignal": -1.2,
-        "federalForecastSignalSources": [
-          "2026 Senate model",
-          "2026 House district model average",
-          "2028 presidential model sample"
-        ],
         "candidateHistory": 0,
         "pollMargin": 0,
         "pollCount": 0
@@ -5605,7 +5199,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00199,
+      "tippingPower": 0.00189,
       "movementDrivers": [],
       "history": [
         {

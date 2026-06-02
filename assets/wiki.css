@@ -2016,11 +2016,17 @@ dd {
 .forecast-map-probbar b {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
   color: #fff;
   font: 950 .74rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-shadow: 0 1px 10px rgba(0, 0, 0, .5);
+}
+
+.forecast-map-probbar b em {
+  font-style: normal;
 }
 
 #senate-map svg,
@@ -3479,8 +3485,9 @@ button.race-board-row {
 }
 
 .results-groups {
-  column-width: 260px;
-  column-gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+  gap: 10px;
   margin-top: 12px;
 }
 
@@ -3496,11 +3503,9 @@ button.race-board-row {
 
 .result-state-card {
   padding: 10px;
-  display: inline-block;
+  display: block;
   width: 100%;
-  margin: 0 0 10px;
-  break-inside: avoid;
-  vertical-align: top;
+  margin: 0;
   animation: result-rise .42s ease both;
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
@@ -3988,8 +3993,9 @@ button.race-board-row {
 
 .result-county-map path:hover,
 .result-county-map path:focus {
-  filter: brightness(1.35);
-  stroke-width: 1.2;
+  filter: brightness(1.35) drop-shadow(0 0 9px rgba(198, 210, 255, .66));
+  stroke: #fff;
+  stroke-width: 2.4;
   transform: scale(1.012);
 }
 
@@ -4256,6 +4262,16 @@ button.race-board-row {
   background: color-mix(in srgb, #1030b2 12%, #020b22);
 }
 
+.result-full-candidate.party-dem-glow:hover,
+.result-full-candidate.party-dem-glow:focus-within {
+  box-shadow: inset 6px 0 0 var(--candidate-color, #1030b2), 0 0 24px color-mix(in srgb, #2f74ff 30%, transparent);
+}
+
+.result-full-candidate.party-rep-glow:hover,
+.result-full-candidate.party-rep-glow:focus-within {
+  box-shadow: inset 6px 0 0 var(--candidate-color, #e03a3e), 0 0 24px color-mix(in srgb, #ff4d57 32%, transparent);
+}
+
 .result-full-candidate.called {
   border-color: color-mix(in srgb, #49d38a 54%, var(--line));
   box-shadow: 0 0 20px color-mix(in srgb, #49d38a 14%, transparent);
@@ -4318,6 +4334,23 @@ button.race-board-row {
 
 .result-map-tabs .result-back-link:hover,
 .result-map-tabs .result-back-link:focus {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: #c6d2ff;
+  text-underline-offset: 4px;
+}
+
+.result-back-link-top {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font: 950 .82rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  text-decoration: none;
+}
+
+.result-back-link-top:hover,
+.result-back-link-top:focus {
   color: var(--ink);
   text-decoration: underline;
   text-decoration-color: #c6d2ff;
@@ -4433,6 +4466,33 @@ button.race-board-row {
 .result-status-list dd {
   margin: 5px 0 0;
   font-weight: 950;
+}
+
+.result-night-meta-top {
+  margin: 14px 0 8px;
+}
+
+.result-night-meta-top .result-reporting-stat,
+.result-night-meta-top .result-poll-close-stat {
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.result-reporting-bar {
+  height: 10px;
+  margin: 0 0 12px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, #020b22 70%, var(--paper));
+}
+
+.result-reporting-bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #1030b2, #c6d2ff, #ff2a4f);
+  transition: width .35s var(--ease-out);
 }
 
 .result-county-panel {
@@ -5029,6 +5089,9 @@ button.race-board-row {
   border-radius: 4px;
   background: #4d070b;
   color: #fff;
+  font: 950 .82rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  letter-spacing: .04em;
+  text-transform: uppercase;
   box-shadow: 0 0 0 1px rgba(255, 42, 42, .35), 0 0 18px rgba(255, 42, 42, .42);
 }
 

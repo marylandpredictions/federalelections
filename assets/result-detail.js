@@ -542,7 +542,7 @@ function candidateRow(candidate, race, maxPercent) {
   const fill = candidateFill(race, candidate);
   const photo = candidatePhotoUrl(race, candidate);
   return `
-    <article class="result-full-candidate ${candidate.callLabel ? "called" : ""}" style="--candidate-color:${escapeHtml(fill)}">
+    <article class="result-full-candidate ${partyClass(code)}-glow ${candidate.callLabel ? "called" : ""}" style="--candidate-color:${escapeHtml(fill)}">
       <div class="result-full-candidate-name">
         <span class="result-candidate-avatar ${partyClass(code)}">${photo ? `<img src="${escapeHtml(photo)}" alt="">` : escapeHtml(candidateInitials(candidate.name))}</span>
         <div>
@@ -1126,10 +1126,12 @@ async function renderRace(race) {
   const notesData = await loadAnalysisNotes();
   const analystNotes = notesData.races?.[String(race.id)] || [];
   const closeIso = pollCloseIso(race);
+  const reporting = Math.max(0, Math.min(100, Number(race.percentReporting || 0)));
   document.title = `${race.electionName} | Federal Elections Analysis`;
   page.innerHTML = `
     <section class="result-night-shell">
       <div class="result-night-left">
+        <a class="result-back-link result-back-link-top" href="/results.html">&lt;- Back to all races</a>
         <div class="result-title-lockup">
           <span class="result-election-marker result-election-marker-large ${markerClass(race.marker)}">
             <i>${escapeHtml(race.marker?.short || "G")}</i>
@@ -1143,21 +1145,23 @@ async function renderRace(race) {
 
         ${raceCallBanner(race)}
 
-        <div class="result-full-candidates">
-          ${candidateRows(race)}
+        <div class="result-night-meta result-night-meta-top">
+          <span class="result-reporting-stat">${percentLabel(race.percentReporting)} reporting</span>
+          <span data-poll-close="${escapeHtml(closeIso)}" class="result-poll-close-stat">${escapeHtml(pollCloseLabel(closeIso))}</span>
+          <span>Last updated ${escapeHtml(timeLabel(race.lastUpdated))}</span>
+          <span>${numberLabel((race.counties || []).length)} counties</span>
+        </div>
+        <div class="result-reporting-bar" aria-label="${escapeHtml(percentLabel(race.percentReporting))} reporting">
+          <i style="width:${reporting}%"></i>
         </div>
 
-        <div class="result-night-meta">
-          <span>${percentLabel(race.percentReporting)} reporting</span>
-          <span>Last updated ${escapeHtml(timeLabel(race.lastUpdated))}</span>
-          <span data-poll-close="${escapeHtml(closeIso)}">${escapeHtml(pollCloseLabel(closeIso))}</span>
-          <span>${numberLabel((race.counties || []).length)} counties</span>
+        <div class="result-full-candidates">
+          ${candidateRows(race)}
         </div>
       </div>
 
       <aside class="result-map-panel">
         <div class="result-map-tabs">
-          <a class="result-back-link" href="/results.html">&lt;- Back to all races</a>
           <button type="button" data-map-zoom="out">-</button>
           <button type="button" data-map-zoom="in">+</button>
           <button type="button" data-map-zoom="reset">Reset</button>

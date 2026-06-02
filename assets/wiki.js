@@ -548,7 +548,7 @@ function setMapProbBar(prefix, demProbability, repProbability, label = "Control"
   const total = Math.max(.0001, dem + rep);
   if (demBar) demBar.style.width = `${(dem / total) * 100}%`;
   if (repBar) repBar.style.width = `${(rep / total) * 100}%`;
-  if (text) text.textContent = `${label}: D ${oneDecimal(dem)} / R ${oneDecimal(rep)}`;
+  if (text) text.innerHTML = `<em>D ${oneDecimal(dem)}</em><em>R ${oneDecimal(rep)}</em>`;
 }
 
 function escapeHtml(value) {

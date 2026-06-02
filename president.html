@@ -118,6 +118,11 @@
             <span id="president-map-probbar-rep"></span>
             <b id="president-map-probbar-label">--</b>
           </div>
+          <div class="senate-map-seatbar president-map-evbar" aria-label="Expected electoral votes">
+            <span id="president-map-evbar-dem"></span>
+            <span id="president-map-evbar-rep"></span>
+            <b id="president-map-evbar-label">--</b>
+          </div>
           <div id="president-map"></div>
           <div id="president-map-legend" class="map-legend" aria-label="Race rating legend"></div>
           <p id="president-map-note" class="map-note"></p>
@@ -301,7 +306,16 @@
       const mapBarLabel = document.getElementById('president-map-probbar-label');
       if (mapDemBar) mapDemBar.style.width = `${demProb * 100}%`;
       if (mapRepBar) mapRepBar.style.width = `${repProb * 100}%`;
-      if (mapBarLabel) mapBarLabel.textContent = `Win probability: ${demLast} ${(demProb * 100).toFixed(1)}% / ${repLast} ${(repProb * 100).toFixed(1)}%`;
+      if (mapBarLabel) mapBarLabel.innerHTML = `<em>${demLast} ${(demProb * 100).toFixed(1)}%</em><em>${repLast} ${(repProb * 100).toFixed(1)}%</em>`;
+      const demEv = Number(forecastData.electoralCollege.demExpectedEV || 0);
+      const repEv = Number(forecastData.electoralCollege.repExpectedEV || 0);
+      const evTotal = Math.max(1, demEv + repEv);
+      const evDemBar = document.getElementById('president-map-evbar-dem');
+      const evRepBar = document.getElementById('president-map-evbar-rep');
+      const evLabel = document.getElementById('president-map-evbar-label');
+      if (evDemBar) evDemBar.style.width = `${(demEv / evTotal) * 100}%`;
+      if (evRepBar) evRepBar.style.width = `${(repEv / evTotal) * 100}%`;
+      if (evLabel) evLabel.innerHTML = `<em>${Math.round(demEv)} ${demLast} EV</em><em>${Math.round(repEv)} ${repLast} EV</em>`;
     }
 
     function candidateLastName(name) {

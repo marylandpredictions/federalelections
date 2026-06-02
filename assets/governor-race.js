@@ -90,16 +90,11 @@
       `<li>${escapeHtml(finance.repFinanceLabel || "Republican side")} cash: $${Math.round(finance.repCash || 0).toLocaleString()}</li>`,
       `<li>Source: ${financeSource}</li>`
     ].join("") : `<li>No normalized state campaign-finance source is available for this race yet.</li>`;
-    const federalSignalRows = [
-      `<li>Federal model pull: ${signedPointMargin(race.sourceInputs?.federalForecastSignal || 0)}</li>`,
-      `<li>Sources: ${escapeHtml((race.sourceInputs?.federalForecastSignalSources || []).join(", ") || "No same-state federal signal available")}</li>`
-    ].join("");
     const snapshotCards = [
       ["Rating", race.rating, "Manual race-rating input before model adjustment"],
       ["Fundamentals", signedPointMargin(race.fundamentalsMargin), "PVI, prior gubernatorial result, and incumbency"],
       ["Candidate/local", signedPointMargin(race.candidateAndLocal), "Manual candidate-quality and local context adjustment"],
       ["Finance", signedPointMargin(race.sourceInputs?.financeSignal || 0), "State-level campaign finance input"],
-      ["Federal pull", signedPointMargin(race.sourceInputs?.federalForecastSignal || 0), "Subtle same-state signal from other FEA models"],
       ["Demographic pull", signedPointMargin(race.demographicPull?.adjustment || 0), "Candidate profile interaction with state electorate"],
       ["Model margin", signedPointMargin(race.margin), "Final projected vote margin"],
       ["Model rating", race.modelRating || race.rating, "Probability-derived rating"]
@@ -120,7 +115,6 @@
       </ul></details>
       <details><summary>Demographic pull</summary><ul>${demographicRows}</ul></details>
       <details><summary>Finance</summary><ul>${financeRows}</ul></details>
-      <details><summary>Cross-model state pull</summary><ul>${federalSignalRows}</ul></details>
       <details><summary>Fundamentals</summary><ul>
         <li>PVI: ${escapeHtml(String(race.pvi))}</li>
         <li>Last gubernatorial margin: ${signedPointMargin(race.lastMargin)}</li>

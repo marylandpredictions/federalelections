@@ -187,7 +187,7 @@
     const mapLabel = document.getElementById("governor-map-probbar-label");
     if (mapDemBar) mapDemBar.style.width = `${(demRaces / Math.max(data.races.length, 1)) * 100}%`;
     if (mapRepBar) mapRepBar.style.width = `${(repRaces / Math.max(data.races.length, 1)) * 100}%`;
-    if (mapLabel) mapLabel.textContent = `${demRaces} D / ${repRaces} R projected race leads`;
+    if (mapLabel) mapLabel.innerHTML = `<em>${demRaces} D</em><em>${repRaces} R</em>`;
   }
 
   function renderFallbackMap(data) {
