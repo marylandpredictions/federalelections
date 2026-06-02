@@ -1,5 +1,77 @@
 {
-  "description": "Manual Federal Elections Analysis race calls. The live results API never makes calls for us. Add race ids here, then list one or more candidates with status values like winner, projected, advances, or advanced.",
-  "races": {
-  }
+  "description": "Manual Federal Elections Analysis race calls. The live results API never makes calls for us. Edit this file, push it, and the site will show the call on the main results board and race detail page.",
+  "_howToUse": {
+    "fileToEdit": "data/result-calls.json",
+    "candidateNameRule": "Candidate names must match the candidate name in the race JSON exactly. Use raceIdGuide below to find the race, then copy the candidate name from that race page if needed.",
+    "singleWinnerExample": {
+      "races": {
+        "79944": {
+          "calls": [
+            {
+              "candidate": "Rob Sand",
+              "status": "projected"
+            }
+          ]
+        }
+      }
+    },
+    "topTwoOrMultiWinnerExample": {
+      "races": {
+        "79777": {
+          "calls": [
+            {
+              "candidate": "Xavier Becerra",
+              "status": "advances"
+            },
+            {
+              "candidate": "Steve Hilton",
+              "status": "advances"
+            }
+          ]
+        }
+      }
+    },
+    "statusOptions": {
+      "winner": "Use for a final or certain single-winner call. Label shown: Winner.",
+      "projected": "Use for a single-winner projection before the result is final. Label shown: Projected winner.",
+      "advances": "Use for top-two/open-primary candidates who are projected to advance. Label shown: Advances.",
+      "advanced": "Use when a top-two/open-primary advance is final. Label shown: Advanced to general election."
+    },
+    "optionalLabel": "You can add a custom label field to any call if you need exact wording, for example { \"candidate\": \"Name\", \"status\": \"projected\", \"label\": \"Projected winner\" }.",
+    "important": "Do not put example calls inside the real races object unless you want them live on the site."
+  },
+  "raceIdGuide": {
+    "79777": "California Governor Open Primary",
+    "79779": "California Lieutenant Governor Open Primary",
+    "79778": "California Insurance Commissioner Open Primary",
+    "79881": "California Superintendent of Public Instruction Open Primary",
+    "79893": "California US House District 1 Open Primary",
+    "79932": "California US House District 7 Open Primary",
+    "79884": "California US House District 11 Open Primary",
+    "79896": "California US House District 22 Open Primary",
+    "79907": "California US House District 32 Open Primary",
+    "79909": "California US House District 34 Open Primary",
+    "79916": "California US House District 40 Open Primary",
+    "79924": "California US House District 48 Open Primary",
+    "79938": "Los Angeles Mayor Open Primary",
+    "79945": "Iowa Governor Republican Primary",
+    "79944": "Iowa Governor Democratic Primary",
+    "80211": "Iowa US Senate Republican Primary",
+    "80210": "Iowa US Senate Democratic Primary",
+    "80460": "Montana US Senate Republican Primary",
+    "80458": "Montana US Senate Democratic Primary",
+    "80452": "Montana US House 1 Democratic Primary",
+    "81058": "New Jersey US Senate Republican Primary",
+    "81057": "New Jersey US Senate Democratic Primary",
+    "81046": "New Jersey US House 7 Democratic Primary",
+    "81048": "New Jersey US House 8 Democratic Primary",
+    "81055": "New Jersey US House 12 Democratic Primary",
+    "80691": "New Mexico Governor Republican Primary",
+    "80690": "New Mexico Governor Democratic Primary",
+    "81014": "New Mexico US Senate Democratic Primary",
+    "81015": "New Mexico US Senate Republican Primary",
+    "80461": "South Dakota Governor Republican Primary",
+    "80512": "South Dakota US Senate Republican Primary"
+  },
+  "races": {}
 }

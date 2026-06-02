@@ -104,8 +104,8 @@ function callLabelFor(race, call) {
   const scope = `${race.election_scope || race.electionType || race.electionName || ""}`.toLowerCase();
   const electionName = `${race.election_name || race.electionName || ""}`.toLowerCase();
   if (call.status === "projected") return "Projected";
+  if (call.status === "advanced") return "Advanced to general election";
   if (call.status === "advances" || scope.includes("primary") || electionName.includes("primary")) return "Advances";
-  if (call.status === "advanced") return "Advanced";
   return "Winner";
 }
 

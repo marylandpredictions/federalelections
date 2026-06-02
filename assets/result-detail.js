@@ -514,6 +514,34 @@ function hasReportedVotes(candidates) {
 
 function sortedCandidates(race) {
   const candidates = [...(race?.candidates || [])];
+  const hasCalls = candidates.some((candidate) => candidate.callLabel);
+  if (hasReportedVotes(candidates)) {
+    return candidates.sort((a, b) => (
+      Number(Boolean(b.callLabel)) - Number(Boolean(a.callLabel))
+      || Number(b.percent || 0) - Number(a.percent || 0)
+      || Number(b.votes || 0) - Number(a.votes || 0)
+      || String(a.name || "").localeCompare(String(b.name || ""))
+    ));
+  }
+  if (hasCalls) {
+    return candidates.sort((a, b) => (
+      Number(Boolean(b.callLabel)) - Number(Boolean(a.callLabel))
+      || String(a.name || "").localeCompare(String(b.name || ""))
+    ));
+  }
+  const featuredNames = (race?.featuredCandidateNames || []).map((name) => String(name).toLowerCase());
+  if (!featuredNames.length) return candidates;
+  return candidates.sort((a, b) => {
+    const aRank = featuredNames.indexOf(String(a.name || "").toLowerCase());
+    const bRank = featuredNames.indexOf(String(b.name || "").toLowerCase());
+    const aValue = aRank === -1 ? Number.POSITIVE_INFINITY : aRank;
+    const bValue = bRank === -1 ? Number.POSITIVE_INFINITY : bRank;
+    return aValue - bValue;
+  });
+}
+
+function sortedCandidatesForCounty(race) {
+  const candidates = [...(race?.candidates || [])];
   if (hasReportedVotes(candidates)) {
     return candidates.sort((a, b) => (
       Number(b.percent || 0) - Number(a.percent || 0)
@@ -552,18 +580,58 @@ function callBadge(candidate, race) {
   return `<span class="result-call-badge">${escapeHtml(compactLabel)}</span>`;
 }
 
+function callVerb(label, race, count) {
+  const text = String(label || "").toLowerCase();
+  const raceText = `${race.electionScope || race.electionName || ""}`.toLowerCase();
+  if (text.includes("advance") || raceText.includes("open primary") || count > 1) return count > 1 ? "advance" : "advances";
+  if (text.includes("project")) return "is projected to win";
+  return "wins";
+}
+
+function callDeckText(race, calledCandidates) {
+  const names = calledCandidates.map((candidate) => candidate.name).filter(Boolean);
+  if (!names.length) return "Race call posted.";
+  const label = calledCandidates[0]?.callLabel || "Winner";
+  const verb = callVerb(label, race, names.length);
+  const raceName = race.electionName || "this race";
+  if (names.length === 1) return `${names[0]} ${verb} ${raceName}.`;
+  if (names.length === 2) return `${names[0]} and ${names[1]} ${verb} in ${raceName}.`;
+  return `${names.slice(0, -1).join(", ")}, and ${names.at(-1)} ${verb} in ${raceName}.`;
+}
+
 function raceCallBanner(race) {
   const calls = race.calls || [];
   if (!calls.length) return "";
-  const labels = calls.map((call) => {
-    const candidate = (race.candidates || []).find((item) => String(item.name || "").toLowerCase() === String(call.candidate || "").toLowerCase());
-    const label = callLabelForDisplay(call, race);
-    return `${candidate?.name || call.candidate || "Candidate"} ${label.toLowerCase()}`;
-  });
+  const calledCandidates = sortedCandidates(race).filter((candidate) => candidate.callLabel);
+  const fallbackCandidates = calls.map((call) => ({
+    name: call.candidate || "Candidate",
+    party: "",
+    partyCode: "",
+    callLabel: callLabelForDisplay(call, race)
+  }));
+  const bannerCandidates = calledCandidates.length ? calledCandidates : fallbackCandidates;
+  const primary = bannerCandidates[0] || null;
+  const photo = primary ? candidatePhotoUrl(race, primary) : "";
+  const fill = primary ? candidateFill(race, primary) : "#49d38a";
+  const callLabel = primary?.callLabel || "Race call";
+  const avatars = bannerCandidates.slice(0, 3).map((candidate) => {
+    const avatarPhoto = candidatePhotoUrl(race, candidate);
+    return `
+      <span class="result-call-avatar" style="--candidate-color:${escapeHtml(candidateFill(race, candidate))}">
+        ${avatarPhoto ? `<img src="${escapeHtml(avatarPhoto)}" alt="">` : escapeHtml(candidateInitials(candidate.name))}
+      </span>
+    `;
+  }).join("");
   return `
-    <div class="result-call-alert" role="status">
-      <span>Race call</span>
-      <strong>${escapeHtml(labels.join(" / "))}</strong>
+    <div class="result-call-alert" style="--candidate-color:${escapeHtml(fill)}" role="status">
+      <div class="result-call-copy">
+        <span>${escapeHtml(callLabel)} <i aria-hidden="true">&#10003;</i></span>
+        <strong>${escapeHtml(callDeckText(race, bannerCandidates))}</strong>
+        <small>Race called by Federal Elections Analysis.</small>
+      </div>
+      <div class="result-call-avatars" aria-hidden="true">
+        ${avatars || (photo ? `<span class="result-call-avatar"><img src="${escapeHtml(photo)}" alt=""></span>` : "")}
+      </div>
     </div>
   `;
 }
@@ -572,7 +640,8 @@ function callLabelForDisplay(call, race) {
   if (call.label) return call.label;
   const scope = `${race.electionScope || race.electionName || ""}`.toLowerCase();
   if (call.status === "projected") return "Projected winner";
-  if (call.status === "advances" || call.status === "advanced" || scope.includes("primary")) return "Advances";
+  if (call.status === "advanced") return "Advanced to general election";
+  if (call.status === "advances" || scope.includes("primary")) return "Advances";
   return "Winner";
 }
 

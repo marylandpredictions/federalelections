@@ -4274,33 +4274,108 @@ button.race-board-row {
 }
 
 .result-full-candidate.called {
-  border-color: color-mix(in srgb, #49d38a 54%, var(--line));
-  box-shadow: 0 0 20px color-mix(in srgb, #49d38a 14%, transparent);
+  color: #fff;
+  border-color: color-mix(in srgb, var(--candidate-color, #49d38a) 62%, var(--line));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--candidate-color, #49d38a) 62%, #07102b), color-mix(in srgb, var(--candidate-color, #49d38a) 24%, #020b22 76%));
+  box-shadow: inset 6px 0 0 var(--candidate-color, #49d38a), 0 0 24px color-mix(in srgb, var(--candidate-color, #49d38a) 24%, transparent);
   animation: called-glow 1.8s ease-in-out infinite;
 }
 
 .result-call-alert {
-  display: flex;
-  gap: 10px;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
   align-items: center;
   margin-top: 14px;
-  padding: 11px 12px;
-  border: 1px solid color-mix(in srgb, #49d38a 64%, var(--line));
-  border-radius: 6px;
+  padding: clamp(14px, 2.4vw, 22px);
+  border: 1px solid color-mix(in srgb, var(--candidate-color, #49d38a) 68%, #fff);
+  border-radius: 8px;
   background:
-    linear-gradient(90deg, color-mix(in srgb, #49d38a 18%, transparent), color-mix(in srgb, var(--paper) 76%, transparent));
-  box-shadow: 0 0 28px color-mix(in srgb, #49d38a 13%, transparent);
+    radial-gradient(circle at 92% 22%, color-mix(in srgb, var(--candidate-color, #49d38a) 30%, transparent), transparent 26%),
+    linear-gradient(135deg, color-mix(in srgb, var(--candidate-color, #49d38a) 74%, #1030b2), color-mix(in srgb, #07102b 72%, var(--candidate-color, #49d38a)));
+  color: #fff;
+  box-shadow: 0 18px 46px color-mix(in srgb, #000 26%, transparent), 0 0 28px color-mix(in srgb, var(--candidate-color, #49d38a) 20%, transparent);
   animation: call-slide .36s var(--ease-out) both;
+  overflow: hidden;
 }
 
-.result-call-alert span {
-  color: #49d38a;
-  font: 950 .66rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+.result-call-alert::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 7px;
+  background: var(--candidate-color, #49d38a);
+}
+
+.result-call-copy {
+  position: relative;
+  display: grid;
+  gap: 6px;
+}
+
+.result-call-copy span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  width: fit-content;
+  color: color-mix(in srgb, #fff 84%, var(--candidate-color, #49d38a));
+  font: 950 .72rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  letter-spacing: .06em;
   text-transform: uppercase;
 }
 
-.result-call-alert strong {
-  font: 950 .9rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
+.result-call-copy span i {
+  width: 16px;
+  height: 16px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, #051632 72%, var(--candidate-color, #49d38a));
+  color: #fff;
+  font-style: normal;
+  font-size: .62rem;
+}
+
+.result-call-copy strong {
+  max-width: 980px;
+  font: 950 clamp(1.15rem, 3vw, 2rem)/1.03 "Telegraf", "Segoe UI", Arial, sans-serif;
+  letter-spacing: 0;
+}
+
+.result-call-copy small {
+  color: color-mix(in srgb, #fff 82%, transparent);
+  font: 850 .82rem/1.25 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.result-call-avatars {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  min-width: 76px;
+}
+
+.result-call-avatar {
+  width: clamp(48px, 6vw, 76px);
+  height: clamp(48px, 6vw, 76px);
+  display: inline-grid;
+  place-items: center;
+  margin-left: -12px;
+  overflow: hidden;
+  border: 2px solid color-mix(in srgb, #fff 86%, var(--candidate-color, #49d38a));
+  border-radius: 999px;
+  background: var(--candidate-color, #49d38a);
+  color: #fff;
+  font: 950 .9rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  box-shadow: 0 8px 22px color-mix(in srgb, #000 30%, transparent);
+}
+
+.result-call-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .result-full-candidate-name {
@@ -6310,6 +6385,21 @@ button.race-board-row {
   .result-reporting-bar {
     height: 13px;
     margin: 2px 0 8px;
+  }
+
+  .result-call-alert {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 14px 14px 14px 18px;
+  }
+
+  .result-call-avatars {
+    justify-content: start;
+    padding-left: 10px;
+  }
+
+  .result-call-copy strong {
+    font-size: clamp(1.1rem, 7vw, 1.55rem);
   }
 
   .result-full-hero,
