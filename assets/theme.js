@@ -61,7 +61,11 @@
         if (desktopHover.matches) {
           event.preventDefault();
           dropdown.open = true;
+          return;
         }
+        document.querySelectorAll(".nav-dropdown[open]").forEach((otherDropdown) => {
+          if (otherDropdown !== dropdown) otherDropdown.open = false;
+        });
       });
     });
   });

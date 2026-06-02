@@ -6196,6 +6196,18 @@ button.race-board-row {
     transform: none;
   }
 
+  .nav-dropdown[open] .nav-dropdown-menu {
+    position: fixed;
+    top: calc(var(--header-offset, 72px) + 6px);
+    left: 9px;
+    right: 9px;
+    width: auto;
+    min-width: 0;
+    max-height: calc(100vh - var(--header-offset, 72px) - 18px);
+    overflow-y: auto;
+    z-index: 200;
+  }
+
   .hero-main {
     min-height: 360px;
   }
