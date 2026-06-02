@@ -20,7 +20,7 @@ const MAP_COLOR_MODES = {
 const CHART_ANNOTATIONS = [
   { date: "2026-05-17", label: "Model reworked" },
   { date: "2026-05-20", label: "Model reworked" },
-  { date: "2026-06-01", label: "Model reworked" }
+  { date: "2026-06-01", label: "Model reworked", align: "right" }
 ];
 
 const MONTANA_CHART_ANNOTATIONS = [
@@ -1579,7 +1579,7 @@ function renderLineChart(chart, points, options) {
     const index = points.findIndex((point) => point.date === annotation.date);
     if (index === -1) return null;
     const x = coords[index].x;
-    const labelX = clamp(x - 12, plot.left + 18, width - plot.right - 18);
+    const labelX = clamp(x + (annotation.align === "right" ? 14 : -12), plot.left + 18, width - plot.right - 18);
     const labelY = plot.top + 96;
     return `<g class="history-annotation"><path d="M${x} ${plot.top}V${height - plot.bottom}"></path><text x="${labelX}" y="${labelY}" transform="rotate(-90 ${labelX} ${labelY})">${annotation.label}</text></g>`;
   }).filter(Boolean).join("");
