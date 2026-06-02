@@ -3,9 +3,11 @@
   "instructions": [
     "Each race id goes under races.",
     "Use raceKey below to see which race each id belongs to.",
-    "Put the newest note first; only the first note displays fully.",
+    "You may add multiple notes per race. The site sorts newest first by date and optional time.",
+    "The newest note displays fully. Older notes appear in a scrollable Previous analyst comments dropdown.",
     "If you add another note after an existing note, put a comma after the previous note's closing brace.",
-    "Allowed note fields: date, author, role, text, image, embed.",
+    "Allowed note fields: date, time, author, role, text, image, embed.",
+    "Use date like \"2026-06-02\". Use time like \"8:45 PM ET\" or \"20:45\". If no time is given, the date still works.",
     "Use either image or embed, not both, for simplicity.",
     "Image can be a URL string or an object like { \"url\": \"https://...\", \"alt\": \"Short description\", \"caption\": \"Optional caption\", \"size\": \"small\" }.",
     "Embed can be a URL string, an external embed object like { \"url\": \"https://www.youtube.com/watch?v=...\", \"title\": \"Optional title\", \"caption\": \"Optional caption\", \"height\": 320, \"size\": \"small\" }, or an internal forecast object like { \"type\": \"governor-race-preview\", \"state\": \"CA\", \"title\": \"California governor forecast\" }.",
@@ -47,6 +49,22 @@
   },
   "races": {
     "79777": [
+	      {
+        "date": "2026-06-02",
+        "author": "gamerdoglover",
+        "role": "Head of Data Science",
+        "text": "For those who saw the VoteHub post on CA turnout, we have an updated early vote count. Returns as of the latest update per @Political_Data:",
+		"text": "🔵 DEM: 2,231,170",
+		"text": "🔴 GOP: 1,510,571",
+		"text": "⚪ OTH: 960,692",
+		"text": "% Turnout by Age: 18-34: 8%, 35-49: 12%, 50-64: 22%, 65+: 40%",
+        "image": "",
+        "embed": {
+          "type": "",
+          "state": "",
+          "title": ""
+        }
+      }
       {
         "date": "2026-06-01",
         "author": "gamerdoglover",

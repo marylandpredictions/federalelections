@@ -1476,10 +1476,47 @@ async function loadAnalysisNotes() {
     .catch(() => ({ races: {} }));
 }
 
+function noteTimestamp(note) {
+  const explicit = new Date(note?.datetime || note?.timestamp || "");
+  if (Number.isFinite(explicit.getTime())) return explicit.getTime();
+  const dateText = String(note?.date || "").trim();
+  const dateMatch = dateText.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!dateMatch) return 0;
+  let hours = 0;
+  let minutes = 0;
+  const timeText = String(note?.time || "").trim();
+  const timeMatch = timeText.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?/i);
+  if (timeMatch) {
+    hours = Number(timeMatch[1] || 0);
+    minutes = Number(timeMatch[2] || 0);
+    const meridian = String(timeMatch[3] || "").toUpperCase();
+    if (meridian === "PM" && hours < 12) hours += 12;
+    if (meridian === "AM" && hours === 12) hours = 0;
+  }
+  return new Date(Number(dateMatch[1]), Number(dateMatch[2]) - 1, Number(dateMatch[3]), hours, minutes).getTime();
+}
+
+function sortedAnalysisNotes(notes) {
+  return [...(Array.isArray(notes) ? notes : [])].sort((a, b) => {
+    const byTime = noteTimestamp(b) - noteTimestamp(a);
+    if (byTime) return byTime;
+    return String(b?.date || "").localeCompare(String(a?.date || ""));
+  });
+}
+
+function noteDateTimeLabel(note) {
+  const date = String(note?.date || "").trim();
+  const time = String(note?.time || "").trim();
+  if (date && time) return `${date} at ${time}`;
+  return date || time;
+}
+
 async function analysisNoteMarkup(notes) {
-  if (!Array.isArray(notes) || !notes.length) {
+  notes = sortedAnalysisNotes(notes);
+  if (!notes.length) {
     notes = [{
       date: "",
+      time: "",
       author: "Federal Elections Analysis",
       role: "Analysis desk",
       text: "No analyst comment has been posted for this race yet.",
@@ -1502,13 +1539,23 @@ async function analysisNoteMarkup(notes) {
       <div class="analysis-note-byline">
         <span class="analysis-note-avatar ${profile ? "has-image" : ""}${placeholderClass}">${avatar}</span>
         <span>
-          ${note.date ? `<strong>${escapeHtml(note.date)}</strong>` : ""}
+          ${noteDateTimeLabel(note) ? `<strong>${escapeHtml(noteDateTimeLabel(note))}</strong>` : ""}
           <small>${escapeHtml(author)}${note.role ? `, ${escapeHtml(note.role)}` : ""}</small>
         </span>
       </div>
     `;
   };
-  const media = latest.image ? noteImageMarkup(latest.image) : latest.embed ? await noteEmbedMarkup(latest.embed) : "";
+  const noteMedia = async (note) => note.image ? noteImageMarkup(note.image) : note.embed ? await noteEmbedMarkup(note.embed) : "";
+  const media = await noteMedia(latest);
+  const historyCards = await Promise.all(history.map(async (note) => `
+    <article>
+      <div class="analysis-note-history-copy">
+        ${analystByline(note)}
+        <p>${escapeHtml(note.text || "No note text entered.")}</p>
+      </div>
+      ${await noteMedia(note)}
+    </article>
+  `));
   return `
     <section class="analysis-note-panel">
       <div class="analysis-note-copy">
@@ -1519,13 +1566,10 @@ async function analysisNoteMarkup(notes) {
       ${media}
       ${history.length ? `
         <details class="analysis-note-history">
-          <summary>Previous analyst comments</summary>
-          ${history.map((note) => `
-            <article>
-              <p>${escapeHtml(note.text || "")}</p>
-              ${analystByline(note)}
-            </article>
-          `).join("")}
+          <summary>Previous analyst comments (${history.length})</summary>
+          <div class="analysis-note-history-list">
+            ${historyCards.join("")}
+          </div>
         </details>
       ` : ""}
     </section>
