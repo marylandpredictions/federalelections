@@ -3,6 +3,11 @@ const raceId = new URLSearchParams(window.location.search).get("id");
 let countyMapDataPromise = null;
 let districtMapDataPromise = null;
 let governorForecastPromise = null;
+let resultMapViewState = {
+  zoom: 1,
+  panX: 0,
+  panY: 0
+};
 
 const REDISTRICTED_RESULT_STATES = new Set(["AL", "LA", "NC", "OH", "TX", "UT"]);
 const MANUAL_INCUMBENTS_BY_RACE = {
@@ -157,6 +162,61 @@ const CANDIDATE_PHOTO_SETS = {
   }
 };
 
+const GLOBAL_CANDIDATE_PHOTOS = {
+  "abel-chavez": { file: "abel-chavez.png", color: "#6263f5" },
+  "adam-hamawy": { file: "adam-hamawy.png", color: "#1493f6" },
+  "adam-miller": { file: "adam-miller.png", color: "#c5162e" },
+  "adam-steen": { file: "adam-steen.png", color: "#c5162e" },
+  "adrian-o-mapp": { file: "adrian-o-mapp.png", color: "#1493f6" },
+  "ammar-campa-najjar": { file: "ammar-campa-najjar.png", color: "#1493f6" },
+  "angela-gonzales-torres": { file: "angela-gonzales-torres.png", color: "#6263f5" },
+  "ashley-hinson": { file: "ashley-hinson.png", color: "#c5162e" },
+  "ben-r-lujan": { file: "ben-r-lujan.png", color: "#1493f6" },
+  "brad-cohen": { file: "brad-cohen.png", color: "#25d6d6" },
+  "brad-sherman": { file: "brad-sherman-ia.png", color: "#c5162e" },
+  "brian-varela": { file: "brian-varela.png", color: "#1493f6" },
+  "cory-booker": { file: "cory-booker.png", color: "#1493f6" },
+  "deb-haaland": { file: "deb-haaland.png", color: "#1493f6" },
+  "duke-rodriguez": { file: "duke-rodriguez.png", color: "#d97a18" },
+  "dusty-johnson": { file: "dusty-johnson.png", color: "#c5162e" },
+  "greggory-d-hull": { file: "greggory-d-hull.png", color: "#d97a18" },
+  "jay-vaingankar": { file: "jay-vaingankar.png", color: "#25d6d6" },
+  "jim-carlin": { file: "jim-carlin.png", color: "#c5162e" },
+  "jim-desmond": { file: "jim-desmond.png", color: "#d97a18" },
+  "jimmy-gomez": { file: "jimmy-gomez.png", color: "#6263f5" },
+  "jon-hansen": { file: "jon-hansen.png", color: "#c5162e" },
+  "josh-turek": { file: "josh-turek.png", color: "#1493f6" },
+  "justin-murphy": { file: "justin-murphy.png", color: "#c5162e" },
+  "karen-ruth-bass": { file: "karen-ruth-bass.png", color: "#1493f6" },
+  "kurt-alme": { file: "kurt-alme.png", color: "#c5162e" },
+  "larry-rhoden": { file: "larry-rhoden.png", color: "#c5162e" },
+  "marni-von-wilpert": { file: "marni-von-wilpert.png", color: "#25d6d6" },
+  "matt-adams": { file: "matt-adams.png", color: "#6263f5" },
+  "matt-rains": { file: "matt-rains.png", color: "#6263f5" },
+  "michael-roth": { file: "michael-roth.png", color: "#6263f5" },
+  "mike-rounds": { file: "mike-rounds.png", color: "#c5162e" },
+  "mussab-ali": { file: "mussab-ali.png", color: "#1493f6" },
+  "nithya-raman": { file: "nithya-raman.png", color: "#1493f6" },
+  "rae-chen-huang": { file: "rae-chen-huang.png", color: "#6263f5" },
+  "randy-feenstra": { file: "randy-feenstra.png", color: "#c5162e" },
+  "rebecca-bennett": { file: "rebecca-bennett.png", color: "#25d6d6" },
+  "rob-menendez": { file: "rob-menendez.png", color: "#6263f5" },
+  "rob-sand": { file: "rob-sand.png", color: "#1493f6" },
+  "robert-s-lebovics": { file: "robert-s-lebovics.png", color: "#c5162e" },
+  "russell-cleveland": { file: "russell-cleveland.png", color: "#1493f6" },
+  "ryan-busse": { file: "ryan-busse.png", color: "#25d6d6" },
+  "sam-bregman": { file: "sam-bregman.png", color: "#6263f5" },
+  "sam-forstag": { file: "sam-forstag.png", color: "#45cd47" },
+  "sam-wang": { file: "sam-wang.png", color: "#d97a18" },
+  "spencer-pratt": { file: "spencer-pratt.png", color: "#6263f5" },
+  "sue-altman": { file: "sue-altman.png", color: "#1493f6" },
+  "tina-shah": { file: "tina-shah.png", color: "#45cd47" },
+  "toby-doeden": { file: "toby-doeden.png", color: "#c5162e" },
+  "verlina-reynolds-jackson": { file: "verlina-reynolds-jackson.png", color: "#25d6d6" },
+  "zach-lahn": { file: "zach-lahn.png", color: "#d97a18" },
+  "zach-wahls": { file: "zach-wahls.png", color: "#1493f6" }
+};
+
 const ANALYST_PROFILES = {
   "fea-analysis-desk": {
     name: "FEA Analysis Desk",
@@ -255,14 +315,15 @@ function slugifyName(value) {
 
 function candidatePhotoUrl(race, candidate) {
   const photoSet = CANDIDATE_PHOTO_SETS[String(race?.id)];
-  if (!photoSet) return "";
   const slug = slugifyName(candidate?.name);
-  return photoSet.photos[slug] ? `${photoSet.base}/${photoSet.photos[slug]}` : "";
+  if (photoSet?.photos?.[slug]) return `${photoSet.base}/${photoSet.photos[slug]}`;
+  const globalPhoto = GLOBAL_CANDIDATE_PHOTOS[slug];
+  return globalPhoto ? `assets/img/candidates/live-results/${globalPhoto.file}` : "";
 }
 
 function candidatePhotoColor(race, candidate) {
   const slug = slugifyName(candidate?.name);
-  return CANDIDATE_PHOTO_SETS[String(race?.id)]?.colors?.[slug] || "";
+  return CANDIDATE_PHOTO_SETS[String(race?.id)]?.colors?.[slug] || GLOBAL_CANDIDATE_PHOTOS[slug]?.color || "";
 }
 
 function safeMediaUrl(value) {
@@ -598,14 +659,27 @@ function regionLeader(county) {
   }, null);
 }
 
-function countyTopCandidates(county, limit = 3) {
-  return [...(county.candidates || [])]
+function countyTopCandidates(county, race, limit = 3) {
+  const candidates = [...(county.candidates || [])];
+  const hasVotes = hasReportedVotes(candidates);
+  const featuredNames = !hasVotes
+    ? (race?.featuredCandidateNames || []).map((name) => String(name).toLowerCase())
+    : [];
+  return candidates
     .sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))
+    .sort((a, b) => {
+      if (hasVotes || !featuredNames.length) return 0;
+      const aRank = featuredNames.indexOf(String(a.name || "").toLowerCase());
+      const bRank = featuredNames.indexOf(String(b.name || "").toLowerCase());
+      const aValue = aRank === -1 ? Number.POSITIVE_INFINITY : aRank;
+      const bValue = bRank === -1 ? Number.POSITIVE_INFINITY : bRank;
+      return aValue - bValue;
+    })
     .slice(0, limit);
 }
 
-function countyTooltipMarkup(county, titlePrefix = "") {
-  const rows = countyTopCandidates(county, 3);
+function countyTooltipMarkup(county, race, titlePrefix = "") {
+  const rows = countyTopCandidates(county, race, 3);
   const title = titlePrefix || `${county.name} County`;
   return `
     <strong>${escapeHtml(title)}</strong>
@@ -862,7 +936,7 @@ async function countyShapeMap(race) {
       const title = county && leader
         ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.percentReporting)} reporting`
         : `${feature.properties?.NAME || "County"} County: waiting for reported votes`;
-      const tooltip = county ? countyTooltipMarkup(county, `${feature.properties?.NAME || county.name} County`) : "";
+      const tooltip = county ? countyTooltipMarkup(county, race, `${feature.properties?.NAME || county.name} County`) : "";
       return `
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
         </path>
@@ -918,8 +992,8 @@ function moveTooltip(event, canvas, tooltip) {
   tooltip.style.top = `${y}px`;
 }
 
-function countyCandidateCells(county) {
-  const candidates = countyTopCandidates(county, 3);
+function countyCandidateCells(county, race) {
+  const candidates = countyTopCandidates(county, race, 3);
   return candidates.map((candidate) => `
     <span>
       <strong>${escapeHtml(candidate.name)}</strong>
@@ -940,7 +1014,7 @@ function countyRows(race) {
             <small>${escapeHtml(county.type || "County")} | ${percentLabel(county.percentReporting)} reporting</small>
           </div>
           <div class="county-candidate-cells">
-            ${countyCandidateCells(county)}
+            ${countyCandidateCells(county, race)}
           </div>
         </article>
       `).join("")}
@@ -1066,11 +1140,10 @@ function bindMapZoom() {
   const frame = page.querySelector(".result-map-frame");
   if (!frame) return;
   const controls = page.querySelectorAll("[data-map-zoom]");
-  let zoom = 1;
-  let panX = 0;
-  let panY = 0;
+  let { zoom, panX, panY } = resultMapViewState;
   let pointerStart = null;
   const apply = () => {
+    resultMapViewState = { zoom, panX, panY };
     frame.style.setProperty("--result-map-zoom", zoom.toFixed(2));
     frame.style.setProperty("--result-map-pan-x", `${panX.toFixed(1)}px`);
     frame.style.setProperty("--result-map-pan-y", `${panY.toFixed(1)}px`);

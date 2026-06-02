@@ -7,6 +7,7 @@ const CALLS_URL = new URL("../data/result-calls.json", import.meta.url);
 const FEATURED_CANDIDATES_URL = new URL("../data/result-featured-candidates.json", import.meta.url);
 const CIVIC_BASE = "https://civicapi.org/api/v2";
 const featuredCandidates = readFeaturedCandidates();
+const manualCalls = readManualCalls();
 
 const FEATURED_GROUPS = [
   { state: "CA", name: "California", queries: ["California Governor", "California Lieutenant Governor", "California Insurance Commissioner", "California Superintendent Public Instruction", "California US House", "California Los Angeles Mayor"] },
@@ -93,7 +94,6 @@ function slugify(value) {
 }
 
 function callForCandidate(raceId, candidateName) {
-  const manualCalls = readManualCalls();
   const raceCalls = manualCalls.races?.[String(raceId)]?.calls || [];
   return raceCalls.find((call) => String(call.candidate || "").toLowerCase() === String(candidateName || "").toLowerCase()) || null;
 }

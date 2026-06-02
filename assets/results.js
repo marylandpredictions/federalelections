@@ -108,7 +108,15 @@ function leadingCandidate(race) {
   if (candidates.some((candidate) => Number(candidate.votes || 0) || Number(candidate.percent || 0))) {
     return candidates.sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))[0] || null;
   }
-  return candidates[0] || null;
+  const featuredNames = (race.featuredCandidateNames || []).map((name) => String(name).toLowerCase());
+  if (!featuredNames.length) return candidates[0] || null;
+  return candidates.sort((a, b) => {
+    const aRank = featuredNames.indexOf(String(a.name || "").toLowerCase());
+    const bRank = featuredNames.indexOf(String(b.name || "").toLowerCase());
+    const aValue = aRank === -1 ? Number.POSITIVE_INFINITY : aRank;
+    const bValue = bRank === -1 ? Number.POSITIVE_INFINITY : bRank;
+    return aValue - bValue;
+  })[0] || null;
 }
 
 function raceCard(race) {
