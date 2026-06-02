@@ -8,8 +8,13 @@ let resultMapViewState = {
   panX: 0,
   panY: 0
 };
+const PROFILE_BG_COLOR_CACHE_VERSION = "ring-v2";
 const PROFILE_BG_COLOR_CACHE = new Map();
 const PROFILE_BG_COLOR_PROMISES = new Map();
+
+function profileBgColorCacheKey(url) {
+  return `${PROFILE_BG_COLOR_CACHE_VERSION}:${url}`;
+}
 
 const REDISTRICTED_RESULT_STATES = new Set(["AL", "LA", "NC", "OH", "TX", "UT"]);
 const MANUAL_INCUMBENTS_BY_RACE = {
@@ -370,54 +375,92 @@ function rgbToHex(r, g, b) {
   return `#${channel(r)}${channel(g)}${channel(b)}`;
 }
 
-function quantizeChannel(value, step = 24) {
+function quantizeChannel(value, step = 32) {
   return Math.max(0, Math.min(255, Math.round(value / step) * step));
 }
 
-function dominantEdgeColorFromImage(image) {
-  const width = Math.max(48, Math.min(160, image.naturalWidth || image.width || 64));
-  const height = Math.max(48, Math.min(160, image.naturalHeight || image.height || 64));
+function colorSaturation(r, g, b) {
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  if (max <= 0) return 0;
+  return (max - min) / max;
+}
+
+function colorLuminance(r, g, b) {
+  return .2126 * r + .7152 * g + .0722 * b;
+}
+
+function isHalftoneDotPixel(r, g, b) {
+  return colorLuminance(r, g, b) > 232 && colorSaturation(r, g, b) < .12;
+}
+
+function isLetterboxPixel(r, g, b) {
+  return colorLuminance(r, g, b) < 28 && colorSaturation(r, g, b) < .12;
+}
+
+function dominantProfileBgColorFromImage(image) {
+  const width = Math.max(64, Math.min(192, image.naturalWidth || image.width || 96));
+  const height = Math.max(64, Math.min(192, image.naturalHeight || image.height || 96));
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
   const context = canvas.getContext("2d", { willReadFrequently: true });
   if (!context) return "";
   context.drawImage(image, 0, 0, width, height);
-  const { data } = context.getImageData(0, 0, width, height);
-  const edgeX = Math.max(6, Math.round(width * .16));
-  const edgeY = Math.max(6, Math.round(height * .16));
+  let data;
+  try {
+    data = context.getImageData(0, 0, width, height).data;
+  } catch {
+    return "";
+  }
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const radius = Math.min(width, height) / 2;
   const buckets = new Map();
+  const addPixel = (r, g, b, weight) => {
+    const key = `${quantizeChannel(r)}-${quantizeChannel(g)}-${quantizeChannel(b)}`;
+    const bucket = buckets.get(key) || { score: 0, r: 0, g: 0, b: 0 };
+    bucket.score += weight;
+    bucket.r += r * weight;
+    bucket.g += g * weight;
+    bucket.b += b * weight;
+    buckets.set(key, bucket);
+  };
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
-      const onEdge = x < edgeX || x >= width - edgeX || y < edgeY || y >= height - edgeY;
-      if (!onEdge) continue;
+      const dx = x - centerX;
+      const dy = y - centerY;
+      const dist = Math.hypot(dx, dy) / radius;
+      if (dist > .94) continue;
       const index = (y * width + x) * 4;
       const alpha = data[index + 3];
-      if (alpha < 220) continue;
+      if (alpha < 160) continue;
       const r = data[index];
       const g = data[index + 1];
       const b = data[index + 2];
-      const key = `${quantizeChannel(r)}-${quantizeChannel(g)}-${quantizeChannel(b)}`;
-      const bucket = buckets.get(key) || { count: 0, r: 0, g: 0, b: 0 };
-      bucket.count += 1;
-      bucket.r += r;
-      bucket.g += g;
-      bucket.b += b;
-      buckets.set(key, bucket);
+      if (isLetterboxPixel(r, g, b) || isHalftoneDotPixel(r, g, b)) continue;
+      const inBackgroundRing = dist >= .42 && dist <= .9;
+      const inCornerWedge = dist >= .55 && dist <= .92 && (Math.abs(dx) > radius * .22 || Math.abs(dy) > radius * .22);
+      if (!inBackgroundRing && !inCornerWedge) continue;
+      const saturation = colorSaturation(r, g, b);
+      const weight = 1 + saturation * 2.5;
+      addPixel(r, g, b, weight);
     }
   }
   let winner = null;
   for (const bucket of buckets.values()) {
-    if (!winner || bucket.count > winner.count) winner = bucket;
+    if (!winner || bucket.score > winner.score) winner = bucket;
   }
-  if (!winner || winner.count < 30) return "";
-  return rgbToHex(winner.r / winner.count, winner.g / winner.count, winner.b / winner.count);
+  if (!winner || winner.score < 18) return "";
+  const totalWeight = winner.score;
+  return rgbToHex(winner.r / totalWeight, winner.g / totalWeight, winner.b / totalWeight);
 }
 
 function loadImage(url) {
   return new Promise((resolve, reject) => {
     const image = new Image();
     image.decoding = "async";
+    image.crossOrigin = "anonymous";
     image.onload = () => resolve(image);
     image.onerror = () => reject(new Error(`Failed to load image: ${url}`));
     image.src = url;
@@ -427,20 +470,21 @@ function loadImage(url) {
 async function candidatePhotoExtractedColor(race, candidate) {
   const photoUrl = candidatePhotoUrl(race, candidate);
   if (!photoUrl) return "";
-  if (PROFILE_BG_COLOR_CACHE.has(photoUrl)) return PROFILE_BG_COLOR_CACHE.get(photoUrl) || "";
-  if (!PROFILE_BG_COLOR_PROMISES.has(photoUrl)) {
+  const cacheKey = profileBgColorCacheKey(photoUrl);
+  if (PROFILE_BG_COLOR_CACHE.has(cacheKey)) return PROFILE_BG_COLOR_CACHE.get(cacheKey) || "";
+  if (!PROFILE_BG_COLOR_PROMISES.has(cacheKey)) {
     const promise = loadImage(photoUrl)
-      .then((image) => dominantEdgeColorFromImage(image))
+      .then((image) => dominantProfileBgColorFromImage(image))
       .catch(() => "")
       .then((color) => {
         const safeColor = isHexColor(color) ? color : "";
-        PROFILE_BG_COLOR_CACHE.set(photoUrl, safeColor);
-        PROFILE_BG_COLOR_PROMISES.delete(photoUrl);
+        PROFILE_BG_COLOR_CACHE.set(cacheKey, safeColor);
+        PROFILE_BG_COLOR_PROMISES.delete(cacheKey);
         return safeColor;
       });
-    PROFILE_BG_COLOR_PROMISES.set(photoUrl, promise);
+    PROFILE_BG_COLOR_PROMISES.set(cacheKey, promise);
   }
-  return PROFILE_BG_COLOR_PROMISES.get(photoUrl) || "";
+  return PROFILE_BG_COLOR_PROMISES.get(cacheKey) || "";
 }
 
 function simplifiedSlug(value) {
@@ -464,7 +508,8 @@ function raceCandidateBySlug(race, candidate) {
 
 function candidateCustomColor(race, candidate) {
   if (!candidate) return "";
-  const extractedColor = PROFILE_BG_COLOR_CACHE.get(candidatePhotoUrl(race, candidate)) || "";
+  const photoUrl = candidatePhotoUrl(race, candidate);
+  const extractedColor = photoUrl ? (PROFILE_BG_COLOR_CACHE.get(profileBgColorCacheKey(photoUrl)) || "") : "";
   if (isHexColor(extractedColor)) return extractedColor;
   const profileColor = candidatePhotoColor(race, candidate);
   if (isHexColor(profileColor)) return profileColor;
