@@ -107,6 +107,11 @@
         "saikat-chakrabarti": "saikat-chakrabarti.png",
         "connie-chan": "connie-chan.png",
         "scott-wiener": "scott-wiener.png"
+      },
+      colors: {
+        "saikat-chakrabarti": "#6b42d8",
+        "connie-chan": "#0091ff",
+        "scott-wiener": "#25d6d6"
       }
     },
     "79896": {
@@ -115,6 +120,11 @@
         "jasmeet-bains": "jasmeet-bains.png",
         "randy-villegas": "randy-villegas.png",
         "david-g-valadao": "david-g-valadao.png"
+      },
+      colors: {
+        "jasmeet-bains": "#4361ff",
+        "randy-villegas": "#26d6d6",
+        "david-g-valadao": "#d86f19"
       }
     },
     "79907": {
@@ -124,6 +134,12 @@
         "marena-lin": "marena-lin.png",
         "brad-sherman": "brad-sherman.png",
         "larry-thompson": "larry-thompson.png"
+      },
+      colors: {
+        "jake-levine": "#0091ff",
+        "marena-lin": "#25d6d6",
+        "brad-sherman": "#5360f6",
+        "larry-thompson": "#8dde18"
       }
     },
     "79916": {
@@ -133,6 +149,12 @@
         "esther-kim-varet": "esther-kim-varet.png",
         "ken-calvert": "ken-calvert.png",
         "young-kim": "young-kim.png"
+      },
+      colors: {
+        "joe-kerr": "#0091ff",
+        "esther-kim-varet": "#5560f6",
+        "ken-calvert": "#c56517",
+        "young-kim": "#dec30f"
       }
     },
     "79932": {
@@ -140,8 +162,30 @@
       photos: {
         "doris-matsui": "doris-matsui.png",
         "mai-vang": "mai-vang.png"
+      },
+      colors: {
+        "doris-matsui": "#0091ff",
+        "mai-vang": "#25d6d6"
       }
     }
+  };
+
+  const POLL_CLOSE_UTC_BY_STATE = {
+    CA: "2026-06-03T03:00:00Z",
+    IA: "2026-06-03T01:00:00Z",
+    MT: "2026-06-03T02:00:00Z",
+    NJ: "2026-06-03T00:00:00Z",
+    NM: "2026-06-03T01:00:00Z",
+    SD: "2026-06-03T01:00:00Z"
+  };
+
+  const POLL_OPEN_UTC_BY_STATE = {
+    CA: "2026-06-02T14:00:00Z",
+    IA: "2026-06-02T12:00:00Z",
+    MT: "2026-06-02T13:00:00Z",
+    NJ: "2026-06-02T10:00:00Z",
+    NM: "2026-06-02T13:00:00Z",
+    SD: "2026-06-02T12:00:00Z"
   };
 
   function escapeHtml(value) {
@@ -165,6 +209,13 @@
   function percentLabel(value) {
     const number = Number(value || 0);
     return Number.isFinite(number) ? `${number.toFixed(1)}%` : "0.0%";
+  }
+
+  function validElectionIso(value) {
+    if (!value) return "";
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime()) || date.getUTCFullYear() < 2020) return "";
+    return date.toISOString();
   }
 
   function numberLabel(value) {
@@ -196,14 +247,21 @@
   }
 
   function pollsAreClosed(race) {
-    const iso = race?.pollsClose || race?.pollCloseAt;
+    const iso = validElectionIso(race?.pollsClose || race?.pollCloseAt) || POLL_CLOSE_UTC_BY_STATE[String(race?.state || "").toUpperCase()];
     if (!iso) return false;
     const date = new Date(iso);
     return Number.isFinite(date.getTime()) && Date.now() >= date.getTime();
   }
 
+  function pollsAreOpen(race) {
+    const iso = validElectionIso(race?.pollsOpen || race?.pollOpenAt) || POLL_OPEN_UTC_BY_STATE[String(race?.state || "").toUpperCase()];
+    if (!iso) return pollsAreClosed(race);
+    const date = new Date(iso);
+    return Number.isFinite(date.getTime()) && Date.now() >= date.getTime();
+  }
+
   function automaticUncontestedCalls(race) {
-    if (!pollsAreClosed(race)) return [];
+    if (!pollsAreOpen(race)) return [];
     const realCandidates = (race.candidates || []).filter(isRealCandidate);
     if (realCandidates.length !== 1) return [];
     return [{
@@ -301,7 +359,7 @@
         <div id="broadcast-call-slot" class="broadcast-call-slot" aria-live="polite"></div>
         <div class="broadcast-ticker-shell">
           <div class="broadcast-ticker-brand">
-            <span>FEA</span>
+            <img src="assets/img/FEA_White.png" alt="Federal Elections Analysis">
             <strong>LIVE</strong>
           </div>
           <div class="broadcast-ticker-viewport">

@@ -3710,6 +3710,11 @@ button.race-board-row {
   overflow: hidden;
 }
 
+.result-full-candidate .result-candidate-avatar {
+  background: var(--candidate-color, #7a6fe8);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--candidate-color, #7a6fe8) 42%, transparent);
+}
+
 .result-candidate-avatar img {
   width: 100%;
   height: 100%;
@@ -4144,50 +4149,6 @@ button.race-board-row {
   border: 1px solid var(--line);
   border-radius: 6px;
   background: #020b22;
-}
-
-.result-map-legend {
-  width: min(92%, 620px);
-  display: grid;
-  grid-template-columns: auto minmax(120px, 240px);
-  gap: 6px 12px;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink);
-  font: 900 .8rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
-  text-align: center;
-}
-
-.result-map-legend strong {
-  grid-row: span 2;
-  color: #fff;
-  font-size: 1rem;
-}
-
-.result-map-legend-swatches,
-.result-map-legend-labels {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(40px, 1fr));
-  gap: 4px;
-}
-
-.result-map-legend-swatches i {
-  height: 18px;
-  border: 1px solid color-mix(in srgb, #d6d9e2 76%, transparent);
-  background: #d6d9e2;
-}
-
-.result-map-legend-swatches i:nth-child(2) {
-  background: #769ad8;
-}
-
-.result-map-legend-swatches i:nth-child(3) {
-  background: #1030b2;
-}
-
-.result-map-legend-labels b {
-  color: var(--muted);
-  font-size: .78rem;
 }
 
 .result-map-controls {

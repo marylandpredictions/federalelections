@@ -41,8 +41,24 @@ const POLL_CLOSE_UTC_BY_STATE = {
   SD: "2026-06-03T01:00:00Z"
 };
 
+const POLL_OPEN_UTC_BY_STATE = {
+  CA: "2026-06-02T14:00:00Z",
+  IA: "2026-06-02T12:00:00Z",
+  MT: "2026-06-02T13:00:00Z",
+  NJ: "2026-06-02T10:00:00Z",
+  NM: "2026-06-02T13:00:00Z",
+  SD: "2026-06-02T12:00:00Z"
+};
+
+function validElectionIso(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime()) || date.getUTCFullYear() < 2020) return "";
+  return date.toISOString();
+}
+
 function pollCloseLabel(race) {
-  const iso = race.pollsClose || race.pollCloseAt || POLL_CLOSE_UTC_BY_STATE[race.state];
+  const iso = validElectionIso(race.pollsClose || race.pollCloseAt) || POLL_CLOSE_UTC_BY_STATE[race.state];
   if (!iso) return "";
   const target = new Date(iso);
   if (Number.isNaN(target.getTime())) return "";
@@ -195,14 +211,21 @@ function isRealCandidate(candidate) {
 }
 
 function pollsAreClosed(race) {
-  const iso = race?.pollsClose || race?.pollCloseAt || POLL_CLOSE_UTC_BY_STATE[race.state];
+  const iso = validElectionIso(race?.pollsClose || race?.pollCloseAt) || POLL_CLOSE_UTC_BY_STATE[race.state];
   if (!iso) return false;
   const date = new Date(iso);
   return Number.isFinite(date.getTime()) && Date.now() >= date.getTime();
 }
 
+function pollsAreOpen(race) {
+  const iso = validElectionIso(race?.pollsOpen || race?.pollOpenAt) || POLL_OPEN_UTC_BY_STATE[race.state];
+  if (!iso) return pollsAreClosed(race);
+  const date = new Date(iso);
+  return Number.isFinite(date.getTime()) && Date.now() >= date.getTime();
+}
+
 function automaticUncontestedCalls(race) {
-  if (!pollsAreClosed(race)) return [];
+  if (!pollsAreOpen(race)) return [];
   const realCandidates = (race.candidates || []).filter(isRealCandidate);
   if (realCandidates.length !== 1) return [];
   return [{

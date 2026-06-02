@@ -402,8 +402,28 @@ const POLL_CLOSE_UTC_BY_STATE = {
   SD: "2026-06-03T01:00:00Z"
 };
 
+const POLL_OPEN_UTC_BY_STATE = {
+  CA: "2026-06-02T14:00:00Z",
+  IA: "2026-06-02T12:00:00Z",
+  MT: "2026-06-02T13:00:00Z",
+  NJ: "2026-06-02T10:00:00Z",
+  NM: "2026-06-02T13:00:00Z",
+  SD: "2026-06-02T12:00:00Z"
+};
+
+function validElectionIso(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime()) || date.getUTCFullYear() < 2020) return "";
+  return date.toISOString();
+}
+
 function pollCloseIso(race) {
-  return race?.pollsClose || POLL_CLOSE_UTC_BY_STATE[String(race.state || "").toUpperCase()] || "";
+  return validElectionIso(race?.pollsClose) || POLL_CLOSE_UTC_BY_STATE[String(race.state || "").toUpperCase()] || "";
+}
+
+function pollOpenIso(race) {
+  return validElectionIso(race?.pollsOpen) || POLL_OPEN_UTC_BY_STATE[String(race.state || "").toUpperCase()] || "";
 }
 
 function pollCloseLabel(iso) {
@@ -726,14 +746,21 @@ function isRealCandidate(candidate) {
 }
 
 function pollsAreClosed(race) {
-  const iso = race?.pollsClose || pollCloseIso(race);
+  const iso = pollCloseIso(race);
   if (!iso) return false;
   const date = new Date(iso);
   return Number.isFinite(date.getTime()) && Date.now() >= date.getTime();
 }
 
+function pollsAreOpen(race) {
+  const iso = pollOpenIso(race);
+  if (!iso) return pollsAreClosed(race);
+  const date = new Date(iso);
+  return Number.isFinite(date.getTime()) && Date.now() >= date.getTime();
+}
+
 function automaticUncontestedCalls(race) {
-  if (!pollsAreClosed(race)) return [];
+  if (!pollsAreOpen(race)) return [];
   const realCandidates = (race.candidates || []).filter(isRealCandidate);
   if (realCandidates.length !== 1) return [];
   return [{
@@ -1133,20 +1160,6 @@ async function countyShapeMap(race) {
   }
 }
 
-function mapLegendMarkup() {
-  return `
-    <div class="result-map-legend" data-map-legend>
-      <strong>Margin key</strong>
-      <span class="result-map-legend-swatches" aria-hidden="true">
-        <i></i><i></i><i></i>
-      </span>
-      <span class="result-map-legend-labels">
-        <b>+0%</b><b>+10%</b><b>+20%+</b>
-      </span>
-    </div>
-  `;
-}
-
 function bindCountyHover() {
   const canvas = page.querySelector(".result-map-canvas");
   const caption = canvas?.querySelector(".result-map-caption");
@@ -1287,7 +1300,6 @@ function voteHistoryChart(race) {
       <section class="result-vote-history-panel result-vote-history-empty">
         <div class="section-head">
           <div>
-            <p class="kicker">Vote history</p>
             <h2>Votes reported over time.</h2>
           </div>
         </div>
@@ -1319,7 +1331,6 @@ function voteHistoryChart(race) {
     <section class="result-vote-history-panel">
       <div class="section-head">
         <div>
-          <p class="kicker">Vote history</p>
           <h2>Votes reported over time.</h2>
         </div>
       </div>
@@ -1393,7 +1404,6 @@ function bindMapZoom() {
 function bindMapColorMode() {
   const frame = page.querySelector(".result-map-frame");
   const controls = page.querySelectorAll("[data-map-color]");
-  const legend = page.querySelector("[data-map-legend]");
   if (!frame) return;
   let mode = "percent";
   const apply = () => {
@@ -1407,13 +1417,6 @@ function bindMapColorMode() {
       control.classList.toggle("active", control.dataset.mapColor === mode);
       control.setAttribute("aria-pressed", String(control.dataset.mapColor === mode));
     });
-    if (legend) {
-      const labels = legend.querySelectorAll(".result-map-legend-labels b");
-      const values = mode === "votes" ? ["+0", "+1k", "+10k+"] : ["+0%", "+10%", "+20%+"];
-      labels.forEach((label, index) => {
-        label.textContent = values[index] || "";
-      });
-    }
   };
   controls.forEach((control) => {
     control.addEventListener("click", () => {
@@ -1468,8 +1471,8 @@ async function renderRace(race) {
 
       <aside class="result-map-panel">
         <div class="result-map-tabs">
-          <button type="button" data-map-color="percent">Pct margin</button>
-          <button type="button" data-map-color="votes">Vote margin</button>
+          <button type="button" data-map-color="percent">% Margin</button>
+          <button type="button" data-map-color="votes">Vote Margin</button>
           <button type="button" data-map-zoom="out">-</button>
           <button type="button" data-map-zoom="in">+</button>
           <button type="button" data-map-zoom="reset">Reset</button>
@@ -1478,7 +1481,6 @@ async function renderRace(race) {
           <div class="result-map-frame">
             ${mapMarkup}
           </div>
-          ${mapLegendMarkup()}
           <div class="result-county-tooltip" aria-hidden="true"></div>
         </div>
         ${await analysisNoteMarkup(analystNotes)}
@@ -1492,7 +1494,6 @@ async function renderRace(race) {
     <section class="result-county-panel">
       <div class="section-head">
         <div>
-          <p class="kicker">County results</p>
           <h2>County-by-county returns.</h2>
         </div>
         <p>${percentLabel(race.percentReporting)} statewide reporting.</p>

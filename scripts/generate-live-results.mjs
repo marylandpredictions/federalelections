@@ -41,8 +41,10 @@ const TYPE_PRIORITY = {
 };
 
 function isoDate(value) {
+  if (value === null || value === undefined || value === "") return null;
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+  if (Number.isNaN(date.getTime()) || date.getUTCFullYear() < 2020) return null;
+  return date.toISOString();
 }
 
 function electionYear(value) {
@@ -104,14 +106,21 @@ function isRealCandidate(candidate) {
 }
 
 function pollsAreClosed(race) {
-  const iso = race.pollsClose || race.polls_close;
+  const iso = isoDate(race.pollsClose || race.polls_close);
   if (!iso) return false;
   const date = new Date(iso);
   return Number.isFinite(date.getTime()) && Date.now() >= date.getTime();
 }
 
+function pollsAreOpen(race) {
+  const iso = isoDate(race.pollsOpen || race.polls_open);
+  if (!iso) return pollsAreClosed(race);
+  const date = new Date(iso);
+  return Number.isFinite(date.getTime()) && Date.now() >= date.getTime();
+}
+
 function automaticUncontestedCalls(race, candidates = []) {
-  if (!pollsAreClosed(race)) return [];
+  if (!pollsAreOpen(race)) return [];
   const realCandidates = candidates.filter(isRealCandidate);
   if (realCandidates.length !== 1) return [];
   return [{
