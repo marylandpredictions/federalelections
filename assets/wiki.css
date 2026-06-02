@@ -5831,11 +5831,41 @@ button.race-board-row {
   stroke-width: 1;
 }
 
+.history-annotation-compact path {
+  stroke: color-mix(in srgb, var(--chart-axis) 46%, transparent);
+  stroke-dasharray: 3 4;
+}
+
 .history-annotation text {
   fill: color-mix(in srgb, var(--chart-axis) 82%, var(--ink));
   font: 800 11px/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: .04em;
   text-anchor: middle;
+}
+
+.history-annotation-compact text {
+  fill: color-mix(in srgb, #c6d2ff 88%, var(--ink));
+  font-size: 14px;
+  font-weight: 950;
+  letter-spacing: 0;
+  text-anchor: start;
+}
+
+.history-annotation-key {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-top: -8px;
+  padding-right: 16px;
+  color: color-mix(in srgb, var(--ink) 78%, var(--muted));
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.history-annotation-key span {
+  color: color-mix(in srgb, #c6d2ff 88%, var(--ink));
 }
 
 .history-overlay {

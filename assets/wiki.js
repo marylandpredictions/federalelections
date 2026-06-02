@@ -18,9 +18,9 @@ const MAP_COLOR_MODES = {
 };
 
 const CHART_ANNOTATIONS = [
-  { date: "2026-05-17", label: "Model reworked" },
-  { date: "2026-05-20", label: "Model reworked" },
-  { date: "2026-06-01", label: "Model reworked", align: "right" }
+  { date: "2026-05-17", label: "Model reworked", marker: "*" },
+  { date: "2026-05-20", label: "Model reworked", marker: "*" },
+  { date: "2026-06-01", label: "Model reworked", marker: "*" }
 ];
 
 const MONTANA_CHART_ANNOTATIONS = [
@@ -1579,10 +1579,17 @@ function renderLineChart(chart, points, options) {
     const index = points.findIndex((point) => point.date === annotation.date);
     if (index === -1) return null;
     const x = coords[index].x;
+    if (annotation.marker) {
+      const markerY = height - plot.bottom - 8;
+      return `<g class="history-annotation history-annotation-compact"><path d="M${x} ${plot.top}V${height - plot.bottom}"></path><text x="${x + 4}" y="${markerY}">${annotation.marker}</text></g>`;
+    }
     const labelX = clamp(x + (annotation.align === "right" ? 14 : -12), plot.left + 18, width - plot.right - 18);
     const labelY = plot.top + 96;
     return `<g class="history-annotation"><path d="M${x} ${plot.top}V${height - plot.bottom}"></path><text x="${labelX}" y="${labelY}" transform="rotate(-90 ${labelX} ${labelY})">${annotation.label}</text></g>`;
   }).filter(Boolean).join("");
+  const annotationKey = (options.annotations || CHART_ANNOTATIONS).some((annotation) => (
+    annotation.marker && points.some((point) => point.date === annotation.date)
+  )) ? `<div class="history-annotation-key"><span>*</span> Model reworked</div>` : "";
   const electionX = hasUsableDates && electionDate && electionDate > latestChartDate && useFullRunway ? width - plot.right : null;
   const currentX = hasUsableDates ? latest.x : null;
   const eventMarkers = hasUsableDates ? rawEventMarkers.map((marker) => {
@@ -1648,6 +1655,7 @@ function renderLineChart(chart, points, options) {
       </g>
       <rect class="history-overlay" x="${plot.left}" y="${plot.top}" width="${plotWidth}" height="${plotHeight}" tabindex="0"></rect>
     </svg>
+    ${annotationKey}
   `;
   const svg = chart.querySelector("svg");
   chart.querySelectorAll("[data-history-zoom]").forEach((button) => {
