@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-02T18:42:14.226Z",
+  "generatedAt": "2026-06-02T19:51:09.199Z",
   "modelDate": "2026-06-02",
   "runDate": "Jun 2, 2026",
   "updateTime": "around 6:20 AM Central",
@@ -43,81 +43,88 @@
     "redistrictingShapeWarning": "The visible shape map may lag enacted 2026 redistricting in states with new maps. Forecast ratings use the redistricting override layer even when the temporary map geometry has not been replaced."
   },
   "sourceStatus": {
-    "checkedAt": "2026-06-02T18:42:05.948Z",
-    "raceToTheWhHouseForecast": {
-      "ok": true,
-      "status": 200,
-      "ms": 115,
-      "bytes": 134916,
-      "url": "https://www.racetothewh.com/house-3"
-    },
-    "raceToTheWhGenericBallot": {
-      "ok": true,
-      "status": 200,
-      "ms": 180,
-      "bytes": 173444,
-      "url": "https://www.racetothewh.com/polls/genericballot"
-    },
+    "checkedAt": "2026-06-02T19:51:00.382Z",
     "cookHouseRatings": {
       "ok": false,
       "status": 403,
-      "ms": 241,
+      "ms": 205,
       "bytes": 5660,
       "url": "https://www.cookpolitical.com/ratings/house-race-ratings"
     },
     "realClearPollingHousePolls": {
       "ok": false,
       "status": 403,
-      "ms": 233,
+      "ms": 225,
       "bytes": 1278,
       "url": "https://www.realclearpolling.com/latest-polls/house"
+    },
+    "raceToTheWhGenericBallot": {
+      "ok": true,
+      "status": 200,
+      "ms": 237,
+      "bytes": 192258,
+      "url": "https://www.racetothewh.com/polls/genericballot"
     },
     "twoSeventyToWinHouseMapData": {
       "ok": true,
       "status": 200,
-      "ms": 258,
-      "bytes": 7116252,
+      "ms": 328,
+      "bytes": 7116954,
       "url": "https://www.270towin.com/2026-house-election/inside-elections-2026-house-ratings"
     },
     "realClearPoliticsGenericBallot": {
       "ok": false,
       "status": 403,
-      "ms": 275,
+      "ms": 396,
       "bytes": 781,
       "url": "https://www.realclearpolitics.com/epolls/other/2026_generic_congressional_vote-8670.html"
     },
     "pollfinityAverages": {
       "ok": false,
       "status": 404,
-      "ms": 450,
+      "ms": 400,
       "bytes": 0,
       "url": "https://pollfinity.com/api/averages"
     },
     "ddhqGenericBallot": {
       "ok": false,
       "status": 404,
-      "ms": 508,
+      "ms": 470,
       "bytes": 370,
       "url": "https://static.dwcdn.net/data/9Jctg.json"
     },
-    "votehubGenericBallot": {
-      "ok": false,
-      "status": 403,
-      "ms": 542,
-      "bytes": 5545,
-      "url": "https://polls.votehub.us/polls/generic-ballot"
+    "raceToTheWhHouseForecast": {
+      "ok": true,
+      "status": 200,
+      "ms": 487,
+      "bytes": 125106,
+      "url": "https://www.racetothewh.com/house-3"
     },
     "twoSeventyToWinHousePolls": {
       "ok": true,
       "status": 200,
-      "ms": 684,
-      "bytes": 7116090,
+      "ms": 569,
+      "bytes": 7116792,
       "url": "https://www.270towin.com/2026-house-election/polls/"
+    },
+    "votehubGenericBallot": {
+      "ok": false,
+      "status": 403,
+      "ms": 639,
+      "bytes": 5545,
+      "url": "https://polls.votehub.us/polls/generic-ballot"
+    },
+    "censusDistrictBoundaries": {
+      "ok": true,
+      "status": 200,
+      "ms": 1048,
+      "bytes": 1043821,
+      "url": "https://www.census.gov/geographies/mapping-files/2025/geo/carto-boundary-file.html"
     },
     "usPollingDataGenericBallot": {
       "ok": true,
       "status": 200,
-      "ms": 727,
+      "ms": 1044,
       "bytes": 107438,
       "url": "https://uspollingdata.com/polls/generic-ballot/"
     },
@@ -129,25 +136,18 @@
     "openFecHouseCandidateSummary": {
       "ok": true,
       "status": 200,
-      "ms": 997,
+      "ms": 1352,
       "bytes": 1563147,
       "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
       "rows": 4078,
       "districts": 459,
       "nationalFinanceSignal": 0.091
     },
-    "censusDistrictBoundaries": {
-      "ok": true,
-      "status": 200,
-      "ms": 1124,
-      "bytes": 1036599,
-      "url": "https://www.census.gov/geographies/mapping-files/2025/geo/carto-boundary-file.html"
-    },
     "insideElections270ToWinRatings": {
       "ok": true,
       "status": 200,
-      "ms": 1144,
-      "bytes": 485084,
+      "ms": 1694,
+      "bytes": 485786,
       "url": "https://www.270towin.com/2026-house-election/table/inside-elections-2026-house-ratings"
     }
   },
@@ -195,7 +195,7 @@
     "realClearHousePollsReachable": false,
     "censusDistrictBoundaryPageReachable": true,
     "redistricting": {
-      "reviewedAt": "2026-06-02T18:42:14.227Z",
+      "reviewedAt": "2026-06-02T19:51:09.200Z",
       "sourceNote": "State statuses are maintained locally so stale public rating feeds do not silently drive the House model after mid-decade map changes.",
       "states": {
         "AL": {
@@ -7828,7 +7828,7 @@
       "congressionalMargin": 0,
       "fundamentalMargin": -9.1,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 71,
+      "kalshiPrice": 69,
       "demCandidate": "Debbie Wasserman Schultz",
       "repCandidate": "Scott M. Singer",
       "fecDemCandidate": {
@@ -81594,7 +81594,7 @@
       "congressionalMargin": 0,
       "fundamentalMargin": -14.7,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 77,
+      "kalshiPrice": 74,
       "demCandidate": "Katy Padilla Stout",
       "repCandidate": "Brandon Herrera",
       "fecDemCandidate": {
