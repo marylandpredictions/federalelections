@@ -90,11 +90,22 @@
       `<li>${escapeHtml(finance.repFinanceLabel || "Republican side")} cash: $${Math.round(finance.repCash || 0).toLocaleString()}</li>`,
       `<li>Source: ${financeSource}</li>`
     ].join("") : `<li>No normalized state campaign-finance source is available for this race yet.</li>`;
+    const pollSources = race.sourceInputs?.pollSources || [];
+    const pollSourceUrls = race.sourceInputs?.pollSourceUrls || [];
+    const pollMatchups = race.sourceInputs?.pollMatchups || [];
+    const pollingRows = Number(race.sourceInputs?.pollCount || 0) > 0 ? [
+      `<li>Polling pull: ${signedPointMargin(race.sourceInputs?.pollMargin || 0)}</li>`,
+      `<li>Usable polls: ${escapeHtml(String(race.sourceInputs?.pollCount || 0))}</li>`,
+      `<li>Sources: ${escapeHtml(pollSources.join(", ") || "Governor polling source")}</li>`,
+      pollSourceUrls.length ? `<li>Links: ${pollSourceUrls.map((url) => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a>`).join(" / ")}</li>` : "",
+      pollMatchups.length ? `<li>Matched matchup: ${escapeHtml(pollMatchups.join(" / "))}</li>` : ""
+    ].filter(Boolean).join("") : `<li>No usable governor polling average is available for this race yet.</li>`;
     const snapshotCards = [
       ["Rating", race.rating, "Manual race-rating input before model adjustment"],
       ["Fundamentals", signedPointMargin(race.fundamentalsMargin), "PVI, prior gubernatorial result, and incumbency"],
       ["Candidate/local", signedPointMargin(race.candidateAndLocal), "Manual candidate-quality and local context adjustment"],
       ["Finance", signedPointMargin(race.sourceInputs?.financeSignal || 0), "State-level campaign finance input"],
+      ["Polling", signedPointMargin(race.sourceInputs?.pollMargin || 0), "Matched governor polling input"],
       ["Demographic pull", signedPointMargin(race.demographicPull?.adjustment || 0), "Candidate profile interaction with state electorate"],
       ["Model margin", signedPointMargin(race.margin), "Final projected vote margin"],
       ["Model rating", race.modelRating || race.rating, "Probability-derived rating"]
@@ -114,6 +125,7 @@
         ${extras}
       </ul></details>
       <details><summary>Demographic pull</summary><ul>${demographicRows}</ul></details>
+      <details><summary>Polling</summary><ul>${pollingRows}</ul></details>
       <details><summary>Finance</summary><ul>${financeRows}</ul></details>
       <details><summary>Fundamentals</summary><ul>
         <li>PVI: ${escapeHtml(String(race.pvi))}</li>

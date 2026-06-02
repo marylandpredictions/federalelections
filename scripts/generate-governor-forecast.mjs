@@ -133,6 +133,10 @@ function decodeHtml(value) {
     .replace(/&gt;/g, ">");
 }
 
+function stripHtml(value) {
+  return decodeHtml(String(value || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
+}
+
 function summarizeGovernorFinance(byState, statusKey, status) {
   const national = {
     demReceipts: 0, repReceipts: 0,
@@ -160,6 +164,44 @@ function summarizeGovernorFinance(byState, statusKey, status) {
 
 function stateSlug(state) {
   return STATE_NAMES[state]?.toLowerCase().replace(/\s+/g, "-") || state.toLowerCase();
+}
+
+function candidateLastName(name) {
+  const cleaned = String(name || "").replace(/\*/g, "").trim();
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+  return (parts.at(-1) || cleaned).toLowerCase();
+}
+
+function candidateLastNames(name) {
+  return String(name || "")
+    .split(/\s+\/\s+|\s+or\s+|,/i)
+    .map(candidateLastName)
+    .filter(Boolean);
+}
+
+function specificCandidateName(name) {
+  const value = String(name || "").trim();
+  if (!value || /field|democrat|republican|nominee/i.test(value)) return "";
+  return value;
+}
+
+function modeledPollMatch(title, race) {
+  const normalizedTitle = String(title || "").toLowerCase();
+  const demSpecific = specificCandidateName(race.demCandidate || race.dem || "");
+  const repSpecific = specificCandidateName(race.repCandidate || race.rep || "");
+  const demNames = candidateLastNames(demSpecific);
+  const repNames = candidateLastNames(repSpecific);
+  const demMatches = demNames.length ? demNames.some((name) => normalizedTitle.includes(name)) : false;
+  const repMatches = repNames.length ? repNames.some((name) => normalizedTitle.includes(name)) : false;
+  if (demNames.length && repNames.length) return demMatches && repMatches;
+  if (demNames.length) return demMatches;
+  if (repNames.length) return repMatches;
+  return false;
+}
+
+function parsePercent(value) {
+  const match = String(value || "").replace(/,/g, "").match(/-?\d+(?:\.\d+)?/);
+  return match ? Number(match[0]) : null;
 }
 
 function readGovernorFinance(status) {
@@ -330,16 +372,164 @@ async function fetchPollfinityAverages(status) {
   }
 }
 
+function inferHeaderParty(headerHtml, candidateName, race) {
+  const style = (headerHtml.match(/style="([^"]*)"/i)?.[1] || "").toLowerCase();
+  const name = stripHtml(candidateName).toLowerCase();
+  const demSpecific = specificCandidateName(race.demCandidate || race.dem || "");
+  const repSpecific = specificCandidateName(race.repCandidate || race.rep || "");
+  if (demSpecific && name.includes(candidateLastName(demSpecific))) return "D";
+  if (repSpecific && name.includes(candidateLastName(repSpecific))) return "R";
+  if (/#3e5a96|#244999|blue/i.test(style)) return "D";
+  if (/#c23237|#b22222|red/i.test(style)) return "R";
+  return "";
+}
+
+function parseTwoSeventyGovernorPage(html, race) {
+  const blocks = [...html.matchAll(/<h4[^>]*>([\s\S]*?)<\/h4>[\s\S]*?<table id="polls"[\s\S]*?<\/table>/gi)];
+  const parsed = [];
+  for (const block of blocks) {
+    const title = stripHtml(block[1]);
+    const table = block[0];
+    if (!/ vs\.? /i.test(title)) continue;
+    if (!modeledPollMatch(title, race)) continue;
+    const headerMatches = [...table.matchAll(/<th[^>]*class="[^"]*\bcan_name\b[^"]*"[^>]*>([\s\S]*?)<\/th>/gi)];
+    const candidates = headerMatches.map((match) => ({
+      name: stripHtml(match[1]).replace(/\*$/, "").trim(),
+      party: inferHeaderParty(match[0], match[1], race)
+    }));
+    const demIndex = candidates.findIndex((candidate) => candidate.party === "D");
+    const repIndex = candidates.findIndex((candidate) => candidate.party === "R");
+    if (demIndex < 0 || repIndex < 0) continue;
+
+    const avgRow = table.match(/<tr id=['"]poll_avg_row['"][\s\S]*?<\/tr>/i)?.[0] || "";
+    if (avgRow) {
+      const cells = [...avgRow.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((match) => stripHtml(match[1]));
+      const values = cells.slice(1, 1 + candidates.length).map(parsePercent);
+      if (Number.isFinite(values[demIndex]) && Number.isFinite(values[repIndex])) {
+        parsed.push({
+          margin: values[demIndex] - values[repIndex],
+          polls: Number((cells[0] || "").match(/Average of\s+(\d+)/i)?.[1] || 1),
+          source: "270toWin polling average",
+          sourceUrl: `https://www.270towin.com/2026-governor-polls/${stateSlug(race.state)}`,
+          matchup: title,
+          demCandidate: candidates[demIndex].name,
+          repCandidate: candidates[repIndex].name
+        });
+        continue;
+      }
+    }
+
+    const pollRows = [...table.matchAll(/<tr[^>]*class="[^"]*\bpoll_row\b[^"]*"[\s\S]*?<\/tr>/gi)];
+    const margins = [];
+    for (const row of pollRows) {
+      const cells = [...row[0].matchAll(/<td[^>]*class="[^"]*\bpoll_data\b[^"]*"[^>]*>([\s\S]*?)<\/td>/gi)].map((match) => parsePercent(stripHtml(match[1])));
+      if (Number.isFinite(cells[demIndex]) && Number.isFinite(cells[repIndex])) margins.push(cells[demIndex] - cells[repIndex]);
+    }
+    if (margins.length) {
+      parsed.push({
+        margin: margins.reduce((sum, value) => sum + value, 0) / margins.length,
+        polls: margins.length,
+        source: "270toWin latest governor polls",
+        sourceUrl: `https://www.270towin.com/2026-governor-polls/${stateSlug(race.state)}`,
+        matchup: title,
+        demCandidate: candidates[demIndex].name,
+        repCandidate: candidates[repIndex].name
+      });
+    }
+  }
+  return parsed.sort((a, b) => b.polls - a.polls)[0] || null;
+}
+
+async function fetchTwoSeventyGovernorPolls(status) {
+  const governorPolls = {};
+  const sourceStatus = { checked: 0, parsed: 0, noPolls: 0, failed: 0, states: {} };
+  const racesToCheck = GOVERNOR_RACES.filter((race) => race.rating !== "Safe D" && race.rating !== "Safe R");
+  for (const baseRace of racesToCheck) {
+    const candidateInfo = GOVERNOR_CANDIDATE_STATUS[baseRace.state] || {};
+    const race = {
+      ...baseRace,
+      ...candidateInfo,
+      demCandidate: candidateInfo.dem || baseRace.demCandidate,
+      repCandidate: candidateInfo.rep || baseRace.repCandidate
+    };
+    const url = `https://www.270towin.com/2026-governor-polls/${stateSlug(race.state)}`;
+    const label = `twoSeventyGovernorPolls${race.state}`;
+    const text = await fetchText(url, label, status, {
+      headers: { "user-agent": "Mozilla/5.0", accept: "text/html,*/*" },
+      timeoutMs: 12000
+    });
+    sourceStatus.checked += 1;
+    if (!text) {
+      sourceStatus.failed += 1;
+      sourceStatus.states[race.state] = { ok: false, url };
+      continue;
+    }
+    const parsed = parseTwoSeventyGovernorPage(text, race);
+    if (!parsed) {
+      sourceStatus.noPolls += 1;
+      sourceStatus.states[race.state] = { ok: true, parsed: false, url };
+      continue;
+    }
+    governorPolls[race.state] = {
+      margin: Number(parsed.margin.toFixed(2)),
+      polls: parsed.polls,
+      source: parsed.source,
+      sourceUrl: parsed.sourceUrl,
+      matchup: parsed.matchup,
+      demCandidate: parsed.demCandidate,
+      repCandidate: parsed.repCandidate
+    };
+    sourceStatus.parsed += 1;
+    sourceStatus.states[race.state] = {
+      ok: true,
+      parsed: true,
+      polls: parsed.polls,
+      margin: Number(parsed.margin.toFixed(2)),
+      matchup: parsed.matchup,
+      url
+    };
+  }
+  status.twoSeventyGovernorPolls = sourceStatus;
+  return { governorPolls };
+}
+
+function mergeGovernorPolling(status, ...sources) {
+  const governorPolls = {};
+  for (const source of sources) {
+    for (const [state, value] of Object.entries(source?.governorPolls || {})) {
+      if (!STATE_NAMES[state] || !value || !Number.isFinite(Number(value.margin)) || !Number(value.polls)) continue;
+      if (!governorPolls[state]) governorPolls[state] = [];
+      governorPolls[state].push(value);
+    }
+  }
+  const merged = {};
+  for (const [state, rows] of Object.entries(governorPolls)) {
+    const totalWeight = rows.reduce((sum, row) => sum + Math.max(1, Number(row.polls || 1)), 0);
+    const margin = rows.reduce((sum, row) => sum + Number(row.margin) * Math.max(1, Number(row.polls || 1)), 0) / totalWeight;
+    merged[state] = {
+      margin: Number(margin.toFixed(2)),
+      polls: rows.reduce((sum, row) => sum + Number(row.polls || 0), 0),
+      sources: rows.map((row) => row.source || "Governor polling source"),
+      sourceUrls: rows.map((row) => row.sourceUrl).filter(Boolean),
+      matchups: rows.map((row) => row.matchup).filter(Boolean)
+    };
+  }
+  status.governorPollingMerged = { states: Object.keys(merged).length };
+  return { governorPolls: merged };
+}
+
 async function fetchAllSources() {
   const status = { checkedAt: new Date().toISOString() };
-  const [manualGovernorFinance, onlineGovernorFinance, ddhqGeneric, pollfinity] = await Promise.all([
+  const [manualGovernorFinance, onlineGovernorFinance, ddhqGeneric, pollfinity, twoSeventyGovernor] = await Promise.all([
     Promise.resolve(readGovernorFinance(status)),
     fetchGovernorOnlineFinance(status),
     fetchDdhqGenericBallot(status),
-    fetchPollfinityAverages(status)
+    fetchPollfinityAverages(status),
+    fetchTwoSeventyGovernorPolls(status)
   ]);
   const governorFinance = mergeGovernorFinance(manualGovernorFinance, onlineGovernorFinance, status);
-  return { governorFinance, fec: governorFinance, ddhqGeneric, pollfinity, status };
+  const governorPolling = mergeGovernorPolling(status, pollfinity, twoSeventyGovernor);
+  return { governorFinance, fec: governorFinance, ddhqGeneric, pollfinity, twoSeventyGovernor, governorPolling, status };
 }
 
 const SETTINGS = {
@@ -353,6 +543,8 @@ const SETTINGS = {
     "Manual 2026 gubernatorial race ledger with candidates, incumbency, PVI, and last gubernatorial margin",
     "Cook Political Report, Inside Elections, Sabato's Crystal Ball, WH, VoteHub, and RCP rating references",
     "Current Senate model generic ballot signal as a broad midterm environment input",
+    "Pollfinity governor polling averages where available",
+    "270toWin state-level 2026 governor polling pages where available",
     "State-level gubernatorial campaign finance file plus configured online state portals for competitive races"
   ]
 };
@@ -884,9 +1076,10 @@ function buildRace(baseRace, nationalShift, sourceData) {
   }
   // Polling integration
   let pollMargin = 0;
-  const governorPoll = sourceData?.pollfinity?.governorPolls?.[race.state];
+  const governorPoll = sourceData?.governorPolling?.governorPolls?.[race.state];
   if (governorPoll && governorPoll.polls > 0) {
-    pollMargin = governorPoll.margin * .5;
+    const pollWeight = clamp(.2 + Math.log1p(governorPoll.polls) * .12, .25, .5);
+    pollMargin = governorPoll.margin * pollWeight;
   }
   
   const rawMargin = (ratingMargin * .52) + (fundamentals * .38) + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin;
@@ -911,7 +1104,10 @@ function buildRace(baseRace, nationalShift, sourceData) {
       nationalFinance,
       candidateHistory,
       pollMargin,
-      pollCount: governorPoll?.polls || 0
+      pollCount: governorPoll?.polls || 0,
+      pollSources: governorPoll?.sources || [],
+      pollSourceUrls: governorPoll?.sourceUrls || [],
+      pollMatchups: governorPoll?.matchups || []
     },
     modelRating: ratingFromProbability(demProbability, margin),
     demProbability: Number(demProbability.toFixed(5)),
@@ -1076,6 +1272,7 @@ async function buildForecast() {
       approvalNet: senateSignals.approvalNet,
       dataSources: sourceData.status,
       nationalFinance: sourceData.governorFinance?.__national || null,
+      governorPolling: sourceData.governorPolling || null,
       financeNote: "Gubernatorial finance is state-regulated. The model checks configured official state portals for competitive races and uses normalized state-level finance records when machine-readable totals are available. Federal FEC data is not treated as a governor finance source."
     },
     modelWarnings: forecastSanityWarnings(modeledRaces, {

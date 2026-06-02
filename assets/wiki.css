@@ -5935,6 +5935,7 @@ button.race-board-row {
 
   .result-map-panel {
     min-height: 460px;
+    padding-left: 0;
   }
 
   .result-map-canvas {
@@ -5956,9 +5957,35 @@ button.race-board-row {
     align-items: start;
   }
 
+  .site-header {
+    gap: 8px;
+    padding-block: 9px;
+  }
+
   .site-nav,
   .site-footer nav {
     justify-content: flex-start;
+  }
+
+  .site-nav,
+  .site-nav-right {
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+  }
+
+  .site-nav::-webkit-scrollbar,
+  .site-nav-right::-webkit-scrollbar {
+    display: none;
+  }
+
+  .site-nav a,
+  .site-nav summary,
+  .site-nav-right a {
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
   .site-footer nav {
@@ -6076,14 +6103,27 @@ button.race-board-row {
   }
 
   #senate-map,
-  #president-map {
+  #president-map,
+  #governor-map {
     min-height: 230px;
   }
 
   #senate-map svg,
-  #president-map svg {
+  #president-map svg,
+  #governor-map svg {
     width: 100%;
     max-height: 330px;
+  }
+
+  .senate-map-seatbar,
+  .forecast-map-probbar {
+    height: 28px;
+  }
+
+  .senate-map-seatbar b,
+  .forecast-map-probbar b {
+    padding: 0 10px;
+    font-size: .66rem;
   }
 
   .hover-card {
@@ -6194,11 +6234,21 @@ button.race-board-row {
   }
 
   .results-groups {
-    column-count: 1;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .results-shell {
+    padding: 8px;
+  }
+
+  .results-search {
+    width: 100%;
   }
 
   .result-race-row {
-    grid-template-columns: 22px minmax(0, 1fr);
+    grid-template-columns: 28px minmax(0, 1fr);
+    padding: 8px;
   }
 
   .result-date {
@@ -6221,12 +6271,59 @@ button.race-board-row {
     grid-template-columns: 1fr;
   }
 
+  .result-detail-body main,
+  .results-board-body main {
+    width: min(100% - 14px, 1540px);
+  }
+
+  .result-night-shell {
+    min-height: 0;
+    gap: 16px;
+    padding-top: 2px;
+  }
+
+  .result-night-meta-top {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 7px;
+    margin: 2px 0 0;
+    font-size: .86rem;
+  }
+
+  .result-night-meta-top span {
+    width: 100%;
+  }
+
+  .result-night-meta-top .result-reporting-stat {
+    order: -2;
+    color: var(--ink);
+    font-size: 1.12rem;
+    line-height: 1.1;
+  }
+
+  .result-night-meta-top .result-poll-close-stat {
+    order: -1;
+    font-size: 1rem;
+  }
+
+  .result-reporting-bar {
+    height: 13px;
+    margin: 2px 0 8px;
+  }
+
+  .result-full-hero,
+  .result-full-grid {
+    padding: 10px;
+  }
+
   .result-candidate-table-head {
     display: none;
   }
 
   .result-full-candidate {
-    grid-template-columns: minmax(0, 1fr) 72px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 11px 10px 11px 17px;
   }
 
   .result-party-label,
@@ -6234,12 +6331,42 @@ button.race-board-row {
     display: none;
   }
 
+  .result-full-candidate-name {
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .result-call-badge {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 3px;
+  }
+
   .result-map-panel {
     min-height: 380px;
+    gap: 8px;
   }
 
   .result-map-canvas {
     min-height: 320px;
+  }
+
+  .result-map-frame {
+    width: 100%;
+    min-height: 320px;
+    border-radius: 12px;
+  }
+
+  .result-map-tabs {
+    gap: 6px;
+  }
+
+  .result-map-tabs span,
+  .result-map-tabs a,
+  .result-map-tabs button {
+    min-height: 30px;
+    padding: 7px 12px;
+    font-size: .75rem;
   }
 
   .result-county-map {
@@ -6279,10 +6406,15 @@ button.race-board-row {
   }
 
   .site-nav a,
+  .site-nav summary,
   .button-link {
     min-height: 32px;
     padding: 6px 8px;
     font-size: .82rem;
+  }
+
+  .nav-dropdown-menu {
+    min-width: 160px;
   }
 
   h1 {
@@ -6347,6 +6479,22 @@ button.race-board-row {
 
   .history-end-label {
     display: none;
+  }
+
+  .result-night-meta-top .result-reporting-stat {
+    font-size: 1.2rem;
+  }
+
+  .result-map-frame {
+    min-height: 280px;
+  }
+
+  .result-full-candidate {
+    grid-template-columns: 1fr;
+  }
+
+  .result-full-numbers {
+    text-align: left;
   }
 
   .county-candidate-cells {

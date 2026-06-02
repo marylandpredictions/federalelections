@@ -1,7 +1,7 @@
 {
   "model": "2026 gubernatorial forecast",
   "modelDate": "2026-06-01",
-  "generatedAt": "2026-06-02T00:03:13.330Z",
+  "generatedAt": "2026-06-02T00:36:51.946Z",
   "runDate": "Jun 1, 2026",
   "settings": {
     "simulations": 100000,
@@ -14,6 +14,8 @@
       "Manual 2026 gubernatorial race ledger with candidates, incumbency, PVI, and last gubernatorial margin",
       "Cook Political Report, Inside Elections, Sabato's Crystal Ball, WH, VoteHub, and RCP rating references",
       "Current Senate model generic ballot signal as a broad midterm environment input",
+      "Pollfinity governor polling averages where available",
+      "270toWin state-level 2026 governor polling pages where available",
       "State-level gubernatorial campaign finance file plus configured online state portals for competitive races"
     ]
   },
@@ -22,7 +24,7 @@
     "gubernatorialNationalShift": 1.08,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-06-02T00:03:08.677Z",
+      "checkedAt": "2026-06-02T00:36:45.615Z",
       "governorFinance": {
         "ok": true,
         "states": 0,
@@ -36,57 +38,268 @@
       "pollfinityAverages": {
         "ok": true,
         "status": 200,
-        "ms": 424,
+        "ms": 167,
         "url": "https://pollfinity.com/averages.json"
+      },
+      "twoSeventyGovernorPollsAK": {
+        "ok": true,
+        "status": 200,
+        "ms": 495,
+        "url": "https://www.270towin.com/2026-governor-polls/alaska"
+      },
+      "twoSeventyGovernorPollsAZ": {
+        "ok": true,
+        "status": 200,
+        "ms": 53,
+        "url": "https://www.270towin.com/2026-governor-polls/arizona"
+      },
+      "twoSeventyGovernorPollsFL": {
+        "ok": true,
+        "status": 200,
+        "ms": 112,
+        "url": "https://www.270towin.com/2026-governor-polls/florida"
       },
       "ddhqGenericBallot": {
         "ok": false,
         "status": 429,
-        "ms": 900,
+        "ms": 669,
         "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
         "error": "<!DOCTYPE html><html lang=\"en\" data-astro-cid-nbv56vs3> <head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" con"
+      },
+      "twoSeventyGovernorPollsGA": {
+        "ok": true,
+        "status": 200,
+        "ms": 49,
+        "url": "https://www.270towin.com/2026-governor-polls/georgia"
+      },
+      "twoSeventyGovernorPollsIA": {
+        "ok": true,
+        "status": 200,
+        "ms": 41,
+        "url": "https://www.270towin.com/2026-governor-polls/iowa"
+      },
+      "twoSeventyGovernorPollsKS": {
+        "ok": true,
+        "status": 200,
+        "ms": 559,
+        "url": "https://www.270towin.com/2026-governor-polls/kansas"
+      },
+      "twoSeventyGovernorPollsME": {
+        "ok": true,
+        "status": 200,
+        "ms": 77,
+        "url": "https://www.270towin.com/2026-governor-polls/maine"
+      },
+      "twoSeventyGovernorPollsMI": {
+        "ok": true,
+        "status": 200,
+        "ms": 77,
+        "url": "https://www.270towin.com/2026-governor-polls/michigan"
+      },
+      "twoSeventyGovernorPollsMN": {
+        "ok": true,
+        "status": 200,
+        "ms": 67,
+        "url": "https://www.270towin.com/2026-governor-polls/minnesota"
+      },
+      "twoSeventyGovernorPollsNV": {
+        "ok": true,
+        "status": 200,
+        "ms": 109,
+        "url": "https://www.270towin.com/2026-governor-polls/nevada"
+      },
+      "twoSeventyGovernorPollsNH": {
+        "ok": true,
+        "status": 200,
+        "ms": 39,
+        "url": "https://www.270towin.com/2026-governor-polls/new-hampshire"
+      },
+      "twoSeventyGovernorPollsNM": {
+        "ok": true,
+        "status": 200,
+        "ms": 42,
+        "url": "https://www.270towin.com/2026-governor-polls/new-mexico"
+      },
+      "twoSeventyGovernorPollsOH": {
+        "ok": true,
+        "status": 200,
+        "ms": 55,
+        "url": "https://www.270towin.com/2026-governor-polls/ohio"
+      },
+      "twoSeventyGovernorPollsOR": {
+        "ok": true,
+        "status": 200,
+        "ms": 37,
+        "url": "https://www.270towin.com/2026-governor-polls/oregon"
+      },
+      "twoSeventyGovernorPollsSC": {
+        "ok": true,
+        "status": 200,
+        "ms": 114,
+        "url": "https://www.270towin.com/2026-governor-polls/south-carolina"
+      },
+      "twoSeventyGovernorPollsWI": {
+        "ok": true,
+        "status": 200,
+        "ms": 59,
+        "url": "https://www.270towin.com/2026-governor-polls/wisconsin"
+      },
+      "twoSeventyGovernorPolls": {
+        "checked": 16,
+        "parsed": 9,
+        "noPolls": 7,
+        "failed": 0,
+        "states": {
+          "AK": {
+            "ok": true,
+            "parsed": false,
+            "url": "https://www.270towin.com/2026-governor-polls/alaska"
+          },
+          "AZ": {
+            "ok": true,
+            "parsed": true,
+            "polls": 3,
+            "margin": 7,
+            "matchup": "Hobbs vs. Schweikert",
+            "url": "https://www.270towin.com/2026-governor-polls/arizona"
+          },
+          "FL": {
+            "ok": true,
+            "parsed": false,
+            "url": "https://www.270towin.com/2026-governor-polls/florida"
+          },
+          "GA": {
+            "ok": true,
+            "parsed": true,
+            "polls": 1,
+            "margin": 6,
+            "matchup": "Bottoms vs. Jones",
+            "url": "https://www.270towin.com/2026-governor-polls/georgia"
+          },
+          "IA": {
+            "ok": true,
+            "parsed": true,
+            "polls": 1,
+            "margin": 12,
+            "matchup": "Sand vs. Feenstra",
+            "url": "https://www.270towin.com/2026-governor-polls/iowa"
+          },
+          "KS": {
+            "ok": true,
+            "parsed": false,
+            "url": "https://www.270towin.com/2026-governor-polls/kansas"
+          },
+          "ME": {
+            "ok": true,
+            "parsed": false,
+            "url": "https://www.270towin.com/2026-governor-polls/maine"
+          },
+          "MI": {
+            "ok": true,
+            "parsed": true,
+            "polls": 6,
+            "margin": 5.33,
+            "matchup": "Benson vs. Duggan vs. Cox",
+            "url": "https://www.270towin.com/2026-governor-polls/michigan"
+          },
+          "MN": {
+            "ok": true,
+            "parsed": false,
+            "url": "https://www.270towin.com/2026-governor-polls/minnesota"
+          },
+          "NV": {
+            "ok": true,
+            "parsed": true,
+            "polls": 3,
+            "margin": -1.33,
+            "matchup": "Ford vs. Lombardo",
+            "url": "https://www.270towin.com/2026-governor-polls/nevada"
+          },
+          "NH": {
+            "ok": true,
+            "parsed": true,
+            "polls": 2,
+            "margin": -7.5,
+            "matchup": "Warmington vs. Ayotte",
+            "url": "https://www.270towin.com/2026-governor-polls/new-hampshire"
+          },
+          "NM": {
+            "ok": true,
+            "parsed": false,
+            "url": "https://www.270towin.com/2026-governor-polls/new-mexico"
+          },
+          "OH": {
+            "ok": true,
+            "parsed": true,
+            "polls": 2,
+            "margin": -3,
+            "matchup": "Acton vs. Ramaswamy",
+            "url": "https://www.270towin.com/2026-governor-polls/ohio"
+          },
+          "OR": {
+            "ok": true,
+            "parsed": true,
+            "polls": 1,
+            "margin": 5,
+            "matchup": "Kotek vs. Drazan",
+            "url": "https://www.270towin.com/2026-governor-polls/oregon"
+          },
+          "SC": {
+            "ok": true,
+            "parsed": false,
+            "url": "https://www.270towin.com/2026-governor-polls/south-carolina"
+          },
+          "WI": {
+            "ok": true,
+            "parsed": true,
+            "polls": 1,
+            "margin": 3,
+            "matchup": "Rodriguez vs. Tiffany",
+            "url": "https://www.270towin.com/2026-governor-polls/wisconsin"
+          }
+        }
       },
       "governorFinanceSourceAK": {
         "ok": true,
         "status": 200,
-        "ms": 1686,
+        "ms": 3272,
         "url": "https://aws.state.ak.us/ApocReports/"
       },
       "governorFinanceSourceAZ": {
         "ok": true,
         "status": 200,
-        "ms": 435,
+        "ms": 467,
         "url": "https://seethemoney.az.gov/"
       },
       "governorFinanceSourceGA": {
         "ok": true,
         "status": 200,
-        "ms": 401,
+        "ms": 779,
         "url": "https://media.ethics.ga.gov/search/campaign/Campaign_ByName.aspx"
       },
       "governorFinanceSourceIA": {
         "ok": true,
         "status": 200,
-        "ms": 371,
+        "ms": 252,
         "url": "https://webapp.iecdb.iowa.gov/PublicView/"
       },
       "governorFinanceSourceMI": {
         "ok": false,
         "status": "fetch-error",
-        "ms": 295,
+        "ms": 178,
         "url": "https://cfrsearch.nictusa.com/",
         "error": "fetch failed"
       },
       "governorFinanceSourceNV": {
         "ok": true,
         "status": 200,
-        "ms": 159,
+        "ms": 162,
         "url": "https://www.nvsos.gov/SOSCandidateServices/AnonymousAccess/CEFDSearchUU/Search.aspx"
       },
       "governorFinanceSourceWI": {
         "ok": true,
         "status": 200,
-        "ms": 517,
+        "ms": 439,
         "url": "https://cfis.wi.gov/"
       },
       "governorOnlineFinance": {
@@ -147,6 +360,9 @@
           "manualStates": 0,
           "onlineStates": 0
         }
+      },
+      "governorPollingMerged": {
+        "states": 9
       }
     },
     "nationalFinance": {
@@ -167,30 +383,151 @@
       "otherIndividual": 0,
       "financeSignal": 0
     },
+    "governorPolling": {
+      "governorPolls": {
+        "AZ": {
+          "margin": 7,
+          "polls": 3,
+          "sources": [
+            "270toWin latest governor polls"
+          ],
+          "sourceUrls": [
+            "https://www.270towin.com/2026-governor-polls/arizona"
+          ],
+          "matchups": [
+            "Hobbs vs. Schweikert"
+          ]
+        },
+        "GA": {
+          "margin": 6,
+          "polls": 1,
+          "sources": [
+            "270toWin latest governor polls"
+          ],
+          "sourceUrls": [
+            "https://www.270towin.com/2026-governor-polls/georgia"
+          ],
+          "matchups": [
+            "Bottoms vs. Jones"
+          ]
+        },
+        "IA": {
+          "margin": 12,
+          "polls": 1,
+          "sources": [
+            "270toWin latest governor polls"
+          ],
+          "sourceUrls": [
+            "https://www.270towin.com/2026-governor-polls/iowa"
+          ],
+          "matchups": [
+            "Sand vs. Feenstra"
+          ]
+        },
+        "MI": {
+          "margin": 5.33,
+          "polls": 6,
+          "sources": [
+            "270toWin latest governor polls"
+          ],
+          "sourceUrls": [
+            "https://www.270towin.com/2026-governor-polls/michigan"
+          ],
+          "matchups": [
+            "Benson vs. Duggan vs. Cox"
+          ]
+        },
+        "NV": {
+          "margin": -1.33,
+          "polls": 3,
+          "sources": [
+            "270toWin latest governor polls"
+          ],
+          "sourceUrls": [
+            "https://www.270towin.com/2026-governor-polls/nevada"
+          ],
+          "matchups": [
+            "Ford vs. Lombardo"
+          ]
+        },
+        "NH": {
+          "margin": -7.5,
+          "polls": 2,
+          "sources": [
+            "270toWin latest governor polls"
+          ],
+          "sourceUrls": [
+            "https://www.270towin.com/2026-governor-polls/new-hampshire"
+          ],
+          "matchups": [
+            "Warmington vs. Ayotte"
+          ]
+        },
+        "OH": {
+          "margin": -3,
+          "polls": 2,
+          "sources": [
+            "270toWin polling average"
+          ],
+          "sourceUrls": [
+            "https://www.270towin.com/2026-governor-polls/ohio"
+          ],
+          "matchups": [
+            "Acton vs. Ramaswamy"
+          ]
+        },
+        "OR": {
+          "margin": 5,
+          "polls": 1,
+          "sources": [
+            "270toWin latest governor polls"
+          ],
+          "sourceUrls": [
+            "https://www.270towin.com/2026-governor-polls/oregon"
+          ],
+          "matchups": [
+            "Kotek vs. Drazan"
+          ]
+        },
+        "WI": {
+          "margin": 3,
+          "polls": 1,
+          "sources": [
+            "270toWin latest governor polls"
+          ],
+          "sourceUrls": [
+            "https://www.270towin.com/2026-governor-polls/wisconsin"
+          ],
+          "matchups": [
+            "Rodriguez vs. Tiffany"
+          ]
+        }
+      }
+    },
     "financeNote": "Gubernatorial finance is state-regulated. The model checks configured official state portals for competitive races and uses normalized state-level finance records when machine-readable totals are available. Federal FEC data is not treated as a governor finance source."
   },
   "modelWarnings": [],
-  "projectedDemRaceWins": 18,
-  "projectedRepRaceWins": 18,
-  "averageDemGovernors": 24,
-  "averageRepGovernors": 26,
+  "projectedDemRaceWins": 19,
+  "projectedRepRaceWins": 17,
+  "averageDemGovernors": 24.22,
+  "averageRepGovernors": 25.78,
   "medianDemGovernors": 24,
   "medianRepGovernors": 26,
   "distribution": {
-    "17": 2,
-    "18": 11,
-    "19": 193,
-    "20": 1113,
-    "21": 4356,
-    "22": 11465,
-    "23": 20591,
-    "24": 24572,
-    "25": 20553,
-    "26": 11578,
-    "27": 4424,
-    "28": 999,
-    "29": 135,
-    "30": 8
+    "17": 1,
+    "18": 12,
+    "19": 135,
+    "20": 727,
+    "21": 3257,
+    "22": 9401,
+    "23": 18308,
+    "24": 24791,
+    "25": 22473,
+    "26": 13925,
+    "27": 5546,
+    "28": 1238,
+    "29": 176,
+    "30": 10
   },
   "stateHistory": {
     "AL": [
@@ -210,8 +547,8 @@
     "AZ": [
       {
         "date": "2026-06-01",
-        "dem": 0.5526,
-        "rep": 0.4474
+        "dem": 0.64685,
+        "rep": 0.35315
       }
     ],
     "AR": [
@@ -252,8 +589,8 @@
     "GA": [
       {
         "date": "2026-06-01",
-        "dem": 0.55819,
-        "rep": 0.44181
+        "dem": 0.6242,
+        "rep": 0.3758
       }
     ],
     "HI": [
@@ -280,8 +617,8 @@
     "IA": [
       {
         "date": "2026-06-01",
-        "dem": 0.46748,
-        "rep": 0.53252
+        "dem": 0.59876,
+        "rep": 0.40124
       }
     ],
     "KS": [
@@ -315,8 +652,8 @@
     "MI": [
       {
         "date": "2026-06-01",
-        "dem": 0.70456,
-        "rep": 0.29544
+        "dem": 0.78782,
+        "rep": 0.21218
       }
     ],
     "MN": [
@@ -336,15 +673,15 @@
     "NV": [
       {
         "date": "2026-06-01",
-        "dem": 0.42758,
-        "rep": 0.57242
+        "dem": 0.40893,
+        "rep": 0.59107
       }
     ],
     "NH": [
       {
         "date": "2026-06-01",
-        "dem": 0.15727,
-        "rep": 0.84273
+        "dem": 0.0916,
+        "rep": 0.9084
       }
     ],
     "NM": [
@@ -364,8 +701,8 @@
     "OH": [
       {
         "date": "2026-06-01",
-        "dem": 0.46066,
-        "rep": 0.53934
+        "dem": 0.43529,
+        "rep": 0.56471
       }
     ],
     "OK": [
@@ -378,8 +715,8 @@
     "OR": [
       {
         "date": "2026-06-01",
-        "dem": 0.98615,
-        "rep": 0.01385
+        "dem": 0.9111,
+        "rep": 0.0889
       }
     ],
     "PA": [
@@ -434,8 +771,8 @@
     "WI": [
       {
         "date": "2026-06-01",
-        "dem": 0.5856,
-        "rep": 0.4144
+        "dem": 0.61691,
+        "rep": 0.38309
       }
     ],
     "WY": [
@@ -554,7 +891,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.00206,
@@ -562,7 +902,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00188,
+      "tippingPower": 0.00194,
       "movementDrivers": [],
       "history": [
         {
@@ -675,7 +1015,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Tilt R",
       "demProbability": 0.38783,
@@ -683,14 +1026,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.61217,
       "competitive": true,
-      "tippingPower": 0.09063,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.18,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.09148,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -726,7 +1063,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Arizona Governor",
-      "margin": 1.3,
+      "margin": 3.69,
       "fundamentalsMargin": 1.83,
       "ratingMargin": 0,
       "candidateAndLocal": -0.4,
@@ -812,28 +1149,42 @@
         "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0
+        "pollMargin": 2.564487263340708,
+        "pollCount": 3,
+        "pollSources": [
+          "270toWin latest governor polls"
+        ],
+        "pollSourceUrls": [
+          "https://www.270towin.com/2026-governor-polls/arizona"
+        ],
+        "pollMatchups": [
+          "Hobbs vs. Schweikert"
+        ]
       },
-      "modelRating": "Toss-up",
-      "demProbability": 0.5526,
-      "repProbability": 0.4474,
+      "modelRating": "Tilt D",
+      "demProbability": 0.64685,
+      "repProbability": 0.35315,
       "winnerParty": "D",
-      "winnerProbability": 0.5526,
+      "winnerProbability": 0.64685,
       "competitive": true,
-      "tippingPower": 0.08458,
+      "tippingPower": 0.07863,
       "movementDrivers": [
         {
+          "label": "Polling",
+          "change": -0.94,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
           "label": "Projected margin",
-          "change": -0.09,
+          "change": -0.86,
           "detail": "Combined governor model margin changed."
         }
       ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.5526,
-          "rep": 0.4474
+          "dem": 0.64685,
+          "rep": 0.35315
         }
       ],
       "movement": {
@@ -950,7 +1301,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.001,
@@ -958,7 +1312,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.0009,
+      "tippingPower": 0.00126,
       "movementDrivers": [],
       "history": [
         {
@@ -1090,7 +1444,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.99538,
@@ -1098,7 +1455,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99538,
       "competitive": false,
-      "tippingPower": 0.00383,
+      "tippingPower": 0.00401,
       "movementDrivers": [],
       "history": [
         {
@@ -1215,7 +1572,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.98875,
@@ -1223,7 +1583,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.98875,
       "competitive": false,
-      "tippingPower": 0.00815,
+      "tippingPower": 0.00842,
       "movementDrivers": [],
       "history": [
         {
@@ -1336,7 +1696,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.99559,
@@ -1344,7 +1707,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99559,
       "competitive": false,
-      "tippingPower": 0.00445,
+      "tippingPower": 0.00465,
       "movementDrivers": [],
       "history": [
         {
@@ -1467,7 +1830,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.02375,
@@ -1475,7 +1841,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.97625,
       "competitive": false,
-      "tippingPower": 0.01359,
+      "tippingPower": 0.01386,
       "movementDrivers": [],
       "history": [
         {
@@ -1512,7 +1878,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Georgia Governor",
-      "margin": 1.56,
+      "margin": 3.37,
       "fundamentalsMargin": -0.89,
       "ratingMargin": 0,
       "candidateAndLocal": 0.5,
@@ -1602,28 +1968,42 @@
         "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0.7,
-        "pollMargin": 0,
-        "pollCount": 0
+        "pollMargin": 1.6990659700031605,
+        "pollCount": 1,
+        "pollSources": [
+          "270toWin latest governor polls"
+        ],
+        "pollSourceUrls": [
+          "https://www.270towin.com/2026-governor-polls/georgia"
+        ],
+        "pollMatchups": [
+          "Bottoms vs. Jones"
+        ]
       },
       "modelRating": "Tilt D",
-      "demProbability": 0.55819,
-      "repProbability": 0.44181,
+      "demProbability": 0.6242,
+      "repProbability": 0.3758,
       "winnerParty": "D",
-      "winnerProbability": 0.55819,
+      "winnerProbability": 0.6242,
       "competitive": true,
-      "tippingPower": 0.07766,
+      "tippingPower": 0.07591,
       "movementDrivers": [
         {
+          "label": "Polling",
+          "change": -1.3,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
           "label": "Projected margin",
-          "change": -0.35,
+          "change": -1.2,
           "detail": "Combined governor model margin changed."
         }
       ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.55819,
-          "rep": 0.44181
+          "dem": 0.6242,
+          "rep": 0.3758
         }
       ],
       "movement": {
@@ -1730,7 +2110,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.999,
@@ -1738,7 +2121,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00125,
+      "tippingPower": 0.00114,
       "movementDrivers": [],
       "history": [
         {
@@ -1856,7 +2239,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.001,
@@ -1864,7 +2250,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00111,
+      "tippingPower": 0.00109,
       "movementDrivers": [],
       "history": [
         {
@@ -1987,7 +2373,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.99379,
@@ -1995,7 +2384,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99379,
       "competitive": false,
-      "tippingPower": 0.00593,
+      "tippingPower": 0.0057,
       "movementDrivers": [],
       "history": [
         {
@@ -2032,7 +2421,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Iowa Governor",
-      "margin": -0.87,
+      "margin": 2.66,
       "fundamentalsMargin": -7.79,
       "ratingMargin": 0,
       "candidateAndLocal": 2.1,
@@ -2117,28 +2506,42 @@
         "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0
+        "pollMargin": 3.398131940006321,
+        "pollCount": 1,
+        "pollSources": [
+          "270toWin latest governor polls"
+        ],
+        "pollSourceUrls": [
+          "https://www.270towin.com/2026-governor-polls/iowa"
+        ],
+        "pollMatchups": [
+          "Sand vs. Feenstra"
+        ]
       },
-      "modelRating": "Toss-up",
-      "demProbability": 0.46748,
-      "repProbability": 0.53252,
-      "winnerParty": "R",
-      "winnerProbability": 0.53252,
+      "modelRating": "Tilt D",
+      "demProbability": 0.59876,
+      "repProbability": 0.40124,
+      "winnerParty": "D",
+      "winnerProbability": 0.59876,
       "competitive": true,
-      "tippingPower": 0.07791,
+      "tippingPower": 0.07827,
       "movementDrivers": [
         {
+          "label": "Polling",
+          "change": -2.6,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
           "label": "Projected margin",
-          "change": 0.44,
+          "change": -2.4,
           "detail": "Combined governor model margin changed."
         }
       ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.46748,
-          "rep": 0.53252
+          "dem": 0.59876,
+          "rep": 0.40124
         }
       ],
       "movement": {
@@ -2250,7 +2653,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.04042,
@@ -2258,7 +2664,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.95958,
       "competitive": false,
-      "tippingPower": 0.01897,
+      "tippingPower": 0.01824,
       "movementDrivers": [],
       "history": [
         {
@@ -2376,7 +2782,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.96912,
@@ -2384,7 +2793,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.96912,
       "competitive": false,
-      "tippingPower": 0.01769,
+      "tippingPower": 0.01686,
       "movementDrivers": [],
       "history": [
         {
@@ -2502,7 +2911,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.999,
@@ -2510,7 +2922,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00078,
+      "tippingPower": 0.00073,
       "movementDrivers": [],
       "history": [
         {
@@ -2623,7 +3035,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.999,
@@ -2631,7 +3046,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00093,
+      "tippingPower": 0.00077,
       "movementDrivers": [],
       "history": [
         {
@@ -2668,7 +3083,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Michigan Governor",
-      "margin": 4.87,
+      "margin": 7.23,
       "fundamentalsMargin": 1.11,
       "ratingMargin": 5,
       "candidateAndLocal": 0.9,
@@ -2752,28 +3167,42 @@
         "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0.25,
-        "pollMargin": 0,
-        "pollCount": 0
+        "pollMargin": 2.3106041313357784,
+        "pollCount": 6,
+        "pollSources": [
+          "270toWin latest governor polls"
+        ],
+        "pollSourceUrls": [
+          "https://www.270towin.com/2026-governor-polls/michigan"
+        ],
+        "pollMatchups": [
+          "Benson vs. Duggan vs. Cox"
+        ]
       },
       "modelRating": "Lean D",
-      "demProbability": 0.70456,
-      "repProbability": 0.29544,
+      "demProbability": 0.78782,
+      "repProbability": 0.21218,
       "winnerParty": "D",
-      "winnerProbability": 0.70456,
-      "competitive": true,
-      "tippingPower": 0.07991,
+      "winnerProbability": 0.78782,
+      "competitive": false,
+      "tippingPower": 0.0679,
       "movementDrivers": [
         {
+          "label": "Polling",
+          "change": -0.35,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
           "label": "Projected margin",
-          "change": -0.24,
+          "change": -0.33,
           "detail": "Combined governor model margin changed."
         }
       ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.70456,
-          "rep": 0.29544
+          "dem": 0.78782,
+          "rep": 0.21218
         }
       ],
       "movement": {
@@ -2885,7 +3314,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Likely D",
       "demProbability": 0.84917,
@@ -2893,14 +3325,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.84917,
       "competitive": false,
-      "tippingPower": 0.05891,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.4,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.06145,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -3022,7 +3448,10 @@
         "nationalFinance": 0,
         "candidateHistory": 1.45,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.00192,
@@ -3030,7 +3459,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99808,
       "competitive": false,
-      "tippingPower": 0.0019,
+      "tippingPower": 0.00235,
       "movementDrivers": [],
       "history": [
         {
@@ -3067,7 +3496,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Nevada Governor",
-      "margin": -1.79,
+      "margin": -2.26,
       "fundamentalsMargin": -3.01,
       "ratingMargin": 0,
       "candidateAndLocal": -1.6,
@@ -3154,28 +3583,42 @@
         "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0
+        "pollMargin": -0.48725258003473454,
+        "pollCount": 3,
+        "pollSources": [
+          "270toWin latest governor polls"
+        ],
+        "pollSourceUrls": [
+          "https://www.270towin.com/2026-governor-polls/nevada"
+        ],
+        "pollMatchups": [
+          "Ford vs. Lombardo"
+        ]
       },
       "modelRating": "Tilt R",
-      "demProbability": 0.42758,
-      "repProbability": 0.57242,
+      "demProbability": 0.40893,
+      "repProbability": 0.59107,
       "winnerParty": "R",
-      "winnerProbability": 0.57242,
+      "winnerProbability": 0.59107,
       "competitive": true,
-      "tippingPower": 0.08527,
+      "tippingPower": 0.0849,
       "movementDrivers": [
         {
+          "label": "Polling",
+          "change": 0.18,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
           "label": "Projected margin",
-          "change": -0.23,
+          "change": 0.16,
           "detail": "Combined governor model margin changed."
         }
       ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.42758,
-          "rep": 0.57242
+          "dem": 0.40893,
+          "rep": 0.59107
         }
       ],
       "movement": {
@@ -3206,7 +3649,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "New Hampshire Governor",
-      "margin": -7.34,
+      "margin": -9.72,
       "fundamentalsMargin": -3.38,
       "ratingMargin": -10.5,
       "candidateAndLocal": -1.6,
@@ -3292,28 +3735,42 @@
         "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0
+        "pollMargin": -2.4887510598012987,
+        "pollCount": 2,
+        "pollSources": [
+          "270toWin latest governor polls"
+        ],
+        "pollSourceUrls": [
+          "https://www.270towin.com/2026-governor-polls/new-hampshire"
+        ],
+        "pollMatchups": [
+          "Warmington vs. Ayotte"
+        ]
       },
       "modelRating": "Likely R",
-      "demProbability": 0.15727,
-      "repProbability": 0.84273,
+      "demProbability": 0.0916,
+      "repProbability": 0.9084,
       "winnerParty": "R",
-      "winnerProbability": 0.84273,
+      "winnerProbability": 0.9084,
       "competitive": false,
-      "tippingPower": 0.06858,
+      "tippingPower": 0.04762,
       "movementDrivers": [
         {
+          "label": "Polling",
+          "change": 1.26,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
           "label": "Projected margin",
-          "change": -0.63,
+          "change": 1.16,
           "detail": "Combined governor model margin changed."
         }
       ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.15727,
-          "rep": 0.84273
+          "dem": 0.0916,
+          "rep": 0.9084
         }
       ],
       "movement": {
@@ -3430,7 +3887,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Lean D",
       "demProbability": 0.81909,
@@ -3438,14 +3898,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.81909,
       "competitive": false,
-      "tippingPower": 0.06729,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.99,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.06934,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -3562,7 +4016,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.99459,
@@ -3570,7 +4027,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99459,
       "competitive": false,
-      "tippingPower": 0.00555,
+      "tippingPower": 0.00551,
       "movementDrivers": [],
       "history": [
         {
@@ -3607,7 +4064,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Ohio Governor",
-      "margin": -1.05,
+      "margin": -1.74,
       "fundamentalsMargin": -5.47,
       "ratingMargin": 0,
       "candidateAndLocal": -0.4,
@@ -3701,33 +4158,42 @@
         "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 1.15,
-        "pollMargin": 0,
-        "pollCount": 0
+        "pollMargin": -0.9955004239205194,
+        "pollCount": 2,
+        "pollSources": [
+          "270toWin polling average"
+        ],
+        "pollSourceUrls": [
+          "https://www.270towin.com/2026-governor-polls/ohio"
+        ],
+        "pollMatchups": [
+          "Acton vs. Ramaswamy"
+        ]
       },
-      "modelRating": "Toss-up",
-      "demProbability": 0.46066,
-      "repProbability": 0.53934,
+      "modelRating": "Tilt R",
+      "demProbability": 0.43529,
+      "repProbability": 0.56471,
       "winnerParty": "R",
-      "winnerProbability": 0.53934,
+      "winnerProbability": 0.56471,
       "competitive": true,
-      "tippingPower": 0.07834,
+      "tippingPower": 0.07833,
       "movementDrivers": [
         {
-          "label": "Projected margin",
-          "change": 15.58,
-          "detail": "Combined governor model margin changed."
+          "label": "Polling",
+          "change": 0.5,
+          "detail": "Weighted governor polling margin changed."
         },
         {
-          "label": "Rating",
-          "change": null,
-          "detail": "Lean R to Toss-up"
+          "label": "Projected margin",
+          "change": 0.46,
+          "detail": "Combined governor model margin changed."
         }
       ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.46066,
-          "rep": 0.53934
+          "dem": 0.43529,
+          "rep": 0.56471
         }
       ],
       "movement": {
@@ -3839,7 +4305,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.00389,
@@ -3847,7 +4316,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99611,
       "competitive": false,
-      "tippingPower": 0.00339,
+      "tippingPower": 0.00336,
       "movementDrivers": [],
       "history": [
         {
@@ -3884,7 +4353,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Oregon Governor",
-      "margin": 16.07,
+      "margin": 9.84,
       "fundamentalsMargin": 5.73,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.2,
@@ -3972,22 +4441,42 @@
         "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0
+        "pollMargin": 1.4158883083359672,
+        "pollCount": 1,
+        "pollSources": [
+          "270toWin latest governor polls"
+        ],
+        "pollSourceUrls": [
+          "https://www.270towin.com/2026-governor-polls/oregon"
+        ],
+        "pollMatchups": [
+          "Kotek vs. Drazan"
+        ]
       },
-      "modelRating": "Safe D",
-      "demProbability": 0.98615,
-      "repProbability": 0.01385,
+      "modelRating": "Likely D",
+      "demProbability": 0.9111,
+      "repProbability": 0.0889,
       "winnerParty": "D",
-      "winnerProbability": 0.98615,
+      "winnerProbability": 0.9111,
       "competitive": false,
-      "tippingPower": 0.01009,
-      "movementDrivers": [],
+      "tippingPower": 0.04613,
+      "movementDrivers": [
+        {
+          "label": "Polling",
+          "change": -1.08,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
+          "label": "Projected margin",
+          "change": -0.99,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.98615,
-          "rep": 0.01385
+          "dem": 0.9111,
+          "rep": 0.0889
         }
       ],
       "movement": {
@@ -4115,7 +4604,10 @@
         "nationalFinance": 0,
         "candidateHistory": 1.25,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.98995,
@@ -4123,14 +4615,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.98995,
       "competitive": false,
-      "tippingPower": 0.00871,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.18,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.0092,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -4242,7 +4728,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.99664,
@@ -4250,7 +4739,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99664,
       "competitive": false,
-      "tippingPower": 0.00383,
+      "tippingPower": 0.00401,
       "movementDrivers": [],
       "history": [
         {
@@ -4379,7 +4868,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.01728,
@@ -4387,7 +4879,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.98272,
       "competitive": false,
-      "tippingPower": 0.01098,
+      "tippingPower": 0.01094,
       "movementDrivers": [],
       "history": [
         {
@@ -4510,7 +5002,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.001,
@@ -4518,7 +5013,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00098,
+      "tippingPower": 0.00106,
       "movementDrivers": [],
       "history": [
         {
@@ -4647,7 +5142,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.00206,
@@ -4655,7 +5153,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.0021,
+      "tippingPower": 0.00197,
       "movementDrivers": [],
       "history": [
         {
@@ -4791,7 +5289,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.02451,
@@ -4799,14 +5300,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.97549,
       "competitive": false,
-      "tippingPower": 0.01843,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.15,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.01966,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -4928,7 +5423,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.00545,
@@ -4936,14 +5434,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99455,
       "competitive": false,
-      "tippingPower": 0.00544,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": -0.98,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00565,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -4979,7 +5471,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Wisconsin Governor",
-      "margin": 2.3,
+      "margin": 3.17,
       "fundamentalsMargin": 3.01,
       "ratingMargin": 0,
       "candidateAndLocal": 0.5,
@@ -5064,22 +5556,42 @@
         "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0
+        "pollMargin": 0.8495329850015803,
+        "pollCount": 1,
+        "pollSources": [
+          "270toWin latest governor polls"
+        ],
+        "pollSourceUrls": [
+          "https://www.270towin.com/2026-governor-polls/wisconsin"
+        ],
+        "pollMatchups": [
+          "Rodriguez vs. Tiffany"
+        ]
       },
       "modelRating": "Tilt D",
-      "demProbability": 0.5856,
-      "repProbability": 0.4144,
+      "demProbability": 0.61691,
+      "repProbability": 0.38309,
       "winnerParty": "D",
-      "winnerProbability": 0.5856,
+      "winnerProbability": 0.61691,
       "competitive": true,
-      "tippingPower": 0.07817,
-      "movementDrivers": [],
+      "tippingPower": 0.07583,
+      "movementDrivers": [
+        {
+          "label": "Polling",
+          "change": -0.65,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
+          "label": "Projected margin",
+          "change": -0.6,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
-          "dem": 0.5856,
-          "rep": 0.4144
+          "dem": 0.61691,
+          "rep": 0.38309
         }
       ],
       "movement": {
@@ -5191,7 +5703,10 @@
         "nationalFinance": 0,
         "candidateHistory": 0,
         "pollMargin": 0,
-        "pollCount": 0
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.00206,
@@ -5199,7 +5714,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00189,
+      "tippingPower": 0.00183,
       "movementDrivers": [],
       "history": [
         {
