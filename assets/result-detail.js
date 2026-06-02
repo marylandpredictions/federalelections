@@ -30,6 +30,34 @@ const MANUAL_INCUMBENTS_BY_RACE = {
 };
 
 const CANDIDATE_PHOTO_SETS = {
+  "79778": {
+    base: "assets/img/candidates/california-insurance-commissioner",
+    photos: {
+      "ben-allen": "ben-allen.png",
+      "steven-craig-bradford": "steven-craig-bradford.png",
+      "jane-kim": "jane-kim.png",
+      "stacy-a-korsgaden": "stacy-a-korsgaden.png"
+    },
+    colors: {
+      "ben-allen": "#17a7e8",
+      "steven-craig-bradford": "#565cf4",
+      "jane-kim": "#55ca2d",
+      "stacy-a-korsgaden": "#e27415"
+    }
+  },
+  "79893": {
+    base: "assets/img/candidates/california-us-house-1",
+    photos: {
+      "audrey-denney": "audrey-denney.png",
+      "mike-mcguire": "mike-mcguire.png",
+      "james-gallagher": "james-gallagher.png"
+    },
+    colors: {
+      "audrey-denney": "#6c5cff",
+      "mike-mcguire": "#23d5d8",
+      "james-gallagher": "#c4162f"
+    }
+  },
   "79779": {
     base: "assets/img/candidates/california-lieutenant-governor",
     photos: {
@@ -572,12 +600,59 @@ function candidateFill(race, candidate) {
   return "#7a6fe8";
 }
 
+function hexToRgb(hex) {
+  const clean = String(hex || "").replace("#", "");
+  const full = clean.length === 3 ? clean.split("").map((char) => char + char).join("") : clean;
+  const value = Number.parseInt(full, 16);
+  if (!Number.isFinite(value)) return { r: 122, g: 111, b: 232 };
+  return {
+    r: (value >> 16) & 255,
+    g: (value >> 8) & 255,
+    b: value & 255
+  };
+}
+
+function mixColor(from, to, amount) {
+  const a = hexToRgb(from);
+  const b = hexToRgb(to);
+  const t = Math.max(0, Math.min(1, amount));
+  const channel = (start, end) => Math.round(start + (end - start) * t).toString(16).padStart(2, "0");
+  return `#${channel(a.r, b.r)}${channel(a.g, b.g)}${channel(a.b, b.b)}`;
+}
+
+function marginCandidates(region) {
+  const candidates = [...(region?.candidates || [])];
+  const hasVotes = candidates.some((candidate) => Number(candidate.votes || 0) > 0);
+  return candidates.sort((a, b) => {
+    if (hasVotes) return Number(b.votes || 0) - Number(a.votes || 0) || Number(b.percent || 0) - Number(a.percent || 0);
+    return Number(b.percent || 0) - Number(a.percent || 0);
+  });
+}
+
+function resultMarginInfo(race, region) {
+  const [leader, runnerUp] = marginCandidates(region);
+  const totalVotes = (region?.candidates || []).reduce((sum, candidate) => sum + Number(candidate.votes || 0), 0);
+  if (!leader || (!totalVotes && !Number(leader.percent || 0))) return null;
+  const voteMargin = Math.max(0, Number(leader.votes || 0) - Number(runnerUp?.votes || 0));
+  const percentMargin = Math.max(0, Number(leader.percent || 0) - Number(runnerUp?.percent || 0));
+  const baseColor = candidateFill(race, leader);
+  const percentStrength = Math.min(1, percentMargin / 20);
+  const voteStrength = Math.min(1, Math.log10(voteMargin + 1) / 4);
+  return {
+    leader,
+    percentMargin,
+    voteMargin,
+    percentFill: mixColor("#d6d9e2", baseColor, .28 + percentStrength * .72),
+    voteFill: mixColor("#d6d9e2", baseColor, .28 + voteStrength * .72)
+  };
+}
+
 function callBadge(candidate, race) {
   if (!candidate.callLabel) return "";
   const compactLabel = String(candidate.callLabel)
     .replace(/^Projected winner$/i, "Projected")
     .replace(/^Advanced to general election$/i, "Advanced");
-  return `<span class="result-call-badge">${escapeHtml(compactLabel)}</span>`;
+  return `<span class="result-call-badge"><i aria-hidden="true">&#8594;</i>${escapeHtml(compactLabel)}</span>`;
 }
 
 function callVerb(label, race, count) {
@@ -625,7 +700,7 @@ function raceCallBanner(race) {
   return `
     <div class="result-call-alert" style="--candidate-color:${escapeHtml(fill)}" role="status">
       <div class="result-call-copy">
-        <span>${escapeHtml(callLabel)} <i aria-hidden="true">&#10003;</i></span>
+        <span>${escapeHtml(callLabel)} <i aria-hidden="true">&#8594;</i></span>
         <strong>${escapeHtml(callDeckText(race, bannerCandidates))}</strong>
         <small>Race called by Federal Elections Analysis.</small>
       </div>
@@ -808,10 +883,13 @@ function regionMap(race) {
   }
   const regions = counties.map((county) => {
     const leader = regionLeader(county);
+    const margin = resultMarginInfo(race, county);
     const label = leader
       ? `${county.name}: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.percentReporting)} reporting`
       : `${county.name}: waiting for reported votes`;
-    const style = leader ? ` style="--tile-color:${candidateFill(race, leader)}"` : "";
+    const percentFill = margin?.percentFill || "#566274";
+    const voteFill = margin?.voteFill || "#566274";
+    const style = ` style="--tile-color:${escapeHtml(percentFill)}" data-fill-percent="${escapeHtml(percentFill)}" data-fill-votes="${escapeHtml(voteFill)}"`;
     return `
       <span class="result-region-tile ${leader ? "" : "is-waiting"}"${style} title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
         ${escapeHtml(regionAbbreviation(county.name))}
@@ -822,7 +900,6 @@ function regionMap(race) {
     <div class="result-region-map" aria-label="${escapeHtml(race.stateName || race.state || "Race")} county result map">
       ${regions}
     </div>
-    <p class="result-map-caption">County tiles color by the current local leader once votes are reported.</p>
   `;
 }
 
@@ -989,14 +1066,21 @@ async function districtShapeMap(race) {
     ));
     if (!feature) return "";
     const leader = leadingCandidate(race);
-    const fill = leader && Number(leader.votes || 0) ? candidateFill(race, leader) : "#566274";
+    const margin = resultMarginInfo(race, race);
+    const fill = margin?.percentFill || (leader && Number(leader.votes || 0) ? candidateFill(race, leader) : "#566274");
+    const voteFill = margin?.voteFill || fill;
     const bounds = stateBounds([feature]);
     const { width, height, lonScale } = mapDimensions(bounds, 700, 500);
+    const districtTitle = `${race.state || ""}-${districtNumber} District`;
+    const districtTooltip = countyTooltipMarkup({
+      name: districtTitle,
+      candidates: race.candidates || [],
+      percentReporting: race.percentReporting
+    }, race, districtTitle);
     return `
       <svg class="result-county-map result-district-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.electionName || "House district")} map">
-        <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}"></path>
+        <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-county-tooltip="${escapeHtml(districtTooltip)}"></path>
       </svg>
-      <p class="result-map-caption" data-default-map-caption="District shape from the 119th Congressional District file. County results below still list county-level returns when available.">District shape from the 119th Congressional District file. County results below still list county-level returns when available.</p>
     `;
   } catch (error) {
     console.warn(error);
@@ -1026,13 +1110,15 @@ async function countyShapeMap(race) {
     const paths = visibleFeatures.map((feature) => {
       const county = lookup.get(feature.id) || lookup.get(String(feature.properties?.NAME || "").toLowerCase());
       const leader = county ? regionLeader(county) : null;
-      const fill = leader ? candidateFill(race, leader) : "#566274";
+      const margin = county ? resultMarginInfo(race, county) : null;
+      const fill = margin?.percentFill || "#566274";
+      const voteFill = margin?.voteFill || "#566274";
       const title = county && leader
         ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.percentReporting)} reporting`
         : `${feature.properties?.NAME || "County"} County: waiting for reported votes`;
       const tooltip = county ? countyTooltipMarkup(county, race, `${feature.properties?.NAME || county.name} County`) : "";
       return `
-        <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
+        <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
         </path>
       `;
     }).join("");
@@ -1040,7 +1126,6 @@ async function countyShapeMap(race) {
       <svg class="result-county-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.stateName || race.state || "State")} county results map">
         ${paths}
       </svg>
-      <p class="result-map-caption" data-default-map-caption="County shapes color by the current local leader once votes are reported.">County shapes color by the current local leader once votes are reported.</p>
     `;
   } catch (error) {
     console.warn(error);
@@ -1048,16 +1133,32 @@ async function countyShapeMap(race) {
   }
 }
 
+function mapLegendMarkup() {
+  return `
+    <div class="result-map-legend" data-map-legend>
+      <strong>Margin key</strong>
+      <span class="result-map-legend-swatches" aria-hidden="true">
+        <i></i><i></i><i></i>
+      </span>
+      <span class="result-map-legend-labels">
+        <b>+0%</b><b>+10%</b><b>+20%+</b>
+      </span>
+    </div>
+  `;
+}
+
 function bindCountyHover() {
   const canvas = page.querySelector(".result-map-canvas");
   const caption = canvas?.querySelector(".result-map-caption");
-  if (!canvas || !caption) return;
+  if (!canvas) return;
   const tooltip = canvas.querySelector(".result-county-tooltip");
-  const defaultText = caption.dataset.defaultMapCaption || caption.textContent;
+  const defaultText = caption?.dataset.defaultMapCaption || caption?.textContent || "";
   canvas.querySelectorAll(".result-county-map path:not(.map-context)").forEach((path) => {
     const show = (event) => {
-      caption.textContent = path.dataset.countyTitle || defaultText;
-      caption.classList.add("is-live");
+      if (caption) {
+        caption.textContent = path.dataset.countyTitle || defaultText;
+        caption.classList.add("is-live");
+      }
       if (tooltip && path.dataset.countyTooltip) {
         tooltip.innerHTML = path.dataset.countyTooltip;
         tooltip.classList.add("visible");
@@ -1065,8 +1166,10 @@ function bindCountyHover() {
       }
     };
     const hide = () => {
-      caption.textContent = defaultText;
-      caption.classList.remove("is-live");
+      if (caption) {
+        caption.textContent = defaultText;
+        caption.classList.remove("is-live");
+      }
       tooltip?.classList.remove("visible");
     };
     path.addEventListener("mouseenter", show);
@@ -1287,6 +1390,40 @@ function bindMapZoom() {
   apply();
 }
 
+function bindMapColorMode() {
+  const frame = page.querySelector(".result-map-frame");
+  const controls = page.querySelectorAll("[data-map-color]");
+  const legend = page.querySelector("[data-map-legend]");
+  if (!frame) return;
+  let mode = "percent";
+  const apply = () => {
+    frame.dataset.marginMode = mode;
+    frame.querySelectorAll("[data-fill-percent]").forEach((node) => {
+      const fill = mode === "votes" ? node.dataset.fillVotes : node.dataset.fillPercent;
+      if (node.tagName.toLowerCase() === "path") node.setAttribute("fill", fill || "#566274");
+      else node.style.setProperty("--tile-color", fill || "#566274");
+    });
+    controls.forEach((control) => {
+      control.classList.toggle("active", control.dataset.mapColor === mode);
+      control.setAttribute("aria-pressed", String(control.dataset.mapColor === mode));
+    });
+    if (legend) {
+      const labels = legend.querySelectorAll(".result-map-legend-labels b");
+      const values = mode === "votes" ? ["+0", "+1k", "+10k+"] : ["+0%", "+10%", "+20%+"];
+      labels.forEach((label, index) => {
+        label.textContent = values[index] || "";
+      });
+    }
+  };
+  controls.forEach((control) => {
+    control.addEventListener("click", () => {
+      mode = control.dataset.mapColor === "votes" ? "votes" : "percent";
+      apply();
+    });
+  });
+  apply();
+}
+
 async function renderRace(race) {
   const leader = leadingCandidate(race);
   const mapMarkup = await countyShapeMap(race);
@@ -1313,10 +1450,12 @@ async function renderRace(race) {
         ${raceCallBanner(race)}
 
         <div class="result-night-meta result-night-meta-top">
-          <span class="result-reporting-stat">${percentLabel(race.percentReporting)} reporting</span>
           <span data-poll-close="${escapeHtml(closeIso)}" class="result-poll-close-stat">${escapeHtml(pollCloseLabel(closeIso))}</span>
           <span>Last updated ${escapeHtml(timeLabel(race.lastUpdated))}</span>
           <span>${numberLabel((race.counties || []).length)} counties</span>
+        </div>
+        <div class="result-reporting-label-row">
+          <span class="result-reporting-stat">${percentLabel(race.percentReporting)} reporting</span>
         </div>
         <div class="result-reporting-bar" aria-label="${escapeHtml(percentLabel(race.percentReporting))} reporting">
           <i style="width:${reporting}%"></i>
@@ -1329,6 +1468,8 @@ async function renderRace(race) {
 
       <aside class="result-map-panel">
         <div class="result-map-tabs">
+          <button type="button" data-map-color="percent">Pct margin</button>
+          <button type="button" data-map-color="votes">Vote margin</button>
           <button type="button" data-map-zoom="out">-</button>
           <button type="button" data-map-zoom="in">+</button>
           <button type="button" data-map-zoom="reset">Reset</button>
@@ -1337,6 +1478,7 @@ async function renderRace(race) {
           <div class="result-map-frame">
             ${mapMarkup}
           </div>
+          ${mapLegendMarkup()}
           <div class="result-county-tooltip" aria-hidden="true"></div>
         </div>
         ${await analysisNoteMarkup(analystNotes)}
@@ -1360,6 +1502,7 @@ async function renderRace(race) {
   `;
   bindCountyHover();
   bindMapZoom();
+  bindMapColorMode();
   bindPollCountdown();
 }
 

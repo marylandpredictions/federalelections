@@ -3625,19 +3625,19 @@ button.race-board-row {
   place-items: center;
   border: 1px solid var(--line);
   border-radius: 9px;
-  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  background: #667085;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff 9%, transparent);
 }
 
 .result-election-marker i {
   display: inline-grid;
   place-items: center;
-  min-width: 19px;
-  height: 18px;
-  padding: 0 3px;
+  width: 100%;
+  height: 100%;
+  padding: 0;
   border-radius: 999px;
   color: #fff;
-  font: 950 .56rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  font: 950 .58rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   font-style: normal;
   letter-spacing: 0;
   white-space: nowrap;
@@ -3656,9 +3656,11 @@ button.race-board-row {
 }
 
 .result-election-marker-large i {
-  min-width: 34px;
-  height: 34px;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
   padding: 0 6px;
+  border-radius: 12px;
   font-size: .68rem;
 }
 
@@ -3931,6 +3933,13 @@ button.race-board-row {
   cursor: pointer;
 }
 
+.result-map-tabs button.active {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 72%, #020b22), color-mix(in srgb, var(--rep) 42%, #020b22));
+  color: #fff;
+  box-shadow: 0 0 18px color-mix(in srgb, #c6d2ff 24%, transparent);
+}
+
 .result-map-tabs button:disabled {
   opacity: .48;
   cursor: default;
@@ -3963,8 +3972,8 @@ button.race-board-row {
   border: 1px solid #d6d9e2;
   border-radius: 18px;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--dem) 10%, transparent), transparent 48%, color-mix(in srgb, var(--rep) 9%, transparent)),
-    var(--chart-bg);
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 8%, transparent), transparent 48%, color-mix(in srgb, var(--rep) 7%, transparent)),
+    #020b22;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff 8%, transparent), 0 18px 46px color-mix(in srgb, #000 22%, transparent);
   cursor: grab;
   touch-action: none;
@@ -4035,7 +4044,7 @@ button.race-board-row {
   border-radius: 6px;
   background:
     linear-gradient(135deg, color-mix(in srgb, #1030b2 14%, transparent), color-mix(in srgb, #ff2a4f 10%, transparent)),
-    color-mix(in srgb, var(--paper) 64%, transparent);
+    #020b22;
 }
 
 .result-region-tile {
@@ -4134,7 +4143,51 @@ button.race-board-row {
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: color-mix(in srgb, var(--paper) 68%, transparent);
+  background: #020b22;
+}
+
+.result-map-legend {
+  width: min(92%, 620px);
+  display: grid;
+  grid-template-columns: auto minmax(120px, 240px);
+  gap: 6px 12px;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  font: 900 .8rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  text-align: center;
+}
+
+.result-map-legend strong {
+  grid-row: span 2;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.result-map-legend-swatches,
+.result-map-legend-labels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(40px, 1fr));
+  gap: 4px;
+}
+
+.result-map-legend-swatches i {
+  height: 18px;
+  border: 1px solid color-mix(in srgb, #d6d9e2 76%, transparent);
+  background: #d6d9e2;
+}
+
+.result-map-legend-swatches i:nth-child(2) {
+  background: #769ad8;
+}
+
+.result-map-legend-swatches i:nth-child(3) {
+  background: #1030b2;
+}
+
+.result-map-legend-labels b {
+  color: var(--muted);
+  font-size: .78rem;
 }
 
 .result-map-controls {
@@ -4348,7 +4401,7 @@ button.race-board-row {
   background: color-mix(in srgb, #051632 72%, var(--candidate-color, #49d38a));
   color: #fff;
   font-style: normal;
-  font-size: .62rem;
+  font-size: .78rem;
 }
 
 .result-call-copy strong {
@@ -4458,6 +4511,9 @@ button.race-board-row {
 }
 
 .result-call-badge {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -4561,10 +4617,20 @@ button.race-board-row {
   margin: 14px 0 8px;
 }
 
-.result-night-meta-top .result-reporting-stat,
 .result-night-meta-top .result-poll-close-stat {
   color: var(--ink);
   font-size: 1rem;
+}
+
+.result-reporting-label-row {
+  display: flex;
+  justify-content: flex-start;
+  margin: 10px 0 5px;
+}
+
+.result-reporting-label-row .result-reporting-stat {
+  color: var(--ink);
+  font: 950 1.08rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .result-reporting-bar {
@@ -4587,8 +4653,8 @@ button.race-board-row {
 .result-county-panel {
   padding: 12px;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--dem) 10%, transparent), transparent 48%, color-mix(in srgb, var(--rep) 9%, transparent)),
-    var(--chart-bg);
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 8%, transparent), transparent 48%, color-mix(in srgb, var(--rep) 7%, transparent)),
+    #020b22;
 }
 
 .analysis-note-panel,
@@ -4598,8 +4664,8 @@ button.race-board-row {
   border: 1px solid var(--line);
   border-radius: 6px;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--dem) 9%, transparent), transparent 50%, color-mix(in srgb, var(--rep) 8%, transparent)),
-    var(--chart-bg);
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 8%, transparent), transparent 50%, color-mix(in srgb, var(--rep) 7%, transparent)),
+    #020b22;
   box-shadow: var(--shadow-soft);
   animation: result-fade .35s var(--ease-out) both;
 }
@@ -4618,8 +4684,8 @@ button.race-board-row {
   padding: 12px;
   border-radius: 10px;
   background:
-    linear-gradient(135deg, color-mix(in srgb, #fff 4%, transparent), transparent 42%, color-mix(in srgb, var(--rep) 8%, transparent)),
-    color-mix(in srgb, var(--chart-bg) 92%, #020817);
+    linear-gradient(135deg, color-mix(in srgb, #fff 4%, transparent), transparent 42%, color-mix(in srgb, var(--rep) 7%, transparent)),
+    #020b22;
 }
 
 .analysis-note-panel p {
@@ -4682,6 +4748,19 @@ button.race-board-row {
   white-space: nowrap;
 }
 
+.result-call-badge i {
+  display: inline-grid;
+  width: 16px;
+  height: 16px;
+  place-items: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, #49d38a 78%, #020b22);
+  color: #fff;
+  font-style: normal;
+  font-size: .78rem;
+  line-height: 1;
+}
+
 .analysis-note-avatar img {
   width: 100%;
   height: 100%;
@@ -4726,8 +4805,8 @@ button.race-board-row {
   border: 1px solid var(--line);
   border-radius: 8px;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--dem) 12%, transparent), transparent 46%, color-mix(in srgb, var(--rep) 10%, transparent)),
-    color-mix(in srgb, var(--chart-bg) 86%, #020817);
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 8%, transparent), transparent 46%, color-mix(in srgb, var(--rep) 7%, transparent)),
+    #020b22;
 }
 
 .analysis-note-forecast h3 {
@@ -4758,7 +4837,7 @@ button.race-board-row {
   padding: 9px;
   border: 1px solid color-mix(in srgb, var(--line) 62%, transparent);
   border-radius: 5px;
-  background: color-mix(in srgb, var(--paper) 56%, transparent);
+  background: #020b22;
 }
 
 .result-vote-history-panel svg {
@@ -4819,14 +4898,14 @@ button.race-board-row {
   padding: 9px;
   border: 1px solid var(--line);
   border-radius: 4px;
-  background: color-mix(in srgb, var(--chart-bg) 82%, var(--paper));
+  background: #020b22;
   transition: transform .18s ease, border-color .18s ease, background .18s ease;
 }
 
 .county-result-row:hover {
   transform: translateY(-1px);
   border-color: color-mix(in srgb, #c6d2ff 70%, var(--line));
-  background: color-mix(in srgb, var(--paper) 84%, transparent);
+  background: color-mix(in srgb, #1030b2 12%, #020b22);
 }
 
 .county-result-row small {

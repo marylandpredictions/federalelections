@@ -10,6 +10,34 @@
   let resultsDataCache = null;
 
   const PHOTO_SETS = {
+    "79778": {
+      base: "assets/img/candidates/california-insurance-commissioner",
+      photos: {
+        "ben-allen": "ben-allen.png",
+        "steven-craig-bradford": "steven-craig-bradford.png",
+        "jane-kim": "jane-kim.png",
+        "stacy-a-korsgaden": "stacy-a-korsgaden.png"
+      },
+      colors: {
+        "ben-allen": "#17a7e8",
+        "steven-craig-bradford": "#565cf4",
+        "jane-kim": "#55ca2d",
+        "stacy-a-korsgaden": "#e27415"
+      }
+    },
+    "79893": {
+      base: "assets/img/candidates/california-us-house-1",
+      photos: {
+        "audrey-denney": "audrey-denney.png",
+        "mike-mcguire": "mike-mcguire.png",
+        "james-gallagher": "james-gallagher.png"
+      },
+      colors: {
+        "audrey-denney": "#6c5cff",
+        "mike-mcguire": "#23d5d8",
+        "james-gallagher": "#c4162f"
+      }
+    },
     "79777": {
       base: "assets/img/candidates/california-governor",
       photos: {
@@ -368,7 +396,7 @@
       <article class="broadcast-call-card" style="--candidate-color:${escapeHtml(color)}">
         <div class="broadcast-call-topline">
           <span>${escapeHtml(callEvent.label)}</span>
-          <i aria-hidden="true">&#10003;</i>
+          <i aria-hidden="true">&#8594;</i>
         </div>
         <div class="broadcast-call-body">
           <div class="broadcast-call-copy">
