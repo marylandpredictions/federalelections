@@ -1199,6 +1199,13 @@ async function loadDistrictMapData() {
   return districtMapDataPromise;
 }
 
+function regionLookupKey(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "");
+}
+
 function countyLookup(race) {
   const lookup = new Map();
   for (const county of race.counties || []) {
@@ -1208,6 +1215,7 @@ function countyLookup(race) {
       lookup.set("shannon", county);
     }
     lookup.set(String(county.name || "").toLowerCase(), county);
+    lookup.set(regionLookupKey(county.name), county);
   }
   return lookup;
 }
@@ -1227,7 +1235,7 @@ function isHouseRace(race) {
 
 function shouldFilterToJurisdiction(race, features, lookup) {
   if (race.district || race.municipality) return true;
-  const matchedCounties = features.filter((feature) => lookup.has(feature.id) || lookup.has(String(feature.properties?.NAME || "").toLowerCase())).length;
+  const matchedCounties = features.filter((feature) => lookup.has(feature.id) || lookup.has(String(feature.properties?.NAME || "").toLowerCase()) || lookup.has(regionLookupKey(feature.properties?.NAME))).length;
   return matchedCounties > 0 && matchedCounties < features.length;
 }
 
@@ -1366,13 +1374,13 @@ async function countyShapeMap(race) {
     if (!features.length) return regionMap(race);
     const lookup = countyLookup(race);
     const visibleFeatures = shouldFilterToJurisdiction(race, features, lookup)
-      ? features.filter((feature) => lookup.has(feature.id) || lookup.has(String(feature.properties?.NAME || "").toLowerCase()))
+      ? features.filter((feature) => lookup.has(feature.id) || lookup.has(String(feature.properties?.NAME || "").toLowerCase()) || lookup.has(regionLookupKey(feature.properties?.NAME)))
       : features;
     if (!visibleFeatures.length) return regionMap(race);
     const bounds = stateBounds(visibleFeatures);
     const { width, height, lonScale } = mapDimensions(bounds);
     const paths = visibleFeatures.map((feature) => {
-      const county = lookup.get(feature.id) || lookup.get(String(feature.properties?.NAME || "").toLowerCase());
+      const county = lookup.get(feature.id) || lookup.get(String(feature.properties?.NAME || "").toLowerCase()) || lookup.get(regionLookupKey(feature.properties?.NAME));
       const leader = county ? regionLeader(county) : null;
       const margin = county ? resultMarginInfo(race, county) : null;
       const fill = margin?.percentFill || "#566274";
