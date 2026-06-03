@@ -2665,9 +2665,9 @@ function renderArticlesList() {
   container.innerHTML = list.length ? list.map((article) => `
     <article class="article-card">
       ${articleLeadImageMarkup(article, "article-card-image")}
-      <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections Analysis")}</p>
       <h2><a href="${articleUrl(article)}">${escapeHtml(article.title)}</a></h2>
       <p>${escapeHtml(article.dek || "")}</p>
+      <p class="meta">By ${escapeHtml(article.author || "Federal Elections Analysis")}</p>
     </article>
   `).join("") : `<article class="article-card"><h2>No articles yet.</h2><p>Published writing will appear here once articles are added.</p></article>`;
 }

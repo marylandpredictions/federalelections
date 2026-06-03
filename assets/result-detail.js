@@ -896,8 +896,21 @@ function resultMarginInfo(race, region) {
     percentMargin,
     voteMargin,
     percentFill: mixColor("#d6d9e2", baseColor, .28 + percentStrength * .72),
-    voteFill: mixColor("#d6d9e2", baseColor, .28 + voteStrength * .72)
+    voteFill: mixColor("#d6d9e2", baseColor, .28 + voteStrength * .72),
+    rawFill: baseColor
   };
+}
+
+function candidateRaceCallLabel(race, candidate) {
+  if (candidate?.callLabel) return candidate.callLabel;
+  const raceCandidate = (race?.candidates || []).find((item) => String(item.name || "").toLowerCase() === String(candidate?.name || "").toLowerCase());
+  return raceCandidate?.callLabel || "";
+}
+
+function candidateCallMark(race, candidate) {
+  const label = candidateRaceCallLabel(race, candidate);
+  if (!label) return "";
+  return `<span class="result-candidate-check" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">✓</span>`;
 }
 
 function callBadge(candidate, race) {
@@ -1040,7 +1053,7 @@ function candidateRow(candidate, race, maxPercent) {
       <div class="result-full-candidate-name">
         <span class="result-candidate-avatar ${partyClass(code)}">${photo ? `<img src="${escapeHtml(photo)}" alt="">` : escapeHtml(candidateInitials(candidate.name))}</span>
         <div>
-          <strong>${escapeHtml(candidate.name)}${incumbentMark(race, candidate)}</strong>
+          <strong>${escapeHtml(candidate.name)}${incumbentMark(race, candidate)} ${candidateCallMark(race, candidate)}</strong>
         </div>
         ${callBadge(candidate, race)}
       </div>
@@ -1121,7 +1134,7 @@ function countyTooltipMarkup(county, race, titlePrefix = "") {
       <tbody>
         ${rows.map((candidate) => `
           <tr>
-            <td>${escapeHtml(candidate.name)} (${escapeHtml(candidate.partyCode || partyCode(candidate.party) || "O")})</td>
+            <td>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)} (${escapeHtml(candidate.partyCode || partyCode(candidate.party) || "O")})</td>
             <td>${numberLabel(candidate.votes)}</td>
             <td>${percentLabel(candidate.percent)}</td>
           </tr>
@@ -1153,7 +1166,8 @@ function regionMap(race) {
       : `${county.name}: waiting for reported votes`;
     const percentFill = margin?.percentFill || "#566274";
     const voteFill = margin?.voteFill || "#566274";
-    const style = ` style="--tile-color:${escapeHtml(percentFill)}" data-fill-percent="${escapeHtml(percentFill)}" data-fill-votes="${escapeHtml(voteFill)}"`;
+    const rawFill = margin?.rawFill || "#566274";
+    const style = ` style="--tile-color:${escapeHtml(percentFill)}" data-fill-percent="${escapeHtml(percentFill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(rawFill)}"`;
     return `
       <span class="result-region-tile ${leader ? "" : "is-waiting"}"${style} title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
         ${escapeHtml(regionAbbreviation(county.name))}
@@ -1351,7 +1365,7 @@ async function districtShapeMap(race) {
     }, race, districtTitle);
     return `
       <svg class="result-county-map result-district-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.electionName || "House district")} map">
-        <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-county-tooltip="${escapeHtml(districtTooltip)}"></path>
+        <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(margin?.rawFill || fill)}" data-county-tooltip="${escapeHtml(districtTooltip)}"></path>
       </svg>
     `;
   } catch (error) {
@@ -1385,12 +1399,13 @@ async function countyShapeMap(race) {
       const margin = county ? resultMarginInfo(race, county) : null;
       const fill = margin?.percentFill || "#566274";
       const voteFill = margin?.voteFill || "#566274";
+      const rawFill = margin?.rawFill || "#566274";
       const title = county && leader
         ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.percentReporting)} reporting`
         : `${feature.properties?.NAME || "County"} County: waiting for reported votes`;
       const tooltip = county ? countyTooltipMarkup(county, race, `${feature.properties?.NAME || county.name} County`) : "";
       return `
-        <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
+        <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(rawFill)}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
         </path>
       `;
     }).join("");
@@ -1451,7 +1466,7 @@ function countyCandidateCells(county, race) {
   const candidates = countyTopCandidates(county, race, 3);
   return candidates.map((candidate) => `
     <span>
-      <strong>${escapeHtml(candidate.name)}</strong>
+      <strong>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)}</strong>
       <small>${numberLabel(candidate.votes)} / ${percentLabel(candidate.percent)}</small>
     </span>
   `).join("");
@@ -1557,21 +1572,47 @@ function voteHistoryChart(race) {
   const candidates = sortedCandidates(race).slice(0, 5);
   const width = 760;
   const height = 220;
-  const pad = { left: 42, right: 18, top: 18, bottom: 32 };
+  const pad = { left: 58, right: 20, top: 18, bottom: 44 };
   const maxVotes = Math.max(1, ...points.flatMap((point) => (point.candidates || []).map((candidate) => Number(candidate.votes || 0))));
   const xFor = (index) => points.length === 1 ? pad.left : pad.left + (index / (points.length - 1)) * (width - pad.left - pad.right);
   const yFor = (votes) => height - pad.bottom - (Number(votes || 0) / maxVotes) * (height - pad.top - pad.bottom);
-  const paths = candidates.map((candidate) => {
+  const defs = candidates.map((candidate, index) => {
+    if (!candidateRaceCallLabel(race, candidate)) return "";
     const color = candidateFill(race, candidate);
+    return `
+      <linearGradient id="vote-history-winner-${index}" x1="0%" x2="100%" y1="0%" y2="0%">
+        <stop offset="0%" stop-color="${escapeHtml(mixColor("#ffffff", color, .35))}"></stop>
+        <stop offset="100%" stop-color="${escapeHtml(color)}"></stop>
+      </linearGradient>
+    `;
+  }).join("");
+  const paths = candidates.map((candidate, index) => {
+    const color = candidateFill(race, candidate);
+    const called = Boolean(candidateRaceCallLabel(race, candidate));
     const d = points.map((point, index) => {
       const item = (point.candidates || []).find((entry) => entry.name === candidate.name);
       return `${index ? "L" : "M"}${xFor(index).toFixed(1)},${yFor(item?.votes || 0).toFixed(1)}`;
     }).join(" ");
-    return `<path d="${d}" fill="none" stroke="${escapeHtml(color)}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`;
+    return `<path d="${d}" fill="none" stroke="${called ? `url(#vote-history-winner-${index})` : escapeHtml(color)}" stroke-width="${called ? 3.4 : 2.6}" stroke-linecap="round" stroke-linejoin="round"></path>`;
+  }).join("");
+  const hits = points.map((point, index) => {
+    const x = xFor(index);
+    const xPrev = index === 0 ? pad.left : xFor(index - 1);
+    const xNext = index === points.length - 1 ? width - pad.right : xFor(index + 1);
+    const hitX = index === 0 ? pad.left : (xPrev + x) / 2;
+    const hitWidth = index === points.length - 1 ? (width - pad.right) - hitX : (xNext + x) / 2 - hitX;
+    const label = [
+      timeLabel(point.updatedAt || point.timestamp || point.time || race.lastUpdated),
+      ...candidates.map((candidate) => {
+        const item = (point.candidates || []).find((entry) => entry.name === candidate.name);
+        return `${candidate.name}: ${numberLabel(item?.votes || 0)} votes`;
+      })
+    ].join("\n");
+    return `<rect class="vote-history-hit" x="${hitX.toFixed(1)}" y="${pad.top}" width="${Math.max(6, hitWidth).toFixed(1)}" height="${height - pad.top - pad.bottom}" data-history-x="${x.toFixed(1)}" data-history-tooltip="${escapeHtml(label)}"></rect>`;
   }).join("");
   const legend = candidates.map((candidate) => `
     <span style="--candidate-color:${escapeHtml(candidateFill(race, candidate))}">
-      <i></i>${escapeHtml(candidate.name)}
+      <i></i>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)}
     </span>
   `).join("");
   return `
@@ -1582,13 +1623,45 @@ function voteHistoryChart(race) {
         </div>
       </div>
       <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Vote history chart">
+        <defs>${defs}</defs>
         <line x1="${pad.left}" y1="${height - pad.bottom}" x2="${width - pad.right}" y2="${height - pad.bottom}"></line>
         <line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${height - pad.bottom}"></line>
+        <text class="vote-history-axis-label vote-history-y-label" x="18" y="${pad.top + 4}" transform="rotate(-90 18 ${pad.top + 4})">Votes</text>
+        <text class="vote-history-axis-label" x="${(width + pad.left - pad.right) / 2}" y="${height - 8}">Time</text>
         ${paths}
+        <line class="vote-history-hover-line" x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${height - pad.bottom}"></line>
+        ${hits}
       </svg>
+      <div class="vote-history-tooltip" aria-hidden="true"></div>
       <div class="vote-history-legend">${legend}</div>
     </section>
   `;
+}
+
+function bindVoteHistoryHover() {
+  const panel = page.querySelector(".result-vote-history-panel");
+  const tooltip = panel?.querySelector(".vote-history-tooltip");
+  const line = panel?.querySelector(".vote-history-hover-line");
+  if (!panel || !tooltip || !line) return;
+  panel.querySelectorAll(".vote-history-hit").forEach((hit) => {
+    const show = (event) => {
+      line.setAttribute("x1", hit.dataset.historyX || "0");
+      line.setAttribute("x2", hit.dataset.historyX || "0");
+      line.classList.add("visible");
+      tooltip.innerHTML = escapeHtml(hit.dataset.historyTooltip || "").replace(/\n/g, "<br>");
+      tooltip.classList.add("visible");
+      const rect = panel.getBoundingClientRect();
+      tooltip.style.left = `${Math.min(rect.width - tooltip.offsetWidth - 8, Math.max(8, event.clientX - rect.left + 12))}px`;
+      tooltip.style.top = `${Math.max(8, event.clientY - rect.top - tooltip.offsetHeight - 10)}px`;
+    };
+    const hide = () => {
+      line.classList.remove("visible");
+      tooltip.classList.remove("visible");
+    };
+    hit.addEventListener("mousemove", show);
+    hit.addEventListener("mouseenter", show);
+    hit.addEventListener("mouseleave", hide);
+  });
 }
 
 function bindMapZoom() {
@@ -1661,7 +1734,7 @@ function bindMapColorMode() {
   };
   controls.forEach((control) => {
     control.addEventListener("click", () => {
-      mode = control.dataset.mapColor === "votes" ? "votes" : "percent";
+      mode = ["votes", "raw"].includes(control.dataset.mapColor) ? control.dataset.mapColor : "percent";
       apply();
     });
   });
@@ -1699,9 +1772,9 @@ function applyMapViewportState() {
 function applyMapMarginColors() {
   const frame = page.querySelector(".result-map-frame");
   if (!frame) return;
-  const mode = frame.dataset.marginMode === "votes" ? "votes" : "percent";
+  const mode = ["votes", "raw"].includes(frame.dataset.marginMode) ? frame.dataset.marginMode : "percent";
   frame.querySelectorAll("[data-fill-percent]").forEach((node) => {
-    const fill = mode === "votes" ? node.dataset.fillVotes : node.dataset.fillPercent;
+    const fill = mode === "raw" ? node.dataset.fillRaw : mode === "votes" ? node.dataset.fillVotes : node.dataset.fillPercent;
     if (node.tagName.toLowerCase() === "path") node.setAttribute("fill", fill || "#566274");
     else node.style.setProperty("--tile-color", fill || "#566274");
   });
@@ -1750,7 +1823,10 @@ async function patchRaceDetail(race) {
     const replacement = document.createElement("div");
     replacement.innerHTML = voteHistoryChart(race).trim();
     const nextPanel = replacement.firstElementChild;
-    if (nextPanel) historyPanel.replaceWith(nextPanel);
+    if (nextPanel) {
+      historyPanel.replaceWith(nextPanel);
+      bindVoteHistoryHover();
+    }
   }
 
   bindPollCountdown();
@@ -1841,6 +1917,7 @@ async function renderRace(race) {
         <div class="result-map-tabs">
           <button type="button" data-map-color="percent">% Margin</button>
           <button type="button" data-map-color="votes">Vote Margin</button>
+          <button type="button" data-map-color="raw">Raw</button>
           <button type="button" data-map-zoom="out">-</button>
           <button type="button" data-map-zoom="in">+</button>
           <button type="button" data-map-zoom="reset">Reset</button>
@@ -1872,6 +1949,7 @@ async function renderRace(race) {
   bindCountyHover();
   bindMapZoom();
   bindMapColorMode();
+  bindVoteHistoryHover();
   bindPollCountdown();
   bindFavoriteRaceControls(race);
 }
