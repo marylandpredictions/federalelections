@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-03T14:46:57.187Z",
+  "generatedAt": "2026-06-03T15:55:58.786Z",
   "modelDate": "2026-06-03",
   "runDate": "Jun 3, 2026",
   "updateTime": "around 6:20 AM Central",
@@ -43,81 +43,88 @@
     "redistrictingShapeWarning": "The visible shape map may lag enacted 2026 redistricting in states with new maps. Forecast ratings use the redistricting override layer even when the temporary map geometry has not been replaced."
   },
   "sourceStatus": {
-    "checkedAt": "2026-06-03T14:46:47.379Z",
+    "checkedAt": "2026-06-03T15:55:50.078Z",
+    "cookHouseRatings": {
+      "ok": false,
+      "status": 403,
+      "ms": 119,
+      "bytes": 5660,
+      "url": "https://www.cookpolitical.com/ratings/house-race-ratings"
+    },
+    "raceToTheWhHouseForecast": {
+      "ok": true,
+      "status": 200,
+      "ms": 140,
+      "bytes": 173412,
+      "url": "https://www.racetothewh.com/house-3"
+    },
     "insideElections270ToWinRatings": {
       "ok": true,
       "status": 200,
-      "ms": 97,
-      "bytes": 485864,
+      "ms": 144,
+      "bytes": 485886,
       "url": "https://www.270towin.com/2026-house-election/table/inside-elections-2026-house-ratings"
     },
     "raceToTheWhGenericBallot": {
       "ok": true,
       "status": 200,
-      "ms": 96,
+      "ms": 143,
       "bytes": 192258,
       "url": "https://www.racetothewh.com/polls/genericballot"
-    },
-    "realClearPoliticsGenericBallot": {
-      "ok": false,
-      "status": 403,
-      "ms": 132,
-      "bytes": 781,
-      "url": "https://www.realclearpolitics.com/epolls/other/2026_generic_congressional_vote-8670.html"
     },
     "realClearPollingHousePolls": {
       "ok": false,
       "status": 403,
-      "ms": 149,
+      "ms": 167,
       "bytes": 1278,
       "url": "https://www.realclearpolling.com/latest-polls/house"
     },
-    "cookHouseRatings": {
-      "ok": false,
-      "status": 403,
-      "ms": 196,
-      "bytes": 5660,
-      "url": "https://www.cookpolitical.com/ratings/house-race-ratings"
-    },
-    "pollfinityAverages": {
-      "ok": false,
-      "status": 404,
-      "ms": 207,
-      "bytes": 0,
-      "url": "https://pollfinity.com/api/averages"
+    "twoSeventyToWinHouseMapData": {
+      "ok": true,
+      "status": 200,
+      "ms": 245,
+      "bytes": 7187709,
+      "url": "https://www.270towin.com/2026-house-election/inside-elections-2026-house-ratings"
     },
     "twoSeventyToWinHousePolls": {
       "ok": true,
       "status": 200,
-      "ms": 229,
-      "bytes": 7187573,
+      "ms": 286,
+      "bytes": 7187547,
       "url": "https://www.270towin.com/2026-house-election/polls/"
     },
-    "raceToTheWhHouseForecast": {
-      "ok": true,
-      "status": 200,
-      "ms": 279,
-      "bytes": 173412,
-      "url": "https://www.racetothewh.com/house-3"
+    "pollfinityAverages": {
+      "ok": false,
+      "status": 404,
+      "ms": 290,
+      "bytes": 0,
+      "url": "https://pollfinity.com/api/averages"
     },
     "ddhqGenericBallot": {
       "ok": false,
       "status": 404,
-      "ms": 311,
-      "bytes": 370,
+      "ms": 291,
+      "bytes": 350,
       "url": "https://static.dwcdn.net/data/9Jctg.json"
+    },
+    "realClearPoliticsGenericBallot": {
+      "ok": false,
+      "status": 403,
+      "ms": 307,
+      "bytes": 781,
+      "url": "https://www.realclearpolitics.com/epolls/other/2026_generic_congressional_vote-8670.html"
     },
     "votehubGenericBallot": {
       "ok": false,
       "status": 403,
-      "ms": 322,
+      "ms": 333,
       "bytes": 5545,
       "url": "https://polls.votehub.us/polls/generic-ballot"
     },
     "usPollingDataGenericBallot": {
       "ok": true,
       "status": 200,
-      "ms": 727,
+      "ms": 846,
       "bytes": 107438,
       "url": "https://uspollingdata.com/polls/generic-ballot/"
     },
@@ -126,29 +133,22 @@
       "status": "local",
       "ms": 0
     },
-    "censusDistrictBoundaries": {
-      "ok": true,
-      "status": 200,
-      "ms": 892,
-      "bytes": 1036275,
-      "url": "https://www.census.gov/geographies/mapping-files/2025/geo/carto-boundary-file.html"
-    },
     "openFecHouseCandidateSummary": {
       "ok": true,
       "status": 200,
-      "ms": 1486,
+      "ms": 1203,
       "bytes": 1569018,
       "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
       "rows": 4097,
       "districts": 459,
       "nationalFinanceSignal": 0.091
     },
-    "twoSeventyToWinHouseMapData": {
+    "censusDistrictBoundaries": {
       "ok": true,
       "status": 200,
-      "ms": 2637,
-      "bytes": 7187735,
-      "url": "https://www.270towin.com/2026-house-election/inside-elections-2026-house-ratings"
+      "ms": 1647,
+      "bytes": 1036275,
+      "url": "https://www.census.gov/geographies/mapping-files/2025/geo/carto-boundary-file.html"
     }
   },
   "sourceSummary": {
@@ -195,7 +195,7 @@
     "realClearHousePollsReachable": false,
     "censusDistrictBoundaryPageReachable": true,
     "redistricting": {
-      "reviewedAt": "2026-06-03T14:46:57.188Z",
+      "reviewedAt": "2026-06-03T15:55:58.787Z",
       "sourceNote": "State statuses are maintained locally so stale public rating feeds do not silently drive the House model after mid-decade map changes.",
       "states": {
         "AL": {
@@ -554,8 +554,8 @@
     },
     {
       "date": "2026-06-03",
-      "dem": 0.73872,
-      "rep": 0.26128
+      "dem": 0.73897,
+      "rep": 0.26103
     }
   ],
   "seatHistory": [
@@ -645,16 +645,16 @@
       "rep": 211
     }
   ],
-  "demControlProbability": 0.73872,
-  "repControlProbability": 0.26128,
+  "demControlProbability": 0.73897,
+  "repControlProbability": 0.26103,
   "medianSeats": 224,
   "seatCounts": {
     "162": 1,
     "163": 1,
     "175": 1,
-    "179": 3,
-    "180": 2,
-    "181": 2,
+    "179": 2,
+    "180": 4,
+    "181": 1,
     "182": 2,
     "183": 4,
     "184": 2,
@@ -663,9 +663,9 @@
     "187": 4,
     "188": 8,
     "189": 5,
-    "190": 12,
-    "191": 18,
-    "192": 23,
+    "190": 13,
+    "191": 19,
+    "192": 21,
     "193": 30,
     "194": 28,
     "195": 29,
@@ -674,65 +674,65 @@
     "198": 99,
     "199": 121,
     "200": 133,
-    "201": 202,
-    "202": 292,
-    "203": 352,
-    "204": 501,
-    "205": 545,
-    "206": 709,
-    "207": 816,
+    "201": 203,
+    "202": 291,
+    "203": 351,
+    "204": 502,
+    "205": 544,
+    "206": 710,
+    "207": 814,
     "208": 1033,
-    "209": 1252,
-    "210": 1491,
+    "209": 1249,
+    "210": 1490,
     "211": 1690,
-    "212": 2083,
-    "213": 2355,
-    "214": 2677,
-    "215": 2948,
-    "216": 3125,
-    "217": 3406,
-    "218": 3685,
-    "219": 3829,
-    "220": 3978,
-    "221": 3958,
+    "212": 2078,
+    "213": 2354,
+    "214": 2670,
+    "215": 2951,
+    "216": 3127,
+    "217": 3395,
+    "218": 3691,
+    "219": 3823,
+    "220": 3971,
+    "221": 3957,
     "222": 3874,
-    "223": 3998,
-    "224": 3917,
-    "225": 3787,
-    "226": 3840,
-    "227": 3497,
-    "228": 3365,
-    "229": 3074,
-    "230": 2839,
-    "231": 2768,
-    "232": 2460,
-    "233": 2239,
-    "234": 1981,
-    "235": 1825,
-    "236": 1580,
-    "237": 1493,
-    "238": 1337,
-    "239": 1155,
-    "240": 1033,
-    "241": 916,
-    "242": 844,
-    "243": 725,
-    "244": 626,
-    "245": 614,
+    "223": 4005,
+    "224": 3908,
+    "225": 3790,
+    "226": 3834,
+    "227": 3489,
+    "228": 3382,
+    "229": 3073,
+    "230": 2845,
+    "231": 2761,
+    "232": 2467,
+    "233": 2240,
+    "234": 1984,
+    "235": 1828,
+    "236": 1577,
+    "237": 1496,
+    "238": 1339,
+    "239": 1159,
+    "240": 1031,
+    "241": 919,
+    "242": 845,
+    "243": 726,
+    "244": 630,
+    "245": 612,
     "246": 518,
-    "247": 462,
-    "248": 416,
-    "249": 345,
-    "250": 301,
-    "251": 271,
+    "247": 459,
+    "248": 420,
+    "249": 349,
+    "250": 300,
+    "251": 269,
     "252": 242,
-    "253": 195,
-    "254": 171,
+    "253": 198,
+    "254": 170,
     "255": 188,
-    "256": 162,
-    "257": 142,
+    "256": 160,
+    "257": 145,
     "258": 125,
-    "259": 115,
+    "259": 116,
     "260": 116,
     "261": 89,
     "262": 78,
@@ -740,12 +740,12 @@
     "264": 54,
     "265": 49,
     "266": 56,
-    "267": 49,
-    "268": 37,
-    "269": 36,
-    "270": 31,
+    "267": 47,
+    "268": 38,
+    "269": 35,
+    "270": 32,
     "271": 26,
-    "272": 28,
+    "272": 29,
     "273": 19,
     "274": 23,
     "275": 23,
@@ -771,8 +771,8 @@
     "295": 3,
     "296": 3,
     "297": 2,
-    "299": 2,
-    "300": 2,
+    "299": 1,
+    "300": 3,
     "301": 1,
     "303": 1,
     "304": 5,
@@ -786,7 +786,7 @@
   },
   "controlPaths": {
     "dem": {
-      "controlSimulations": 73872,
+      "controlSimulations": 73897,
       "tossupWins": 12.8,
       "tiltRWins": 0,
       "leanRWins": 2.7,
@@ -796,7 +796,7 @@
       "vulnerableRHolds": 0
     },
     "rep": {
-      "controlSimulations": 26128,
+      "controlSimulations": 26103,
       "tossupWins": 10.4,
       "tiltRWins": 0,
       "leanRWins": 0,
@@ -2196,7 +2196,7 @@
       "congressionalMargin": -26.2,
       "fundamentalMargin": -23.51,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 78,
+      "kalshiPrice": 88,
       "demCandidate": "Rachel Grage",
       "repCandidate": "John Rutherford",
       "fecDemCandidate": {
@@ -11912,7 +11912,7 @@
       "congressionalMargin": -34.6,
       "fundamentalMargin": -28.61,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 95,
+      "kalshiPrice": 84,
       "demCandidate": "Chris Harden",
       "repCandidate": "Tricia Pridemore",
       "fecDemCandidate": {
@@ -13321,7 +13321,7 @@
       "congressionalMargin": 36.3,
       "fundamentalMargin": 28.22,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 90,
+      "kalshiPrice": 95,
       "demCandidate": "Jill Tokuda",
       "repCandidate": "Brenton Awa",
       "fecDemCandidate": {
@@ -23842,7 +23842,7 @@
       "congressionalMargin": -46.2,
       "fundamentalMargin": -43.51,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 90,
+      "kalshiPrice": 94,
       "demCandidate": "Megan Wingfield",
       "repCandidate": "Brett Guthrie",
       "fecDemCandidate": {
@@ -49355,7 +49355,7 @@
       "congressionalMargin": 45.7,
       "fundamentalMargin": 43.78,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 94,
+      "kalshiPrice": 92,
       "demCandidate": "Gregory Meeks",
       "repCandidate": "Aaron Lee Cherry",
       "fecDemCandidate": {
@@ -76731,7 +76731,7 @@
       "congressionalMargin": 0,
       "fundamentalMargin": -49.4,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 93,
+      "kalshiPrice": 96,
       "demCandidate": "Yolanda Prince",
       "repCandidate": "Nathaniel Moran",
       "fecDemCandidate": {
@@ -86538,9 +86538,9 @@
       "id": "TX-35",
       "state": "TX",
       "district": "35",
-      "label": "Greg Casar / open",
-      "incumbent": "Greg Casar",
-      "open": true,
+      "label": "OPEN (Casar)",
+      "incumbent": "OPEN (Casar)",
+      "open": false,
       "rating": "Lean R",
       "sourceRating": "Likely R",
       "ratingSource": "270toWin / Inside Elections",
@@ -86585,11 +86585,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -4.92,
-      "demProbability": 0.2524,
-      "repProbability": 0.7476,
+      "margin": -4.75,
+      "demProbability": 0.2605,
+      "repProbability": 0.7395,
       "winnerParty": "R",
-      "winnerProbability": 0.7476,
+      "winnerProbability": 0.7395,
       "error": 6.45,
       "competitive": true,
       "sourceInputs": {
@@ -86600,8 +86600,8 @@
         "districtFundamentalMargin": -10.4,
         "contextualBaseline": -10.4,
         "ratingBaseline": -9.5,
-        "openPenalty": 0.45,
-        "incumbencyAdjustment": 0,
+        "openPenalty": 0,
+        "incumbencyAdjustment": 0.45,
         "nomination": {
           "status": "resolved-or-filed",
           "primaryDate": "2026-03-03",
@@ -86612,14 +86612,14 @@
           "marginAdjustment": 0,
           "errorAdjustment": 0,
           "demProfile": {
-            "key": "resolvedNominee",
+            "key": "incumbent",
             "name": "Johnny Garcia",
             "party": "D",
             "placeholder": false,
-            "incumbent": false,
+            "incumbent": true,
             "strength": "none",
-            "quality": 0.18,
-            "uncertainty": -0.35
+            "quality": 0.55,
+            "uncertainty": -0.45
           },
           "repProfile": {
             "key": "resolvedNominee",
@@ -86633,18 +86633,18 @@
           },
           "summary": "Texas held a March 3 primary and May 26 runoff where needed."
         },
-        "candidateQualityAdjustment": 0,
+        "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
         "demographicPull": {
-          "adjustment": 0,
-          "demProfile": "democrat",
+          "adjustment": 0.05,
+          "demProfile": "demIncumbent",
           "repProfile": "republican",
           "topGroups": [
             {
               "group": "white_noncollege",
               "label": "White non-college",
               "weight": 0.35,
-              "effect": -0.13
+              "effect": -0.09
             },
             {
               "group": "white_college",
@@ -86663,12 +86663,6 @@
               "label": "Black",
               "weight": 0.07,
               "effect": 0.02
-            },
-            {
-              "group": "senior",
-              "label": "65+",
-              "weight": 0.14,
-              "effect": -0.02
             }
           ]
         },
@@ -86716,14 +86710,14 @@
       "demStatus": "nominee",
       "repStatus": "nominee",
       "demProfile": {
-        "key": "resolvedNominee",
+        "key": "incumbent",
         "name": "Johnny Garcia",
         "party": "D",
         "placeholder": false,
-        "incumbent": false,
+        "incumbent": true,
         "strength": "none",
-        "quality": 0.18,
-        "uncertainty": -0.35
+        "quality": 0.55,
+        "uncertainty": -0.45
       },
       "repProfile": {
         "key": "resolvedNominee",
@@ -86819,8 +86813,8 @@
         },
         {
           "date": "2026-06-03",
-          "dem": 0.2524,
-          "rep": 0.7476
+          "dem": 0.2605,
+          "rep": 0.7395
         }
       ]
     },
@@ -87118,8 +87112,8 @@
       "id": "TX-37",
       "state": "TX",
       "district": "37",
-      "label": "Lloyd Doggett / open",
-      "incumbent": "Lloyd Doggett",
+      "label": "Greg Casar / open",
+      "incumbent": "Greg Casar",
       "open": true,
       "rating": "Safe D",
       "sourceRating": "Safe D",
@@ -105150,7 +105144,7 @@
       "congressionalMargin": 0,
       "fundamentalMargin": 8.3,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 79,
+      "kalshiPrice": 78,
       "demCandidate": "Thien Ho",
       "repCandidate": "Michael Stansfield",
       "fecDemCandidate": {
@@ -111150,7 +111144,7 @@
       "congressionalMargin": 0,
       "fundamentalMargin": 9.7,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 95,
+      "kalshiPrice": 93,
       "demCandidate": "George Whitesides",
       "repCandidate": "Jason Gibbs",
       "fecDemCandidate": {
@@ -115097,9 +115091,9 @@
       "id": "CA-41",
       "state": "CA",
       "district": "41",
-      "label": "Linda Sanchez",
+      "label": "Linda Sanchez / open",
       "incumbent": "Linda Sanchez",
-      "open": false,
+      "open": true,
       "rating": "Safe D",
       "sourceRating": "Safe D",
       "ratingSource": "270toWin / Inside Elections",
@@ -115144,11 +115138,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.15,
-      "demProbability": 0.9998,
-      "repProbability": 0.0002,
+      "margin": 22.24,
+      "demProbability": 0.9996,
+      "repProbability": 0.0004,
       "winnerParty": "D",
-      "winnerProbability": 0.9998,
+      "winnerProbability": 0.9996,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -115159,8 +115153,8 @@
         "districtFundamentalMargin": 14.1,
         "contextualBaseline": 14.1,
         "ratingBaseline": 21,
-        "openPenalty": 0,
-        "incumbencyAdjustment": 0.45,
+        "openPenalty": -0.45,
+        "incumbencyAdjustment": 0,
         "nomination": {
           "status": "resolved-or-filed",
           "primaryDate": "2026-06-02",
@@ -115171,14 +115165,14 @@
           "marginAdjustment": 0,
           "errorAdjustment": 0,
           "demProfile": {
-            "key": "incumbent",
+            "key": "resolvedNominee",
             "name": "Linda Sanchez",
             "party": "D",
             "placeholder": false,
-            "incumbent": true,
+            "incumbent": false,
             "strength": "none",
-            "quality": 0.55,
-            "uncertainty": -0.45
+            "quality": 0.18,
+            "uncertainty": -0.35
           },
           "repProfile": {
             "key": "resolvedNominee",
@@ -115192,11 +115186,11 @@
           },
           "summary": "Primary date has passed for 2026-06-02; known candidates are treated as nominees unless the source still has placeholders."
         },
-        "candidateQualityAdjustment": 0.15,
+        "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
         "demographicPull": {
-          "adjustment": 0.09,
-          "demProfile": "demIncumbent",
+          "adjustment": 0.07,
+          "demProfile": "democrat",
           "repProfile": "republican",
           "topGroups": [
             {
@@ -115209,7 +115203,7 @@
               "group": "white_noncollege",
               "label": "White non-college",
               "weight": 0.19,
-              "effect": -0.05
+              "effect": -0.07
             },
             {
               "group": "black",
@@ -115222,6 +115216,12 @@
               "label": "Latino",
               "weight": 0.17,
               "effect": 0.03
+            },
+            {
+              "group": "youth",
+              "label": "18-29",
+              "weight": 0.11,
+              "effect": 0.02
             }
           ]
         },
@@ -115269,14 +115269,14 @@
       "demStatus": "nominee",
       "repStatus": "nominee",
       "demProfile": {
-        "key": "incumbent",
+        "key": "resolvedNominee",
         "name": "Linda Sanchez",
         "party": "D",
         "placeholder": false,
-        "incumbent": true,
+        "incumbent": false,
         "strength": "none",
-        "quality": 0.55,
-        "uncertainty": -0.45
+        "quality": 0.18,
+        "uncertainty": -0.35
       },
       "repProfile": {
         "key": "resolvedNominee",
@@ -115372,8 +115372,8 @@
         },
         {
           "date": "2026-06-03",
-          "dem": 0.9998,
-          "rep": 0.0002
+          "dem": 0.9996,
+          "rep": 0.0004
         }
       ]
     },
