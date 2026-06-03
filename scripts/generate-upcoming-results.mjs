@@ -77,6 +77,16 @@ async function searchCivic(query) {
   return data.races || [];
 }
 
+async function fetchRaceDetail(id) {
+  if (!id) return null;
+  try {
+    return await fetchJson(`${CIVIC_BASE}/race/${encodeURIComponent(id)}`);
+  } catch (error) {
+    console.warn(`Upcoming CivicAPI detail failed for "${id}": ${error.message}`);
+    return null;
+  }
+}
+
 function dedupeRaces(races) {
   const seen = new Set();
   return races.filter((race) => {
@@ -94,14 +104,22 @@ export async function buildUpcomingResults() {
   const queries = [...new Set([...(config.civicDiscovery.searchQueries || []), ...manualQueries])];
   const today = new Date().toISOString().slice(0, 10);
   const raw = [];
-  for (const query of queries) {
-    try {
-      raw.push(...await searchCivic(query));
-    } catch (error) {
-      console.warn(`Upcoming CivicAPI search failed for "${query}": ${error.message}`);
-    }
-  }
-  const generated = dedupeRaces(raw.map(normalizeCivicRace))
+  const searchResults = await Promise.allSettled(queries.map((query) => searchCivic(query)));
+  searchResults.forEach((result, index) => {
+    if (result.status === "fulfilled") raw.push(...result.value);
+    else console.warn(`Upcoming CivicAPI search failed for "${queries[index]}": ${result.reason?.message || result.reason}`);
+  });
+  const searchedRaces = dedupeRaces(raw)
+    .filter((race) => race.country === "US")
+    .filter((race) => {
+      const date = isoDate(race.election_date);
+      return date && date >= today;
+    });
+  const detailed = await Promise.all(searchedRaces.map(async (race) => {
+    const detail = await fetchRaceDetail(race.id);
+    return normalizeCivicRace(detail ? { ...race, ...detail, id: race.id || detail.id } : race);
+  }));
+  const generated = dedupeRaces(detailed)
     .filter((race) => race.electionDate && race.electionDate >= today)
     .sort((a, b) => a.electionDate.localeCompare(b.electionDate) || a.electionName.localeCompare(b.electionName));
   const firstDate = generated[0]?.electionDate || "";

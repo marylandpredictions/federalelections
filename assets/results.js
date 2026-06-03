@@ -32,6 +32,10 @@ function percentLabel(value) {
 
 function dateLabel(value) {
   if (!value) return "Date TBA";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
+    const [year, month, day] = String(value).split("-").map(Number);
+    return new Intl.DateTimeFormat("en-US", { month: "numeric", day: "numeric", year: "numeric" }).format(new Date(year, month - 1, day));
+  }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "Date TBA";
   return new Intl.DateTimeFormat("en-US", { month: "numeric", day: "numeric", year: "numeric" }).format(date);
@@ -342,7 +346,7 @@ function renderGroups() {
   if (updateKey === resultsListUpdateKeyCache && groupsNode.dataset.rendered === "true") return;
   resultsListUpdateKeyCache = updateKey;
   const latestDate = latestLiveDateKey();
-  const latestRaces = flattenRaces(liveResultsData).filter((race) => dateKeyForRace(race) === latestDate && raceMatches(race, query));
+  const latestRaces = flattenRaces(liveResultsData).filter((race) => dateKeyForRace(race) === latestDate && !raceHasCall(race) && raceMatches(race, query));
   const groups = groupRacesByState(latestRaces);
 
   groupsNode.dataset.rendered = "true";
@@ -384,7 +388,7 @@ function renderArchive() {
   const archivedByDate = new Map();
   flattenRaces(liveResultsData).forEach((race) => {
     const dateKey = dateKeyForRace(race);
-    if (!dateKey || (latestDate && dateKey === latestDate) || !isDateFullyResolved(dateKey) || !raceMatches(race, query)) return;
+    if (!dateKey || !raceHasCall(race) || !raceMatches(race, query)) return;
     if (!archivedByDate.has(dateKey)) archivedByDate.set(dateKey, []);
     archivedByDate.get(dateKey).push(race);
   });
@@ -396,7 +400,7 @@ function renderArchive() {
       <div>
         <p class="kicker">Results archive</p>
         <h2>Archived results.</h2>
-        <p>Completed election nights appear here after every covered race from that date is resolved.</p>
+        <p>Called races appear here while unresolved races from the same election night stay live above.</p>
       </div>
     </div>
     <div class="results-archive-dates" aria-label="Election dates">
