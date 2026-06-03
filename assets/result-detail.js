@@ -1917,4 +1917,4 @@ async function loadRaceDetail() {
 }
 
 loadRaceDetail();
-setInterval(loadRaceDetail, 30000);
+setInterval(loadRaceDetail, 15000);

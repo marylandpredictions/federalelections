@@ -405,7 +405,7 @@ export async function buildLiveResults() {
       url: "https://civicapi.org/",
       attribution: "Live race data provided by civicAPI where available. Race calls are manual Federal Elections Analysis calls from local config."
     },
-    refreshSeconds: 90,
+    refreshSeconds: 15,
     groups,
     errors
   };

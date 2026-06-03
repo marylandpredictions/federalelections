@@ -32,7 +32,7 @@ const rateLimitMs = 60_000;
 const rateLimit = new Map();
 let liveResultsCache = null;
 let liveResultsCacheAt = 0;
-const liveResultsCacheMs = 90_000;
+const liveResultsCacheMs = 15_000;
 
 const contentTypes = {
   ".html": "text/html; charset=utf-8",
