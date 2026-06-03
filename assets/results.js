@@ -2,25 +2,14 @@ const updatedLabel = document.getElementById("results-updated");
 const statusLabel = document.getElementById("results-status");
 const groupsNode = document.getElementById("results-groups");
 const archiveNode = document.getElementById("results-archive");
+const upcomingNode = document.getElementById("results-upcoming");
 const searchInput = document.getElementById("results-search");
 const refreshButton = document.getElementById("results-refresh");
 
 let liveResultsData = null;
+let upcomingRacesData = [];
 const FAVORITE_RACES_KEY = "fea.favoriteResultRaces.v1";
-let selectedArchiveYear = "2026";
 let selectedArchiveDate = "";
-
-const UPCOMING_RACES = [
-  { state: "NV", stateName: "Nevada", electionDate: "2026-06-09", electionName: "Nevada Governor", marker: { kind: "open-primary", short: "P", label: "Primary" } },
-  ...[1, 2, 3, 4].map((district) => ({ state: "NV", stateName: "Nevada", electionDate: "2026-06-09", electionName: `Nevada US House District ${district}`, marker: { kind: "open-primary", short: "P", label: "Primary" } })),
-  { state: "ND", stateName: "North Dakota", electionDate: "2026-06-09", electionName: "North Dakota US House At-Large", marker: { kind: "open-primary", short: "P", label: "Primary" } },
-  { state: "ME", stateName: "Maine", electionDate: "2026-06-09", electionName: "Maine Governor", marker: { kind: "open-primary", short: "P", label: "Primary" } },
-  { state: "ME", stateName: "Maine", electionDate: "2026-06-09", electionName: "Maine US Senate", marker: { kind: "open-primary", short: "P", label: "Primary" } },
-  ...[1, 2].map((district) => ({ state: "ME", stateName: "Maine", electionDate: "2026-06-09", electionName: `Maine US House District ${district}`, marker: { kind: "open-primary", short: "P", label: "Primary" } })),
-  { state: "SC", stateName: "South Carolina", electionDate: "2026-06-09", electionName: "South Carolina Governor", marker: { kind: "open-primary", short: "P", label: "Primary" } },
-  { state: "SC", stateName: "South Carolina", electionDate: "2026-06-09", electionName: "South Carolina US Senate", marker: { kind: "open-primary", short: "P", label: "Primary" } },
-  ...[1, 2, 3, 4, 5, 6, 7].map((district) => ({ state: "SC", stateName: "South Carolina", electionDate: "2026-06-09", electionName: `South Carolina US House District ${district}`, marker: { kind: "open-primary", short: "P", label: "Primary" } }))
-];
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -140,6 +129,23 @@ function raceHasCall(race) {
   return Boolean((race.calls || []).length || (race.candidates || []).some((candidate) => candidate.callLabel));
 }
 
+function dateKeyForRace(race) {
+  const iso = validElectionIso(race.electionDate || race.pollsClose || race.pollCloseAt);
+  return iso ? iso.slice(0, 10) : "";
+}
+
+function latestLiveDateKey(races = flattenRaces()) {
+  const dated = races.map(dateKeyForRace).filter(Boolean).sort();
+  if (!dated.length) return "";
+  const unresolvedDates = [...new Set(races.filter((race) => !raceHasCall(race)).map(dateKeyForRace).filter(Boolean))].sort();
+  return unresolvedDates.at(-1) || "";
+}
+
+function isDateFullyResolved(dateKey, races = flattenRaces()) {
+  const dayRaces = races.filter((race) => dateKeyForRace(race) === dateKey);
+  return Boolean(dayRaces.length) && dayRaces.every(raceHasCall);
+}
+
 function readFavoriteRaces() {
   try {
     const parsed = JSON.parse(localStorage.getItem(FAVORITE_RACES_KEY) || "[]");
@@ -235,7 +241,37 @@ function resultGroupCard(group) {
   `;
 }
 
+function groupRacesByState(races) {
+  const byState = new Map();
+  races.forEach((race) => {
+    const key = race.state || race.stateName || "US";
+    if (!byState.has(key)) byState.set(key, { state: race.state || "US", stateName: race.stateName || race.state || "United States", featuredCount: 0, races: [] });
+    const group = byState.get(key);
+    group.featuredCount += 1;
+    group.races.push(race);
+  });
+  return [...byState.values()];
+}
+
+function normalizeUpcomingRace(race, index = 0) {
+  return {
+    id: race.id || `upcoming-${race.state || "US"}-${race.electionDate || "date-tba"}-${index}`,
+    state: race.state || "",
+    stateName: race.stateName || race.state || "",
+    electionDate: race.electionDate || race.date || "",
+    electionName: race.electionName || race.name || "Upcoming race",
+    type: race.office || race.type || "Race",
+    district: race.district ?? null,
+    candidates: Array.isArray(race.candidates) ? race.candidates : [],
+    marker: race.marker || { kind: "open-primary", short: "P", label: "Primary" },
+    missingFields: race.missingFields || []
+  };
+}
+
 function upcomingRaceCard(race) {
+  const candidateLabel = race.candidates?.length
+    ? `${race.candidates.slice(0, 2).map((candidate) => candidate.name || candidate).join(", ")}${race.candidates.length > 2 ? ` + ${race.candidates.length - 2}` : ""}`
+    : "Candidate list pending";
   return `
     <article class="result-race-tile result-race-upcoming">
       <div class="result-race-row">
@@ -244,7 +280,7 @@ function upcomingRaceCard(race) {
         </span>
         <span class="result-race-copy">
           <strong>${escapeHtml(race.electionName)}</strong>
-          <small>Upcoming coverage</small>
+          <small>${escapeHtml(candidateLabel)}</small>
         </span>
         <span class="result-race-meta">
           <span class="result-date">${escapeHtml(dateLabel(race.electionDate))}</span>
@@ -255,16 +291,7 @@ function upcomingRaceCard(race) {
 }
 
 function upcomingGroups(query) {
-  const filtered = UPCOMING_RACES.filter((race) => raceMatches(race, query));
-  const byState = new Map();
-  filtered.forEach((race) => {
-    const key = race.state;
-    if (!byState.has(key)) byState.set(key, { state: race.state, stateName: race.stateName, featuredCount: 0, races: [] });
-    const group = byState.get(key);
-    group.featuredCount += 1;
-    group.races.push(race);
-  });
-  return [...byState.values()];
+  return groupRacesByState(upcomingRacesData.filter((race) => raceMatches(race, query)));
 }
 
 function resultsColumnCount() {
@@ -294,6 +321,7 @@ function masonryGroupsMarkup(cards) {
 function resultsListUpdateKey(data, query = "") {
   return JSON.stringify({
     query,
+    upcoming: upcomingRacesData.map((race) => [race.id, race.electionName, race.electionDate]),
     races: flattenRaces(data).map((race) => [
       race.id,
       race.leaderName,
@@ -313,14 +341,9 @@ function renderGroups() {
   const updateKey = resultsListUpdateKey(liveResultsData, query);
   if (updateKey === resultsListUpdateKeyCache && groupsNode.dataset.rendered === "true") return;
   resultsListUpdateKeyCache = updateKey;
-  const groups = (liveResultsData.groups || []).map((group) => ({
-    ...group,
-    races: (group.races || []).filter((race) => !raceHasCall(race) && raceMatches(race, query))
-  })).filter((group) => group.races.length);
-  const upcoming = upcomingGroups(query).map((group) => ({
-    ...group,
-    upcoming: true
-  }));
+  const latestDate = latestLiveDateKey();
+  const latestRaces = flattenRaces(liveResultsData).filter((race) => dateKeyForRace(race) === latestDate && raceMatches(race, query));
+  const groups = groupRacesByState(latestRaces);
 
   groupsNode.dataset.rendered = "true";
   const racesById = new Map(flattenRaces(liveResultsData).map((race) => [String(race.id), race]));
@@ -348,7 +371,55 @@ function renderGroups() {
     });
   }
   groups.forEach((group) => cards.push({ weight: groupWeight(group), html: resultGroupCard(group) }));
-  upcoming.forEach((group) => cards.push({
+  groupsNode.innerHTML = cards.length ? masonryGroupsMarkup(cards) : `<p class="meta">No current election-night races match this search.</p>`;
+  bindFavoriteButtons();
+  renderArchive();
+  renderUpcoming();
+}
+
+function renderArchive() {
+  if (!archiveNode || !liveResultsData) return;
+  const query = searchInput?.value?.trim() || "";
+  const latestDate = latestLiveDateKey();
+  const archivedByDate = new Map();
+  flattenRaces(liveResultsData).forEach((race) => {
+    const dateKey = dateKeyForRace(race);
+    if (!dateKey || (latestDate && dateKey === latestDate) || !isDateFullyResolved(dateKey) || !raceMatches(race, query)) return;
+    if (!archivedByDate.has(dateKey)) archivedByDate.set(dateKey, []);
+    archivedByDate.get(dateKey).push(race);
+  });
+  const dates = [...archivedByDate.keys()].sort((a, b) => b.localeCompare(a));
+  if (!selectedArchiveDate || !dates.includes(selectedArchiveDate)) selectedArchiveDate = dates[0] || "";
+  const selectedRaces = selectedArchiveDate ? archivedByDate.get(selectedArchiveDate) || [] : [];
+  archiveNode.innerHTML = `
+    <div class="results-archive-head">
+      <div>
+        <p class="kicker">Results archive</p>
+        <h2>Archived results.</h2>
+        <p>Completed election nights appear here after every covered race from that date is resolved.</p>
+      </div>
+    </div>
+    <div class="results-archive-dates" aria-label="Election dates">
+      ${dates.length ? dates.map((date) => `<button type="button" class="${date === selectedArchiveDate ? "active" : ""}" data-archive-date="${escapeHtml(date)}">${escapeHtml(dateLabel(date))}</button>`).join("") : `<span>No fully archived election dates yet.</span>`}
+    </div>
+    <div class="results-archive-races">
+      ${selectedRaces.length ? selectedRaces.map(raceCard).join("") : `<p class="meta">No called races match this archive selection.</p>`}
+    </div>
+  `;
+  archiveNode.querySelectorAll("[data-archive-date]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedArchiveDate = button.dataset.archiveDate || "";
+      renderArchive();
+    });
+  });
+  bindFavoriteButtons();
+}
+
+function renderUpcoming() {
+  if (!upcomingNode) return;
+  const query = searchInput?.value?.trim() || "";
+  const groups = upcomingGroups(query);
+  const cards = groups.map((group) => ({
     weight: groupWeight(group),
     html: `
       <section class="result-state-card result-upcoming-card">
@@ -365,74 +436,27 @@ function renderGroups() {
       </section>
     `
   }));
-  groupsNode.innerHTML = cards.length ? masonryGroupsMarkup(cards) : `<p class="meta">No active matching races. Check the archive below for called races.</p>`;
-  bindFavoriteButtons();
-  renderArchive();
-}
-
-function archiveDateKey(race) {
-  const iso = validElectionIso(race.electionDate || race.pollsClose || race.pollCloseAt);
-  return iso ? iso.slice(0, 10) : "undated";
-}
-
-function archiveYearKey(dateKey) {
-  return /^\d{4}/.test(dateKey) ? dateKey.slice(0, 4) : "Other";
-}
-
-function renderArchive() {
-  if (!archiveNode || !liveResultsData) return;
-  const query = searchInput?.value?.trim() || "";
-  const calledRaces = flattenRaces(liveResultsData).filter((race) => raceHasCall(race) && raceMatches(race, query));
-  const calledByDate = new Map();
-  calledRaces.forEach((race) => {
-    const dateKey = archiveDateKey(race);
-    if (!calledByDate.has(dateKey)) calledByDate.set(dateKey, []);
-    calledByDate.get(dateKey).push(race);
-  });
-  const years = ["2026", "2025", "2024"];
-  const dates = [...calledByDate.keys()].filter((date) => archiveYearKey(date) === selectedArchiveYear).sort((a, b) => b.localeCompare(a));
-  if (!selectedArchiveDate || !dates.includes(selectedArchiveDate)) selectedArchiveDate = dates[0] || "";
-  const selectedRaces = selectedArchiveDate ? calledByDate.get(selectedArchiveDate) || [] : [];
-  archiveNode.innerHTML = `
+  upcomingNode.innerHTML = `
     <div class="results-archive-head">
       <div>
-        <p class="kicker">Results archive</p>
-        <h2>Called and past races.</h2>
-        <p>Called races move here so the active board stays focused on races still developing.</p>
-      </div>
-      <div class="results-archive-years" role="tablist" aria-label="Archive years">
-        ${years.map((year) => `<button type="button" class="${year === selectedArchiveYear ? "active" : ""}" data-archive-year="${escapeHtml(year)}">${escapeHtml(year)}</button>`).join("")}
+        <p class="kicker">Upcoming races</p>
+        <h2>Next election date.</h2>
+        <p>Future races the site is preparing to cover. Candidate profiles and live data will be added closer to election night.</p>
       </div>
     </div>
-    <div class="results-archive-dates" aria-label="Election dates">
-      ${dates.length ? dates.map((date) => `<button type="button" class="${date === selectedArchiveDate ? "active" : ""}" data-archive-date="${escapeHtml(date)}">${escapeHtml(dateLabel(date))}</button>`).join("") : `<span>No archived races yet for ${escapeHtml(selectedArchiveYear)}.</span>`}
-    </div>
-    <div class="results-archive-races">
-      ${selectedRaces.length ? selectedRaces.map(raceCard).join("") : `<p class="meta">No called races match this archive selection.</p>`}
+    <div class="results-groups results-upcoming-groups">
+      ${cards.length ? masonryGroupsMarkup(cards) : `<p class="meta">No upcoming races match this search.</p>`}
     </div>
   `;
-  archiveNode.querySelectorAll("[data-archive-year]").forEach((button) => {
-    button.addEventListener("click", () => {
-      selectedArchiveYear = button.dataset.archiveYear || "2026";
-      selectedArchiveDate = "";
-      renderArchive();
-    });
-  });
-  archiveNode.querySelectorAll("[data-archive-date]").forEach((button) => {
-    button.addEventListener("click", () => {
-      selectedArchiveDate = button.dataset.archiveDate || "";
-      renderArchive();
-    });
-  });
-  bindFavoriteButtons();
 }
 
 function renderMeta(data, source) {
   if (updatedLabel) updatedLabel.textContent = timeLabel(data.generatedAt);
   if (statusLabel) {
     const errorCount = data.errors?.length || 0;
-    const activeCount = flattenRaces(data).filter((race) => !raceHasCall(race)).length;
-    statusLabel.textContent = errorCount ? `${errorCount} source group${errorCount === 1 ? "" : "s"} unavailable` : `Tracking ${activeCount} active races`;
+    const latestDate = latestLiveDateKey(flattenRaces(data));
+    const latestCount = flattenRaces(data).filter((race) => dateKeyForRace(race) === latestDate).length;
+    statusLabel.textContent = errorCount ? `${errorCount} source group${errorCount === 1 ? "" : "s"} unavailable` : `Tracking ${latestCount} latest races`;
     statusLabel.dataset.source = source || "cache";
   }
 }
@@ -506,6 +530,20 @@ async function loadManualCalls() {
   return response.json();
 }
 
+async function loadUpcomingRaces() {
+  try {
+    const response = await fetch(`data/result-upcoming-races.json?v=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) throw new Error(`Upcoming races returned ${response.status}`);
+    const data = await response.json();
+    upcomingRacesData = [
+      ...(Array.isArray(data.manualRaces) ? data.manualRaces : []),
+      ...(Array.isArray(data.generatedRaces) ? data.generatedRaces : [])
+    ].map(normalizeUpcomingRace);
+  } catch {
+    upcomingRacesData = [];
+  }
+}
+
 async function applyManualCalls(data) {
   const callsData = await loadManualCalls().catch(() => ({ races: {} }));
   const callRaces = callsData.races || {};
@@ -556,6 +594,7 @@ async function loadResults(forceLive = false) {
       }
     }
     liveResultsData = await applyManualCalls(liveResultsData);
+    await loadUpcomingRaces();
     renderMeta(liveResultsData, source);
     renderGroups();
   } catch (error) {

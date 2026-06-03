@@ -1,0 +1,31 @@
+{
+  "description": "Upcoming result races shown below the live board. Manual entries are placeholders until CivicAPI has enough race detail; do not invent candidate names or IDs here.",
+  "automationNote": "CivicAPI v2 currently gives us reliable race search/detail data, but this site does not yet have a dependable global next-election calendar endpoint. Keep manual placeholders here, and future generated CivicAPI races can be added to generatedRaces using the same shape.",
+  "civicDiscovery": {
+    "enabled": true,
+    "note": "scripts/generate-upcoming-results.mjs searches CivicAPI using these names plus manual race names. It only writes races CivicAPI actually returns.",
+    "searchQueries": []
+  },
+  "manualRaces": [
+    { "state": "NV", "stateName": "Nevada", "electionDate": "2026-06-09", "electionName": "Nevada Governor", "office": "Governor" },
+    { "state": "NV", "stateName": "Nevada", "electionDate": "2026-06-09", "electionName": "Nevada US House District 1", "office": "US House", "district": 1 },
+    { "state": "NV", "stateName": "Nevada", "electionDate": "2026-06-09", "electionName": "Nevada US House District 2", "office": "US House", "district": 2 },
+    { "state": "NV", "stateName": "Nevada", "electionDate": "2026-06-09", "electionName": "Nevada US House District 3", "office": "US House", "district": 3 },
+    { "state": "NV", "stateName": "Nevada", "electionDate": "2026-06-09", "electionName": "Nevada US House District 4", "office": "US House", "district": 4 },
+    { "state": "ND", "stateName": "North Dakota", "electionDate": "2026-06-09", "electionName": "North Dakota US House At-Large", "office": "US House", "district": "At-Large" },
+    { "state": "ME", "stateName": "Maine", "electionDate": "2026-06-09", "electionName": "Maine Governor", "office": "Governor" },
+    { "state": "ME", "stateName": "Maine", "electionDate": "2026-06-09", "electionName": "Maine US Senate", "office": "US Senate" },
+    { "state": "ME", "stateName": "Maine", "electionDate": "2026-06-09", "electionName": "Maine US House District 1", "office": "US House", "district": 1 },
+    { "state": "ME", "stateName": "Maine", "electionDate": "2026-06-09", "electionName": "Maine US House District 2", "office": "US House", "district": 2 },
+    { "state": "SC", "stateName": "South Carolina", "electionDate": "2026-06-09", "electionName": "South Carolina Governor", "office": "Governor" },
+    { "state": "SC", "stateName": "South Carolina", "electionDate": "2026-06-09", "electionName": "South Carolina US Senate", "office": "US Senate" },
+    { "state": "SC", "stateName": "South Carolina", "electionDate": "2026-06-09", "electionName": "South Carolina US House District 1", "office": "US House", "district": 1 },
+    { "state": "SC", "stateName": "South Carolina", "electionDate": "2026-06-09", "electionName": "South Carolina US House District 2", "office": "US House", "district": 2 },
+    { "state": "SC", "stateName": "South Carolina", "electionDate": "2026-06-09", "electionName": "South Carolina US House District 3", "office": "US House", "district": 3 },
+    { "state": "SC", "stateName": "South Carolina", "electionDate": "2026-06-09", "electionName": "South Carolina US House District 4", "office": "US House", "district": 4 },
+    { "state": "SC", "stateName": "South Carolina", "electionDate": "2026-06-09", "electionName": "South Carolina US House District 5", "office": "US House", "district": 5 },
+    { "state": "SC", "stateName": "South Carolina", "electionDate": "2026-06-09", "electionName": "South Carolina US House District 6", "office": "US House", "district": 6 },
+    { "state": "SC", "stateName": "South Carolina", "electionDate": "2026-06-09", "electionName": "South Carolina US House District 7", "office": "US House", "district": 7 }
+  ],
+  "generatedRaces": []
+}
