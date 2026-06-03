@@ -25,6 +25,7 @@ await loadLocalEnv();
 
 const root = resolve(process.cwd());
 const port = Number(process.env.PORT || 8000);
+const host = process.env.HOST || "0.0.0.0";
 const contactTo = process.env.CONTACT_TO || "federalelectionsanalysis@gmail.com";
 const submissionsPath = resolve(root, "data", "contact-submissions.jsonl");
 const maxBodyBytes = 24 * 1024;
@@ -297,6 +298,7 @@ createServer(async (request, response) => {
     return;
   }
   await serveStatic(request, response);
-}).listen(port, "127.0.0.1", () => {
-  console.log(`Federal Elections Analysis server: http://127.0.0.1:${port}/`);
+}).listen(port, host, () => {
+  const displayHost = host === "0.0.0.0" ? "127.0.0.1" : host;
+  console.log(`Federal Elections Analysis server: http://${displayHost}:${port}/`);
 });
