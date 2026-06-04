@@ -1,5 +1,5 @@
 import { mkdirSync, readFileSync, writeFileSync, readFile } from "node:fs";
-import { pathToFileURL } from "node:url";
+import { pathToFileURL, fileURLToPath } from "node:url";
 
 const OUTPUT_URL = new URL("../data/live-results.json", import.meta.url);
 const DETAIL_DIR_URL = new URL("../data/live-results-races/", import.meta.url);
@@ -586,15 +586,7 @@ export async function buildLiveResults() {
 }
 
 export async function buildRaceResultDetail(id) {
-  // First try to read from local cache
-  try {
-    const cachePath = new URL(`${id}.json`, DETAIL_DIR_URL);
-    const cachedData = await readFile(cachePath, "utf8");
-    return JSON.parse(cachedData);
-  } catch {
-    // Fall back to fetching from civicAPI if cache doesn't exist
-    return fetchRaceDetail(id);
-  }
+  return fetchRaceDetail(id);
 }
 
 async function writeRaceDetails(data) {
