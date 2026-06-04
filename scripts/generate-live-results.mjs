@@ -398,13 +398,28 @@ function normalizeRegionResults(regionResults, race) {
     const candidates = (region.candidates || []).map((candidate) => withManualCall(normalizeCandidate(candidate), race))
       .sort((a, b) => b.votes - a.votes || b.percent - a.percent);
     const precinctReporting = Number(region.percent_reporting || 0);
-    // For counties, use precinct reporting directly without aggressive adjustment
-    // Counties typically report precincts more accurately than statewide
-    let estimatedReporting = precinctReporting;
-    // Only apply minimal adjustment for counties when precincts are nearly complete
-    if (precinctReporting >= 95) {
-      estimatedReporting = Math.min(99.9, precinctReporting * 0.99);
+    
+    // For counties, use a more conservative estimation approach
+    // Counties report precincts more accurately than statewide, but still need adjustment
+    // when precincts show 100% as they're rarely actually complete
+    let estimatedReporting;
+    if (precinctReporting < 80) {
+      // Low precinct reporting: use precinct reporting directly
+      estimatedReporting = precinctReporting;
+    } else if (precinctReporting < 90) {
+      // Medium precinct reporting: slight adjustment
+      estimatedReporting = precinctReporting * 0.98;
+    } else if (precinctReporting < 95) {
+      // High precinct reporting: moderate adjustment
+      estimatedReporting = precinctReporting * 0.95;
+    } else if (precinctReporting < 99) {
+      // Nearly complete: significant adjustment
+      estimatedReporting = precinctReporting * 0.92;
+    } else {
+      // 99-100% precinct reporting: cap at realistic maximum
+      estimatedReporting = Math.min(99.9, precinctReporting * 0.90);
     }
+    
     return {
       id: key,
       name: region.name || key.replace(/_/g, " "),
