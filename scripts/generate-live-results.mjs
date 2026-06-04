@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync, readFile } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 const OUTPUT_URL = new URL("../data/live-results.json", import.meta.url);
@@ -305,13 +305,15 @@ function calculateEstimatedVoteReporting(race) {
   if (precinctReporting < 60) {
     adjustmentFactor = 0.98; // Almost no adjustment for most races
   } else if (precinctReporting < 80) {
-    adjustmentFactor = 0.95; // Slight adjustment
+    adjustmentFactor = 0.96; // Slight adjustment
   } else if (precinctReporting < 90) {
-    adjustmentFactor = 0.85; // Moderate adjustment
+    adjustmentFactor = 0.94; // Moderate adjustment
   } else if (precinctReporting < 95) {
-    adjustmentFactor = 0.65; // Significant adjustment when nearly complete
+    adjustmentFactor = 0.92; // More significant adjustment when nearly complete
+  } else if (precinctReporting < 98) {
+    adjustmentFactor = 0.90; // Significant adjustment
   } else {
-    adjustmentFactor = 0.58; // Most aggressive adjustment when precincts complete
+    adjustmentFactor = 0.88; // Most aggressive adjustment when precincts very complete
   }
   
   const adjustedReporting = precinctReporting * adjustmentFactor;
@@ -584,7 +586,15 @@ export async function buildLiveResults() {
 }
 
 export async function buildRaceResultDetail(id) {
-  return fetchRaceDetail(id);
+  // First try to read from local cache
+  try {
+    const cachePath = new URL(`${id}.json`, DETAIL_DIR_URL);
+    const cachedData = await readFile(cachePath, "utf8");
+    return JSON.parse(cachedData);
+  } catch {
+    // Fall back to fetching from civicAPI if cache doesn't exist
+    return fetchRaceDetail(id);
+  }
 }
 
 async function writeRaceDetails(data) {
