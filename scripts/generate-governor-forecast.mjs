@@ -440,9 +440,59 @@ function parseTwoSeventyGovernorPage(html, race) {
   return parsed.sort((a, b) => b.polls - a.polls)[0] || null;
 }
 
+function parseTwoSeventyGovernorPrimarySignal(html, race) {
+  const blocks = [...html.matchAll(/<h3[^>]*>([\s\S]*?)<\/h3>[\s\S]*?<table id="polls"[\s\S]*?<\/table>/gi)];
+  const parsed = [];
+  for (const block of blocks) {
+    const title = stripHtml(block[1]);
+    const party = /republican primary/i.test(title) ? "R" : /democratic primary/i.test(title) ? "D" : "";
+    if (!party) continue;
+    const targetName = specificCandidateName(party === "R" ? (race.repCandidate || race.rep) : (race.demCandidate || race.dem));
+    const targetLastName = candidateLastName(targetName);
+    if (!targetLastName) continue;
+    const table = block[0];
+    const headerMatches = [...table.matchAll(/<th[^>]*class="[^"]*\bcan_name\b[^"]*"[^>]*>([\s\S]*?)<\/th>/gi)];
+    const candidates = headerMatches.map((match) => stripHtml(match[1]).replace(/\*$/, "").trim());
+    const targetIndex = candidates.findIndex((candidate) => candidateLastName(candidate) === targetLastName);
+    if (targetIndex < 0) continue;
+
+    const rows = [];
+    const avgRow = table.match(/<tr id=['"]poll_avg_row['"][\s\S]*?<\/tr>/i)?.[0] || "";
+    if (avgRow) rows.push(avgRow);
+    rows.push(...[...table.matchAll(/<tr[^>]*class="[^"]*\bpoll_row\b[^"]*"[\s\S]*?<\/tr>/gi)].map((match) => match[0]));
+
+    const targetLeads = [];
+    for (const row of rows) {
+      const cells = [...row.matchAll(/<td[^>]*class="[^"]*\bpoll_data\b[^"]*"[^>]*>([\s\S]*?)<\/td>/gi)].map((match) => parsePercent(stripHtml(match[1])));
+      if (!cells.length) {
+        const allCells = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((match) => parsePercent(stripHtml(match[1])));
+        const values = allCells.slice(1, 1 + candidates.length);
+        if (values.length) cells.push(...values);
+      }
+      const targetValue = cells[targetIndex];
+      const topOther = Math.max(...cells.filter((value, index) => index !== targetIndex && Number.isFinite(value)));
+      if (Number.isFinite(targetValue) && Number.isFinite(topOther)) targetLeads.push(targetValue - topOther);
+    }
+    if (!targetLeads.length) continue;
+    const lead = targetLeads.reduce((sum, value) => sum + value, 0) / targetLeads.length;
+    parsed.push({
+      margin: (party === "D" ? 1 : -1) * clamp(lead / 10, -.55, .55),
+      lead: Number(lead.toFixed(2)),
+      polls: targetLeads.length,
+      source: "270toWin primary polling signal",
+      sourceUrl: `https://www.270towin.com/2026-governor-polls/${stateSlug(race.state)}`,
+      matchup: title,
+      candidate: candidates[targetIndex],
+      party
+    });
+  }
+  return parsed.sort((a, b) => b.polls - a.polls)[0] || null;
+}
+
 async function fetchTwoSeventyGovernorPolls(status) {
   const governorPolls = {};
-  const sourceStatus = { checked: 0, parsed: 0, noPolls: 0, failed: 0, states: {} };
+  const governorPrimarySignals = {};
+  const sourceStatus = { checked: 0, parsed: 0, primarySignals: 0, noPolls: 0, failed: 0, states: {} };
   const racesToCheck = GOVERNOR_RACES.filter((race) => race.rating !== "Safe D" && race.rating !== "Safe R");
   for (const baseRace of racesToCheck) {
     const candidateInfo = GOVERNOR_CANDIDATE_STATUS[baseRace.state] || {};
@@ -466,6 +516,30 @@ async function fetchTwoSeventyGovernorPolls(status) {
     }
     const parsed = parseTwoSeventyGovernorPage(text, race);
     if (!parsed) {
+      const primarySignal = parseTwoSeventyGovernorPrimarySignal(text, race);
+      if (primarySignal) {
+        governorPrimarySignals[race.state] = {
+          margin: Number(primarySignal.margin.toFixed(2)),
+          lead: primarySignal.lead,
+          polls: primarySignal.polls,
+          source: primarySignal.source,
+          sourceUrl: primarySignal.sourceUrl,
+          matchup: primarySignal.matchup,
+          candidate: primarySignal.candidate,
+          party: primarySignal.party
+        };
+        sourceStatus.primarySignals += 1;
+        sourceStatus.states[race.state] = {
+          ok: true,
+          parsed: true,
+          primarySignal: true,
+          polls: primarySignal.polls,
+          margin: Number(primarySignal.margin.toFixed(2)),
+          matchup: primarySignal.matchup,
+          url
+        };
+        continue;
+      }
       sourceStatus.noPolls += 1;
       sourceStatus.states[race.state] = { ok: true, parsed: false, url };
       continue;
@@ -490,7 +564,7 @@ async function fetchTwoSeventyGovernorPolls(status) {
     };
   }
   status.twoSeventyGovernorPolls = sourceStatus;
-  return { governorPolls };
+  return { governorPolls, governorPrimarySignals };
 }
 
 function mergeGovernorPolling(status, ...sources) {
@@ -1082,8 +1156,10 @@ function buildRace(baseRace, nationalShift, sourceData) {
     const pollWeight = clamp(.2 + Math.log1p(governorPoll.polls) * .12, .25, .5);
     pollMargin = governorPoll.margin * pollWeight;
   }
+  const governorPrimarySignal = sourceData?.twoSeventyGovernor?.governorPrimarySignals?.[race.state];
+  const primaryPollSignal = governorPrimarySignal?.polls ? governorPrimarySignal.margin : 0;
   
-  const rawMargin = (ratingMargin * .52) + (fundamentals * .38) + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin;
+  const rawMargin = (ratingMargin * .52) + (fundamentals * .38) + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin + primaryPollSignal;
   const margin = governorMarginGuardrail(race, rawMargin, ratingMargin, fundamentals, governorPoll);
   const error = governorRaceError(race);
   const demProbability = clamp(normalCdf(margin, 0, error), 0.001, 0.999);
@@ -1108,7 +1184,12 @@ function buildRace(baseRace, nationalShift, sourceData) {
       pollCount: governorPoll?.polls || 0,
       pollSources: governorPoll?.sources || [],
       pollSourceUrls: governorPoll?.sourceUrls || [],
-      pollMatchups: governorPoll?.matchups || []
+      pollMatchups: governorPoll?.matchups || [],
+      primaryPollSignal,
+      primaryPollCount: governorPrimarySignal?.polls || 0,
+      primaryPollSources: governorPrimarySignal?.source ? [governorPrimarySignal.source] : [],
+      primaryPollSourceUrls: governorPrimarySignal?.sourceUrl ? [governorPrimarySignal.sourceUrl] : [],
+      primaryPollMatchups: governorPrimarySignal?.matchup ? [governorPrimarySignal.matchup] : []
     },
     modelRating: ratingFromProbability(demProbability, margin),
     demProbability: Number(demProbability.toFixed(5)),

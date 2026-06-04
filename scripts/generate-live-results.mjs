@@ -11,6 +11,15 @@ const featuredCandidates = readFeaturedCandidates();
 const manualCalls = readManualCalls();
 const externalEstimateCache = new Map();
 
+const STATE_ESTIMATE_FALLBACK_SLUGS = {
+  CA: "california-governor-results",
+  IA: "iowa-senate-results",
+  MT: "montana-senate-results",
+  NJ: "new-jersey-senate-results",
+  NM: "new-mexico-senate-results",
+  SD: "south-dakota-senate-results"
+};
+
 const FEATURED_GROUPS = [
   { state: "CA", name: "California", queries: ["California Governor", "California Lieutenant Governor", "California Insurance Commissioner", "California Superintendent Public Instruction", "California US House", "California Los Angeles Mayor"] },
   { state: "IA", name: "Iowa", queries: ["Iowa US Senate", "Iowa US House", "Iowa Governor"] },
@@ -229,14 +238,31 @@ function normalizeCandidate(candidate) {
       // CA US House 32 Open Primary
       "brad sherman": "Democratic",
       "jake levine": "Democratic",
+      "larry thompson": "Republican",
+      "marena lin": "Democratic",
+      "chris ahuja": "Democratic",
+      "anna wilding": "Democratic",
+      "dory benami": "Democratic",
+      "josh sautter": "Democratic",
+      "doug smith": "Independent",
       // CA US House 34 Open Primary
       "jimmy gomez": "Democratic",
       "angela gonzales-torres": "Democratic",
+      "calvin lee": "Republican",
+      "robert lucero": "Democratic",
+      "robert george lucero": "Democratic",
+      "robert george lucero jr": "Democratic",
+      "arthur dixon": "Democratic",
+      "loren colin": "Independent",
       // CA US House 40 Open Primary
       "young kim": "Republican",
       "ken calvert": "Republican",
       "esther kim-varet": "Democratic",
       "joe kerr": "Democratic",
+      "lisa ramirez": "Democratic",
+      "claude keissieh": "Democratic",
+      "francis hoffman": "Democratic",
+      "nina linh": "Independent",
       // CA US House 11 Open Primary
       "scott wiener": "Democratic",
       "connie chan": "Democratic",
@@ -254,6 +280,8 @@ function normalizeCandidate(candidate) {
       "marni von wilpert": "Democratic",
       "ammar campa-najjar": "Democratic",
       "kevin o'neil": "Republican",
+      "kevin o’neil": "Republican",
+      "kevin o'neil": "Republican",
       "brandon riker": "Democratic",
       "abel chavez": "Democratic",
       "corinna contreras": "Democratic",
@@ -264,8 +292,9 @@ function normalizeCandidate(candidate) {
       "ferguson porter": "Democratic"
     };
     
+    const normalizedCandidateName = normalizeName(name);
     for (const [key, correction] of Object.entries(partyCorrections)) {
-      if (name.includes(key)) {
+      if (name.includes(key) || normalizedCandidateName.includes(normalizeName(key))) {
         party = correction;
         break;
       }
@@ -317,6 +346,7 @@ function slugForRace(race) {
   const district = districtNumber(race.district);
   if (state === "ca" && type.includes("governor") && !type.includes("lieutenant")) return "california-governor-results";
   if (state === "ca" && type.includes("lieutenant")) return "california-lieutenant-governor-results";
+  if (state === "ca" && type.includes("mayor")) return "los-angeles-mayor-results";
   if (state === "ca" && type.includes("house") && district) return `california-us-house-district-${district}-results`;
   if (state === "ia" && type.includes("senate")) return "iowa-senate-results";
   if (state === "ia" && type.includes("governor")) return "iowa-governor-results";
@@ -332,16 +362,29 @@ function slugForRace(race) {
 }
 
 function normalizeName(value) {
-  return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 }
 
 function raceMatchesExternalSummary(race, summary = {}) {
   const district = districtNumber(race.district);
   if (district && String(summary.district || "") !== district) return false;
-  const scope = normalizeName(race.electionScope || race.election_type || race.electionType || race.type);
+  const scope = normalizeName([
+    race.electionScope,
+    race.election_scope,
+    race.electionName,
+    race.election_name,
+    race.electionType,
+    race.election_type,
+    race.type
+  ].filter(Boolean).join(" "));
   const raceName = normalizeName(`${summary.officeName || ""} ${summary.raceName || ""}`);
-  if (scope.includes("republican") || scope === "r" || scope.includes("gop")) return raceName.includes("r ");
-  if (scope.includes("democratic") || scope === "d") return raceName.includes("d ");
+  if (scope.includes("republican") || scope === "r" || scope.includes("gop")) return /\br\b/.test(raceName);
+  if (scope.includes("democratic") || scope === "d") return /\bd\b/.test(raceName);
   const localType = normalizeName(race.electionType || race.type);
   return !district || normalizeName(summary.office || summary.officeName || "").includes(localType.split(" ")[0]);
 }
@@ -390,13 +433,49 @@ async function fetchExternalEstimate(race) {
     ? cached.data.districtTables.flatMap((table) => table.races || [])
     : [];
   const sourceRaces = [...candidates, ...districtTables];
-  const matched = sourceRaces.find((item) => raceMatchesExternalSummary(race, item.summary || item)) || sourceRaces[0];
+  const matched = sourceRaces.find((item) => raceMatchesExternalSummary(race, item.summary || item))
+    || (sourceRaces.length === 1 ? sourceRaces[0] : null);
   return matched ? normalizeNbcRaceEstimate(race, matched, url) : null;
+}
+
+async function fetchStatewideEstimateFallback(race) {
+  const state = String(race.state || race.province || "").toUpperCase();
+  const slug = STATE_ESTIMATE_FALLBACK_SLUGS[state];
+  if (!slug || slug === slugForRace(race)) return null;
+  const url = `${NBC_BASE}/${slug}`;
+  if (!externalEstimateCache.has(url)) {
+    externalEstimateCache.set(url, fetchJson(url)
+      .then((data) => ({ ok: true, data }))
+      .catch((error) => ({ ok: false, error })));
+  }
+  const cached = await externalEstimateCache.get(url);
+  if (!cached.ok) return null;
+  const sourceRace = Array.isArray(cached.data.races) ? cached.data.races[0] : null;
+  if (!sourceRace) return null;
+  const estimate = normalizeNbcRaceEstimate(race, sourceRace, url);
+  return {
+    ...estimate,
+    estimatedVoteReportingSource: estimate.estimatedVoteReporting === null
+      ? "external-estimate-pending"
+      : "nbc-news-statewide-percent-in-fallback"
+  };
+}
+
+async function fetchBestExternalEstimate(race) {
+  const direct = await fetchExternalEstimate(race);
+  if (direct?.estimatedVoteReporting !== null && direct?.estimatedVoteReporting !== undefined) return direct;
+  const fallback = await fetchStatewideEstimateFallback(race);
+  return fallback || direct;
 }
 
 function externalCountyEstimateFor(county, externalEstimate) {
   if (!county || !externalEstimate?.counties) return null;
-  return externalEstimate.counties[normalizeName(county.name || county.id || "")] || null;
+  const key = normalizeName(county.name || county.id || "");
+  const direct = externalEstimate.counties[key];
+  if (direct) return direct;
+  const compactKey = key.replace(/\s+/g, "");
+  const matchedKey = Object.keys(externalEstimate.counties).find((countyKey) => countyKey.replace(/\s+/g, "") === compactKey);
+  return matchedKey ? externalEstimate.counties[matchedKey] : null;
 }
 
 function applyExternalEstimateToDetail(detail, externalEstimate) {
@@ -549,7 +628,7 @@ async function fetchRaceDetail(id) {
     name: detail.province || "Race"
   };
   const race = normalizeRace({ id, ...detail, type: detail.election_type, election_type: detail.election_scope }, group);
-  const externalEstimate = await fetchExternalEstimate({
+  const externalEstimate = await fetchBestExternalEstimate({
     ...race,
     state: race.state || detail.province,
     province: detail.province,
@@ -624,7 +703,7 @@ async function fetchGroup(group) {
   const selectedRaces = requiredRaces.length ? requiredRaces : races.slice(0, 7);
   
   const racesWithEstimate = await Promise.all(selectedRaces.map(async (race) => {
-    const externalEstimate = await fetchExternalEstimate(race);
+    const externalEstimate = await fetchBestExternalEstimate(race);
     return {
       ...race,
       estimatedVoteReporting: externalEstimate?.estimatedVoteReporting ?? race.estimatedVoteReporting ?? null,
@@ -686,7 +765,7 @@ export async function buildLiveResults() {
 
 export async function buildRaceResultDetail(id) {
   const detail = await fetchRaceDetail(id);
-  const externalEstimate = await fetchExternalEstimate(detail);
+  const externalEstimate = await fetchBestExternalEstimate(detail);
   return applyExternalEstimateToDetail(detail, externalEstimate);
 }
 
@@ -697,7 +776,7 @@ async function writeRaceDetails(data) {
   for (const race of races) {
     try {
       const detail = MANUAL_RACES[String(race.id)] || await buildRaceResultDetail(race.id);
-      const externalEstimate = await fetchExternalEstimate(race);
+      const externalEstimate = await fetchBestExternalEstimate(race);
       const hydratedDetail = applyExternalEstimateToDetail(detail, externalEstimate);
       hydratedDetail.voteHistory = appendVoteHistory(hydratedDetail);
       writeFileSync(new URL(`${race.id}.json`, DETAIL_DIR_URL), JSON.stringify(hydratedDetail, null, 2), "utf8");
