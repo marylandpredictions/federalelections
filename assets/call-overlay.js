@@ -430,10 +430,10 @@
       .forEach((race) => {
         const candidates = [...(race.candidates || [])].sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0));
         const leader = candidates[0];
-        if (leader && (Number(leader.votes || 0) || Number(race.percentReporting || 0))) {
+        if (leader && (Number(leader.votes || 0) || Number(race.estimatedVoteReporting || race.percentReporting || 0))) {
           items.push({
             tag: race.state || "Update",
-            text: `${race.electionName}: ${leader.name} ${percentLabel(leader.percent)} with ${percentLabel(race.percentReporting)} estimated in`
+            text: `${race.electionName}: ${leader.name} ${percentLabel(leader.percent)} with ${percentLabel(race.estimatedVoteReporting || race.percentReporting)} estimated in`
           });
         } else {
           items.push({
@@ -482,7 +482,7 @@
     const color = candidateColor(primary, callEvent.race);
     const avatars = callEvent.calledCandidates.map((item) => avatarMarkup(item, callEvent.race)).join("");
     const raceName = callEvent.race?.electionName || "Election race";
-    const reporting = percentLabel(callEvent.race?.percentReporting);
+    const reporting = percentLabel(callEvent.race?.estimatedVoteReporting || callEvent.race?.percentReporting);
     const calledAt = callTimeLabel(Math.max(...callEvent.calls.map((call) => Date.parse(call.calledAt || "") || 0), 0));
     return `
       <article class="broadcast-call-card" style="--candidate-color:${escapeHtml(color)}">

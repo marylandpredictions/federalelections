@@ -404,6 +404,12 @@ async function fetchGroup(group) {
   const selectedRaces = requiredRaces.length ? requiredRaces : races.slice(0, 7);
   const estimatedVoteReporting = calculateEstimatedVoteReporting(selectedRaces);
 
+  // Add estimatedVoteReporting to each race for consistent display
+  const racesWithEstimate = selectedRaces.map(race => ({
+    ...race,
+    estimatedVoteReporting
+  }));
+
   return {
     state: group.state,
     stateName: group.name,
@@ -411,7 +417,7 @@ async function fetchGroup(group) {
     totalAvailable: Math.max(races.length, ...searches.map(({ data }) => Number(data.count || 0))),
     featuredCount: selectedRaces.length,
     estimatedVoteReporting,
-    races: selectedRaces
+    races: racesWithEstimate
   };
 }
 
