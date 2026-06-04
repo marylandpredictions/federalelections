@@ -1915,16 +1915,32 @@ function bindPartyCombineToggle(race) {
   
   let isPartyView = false;
   let originalRace = { ...race };
+  let originalMapMarkup = page.querySelector(".result-map-frame")?.innerHTML;
   
   toggle.addEventListener("click", async () => {
     isPartyView = !isPartyView;
     toggle.textContent = isPartyView ? "Candidate View" : "Party View";
     toggle.style.background = isPartyView ? "rgba(16, 48, 178, 0.3)" : "";
+    toggle.style.color = isPartyView ? "#ffffff" : "";
     
     const candidatesNode = page.querySelector(".result-full-candidates");
+    const mapFrame = page.querySelector(".result-map-frame");
+    
     if (candidatesNode) {
       const displayRace = isPartyView ? { ...race, candidates: combineCandidatesByParty(race) } : originalRace;
       candidatesNode.innerHTML = candidateRows(displayRace);
+    }
+    
+    if (mapFrame) {
+      if (isPartyView) {
+        const partyRace = { ...race, candidates: combineCandidatesByParty(race) };
+        const newMapMarkup = await countyShapeMap(partyRace);
+        mapFrame.innerHTML = newMapMarkup;
+        bindCountyHover();
+      } else {
+        mapFrame.innerHTML = originalMapMarkup;
+        bindCountyHover();
+      }
     }
   });
 }
