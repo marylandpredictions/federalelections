@@ -79,6 +79,28 @@ const HOUSE_CANDIDATE_STATUS_OVERRIDES = {
   "CO-04": { D: "presumptive", R: "presumptive" }
 };
 
+const MANUAL_HOUSE_CANDIDATE_OVERRIDES = {
+  "IA-01": { D: "Christina Bohannan", R: "Mariannette Miller-Meeks" },
+  "IA-02": { D: "Lindsay James", R: "Joe Mitchell" },
+  "IA-03": { D: "Sarah Trone Garriott", R: "Zach Nunn" },
+  "IA-04": { D: "Dave Dawson", R: "Chris McGowan" },
+  "MT-01": { D: "Sam Forstag", R: "Aaron Flint" },
+  "MT-02": { D: "Brian Miller", R: "Troy Downing" },
+  "NJ-01": { D: "Donald Norcross", R: "Damon Galdo" },
+  "NJ-02": { D: "Zack Mullock", R: "Jeff Van Drew" },
+  "NJ-03": { D: "Herb Conaway", R: "Michael McGuire" },
+  "NJ-04": { D: "Rachel Peace", R: "Christopher Smith" },
+  "NJ-05": { D: "Josh Gottheimer", R: "Sean Kirrane" },
+  "NJ-06": { D: "Frank Pallone Jr.", R: "Hillary Herzig" },
+  "NJ-07": { D: "Rebecca Bennett", R: "Tom Kean Jr." },
+  "NJ-08": { D: "Rob Menendez" },
+  "NJ-09": { D: "Nellie Pou", R: "Rosie Pino" },
+  "NJ-10": { D: "LaMonica McIver", R: "Carmen Bucco" },
+  "NJ-11": { D: "Analilia Mejia", R: "Joe Hathaway" },
+  "NJ-12": { D: "Adam Hamawy", R: "Gregg Mele" },
+  "SD-AL": { D: "Nicole Gronli", R: "Marty Jackley" }
+};
+
 const HOUSE_PRIMARY_DATES = {
   AR: "2026-03-03",
   NC: "2026-03-03",
@@ -869,12 +891,13 @@ function applyRedistrictingOverride(district) {
 
 function applyCandidateData(district, finance) {
   const incumbentCandidate = incumbentNameFromLabel(district.label || district.incumbent);
+  const manual = MANUAL_HOUSE_CANDIDATE_OVERRIDES[district.id] || {};
   const demCandidate = isPlaceholderCandidate(district.demCandidate, "D")
-    ? (district.seatParty === "D" && !district.open ? incumbentCandidate : null) || finance?.demCandidate?.name || district.demCandidate
-    : district.demCandidate;
+    ? manual.D || (district.seatParty === "D" && !district.open ? incumbentCandidate : null) || finance?.demCandidate?.name || district.demCandidate
+    : manual.D || district.demCandidate;
   const repCandidate = isPlaceholderCandidate(district.repCandidate, "R")
-    ? (district.seatParty === "R" && !district.open ? incumbentCandidate : null) || finance?.repCandidate?.name || district.repCandidate
-    : district.repCandidate;
+    ? manual.R || (district.seatParty === "R" && !district.open ? incumbentCandidate : null) || finance?.repCandidate?.name || district.repCandidate
+    : manual.R || district.repCandidate;
   return {
     ...district,
     demCandidate,

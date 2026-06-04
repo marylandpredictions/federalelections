@@ -4383,6 +4383,29 @@ button.race-board-row {
   text-overflow: ellipsis;
 }
 
+.result-tooltip-candidate {
+  display: grid;
+  grid-template-columns: 3px minmax(0, 1fr);
+  gap: 5px;
+  align-items: center;
+  min-width: 0;
+}
+
+.result-tooltip-candidate i {
+  display: block;
+  width: 3px;
+  height: 1.35em;
+  border-radius: 999px;
+  background: var(--candidate-color, #C6D2FF);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--candidate-color, #C6D2FF) 55%, transparent);
+}
+
+.result-tooltip-candidate span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .result-county-tooltip small {
   display: block;
   margin-top: 5px;

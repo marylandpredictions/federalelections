@@ -1138,21 +1138,22 @@ function countyTopCandidates(county, race, limit = 3) {
 function countyTooltipMarkup(county, race, titlePrefix = "") {
   const rows = countyTopCandidates(county, race, 3);
   const title = titlePrefix || `${county.name} County`;
+  const reporting = county.estimatedVoteReporting ?? county.percentIn ?? county.percent_in ?? null;
   return `
     <strong>${escapeHtml(title)}</strong>
     <table>
       <thead><tr><th></th><th>Votes</th><th>Pct</th></tr></thead>
       <tbody>
         ${rows.map((candidate) => `
-          <tr>
-            <td>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)} (${escapeHtml(candidate.partyCode || partyCode(candidate.party) || "O")})</td>
+          <tr style="--candidate-color:${escapeHtml(candidateFill(race, candidate))}">
+            <td><span class="result-tooltip-candidate"><i aria-hidden="true"></i><span>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)} (${escapeHtml(candidate.partyCode || partyCode(candidate.party) || "O")})</span></span></td>
             <td>${numberLabel(candidate.votes)}</td>
             <td>${percentLabel(candidate.percent)}</td>
           </tr>
         `).join("")}
       </tbody>
     </table>
-    <small>${estimatedInLabel(county.estimatedVoteReporting)} estimated in</small>
+    <small>${estimatedInLabel(reporting)} estimated in</small>
   `;
 }
 
