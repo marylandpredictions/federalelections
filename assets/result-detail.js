@@ -1913,26 +1913,26 @@ function bindPartyCombineToggle(race) {
   const toggle = page.querySelector("[data-party-combine-toggle]");
   if (!toggle) return;
   
-  let isPartyView = false;
+  let showCombined = false;
   let originalRace = { ...race };
   let originalMapMarkup = page.querySelector(".result-map-frame")?.innerHTML;
   
   toggle.addEventListener("click", async () => {
-    isPartyView = !isPartyView;
-    toggle.textContent = isPartyView ? "Candidate View" : "Party View";
-    toggle.style.background = isPartyView ? "rgba(16, 48, 178, 0.3)" : "";
-    toggle.style.color = isPartyView ? "#ffffff" : "";
+    showCombined = !showCombined;
+    toggle.textContent = showCombined ? "Candidate View" : "Party View";
+    toggle.style.background = showCombined ? "rgba(16, 48, 178, 0.3)" : "";
+    toggle.style.color = showCombined ? "#ffffff" : "";
     
     const candidatesNode = page.querySelector(".result-full-candidates");
     const mapFrame = page.querySelector(".result-map-frame");
     
     if (candidatesNode) {
-      const displayRace = isPartyView ? { ...race, candidates: combineCandidatesByParty(race) } : originalRace;
+      const displayRace = showCombined ? { ...race, candidates: combineCandidatesByParty(race) } : originalRace;
       candidatesNode.innerHTML = candidateRows(displayRace);
     }
     
     if (mapFrame) {
-      if (isPartyView) {
+      if (showCombined) {
         const partyRace = { ...race, candidates: combineCandidatesByParty(race) };
         const newMapMarkup = await countyShapeMap(partyRace);
         mapFrame.innerHTML = newMapMarkup;
