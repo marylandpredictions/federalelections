@@ -194,7 +194,17 @@ function normalizeCandidate(candidate) {
       "michael tubbs": "Democratic",
       "oliver ma": "Democratic",
       "gloria romero": "Republican",
-      "david fennell": "Republican"
+      "david fennell": "Republican",
+      "skip shelton": "Republican",
+      "janelle kellman": "Democratic",
+      "ebie lynch": "Republican",
+      "tim myers": "Democratic",
+      "alice stek": "Peace and Freedom",
+      "jeyson lopez": "Democratic",
+      "abdur rahman sikder": "Democratic",
+      "sean collinson": "Independent",
+      "rakesh christian": "Independent",
+      "david collenberg": "Republican"
     };
     
     for (const [key, correction] of Object.entries(partyCorrections)) {
@@ -332,12 +342,17 @@ function normalizeRegionResults(regionResults, race) {
   return Object.entries(regionResults).map(([key, region]) => {
     const candidates = (region.candidates || []).map((candidate) => withManualCall(normalizeCandidate(candidate), race))
       .sort((a, b) => b.votes - a.votes || b.percent - a.percent);
+    const regionData = {
+      ...region,
+      percentReporting: Number(region.percent_reporting || 0)
+    };
     return {
       id: key,
       name: region.name || key.replace(/_/g, " "),
       type: region.type || "County",
       fips: region.fips || "",
       percentReporting: Number(region.percent_reporting || 0),
+      estimatedVoteReporting: calculateEstimatedVoteReporting(regionData),
       candidates
     };
   }).sort((a, b) => a.name.localeCompare(b.name));

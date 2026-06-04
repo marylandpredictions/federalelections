@@ -325,7 +325,9 @@ function numberLabel(value) {
 
 function percentLabel(value) {
   const number = Number(value || 0);
-  return Number.isFinite(number) ? `${number.toFixed(1)}%` : "0.0%";
+  if (!Number.isFinite(number)) return "0.0%";
+  if (number >= 100) return ">99%";
+  return `${number.toFixed(1)}%`;
 }
 
 function signedPointMargin(value) {
@@ -1144,7 +1146,7 @@ function countyTooltipMarkup(county, race, titlePrefix = "") {
         `).join("")}
       </tbody>
     </table>
-    <small>${percentLabel(county.percentReporting)} reporting</small>
+    <small>${percentLabel(county.estimatedVoteReporting || county.percentReporting)} estimated in</small>
   `;
 }
 
@@ -1165,7 +1167,7 @@ function regionMap(race) {
     const leader = regionLeader(county);
     const margin = resultMarginInfo(race, county);
     const label = leader
-      ? `${county.name}: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.percentReporting)} reporting`
+      ? `${county.name}: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.estimatedVoteReporting || county.percentReporting)} estimated in`
       : `${county.name}: waiting for reported votes`;
     const percentFill = margin?.percentFill || "#566274";
     const voteFill = margin?.voteFill || "#566274";
@@ -1404,7 +1406,7 @@ async function countyShapeMap(race) {
       const voteFill = margin?.voteFill || "#566274";
       const rawFill = margin?.rawFill || "#566274";
       const title = county && leader
-        ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.percentReporting)} reporting`
+        ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.estimatedVoteReporting || county.percentReporting)} estimated in`
         : `${feature.properties?.NAME || "County"} County: waiting for reported votes`;
       const tooltip = county ? countyTooltipMarkup(county, race, `${feature.properties?.NAME || county.name} County`) : "";
       return `
@@ -1484,7 +1486,7 @@ function countyRows(race) {
         <article class="county-result-row">
           <div>
             <strong>${escapeHtml(county.name)}</strong>
-            <small>${escapeHtml(county.type || "County")} | ${percentLabel(county.percentReporting)} reporting</small>
+            <small>${escapeHtml(county.type || "County")} | ${percentLabel(county.estimatedVoteReporting || county.percentReporting)} estimated in</small>
           </div>
           <div class="county-candidate-cells">
             ${countyCandidateCells(county, race)}
@@ -1756,7 +1758,7 @@ function raceDetailUpdateKey(race) {
     calls: (race.calls || []).map((call) => [call.candidate, call.status, call.label || "", call.calledAt || ""]),
     counties: (race.counties || []).map((county) => [
       county.name,
-      county.percentReporting,
+      county.estimatedVoteReporting || county.percentReporting,
       (county.candidates || []).map((candidate) => [candidate.name, candidate.votes, candidate.percent])
     ]),
     voteHistory: (race.voteHistory || []).length

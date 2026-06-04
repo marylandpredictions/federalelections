@@ -223,7 +223,9 @@
 
   function percentLabel(value) {
     const number = Number(value || 0);
-    return Number.isFinite(number) ? `${number.toFixed(1)}%` : "0.0%";
+    if (!Number.isFinite(number)) return "0.0%";
+    if (number >= 100) return ">99%";
+    return `${number.toFixed(1)}%`;
   }
 
   function validElectionIso(value) {
