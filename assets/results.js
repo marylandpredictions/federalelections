@@ -176,7 +176,7 @@ function dateKeyForRace(race) {
 function latestLiveDateKey(races = flattenRaces()) {
   const dated = races.map(dateKeyForRace).filter(Boolean).sort();
   if (!dated.length) return "";
-  const unresolvedDates = [...new Set(races.filter((race) => !raceHasCall(race)).map(dateKeyForRace).filter(Boolean))].sort();
+  const unresolvedDates = [...new Set(races.filter((race) => !shouldArchiveRace(race)).map(dateKeyForRace).filter(Boolean))].sort();
   return unresolvedDates.at(-1) || "";
 }
 
@@ -264,12 +264,6 @@ function raceCard(race) {
 }
 
 function resultGroupCard(group) {
-  const reportingValues = (group.races || [])
-    .map((race) => Number(race.estimatedVoteReporting ?? race.percentReporting ?? 0))
-    .filter(Number.isFinite);
-  const estimatedReporting = reportingValues.length
-    ? reportingValues.reduce((sum, value) => sum + value, 0) / reportingValues.length
-    : 0;
   return `
     <section class="result-state-card">
       <div class="result-state-head">
@@ -277,7 +271,6 @@ function resultGroupCard(group) {
           <p class="kicker">${escapeHtml(group.state)}</p>
           <h2>${escapeHtml(group.stateName)}</h2>
         </div>
-        <span>${estimatedInLabel(estimatedReporting)} estimated in</span>
       </div>
       <div class="result-race-list">
         ${group.races.length ? group.races.map(raceCard).join("") : `<p class="meta">No matching featured races in this group.</p>`}
@@ -387,7 +380,7 @@ function renderGroups() {
   if (updateKey === resultsListUpdateKeyCache && groupsNode.dataset.rendered === "true") return;
   resultsListUpdateKeyCache = updateKey;
   const latestDate = latestLiveDateKey();
-  const latestRaces = flattenRaces(liveResultsData).filter((race) => dateKeyForRace(race) === latestDate && !raceHasCall(race) && raceMatches(race, query));
+  const latestRaces = flattenRaces(liveResultsData).filter((race) => dateKeyForRace(race) === latestDate && !shouldArchiveRace(race) && raceMatches(race, query));
   const groups = groupRacesByState(latestRaces);
 
   groupsNode.dataset.rendered = "true";
@@ -500,7 +493,7 @@ function renderMeta(data, source) {
   if (statusLabel) {
     const errorCount = data.errors?.length || 0;
     const latestDate = latestLiveDateKey(flattenRaces(data));
-    const latestCount = flattenRaces(data).filter((race) => dateKeyForRace(race) === latestDate).length;
+    const latestCount = flattenRaces(data).filter((race) => dateKeyForRace(race) === latestDate && !shouldArchiveRace(race)).length;
     statusLabel.textContent = errorCount ? `${errorCount} source group${errorCount === 1 ? "" : "s"} unavailable` : `Tracking ${latestCount} latest races`;
     statusLabel.dataset.source = source || "cache";
   }
