@@ -3,7 +3,7 @@ import { createWriteStream } from "node:fs";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { extname, join, resolve } from "node:path";
 import tls from "node:tls";
-import { buildLiveResults, buildRaceResultDetail, reloadManualResultConfig } from "./scripts/generate-live-results.mjs";
+import { buildLiveResults, buildRaceResultDetailWithHistory, reloadManualResultConfig } from "./scripts/generate-live-results.mjs";
 
 async function loadLocalEnv() {
   try {
@@ -291,7 +291,7 @@ async function handleLiveResultRace(request, response, url) {
     return;
   }
   try {
-    sendJson(response, 200, await buildRaceResultDetail(id));
+    sendJson(response, 200, await buildRaceResultDetailWithHistory(id, { persist: true }));
   } catch (error) {
     console.error(error);
     sendJson(response, 502, { ok: false, error: "Live race detail source unavailable." });

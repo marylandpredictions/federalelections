@@ -601,6 +601,7 @@ function normalizeRegionResults(regionResults, race, externalEstimate = null) {
 function voteHistoryPoint(race) {
   return {
     at: new Date().toISOString(),
+    sourceUpdatedAt: isoDate(race.lastUpdated) || "",
     reporting: Number(race.estimatedVoteReporting ?? race.percentReporting ?? 0),
     candidates: (race.candidates || []).map((candidate) => ({
       name: candidate.name,
@@ -613,6 +614,71 @@ function voteHistoryPoint(race) {
   };
 }
 
+function voteHistorySignature(point) {
+  const candidates = (point?.candidates || [])
+    .map((candidate) => [
+      normalizeName(candidate.name),
+      Number(candidate.votes || 0),
+      Number(candidate.percent || 0).toFixed(3)
+    ].join(":"))
+    .sort()
+    .join("|");
+  return [
+    Number(point?.reporting || 0).toFixed(3),
+    candidates
+  ].join("::");
+}
+
+function normalizeHistoryCandidate(candidate) {
+  return {
+    name: candidate.name || candidate.candidate || candidate.candidate_name || "",
+    party: candidate.party || candidate.party_name || "",
+    partyCode: candidate.partyCode || candidate.party_code || partyCode(candidate.party || candidate.party_name || ""),
+    votes: Number(candidate.votes ?? candidate.vote_count ?? candidate.total_votes ?? 0),
+    percent: Number(candidate.percent ?? candidate.percentage ?? candidate.vote_share ?? 0),
+    color: candidate.color || ""
+  };
+}
+
+function voteHistoryFromCivicDetail(detail) {
+  const rawHistory = detail?.vote_history
+    || detail?.voteHistory
+    || detail?.results_history
+    || detail?.resultsHistory
+    || detail?.timeline
+    || detail?.updates
+    || [];
+  if (!Array.isArray(rawHistory)) return [];
+  return rawHistory.map((entry) => {
+    const candidates = entry.candidates || entry.results || entry.vote_totals || entry.totals || [];
+    return {
+      at: isoDate(entry.at || entry.timestamp || entry.time || entry.updated_at || entry.last_updated) || "",
+      sourceUpdatedAt: isoDate(entry.sourceUpdatedAt || entry.last_updated || entry.updated_at) || "",
+      reporting: Number(entry.reporting ?? entry.percent_reporting ?? entry.estimatedVoteReporting ?? 0),
+      candidates: Array.isArray(candidates) ? candidates.map(normalizeHistoryCandidate).filter((candidate) => candidate.name) : []
+    };
+  }).filter((point) => point.at && point.candidates.length);
+}
+
+function mergeVoteHistory(...histories) {
+  const byKey = new Map();
+  for (const history of histories) {
+    for (const point of Array.isArray(history) ? history : []) {
+      const at = isoDate(point.at || point.updatedAt || point.timestamp || point.time);
+      if (!at) continue;
+      const normalized = {
+        at,
+        sourceUpdatedAt: isoDate(point.sourceUpdatedAt) || "",
+        reporting: Number(point.reporting ?? point.estimatedVoteReporting ?? 0),
+        candidates: (point.candidates || []).map(normalizeHistoryCandidate).filter((candidate) => candidate.name)
+      };
+      if (!normalized.candidates.length) continue;
+      byKey.set(at.slice(0, 19), normalized);
+    }
+  }
+  return [...byKey.values()].sort((a, b) => new Date(a.at) - new Date(b.at));
+}
+
 function appendVoteHistory(race) {
   let stored = [];
   try {
@@ -621,7 +687,13 @@ function appendVoteHistory(race) {
   } catch {
     stored = [];
   }
+  stored = mergeVoteHistory(race.voteHistory || [], stored);
   const point = voteHistoryPoint(race);
+  const latest = stored.at(-1);
+  const pointSignature = voteHistorySignature(point);
+  if (latest && voteHistorySignature(latest) === pointSignature) {
+    return stored.slice(-240);
+  }
   const pointKey = point.at.slice(0, 16);
   const withoutCurrentMinute = stored.filter((item) => String(item.at || "").slice(0, 16) !== pointKey);
   return [...withoutCurrentMinute, point].slice(-240);
@@ -653,6 +725,7 @@ async function fetchRaceDetail(id) {
     electionScope: detail.election_scope || race.electionScope,
     registeredVoters: detail.registered_voters || null,
     maps: detail.maps || [],
+    voteHistory: voteHistoryFromCivicDetail(detail),
     counties
   };
 }
@@ -775,17 +848,26 @@ export async function buildRaceResultDetail(id) {
   return applyExternalEstimateToDetail(detail, externalEstimate);
 }
 
+export async function buildRaceResultDetailWithHistory(id, options = {}) {
+  const detail = await buildRaceResultDetail(id);
+  const hydratedDetail = {
+    ...detail,
+    voteHistory: appendVoteHistory(detail)
+  };
+  if (options.persist !== false) {
+    mkdirSync(DETAIL_DIR_URL, { recursive: true });
+    writeFileSync(new URL(`${id}.json`, DETAIL_DIR_URL), JSON.stringify(hydratedDetail, null, 2), "utf8");
+  }
+  return hydratedDetail;
+}
+
 async function writeRaceDetails(data) {
   mkdirSync(DETAIL_DIR_URL, { recursive: true });
   const races = data.groups.flatMap((group) => group.races || []);
   let written = 0;
   for (const race of races) {
     try {
-      const detail = MANUAL_RACES[String(race.id)] || await buildRaceResultDetail(race.id);
-      const externalEstimate = await fetchBestExternalEstimate(race);
-      const hydratedDetail = applyExternalEstimateToDetail(detail, externalEstimate);
-      hydratedDetail.voteHistory = appendVoteHistory(hydratedDetail);
-      writeFileSync(new URL(`${race.id}.json`, DETAIL_DIR_URL), JSON.stringify(hydratedDetail, null, 2), "utf8");
+      await buildRaceResultDetailWithHistory(race.id);
       written += 1;
     } catch (error) {
       console.warn(`Could not write race detail for ${race.id}: ${error.message}`);
@@ -794,7 +876,7 @@ async function writeRaceDetails(data) {
   return written;
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const data = await buildLiveResults();
   writeFileSync(OUTPUT_URL, JSON.stringify(data, null, 2), "utf8");
   const detailCount = await writeRaceDetails(data);

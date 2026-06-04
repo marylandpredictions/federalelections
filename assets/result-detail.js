@@ -1588,6 +1588,11 @@ function voteHistoryChart(race) {
   const maxVotes = Math.max(1, ...points.flatMap((point) => (point.candidates || []).map((candidate) => Number(candidate.votes || 0))));
   const xFor = (index) => points.length === 1 ? pad.left : pad.left + (index / (points.length - 1)) * (width - pad.left - pad.right);
   const yFor = (votes) => height - pad.bottom - (Number(votes || 0) / maxVotes) * (height - pad.top - pad.bottom);
+  const historyCandidateFor = (point, candidate) => {
+    const slug = slugifyName(candidate.name);
+    return (point.candidates || []).find((entry) => entry.name === candidate.name)
+      || (point.candidates || []).find((entry) => slugifyName(entry.name) === slug);
+  };
   const defs = candidates.map((candidate, index) => {
     if (!candidateRaceCallLabel(race, candidate)) return "";
     const color = candidateFill(race, candidate);
@@ -1602,7 +1607,7 @@ function voteHistoryChart(race) {
     const color = candidateFill(race, candidate);
     const called = Boolean(candidateRaceCallLabel(race, candidate));
     const d = points.map((point, index) => {
-      const item = (point.candidates || []).find((entry) => entry.name === candidate.name);
+      const item = historyCandidateFor(point, candidate);
       return `${index ? "L" : "M"}${xFor(index).toFixed(1)},${yFor(item?.votes || 0).toFixed(1)}`;
     }).join(" ");
     return `<path d="${d}" fill="none" stroke="${called ? `url(#vote-history-winner-${index})` : escapeHtml(color)}" stroke-width="${called ? 3.4 : 2.6}" stroke-linecap="round" stroke-linejoin="round"></path>`;
@@ -1614,10 +1619,10 @@ function voteHistoryChart(race) {
     const hitX = index === 0 ? pad.left : (xPrev + x) / 2;
     const hitWidth = index === points.length - 1 ? (width - pad.right) - hitX : (xNext + x) / 2 - hitX;
     const label = [
-      timeLabel(point.updatedAt || point.timestamp || point.time || race.lastUpdated),
+      timeLabel(point.at || point.updatedAt || point.timestamp || point.time || race.lastUpdated),
       ...candidates.map((candidate) => {
-        const item = (point.candidates || []).find((entry) => entry.name === candidate.name);
-        return `${candidate.name}: ${numberLabel(item?.votes || 0)} votes`;
+        const item = historyCandidateFor(point, candidate);
+        return `${candidate.name}: ${numberLabel(item?.votes || 0)} votes (${percentLabel(item?.percent || 0)})`;
       })
     ].join("\n");
     return `<rect class="vote-history-hit" x="${hitX.toFixed(1)}" y="${pad.top}" width="${Math.max(6, hitWidth).toFixed(1)}" height="${height - pad.top - pad.bottom}" data-history-x="${x.toFixed(1)}" data-history-tooltip="${escapeHtml(label)}"></rect>`;
