@@ -397,17 +397,21 @@ function normalizeRegionResults(regionResults, race) {
   return Object.entries(regionResults).map(([key, region]) => {
     const candidates = (region.candidates || []).map((candidate) => withManualCall(normalizeCandidate(candidate), race))
       .sort((a, b) => b.votes - a.votes || b.percent - a.percent);
-    const regionData = {
-      ...region,
-      percentReporting: Number(region.percent_reporting || 0)
-    };
+    const precinctReporting = Number(region.percent_reporting || 0);
+    // For counties, use precinct reporting directly without aggressive adjustment
+    // Counties typically report precincts more accurately than statewide
+    let estimatedReporting = precinctReporting;
+    // Only apply minimal adjustment for counties when precincts are nearly complete
+    if (precinctReporting >= 95) {
+      estimatedReporting = Math.min(99.9, precinctReporting * 0.99);
+    }
     return {
       id: key,
       name: region.name || key.replace(/_/g, " "),
       type: region.type || "County",
       fips: region.fips || "",
-      percentReporting: Number(region.percent_reporting || 0),
-      estimatedVoteReporting: calculateEstimatedVoteReporting(regionData),
+      percentReporting: precinctReporting,
+      estimatedVoteReporting: estimatedReporting,
       candidates
     };
   }).sort((a, b) => a.name.localeCompare(b.name));

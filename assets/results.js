@@ -141,16 +141,23 @@ function isTopTwoAdvance(race) {
   return scope.includes("open primary") || name.includes("open primary");
 }
 
+function isRunoffPrimary(race) {
+  const scope = String(race.electionScope || "").toLowerCase();
+  const name = String(race.electionName || "").toLowerCase();
+  return scope.includes("primary") && (name.includes("runoff") || name.includes("jungle"));
+}
+
+function isTwoWinnerRace(race) {
+  return isTopTwoAdvance(race) || isRunoffPrimary(race);
+}
+
 function shouldArchiveRace(race) {
   if (!raceHasCall(race)) return false;
   
-  // For top-2 advance races, only archive if two candidates are projected to advance
-  if (isTopTwoAdvance(race)) {
-    const advanceCalls = (race.calls || []).filter(call => 
-      call.label?.toLowerCase().includes("advance") || 
-      call.status?.toLowerCase().includes("advance")
-    );
-    return advanceCalls.length >= 2;
+  // For two-winner races (open primaries, runoff primaries), only archive if two candidates are called
+  if (isTwoWinnerRace(race)) {
+    const totalCalls = (race.calls || []).length;
+    return totalCalls >= 2;
   }
   
   return true;
@@ -260,7 +267,7 @@ function resultGroupCard(group) {
           <p class="kicker">${escapeHtml(group.state)}</p>
           <h2>${escapeHtml(group.stateName)}</h2>
         </div>
-        <span>${estimatedReporting} estimated in</span>
+        <span>${estimatedInLabel(group.estimatedVoteReporting)} estimated in</span>
       </div>
       <div class="result-race-list">
         ${group.races.length ? group.races.map(raceCard).join("") : `<p class="meta">No matching featured races in this group.</p>`}

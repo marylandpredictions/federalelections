@@ -228,6 +228,13 @@
     return `${number.toFixed(1)}%`;
   }
 
+  function estimatedInLabel(value) {
+    const number = Number(value || 0);
+    if (!Number.isFinite(number)) return "0.0";
+    if (number >= 100) return ">99";
+    return `${number.toFixed(1)}`;
+  }
+
   function validElectionIso(value) {
     if (!value) return "";
     const date = new Date(value);
@@ -484,7 +491,7 @@
     const color = candidateColor(primary, callEvent.race);
     const avatars = callEvent.calledCandidates.map((item) => avatarMarkup(item, callEvent.race)).join("");
     const raceName = callEvent.race?.electionName || "Election race";
-    const reporting = percentLabel(callEvent.race?.estimatedVoteReporting || callEvent.race?.percentReporting);
+    const reporting = estimatedInLabel(callEvent.race?.estimatedVoteReporting || callEvent.race?.percentReporting);
     const calledAt = callTimeLabel(Math.max(...callEvent.calls.map((call) => Date.parse(call.calledAt || "") || 0), 0));
     return `
       <article class="broadcast-call-card" style="--candidate-color:${escapeHtml(color)}">

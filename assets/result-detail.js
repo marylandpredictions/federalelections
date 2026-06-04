@@ -1146,7 +1146,7 @@ function countyTooltipMarkup(county, race, titlePrefix = "") {
         `).join("")}
       </tbody>
     </table>
-    <small>${percentLabel(county.estimatedVoteReporting || county.percentReporting)} estimated in</small>
+    <small>${estimatedInLabel(county.estimatedVoteReporting || county.percentReporting)} estimated in</small>
   `;
 }
 
@@ -1167,7 +1167,7 @@ function regionMap(race) {
     const leader = regionLeader(county);
     const margin = resultMarginInfo(race, county);
     const label = leader
-      ? `${county.name}: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.estimatedVoteReporting || county.percentReporting)} estimated in`
+      ? `${county.name}: ${leader.name} ${percentLabel(leader.percent)}, ${estimatedInLabel(county.estimatedVoteReporting || county.percentReporting)} estimated in`
       : `${county.name}: waiting for reported votes`;
     const percentFill = margin?.percentFill || "#566274";
     const voteFill = margin?.voteFill || "#566274";
@@ -1406,7 +1406,7 @@ async function countyShapeMap(race) {
       const voteFill = margin?.voteFill || "#566274";
       const rawFill = margin?.rawFill || "#566274";
       const title = county && leader
-        ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${percentLabel(county.estimatedVoteReporting || county.percentReporting)} estimated in`
+        ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${estimatedInLabel(county.estimatedVoteReporting || county.percentReporting)} estimated in`
         : `${feature.properties?.NAME || "County"} County: waiting for reported votes`;
       const tooltip = county ? countyTooltipMarkup(county, race, `${feature.properties?.NAME || county.name} County`) : "";
       return `
@@ -1486,7 +1486,7 @@ function countyRows(race) {
         <article class="county-result-row">
           <div>
             <strong>${escapeHtml(county.name)}</strong>
-            <small>${escapeHtml(county.type || "County")} | ${percentLabel(county.estimatedVoteReporting || county.percentReporting)} estimated in</small>
+            <small>${escapeHtml(county.type || "County")} | ${estimatedInLabel(county.estimatedVoteReporting || county.percentReporting)} estimated in</small>
           </div>
           <div class="county-candidate-cells">
             ${countyCandidateCells(county, race)}
@@ -1788,7 +1788,7 @@ function applyMapMarginColors() {
 async function patchRaceDetail(race) {
   const reporting = Math.max(0, Math.min(100, Number(race.estimatedVoteReporting || race.percentReporting || 0)));
   const reportingStat = page.querySelector(".result-reporting-stat");
-  if (reportingStat) reportingStat.textContent = `${percentLabel(race.estimatedVoteReporting || race.percentReporting)} estimated in`;
+  if (reportingStat) reportingStat.textContent = `${estimatedInLabel(race.estimatedVoteReporting || race.percentReporting)} estimated in`;
   const reportingBar = page.querySelector(".result-reporting-bar i");
   if (reportingBar) reportingBar.style.width = `${reporting}%`;
 
@@ -1798,7 +1798,7 @@ async function patchRaceDetail(race) {
   if (countyCountNode) countyCountNode.textContent = `${numberLabel((race.counties || []).length)} counties`;
 
   const countyPanelReporting = page.querySelector(".result-county-panel .section-head p");
-  if (countyPanelReporting) countyPanelReporting.textContent = `${percentLabel(race.estimatedVoteReporting || race.percentReporting)} estimated in.`;
+  if (countyPanelReporting) countyPanelReporting.textContent = `${estimatedInLabel(race.estimatedVoteReporting || race.percentReporting)} estimated in.`;
 
   const candidatesNode = page.querySelector(".result-full-candidates");
   if (candidatesNode) candidatesNode.innerHTML = candidateRows(race);
@@ -2077,7 +2077,7 @@ async function renderRace(race) {
           <span data-result-county-count>${numberLabel((race.counties || []).length)} counties</span>
         </div>
         <div class="result-reporting-label-row">
-          <span class="result-reporting-stat">${percentLabel(race.estimatedVoteReporting || race.percentReporting)} estimated in</span>
+          <span class="result-reporting-stat">${estimatedInLabel(race.estimatedVoteReporting || race.percentReporting)} estimated in</span>
         </div>
         <div class="result-reporting-bar" aria-label="${escapeHtml(percentLabel(race.estimatedVoteReporting || race.percentReporting))} estimated in">
           <i style="width:${reporting}%"></i>
@@ -2118,7 +2118,7 @@ async function renderRace(race) {
         <div>
           <h2>County-by-county returns.</h2>
         </div>
-        <p>${percentLabel(race.estimatedVoteReporting || race.percentReporting)} statewide estimated in.</p>
+        <p>${estimatedInLabel(race.estimatedVoteReporting || race.percentReporting)} statewide estimated in.</p>
       </div>
       ${countyRows(race)}
     </section>
