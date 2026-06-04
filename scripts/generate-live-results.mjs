@@ -184,11 +184,12 @@ function normalizeCandidate(candidate) {
   let party = /no party preference/i.test(candidate.party || "") ? "Independent" : (candidate.party || "");
   const name = String(candidate.name || "").toLowerCase();
   
-  // CA Lieutenant Governor Open Primary - civicAPI incorrectly marks all as Nonpartisan
+  // CA races where civicAPI incorrectly marks candidates as Nonpartisan
   // Correct party affiliations based on actual candidate party registrations
   const partyLower = party.toLowerCase();
   if (partyLower === "nonpartisan" || partyLower === "n" || partyLower === "") {
     const partyCorrections = {
+      // CA Lieutenant Governor Open Primary
       "fiona ma": "Democratic",
       "josh fryday": "Democratic", 
       "michael tubbs": "Democratic",
@@ -204,7 +205,61 @@ function normalizeCandidate(candidate) {
       "abdur sikder": "Democratic",
       "sean collinson": "Independent",
       "rakesh christian": "Independent",
-      "david collenberg": "Republican"
+      "david collenberg": "Republican",
+      // CA US House 7 Open Primary
+      "doris matsui": "Democratic",
+      "mai vang": "Democratic",
+      "zachariah wooden": "Republican",
+      "ralph nwobi": "Republican",
+      "robby morin": "Democratic",
+      "enayat nazhat": "Democratic",
+      // CA US House 1 Open Primary
+      "james gallagher": "Republican",
+      "mike mcguire": "Democratic",
+      "audrey denney": "Democratic",
+      "janice karrman": "Democratic",
+      "timothy kelly": "Independent",
+      "richard minner": "Independent",
+      // CA US House 22 Open Primary
+      "david valadao": "Republican",
+      "jasmeet bains": "Democratic",
+      "randy villegas": "Democratic",
+      // CA US House 32 Open Primary
+      "brad sherman": "Democratic",
+      "jake levine": "Democratic",
+      // CA US House 34 Open Primary
+      "jimmy gomez": "Democratic",
+      "angela gonzales-torres": "Democratic",
+      // CA US House 40 Open Primary
+      "young kim": "Republican",
+      "ken calvert": "Republican",
+      "esther kim-varet": "Democratic",
+      "joe kerr": "Democratic",
+      // CA US House 11 Open Primary
+      "scott wiener": "Democratic",
+      "connie chan": "Democratic",
+      "saikat chakrabarti": "Democratic",
+      "david ganezer": "Republican",
+      "marie hurabiell": "Democratic",
+      "jingchao xiong": "Independent",
+      "gregory haynes": "Democratic",
+      "john buffler": "Democratic",
+      "nathan deer": "Independent",
+      "keith freedman": "Democratic",
+      "omed hamid": "Democratic",
+      // CA US House 48 Open Primary
+      "jim desmond": "Republican",
+      "marni von wilpert": "Democratic",
+      "ammar campa-najjar": "Democratic",
+      "kevin o'neil": "Republican",
+      "brandon riker": "Democratic",
+      "abel chavez": "Democratic",
+      "corinna contreras": "Democratic",
+      "mike schaefer": "Democratic",
+      "stephen clemons": "Democratic",
+      "luis reyna": "Independent",
+      "eric shaw": "Democratic",
+      "ferguson porter": "Democratic"
     };
     
     for (const [key, correction] of Object.entries(partyCorrections)) {
