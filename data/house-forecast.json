@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-04T14:09:51.941Z",
+  "generatedAt": "2026-06-04T15:40:13.953Z",
   "modelDate": "2026-06-04",
   "runDate": "Jun 4, 2026",
   "updateTime": "around 6:20 AM Central",
@@ -43,74 +43,81 @@
     "redistrictingShapeWarning": "The visible shape map may lag enacted 2026 redistricting in states with new maps. Forecast ratings use the redistricting override layer even when the temporary map geometry has not been replaced."
   },
   "sourceStatus": {
-    "checkedAt": "2026-06-04T14:09:43.293Z",
+    "checkedAt": "2026-06-04T15:40:05.329Z",
+    "raceToTheWhHouseForecast": {
+      "ok": true,
+      "status": 200,
+      "ms": 162,
+      "bytes": 125106,
+      "url": "https://www.racetothewh.com/house-3"
+    },
     "cookHouseRatings": {
       "ok": false,
       "status": 403,
-      "ms": 104,
+      "ms": 199,
       "bytes": 5660,
       "url": "https://www.cookpolitical.com/ratings/house-race-ratings"
+    },
+    "raceToTheWhGenericBallot": {
+      "ok": true,
+      "status": 200,
+      "ms": 162,
+      "bytes": 163446,
+      "url": "https://www.racetothewh.com/polls/genericballot"
     },
     "realClearPollingHousePolls": {
       "ok": false,
       "status": 403,
-      "ms": 69,
+      "ms": 182,
       "bytes": 1278,
       "url": "https://www.realclearpolling.com/latest-polls/house"
+    },
+    "twoSeventyToWinHouseMapData": {
+      "ok": true,
+      "status": 200,
+      "ms": 298,
+      "bytes": 7193460,
+      "url": "https://www.270towin.com/2026-house-election/inside-elections-2026-house-ratings"
     },
     "realClearPoliticsGenericBallot": {
       "ok": false,
       "status": 403,
-      "ms": 83,
+      "ms": 325,
       "bytes": 781,
       "url": "https://www.realclearpolitics.com/epolls/other/2026_generic_congressional_vote-8670.html"
     },
     "pollfinityAverages": {
       "ok": false,
       "status": 404,
-      "ms": 167,
+      "ms": 365,
       "bytes": 0,
       "url": "https://pollfinity.com/api/averages"
-    },
-    "raceToTheWhGenericBallot": {
-      "ok": true,
-      "status": 200,
-      "ms": 201,
-      "bytes": 163446,
-      "url": "https://www.racetothewh.com/polls/genericballot"
-    },
-    "raceToTheWhHouseForecast": {
-      "ok": true,
-      "status": 200,
-      "ms": 210,
-      "bytes": 125106,
-      "url": "https://www.racetothewh.com/house-3"
-    },
-    "twoSeventyToWinHouseMapData": {
-      "ok": true,
-      "status": 200,
-      "ms": 244,
-      "bytes": 7193460,
-      "url": "https://www.270towin.com/2026-house-election/inside-elections-2026-house-ratings"
     },
     "ddhqGenericBallot": {
       "ok": false,
       "status": 404,
-      "ms": 260,
-      "bytes": 370,
+      "ms": 422,
+      "bytes": 350,
       "url": "https://static.dwcdn.net/data/9Jctg.json"
     },
     "votehubGenericBallot": {
       "ok": false,
       "status": 403,
-      "ms": 364,
+      "ms": 512,
       "bytes": 5545,
       "url": "https://polls.votehub.us/polls/generic-ballot"
+    },
+    "twoSeventyToWinHousePolls": {
+      "ok": true,
+      "status": 200,
+      "ms": 572,
+      "bytes": 7193298,
+      "url": "https://www.270towin.com/2026-house-election/polls/"
     },
     "usPollingDataGenericBallot": {
       "ok": true,
       "status": 200,
-      "ms": 377,
+      "ms": 608,
       "bytes": 107438,
       "url": "https://uspollingdata.com/polls/generic-ballot/"
     },
@@ -119,36 +126,29 @@
       "status": "local",
       "ms": 0
     },
-    "twoSeventyToWinHousePolls": {
-      "ok": true,
-      "status": 200,
-      "ms": 473,
-      "bytes": 7193298,
-      "url": "https://www.270towin.com/2026-house-election/polls/"
-    },
-    "openFecHouseCandidateSummary": {
-      "ok": true,
-      "status": 200,
-      "ms": 563,
-      "bytes": 1570601,
-      "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
-      "rows": 4102,
-      "districts": 459,
-      "nationalFinanceSignal": 0.091
-    },
     "insideElections270ToWinRatings": {
       "ok": true,
       "status": 200,
-      "ms": 899,
+      "ms": 1110,
       "bytes": 485886,
       "url": "https://www.270towin.com/2026-house-election/table/inside-elections-2026-house-ratings"
     },
     "censusDistrictBoundaries": {
       "ok": true,
       "status": 200,
-      "ms": 1279,
-      "bytes": 1036275,
+      "ms": 1202,
+      "bytes": 1043821,
       "url": "https://www.census.gov/geographies/mapping-files/2025/geo/carto-boundary-file.html"
+    },
+    "openFecHouseCandidateSummary": {
+      "ok": true,
+      "status": 200,
+      "ms": 1235,
+      "bytes": 1570601,
+      "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
+      "rows": 4102,
+      "districts": 459,
+      "nationalFinanceSignal": 0.091
     }
   },
   "sourceSummary": {
@@ -168,14 +168,14 @@
       "financeSignal": 0.091
     },
     "genericPolling": {
-      "margin": 5.933943637414794,
+      "margin": 5.921331447591513,
       "sources": [
         {
           "source": "VoteHub via Senate run",
-          "margin": 5.454218274251451,
-          "dem": 47.46101798001121,
-          "rep": 42.006799705759754,
-          "polls": 373,
+          "margin": 5.435930599007692,
+          "dem": 47.382542497063255,
+          "rep": 41.94661189805555,
+          "polls": 374,
           "weight": 1
         },
         {
@@ -195,7 +195,7 @@
     "realClearHousePollsReachable": false,
     "censusDistrictBoundaryPageReachable": true,
     "redistricting": {
-      "reviewedAt": "2026-06-04T14:09:51.942Z",
+      "reviewedAt": "2026-06-04T15:40:13.954Z",
       "sourceNote": "State statuses are maintained locally so stale public rating feeds do not silently drive the House model after mid-decade map changes.",
       "states": {
         "AL": {
@@ -559,8 +559,8 @@
     },
     {
       "date": "2026-06-04",
-      "dem": 0.70669,
-      "rep": 0.29331
+      "dem": 0.70617,
+      "rep": 0.29383
     }
   ],
   "seatHistory": [
@@ -655,8 +655,8 @@
       "rep": 212
     }
   ],
-  "demControlProbability": 0.70669,
-  "repControlProbability": 0.29331,
+  "demControlProbability": 0.70617,
+  "repControlProbability": 0.29383,
   "medianSeats": 223,
   "seatCounts": {
     "178": 1,
@@ -671,125 +671,126 @@
     "189": 5,
     "190": 10,
     "191": 17,
-    "192": 24,
+    "192": 26,
     "193": 26,
-    "194": 35,
-    "195": 62,
+    "194": 36,
+    "195": 60,
     "196": 76,
-    "197": 110,
-    "198": 132,
-    "199": 171,
-    "200": 215,
-    "201": 255,
-    "202": 353,
-    "203": 445,
-    "204": 533,
-    "205": 666,
+    "197": 113,
+    "198": 130,
+    "199": 173,
+    "200": 218,
+    "201": 254,
+    "202": 366,
+    "203": 434,
+    "204": 536,
+    "205": 672,
     "206": 828,
-    "207": 999,
-    "208": 1244,
-    "209": 1465,
-    "210": 1717,
-    "211": 2046,
-    "212": 2309,
-    "213": 2527,
-    "214": 2856,
-    "215": 3150,
-    "216": 3382,
-    "217": 3636,
-    "218": 3667,
-    "219": 3743,
-    "220": 3979,
-    "221": 4096,
-    "222": 4063,
-    "223": 3841,
-    "224": 3755,
-    "225": 3765,
-    "226": 3503,
-    "227": 3303,
-    "228": 3112,
-    "229": 2898,
-    "230": 2691,
-    "231": 2424,
-    "232": 2254,
-    "233": 1984,
-    "234": 1910,
-    "235": 1674,
-    "236": 1488,
-    "237": 1351,
-    "238": 1166,
-    "239": 1099,
+    "207": 1005,
+    "208": 1246,
+    "209": 1467,
+    "210": 1712,
+    "211": 2052,
+    "212": 2325,
+    "213": 2520,
+    "214": 2851,
+    "215": 3155,
+    "216": 3396,
+    "217": 3637,
+    "218": 3663,
+    "219": 3758,
+    "220": 3988,
+    "221": 4095,
+    "222": 4038,
+    "223": 3848,
+    "224": 3788,
+    "225": 3737,
+    "226": 3490,
+    "227": 3312,
+    "228": 3110,
+    "229": 2897,
+    "230": 2692,
+    "231": 2432,
+    "232": 2245,
+    "233": 1988,
+    "234": 1889,
+    "235": 1680,
+    "236": 1483,
+    "237": 1346,
+    "238": 1165,
+    "239": 1095,
     "240": 956,
-    "241": 889,
-    "242": 762,
-    "243": 682,
-    "244": 650,
-    "245": 555,
-    "246": 461,
-    "247": 430,
-    "248": 370,
-    "249": 332,
-    "250": 306,
+    "241": 883,
+    "242": 770,
+    "243": 673,
+    "244": 644,
+    "245": 562,
+    "246": 453,
+    "247": 436,
+    "248": 366,
+    "249": 325,
+    "250": 310,
     "251": 270,
-    "252": 230,
-    "253": 241,
-    "254": 195,
-    "255": 150,
-    "256": 143,
-    "257": 142,
-    "258": 128,
-    "259": 88,
-    "260": 90,
+    "252": 229,
+    "253": 240,
+    "254": 191,
+    "255": 151,
+    "256": 145,
+    "257": 140,
+    "258": 124,
+    "259": 91,
+    "260": 89,
     "261": 79,
-    "262": 96,
-    "263": 70,
-    "264": 56,
-    "265": 63,
+    "262": 95,
+    "263": 69,
+    "264": 60,
+    "265": 61,
     "266": 49,
-    "267": 41,
-    "268": 40,
+    "267": 39,
+    "268": 41,
     "269": 39,
-    "270": 31,
+    "270": 29,
     "271": 25,
-    "272": 29,
-    "273": 22,
+    "272": 30,
+    "273": 21,
     "274": 19,
     "275": 22,
-    "276": 16,
-    "277": 13,
-    "278": 16,
-    "279": 15,
+    "276": 18,
+    "277": 12,
+    "278": 18,
+    "279": 12,
     "280": 10,
-    "281": 8,
-    "282": 8,
+    "281": 9,
+    "282": 7,
     "283": 3,
-    "284": 7,
-    "285": 7,
+    "284": 8,
+    "285": 6,
     "286": 4,
     "287": 5,
     "288": 4,
     "289": 5,
     "290": 5,
     "291": 3,
-    "292": 3,
-    "293": 3,
+    "292": 4,
+    "293": 2,
     "294": 2,
     "295": 1,
     "298": 1,
     "299": 1,
-    "301": 2,
+    "300": 1,
+    "301": 1,
     "302": 2,
-    "304": 1,
-    "305": 2,
+    "304": 2,
+    "305": 1,
     "310": 1,
     "319": 1,
-    "322": 1,
+    "321": 1,
     "332": 1,
     "349": 1
   },
   "controlPaths": {
     "dem": {
-      "controlSimulations": 70669,
+      "controlSimulations": 70617,
       "tossupWins": 12.9,
       "tiltRWins": 0,
       "leanRWins": 2.8,
@@ -799,7 +800,7 @@
       "vulnerableRHolds": 0
     },
     "rep": {
-      "controlSimulations": 29331,
+      "controlSimulations": 29383,
       "tossupWins": 10.3,
       "tiltRWins": 0,
       "leanRWins": 0,
@@ -832,7 +833,7 @@
       "fecRepCandidate": null,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.43,
+      "margin": 23.42,
       "demProbability": 0.999,
       "repProbability": 0.001,
       "winnerParty": "D",
@@ -1375,11 +1376,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.69,
-      "demProbability": 0.0211,
-      "repProbability": 0.9789,
+      "margin": -14.7,
+      "demProbability": 0.021,
+      "repProbability": 0.979,
       "winnerParty": "R",
-      "winnerProbability": 0.9789,
+      "winnerProbability": 0.979,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -1614,8 +1615,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0211,
-          "rep": 0.9789
+          "dem": 0.021,
+          "rep": 0.979
         }
       ]
     },
@@ -2850,11 +2851,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -6.15,
-      "demProbability": 0.2211,
-      "repProbability": 0.7789,
+      "margin": -6.16,
+      "demProbability": 0.2207,
+      "repProbability": 0.7793,
       "winnerParty": "R",
-      "winnerProbability": 0.7789,
+      "winnerProbability": 0.7793,
       "error": 7.2,
       "competitive": true,
       "sourceInputs": {
@@ -3089,8 +3090,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.2211,
-          "rep": 0.7789
+          "dem": 0.2207,
+          "rep": 0.7793
         }
       ]
     },
@@ -3440,11 +3441,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -5.51,
-      "demProbability": 0.2477,
-      "repProbability": 0.7523,
+      "margin": -5.52,
+      "demProbability": 0.2473,
+      "repProbability": 0.7527,
       "winnerParty": "R",
-      "winnerProbability": 0.7523,
+      "winnerProbability": 0.7527,
       "error": 7.2,
       "competitive": true,
       "sourceInputs": {
@@ -3673,8 +3674,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.2477,
-          "rep": 0.7523
+          "dem": 0.2473,
+          "rep": 0.7527
         }
       ]
     },
@@ -3729,7 +3730,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.73,
+      "margin": 23.72,
       "demProbability": 0.9994,
       "repProbability": 0.0006,
       "winnerParty": "D",
@@ -4018,11 +4019,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.09,
-      "demProbability": 0.0187,
-      "repProbability": 0.9813,
+      "margin": -15.1,
+      "demProbability": 0.0186,
+      "repProbability": 0.9814,
       "winnerParty": "R",
-      "winnerProbability": 0.9813,
+      "winnerProbability": 0.9814,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -4257,8 +4258,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0187,
-          "rep": 0.9813
+          "dem": 0.0186,
+          "rep": 0.9814
         }
       ]
     },
@@ -4903,11 +4904,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Lean R",
       "insideRating": null,
-      "margin": -1.78,
-      "demProbability": 0.4142,
-      "repProbability": 0.5858,
+      "margin": -1.79,
+      "demProbability": 0.4139,
+      "repProbability": 0.586,
       "winnerParty": "R",
-      "winnerProbability": 0.5858,
+      "winnerProbability": 0.586,
       "error": 7.75,
       "competitive": true,
       "sourceInputs": {
@@ -5136,8 +5137,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.4142,
-          "rep": 0.5858
+          "dem": 0.4139,
+          "rep": 0.586
         }
       ]
     },
@@ -5487,11 +5488,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -5.5,
-      "demProbability": 0.2472,
-      "repProbability": 0.7528,
+      "margin": -5.51,
+      "demProbability": 0.2468,
+      "repProbability": 0.7532,
       "winnerParty": "R",
-      "winnerProbability": 0.7528,
+      "winnerProbability": 0.7532,
       "error": 7.2,
       "competitive": true,
       "sourceInputs": {
@@ -5726,8 +5727,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.2472,
-          "rep": 0.7528
+          "dem": 0.2468,
+          "rep": 0.7532
         }
       ]
     },
@@ -6372,11 +6373,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.79,
-      "demProbability": 0.0217,
-      "repProbability": 0.9783,
+      "margin": -14.8,
+      "demProbability": 0.0216,
+      "repProbability": 0.9784,
       "winnerParty": "R",
-      "winnerProbability": 0.9783,
+      "winnerProbability": 0.9784,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -6611,8 +6612,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0217,
-          "rep": 0.9783
+          "dem": 0.0216,
+          "rep": 0.9784
         }
       ]
     },
@@ -6667,7 +6668,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.91,
+      "margin": 22.9,
       "demProbability": 0.9992,
       "repProbability": 0.0008,
       "winnerParty": "D",
@@ -7257,11 +7258,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Lean R",
       "insideRating": null,
-      "margin": -1.93,
-      "demProbability": 0.4077,
-      "repProbability": 0.5923,
+      "margin": -1.94,
+      "demProbability": 0.4073,
+      "repProbability": 0.5927,
       "winnerParty": "R",
-      "winnerProbability": 0.5923,
+      "winnerProbability": 0.5927,
       "error": 7.75,
       "competitive": true,
       "sourceInputs": {
@@ -7490,8 +7491,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.4077,
-          "rep": 0.5923
+          "dem": 0.4073,
+          "rep": 0.5927
         }
       ]
     },
@@ -7835,7 +7836,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.35,
+      "margin": 22.34,
       "demProbability": 0.999,
       "repProbability": 0.001,
       "winnerParty": "D",
@@ -8130,11 +8131,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 6.5,
-      "demProbability": 0.7104,
-      "repProbability": 0.2896,
+      "margin": 6.49,
+      "demProbability": 0.7102,
+      "repProbability": 0.2898,
       "winnerParty": "D",
-      "winnerProbability": 0.7104,
+      "winnerProbability": 0.7102,
       "error": 11.35,
       "competitive": true,
       "sourceInputs": {
@@ -8363,8 +8364,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.7104,
-          "rep": 0.2896
+          "dem": 0.7102,
+          "rep": 0.2898
         }
       ]
     },
@@ -9876,8 +9877,8 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.85,
-      "demProbability": 0.0081,
+      "margin": -15.86,
+      "demProbability": 0.008,
       "repProbability": 0.9919,
       "winnerParty": "R",
       "winnerProbability": 0.9919,
@@ -10109,7 +10110,7 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0081,
+          "dem": 0.008,
           "rep": 0.9919
         }
       ]
@@ -10165,7 +10166,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.49,
+      "margin": 23.48,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -10436,7 +10437,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -10707,7 +10708,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -12724,7 +12725,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.8,
+      "margin": 22.79,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -13297,11 +13298,11 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.67,
-      "demProbability": 0.9995,
-      "repProbability": 0.0005,
+      "margin": 23.66,
+      "demProbability": 0.9994,
+      "repProbability": 0.0006,
       "winnerParty": "D",
-      "winnerProbability": 0.9995,
+      "winnerProbability": 0.9994,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -13524,8 +13525,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.9995,
-          "rep": 0.0005
+          "dem": 0.9994,
+          "rep": 0.0006
         }
       ]
     },
@@ -13853,7 +13854,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.99,
+      "margin": -16,
       "demProbability": 0.0078,
       "repProbability": 0.9922,
       "winnerParty": "R",
@@ -14421,7 +14422,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.97,
+      "margin": 22.96,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -14983,7 +14984,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.5,
+      "margin": 23.49,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -15545,7 +15546,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.5,
+      "margin": 23.49,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -15823,7 +15824,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 21.19,
+      "margin": 21.18,
       "demProbability": 0.9994,
       "repProbability": 0.0006,
       "winnerParty": "D",
@@ -16385,7 +16386,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 21.22,
+      "margin": 21.21,
       "demProbability": 0.9993,
       "repProbability": 0.0007,
       "winnerParty": "D",
@@ -16935,7 +16936,7 @@
       "fecRepCandidate": null,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.5,
+      "margin": 23.49,
       "demProbability": 0.9999,
       "repProbability": 0.0001,
       "winnerParty": "D",
@@ -17479,11 +17480,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.89,
-      "demProbability": 0.0082,
-      "repProbability": 0.9918,
+      "margin": -15.9,
+      "demProbability": 0.0081,
+      "repProbability": 0.9919,
       "winnerParty": "R",
-      "winnerProbability": 0.9918,
+      "winnerProbability": 0.9919,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -17712,8 +17713,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0082,
-          "rep": 0.9918
+          "dem": 0.0081,
+          "rep": 0.9919
         }
       ]
     },
@@ -18041,7 +18042,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 21.85,
+      "margin": 21.84,
       "demProbability": 0.9995,
       "repProbability": 0.0005,
       "winnerParty": "D",
@@ -18319,11 +18320,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.68,
-      "demProbability": 0.0086,
-      "repProbability": 0.9914,
+      "margin": -15.69,
+      "demProbability": 0.0085,
+      "repProbability": 0.9915,
       "winnerParty": "R",
-      "winnerProbability": 0.9914,
+      "winnerProbability": 0.9915,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -18552,8 +18553,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0086,
-          "rep": 0.9914
+          "dem": 0.0085,
+          "rep": 0.9915
         }
       ]
     },
@@ -18603,7 +18604,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.97,
+      "margin": -15.98,
       "demProbability": 0.0074,
       "repProbability": 0.9926,
       "winnerParty": "R",
@@ -18887,7 +18888,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 21.69,
+      "margin": 21.68,
       "demProbability": 0.9996,
       "repProbability": 0.0004,
       "winnerParty": "D",
@@ -19170,11 +19171,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Likely D",
       "insideRating": null,
-      "margin": 12.45,
-      "demProbability": 0.9538,
-      "repProbability": 0.0462,
+      "margin": 12.44,
+      "demProbability": 0.9537,
+      "repProbability": 0.0463,
       "winnerParty": "D",
-      "winnerProbability": 0.9538,
+      "winnerProbability": 0.9537,
       "error": 6.45,
       "competitive": false,
       "sourceInputs": {
@@ -19397,8 +19398,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.9538,
-          "rep": 0.0462
+          "dem": 0.9537,
+          "rep": 0.0463
         }
       ]
     },
@@ -19453,7 +19454,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.99,
+      "margin": -16,
       "demProbability": 0.008,
       "repProbability": 0.992,
       "winnerParty": "R",
@@ -19742,7 +19743,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.46,
+      "margin": -15.47,
       "demProbability": 0.0094,
       "repProbability": 0.9906,
       "winnerParty": "R",
@@ -20898,7 +20899,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.37,
+      "margin": 23.36,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -21470,7 +21471,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.99,
+      "margin": -16,
       "demProbability": 0.0081,
       "repProbability": 0.9919,
       "winnerParty": "R",
@@ -21754,11 +21755,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.53,
-      "demProbability": 0.5886,
-      "repProbability": 0.4114,
+      "margin": 2.52,
+      "demProbability": 0.5883,
+      "repProbability": 0.4117,
       "winnerParty": "D",
-      "winnerProbability": 0.5886,
+      "winnerProbability": 0.5883,
       "error": 10.6,
       "competitive": true,
       "sourceInputs": {
@@ -21981,8 +21982,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5886,
-          "rep": 0.4114
+          "dem": 0.5883,
+          "rep": 0.4117
         }
       ]
     },
@@ -22310,11 +22311,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.39,
-      "demProbability": 0.5837,
-      "repProbability": 0.4163,
+      "margin": 2.38,
+      "demProbability": 0.5834,
+      "repProbability": 0.4166,
       "winnerParty": "D",
-      "winnerProbability": 0.5837,
+      "winnerProbability": 0.5834,
       "error": 10.6,
       "competitive": true,
       "sourceInputs": {
@@ -22537,8 +22538,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5837,
-          "rep": 0.4163
+          "dem": 0.5834,
+          "rep": 0.4166
         }
       ]
     },
@@ -22588,11 +22589,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.57,
-      "demProbability": 0.0138,
-      "repProbability": 0.9862,
+      "margin": -14.58,
+      "demProbability": 0.0137,
+      "repProbability": 0.9863,
       "winnerParty": "R",
-      "winnerProbability": 0.9862,
+      "winnerProbability": 0.9863,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -22821,8 +22822,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0138,
-          "rep": 0.9862
+          "dem": 0.0137,
+          "rep": 0.9863
         }
       ]
     },
@@ -23440,11 +23441,11 @@
       },
       "baselineRating": "Likely D",
       "insideRating": null,
-      "margin": 13.31,
-      "demProbability": 0.9496,
-      "repProbability": 0.0504,
+      "margin": 13.3,
+      "demProbability": 0.9495,
+      "repProbability": 0.0505,
       "winnerParty": "D",
-      "winnerProbability": 0.9496,
+      "winnerProbability": 0.9495,
       "error": 7.2,
       "competitive": false,
       "sourceInputs": {
@@ -23667,8 +23668,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.9496,
-          "rep": 0.0504
+          "dem": 0.9495,
+          "rep": 0.0505
         }
       ]
     },
@@ -24002,7 +24003,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.99,
+      "margin": -16,
       "demProbability": 0.0075,
       "repProbability": 0.9925,
       "winnerParty": "R",
@@ -24286,7 +24287,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.51,
+      "margin": -15.52,
       "demProbability": 0.0092,
       "repProbability": 0.9908,
       "winnerParty": "R",
@@ -24570,7 +24571,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.47,
+      "margin": 23.46,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -24848,11 +24849,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.96,
-      "demProbability": 0.0115,
-      "repProbability": 0.9885,
+      "margin": -14.97,
+      "demProbability": 0.0114,
+      "repProbability": 0.9886,
       "winnerParty": "R",
-      "winnerProbability": 0.9885,
+      "winnerProbability": 0.9886,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -25081,8 +25082,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0115,
-          "rep": 0.9885
+          "dem": 0.0114,
+          "rep": 0.9886
         }
       ]
     },
@@ -25416,11 +25417,11 @@
       },
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -6.17,
-      "demProbability": 0.2022,
-      "repProbability": 0.7978,
+      "margin": -6.18,
+      "demProbability": 0.2018,
+      "repProbability": 0.7982,
       "winnerParty": "R",
-      "winnerProbability": 0.7978,
+      "winnerProbability": 0.7982,
       "error": 6.45,
       "competitive": true,
       "sourceInputs": {
@@ -25649,8 +25650,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.2022,
-          "rep": 0.7978
+          "dem": 0.2018,
+          "rep": 0.7982
         }
       ]
     },
@@ -25982,7 +25983,7 @@
       "redistrictingOverride": true,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.73,
+      "margin": 23.72,
       "demProbability": 0.9983,
       "repProbability": 0.0017,
       "winnerParty": "D",
@@ -26831,11 +26832,11 @@
       "redistrictingOverride": true,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.82,
-      "demProbability": 0.0202,
-      "repProbability": 0.9798,
+      "margin": -14.83,
+      "demProbability": 0.0201,
+      "repProbability": 0.9799,
       "winnerParty": "R",
-      "winnerProbability": 0.9798,
+      "winnerProbability": 0.9799,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -27064,8 +27065,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0202,
-          "rep": 0.9798
+          "dem": 0.0201,
+          "rep": 0.9799
         }
       ]
     },
@@ -27120,11 +27121,11 @@
       "redistrictingOverride": true,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.55,
-      "demProbability": 0.0345,
-      "repProbability": 0.9655,
+      "margin": -14.56,
+      "demProbability": 0.0344,
+      "repProbability": 0.9656,
       "winnerParty": "R",
-      "winnerProbability": 0.9655,
+      "winnerProbability": 0.9656,
       "error": 7.15,
       "competitive": false,
       "sourceInputs": {
@@ -27353,8 +27354,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0345,
-          "rep": 0.9655
+          "dem": 0.0344,
+          "rep": 0.9656
         }
       ]
     },
@@ -27682,11 +27683,11 @@
       },
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -4.28,
-      "demProbability": 0.2941,
-      "repProbability": 0.7059,
+      "margin": -4.29,
+      "demProbability": 0.2936,
+      "repProbability": 0.7064,
       "winnerParty": "R",
-      "winnerProbability": 0.7059,
+      "winnerProbability": 0.7064,
       "error": 7.2,
       "competitive": true,
       "sourceInputs": {
@@ -27909,8 +27910,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.2941,
-          "rep": 0.7059
+          "dem": 0.2936,
+          "rep": 0.7064
         }
       ]
     },
@@ -27965,7 +27966,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16,
+      "margin": -16.01,
       "demProbability": 0.014,
       "repProbability": 0.986,
       "winnerParty": "R",
@@ -28254,7 +28255,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.73,
+      "margin": 23.72,
       "demProbability": 0.9995,
       "repProbability": 0.0005,
       "winnerParty": "D",
@@ -28808,7 +28809,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.86,
+      "margin": 23.85,
       "demProbability": 0.999,
       "repProbability": 0.001,
       "winnerParty": "D",
@@ -29079,7 +29080,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.46,
+      "margin": 22.45,
       "demProbability": 0.9992,
       "repProbability": 0.0008,
       "winnerParty": "D",
@@ -29639,7 +29640,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.86,
+      "margin": 23.85,
       "demProbability": 0.9991,
       "repProbability": 0.0009,
       "winnerParty": "D",
@@ -29910,7 +29911,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.73,
+      "margin": 23.72,
       "demProbability": 0.9994,
       "repProbability": 0.0006,
       "winnerParty": "D",
@@ -30176,7 +30177,7 @@
       "fecRepCandidate": null,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.86,
+      "margin": 23.85,
       "demProbability": 0.9993,
       "repProbability": 0.0007,
       "winnerParty": "D",
@@ -30430,7 +30431,7 @@
       "fecRepCandidate": null,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.84,
+      "margin": 23.83,
       "demProbability": 0.9992,
       "repProbability": 0.0008,
       "winnerParty": "D",
@@ -30696,7 +30697,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9995,
       "repProbability": 0.0005,
       "winnerParty": "D",
@@ -30974,7 +30975,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9994,
       "repProbability": 0.0006,
       "winnerParty": "D",
@@ -31240,7 +31241,7 @@
       "fecRepCandidate": null,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.84,
+      "margin": 23.83,
       "demProbability": 0.9992,
       "repProbability": 0.0008,
       "winnerParty": "D",
@@ -31506,7 +31507,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 21.96,
+      "margin": 21.95,
       "demProbability": 0.9989,
       "repProbability": 0.0011,
       "winnerParty": "D",
@@ -31778,7 +31779,7 @@
       "fecRepCandidate": null,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.84,
+      "margin": 23.83,
       "demProbability": 0.9991,
       "repProbability": 0.0009,
       "winnerParty": "D",
@@ -32044,7 +32045,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9996,
       "repProbability": 0.0004,
       "winnerParty": "D",
@@ -32322,7 +32323,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.89,
+      "margin": 22.88,
       "demProbability": 0.9992,
       "repProbability": 0.0008,
       "winnerParty": "D",
@@ -32600,7 +32601,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.6,
+      "margin": -15.61,
       "demProbability": 0.0161,
       "repProbability": 0.9839,
       "winnerParty": "R",
@@ -32884,11 +32885,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.95,
-      "demProbability": 0.0144,
-      "repProbability": 0.9856,
+      "margin": -15.96,
+      "demProbability": 0.0143,
+      "repProbability": 0.9857,
       "winnerParty": "R",
-      "winnerProbability": 0.9856,
+      "winnerProbability": 0.9857,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -33117,8 +33118,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0144,
-          "rep": 0.9856
+          "dem": 0.0143,
+          "rep": 0.9857
         }
       ]
     },
@@ -33446,11 +33447,11 @@
       },
       "baselineRating": "Lean R",
       "insideRating": null,
-      "margin": -3,
-      "demProbability": 0.3602,
-      "repProbability": 0.6398,
+      "margin": -3.01,
+      "demProbability": 0.3599,
+      "repProbability": 0.6401,
       "winnerParty": "R",
-      "winnerProbability": 0.6398,
+      "winnerProbability": 0.6401,
       "error": 7.75,
       "competitive": true,
       "sourceInputs": {
@@ -33673,8 +33674,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.3602,
-          "rep": 0.6398
+          "dem": 0.3599,
+          "rep": 0.6401
         }
       ]
     },
@@ -34286,11 +34287,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.39,
-      "demProbability": 0.5807,
-      "repProbability": 0.4193,
+      "margin": 2.38,
+      "demProbability": 0.5803,
+      "repProbability": 0.4197,
       "winnerParty": "D",
-      "winnerProbability": 0.5807,
+      "winnerProbability": 0.5803,
       "error": 11.35,
       "competitive": true,
       "sourceInputs": {
@@ -34513,8 +34514,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5807,
-          "rep": 0.4193
+          "dem": 0.5803,
+          "rep": 0.4197
         }
       ]
     },
@@ -34564,11 +34565,11 @@
       },
       "baselineRating": "Lean D",
       "insideRating": null,
-      "margin": 9.65,
-      "demProbability": 0.8709,
-      "repProbability": 0.1291,
+      "margin": 9.64,
+      "demProbability": 0.8707,
+      "repProbability": 0.1293,
       "winnerParty": "D",
-      "winnerProbability": 0.8709,
+      "winnerProbability": 0.8707,
       "error": 7.75,
       "competitive": false,
       "sourceInputs": {
@@ -34791,8 +34792,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.8709,
-          "rep": 0.1291
+          "dem": 0.8707,
+          "rep": 0.1293
         }
       ]
     },
@@ -35126,11 +35127,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 3.11,
-      "demProbability": 0.6033,
-      "repProbability": 0.3967,
+      "margin": 3.1,
+      "demProbability": 0.6029,
+      "repProbability": 0.3971,
       "winnerParty": "D",
-      "winnerProbability": 0.6033,
+      "winnerProbability": 0.6029,
       "error": 11.35,
       "competitive": true,
       "sourceInputs": {
@@ -35353,8 +35354,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.6033,
-          "rep": 0.3967
+          "dem": 0.6029,
+          "rep": 0.3971
         }
       ]
     },
@@ -35404,7 +35405,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.04,
+      "margin": 22.03,
       "demProbability": 0.9989,
       "repProbability": 0.0011,
       "winnerParty": "D",
@@ -35966,7 +35967,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.4,
+      "margin": 23.39,
       "demProbability": 0.9994,
       "repProbability": 0.0006,
       "winnerParty": "D",
@@ -36232,11 +36233,11 @@
       },
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -7.34,
-      "demProbability": 0.1952,
-      "repProbability": 0.8048,
+      "margin": -7.35,
+      "demProbability": 0.1948,
+      "repProbability": 0.8052,
       "winnerParty": "R",
-      "winnerProbability": 0.8048,
+      "winnerProbability": 0.8052,
       "error": 7.65,
       "competitive": true,
       "sourceInputs": {
@@ -36453,8 +36454,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.1952,
-          "rep": 0.8048
+          "dem": 0.1948,
+          "rep": 0.8052
         }
       ]
     },
@@ -36504,11 +36505,11 @@
       },
       "baselineRating": "Likely D",
       "insideRating": null,
-      "margin": 12.75,
-      "demProbability": 0.9436,
-      "repProbability": 0.0564,
+      "margin": 12.74,
+      "demProbability": 0.9434,
+      "repProbability": 0.0566,
       "winnerParty": "D",
-      "winnerProbability": 0.9436,
+      "winnerProbability": 0.9434,
       "error": 7.2,
       "competitive": false,
       "sourceInputs": {
@@ -36737,8 +36738,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.9436,
-          "rep": 0.0564
+          "dem": 0.9434,
+          "rep": 0.0566
         }
       ]
     },
@@ -37320,11 +37321,11 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.18,
-      "demProbability": 0.9993,
-      "repProbability": 0.0007,
+      "margin": 23.17,
+      "demProbability": 0.9992,
+      "repProbability": 0.0008,
       "winnerParty": "D",
-      "winnerProbability": 0.9993,
+      "winnerProbability": 0.9992,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -37547,8 +37548,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.9993,
-          "rep": 0.0007
+          "dem": 0.9992,
+          "rep": 0.0008
         }
       ]
     },
@@ -38402,7 +38403,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.97,
+      "margin": -15.98,
       "demProbability": 0.0075,
       "repProbability": 0.9925,
       "winnerParty": "R",
@@ -38686,7 +38687,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.33,
+      "margin": 23.32,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -39248,7 +39249,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.44,
+      "margin": -15.45,
       "demProbability": 0.0098,
       "repProbability": 0.9902,
       "winnerParty": "R",
@@ -40109,7 +40110,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.67,
+      "margin": -15.68,
       "demProbability": 0.0153,
       "repProbability": 0.9847,
       "winnerParty": "R",
@@ -40398,11 +40399,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.2,
-      "demProbability": 0.0124,
-      "repProbability": 0.9876,
+      "margin": -16.21,
+      "demProbability": 0.0123,
+      "repProbability": 0.9877,
       "winnerParty": "R",
-      "winnerProbability": 0.9876,
+      "winnerProbability": 0.9877,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -40631,8 +40632,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0124,
-          "rep": 0.9876
+          "dem": 0.0123,
+          "rep": 0.9877
         }
       ]
     },
@@ -40687,7 +40688,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.2,
+      "margin": -14.21,
       "demProbability": 0.0253,
       "repProbability": 0.9747,
       "winnerParty": "R",
@@ -40970,7 +40971,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.57,
+      "margin": -14.58,
       "demProbability": 0.0223,
       "repProbability": 0.9777,
       "winnerParty": "R",
@@ -41259,7 +41260,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.67,
+      "margin": -15.68,
       "demProbability": 0.0151,
       "repProbability": 0.9849,
       "winnerParty": "R",
@@ -42116,11 +42117,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.46,
-      "demProbability": 0.0095,
-      "repProbability": 0.9905,
+      "margin": -15.47,
+      "demProbability": 0.0094,
+      "repProbability": 0.9906,
       "winnerParty": "R",
-      "winnerProbability": 0.9905,
+      "winnerProbability": 0.9906,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -42349,8 +42350,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0095,
-          "rep": 0.9905
+          "dem": 0.0094,
+          "rep": 0.9906
         }
       ]
     },
@@ -42400,11 +42401,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.93,
-      "demProbability": 0.008,
-      "repProbability": 0.992,
+      "margin": -15.94,
+      "demProbability": 0.0079,
+      "repProbability": 0.9921,
       "winnerParty": "R",
-      "winnerProbability": 0.992,
+      "winnerProbability": 0.9921,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -42633,8 +42634,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.008,
-          "rep": 0.992
+          "dem": 0.0079,
+          "rep": 0.9921
         }
       ]
     },
@@ -42962,8 +42963,8 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.97,
-      "demProbability": 0.0076,
+      "margin": -15.98,
+      "demProbability": 0.0075,
       "repProbability": 0.9925,
       "winnerParty": "R",
       "winnerProbability": 0.9925,
@@ -43195,7 +43196,7 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0076,
+          "dem": 0.0075,
           "rep": 0.9925
         }
       ]
@@ -43246,7 +43247,7 @@
       },
       "baselineRating": "Likely D",
       "insideRating": null,
-      "margin": 12.64,
+      "margin": 12.63,
       "demProbability": 0.9415,
       "repProbability": 0.0585,
       "winnerParty": "D",
@@ -43820,11 +43821,11 @@
       },
       "baselineRating": "Lean D",
       "insideRating": null,
-      "margin": 9.24,
-      "demProbability": 0.8575,
-      "repProbability": 0.1425,
+      "margin": 9.23,
+      "demProbability": 0.8572,
+      "repProbability": 0.1428,
       "winnerParty": "D",
-      "winnerProbability": 0.8575,
+      "winnerProbability": 0.8572,
       "error": 7.75,
       "competitive": false,
       "sourceInputs": {
@@ -44053,8 +44054,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.8575,
-          "rep": 0.1425
+          "dem": 0.8572,
+          "rep": 0.1428
         }
       ]
     },
@@ -44104,11 +44105,11 @@
       },
       "baselineRating": "Likely D",
       "insideRating": null,
-      "margin": 12.89,
-      "demProbability": 0.9437,
-      "repProbability": 0.0563,
+      "margin": 12.88,
+      "demProbability": 0.9436,
+      "repProbability": 0.0564,
       "winnerParty": "D",
-      "winnerProbability": 0.9437,
+      "winnerProbability": 0.9436,
       "error": 7.2,
       "competitive": false,
       "sourceInputs": {
@@ -44337,8 +44338,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.9437,
-          "rep": 0.0563
+          "dem": 0.9436,
+          "rep": 0.0564
         }
       ]
     },
@@ -44666,11 +44667,11 @@
       },
       "baselineRating": "Likely D",
       "insideRating": null,
-      "margin": 12.7,
-      "demProbability": 0.9429,
-      "repProbability": 0.0571,
+      "margin": 12.69,
+      "demProbability": 0.9428,
+      "repProbability": 0.0572,
       "winnerParty": "D",
-      "winnerProbability": 0.9429,
+      "winnerProbability": 0.9428,
       "error": 7.2,
       "competitive": false,
       "sourceInputs": {
@@ -44893,8 +44894,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.9429,
-          "rep": 0.0571
+          "dem": 0.9428,
+          "rep": 0.0572
         }
       ]
     },
@@ -44944,7 +44945,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.5,
+      "margin": 23.49,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -45222,11 +45223,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.63,
-      "demProbability": 0.0094,
-      "repProbability": 0.9906,
+      "margin": -15.64,
+      "demProbability": 0.0093,
+      "repProbability": 0.9907,
       "winnerParty": "R",
-      "winnerProbability": 0.9906,
+      "winnerProbability": 0.9907,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -45455,8 +45456,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0094,
-          "rep": 0.9906
+          "dem": 0.0093,
+          "rep": 0.9907
         }
       ]
     },
@@ -45506,7 +45507,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.05,
+      "margin": 22.04,
       "demProbability": 0.9996,
       "repProbability": 0.0004,
       "winnerParty": "D",
@@ -45784,7 +45785,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.97,
+      "margin": -15.98,
       "demProbability": 0.0075,
       "repProbability": 0.9925,
       "winnerParty": "R",
@@ -46346,7 +46347,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.44,
+      "margin": 22.43,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -46624,11 +46625,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.46,
-      "demProbability": 0.5861,
-      "repProbability": 0.4139,
+      "margin": 2.45,
+      "demProbability": 0.5858,
+      "repProbability": 0.4142,
       "winnerParty": "D",
-      "winnerProbability": 0.5861,
+      "winnerProbability": 0.5858,
       "error": 10.6,
       "competitive": true,
       "sourceInputs": {
@@ -46851,8 +46852,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5861,
-          "rep": 0.4139
+          "dem": 0.5858,
+          "rep": 0.4142
         }
       ]
     },
@@ -47156,11 +47157,11 @@
       },
       "baselineRating": "Lean D",
       "insideRating": null,
-      "margin": 9.42,
-      "demProbability": 0.8824,
-      "repProbability": 0.1176,
+      "margin": 9.41,
+      "demProbability": 0.8821,
+      "repProbability": 0.1179,
       "winnerParty": "D",
-      "winnerProbability": 0.8824,
+      "winnerProbability": 0.8821,
       "error": 7,
       "competitive": false,
       "sourceInputs": {
@@ -47383,8 +47384,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.8824,
-          "rep": 0.1176
+          "dem": 0.8821,
+          "rep": 0.1179
         }
       ]
     },
@@ -47434,7 +47435,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.5,
+      "margin": 23.49,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -47990,7 +47991,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.46,
+      "margin": 22.45,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -48274,7 +48275,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.91,
+      "margin": 22.9,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -48558,11 +48559,11 @@
       },
       "baselineRating": "Lean D",
       "insideRating": null,
-      "margin": 9.06,
-      "demProbability": 0.8737,
-      "repProbability": 0.1263,
+      "margin": 9.05,
+      "demProbability": 0.8734,
+      "repProbability": 0.1266,
       "winnerParty": "D",
-      "winnerProbability": 0.8737,
+      "winnerProbability": 0.8734,
       "error": 7,
       "competitive": false,
       "sourceInputs": {
@@ -48791,8 +48792,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.8737,
-          "rep": 0.1263
+          "dem": 0.8734,
+          "rep": 0.1266
         }
       ]
     },
@@ -48842,7 +48843,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 21.78,
+      "margin": 21.77,
       "demProbability": 0.9996,
       "repProbability": 0.0004,
       "winnerParty": "D",
@@ -49131,11 +49132,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -6.21,
-      "demProbability": 0.2201,
-      "repProbability": 0.7799,
+      "margin": -6.22,
+      "demProbability": 0.2197,
+      "repProbability": 0.7803,
       "winnerParty": "R",
-      "winnerProbability": 0.7799,
+      "winnerProbability": 0.7803,
       "error": 7.2,
       "competitive": true,
       "sourceInputs": {
@@ -49358,8 +49359,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.2201,
-          "rep": 0.7799
+          "dem": 0.2197,
+          "rep": 0.7803
         }
       ]
     },
@@ -49414,7 +49415,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.19,
+      "margin": -16.2,
       "demProbability": 0.0123,
       "repProbability": 0.9877,
       "winnerParty": "R",
@@ -49986,11 +49987,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Lean D",
       "insideRating": null,
-      "margin": 9.66,
-      "demProbability": 0.8696,
-      "repProbability": 0.1304,
+      "margin": 9.65,
+      "demProbability": 0.8694,
+      "repProbability": 0.1306,
       "winnerParty": "D",
-      "winnerProbability": 0.8696,
+      "winnerProbability": 0.8694,
       "error": 7.75,
       "competitive": false,
       "sourceInputs": {
@@ -50213,8 +50214,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.8696,
-          "rep": 0.1304
+          "dem": 0.8694,
+          "rep": 0.1306
         }
       ]
     },
@@ -50269,7 +50270,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9995,
       "repProbability": 0.0005,
       "winnerParty": "D",
@@ -50552,7 +50553,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.32,
+      "margin": 23.31,
       "demProbability": 0.9994,
       "repProbability": 0.0006,
       "winnerParty": "D",
@@ -51100,7 +51101,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9994,
       "repProbability": 0.0006,
       "winnerParty": "D",
@@ -51383,7 +51384,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9996,
       "repProbability": 0.0004,
       "winnerParty": "D",
@@ -51654,7 +51655,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.6,
+      "margin": 23.59,
       "demProbability": 0.9993,
       "repProbability": 0.0007,
       "winnerParty": "D",
@@ -51925,7 +51926,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.08,
+      "margin": -16.09,
       "demProbability": 0.0125,
       "repProbability": 0.9875,
       "winnerParty": "R",
@@ -52214,7 +52215,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.44,
+      "margin": 22.43,
       "demProbability": 0.999,
       "repProbability": 0.001,
       "winnerParty": "D",
@@ -52491,7 +52492,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.84,
+      "margin": 23.83,
       "demProbability": 0.9991,
       "repProbability": 0.0009,
       "winnerParty": "D",
@@ -53033,7 +53034,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.84,
+      "margin": 23.83,
       "demProbability": 0.9992,
       "repProbability": 0.0008,
       "winnerParty": "D",
@@ -53304,7 +53305,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9995,
       "repProbability": 0.0005,
       "winnerParty": "D",
@@ -55014,7 +55015,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.23,
+      "margin": 22.22,
       "demProbability": 0.999,
       "repProbability": 0.001,
       "winnerParty": "D",
@@ -55875,7 +55876,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9993,
       "repProbability": 0.0007,
       "winnerParty": "D",
@@ -56146,7 +56147,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.84,
+      "margin": 23.83,
       "demProbability": 0.999,
       "repProbability": 0.001,
       "winnerParty": "D",
@@ -56700,7 +56701,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -56983,7 +56984,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.35,
+      "margin": -15.36,
       "demProbability": 0.0098,
       "repProbability": 0.9902,
       "winnerParty": "R",
@@ -57272,7 +57273,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.99,
+      "margin": 22.98,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -58133,7 +58134,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.71,
+      "margin": -15.72,
       "demProbability": 0.009,
       "repProbability": 0.991,
       "winnerParty": "R",
@@ -58422,7 +58423,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.79,
+      "margin": -15.8,
       "demProbability": 0.0085,
       "repProbability": 0.9915,
       "winnerParty": "R",
@@ -58711,7 +58712,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.73,
+      "margin": -15.74,
       "demProbability": 0.0087,
       "repProbability": 0.9913,
       "winnerParty": "R",
@@ -59289,11 +59290,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -6.33,
-      "demProbability": 0.1975,
-      "repProbability": 0.8025,
+      "margin": -6.34,
+      "demProbability": 0.1971,
+      "repProbability": 0.8029,
       "winnerParty": "R",
-      "winnerProbability": 0.8025,
+      "winnerProbability": 0.8029,
       "error": 6.45,
       "competitive": true,
       "sourceInputs": {
@@ -59516,8 +59517,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.1975,
-          "rep": 0.8025
+          "dem": 0.1971,
+          "rep": 0.8029
         }
       ]
     },
@@ -59572,7 +59573,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -59855,11 +59856,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.64,
-      "demProbability": 0.0085,
-      "repProbability": 0.9915,
+      "margin": -15.65,
+      "demProbability": 0.0084,
+      "repProbability": 0.9916,
       "winnerParty": "R",
-      "winnerProbability": 0.9915,
+      "winnerProbability": 0.9916,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -60088,8 +60089,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0085,
-          "rep": 0.9915
+          "dem": 0.0084,
+          "rep": 0.9916
         }
       ]
     },
@@ -60144,8 +60145,8 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.87,
-      "demProbability": 0.0078,
+      "margin": -15.88,
+      "demProbability": 0.0077,
       "repProbability": 0.9922,
       "winnerParty": "R",
       "winnerProbability": 0.9922,
@@ -60377,7 +60378,7 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0078,
+          "dem": 0.0077,
           "rep": 0.9922
         }
       ]
@@ -60941,7 +60942,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.46,
+      "margin": -15.47,
       "demProbability": 0.0097,
       "repProbability": 0.9903,
       "winnerParty": "R",
@@ -61489,7 +61490,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.99,
+      "margin": -16,
       "demProbability": 0.0074,
       "repProbability": 0.9926,
       "winnerParty": "R",
@@ -61778,11 +61779,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.99,
-      "demProbability": 0.0078,
-      "repProbability": 0.9922,
+      "margin": -16,
+      "demProbability": 0.0077,
+      "repProbability": 0.9923,
       "winnerParty": "R",
-      "winnerProbability": 0.9922,
+      "winnerProbability": 0.9923,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -62011,8 +62012,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0078,
-          "rep": 0.9922
+          "dem": 0.0077,
+          "rep": 0.9923
         }
       ]
     },
@@ -62067,11 +62068,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.88,
-      "demProbability": 0.008,
-      "repProbability": 0.992,
+      "margin": -15.89,
+      "demProbability": 0.0079,
+      "repProbability": 0.9921,
       "winnerParty": "R",
-      "winnerProbability": 0.992,
+      "winnerProbability": 0.9921,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -62300,8 +62301,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.008,
-          "rep": 0.992
+          "dem": 0.0079,
+          "rep": 0.9921
         }
       ]
     },
@@ -62645,11 +62646,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.92,
-      "demProbability": 0.0077,
-      "repProbability": 0.9923,
+      "margin": -15.93,
+      "demProbability": 0.0076,
+      "repProbability": 0.9924,
       "winnerParty": "R",
-      "winnerProbability": 0.9923,
+      "winnerProbability": 0.9924,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -62878,8 +62879,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0077,
-          "rep": 0.9923
+          "dem": 0.0076,
+          "rep": 0.9924
         }
       ]
     },
@@ -63217,11 +63218,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.37,
-      "demProbability": 0.0146,
-      "repProbability": 0.9854,
+      "margin": -14.38,
+      "demProbability": 0.0145,
+      "repProbability": 0.9855,
       "winnerParty": "R",
-      "winnerProbability": 0.9854,
+      "winnerProbability": 0.9855,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -63444,8 +63445,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0146,
-          "rep": 0.9854
+          "dem": 0.0145,
+          "rep": 0.9855
         }
       ]
     },
@@ -63783,7 +63784,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.94,
+      "margin": -15.95,
       "demProbability": 0.0078,
       "repProbability": 0.9922,
       "winnerParty": "R",
@@ -64355,7 +64356,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.46,
+      "margin": -15.47,
       "demProbability": 0.0096,
       "repProbability": 0.9904,
       "winnerParty": "R",
@@ -64644,7 +64645,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.82,
+      "margin": -14.83,
       "demProbability": 0.0125,
       "repProbability": 0.9875,
       "winnerParty": "R",
@@ -64922,7 +64923,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.61,
+      "margin": -14.62,
       "demProbability": 0.0214,
       "repProbability": 0.9786,
       "winnerParty": "R",
@@ -65206,7 +65207,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.2,
+      "margin": -16.21,
       "demProbability": 0.0125,
       "repProbability": 0.9875,
       "winnerParty": "R",
@@ -65490,11 +65491,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.2,
-      "demProbability": 0.0126,
-      "repProbability": 0.9874,
+      "margin": -16.21,
+      "demProbability": 0.0125,
+      "repProbability": 0.9875,
       "winnerParty": "R",
-      "winnerProbability": 0.9874,
+      "winnerProbability": 0.9875,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -65723,8 +65724,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0126,
-          "rep": 0.9874
+          "dem": 0.0125,
+          "rep": 0.9875
         }
       ]
     },
@@ -65774,7 +65775,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.2,
+      "margin": -16.21,
       "demProbability": 0.0126,
       "repProbability": 0.9874,
       "winnerParty": "R",
@@ -66620,7 +66621,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.97,
+      "margin": -15.98,
       "demProbability": 0.0079,
       "repProbability": 0.9921,
       "winnerParty": "R",
@@ -66892,7 +66893,7 @@
       "fecRepCandidate": null,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.5,
+      "margin": 23.49,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -67992,11 +67993,11 @@
       },
       "baselineRating": "Lean R",
       "insideRating": null,
-      "margin": -2.46,
-      "demProbability": 0.3785,
-      "repProbability": 0.6215,
+      "margin": -2.47,
+      "demProbability": 0.3781,
+      "repProbability": 0.6219,
       "winnerParty": "R",
-      "winnerProbability": 0.6215,
+      "winnerProbability": 0.6219,
       "error": 7,
       "competitive": true,
       "sourceInputs": {
@@ -68219,8 +68220,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.3785,
-          "rep": 0.6215
+          "dem": 0.3781,
+          "rep": 0.6219
         }
       ]
     },
@@ -68832,7 +68833,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.49,
+      "margin": 23.48,
       "demProbability": 0.9999,
       "repProbability": 0.0001,
       "winnerParty": "D",
@@ -69388,7 +69389,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.55,
+      "margin": 22.54,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -69666,11 +69667,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.67,
-      "demProbability": 0.5962,
-      "repProbability": 0.4038,
+      "margin": 2.66,
+      "demProbability": 0.5959,
+      "repProbability": 0.4041,
       "winnerParty": "D",
-      "winnerProbability": 0.5962,
+      "winnerProbability": 0.5959,
       "error": 10.6,
       "competitive": true,
       "sourceInputs": {
@@ -69893,8 +69894,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5962,
-          "rep": 0.4038
+          "dem": 0.5959,
+          "rep": 0.4041
         }
       ]
     },
@@ -69944,11 +69945,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.43,
-      "demProbability": 0.5825,
-      "repProbability": 0.4175,
+      "margin": 2.42,
+      "demProbability": 0.5821,
+      "repProbability": 0.4179,
       "winnerParty": "D",
-      "winnerProbability": 0.5825,
+      "winnerProbability": 0.5821,
       "error": 10.6,
       "competitive": true,
       "sourceInputs": {
@@ -70171,8 +70172,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5825,
-          "rep": 0.4175
+          "dem": 0.5821,
+          "rep": 0.4179
         }
       ]
     },
@@ -70222,11 +70223,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.48,
-      "demProbability": 0.0089,
-      "repProbability": 0.9911,
+      "margin": -15.49,
+      "demProbability": 0.0088,
+      "repProbability": 0.9912,
       "winnerParty": "R",
-      "winnerProbability": 0.9911,
+      "winnerProbability": 0.9912,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -70455,8 +70456,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0089,
-          "rep": 0.9911
+          "dem": 0.0088,
+          "rep": 0.9912
         }
       ]
     },
@@ -70784,7 +70785,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.97,
+      "margin": -15.98,
       "demProbability": 0.0078,
       "repProbability": 0.9922,
       "winnerParty": "R",
@@ -71068,7 +71069,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.45,
+      "margin": 23.44,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -71346,7 +71347,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.97,
+      "margin": -15.98,
       "demProbability": 0.0073,
       "repProbability": 0.9927,
       "winnerParty": "R",
@@ -72198,7 +72199,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.44,
+      "margin": -15.45,
       "demProbability": 0.0096,
       "repProbability": 0.9904,
       "winnerParty": "R",
@@ -72748,7 +72749,7 @@
       "fecRepCandidate": null,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.84,
+      "margin": 23.83,
       "demProbability": 0.9991,
       "repProbability": 0.0009,
       "winnerParty": "D",
@@ -73297,11 +73298,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.43,
-      "demProbability": 0.023,
-      "repProbability": 0.977,
+      "margin": -14.44,
+      "demProbability": 0.0229,
+      "repProbability": 0.9771,
       "winnerParty": "R",
-      "winnerProbability": 0.977,
+      "winnerProbability": 0.9771,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -73530,8 +73531,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.023,
-          "rep": 0.977
+          "dem": 0.0229,
+          "rep": 0.9771
         }
       ]
     },
@@ -73586,7 +73587,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.98,
+      "margin": -15.99,
       "demProbability": 0.0132,
       "repProbability": 0.9868,
       "winnerParty": "R",
@@ -73875,11 +73876,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.78,
-      "demProbability": 0.0145,
-      "repProbability": 0.9855,
+      "margin": -15.79,
+      "demProbability": 0.0144,
+      "repProbability": 0.9856,
       "winnerParty": "R",
-      "winnerProbability": 0.9855,
+      "winnerProbability": 0.9856,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -74108,8 +74109,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0145,
-          "rep": 0.9855
+          "dem": 0.0144,
+          "rep": 0.9856
         }
       ]
     },
@@ -74453,7 +74454,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.16,
+      "margin": -15.17,
       "demProbability": 0.018,
       "repProbability": 0.982,
       "winnerParty": "R",
@@ -74742,7 +74743,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.73,
+      "margin": 23.72,
       "demProbability": 0.9996,
       "repProbability": 0.0004,
       "winnerParty": "D",
@@ -75025,7 +75026,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.03,
+      "margin": -16.04,
       "demProbability": 0.0128,
       "repProbability": 0.9872,
       "winnerParty": "R",
@@ -75539,11 +75540,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.67,
-      "demProbability": 0.0153,
-      "repProbability": 0.9847,
+      "margin": -15.68,
+      "demProbability": 0.0152,
+      "repProbability": 0.9848,
       "winnerParty": "R",
-      "winnerProbability": 0.9847,
+      "winnerProbability": 0.9848,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -75772,8 +75773,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0153,
-          "rep": 0.9847
+          "dem": 0.0152,
+          "rep": 0.9848
         }
       ]
     },
@@ -75828,7 +75829,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.12,
+      "margin": -16.13,
       "demProbability": 0.0126,
       "repProbability": 0.9874,
       "winnerParty": "R",
@@ -76117,8 +76118,8 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.2,
-      "demProbability": 0.0127,
+      "margin": -16.21,
+      "demProbability": 0.0126,
       "repProbability": 0.9873,
       "winnerParty": "R",
       "winnerProbability": 0.9873,
@@ -76350,7 +76351,7 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0127,
+          "dem": 0.0126,
           "rep": 0.9873
         }
       ]
@@ -76370,7 +76371,7 @@
       "congressionalMargin": 0,
       "fundamentalMargin": -23.9,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 95,
+      "kalshiPrice": 93,
       "demCandidate": "Mike Cortese",
       "repCandidate": "Scott DesJarlais",
       "fecDemCandidate": {
@@ -76406,7 +76407,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.5,
+      "margin": -15.51,
       "demProbability": 0.016,
       "repProbability": 0.984,
       "winnerParty": "R",
@@ -76695,7 +76696,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.5,
+      "margin": -15.51,
       "demProbability": 0.0157,
       "repProbability": 0.9843,
       "winnerParty": "R",
@@ -76984,7 +76985,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.63,
+      "margin": -14.64,
       "demProbability": 0.0215,
       "repProbability": 0.9785,
       "winnerParty": "R",
@@ -77562,11 +77563,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.12,
-      "demProbability": 0.0119,
-      "repProbability": 0.9881,
+      "margin": -16.13,
+      "demProbability": 0.0118,
+      "repProbability": 0.9882,
       "winnerParty": "R",
-      "winnerProbability": 0.9881,
+      "winnerProbability": 0.9882,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -77795,8 +77796,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0119,
-          "rep": 0.9881
+          "dem": 0.0118,
+          "rep": 0.9882
         }
       ]
     },
@@ -78435,7 +78436,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.99,
+      "margin": -15,
       "demProbability": 0.0111,
       "repProbability": 0.9889,
       "winnerParty": "R",
@@ -78730,7 +78731,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.92,
+      "margin": -15.93,
       "demProbability": 0.008,
       "repProbability": 0.992,
       "winnerParty": "R",
@@ -79910,7 +79911,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9999,
       "repProbability": 0.0001,
       "winnerParty": "D",
@@ -80199,7 +80200,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.67,
+      "margin": -14.68,
       "demProbability": 0.0131,
       "repProbability": 0.9869,
       "winnerParty": "R",
@@ -80789,7 +80790,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.73,
+      "margin": -14.74,
       "demProbability": 0.0127,
       "repProbability": 0.9873,
       "winnerParty": "R",
@@ -83143,7 +83144,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -83727,7 +83728,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -84311,11 +84312,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.87,
-      "demProbability": 0.012,
-      "repProbability": 0.988,
+      "margin": -14.88,
+      "demProbability": 0.0119,
+      "repProbability": 0.9881,
       "winnerParty": "R",
-      "winnerProbability": 0.988,
+      "winnerProbability": 0.9881,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -84550,8 +84551,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.012,
-          "rep": 0.988
+          "dem": 0.0119,
+          "rep": 0.9881
         }
       ]
     },
@@ -84606,11 +84607,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -6.27,
-      "demProbability": 0.1973,
-      "repProbability": 0.8027,
+      "margin": -6.28,
+      "demProbability": 0.1969,
+      "repProbability": 0.8031,
       "winnerParty": "R",
-      "winnerProbability": 0.8027,
+      "winnerProbability": 0.8031,
       "error": 6.45,
       "competitive": true,
       "sourceInputs": {
@@ -84845,8 +84846,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.1973,
-          "rep": 0.8027
+          "dem": 0.1969,
+          "rep": 0.8031
         }
       ]
     },
@@ -85491,11 +85492,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.86,
-      "demProbability": 0.0084,
-      "repProbability": 0.9916,
+      "margin": -15.87,
+      "demProbability": 0.0083,
+      "repProbability": 0.9917,
       "winnerParty": "R",
-      "winnerProbability": 0.9916,
+      "winnerProbability": 0.9917,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -85730,8 +85731,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0084,
-          "rep": 0.9916
+          "dem": 0.0083,
+          "rep": 0.9917
         }
       ]
     },
@@ -85786,11 +85787,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.88,
-      "demProbability": 0.008,
-      "repProbability": 0.992,
+      "margin": -15.89,
+      "demProbability": 0.0079,
+      "repProbability": 0.9921,
       "winnerParty": "R",
-      "winnerProbability": 0.992,
+      "winnerProbability": 0.9921,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -86025,8 +86026,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.008,
-          "rep": 0.992
+          "dem": 0.0079,
+          "rep": 0.9921
         }
       ]
     },
@@ -86081,11 +86082,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Lean D",
       "insideRating": null,
-      "margin": 10.57,
-      "demProbability": 0.9108,
-      "repProbability": 0.0892,
+      "margin": 10.56,
+      "demProbability": 0.9106,
+      "repProbability": 0.0894,
       "winnerParty": "D",
-      "winnerProbability": 0.9108,
+      "winnerProbability": 0.9106,
       "error": 7,
       "competitive": false,
       "sourceInputs": {
@@ -86314,8 +86315,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.9108,
-          "rep": 0.0892
+          "dem": 0.9106,
+          "rep": 0.0894
         }
       ]
     },
@@ -86370,7 +86371,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9999,
       "repProbability": 0.0001,
       "winnerParty": "D",
@@ -86954,11 +86955,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.81,
-      "demProbability": 0.0084,
-      "repProbability": 0.9916,
+      "margin": -15.82,
+      "demProbability": 0.0083,
+      "repProbability": 0.9917,
       "winnerParty": "R",
-      "winnerProbability": 0.9916,
+      "winnerProbability": 0.9917,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -87193,8 +87194,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0084,
-          "rep": 0.9916
+          "dem": 0.0083,
+          "rep": 0.9917
         }
       ]
     },
@@ -87544,7 +87545,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.36,
+      "margin": 22.35,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -87839,11 +87840,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 6.55,
-      "demProbability": 0.7217,
-      "repProbability": 0.2783,
+      "margin": 6.54,
+      "demProbability": 0.7214,
+      "repProbability": 0.2786,
       "winnerParty": "D",
-      "winnerProbability": 0.7217,
+      "winnerProbability": 0.7214,
       "error": 10.6,
       "competitive": true,
       "sourceInputs": {
@@ -88072,8 +88073,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.7217,
-          "rep": 0.2783
+          "dem": 0.7214,
+          "rep": 0.2786
         }
       ]
     },
@@ -88128,11 +88129,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -4.77,
-      "demProbability": 0.2574,
-      "repProbability": 0.7426,
+      "margin": -4.78,
+      "demProbability": 0.2569,
+      "repProbability": 0.7431,
       "winnerParty": "R",
-      "winnerProbability": 0.7426,
+      "winnerProbability": 0.7431,
       "error": 6.45,
       "competitive": true,
       "sourceInputs": {
@@ -88361,8 +88362,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.2574,
-          "rep": 0.7426
+          "dem": 0.2569,
+          "rep": 0.7431
         }
       ]
     },
@@ -89007,7 +89008,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.82,
+      "margin": -14.83,
       "demProbability": 0.012,
       "repProbability": 0.988,
       "winnerParty": "R",
@@ -89302,7 +89303,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.07,
+      "margin": 22.06,
       "demProbability": 0.999,
       "repProbability": 0.001,
       "winnerParty": "D",
@@ -89874,11 +89875,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.12,
-      "demProbability": 0.0128,
-      "repProbability": 0.9872,
+      "margin": -16.13,
+      "demProbability": 0.0127,
+      "repProbability": 0.9873,
       "winnerParty": "R",
-      "winnerProbability": 0.9872,
+      "winnerProbability": 0.9873,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -90107,8 +90108,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0128,
-          "rep": 0.9872
+          "dem": 0.0127,
+          "rep": 0.9873
         }
       ]
     },
@@ -90423,7 +90424,7 @@
       "fecRepCandidate": null,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.56,
+      "margin": 23.55,
       "demProbability": 0.9988,
       "repProbability": 0.0012,
       "winnerParty": "D",
@@ -90954,11 +90955,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.88,
-      "demProbability": 0.5957,
-      "repProbability": 0.4043,
+      "margin": 2.87,
+      "demProbability": 0.5954,
+      "repProbability": 0.4046,
       "winnerParty": "D",
-      "winnerProbability": 0.5957,
+      "winnerProbability": 0.5954,
       "error": 11.35,
       "competitive": true,
       "sourceInputs": {
@@ -91181,8 +91182,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5957,
-          "rep": 0.4043
+          "dem": 0.5954,
+          "rep": 0.4046
         }
       ]
     },
@@ -91237,7 +91238,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.73,
+      "margin": 23.72,
       "demProbability": 0.9994,
       "repProbability": 0.0006,
       "winnerParty": "D",
@@ -91508,7 +91509,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.86,
+      "margin": 23.85,
       "demProbability": 0.999,
       "repProbability": 0.001,
       "winnerParty": "D",
@@ -91779,11 +91780,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -6.32,
-      "demProbability": 0.218,
-      "repProbability": 0.782,
+      "margin": -6.33,
+      "demProbability": 0.2177,
+      "repProbability": 0.7823,
       "winnerParty": "R",
-      "winnerProbability": 0.782,
+      "winnerProbability": 0.7823,
       "error": 7.2,
       "competitive": true,
       "sourceInputs": {
@@ -92012,8 +92013,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.218,
-          "rep": 0.782
+          "dem": 0.2177,
+          "rep": 0.7823
         }
       ]
     },
@@ -92068,7 +92069,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16,
+      "margin": -16.01,
       "demProbability": 0.014,
       "repProbability": 0.986,
       "winnerParty": "R",
@@ -92357,11 +92358,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Likely D",
       "insideRating": null,
-      "margin": 12.45,
-      "demProbability": 0.9393,
-      "repProbability": 0.0607,
+      "margin": 12.44,
+      "demProbability": 0.9392,
+      "repProbability": 0.0608,
       "winnerParty": "D",
-      "winnerProbability": 0.9393,
+      "winnerProbability": 0.9392,
       "error": 7.2,
       "competitive": false,
       "sourceInputs": {
@@ -92584,8 +92585,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.9393,
-          "rep": 0.0607
+          "dem": 0.9392,
+          "rep": 0.0608
         }
       ]
     },
@@ -92640,7 +92641,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.29,
+      "margin": 23.28,
       "demProbability": 0.9994,
       "repProbability": 0.0006,
       "winnerParty": "D",
@@ -92923,11 +92924,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.08,
-      "demProbability": 0.0125,
-      "repProbability": 0.9875,
+      "margin": -16.09,
+      "demProbability": 0.0124,
+      "repProbability": 0.9876,
       "winnerParty": "R",
-      "winnerProbability": 0.9875,
+      "winnerProbability": 0.9876,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -93156,8 +93157,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0125,
-          "rep": 0.9875
+          "dem": 0.0124,
+          "rep": 0.9876
         }
       ]
     },
@@ -93495,7 +93496,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.2,
+      "margin": 23.19,
       "demProbability": 0.9994,
       "repProbability": 0.0006,
       "winnerParty": "D",
@@ -94061,7 +94062,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9995,
       "repProbability": 0.0005,
       "winnerParty": "D",
@@ -94627,7 +94628,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.65,
+      "margin": -14.66,
       "demProbability": 0.0216,
       "repProbability": 0.9784,
       "winnerParty": "R",
@@ -94922,11 +94923,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.09,
-      "demProbability": 0.0129,
-      "repProbability": 0.9871,
+      "margin": -16.1,
+      "demProbability": 0.0128,
+      "repProbability": 0.9872,
       "winnerParty": "R",
-      "winnerProbability": 0.9871,
+      "winnerProbability": 0.9872,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -95155,8 +95156,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0129,
-          "rep": 0.9871
+          "dem": 0.0128,
+          "rep": 0.9872
         }
       ]
     },
@@ -95211,7 +95212,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9996,
       "repProbability": 0.0004,
       "winnerParty": "D",
@@ -95494,7 +95495,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9995,
       "repProbability": 0.0005,
       "winnerParty": "D",
@@ -96060,7 +96061,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9995,
       "repProbability": 0.0005,
       "winnerParty": "D",
@@ -96597,11 +96598,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.77,
-      "demProbability": 0.0084,
-      "repProbability": 0.9916,
+      "margin": -15.78,
+      "demProbability": 0.0083,
+      "repProbability": 0.9917,
       "winnerParty": "R",
-      "winnerProbability": 0.9916,
+      "winnerProbability": 0.9917,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -96830,8 +96831,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0084,
-          "rep": 0.9916
+          "dem": 0.0083,
+          "rep": 0.9917
         }
       ]
     },
@@ -96881,11 +96882,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.46,
-      "demProbability": 0.0096,
-      "repProbability": 0.9904,
+      "margin": -15.47,
+      "demProbability": 0.0095,
+      "repProbability": 0.9905,
       "winnerParty": "R",
-      "winnerProbability": 0.9904,
+      "winnerProbability": 0.9905,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -97114,8 +97115,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0096,
-          "rep": 0.9904
+          "dem": 0.0095,
+          "rep": 0.9905
         }
       ]
     },
@@ -97999,7 +98000,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.22,
+      "margin": 23.21,
       "demProbability": 0.9993,
       "repProbability": 0.0007,
       "winnerParty": "D",
@@ -98277,11 +98278,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -16.2,
-      "demProbability": 0.0125,
-      "repProbability": 0.9875,
+      "margin": -16.21,
+      "demProbability": 0.0124,
+      "repProbability": 0.9876,
       "winnerParty": "R",
-      "winnerProbability": 0.9875,
+      "winnerProbability": 0.9876,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -98510,8 +98511,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0125,
-          "rep": 0.9875
+          "dem": 0.0124,
+          "rep": 0.9876
         }
       ]
     },
@@ -98561,7 +98562,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.94,
+      "margin": -15.95,
       "demProbability": 0.0138,
       "repProbability": 0.9862,
       "winnerParty": "R",
@@ -99614,11 +99615,11 @@
       "fecRepCandidate": null,
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -5.91,
-      "demProbability": 0.2444,
-      "repProbability": 0.7556,
+      "margin": -5.92,
+      "demProbability": 0.2441,
+      "repProbability": 0.7559,
       "winnerParty": "R",
-      "winnerProbability": 0.7556,
+      "winnerProbability": 0.7559,
       "error": 7.65,
       "competitive": true,
       "sourceInputs": {
@@ -99812,8 +99813,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.2444,
-          "rep": 0.7556
+          "dem": 0.2441,
+          "rep": 0.7559
         }
       ]
     },
@@ -99868,11 +99869,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.66,
-      "demProbability": 0.0216,
-      "repProbability": 0.9784,
+      "margin": -14.67,
+      "demProbability": 0.0215,
+      "repProbability": 0.9785,
       "winnerParty": "R",
-      "winnerProbability": 0.9784,
+      "winnerProbability": 0.9785,
       "error": 6.25,
       "competitive": false,
       "sourceInputs": {
@@ -100101,8 +100102,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0216,
-          "rep": 0.9784
+          "dem": 0.0215,
+          "rep": 0.9785
         }
       ]
     },
@@ -100157,11 +100158,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -4.21,
-      "demProbability": 0.2996,
-      "repProbability": 0.7004,
+      "margin": -4.22,
+      "demProbability": 0.2992,
+      "repProbability": 0.7008,
       "winnerParty": "R",
-      "winnerProbability": 0.7004,
+      "winnerProbability": 0.7008,
       "error": 7.2,
       "competitive": true,
       "sourceInputs": {
@@ -100384,8 +100385,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.2996,
-          "rep": 0.7004
+          "dem": 0.2992,
+          "rep": 0.7008
         }
       ]
     },
@@ -100729,11 +100730,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.97,
-      "demProbability": 0.0075,
-      "repProbability": 0.9925,
+      "margin": -15.98,
+      "demProbability": 0.0074,
+      "repProbability": 0.9926,
       "winnerParty": "R",
-      "winnerProbability": 0.9925,
+      "winnerProbability": 0.9926,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -100962,8 +100963,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0075,
-          "rep": 0.9925
+          "dem": 0.0074,
+          "rep": 0.9926
         }
       ]
     },
@@ -101018,7 +101019,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.44,
+      "margin": -15.45,
       "demProbability": 0.0097,
       "repProbability": 0.9903,
       "winnerParty": "R",
@@ -101874,11 +101875,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.99,
-      "demProbability": 0.0072,
-      "repProbability": 0.9928,
+      "margin": -16,
+      "demProbability": 0.0071,
+      "repProbability": 0.9929,
       "winnerParty": "R",
-      "winnerProbability": 0.9928,
+      "winnerProbability": 0.9929,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -102107,8 +102108,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0072,
-          "rep": 0.9928
+          "dem": 0.0071,
+          "rep": 0.9929
         }
       ]
     },
@@ -102158,11 +102159,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.85,
-      "demProbability": 0.0074,
-      "repProbability": 0.9926,
+      "margin": -15.86,
+      "demProbability": 0.0073,
+      "repProbability": 0.9927,
       "winnerParty": "R",
-      "winnerProbability": 0.9926,
+      "winnerProbability": 0.9927,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -102391,8 +102392,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0074,
-          "rep": 0.9926
+          "dem": 0.0073,
+          "rep": 0.9927
         }
       ]
     },
@@ -102442,7 +102443,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.99,
+      "margin": -16,
       "demProbability": 0.0076,
       "repProbability": 0.9924,
       "winnerParty": "R",
@@ -102726,11 +102727,11 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.99,
-      "demProbability": 0.0077,
-      "repProbability": 0.9923,
+      "margin": -16,
+      "demProbability": 0.0076,
+      "repProbability": 0.9924,
       "winnerParty": "R",
-      "winnerProbability": 0.9923,
+      "winnerProbability": 0.9924,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -102959,8 +102960,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.0077,
-          "rep": 0.9923
+          "dem": 0.0076,
+          "rep": 0.9924
         }
       ]
     },
@@ -103010,11 +103011,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 3.6,
-      "demProbability": 0.6172,
-      "repProbability": 0.3828,
+      "margin": 3.59,
+      "demProbability": 0.6168,
+      "repProbability": 0.3832,
       "winnerParty": "D",
-      "winnerProbability": 0.6172,
+      "winnerProbability": 0.6168,
       "error": 11.35,
       "competitive": true,
       "sourceInputs": {
@@ -103243,8 +103244,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.6172,
-          "rep": 0.3828
+          "dem": 0.6168,
+          "rep": 0.3832
         }
       ]
     },
@@ -103294,11 +103295,11 @@
       },
       "baselineRating": "Likely R",
       "insideRating": null,
-      "margin": -6.62,
-      "demProbability": 0.2048,
-      "repProbability": 0.7952,
+      "margin": -6.63,
+      "demProbability": 0.2044,
+      "repProbability": 0.7956,
       "winnerParty": "R",
-      "winnerProbability": 0.7952,
+      "winnerProbability": 0.7956,
       "error": 7.2,
       "competitive": true,
       "sourceInputs": {
@@ -103533,8 +103534,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.2048,
-          "rep": 0.7952
+          "dem": 0.2044,
+          "rep": 0.7956
         }
       ]
     },
@@ -103584,7 +103585,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.64,
+      "margin": 23.63,
       "demProbability": 0.9995,
       "repProbability": 0.0005,
       "winnerParty": "D",
@@ -104442,11 +104443,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.95,
-      "demProbability": 0.5983,
-      "repProbability": 0.4017,
+      "margin": 2.94,
+      "demProbability": 0.598,
+      "repProbability": 0.402,
       "winnerParty": "D",
-      "winnerProbability": 0.5983,
+      "winnerProbability": 0.598,
       "error": 11.35,
       "competitive": true,
       "sourceInputs": {
@@ -104675,8 +104676,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5983,
-          "rep": 0.4017
+          "dem": 0.598,
+          "rep": 0.402
         }
       ]
     },
@@ -104726,7 +104727,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.73,
+      "margin": 23.72,
       "demProbability": 0.9995,
       "repProbability": 0.0005,
       "winnerParty": "D",
@@ -105595,7 +105596,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.26,
+      "margin": 22.25,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -106179,7 +106180,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 21.31,
+      "margin": 21.3,
       "demProbability": 0.9992,
       "repProbability": 0.0008,
       "winnerParty": "D",
@@ -106474,7 +106475,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.04,
+      "margin": 23.03,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -107058,11 +107059,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Likely D",
       "insideRating": null,
-      "margin": 11.94,
-      "demProbability": 0.9476,
-      "repProbability": 0.0524,
+      "margin": 11.93,
+      "demProbability": 0.9474,
+      "repProbability": 0.0526,
       "winnerParty": "D",
-      "winnerProbability": 0.9476,
+      "winnerProbability": 0.9474,
       "error": 6.45,
       "competitive": false,
       "sourceInputs": {
@@ -107297,8 +107298,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.9476,
-          "rep": 0.0524
+          "dem": 0.9474,
+          "rep": 0.0526
         }
       ]
     },
@@ -107353,7 +107354,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.53,
+      "margin": 22.52,
       "demProbability": 0.9996,
       "repProbability": 0.0004,
       "winnerParty": "D",
@@ -107642,7 +107643,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -107931,7 +107932,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.63,
+      "margin": 22.62,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -108220,7 +108221,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -108804,7 +108805,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -109093,11 +109094,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Lean D",
       "insideRating": null,
-      "margin": 9.2,
-      "demProbability": 0.8791,
-      "repProbability": 0.1209,
+      "margin": 9.19,
+      "demProbability": 0.8788,
+      "repProbability": 0.1212,
       "winnerParty": "D",
-      "winnerProbability": 0.8791,
+      "winnerProbability": 0.8788,
       "error": 7,
       "competitive": false,
       "sourceInputs": {
@@ -109326,8 +109327,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.8791,
-          "rep": 0.1209
+          "dem": 0.8788,
+          "rep": 0.1212
         }
       ]
     },
@@ -109382,7 +109383,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.46,
+      "margin": 22.45,
       "demProbability": 0.9996,
       "repProbability": 0.0004,
       "winnerParty": "D",
@@ -109677,7 +109678,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -109966,7 +109967,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -110544,7 +110545,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.45,
+      "margin": 23.44,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -111706,11 +111707,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.67,
-      "demProbability": 0.5948,
-      "repProbability": 0.4052,
+      "margin": 2.66,
+      "demProbability": 0.5945,
+      "repProbability": 0.4055,
       "winnerParty": "D",
-      "winnerProbability": 0.5948,
+      "winnerProbability": 0.5945,
       "error": 10.6,
       "competitive": true,
       "sourceInputs": {
@@ -111939,8 +111940,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5948,
-          "rep": 0.4052
+          "dem": 0.5945,
+          "rep": 0.4055
         }
       ]
     },
@@ -111995,11 +111996,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.56,
+      "margin": -15.57,
       "demProbability": 0.0092,
-      "repProbability": 0.9908,
+      "repProbability": 0.9909,
       "winnerParty": "R",
-      "winnerProbability": 0.9908,
+      "winnerProbability": 0.9909,
       "error": 5.5,
       "competitive": false,
       "sourceInputs": {
@@ -112235,7 +112236,7 @@
         {
           "date": "2026-06-04",
           "dem": 0.0092,
-          "rep": 0.9908
+          "rep": 0.9909
         }
       ]
     },
@@ -112290,7 +112291,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -112579,7 +112580,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 21.54,
+      "margin": 21.53,
       "demProbability": 0.9993,
       "repProbability": 0.0007,
       "winnerParty": "D",
@@ -112868,7 +112869,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.45,
+      "margin": 22.44,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -113163,7 +113164,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 21.83,
+      "margin": 21.82,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -113452,7 +113453,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.42,
+      "margin": 23.41,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -113741,7 +113742,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9999,
       "repProbability": 0.0001,
       "winnerParty": "D",
@@ -114030,7 +114031,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.43,
+      "margin": 23.42,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -114319,7 +114320,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.26,
+      "margin": 22.25,
       "demProbability": 0.9996,
       "repProbability": 0.0004,
       "winnerParty": "D",
@@ -114608,7 +114609,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.37,
+      "margin": 23.36,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -115186,7 +115187,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.4,
+      "margin": 23.39,
       "demProbability": 0.9999,
       "repProbability": 0.0001,
       "winnerParty": "D",
@@ -115764,7 +115765,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.1,
+      "margin": 23.09,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -116053,7 +116054,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9999,
       "repProbability": 0.0001,
       "winnerParty": "D",
@@ -116342,7 +116343,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.72,
+      "margin": 22.71,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -116619,7 +116620,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.27,
+      "margin": 22.26,
       "demProbability": 0.9996,
       "repProbability": 0.0004,
       "winnerParty": "D",
@@ -116896,7 +116897,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -14.25,
+      "margin": -14.26,
       "demProbability": 0.0156,
       "repProbability": 0.9844,
       "winnerParty": "R",
@@ -117191,7 +117192,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.22,
+      "margin": 22.21,
       "demProbability": 0.9996,
       "repProbability": 0.0004,
       "winnerParty": "D",
@@ -118064,7 +118065,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.52,
+      "margin": 23.51,
       "demProbability": 0.9999,
       "repProbability": 0.0001,
       "winnerParty": "D",
@@ -118353,11 +118354,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Lean D",
       "insideRating": null,
-      "margin": 9.86,
-      "demProbability": 0.8935,
-      "repProbability": 0.1065,
+      "margin": 9.85,
+      "demProbability": 0.8933,
+      "repProbability": 0.1067,
       "winnerParty": "D",
-      "winnerProbability": 0.8935,
+      "winnerProbability": 0.8933,
       "error": 7,
       "competitive": false,
       "sourceInputs": {
@@ -118586,8 +118587,8 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.8935,
-          "rep": 0.1065
+          "dem": 0.8933,
+          "rep": 0.1067
         }
       ]
     },
@@ -119515,7 +119516,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.77,
+      "margin": 22.76,
       "demProbability": 0.9997,
       "repProbability": 0.0003,
       "winnerParty": "D",
@@ -119804,7 +119805,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.43,
+      "margin": 23.42,
       "demProbability": 0.9999,
       "repProbability": 0.0001,
       "winnerParty": "D",
@@ -120093,7 +120094,7 @@
       "redistrictingOverride": false,
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.34,
+      "margin": 23.33,
       "demProbability": 0.9998,
       "repProbability": 0.0002,
       "winnerParty": "D",
@@ -120944,7 +120945,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9994,
       "repProbability": 0.0006,
       "winnerParty": "D",
@@ -121500,7 +121501,7 @@
       },
       "baselineRating": "Safe R",
       "insideRating": null,
-      "margin": -15.73,
+      "margin": -15.74,
       "demProbability": 0.015,
       "repProbability": 0.985,
       "winnerParty": "R",
@@ -122062,7 +122063,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9995,
       "repProbability": 0.0005,
       "winnerParty": "D",
@@ -122340,7 +122341,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.46,
+      "margin": 23.45,
       "demProbability": 0.9994,
       "repProbability": 0.0006,
       "winnerParty": "D",
@@ -122896,7 +122897,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9995,
       "repProbability": 0.0005,
       "winnerParty": "D",
@@ -123174,7 +123175,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 22.84,
+      "margin": 22.83,
       "demProbability": 0.9992,
       "repProbability": 0.0008,
       "winnerParty": "D",
@@ -123730,7 +123731,7 @@
       },
       "baselineRating": "Safe D",
       "insideRating": null,
-      "margin": 23.71,
+      "margin": 23.7,
       "demProbability": 0.9993,
       "repProbability": 0.0007,
       "winnerParty": "D",
@@ -124851,11 +124852,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.39,
-      "demProbability": 0.5807,
-      "repProbability": 0.4193,
+      "margin": 2.38,
+      "demProbability": 0.5803,
+      "repProbability": 0.4197,
       "winnerParty": "D",
-      "winnerProbability": 0.5807,
+      "winnerProbability": 0.5803,
       "error": 11.35,
       "competitive": true,
       "sourceInputs": {
@@ -125078,11 +125079,11 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5807,
-          "rep": 0.4193
+          "dem": 0.5803,
+          "rep": 0.4197
         }
       ],
-      "leverage": 0.8386
+      "leverage": 0.8393999999999999
     },
     {
       "id": "PA-08",
@@ -125130,11 +125131,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.43,
-      "demProbability": 0.5825,
-      "repProbability": 0.4175,
+      "margin": 2.42,
+      "demProbability": 0.5821,
+      "repProbability": 0.4179,
       "winnerParty": "D",
-      "winnerProbability": 0.5825,
+      "winnerProbability": 0.5821,
       "error": 10.6,
       "competitive": true,
       "sourceInputs": {
@@ -125357,11 +125358,11 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5825,
-          "rep": 0.4175
+          "dem": 0.5821,
+          "rep": 0.4179
         }
       ],
-      "leverage": 0.835
+      "leverage": 0.8358000000000001
     },
     {
       "id": "IA-03",
@@ -125409,11 +125410,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.39,
-      "demProbability": 0.5837,
-      "repProbability": 0.4163,
+      "margin": 2.38,
+      "demProbability": 0.5834,
+      "repProbability": 0.4166,
       "winnerParty": "D",
-      "winnerProbability": 0.5837,
+      "winnerProbability": 0.5834,
       "error": 10.6,
       "competitive": true,
       "sourceInputs": {
@@ -125636,11 +125637,290 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5837,
-          "rep": 0.4163
+          "dem": 0.5834,
+          "rep": 0.4166
         }
       ],
-      "leverage": 0.8326
+      "leverage": 0.8331999999999999
+    },
+    {
+      "id": "NJ-07",
+      "state": "NJ",
+      "district": "7",
+      "label": "Tom Kean",
+      "incumbent": "Tom Kean",
+      "open": false,
+      "rating": "Tilt D",
+      "sourceRating": "Toss-up",
+      "ratingSource": "270toWin / Inside Elections",
+      "seatParty": "R",
+      "presidentialMargin": -1.2,
+      "congressionalMargin": -5.4,
+      "fundamentalMargin": -3.09,
+      "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
+      "kalshiPrice": 81,
+      "demCandidate": "Rebecca Bennett",
+      "repCandidate": "Tom Kean Jr.",
+      "fecDemCandidate": {
+        "name": "Rebecca Bennett",
+        "fecName": "BENNETT, REBECCA",
+        "id": "H6NJ07201",
+        "party": "DEM",
+        "status": "CHALLENGER",
+        "receipts": 2944137.78,
+        "cash": 764068.25,
+        "debts": 0,
+        "score": 3937426.5,
+        "primaryShare": 0.399,
+        "fieldSize": 10
+      },
+      "fecRepCandidate": {
+        "name": "Thomas H. JR Kean",
+        "fecName": "KEAN, THOMAS H. JR.",
+        "id": "H0NJ07261",
+        "party": "REP",
+        "status": "INCUMBENT",
+        "receipts": 4542249.87,
+        "cash": 3390690.6,
+        "debts": 39377.58,
+        "score": 17902894.55,
+        "primaryShare": 1,
+        "fieldSize": 1
+      },
+      "baselineRating": "Toss-up",
+      "insideRating": null,
+      "margin": 2.45,
+      "demProbability": 0.5858,
+      "repProbability": 0.4142,
+      "winnerParty": "D",
+      "winnerProbability": 0.5858,
+      "error": 10.6,
+      "competitive": true,
+      "sourceInputs": {
+        "genericBallotShift": 3.32,
+        "nationalFinanceShift": 0.03,
+        "presidentialBaseline": -1.2,
+        "congressionalBaseline": -5.4,
+        "districtFundamentalMargin": -3.09,
+        "contextualBaseline": -3.09,
+        "ratingBaseline": 0,
+        "openPenalty": 0,
+        "incumbencyAdjustment": -0.45,
+        "nomination": {
+          "status": "resolved-or-filed",
+          "primaryDate": "2026-06-02",
+          "demStatus": "nominee",
+          "repStatus": "nominee",
+          "demCertainty": 1,
+          "repCertainty": 1,
+          "marginAdjustment": 0,
+          "errorAdjustment": 0,
+          "demProfile": {
+            "key": "resolvedNominee",
+            "name": "Rebecca Bennett",
+            "party": "D",
+            "placeholder": false,
+            "incumbent": false,
+            "strength": "none",
+            "quality": 0.18,
+            "uncertainty": -0.35
+          },
+          "repProfile": {
+            "key": "incumbent",
+            "name": "Tom Kean Jr.",
+            "party": "R",
+            "placeholder": false,
+            "incumbent": true,
+            "strength": "none",
+            "quality": 0.55,
+            "uncertainty": -0.45
+          },
+          "summary": "Primary date has passed for 2026-06-02; known candidates are treated as nominees unless the source still has placeholders."
+        },
+        "candidateQualityAdjustment": -0.15,
+        "nominationAdjustment": 0,
+        "demographicPull": {
+          "adjustment": 0.04,
+          "demProfile": "democrat",
+          "repProfile": "repIncumbent",
+          "topGroups": [
+            {
+              "group": "white_college",
+              "label": "White college",
+              "weight": 0.28,
+              "effect": 0.06
+            },
+            {
+              "group": "white_noncollege",
+              "label": "White non-college",
+              "weight": 0.19,
+              "effect": -0.06
+            },
+            {
+              "group": "black",
+              "label": "Black",
+              "weight": 0.07,
+              "effect": 0.02
+            }
+          ]
+        },
+        "challengerStrength": "none",
+        "finance": {
+          "demReceipts": 9272985.41,
+          "repReceipts": 4542249.87,
+          "demCash": 2453311.97,
+          "repCash": 3390690.6,
+          "demDebts": 2167179.02,
+          "repDebts": 39377.58,
+          "candidates": 13,
+          "financeSignal": -1.081,
+          "demCandidate": {
+            "name": "Rebecca Bennett",
+            "fecName": "BENNETT, REBECCA",
+            "id": "H6NJ07201",
+            "party": "DEM",
+            "status": "CHALLENGER",
+            "receipts": 2944137.78,
+            "cash": 764068.25,
+            "debts": 0,
+            "score": 3937426.5,
+            "primaryShare": 0.399,
+            "fieldSize": 10
+          },
+          "repCandidate": {
+            "name": "Thomas H. JR Kean",
+            "fecName": "KEAN, THOMAS H. JR.",
+            "id": "H0NJ07261",
+            "party": "REP",
+            "status": "INCUMBENT",
+            "receipts": 4542249.87,
+            "cash": 3390690.6,
+            "debts": 39377.58,
+            "score": 17902894.55,
+            "primaryShare": 1,
+            "fieldSize": 1
+          }
+        }
+      },
+      "primaryDate": "2026-06-02",
+      "primaryStatus": "resolved-or-filed",
+      "primarySummary": "Primary date has passed for 2026-06-02; known candidates are treated as nominees unless the source still has placeholders.",
+      "demStatus": "nominee",
+      "repStatus": "nominee",
+      "demProfile": {
+        "key": "resolvedNominee",
+        "name": "Rebecca Bennett",
+        "party": "D",
+        "placeholder": false,
+        "incumbent": false,
+        "strength": "none",
+        "quality": 0.18,
+        "uncertainty": -0.35
+      },
+      "repProfile": {
+        "key": "incumbent",
+        "name": "Tom Kean Jr.",
+        "party": "R",
+        "placeholder": false,
+        "incumbent": true,
+        "strength": "none",
+        "quality": 0.55,
+        "uncertainty": -0.45
+      },
+      "sourceBlend": "270toWin / Inside Elections",
+      "history": [
+        {
+          "date": "2026-05-18",
+          "dem": 0.6702,
+          "rep": 0.3298
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.6731,
+          "rep": 0.3269
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.6406,
+          "rep": 0.3594
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.6407,
+          "rep": 0.3593
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.6526,
+          "rep": 0.3474
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.6471,
+          "rep": 0.3529
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.6554,
+          "rep": 0.3446
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.6569,
+          "rep": 0.3431
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.6619,
+          "rep": 0.3381
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.6565,
+          "rep": 0.3435
+        },
+        {
+          "date": "2026-05-28",
+          "dem": 0.6626,
+          "rep": 0.3374
+        },
+        {
+          "date": "2026-05-29",
+          "dem": 0.6609,
+          "rep": 0.3391
+        },
+        {
+          "date": "2026-05-30",
+          "dem": 0.6258,
+          "rep": 0.3742
+        },
+        {
+          "date": "2026-05-31",
+          "dem": 0.6281,
+          "rep": 0.3719
+        },
+        {
+          "date": "2026-06-01",
+          "dem": 0.5778,
+          "rep": 0.4222
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.5892,
+          "rep": 0.4108
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.5888,
+          "rep": 0.4112
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.5858,
+          "rep": 0.4142
+        }
+      ],
+      "leverage": 0.8284
     },
     {
       "id": "FL-14",
@@ -125693,11 +125973,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Lean R",
       "insideRating": null,
-      "margin": -1.78,
-      "demProbability": 0.4142,
-      "repProbability": 0.5858,
+      "margin": -1.79,
+      "demProbability": 0.4139,
+      "repProbability": 0.586,
       "winnerParty": "R",
-      "winnerProbability": 0.5858,
+      "winnerProbability": 0.586,
       "error": 7.75,
       "competitive": true,
       "sourceInputs": {
@@ -125926,290 +126206,11 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.4142,
-          "rep": 0.5858
+          "dem": 0.4139,
+          "rep": 0.586
         }
       ],
-      "leverage": 0.8284
-    },
-    {
-      "id": "NJ-07",
-      "state": "NJ",
-      "district": "7",
-      "label": "Tom Kean",
-      "incumbent": "Tom Kean",
-      "open": false,
-      "rating": "Tilt D",
-      "sourceRating": "Toss-up",
-      "ratingSource": "270toWin / Inside Elections",
-      "seatParty": "R",
-      "presidentialMargin": -1.2,
-      "congressionalMargin": -5.4,
-      "fundamentalMargin": -3.09,
-      "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 81,
-      "demCandidate": "Rebecca Bennett",
-      "repCandidate": "Tom Kean Jr.",
-      "fecDemCandidate": {
-        "name": "Rebecca Bennett",
-        "fecName": "BENNETT, REBECCA",
-        "id": "H6NJ07201",
-        "party": "DEM",
-        "status": "CHALLENGER",
-        "receipts": 2944137.78,
-        "cash": 764068.25,
-        "debts": 0,
-        "score": 3937426.5,
-        "primaryShare": 0.399,
-        "fieldSize": 10
-      },
-      "fecRepCandidate": {
-        "name": "Thomas H. JR Kean",
-        "fecName": "KEAN, THOMAS H. JR.",
-        "id": "H0NJ07261",
-        "party": "REP",
-        "status": "INCUMBENT",
-        "receipts": 4542249.87,
-        "cash": 3390690.6,
-        "debts": 39377.58,
-        "score": 17902894.55,
-        "primaryShare": 1,
-        "fieldSize": 1
-      },
-      "baselineRating": "Toss-up",
-      "insideRating": null,
-      "margin": 2.46,
-      "demProbability": 0.5861,
-      "repProbability": 0.4139,
-      "winnerParty": "D",
-      "winnerProbability": 0.5861,
-      "error": 10.6,
-      "competitive": true,
-      "sourceInputs": {
-        "genericBallotShift": 3.32,
-        "nationalFinanceShift": 0.03,
-        "presidentialBaseline": -1.2,
-        "congressionalBaseline": -5.4,
-        "districtFundamentalMargin": -3.09,
-        "contextualBaseline": -3.09,
-        "ratingBaseline": 0,
-        "openPenalty": 0,
-        "incumbencyAdjustment": -0.45,
-        "nomination": {
-          "status": "resolved-or-filed",
-          "primaryDate": "2026-06-02",
-          "demStatus": "nominee",
-          "repStatus": "nominee",
-          "demCertainty": 1,
-          "repCertainty": 1,
-          "marginAdjustment": 0,
-          "errorAdjustment": 0,
-          "demProfile": {
-            "key": "resolvedNominee",
-            "name": "Rebecca Bennett",
-            "party": "D",
-            "placeholder": false,
-            "incumbent": false,
-            "strength": "none",
-            "quality": 0.18,
-            "uncertainty": -0.35
-          },
-          "repProfile": {
-            "key": "incumbent",
-            "name": "Tom Kean Jr.",
-            "party": "R",
-            "placeholder": false,
-            "incumbent": true,
-            "strength": "none",
-            "quality": 0.55,
-            "uncertainty": -0.45
-          },
-          "summary": "Primary date has passed for 2026-06-02; known candidates are treated as nominees unless the source still has placeholders."
-        },
-        "candidateQualityAdjustment": -0.15,
-        "nominationAdjustment": 0,
-        "demographicPull": {
-          "adjustment": 0.04,
-          "demProfile": "democrat",
-          "repProfile": "repIncumbent",
-          "topGroups": [
-            {
-              "group": "white_college",
-              "label": "White college",
-              "weight": 0.28,
-              "effect": 0.06
-            },
-            {
-              "group": "white_noncollege",
-              "label": "White non-college",
-              "weight": 0.19,
-              "effect": -0.06
-            },
-            {
-              "group": "black",
-              "label": "Black",
-              "weight": 0.07,
-              "effect": 0.02
-            }
-          ]
-        },
-        "challengerStrength": "none",
-        "finance": {
-          "demReceipts": 9272985.41,
-          "repReceipts": 4542249.87,
-          "demCash": 2453311.97,
-          "repCash": 3390690.6,
-          "demDebts": 2167179.02,
-          "repDebts": 39377.58,
-          "candidates": 13,
-          "financeSignal": -1.081,
-          "demCandidate": {
-            "name": "Rebecca Bennett",
-            "fecName": "BENNETT, REBECCA",
-            "id": "H6NJ07201",
-            "party": "DEM",
-            "status": "CHALLENGER",
-            "receipts": 2944137.78,
-            "cash": 764068.25,
-            "debts": 0,
-            "score": 3937426.5,
-            "primaryShare": 0.399,
-            "fieldSize": 10
-          },
-          "repCandidate": {
-            "name": "Thomas H. JR Kean",
-            "fecName": "KEAN, THOMAS H. JR.",
-            "id": "H0NJ07261",
-            "party": "REP",
-            "status": "INCUMBENT",
-            "receipts": 4542249.87,
-            "cash": 3390690.6,
-            "debts": 39377.58,
-            "score": 17902894.55,
-            "primaryShare": 1,
-            "fieldSize": 1
-          }
-        }
-      },
-      "primaryDate": "2026-06-02",
-      "primaryStatus": "resolved-or-filed",
-      "primarySummary": "Primary date has passed for 2026-06-02; known candidates are treated as nominees unless the source still has placeholders.",
-      "demStatus": "nominee",
-      "repStatus": "nominee",
-      "demProfile": {
-        "key": "resolvedNominee",
-        "name": "Rebecca Bennett",
-        "party": "D",
-        "placeholder": false,
-        "incumbent": false,
-        "strength": "none",
-        "quality": 0.18,
-        "uncertainty": -0.35
-      },
-      "repProfile": {
-        "key": "incumbent",
-        "name": "Tom Kean Jr.",
-        "party": "R",
-        "placeholder": false,
-        "incumbent": true,
-        "strength": "none",
-        "quality": 0.55,
-        "uncertainty": -0.45
-      },
-      "sourceBlend": "270toWin / Inside Elections",
-      "history": [
-        {
-          "date": "2026-05-18",
-          "dem": 0.6702,
-          "rep": 0.3298
-        },
-        {
-          "date": "2026-05-19",
-          "dem": 0.6731,
-          "rep": 0.3269
-        },
-        {
-          "date": "2026-05-20",
-          "dem": 0.6406,
-          "rep": 0.3594
-        },
-        {
-          "date": "2026-05-21",
-          "dem": 0.6407,
-          "rep": 0.3593
-        },
-        {
-          "date": "2026-05-22",
-          "dem": 0.6526,
-          "rep": 0.3474
-        },
-        {
-          "date": "2026-05-23",
-          "dem": 0.6471,
-          "rep": 0.3529
-        },
-        {
-          "date": "2026-05-24",
-          "dem": 0.6554,
-          "rep": 0.3446
-        },
-        {
-          "date": "2026-05-25",
-          "dem": 0.6569,
-          "rep": 0.3431
-        },
-        {
-          "date": "2026-05-26",
-          "dem": 0.6619,
-          "rep": 0.3381
-        },
-        {
-          "date": "2026-05-27",
-          "dem": 0.6565,
-          "rep": 0.3435
-        },
-        {
-          "date": "2026-05-28",
-          "dem": 0.6626,
-          "rep": 0.3374
-        },
-        {
-          "date": "2026-05-29",
-          "dem": 0.6609,
-          "rep": 0.3391
-        },
-        {
-          "date": "2026-05-30",
-          "dem": 0.6258,
-          "rep": 0.3742
-        },
-        {
-          "date": "2026-05-31",
-          "dem": 0.6281,
-          "rep": 0.3719
-        },
-        {
-          "date": "2026-06-01",
-          "dem": 0.5778,
-          "rep": 0.4222
-        },
-        {
-          "date": "2026-06-02",
-          "dem": 0.5892,
-          "rep": 0.4108
-        },
-        {
-          "date": "2026-06-03",
-          "dem": 0.5888,
-          "rep": 0.4112
-        },
-        {
-          "date": "2026-06-04",
-          "dem": 0.5861,
-          "rep": 0.4139
-        }
-      ],
-      "leverage": 0.8278000000000001
+      "leverage": 0.8278
     },
     {
       "id": "IA-01",
@@ -126257,11 +126258,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.53,
-      "demProbability": 0.5886,
-      "repProbability": 0.4114,
+      "margin": 2.52,
+      "demProbability": 0.5883,
+      "repProbability": 0.4117,
       "winnerParty": "D",
-      "winnerProbability": 0.5886,
+      "winnerProbability": 0.5883,
       "error": 10.6,
       "competitive": true,
       "sourceInputs": {
@@ -126484,11 +126485,11 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5886,
-          "rep": 0.4114
+          "dem": 0.5883,
+          "rep": 0.4117
         }
       ],
-      "leverage": 0.8228
+      "leverage": 0.8233999999999999
     },
     {
       "id": "FL-22",
@@ -126541,11 +126542,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Lean R",
       "insideRating": null,
-      "margin": -1.93,
-      "demProbability": 0.4077,
-      "repProbability": 0.5923,
+      "margin": -1.94,
+      "demProbability": 0.4073,
+      "repProbability": 0.5927,
       "winnerParty": "R",
-      "winnerProbability": 0.5923,
+      "winnerProbability": 0.5927,
       "error": 7.75,
       "competitive": true,
       "sourceInputs": {
@@ -126774,11 +126775,11 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.4077,
-          "rep": 0.5923
+          "dem": 0.4073,
+          "rep": 0.5927
         }
       ],
-      "leverage": 0.8154
+      "leverage": 0.8146
     },
     {
       "id": "CA-22",
@@ -126831,11 +126832,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.67,
-      "demProbability": 0.5948,
-      "repProbability": 0.4052,
+      "margin": 2.66,
+      "demProbability": 0.5945,
+      "repProbability": 0.4055,
       "winnerParty": "D",
-      "winnerProbability": 0.5948,
+      "winnerProbability": 0.5945,
       "error": 10.6,
       "competitive": true,
       "sourceInputs": {
@@ -127064,11 +127065,11 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5948,
-          "rep": 0.4052
+          "dem": 0.5945,
+          "rep": 0.4055
         }
       ],
-      "leverage": 0.8104
+      "leverage": 0.8109999999999999
     },
     {
       "id": "VA-02",
@@ -127121,11 +127122,11 @@
       "redistrictingOverride": false,
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.88,
-      "demProbability": 0.5957,
-      "repProbability": 0.4043,
+      "margin": 2.87,
+      "demProbability": 0.5954,
+      "repProbability": 0.4046,
       "winnerParty": "D",
-      "winnerProbability": 0.5957,
+      "winnerProbability": 0.5954,
       "error": 11.35,
       "competitive": true,
       "sourceInputs": {
@@ -127348,11 +127349,11 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5957,
-          "rep": 0.4043
+          "dem": 0.5954,
+          "rep": 0.4046
         }
       ],
-      "leverage": 0.8086
+      "leverage": 0.8091999999999999
     },
     {
       "id": "PA-07",
@@ -127400,11 +127401,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 2.67,
-      "demProbability": 0.5962,
-      "repProbability": 0.4038,
+      "margin": 2.66,
+      "demProbability": 0.5959,
+      "repProbability": 0.4041,
       "winnerParty": "D",
-      "winnerProbability": 0.5962,
+      "winnerProbability": 0.5959,
       "error": 10.6,
       "competitive": true,
       "sourceInputs": {
@@ -127627,11 +127628,296 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.5962,
-          "rep": 0.4038
+          "dem": 0.5959,
+          "rep": 0.4041
         }
       ],
-      "leverage": 0.8076000000000001
+      "leverage": 0.8082
+    },
+    {
+      "id": "AZ-06",
+      "state": "AZ",
+      "district": "6",
+      "label": "Juan Ciscomani",
+      "incumbent": "Juan Ciscomani",
+      "open": false,
+      "rating": "Tilt D",
+      "sourceRating": "Toss-up",
+      "ratingSource": "270toWin / Inside Elections",
+      "seatParty": "R",
+      "presidentialMargin": -0.7,
+      "congressionalMargin": -2.5,
+      "fundamentalMargin": -1.51,
+      "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
+      "kalshiPrice": 84,
+      "demCandidate": "Joanna Mendoza",
+      "repCandidate": "Juan Ciscomani",
+      "fecDemCandidate": {
+        "name": "Joanna Mendoza",
+        "fecName": "MENDOZA, JOANNA",
+        "id": "H6AZ06099",
+        "party": "DEM",
+        "status": "CHALLENGER",
+        "receipts": 5341037.68,
+        "cash": 3510579.64,
+        "debts": 0,
+        "score": 9904791.21,
+        "primaryShare": 0.998,
+        "fieldSize": 2
+      },
+      "fecRepCandidate": {
+        "name": "Juan Ciscomani",
+        "fecName": "CISCOMANI, JUAN",
+        "id": "H2AZ02360",
+        "party": "REP",
+        "status": "INCUMBENT",
+        "receipts": 5083546.72,
+        "cash": 3831730.84,
+        "debts": 0,
+        "score": 19064796.81,
+        "primaryShare": 1,
+        "fieldSize": 1
+      },
+      "baselineRating": "Toss-up",
+      "insideRating": null,
+      "margin": 2.94,
+      "demProbability": 0.598,
+      "repProbability": 0.402,
+      "winnerParty": "D",
+      "winnerProbability": 0.598,
+      "error": 11.35,
+      "competitive": true,
+      "sourceInputs": {
+        "genericBallotShift": 3.32,
+        "nationalFinanceShift": 0.03,
+        "presidentialBaseline": -0.7,
+        "congressionalBaseline": -2.5,
+        "districtFundamentalMargin": -1.51,
+        "contextualBaseline": -1.51,
+        "ratingBaseline": 0,
+        "openPenalty": 0,
+        "incumbencyAdjustment": -0.45,
+        "nomination": {
+          "status": "pending",
+          "primaryDate": "2026-07-21",
+          "demStatus": "presumptive",
+          "repStatus": "presumptive",
+          "demCertainty": 0.78,
+          "repCertainty": 0.78,
+          "marginAdjustment": 0,
+          "errorAdjustment": 0.75,
+          "demProfile": {
+            "key": "presumptiveNominee",
+            "name": "Joanna Mendoza",
+            "party": "D",
+            "placeholder": false,
+            "incumbent": false,
+            "strength": "none",
+            "quality": 0.1,
+            "uncertainty": -0.18
+          },
+          "repProfile": {
+            "key": "incumbent",
+            "name": "Juan Ciscomani",
+            "party": "R",
+            "placeholder": false,
+            "incumbent": true,
+            "strength": "none",
+            "quality": 0.55,
+            "uncertainty": -0.45
+          },
+          "summary": "Primary scheduled for 2026-07-21; known candidates are treated as filed or presumptive candidates."
+        },
+        "candidateQualityAdjustment": -0.19,
+        "nominationAdjustment": 0,
+        "demographicPull": {
+          "adjustment": 0.06,
+          "demProfile": "democrat",
+          "repProfile": "repIncumbent",
+          "topGroups": [
+            {
+              "group": "white_college",
+              "label": "White college",
+              "weight": 0.28,
+              "effect": 0.06
+            },
+            {
+              "group": "white_noncollege",
+              "label": "White non-college",
+              "weight": 0.19,
+              "effect": -0.06
+            },
+            {
+              "group": "latino",
+              "label": "Latino",
+              "weight": 0.17,
+              "effect": 0.03
+            },
+            {
+              "group": "black",
+              "label": "Black",
+              "weight": 0.07,
+              "effect": 0.02
+            }
+          ]
+        },
+        "challengerStrength": "none",
+        "finance": {
+          "demReceipts": 5362099.64,
+          "repReceipts": 5083546.72,
+          "demCash": 3510579.64,
+          "repCash": 3831730.84,
+          "demDebts": 0,
+          "repDebts": 0,
+          "candidates": 12,
+          "financeSignal": -0.004,
+          "demCandidate": {
+            "name": "Joanna Mendoza",
+            "fecName": "MENDOZA, JOANNA",
+            "id": "H6AZ06099",
+            "party": "DEM",
+            "status": "CHALLENGER",
+            "receipts": 5341037.68,
+            "cash": 3510579.64,
+            "debts": 0,
+            "score": 9904791.21,
+            "primaryShare": 0.998,
+            "fieldSize": 2
+          },
+          "repCandidate": {
+            "name": "Juan Ciscomani",
+            "fecName": "CISCOMANI, JUAN",
+            "id": "H2AZ02360",
+            "party": "REP",
+            "status": "INCUMBENT",
+            "receipts": 5083546.72,
+            "cash": 3831730.84,
+            "debts": 0,
+            "score": 19064796.81,
+            "primaryShare": 1,
+            "fieldSize": 1
+          }
+        }
+      },
+      "primaryDate": "2026-07-21",
+      "primaryStatus": "pending",
+      "primarySummary": "Primary scheduled for 2026-07-21; known candidates are treated as filed or presumptive candidates.",
+      "demStatus": "presumptive",
+      "repStatus": "presumptive",
+      "demProfile": {
+        "key": "presumptiveNominee",
+        "name": "Joanna Mendoza",
+        "party": "D",
+        "placeholder": false,
+        "incumbent": false,
+        "strength": "none",
+        "quality": 0.1,
+        "uncertainty": -0.18
+      },
+      "repProfile": {
+        "key": "incumbent",
+        "name": "Juan Ciscomani",
+        "party": "R",
+        "placeholder": false,
+        "incumbent": true,
+        "strength": "none",
+        "quality": 0.55,
+        "uncertainty": -0.45
+      },
+      "sourceBlend": "270toWin / Inside Elections",
+      "history": [
+        {
+          "date": "2026-05-18",
+          "dem": 0.6744,
+          "rep": 0.3256
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.6807,
+          "rep": 0.3193
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.6419,
+          "rep": 0.3581
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.6433,
+          "rep": 0.3567
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.6512,
+          "rep": 0.3488
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.6528,
+          "rep": 0.3472
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.6558,
+          "rep": 0.3442
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.6636,
+          "rep": 0.3364
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.6627,
+          "rep": 0.3373
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.6653,
+          "rep": 0.3347
+        },
+        {
+          "date": "2026-05-28",
+          "dem": 0.6645,
+          "rep": 0.3355
+        },
+        {
+          "date": "2026-05-29",
+          "dem": 0.6664,
+          "rep": 0.3336
+        },
+        {
+          "date": "2026-05-30",
+          "dem": 0.646,
+          "rep": 0.354
+        },
+        {
+          "date": "2026-05-31",
+          "dem": 0.6468,
+          "rep": 0.3532
+        },
+        {
+          "date": "2026-06-01",
+          "dem": 0.6012,
+          "rep": 0.3988
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.5992,
+          "rep": 0.4008
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.5974,
+          "rep": 0.4026
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.598,
+          "rep": 0.402
+        }
+      ],
+      "leverage": 0.804
     },
     {
       "id": "PA-10",
@@ -127913,291 +128199,6 @@
       "leverage": 0.8038000000000001
     },
     {
-      "id": "AZ-06",
-      "state": "AZ",
-      "district": "6",
-      "label": "Juan Ciscomani",
-      "incumbent": "Juan Ciscomani",
-      "open": false,
-      "rating": "Tilt D",
-      "sourceRating": "Toss-up",
-      "ratingSource": "270toWin / Inside Elections",
-      "seatParty": "R",
-      "presidentialMargin": -0.7,
-      "congressionalMargin": -2.5,
-      "fundamentalMargin": -1.51,
-      "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 84,
-      "demCandidate": "Joanna Mendoza",
-      "repCandidate": "Juan Ciscomani",
-      "fecDemCandidate": {
-        "name": "Joanna Mendoza",
-        "fecName": "MENDOZA, JOANNA",
-        "id": "H6AZ06099",
-        "party": "DEM",
-        "status": "CHALLENGER",
-        "receipts": 5341037.68,
-        "cash": 3510579.64,
-        "debts": 0,
-        "score": 9904791.21,
-        "primaryShare": 0.998,
-        "fieldSize": 2
-      },
-      "fecRepCandidate": {
-        "name": "Juan Ciscomani",
-        "fecName": "CISCOMANI, JUAN",
-        "id": "H2AZ02360",
-        "party": "REP",
-        "status": "INCUMBENT",
-        "receipts": 5083546.72,
-        "cash": 3831730.84,
-        "debts": 0,
-        "score": 19064796.81,
-        "primaryShare": 1,
-        "fieldSize": 1
-      },
-      "baselineRating": "Toss-up",
-      "insideRating": null,
-      "margin": 2.95,
-      "demProbability": 0.5983,
-      "repProbability": 0.4017,
-      "winnerParty": "D",
-      "winnerProbability": 0.5983,
-      "error": 11.35,
-      "competitive": true,
-      "sourceInputs": {
-        "genericBallotShift": 3.32,
-        "nationalFinanceShift": 0.03,
-        "presidentialBaseline": -0.7,
-        "congressionalBaseline": -2.5,
-        "districtFundamentalMargin": -1.51,
-        "contextualBaseline": -1.51,
-        "ratingBaseline": 0,
-        "openPenalty": 0,
-        "incumbencyAdjustment": -0.45,
-        "nomination": {
-          "status": "pending",
-          "primaryDate": "2026-07-21",
-          "demStatus": "presumptive",
-          "repStatus": "presumptive",
-          "demCertainty": 0.78,
-          "repCertainty": 0.78,
-          "marginAdjustment": 0,
-          "errorAdjustment": 0.75,
-          "demProfile": {
-            "key": "presumptiveNominee",
-            "name": "Joanna Mendoza",
-            "party": "D",
-            "placeholder": false,
-            "incumbent": false,
-            "strength": "none",
-            "quality": 0.1,
-            "uncertainty": -0.18
-          },
-          "repProfile": {
-            "key": "incumbent",
-            "name": "Juan Ciscomani",
-            "party": "R",
-            "placeholder": false,
-            "incumbent": true,
-            "strength": "none",
-            "quality": 0.55,
-            "uncertainty": -0.45
-          },
-          "summary": "Primary scheduled for 2026-07-21; known candidates are treated as filed or presumptive candidates."
-        },
-        "candidateQualityAdjustment": -0.19,
-        "nominationAdjustment": 0,
-        "demographicPull": {
-          "adjustment": 0.06,
-          "demProfile": "democrat",
-          "repProfile": "repIncumbent",
-          "topGroups": [
-            {
-              "group": "white_college",
-              "label": "White college",
-              "weight": 0.28,
-              "effect": 0.06
-            },
-            {
-              "group": "white_noncollege",
-              "label": "White non-college",
-              "weight": 0.19,
-              "effect": -0.06
-            },
-            {
-              "group": "latino",
-              "label": "Latino",
-              "weight": 0.17,
-              "effect": 0.03
-            },
-            {
-              "group": "black",
-              "label": "Black",
-              "weight": 0.07,
-              "effect": 0.02
-            }
-          ]
-        },
-        "challengerStrength": "none",
-        "finance": {
-          "demReceipts": 5362099.64,
-          "repReceipts": 5083546.72,
-          "demCash": 3510579.64,
-          "repCash": 3831730.84,
-          "demDebts": 0,
-          "repDebts": 0,
-          "candidates": 12,
-          "financeSignal": -0.004,
-          "demCandidate": {
-            "name": "Joanna Mendoza",
-            "fecName": "MENDOZA, JOANNA",
-            "id": "H6AZ06099",
-            "party": "DEM",
-            "status": "CHALLENGER",
-            "receipts": 5341037.68,
-            "cash": 3510579.64,
-            "debts": 0,
-            "score": 9904791.21,
-            "primaryShare": 0.998,
-            "fieldSize": 2
-          },
-          "repCandidate": {
-            "name": "Juan Ciscomani",
-            "fecName": "CISCOMANI, JUAN",
-            "id": "H2AZ02360",
-            "party": "REP",
-            "status": "INCUMBENT",
-            "receipts": 5083546.72,
-            "cash": 3831730.84,
-            "debts": 0,
-            "score": 19064796.81,
-            "primaryShare": 1,
-            "fieldSize": 1
-          }
-        }
-      },
-      "primaryDate": "2026-07-21",
-      "primaryStatus": "pending",
-      "primarySummary": "Primary scheduled for 2026-07-21; known candidates are treated as filed or presumptive candidates.",
-      "demStatus": "presumptive",
-      "repStatus": "presumptive",
-      "demProfile": {
-        "key": "presumptiveNominee",
-        "name": "Joanna Mendoza",
-        "party": "D",
-        "placeholder": false,
-        "incumbent": false,
-        "strength": "none",
-        "quality": 0.1,
-        "uncertainty": -0.18
-      },
-      "repProfile": {
-        "key": "incumbent",
-        "name": "Juan Ciscomani",
-        "party": "R",
-        "placeholder": false,
-        "incumbent": true,
-        "strength": "none",
-        "quality": 0.55,
-        "uncertainty": -0.45
-      },
-      "sourceBlend": "270toWin / Inside Elections",
-      "history": [
-        {
-          "date": "2026-05-18",
-          "dem": 0.6744,
-          "rep": 0.3256
-        },
-        {
-          "date": "2026-05-19",
-          "dem": 0.6807,
-          "rep": 0.3193
-        },
-        {
-          "date": "2026-05-20",
-          "dem": 0.6419,
-          "rep": 0.3581
-        },
-        {
-          "date": "2026-05-21",
-          "dem": 0.6433,
-          "rep": 0.3567
-        },
-        {
-          "date": "2026-05-22",
-          "dem": 0.6512,
-          "rep": 0.3488
-        },
-        {
-          "date": "2026-05-23",
-          "dem": 0.6528,
-          "rep": 0.3472
-        },
-        {
-          "date": "2026-05-24",
-          "dem": 0.6558,
-          "rep": 0.3442
-        },
-        {
-          "date": "2026-05-25",
-          "dem": 0.6636,
-          "rep": 0.3364
-        },
-        {
-          "date": "2026-05-26",
-          "dem": 0.6627,
-          "rep": 0.3373
-        },
-        {
-          "date": "2026-05-27",
-          "dem": 0.6653,
-          "rep": 0.3347
-        },
-        {
-          "date": "2026-05-28",
-          "dem": 0.6645,
-          "rep": 0.3355
-        },
-        {
-          "date": "2026-05-29",
-          "dem": 0.6664,
-          "rep": 0.3336
-        },
-        {
-          "date": "2026-05-30",
-          "dem": 0.646,
-          "rep": 0.354
-        },
-        {
-          "date": "2026-05-31",
-          "dem": 0.6468,
-          "rep": 0.3532
-        },
-        {
-          "date": "2026-06-01",
-          "dem": 0.6012,
-          "rep": 0.3988
-        },
-        {
-          "date": "2026-06-02",
-          "dem": 0.5992,
-          "rep": 0.4008
-        },
-        {
-          "date": "2026-06-03",
-          "dem": 0.5974,
-          "rep": 0.4026
-        },
-        {
-          "date": "2026-06-04",
-          "dem": 0.5983,
-          "rep": 0.4017
-        }
-      ],
-      "leverage": 0.8033999999999999
-    },
-    {
       "id": "MI-10",
       "state": "MI",
       "district": "10",
@@ -128243,11 +128244,11 @@
       },
       "baselineRating": "Toss-up",
       "insideRating": null,
-      "margin": 3.11,
-      "demProbability": 0.6033,
-      "repProbability": 0.3967,
+      "margin": 3.1,
+      "demProbability": 0.6029,
+      "repProbability": 0.3971,
       "winnerParty": "D",
-      "winnerProbability": 0.6033,
+      "winnerProbability": 0.6029,
       "error": 11.35,
       "competitive": true,
       "sourceInputs": {
@@ -128470,11 +128471,11 @@
         },
         {
           "date": "2026-06-04",
-          "dem": 0.6033,
-          "rep": 0.3967
+          "dem": 0.6029,
+          "rep": 0.3971
         }
       ],
-      "leverage": 0.7934000000000001
+      "leverage": 0.7942
     },
     {
       "id": "CO-08",
