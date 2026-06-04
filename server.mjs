@@ -4,7 +4,6 @@ import { mkdir, readFile } from "node:fs/promises";
 import { extname, join, resolve } from "node:path";
 import tls from "node:tls";
 import { buildLiveResults, buildRaceResultDetail } from "./scripts/generate-live-results.mjs";
-import { fileURLToPath } from "node:url";
 
 async function loadLocalEnv() {
   try {
@@ -250,16 +249,7 @@ async function handleLiveResultRace(request, response, url) {
     return;
   }
   try {
-    // First try to read from local cache (for archived races)
-    try {
-      const cachePath = resolve(root, "data", "live-results-races", `${id}.json`);
-      const cachedData = await readFile(cachePath, "utf8");
-      sendJson(response, 200, JSON.parse(cachedData));
-      return;
-    } catch {
-      // Fall back to fetching from civicAPI if cache doesn't exist
-      sendJson(response, 200, await buildRaceResultDetail(id));
-    }
+    sendJson(response, 200, await buildRaceResultDetail(id));
   } catch (error) {
     console.error(error);
     sendJson(response, 502, { ok: false, error: "Live race detail source unavailable." });
