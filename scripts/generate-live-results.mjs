@@ -204,40 +204,39 @@ function racePriority(race) {
   return base + reporting / 20 + candidateBonus;
 }
 
-function calculateEstimatedVoteReporting(races) {
+function calculateEstimatedVoteReporting(race) {
+  // Calculate estimated vote reporting for a single race
+  // Apply conservative adjustment to account for mail-in ballots and provisional ballots
+  const precinctReporting = Number(race.percentReporting || race.percent_reporting || 0);
+  
+  // Apply conservative adjustment factor
+  // Mail-in ballots and provisional ballots take time to count
+  // Typical gap between precinct reporting and actual vote counted is 10-15%
+  const adjustedReporting = precinctReporting * 0.88; // Conservative 12% adjustment
+  
+  // Ensure result doesn't exceed 100% and is at least 0
+  return Math.max(0, Math.min(100, Math.round(adjustedReporting * 100) / 100));
+}
+
+function calculateGroupEstimatedVoteReporting(races) {
   if (!races || races.length === 0) return 0;
   
-  // Calculate estimated vote reporting using a more conservative approach
-  // Major sources (AP, DDHQ, CNN) use "expected vote" methodology based on:
-  // - Historical turnout data
-  // - Voter registration figures  
-  // - Population changes
-  // - Pre-Election Day voting data
-  // Since we don't have access to that data, we use a conservative adjustment
-  
+  // Calculate group-level estimated vote reporting as weighted average of individual race estimates
   let totalWeight = 0;
   let weightedSum = 0;
   
   for (const race of races) {
-    const precinctReporting = Number(race.percentReporting || race.percent_reporting || 0);
+    const raceEstimate = calculateEstimatedVoteReporting(race);
     const totalVotes = (race.candidates || []).reduce((sum, candidate) => sum + Number(candidate.votes || 0), 0);
-    
-    // Apply conservative adjustment factor
-    // Mail-in ballots and provisional ballots take time to count
-    // Typical gap between precinct reporting and actual vote counted is 10-15%
-    const adjustedReporting = precinctReporting * 0.88; // Conservative 12% adjustment
     
     // Use vote count as weight, with minimum weight to ensure all races contribute
     const weight = Math.max(100, totalVotes);
-    weightedSum += adjustedReporting * weight;
+    weightedSum += raceEstimate * weight;
     totalWeight += weight;
   }
   
   if (totalWeight === 0) return 0;
-  const result = Math.round((weightedSum / totalWeight) * 100) / 100;
-  
-  // Ensure result doesn't exceed 100% and is at least 0
-  return Math.max(0, Math.min(100, result));
+  return Math.round((weightedSum / totalWeight) * 100) / 100;
 }
 
 function normalizeRace(race, group) {
@@ -277,6 +276,7 @@ function normalizeRace(race, group) {
     pollsClose: isoDate(race.polls_close),
     lastUpdated: isoDate(race.last_updated),
     percentReporting: Number(race.percent_reporting || 0),
+    estimatedVoteReporting: calculateEstimatedVoteReporting(race),
     hasBreakdown: Boolean(race.has_breakdown),
     hasMap: Boolean(race.has_map),
     marker,
@@ -402,13 +402,15 @@ async function fetchGroup(group) {
     }
   }
   const selectedRaces = requiredRaces.length ? requiredRaces : races.slice(0, 7);
-  const estimatedVoteReporting = calculateEstimatedVoteReporting(selectedRaces);
-
-  // Add estimatedVoteReporting to each race for consistent display
+  
+  // Calculate estimated vote reporting for each individual race
   const racesWithEstimate = selectedRaces.map(race => ({
     ...race,
-    estimatedVoteReporting
+    estimatedVoteReporting: calculateEstimatedVoteReporting(race)
   }));
+  
+  // Calculate group-level estimate from individual race estimates
+  const estimatedVoteReporting = calculateGroupEstimatedVoteReporting(racesWithEstimate);
 
   return {
     state: group.state,

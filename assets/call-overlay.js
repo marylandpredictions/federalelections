@@ -425,7 +425,7 @@
     races
       .filter((race) => !raceFilter || String(race.id) === String(raceFilter))
       .slice()
-      .sort((a, b) => Number(b.percentReporting || 0) - Number(a.percentReporting || 0))
+      .sort((a, b) => Number(b.estimatedVoteReporting || b.percentReporting || 0) - Number(a.estimatedVoteReporting || a.percentReporting || 0))
       .slice(0, 12)
       .forEach((race) => {
         const candidates = [...(race.candidates || [])].sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0));

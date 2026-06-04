@@ -330,7 +330,7 @@ function resultsListUpdateKey(data, query = "") {
     races: flattenRaces(data).map((race) => [
       race.id,
       race.leaderName,
-      race.percentReporting,
+      race.estimatedVoteReporting || race.percentReporting,
       (race.calls || []).length,
       (race.calls || []).map((call) => call.calledAt || ""),
       (race.candidates || []).slice(0, 2).map((candidate) => [candidate.name, candidate.percent, candidate.callLabel || ""])

@@ -1746,7 +1746,7 @@ function bindMapColorMode() {
 
 function raceDetailUpdateKey(race) {
   return JSON.stringify({
-    reporting: race.percentReporting,
+    reporting: race.estimatedVoteReporting || race.percentReporting,
     candidates: (race.candidates || []).map((candidate) => [
       candidate.name,
       candidate.votes,
