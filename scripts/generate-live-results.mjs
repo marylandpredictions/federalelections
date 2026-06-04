@@ -206,13 +206,24 @@ function racePriority(race) {
 
 function calculateEstimatedVoteReporting(race) {
   // Calculate estimated vote reporting for a single race
-  // Apply conservative adjustment to account for mail-in ballots and provisional ballots
+  // Apply non-linear adjustment to better match major source methodology
   const precinctReporting = Number(race.percentReporting || race.percent_reporting || 0);
   
-  // Apply conservative adjustment factor
-  // Mail-in ballots and provisional ballots take time to count
-  // Typical gap between precinct reporting and actual vote counted is 10-15%
-  const adjustedReporting = precinctReporting * 0.88; // Conservative 12% adjustment
+  // Apply non-linear adjustment based on precinct reporting level
+  // As precincts approach 100%, the gap between precincts reporting and actual votes counted widens
+  // This mimics how major sources calculate expected vote
+  let adjustmentFactor;
+  if (precinctReporting < 50) {
+    adjustmentFactor = 0.75; // Less adjustment early on
+  } else if (precinctReporting < 75) {
+    adjustmentFactor = 0.65; // Moderate adjustment
+  } else if (precinctReporting < 90) {
+    adjustmentFactor = 0.58; // More aggressive adjustment
+  } else {
+    adjustmentFactor = 0.56; // Most aggressive adjustment when precincts nearly complete
+  }
+  
+  const adjustedReporting = precinctReporting * adjustmentFactor;
   
   // Ensure result doesn't exceed 100% and is at least 0
   return Math.max(0, Math.min(100, Math.round(adjustedReporting * 100) / 100));
