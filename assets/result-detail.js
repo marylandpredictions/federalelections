@@ -1875,71 +1875,127 @@ function bindFavoriteRaceControls(race) {
 function isOpenPrimary(race) {
   const scope = String(race.electionScope || "").toLowerCase();
   const name = String(race.electionName || "").toLowerCase();
+  
+  // Check if race is nonpartisan - if so, don't show party toggle
+  if (scope.includes("nonpartisan") || name.includes("nonpartisan")) {
+    return false;
+  }
+  
   return scope.includes("open primary") || name.includes("open primary");
 }
 
 function combineCandidatesByParty(race) {
   const candidates = race.candidates || [];
-  const democrats = candidates.filter(c => c.partyCode === "D");
-  const republicans = candidates.filter(c => c.partyCode === "R");
   
-  const demVotes = democrats.reduce((sum, c) => sum + Number(c.votes || 0), 0);
-  const repVotes = republicans.reduce((sum, c) => sum + Number(c.votes || 0), 0);
-  const totalVotes = demVotes + repVotes;
-  
-  return [
-    {
-      name: "Democrats",
-      party: "Democratic",
-      partyCode: "D",
-      color: "#1030b2",
-      votes: demVotes,
-      percent: totalVotes > 0 ? (demVotes / totalVotes) * 100 : 0,
-      isCombined: true
-    },
-    {
-      name: "Republicans",
-      party: "Republican",
-      partyCode: "R",
-      color: "#e03a3e",
-      votes: repVotes,
-      percent: totalVotes > 0 ? (repVotes / totalVotes) * 100 : 0,
-      isCombined: true
+  // Group candidates by party code
+  const partyGroups = {};
+  candidates.forEach(c => {
+    const partyCode = c.partyCode || "Other";
+    if (!partyGroups[partyCode]) {
+      partyGroups[partyCode] = {
+        partyCode,
+        party: c.party || partyCode,
+        candidates: [],
+        totalVotes: 0
+      };
     }
-  ];
+    partyGroups[partyCode].candidates.push(c);
+    partyGroups[partyCode].totalVotes += Number(c.votes || 0);
+  });
+  
+  // Define party colors
+  const partyColors = {
+    "D": "#1030b2",
+    "R": "#e03a3e",
+    "I": "#6c757d",
+    "L": "#f4a261",
+    "G": "#2a9d8f",
+    "Other": "#95a5a6"
+  };
+  
+  // Get total votes for percentage calculation
+  const totalVotes = Object.values(partyGroups).reduce((sum, group) => sum + group.totalVotes, 0);
+  
+  // Create combined candidates for each party
+  const combined = Object.values(partyGroups).map(group => {
+    let name = group.party;
+    if (group.partyCode === "D") name = "Democrats";
+    else if (group.partyCode === "R") name = "Republicans";
+    else if (group.partyCode === "I") name = "Independents";
+    else name = group.party;
+    
+    return {
+      name,
+      party: group.party,
+      partyCode: group.partyCode,
+      color: partyColors[group.partyCode] || partyColors["Other"],
+      votes: group.totalVotes,
+      percent: totalVotes > 0 ? (group.totalVotes / totalVotes) * 100 : 0,
+      isCombined: true
+    };
+  });
+  
+  // Sort by votes descending
+  return combined.sort((a, b) => b.votes - a.votes);
 }
 
 function combineCountiesByParty(race) {
   const counties = race.counties || [];
+  
+  // Define party colors
+  const partyColors = {
+    "D": "#1030b2",
+    "R": "#e03a3e",
+    "I": "#6c757d",
+    "L": "#f4a261",
+    "G": "#2a9d8f",
+    "Other": "#95a5a6"
+  };
+  
   return counties.map(county => {
     const countyCandidates = county.candidates || [];
-    const dems = countyCandidates.filter(c => c.partyCode === "D");
-    const reps = countyCandidates.filter(c => c.partyCode === "R");
     
-    const demVotes = dems.reduce((sum, c) => sum + Number(c.votes || 0), 0);
-    const repVotes = reps.reduce((sum, c) => sum + Number(c.votes || 0), 0);
-    const totalVotes = demVotes + repVotes;
+    // Group county candidates by party code
+    const partyGroups = {};
+    countyCandidates.forEach(c => {
+      const partyCode = c.partyCode || "Other";
+      if (!partyGroups[partyCode]) {
+        partyGroups[partyCode] = {
+          partyCode,
+          party: c.party || partyCode,
+          totalVotes: 0
+        };
+      }
+      partyGroups[partyCode].totalVotes += Number(c.votes || 0);
+    });
+    
+    // Get total votes for percentage calculation
+    const totalVotes = Object.values(partyGroups).reduce((sum, group) => sum + group.totalVotes, 0);
+    
+    // Create combined candidates for each party in this county
+    const combinedCandidates = Object.values(partyGroups).map(group => {
+      let name = group.party;
+      if (group.partyCode === "D") name = "Democrats";
+      else if (group.partyCode === "R") name = "Republicans";
+      else if (group.partyCode === "I") name = "Independents";
+      else name = group.party;
+      
+      return {
+        name,
+        party: group.party,
+        partyCode: group.partyCode,
+        color: partyColors[group.partyCode] || partyColors["Other"],
+        votes: group.totalVotes,
+        percent: totalVotes > 0 ? (group.totalVotes / totalVotes) * 100 : 0
+      };
+    });
+    
+    // Sort by votes descending
+    combinedCandidates.sort((a, b) => b.votes - a.votes);
     
     return {
       ...county,
-      candidates: [
-        {
-          name: "Democrats",
-          party: "Democratic",
-          partyCode: "D",
-          color: "#1030b2",
-          votes: demVotes,
-          percent: totalVotes > 0 ? (demVotes / totalVotes) * 100 : 0
-        },
-        {
-          name: "Republicans",
-          party: "Republican",
-          partyCode: "R",
-          color: "#e03a3e",
-          votes: repVotes,
-          percent: totalVotes > 0 ? (repVotes / totalVotes) * 100 : 0
-        }
-      ]
+      candidates: combinedCandidates
     };
   });
 }
