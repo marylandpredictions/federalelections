@@ -20,7 +20,7 @@
   --ink: #ffffff;
   --muted: #c6d2ff;
   --line: rgba(214, 217, 226, .92);
-  --ticker-height: 66px;
+  --ticker-height: 80px;
 }
 
 * {
@@ -50,16 +50,17 @@ body {
 
 .broadcast-ticker-shell {
   position: absolute;
-  left: 28px;
-  right: 28px;
-  bottom: 24px;
-  height: var(--ticker-height);
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 32px;
+  width: min(1400px, calc(100vw - 64px));
+  height: 80px;
   display: grid;
-  grid-template-columns: 178px minmax(0, 1fr) 92px;
+  grid-template-columns: 200px minmax(0, 1fr) 110px;
   align-items: stretch;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 12px;
   background:
     linear-gradient(135deg, rgba(16, 48, 178, .92), rgba(7, 14, 38, .98) 48%, rgba(224, 58, 62, .66)),
     rgba(5, 10, 28, .95);
@@ -73,12 +74,21 @@ body {
   gap: 8px;
   border-right: 1px solid rgba(214, 217, 226, .55);
   background:
-    linear-gradient(135deg, rgba(16, 48, 178, .98), rgba(224, 58, 62, .92)),
-    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, .7) 1px, transparent 1px),
-    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, .7) 1px, transparent 1px),
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .7) 1px, transparent 1px);
-  background-size: 100% 100%, 20px 20px, 20px 20px, 20px 20px;
+    linear-gradient(135deg, rgba(16, 48, 178, .98), rgba(224, 58, 62, .92));
   text-transform: uppercase;
+  position: relative;
+}
+
+.broadcast-ticker-brand::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, .4) 1px, transparent 1px),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, .4) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .4) 1px, transparent 1px);
+  background-size: 20px 20px, 20px 20px, 20px 20px;
+  opacity: 0.7;
 }
 
 .broadcast-ticker-brand img {
@@ -145,20 +155,30 @@ body {
   display: grid;
   place-items: center;
   border-left: 1px solid rgba(214, 217, 226, .55);
-  background:
-    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, .7) 1px, transparent 1px),
-    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, .7) 1px, transparent 1px),
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .7) 1px, transparent 1px);
-  background-size: 20px 20px, 20px 20px, 20px 20px;
+  background: transparent;
   color: #fff;
-  font: 900 1.1rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  font: 900 1.3rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  position: relative;
+}
+
+.broadcast-ticker-clock::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, .4) 1px, transparent 1px),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, .4) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .4) 1px, transparent 1px);
+  background-size: 20px 20px, 20px 20px, 20px 20px;
+  opacity: 0.7;
 }
 
 .broadcast-call-slot {
   position: absolute;
-  right: 34px;
-  bottom: calc(var(--ticker-height) + 46px);
-  width: min(790px, calc(100vw - 68px));
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 112px;
+  width: min(900px, calc(100vw - 64px));
 }
 
 .broadcast-call-card {

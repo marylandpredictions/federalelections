@@ -1872,6 +1872,63 @@ function bindFavoriteRaceControls(race) {
   });
 }
 
+function isOpenPrimary(race) {
+  const scope = String(race.electionScope || "").toLowerCase();
+  const name = String(race.electionName || "").toLowerCase();
+  return scope.includes("open primary") || name.includes("open primary");
+}
+
+function combineCandidatesByParty(race) {
+  const candidates = race.candidates || [];
+  const democrats = candidates.filter(c => c.partyCode === "D");
+  const republicans = candidates.filter(c => c.partyCode === "R");
+  
+  const demVotes = democrats.reduce((sum, c) => sum + Number(c.votes || 0), 0);
+  const repVotes = republicans.reduce((sum, c) => sum + Number(c.votes || 0), 0);
+  const totalVotes = demVotes + repVotes;
+  
+  return [
+    {
+      name: "Democrats",
+      party: "Democratic",
+      partyCode: "D",
+      color: "#1030b2",
+      votes: demVotes,
+      percent: totalVotes > 0 ? (demVotes / totalVotes) * 100 : 0,
+      isCombined: true
+    },
+    {
+      name: "Republicans",
+      party: "Republican",
+      partyCode: "R",
+      color: "#e03a3e",
+      votes: repVotes,
+      percent: totalVotes > 0 ? (repVotes / totalVotes) * 100 : 0,
+      isCombined: true
+    }
+  ];
+}
+
+function bindPartyCombineToggle(race) {
+  const toggle = page.querySelector("[data-party-combine-toggle]");
+  if (!toggle) return;
+  
+  let isPartyView = false;
+  let originalRace = { ...race };
+  
+  toggle.addEventListener("click", async () => {
+    isPartyView = !isPartyView;
+    toggle.textContent = isPartyView ? "Candidate View" : "Party View";
+    toggle.style.background = isPartyView ? "rgba(16, 48, 178, 0.3)" : "";
+    
+    const candidatesNode = page.querySelector(".result-full-candidates");
+    if (candidatesNode) {
+      const displayRace = isPartyView ? { ...race, candidates: combineCandidatesByParty(race) } : originalRace;
+      candidatesNode.innerHTML = candidateRows(displayRace);
+    }
+  });
+}
+
 async function renderRace(race) {
   await primeCandidatePhotoBgColors(race);
   const leader = leadingCandidate(race);
@@ -1921,6 +1978,7 @@ async function renderRace(race) {
           <button type="button" data-map-color="percent">% Margin</button>
           <button type="button" data-map-color="votes">Vote Margin</button>
           <button type="button" data-map-color="raw">Raw</button>
+          ${isOpenPrimary(race) ? `<button type="button" data-party-combine-toggle>Party View</button>` : ""}
           <button type="button" data-map-zoom="out">-</button>
           <button type="button" data-map-zoom="in">+</button>
           <button type="button" data-map-zoom="reset">Reset</button>
@@ -1955,6 +2013,7 @@ async function renderRace(race) {
   bindVoteHistoryHover();
   bindPollCountdown();
   bindFavoriteRaceControls(race);
+  bindPartyCombineToggle(race);
 }
 
 async function fetchRace() {

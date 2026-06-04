@@ -206,21 +206,24 @@ function racePriority(race) {
 
 function calculateEstimatedVoteReporting(race) {
   // Calculate estimated vote reporting for a single race
-  // Apply non-linear adjustment to better match major source methodology
+  // Since we lack access to historical turnout, voter registration, and population data
+  // that major sources use, we use a conservative approach that stays closer to precinct reporting
+  // for most races, with more aggressive adjustment only when precincts are nearly complete
   const precinctReporting = Number(race.percentReporting || race.percent_reporting || 0);
   
-  // Apply non-linear adjustment based on precinct reporting level
-  // As precincts approach 100%, the gap between precincts reporting and actual votes counted widens
-  // This mimics how major sources calculate expected vote
+  // Use a much more conservative approach that matches observed patterns better
+  // Most races should stay close to precinct reporting unless precincts are nearly complete
   let adjustmentFactor;
-  if (precinctReporting < 50) {
-    adjustmentFactor = 0.75; // Less adjustment early on
-  } else if (precinctReporting < 75) {
-    adjustmentFactor = 0.65; // Moderate adjustment
+  if (precinctReporting < 60) {
+    adjustmentFactor = 0.98; // Almost no adjustment for most races
+  } else if (precinctReporting < 80) {
+    adjustmentFactor = 0.95; // Slight adjustment
   } else if (precinctReporting < 90) {
-    adjustmentFactor = 0.58; // More aggressive adjustment
+    adjustmentFactor = 0.85; // Moderate adjustment
+  } else if (precinctReporting < 95) {
+    adjustmentFactor = 0.65; // Significant adjustment when nearly complete
   } else {
-    adjustmentFactor = 0.56; // Most aggressive adjustment when precincts nearly complete
+    adjustmentFactor = 0.58; // Most aggressive adjustment when precincts complete
   }
   
   const adjustedReporting = precinctReporting * adjustmentFactor;
