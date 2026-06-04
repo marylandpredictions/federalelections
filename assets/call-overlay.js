@@ -316,7 +316,10 @@
     const text = String(label || "").toLowerCase();
     const raceText = `${race?.electionScope || race?.electionName || ""}`.toLowerCase();
     if (text.includes("advance") || raceText.includes("open primary") || count > 1) return count > 1 ? "advance" : "advances";
-    if (text.includes("project")) return "is projected to win";
+    if (text.includes("project")) {
+      if (raceText.includes("primary") || raceText.includes("open primary")) return "is projected to advance";
+      return "is projected to win";
+    }
     return "wins";
   }
 
@@ -325,9 +328,9 @@
     const label = labelFor(calledCandidates[0]?.call || {}, race);
     const verb = verbFor(label, race, names.length);
     const raceName = race?.electionName || "this race";
-    if (names.length === 1) return `${names[0]} ${verb} ${raceName}.`;
-    if (names.length === 2) return `${names[0]} and ${names[1]} ${verb} in ${raceName}.`;
-    return `${names.slice(0, -1).join(", ")}, and ${names.at(-1)} ${verb} in ${raceName}.`;
+    if (names.length === 1) return `${names[0]} ${verb} the ${raceName}.`;
+    if (names.length === 2) return `${names[0]} and ${names[1]} ${verb} in the ${raceName}.`;
+    return `${names.slice(0, -1).join(", ")}, and ${names.at(-1)} ${verb} in the ${raceName}.`;
   }
 
   function fetchJson(url) {

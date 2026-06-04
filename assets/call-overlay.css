@@ -68,18 +68,23 @@ body {
 
 .broadcast-ticker-brand {
   display: grid;
+  grid-template-columns: auto auto;
   place-items: center;
-  gap: 2px;
+  gap: 8px;
   border-right: 1px solid rgba(214, 217, 226, .55);
   background:
-    linear-gradient(135deg, rgba(16, 48, 178, .98), rgba(224, 58, 62, .92));
+    linear-gradient(135deg, rgba(16, 48, 178, .98), rgba(224, 58, 62, .92)),
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, .7) 1px, transparent 1px),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, .7) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .7) 1px, transparent 1px);
+  background-size: 100% 100%, 20px 20px, 20px 20px, 20px 20px;
   text-transform: uppercase;
 }
 
 .broadcast-ticker-brand img {
-  width: 112px;
-  max-width: 82%;
-  height: 34px;
+  width: 130px;
+  max-width: 85%;
+  height: 40px;
   object-fit: contain;
   display: block;
   filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .28));
@@ -87,7 +92,7 @@ body {
 
 .broadcast-ticker-brand strong {
   color: #ffd5d9;
-  font: 900 .72rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  font: 900 1rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   letter-spacing: .18em;
 }
 
@@ -140,8 +145,13 @@ body {
   display: grid;
   place-items: center;
   border-left: 1px solid rgba(214, 217, 226, .55);
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, .7) 1px, transparent 1px),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, .7) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .7) 1px, transparent 1px);
+  background-size: 20px 20px, 20px 20px, 20px 20px;
   color: #fff;
-  font: 900 .98rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  font: 900 1.1rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .broadcast-call-slot {
