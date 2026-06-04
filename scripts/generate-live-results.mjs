@@ -201,7 +201,7 @@ function normalizeCandidate(candidate) {
       "tim myers": "Democratic",
       "alice stek": "Peace and Freedom",
       "jeyson lopez": "Democratic",
-      "abdur rahman sikder": "Democratic",
+      "abdur sikder": "Democratic",
       "sean collinson": "Independent",
       "rakesh christian": "Independent",
       "david collenberg": "Republican"
