@@ -1,5 +1,5 @@
-import { mkdirSync, readFileSync, writeFileSync, readFile } from "node:fs";
-import { pathToFileURL, fileURLToPath } from "node:url";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 
 const OUTPUT_URL = new URL("../data/live-results.json", import.meta.url);
 const DETAIL_DIR_URL = new URL("../data/live-results-races/", import.meta.url);

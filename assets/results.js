@@ -32,6 +32,11 @@ function percentLabel(value) {
   return `${number.toFixed(1)}%`;
 }
 
+function estimatedInLabel(value) {
+  const number = Number(value || 0);
+  return Number.isFinite(number) ? `${number.toFixed(1)}%` : "0.0%";
+}
+
 function dateLabel(value) {
   if (!value) return "Date TBA";
   if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
@@ -259,7 +264,12 @@ function raceCard(race) {
 }
 
 function resultGroupCard(group) {
-  const estimatedReporting = group.estimatedVoteReporting !== undefined ? percentLabel(group.estimatedVoteReporting) : "0.0%";
+  const reportingValues = (group.races || [])
+    .map((race) => Number(race.estimatedVoteReporting ?? race.percentReporting ?? 0))
+    .filter(Number.isFinite);
+  const estimatedReporting = reportingValues.length
+    ? reportingValues.reduce((sum, value) => sum + value, 0) / reportingValues.length
+    : 0;
   return `
     <section class="result-state-card">
       <div class="result-state-head">
@@ -267,7 +277,7 @@ function resultGroupCard(group) {
           <p class="kicker">${escapeHtml(group.state)}</p>
           <h2>${escapeHtml(group.stateName)}</h2>
         </div>
-        <span>${estimatedInLabel(group.estimatedVoteReporting)} estimated in</span>
+        <span>${estimatedInLabel(estimatedReporting)} estimated in</span>
       </div>
       <div class="result-race-list">
         ${group.races.length ? group.races.map(raceCard).join("") : `<p class="meta">No matching featured races in this group.</p>`}

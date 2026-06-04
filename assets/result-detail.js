@@ -330,6 +330,11 @@ function percentLabel(value) {
   return `${number.toFixed(1)}%`;
 }
 
+function estimatedInLabel(value) {
+  const number = Number(value || 0);
+  return Number.isFinite(number) ? `${number.toFixed(1)}%` : "0.0%";
+}
+
 function signedPointMargin(value) {
   const number = Number(value || 0);
   if (!Number.isFinite(number) || Math.abs(number) < .05) return "Even";
