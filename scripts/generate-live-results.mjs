@@ -181,7 +181,30 @@ function electionMarkerFor(race, candidates = []) {
 }
 
 function normalizeCandidate(candidate) {
-  const party = /no party preference/i.test(candidate.party || "") ? "Independent" : (candidate.party || "");
+  let party = /no party preference/i.test(candidate.party || "") ? "Independent" : (candidate.party || "");
+  const name = String(candidate.name || "").toLowerCase();
+  
+  // CA Lieutenant Governor Open Primary - civicAPI incorrectly marks all as Nonpartisan
+  // Correct party affiliations based on actual candidate party registrations
+  const partyLower = party.toLowerCase();
+  if (partyLower === "nonpartisan" || partyLower === "n" || partyLower === "") {
+    const partyCorrections = {
+      "fiona ma": "Democratic",
+      "josh fryday": "Democratic", 
+      "michael tubbs": "Democratic",
+      "oliver ma": "Democratic",
+      "gloria romero": "Republican",
+      "david fennell": "Republican"
+    };
+    
+    for (const [key, correction] of Object.entries(partyCorrections)) {
+      if (name.includes(key)) {
+        party = correction;
+        break;
+      }
+    }
+  }
+  
   const normalized = {
     name: candidate.name || "Unknown",
     party,
