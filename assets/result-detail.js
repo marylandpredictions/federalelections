@@ -1909,6 +1909,41 @@ function combineCandidatesByParty(race) {
   ];
 }
 
+function combineCountiesByParty(race) {
+  const counties = race.counties || [];
+  return counties.map(county => {
+    const countyCandidates = county.candidates || [];
+    const dems = countyCandidates.filter(c => c.partyCode === "D");
+    const reps = countyCandidates.filter(c => c.partyCode === "R");
+    
+    const demVotes = dems.reduce((sum, c) => sum + Number(c.votes || 0), 0);
+    const repVotes = reps.reduce((sum, c) => sum + Number(c.votes || 0), 0);
+    const totalVotes = demVotes + repVotes;
+    
+    return {
+      ...county,
+      candidates: [
+        {
+          name: "Democrats",
+          party: "Democratic",
+          partyCode: "D",
+          color: "#1030b2",
+          votes: demVotes,
+          percent: totalVotes > 0 ? (demVotes / totalVotes) * 100 : 0
+        },
+        {
+          name: "Republicans",
+          party: "Republican",
+          partyCode: "R",
+          color: "#e03a3e",
+          votes: repVotes,
+          percent: totalVotes > 0 ? (repVotes / totalVotes) * 100 : 0
+        }
+      ]
+    };
+  });
+}
+
 function bindPartyCombineToggle(race) {
   const toggle = page.querySelector("[data-party-combine-toggle]");
   if (!toggle) return;
@@ -1933,7 +1968,11 @@ function bindPartyCombineToggle(race) {
     
     if (mapFrame) {
       if (showCombined) {
-        const partyRace = { ...race, candidates: combineCandidatesByParty(race) };
+        const partyRace = { 
+          ...race, 
+          candidates: combineCandidatesByParty(race),
+          counties: combineCountiesByParty(race)
+        };
         const newMapMarkup = await countyShapeMap(partyRace);
         mapFrame.innerHTML = newMapMarkup;
         bindCountyHover();
