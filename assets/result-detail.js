@@ -1875,9 +1875,10 @@ function bindFavoriteRaceControls(race) {
 function isOpenPrimary(race) {
   const scope = String(race.electionScope || "").toLowerCase();
   const name = String(race.electionName || "").toLowerCase();
+  const type = String(race.type || "").toLowerCase();
   
   // Check if race is nonpartisan - if so, don't show party toggle
-  if (scope.includes("nonpartisan") || name.includes("nonpartisan")) {
+  if (scope.includes("nonpartisan") || name.includes("nonpartisan") || type.includes("nonpartisan")) {
     return false;
   }
   
@@ -1907,9 +1908,10 @@ function combineCandidatesByParty(race) {
   const partyColors = {
     "D": "#1030b2",
     "R": "#e03a3e",
-    "I": "#6c757d",
-    "L": "#f4a261",
+    "I": "#9b59b6",
+    "L": "#f1c40f",
     "G": "#2a9d8f",
+    "P": "#e74c3c",
     "Other": "#95a5a6"
   };
   
@@ -1946,9 +1948,10 @@ function combineCountiesByParty(race) {
   const partyColors = {
     "D": "#1030b2",
     "R": "#e03a3e",
-    "I": "#6c757d",
-    "L": "#f4a261",
+    "I": "#9b59b6",
+    "L": "#f1c40f",
     "G": "#2a9d8f",
+    "P": "#e74c3c",
     "Other": "#95a5a6"
   };
   
@@ -2081,6 +2084,7 @@ async function renderRace(race) {
         <div class="result-full-candidates">
           ${candidateRows(race)}
         </div>
+        ${isOpenPrimary(race) ? `<div class="result-party-toggle"><button type="button" data-party-combine-toggle>Party View</button></div>` : ""}
         ${favoriteRacePanelMarkup(race)}
       </div>
 
@@ -2089,7 +2093,6 @@ async function renderRace(race) {
           <button type="button" data-map-color="percent">% Margin</button>
           <button type="button" data-map-color="votes">Vote Margin</button>
           <button type="button" data-map-color="raw">Raw</button>
-          ${isOpenPrimary(race) ? `<button type="button" data-party-combine-toggle>Party View</button>` : ""}
           <button type="button" data-map-zoom="out">-</button>
           <button type="button" data-map-zoom="in">+</button>
           <button type="button" data-map-zoom="reset">Reset</button>

@@ -133,6 +133,27 @@ function raceHasCall(race) {
   return Boolean((race.calls || []).length || (race.candidates || []).some((candidate) => candidate.callLabel));
 }
 
+function isTopTwoAdvance(race) {
+  const scope = String(race.electionScope || "").toLowerCase();
+  const name = String(race.electionName || "").toLowerCase();
+  return scope.includes("open primary") || name.includes("open primary");
+}
+
+function shouldArchiveRace(race) {
+  if (!raceHasCall(race)) return false;
+  
+  // For top-2 advance races, only archive if two candidates are projected to advance
+  if (isTopTwoAdvance(race)) {
+    const advanceCalls = (race.calls || []).filter(call => 
+      call.label?.toLowerCase().includes("advance") || 
+      call.status?.toLowerCase().includes("advance")
+    );
+    return advanceCalls.length >= 2;
+  }
+  
+  return true;
+}
+
 function dateKeyForRace(race) {
   const iso = validElectionIso(race.electionDate || race.pollsClose || race.pollCloseAt);
   return iso ? iso.slice(0, 10) : "";
@@ -147,7 +168,7 @@ function latestLiveDateKey(races = flattenRaces()) {
 
 function isDateFullyResolved(dateKey, races = flattenRaces()) {
   const dayRaces = races.filter((race) => dateKeyForRace(race) === dateKey);
-  return Boolean(dayRaces.length) && dayRaces.every(raceHasCall);
+  return Boolean(dayRaces.length) && dayRaces.every(shouldArchiveRace);
 }
 
 function readFavoriteRaces() {
@@ -389,7 +410,7 @@ function renderArchive() {
   const archivedByDate = new Map();
   flattenRaces(liveResultsData).forEach((race) => {
     const dateKey = dateKeyForRace(race);
-    if (!dateKey || !raceHasCall(race) || !raceMatches(race, query)) return;
+    if (!dateKey || !shouldArchiveRace(race) || !raceMatches(race, query)) return;
     if (!archivedByDate.has(dateKey)) archivedByDate.set(dateKey, []);
     archivedByDate.get(dateKey).push(race);
   });
