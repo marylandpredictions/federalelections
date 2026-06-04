@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>FEA Admin</title>
+  <link rel="icon" href="img/sda.png">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <style>
+    body.admin-page {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(16, 48, 178, 0.34), transparent 34rem),
+        linear-gradient(135deg, #050b1c 0%, #071641 56%, #1b1026 100%);
+      color: #fff;
+    }
+    .admin-shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 64px;
+    }
+    .admin-hero,
+    .admin-panel {
+      border: 1px solid #d6d9e2;
+      background: linear-gradient(135deg, rgba(13, 38, 104, 0.96), rgba(28, 23, 74, 0.94));
+      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.35);
+    }
+    .admin-hero {
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 18px;
+    }
+    .admin-hero h1 {
+      margin: 0;
+      font-size: clamp(2rem, 6vw, 4.8rem);
+      line-height: 0.95;
+      background: linear-gradient(90deg, #2d7cff, #f3536a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .admin-hero p,
+    .admin-muted {
+      color: #c6d2ff;
+    }
+    .admin-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      gap: 18px;
+    }
+    .admin-panel {
+      border-radius: 14px;
+      padding: 18px;
+    }
+    .admin-panel h2 {
+      margin: 0 0 14px;
+      font-size: 1.25rem;
+    }
+    .admin-field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+    .admin-field label {
+      color: #c6d2ff;
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .admin-input,
+    .admin-select,
+    .admin-textarea {
+      width: 100%;
+      border: 1px solid #d6d9e2;
+      border-radius: 10px;
+      background: #07143b;
+      color: #fff;
+      font: inherit;
+      padding: 11px 12px;
+    }
+    .admin-textarea {
+      min-height: 170px;
+      resize: vertical;
+    }
+    .admin-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .admin-button {
+      border: 1px solid #d6d9e2;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #1236b8, #651c44);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 900;
+      padding: 11px 14px;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+    .admin-button:hover {
+      border-color: #fff;
+      box-shadow: 0 0 0 3px rgba(198, 210, 255, 0.14);
+      transform: translateY(-1px);
+    }
+    .admin-button.secondary {
+      background: #07143b;
+    }
+    .admin-call-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 150px 44px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .admin-call-row button {
+      min-height: 42px;
+      padding: 0;
+    }
+    .admin-candidate-list {
+      display: grid;
+      gap: 6px;
+      margin: 10px 0 14px;
+      max-height: 260px;
+      overflow: auto;
+    }
+    .admin-candidate {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid rgba(214, 217, 226, 0.35);
+      border-radius: 9px;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .admin-status {
+      min-height: 22px;
+      color: #48d38a;
+      font-weight: 800;
+    }
+    .admin-status.error {
+      color: #ff6b76;
+    }
+    @media (max-width: 850px) {
+      .admin-grid,
+      .admin-call-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="admin-page">
+  <main class="admin-shell">
+    <section class="admin-hero">
+      <p class="kicker">Federal Elections Analysis</p>
+      <h1>Results admin.</h1>
+      <p>Make race calls and add analyst notes without editing JSON by hand. Changes save to the same files the live site already reads.</p>
+    </section>
+
+    <section class="admin-panel" id="loginPanel">
+      <h2>Staff access</h2>
+      <div class="admin-field">
+        <label for="adminSecret">Admin secret</label>
+        <input class="admin-input" id="adminSecret" type="password" autocomplete="current-password" placeholder="Enter staff secret">
+      </div>
+      <div class="admin-actions">
+        <button class="admin-button" id="unlockAdmin" type="button">Unlock admin</button>
+      </div>
+      <p class="admin-muted">Set this with the server environment variable <code>ADMIN_SECRET</code>. The hidden URL alone is not enough security.</p>
+    </section>
+
+    <section class="admin-grid" id="adminApp" hidden>
+      <aside class="admin-panel">
+        <h2>Race</h2>
+        <div class="admin-field">
+          <label for="raceSelect">Select race</label>
+          <select class="admin-select" id="raceSelect"></select>
+        </div>
+        <div class="admin-candidate-list" id="candidateList"></div>
+        <p class="admin-muted" id="raceHelp">Candidate names must match exactly. Use the buttons below to copy names into call rows.</p>
+      </aside>
+
+      <section class="admin-panel">
+        <h2>Race calls</h2>
+        <p class="admin-muted">Single-winner races usually use Projected or Winner. Top-two/open primaries usually use Advances or Advanced.</p>
+        <div id="callRows"></div>
+        <div class="admin-actions">
+          <button class="admin-button secondary" id="addCallRow" type="button">Add call row</button>
+          <button class="admin-button" id="saveCalls" type="button">Save calls</button>
+        </div>
+        <p class="admin-status" id="callStatus"></p>
+      </section>
+
+      <section class="admin-panel" style="grid-column: 1 / -1;">
+        <h2>Analyst note</h2>
+        <div class="admin-grid">
+          <div>
+            <div class="admin-field">
+              <label for="noteAuthor">Author</label>
+              <input class="admin-input" id="noteAuthor" value="FEA Analysis Desk">
+            </div>
+            <div class="admin-field">
+              <label for="noteRole">Role</label>
+              <input class="admin-input" id="noteRole" value="Analysis desk">
+            </div>
+            <div class="admin-field">
+              <label for="noteDate">Date/time label</label>
+              <input class="admin-input" id="noteDate">
+            </div>
+            <div class="admin-field">
+              <label for="noteImage">Image URL or image JSON</label>
+              <input class="admin-input" id="noteImage" placeholder="Optional">
+            </div>
+            <div class="admin-field">
+              <label for="noteEmbed">Embed URL or embed JSON</label>
+              <input class="admin-input" id="noteEmbed" placeholder='Optional, e.g. {"type":"governor-race-preview","state":"CA"}'>
+            </div>
+          </div>
+          <div class="admin-field">
+            <label for="noteText">Note text</label>
+            <textarea class="admin-textarea" id="noteText" placeholder="Write the newest analyst note here. It will be inserted above previous notes."></textarea>
+          </div>
+        </div>
+        <div class="admin-actions">
+          <button class="admin-button" id="saveNote" type="button">Add newest note</button>
+        </div>
+        <p class="admin-status" id="noteStatus"></p>
+      </section>
+    </section>
+  </main>
+  <script src="assets/admin.js"></script>
+</body>
+</html>

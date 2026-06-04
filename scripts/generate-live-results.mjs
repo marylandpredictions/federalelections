@@ -7,8 +7,8 @@ const CALLS_URL = new URL("../data/result-calls.json", import.meta.url);
 const FEATURED_CANDIDATES_URL = new URL("../data/result-featured-candidates.json", import.meta.url);
 const CIVIC_BASE = "https://civicapi.org/api/v2";
 const NBC_BASE = "https://www.nbcnews.com/firecracker/api/v2/state-results/2026-primary-elections";
-const featuredCandidates = readFeaturedCandidates();
-const manualCalls = readManualCalls();
+let featuredCandidates = readFeaturedCandidates();
+let manualCalls = readManualCalls();
 const externalEstimateCache = new Map();
 
 const STATE_ESTIMATE_FALLBACK_SLUGS = {
@@ -96,6 +96,12 @@ function readFeaturedCandidates() {
   } catch {
     return { races: {} };
   }
+}
+
+export function reloadManualResultConfig() {
+  featuredCandidates = readFeaturedCandidates();
+  manualCalls = readManualCalls();
+  externalEstimateCache.clear();
 }
 
 function featuredNamesForRace(raceId) {

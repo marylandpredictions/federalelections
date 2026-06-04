@@ -1,9 +1,9 @@
 import { createServer } from "node:http";
 import { createWriteStream } from "node:fs";
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { extname, join, resolve } from "node:path";
 import tls from "node:tls";
-import { buildLiveResults, buildRaceResultDetail } from "./scripts/generate-live-results.mjs";
+import { buildLiveResults, buildRaceResultDetail, reloadManualResultConfig } from "./scripts/generate-live-results.mjs";
 
 async function loadLocalEnv() {
   try {
@@ -28,6 +28,10 @@ const port = Number(process.env.PORT || 8000);
 const host = process.env.HOST || "0.0.0.0";
 const contactTo = process.env.CONTACT_TO || "federalelectionsanalysis@gmail.com";
 const submissionsPath = resolve(root, "data", "contact-submissions.jsonl");
+const callsPath = resolve(root, "data", "result-calls.json");
+const analysisNotesPath = resolve(root, "data", "result-analysis-notes.json");
+const adminPath = `/${String(process.env.ADMIN_PATH || "1234ab").replace(/^\/+/, "")}`;
+const adminSecret = process.env.ADMIN_SECRET || process.env.ADMIN_PASSWORD || "";
 const maxBodyBytes = 24 * 1024;
 const rateLimitMs = 60_000;
 const rateLimit = new Map();
@@ -49,6 +53,44 @@ const contentTypes = {
 function sendJson(response, status, payload) {
   response.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
   response.end(JSON.stringify(payload));
+}
+
+function timingSafeEqualString(left, right) {
+  const a = Buffer.from(String(left || ""));
+  const b = Buffer.from(String(right || ""));
+  if (a.length !== b.length) return false;
+  return cryptoSafeEqual(a, b);
+}
+
+function cryptoSafeEqual(a, b) {
+  let diff = 0;
+  for (let index = 0; index < a.length; index += 1) diff |= a[index] ^ b[index];
+  return diff === 0;
+}
+
+function adminEnabled() {
+  return Boolean(adminSecret);
+}
+
+function isAdminRequest(request, url) {
+  if (!adminEnabled()) return false;
+  const headerSecret = request.headers["x-admin-secret"];
+  const querySecret = url.searchParams.get("secret");
+  return timingSafeEqualString(headerSecret || querySecret, adminSecret);
+}
+
+async function readJsonFile(filePath, fallback) {
+  try {
+    return JSON.parse(await readFile(filePath, "utf8"));
+  } catch {
+    return fallback;
+  }
+}
+
+async function writeJsonFile(filePath, payload) {
+  const temporaryPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
+  await writeFile(temporaryPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  await rename(temporaryPath, filePath);
 }
 
 function escapeHeader(value) {
@@ -256,9 +298,150 @@ async function handleLiveResultRace(request, response, url) {
   }
 }
 
+function raceListFromLiveResults(data) {
+  return (data.groups || []).flatMap((group) => (group.races || []).map((race) => ({
+    id: String(race.id),
+    label: race.electionName || race.name || `Race ${race.id}`,
+    state: race.state || group.state || "",
+    candidates: (race.candidates || []).map((candidate) => ({
+      name: candidate.name,
+      party: candidate.party || "",
+      partyCode: candidate.partyCode || ""
+    }))
+  }))).sort((a, b) => a.state.localeCompare(b.state) || a.label.localeCompare(b.label));
+}
+
+async function handleAdmin(request, response, url) {
+  if (!adminEnabled()) {
+    sendJson(response, 503, { ok: false, error: "Admin is disabled. Set ADMIN_SECRET in the server environment." });
+    return;
+  }
+  if (!isAdminRequest(request, url)) {
+    sendJson(response, 401, { ok: false, error: "Admin secret required." });
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/admin/bootstrap") {
+    const [liveResults, calls, notes] = await Promise.all([
+      readJsonFile(resolve(root, "data", "live-results.json"), { groups: [] }),
+      readJsonFile(callsPath, { races: {}, raceIdGuide: {} }),
+      readJsonFile(analysisNotesPath, { races: {}, raceKey: {} })
+    ]);
+    sendJson(response, 200, {
+      ok: true,
+      races: raceListFromLiveResults(liveResults),
+      calls,
+      notes
+    });
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/admin/calls") {
+    let payload;
+    try {
+      payload = await readJsonBody(request);
+    } catch {
+      sendJson(response, 400, { ok: false, error: "Invalid call payload." });
+      return;
+    }
+    const raceId = String(payload.raceId || "").trim();
+    if (!/^\d+$/.test(raceId)) {
+      sendJson(response, 400, { ok: false, error: "Choose a valid race." });
+      return;
+    }
+    const calls = Array.isArray(payload.calls) ? payload.calls : [];
+    const cleanedCalls = calls
+      .map((call) => ({
+        candidate: String(call.candidate || "").trim(),
+        status: String(call.status || "projected").trim(),
+        label: String(call.label || "").trim(),
+        calledAt: String(call.calledAt || "").trim()
+      }))
+      .filter((call) => call.candidate)
+      .map((call) => {
+        const next = {
+          candidate: call.candidate,
+          status: ["winner", "projected", "advances", "advanced"].includes(call.status) ? call.status : "projected"
+        };
+        if (call.label) next.label = call.label;
+        next.calledAt = call.calledAt || new Date().toISOString();
+        return next;
+      });
+
+    const current = await readJsonFile(callsPath, { races: {}, raceIdGuide: {} });
+    current.races = current.races || {};
+    if (cleanedCalls.length) current.races[raceId] = { calls: cleanedCalls };
+    else delete current.races[raceId];
+    await writeJsonFile(callsPath, current);
+    reloadManualResultConfig();
+    liveResultsCache = null;
+    sendJson(response, 200, { ok: true, calls: current.races[raceId]?.calls || [] });
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/admin/notes") {
+    let payload;
+    try {
+      payload = await readJsonBody(request);
+    } catch {
+      sendJson(response, 400, { ok: false, error: "Invalid note payload." });
+      return;
+    }
+    const raceId = String(payload.raceId || "").trim();
+    const text = String(payload.text || "").trim();
+    if (!/^\d+$/.test(raceId)) {
+      sendJson(response, 400, { ok: false, error: "Choose a valid race." });
+      return;
+    }
+    if (text.length < 3 || text.length > 8000) {
+      sendJson(response, 400, { ok: false, error: "Enter an analyst note between 3 and 8000 characters." });
+      return;
+    }
+    const parseOptionalJson = (value) => {
+      const trimmed = String(value || "").trim();
+      if (!trimmed) return "";
+      if (!/^[\[{]/.test(trimmed)) return trimmed;
+      return JSON.parse(trimmed);
+    };
+    let image = "";
+    let embed = "";
+    try {
+      image = parseOptionalJson(payload.image);
+      embed = parseOptionalJson(payload.embed);
+    } catch {
+      sendJson(response, 400, { ok: false, error: "Image/embed JSON is malformed." });
+      return;
+    }
+    const note = {
+      date: String(payload.date || new Date().toISOString()).trim(),
+      author: String(payload.author || "FEA Analysis Desk").trim(),
+      role: String(payload.role || "Analysis desk").trim(),
+      text,
+      image,
+      embed
+    };
+    const current = await readJsonFile(analysisNotesPath, { races: {}, raceKey: {} });
+    current.races = current.races || {};
+    current.races[raceId] = [note, ...(Array.isArray(current.races[raceId]) ? current.races[raceId] : [])];
+    await writeJsonFile(analysisNotesPath, current);
+    sendJson(response, 200, { ok: true, note, notes: current.races[raceId] });
+    return;
+  }
+
+  sendJson(response, 404, { ok: false, error: "Admin endpoint not found." });
+}
+
 async function serveStatic(request, response) {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
   let requestedPath = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
+
+  if (requestedPath === adminPath) {
+    requestedPath = "/admin.html";
+  } else if (requestedPath === "/admin.html") {
+    response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+    response.end("Not found");
+    return;
+  }
   
   // If the path doesn't have an extension, try adding .html
   if (!extname(requestedPath)) {
@@ -295,6 +478,10 @@ createServer(async (request, response) => {
   }
   if (url.pathname === "/api/live-results/race") {
     await handleLiveResultRace(request, response, url);
+    return;
+  }
+  if (url.pathname.startsWith("/api/admin/")) {
+    await handleAdmin(request, response, url);
     return;
   }
   await serveStatic(request, response);
