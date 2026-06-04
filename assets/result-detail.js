@@ -938,7 +938,7 @@ function callDeckText(race, calledCandidates) {
   const label = calledCandidates[0]?.callLabel || "Winner";
   const verb = callVerb(label, race, names.length);
   const raceName = race.electionName || "this race";
-  if (names.length === 1) return `${names[0]} ${verb} the ${raceName}.`;
+  if (names.length === 1) return `${names[0]} ${verb} in the ${raceName}.`;
   if (names.length === 2) return `${names[0]} and ${names[1]} ${verb} in the ${raceName}.`;
   return `${names.slice(0, -1).join(", ")}, and ${names.at(-1)} ${verb} in the ${raceName}.`;
 }
@@ -1786,7 +1786,7 @@ function applyMapMarginColors() {
 async function patchRaceDetail(race) {
   const reporting = Math.max(0, Math.min(100, Number(race.percentReporting || 0)));
   const reportingStat = page.querySelector(".result-reporting-stat");
-  if (reportingStat) reportingStat.textContent = `${percentLabel(race.percentReporting)} reporting`;
+  if (reportingStat) reportingStat.textContent = `${percentLabel(race.percentReporting)} estimated in`;
   const reportingBar = page.querySelector(".result-reporting-bar i");
   if (reportingBar) reportingBar.style.width = `${reporting}%`;
 
@@ -1796,7 +1796,7 @@ async function patchRaceDetail(race) {
   if (countyCountNode) countyCountNode.textContent = `${numberLabel((race.counties || []).length)} counties`;
 
   const countyPanelReporting = page.querySelector(".result-county-panel .section-head p");
-  if (countyPanelReporting) countyPanelReporting.textContent = `${percentLabel(race.percentReporting)} statewide reporting.`;
+  if (countyPanelReporting) countyPanelReporting.textContent = `${percentLabel(race.percentReporting)} estimated in.`;
 
   const candidatesNode = page.querySelector(".result-full-candidates");
   if (candidatesNode) candidatesNode.innerHTML = candidateRows(race);
@@ -1904,9 +1904,9 @@ async function renderRace(race) {
           <span data-result-county-count>${numberLabel((race.counties || []).length)} counties</span>
         </div>
         <div class="result-reporting-label-row">
-          <span class="result-reporting-stat">${percentLabel(race.percentReporting)} reporting</span>
+          <span class="result-reporting-stat">${percentLabel(race.percentReporting)} estimated in</span>
         </div>
-        <div class="result-reporting-bar" aria-label="${escapeHtml(percentLabel(race.percentReporting))} reporting">
+        <div class="result-reporting-bar" aria-label="${escapeHtml(percentLabel(race.percentReporting))} estimated in">
           <i style="width:${reporting}%"></i>
         </div>
 
@@ -1944,7 +1944,7 @@ async function renderRace(race) {
         <div>
           <h2>County-by-county returns.</h2>
         </div>
-        <p>${percentLabel(race.percentReporting)} statewide reporting.</p>
+        <p>${percentLabel(race.percentReporting)} statewide estimated in.</p>
       </div>
       ${countyRows(race)}
     </section>

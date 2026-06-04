@@ -229,6 +229,7 @@ function raceCard(race) {
 }
 
 function resultGroupCard(group) {
+  const estimatedReporting = group.estimatedVoteReporting !== undefined ? percentLabel(group.estimatedVoteReporting) : "0.0%";
   return `
     <section class="result-state-card">
       <div class="result-state-head">
@@ -236,7 +237,7 @@ function resultGroupCard(group) {
           <p class="kicker">${escapeHtml(group.state)}</p>
           <h2>${escapeHtml(group.stateName)}</h2>
         </div>
-        <span>${numberLabel(group.featuredCount)} tracked</span>
+        <span>${estimatedReporting} estimated in</span>
       </div>
       <div class="result-race-list">
         ${group.races.length ? group.races.map(raceCard).join("") : `<p class="meta">No matching featured races in this group.</p>`}

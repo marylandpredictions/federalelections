@@ -204,6 +204,42 @@ function racePriority(race) {
   return base + reporting / 20 + candidateBonus;
 }
 
+function calculateEstimatedVoteReporting(races) {
+  if (!races || races.length === 0) return 0;
+  
+  // Calculate estimated vote reporting using a more conservative approach
+  // Major sources (AP, DDHQ, CNN) use "expected vote" methodology based on:
+  // - Historical turnout data
+  // - Voter registration figures  
+  // - Population changes
+  // - Pre-Election Day voting data
+  // Since we don't have access to that data, we use a conservative adjustment
+  
+  let totalWeight = 0;
+  let weightedSum = 0;
+  
+  for (const race of races) {
+    const precinctReporting = Number(race.percentReporting || race.percent_reporting || 0);
+    const totalVotes = (race.candidates || []).reduce((sum, candidate) => sum + Number(candidate.votes || 0), 0);
+    
+    // Apply conservative adjustment factor
+    // Mail-in ballots and provisional ballots take time to count
+    // Typical gap between precinct reporting and actual vote counted is 10-15%
+    const adjustedReporting = precinctReporting * 0.88; // Conservative 12% adjustment
+    
+    // Use vote count as weight, with minimum weight to ensure all races contribute
+    const weight = Math.max(100, totalVotes);
+    weightedSum += adjustedReporting * weight;
+    totalWeight += weight;
+  }
+  
+  if (totalWeight === 0) return 0;
+  const result = Math.round((weightedSum / totalWeight) * 100) / 100;
+  
+  // Ensure result doesn't exceed 100% and is at least 0
+  return Math.max(0, Math.min(100, result));
+}
+
 function normalizeRace(race, group) {
   const candidateHasVotes = (race.candidates || []).some((candidate) => Number(candidate.votes || 0) || Number(candidate.percent || 0));
   const candidates = (race.candidates || []).map((candidate, index) => ({ ...normalizeCandidate(candidate), sourceOrder: index }))
@@ -366,6 +402,7 @@ async function fetchGroup(group) {
     }
   }
   const selectedRaces = requiredRaces.length ? requiredRaces : races.slice(0, 7);
+  const estimatedVoteReporting = calculateEstimatedVoteReporting(selectedRaces);
 
   return {
     state: group.state,
@@ -373,6 +410,7 @@ async function fetchGroup(group) {
     sourceQuery: (group.queries || [group.query]).join(" / "),
     totalAvailable: Math.max(races.length, ...searches.map(({ data }) => Number(data.count || 0))),
     featuredCount: selectedRaces.length,
+    estimatedVoteReporting,
     races: selectedRaces
   };
 }

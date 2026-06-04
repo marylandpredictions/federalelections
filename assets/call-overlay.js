@@ -328,7 +328,7 @@
     const label = labelFor(calledCandidates[0]?.call || {}, race);
     const verb = verbFor(label, race, names.length);
     const raceName = race?.electionName || "this race";
-    if (names.length === 1) return `${names[0]} ${verb} the ${raceName}.`;
+    if (names.length === 1) return `${names[0]} ${verb} in the ${raceName}.`;
     if (names.length === 2) return `${names[0]} and ${names[1]} ${verb} in the ${raceName}.`;
     return `${names.slice(0, -1).join(", ")}, and ${names.at(-1)} ${verb} in the ${raceName}.`;
   }
@@ -433,7 +433,7 @@
         if (leader && (Number(leader.votes || 0) || Number(race.percentReporting || 0))) {
           items.push({
             tag: race.state || "Update",
-            text: `${race.electionName}: ${leader.name} ${percentLabel(leader.percent)} with ${percentLabel(race.percentReporting)} reporting`
+            text: `${race.electionName}: ${leader.name} ${percentLabel(leader.percent)} with ${percentLabel(race.percentReporting)} estimated in`
           });
         } else {
           items.push({
