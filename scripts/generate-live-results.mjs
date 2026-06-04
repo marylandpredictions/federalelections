@@ -6,8 +6,10 @@ const DETAIL_DIR_URL = new URL("../data/live-results-races/", import.meta.url);
 const CALLS_URL = new URL("../data/result-calls.json", import.meta.url);
 const FEATURED_CANDIDATES_URL = new URL("../data/result-featured-candidates.json", import.meta.url);
 const CIVIC_BASE = "https://civicapi.org/api/v2";
+const NBC_BASE = "https://www.nbcnews.com/firecracker/api/v2/state-results/2026-primary-elections";
 const featuredCandidates = readFeaturedCandidates();
 const manualCalls = readManualCalls();
+const externalEstimateCache = new Map();
 
 const FEATURED_GROUPS = [
   { state: "CA", name: "California", queries: ["California Governor", "California Lieutenant Governor", "California Insurance Commissioner", "California Superintendent Public Instruction", "California US House", "California Los Angeles Mayor"] },
@@ -292,55 +294,150 @@ function racePriority(race) {
   return base + reporting / 20 + candidateBonus;
 }
 
-function calculateEstimatedVoteReporting(race) {
-  // Calculate estimated vote reporting for a single race
-  // Since we lack access to historical turnout, voter registration, and population data
-  // that major sources use, we use a conservative approach that stays closer to precinct reporting
-  // for most races, with more aggressive adjustment only when precincts are nearly complete
-  const precinctReporting = Number(race.percentReporting || race.percent_reporting || 0);
-  
-  // Use a much more conservative approach that matches observed patterns better
-  // Most races should stay close to precinct reporting unless precincts are nearly complete
-  let adjustmentFactor;
-  if (precinctReporting < 60) {
-    adjustmentFactor = 0.98; // Almost no adjustment for most races
-  } else if (precinctReporting < 80) {
-    adjustmentFactor = 0.96; // Slight adjustment
-  } else if (precinctReporting < 90) {
-    adjustmentFactor = 0.94; // Moderate adjustment
-  } else if (precinctReporting < 95) {
-    adjustmentFactor = 0.92; // More significant adjustment when nearly complete
-  } else if (precinctReporting < 98) {
-    adjustmentFactor = 0.90; // Significant adjustment
-  } else {
-    adjustmentFactor = 0.88; // Most aggressive adjustment when precincts very complete
+function clampPercent(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const number = Number(value);
+  if (!Number.isFinite(number)) return null;
+  return Math.max(0, Math.min(100, number));
+}
+
+function roundPercent(value) {
+  const percent = clampPercent(value);
+  return percent === null ? null : Math.round(percent * 100) / 100;
+}
+
+function totalCandidateVotes(candidates = []) {
+  return candidates.reduce((sum, candidate) => sum + Number(candidate.votes || 0), 0);
+}
+
+function slugForRace(race) {
+  const state = String(race.state || race.province || "").toLowerCase();
+  if (!state) return "";
+  const type = String(race.electionType || race.type || "").toLowerCase();
+  const district = districtNumber(race.district);
+  if (state === "ca" && type.includes("governor") && !type.includes("lieutenant")) return "california-governor-results";
+  if (state === "ca" && type.includes("lieutenant")) return "california-lieutenant-governor-results";
+  if (state === "ca" && type.includes("house") && district) return `california-us-house-district-${district}-results`;
+  if (state === "ia" && type.includes("senate")) return "iowa-senate-results";
+  if (state === "ia" && type.includes("governor")) return "iowa-governor-results";
+  if (state === "mt" && type.includes("senate")) return "montana-senate-results";
+  if (state === "mt" && type.includes("house") && district) return `montana-us-house-district-${district}-results`;
+  if (state === "nj" && type.includes("senate")) return "new-jersey-senate-results";
+  if (state === "nj" && type.includes("house") && district) return `new-jersey-us-house-district-${district}-results`;
+  if (state === "nm" && type.includes("senate")) return "new-mexico-senate-results";
+  if (state === "nm" && type.includes("governor")) return "new-mexico-governor-results";
+  if (state === "sd" && type.includes("senate")) return "south-dakota-senate-results";
+  if (state === "sd" && type.includes("governor")) return "south-dakota-governor-results";
+  return "";
+}
+
+function normalizeName(value) {
+  return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function raceMatchesExternalSummary(race, summary = {}) {
+  const district = districtNumber(race.district);
+  if (district && String(summary.district || "") !== district) return false;
+  const scope = normalizeName(race.electionScope || race.election_type || race.electionType || race.type);
+  const raceName = normalizeName(`${summary.officeName || ""} ${summary.raceName || ""}`);
+  if (scope.includes("republican") || scope === "r" || scope.includes("gop")) return raceName.includes("r ");
+  if (scope.includes("democratic") || scope === "d") return raceName.includes("d ");
+  const localType = normalizeName(race.electionType || race.type);
+  return !district || normalizeName(summary.office || summary.officeName || "").includes(localType.split(" ")[0]);
+}
+
+function districtNumber(value) {
+  if (value === null || value === undefined || value === "") return "";
+  const match = String(value).match(/\d+/);
+  if (!match) return "";
+  return String(Number(match[0]));
+}
+
+function normalizeNbcRaceEstimate(race, nbcRace, sourceUrl) {
+  const summary = nbcRace.summary || nbcRace;
+  const percent = roundPercent(summary.percentIn);
+  const counties = {};
+  for (const area of nbcRace.areas || []) {
+    const areaPercent = roundPercent(area.percentIn);
+    if (areaPercent === null) continue;
+    counties[normalizeName(area.name)] = {
+      estimatedVoteReporting: areaPercent,
+      source: "NBC News",
+      sourceUrl
+    };
   }
-  
-  const adjustedReporting = precinctReporting * adjustmentFactor;
-  
-  // Ensure result doesn't exceed 100% and is at least 0
-  return Math.max(0, Math.min(100, Math.round(adjustedReporting * 100) / 100));
+  return {
+    estimatedVoteReporting: percent,
+    estimatedVoteReportingSource: percent === null ? "external-estimate-pending" : "nbc-news-percent-in",
+    sourceUrl,
+    counties
+  };
+}
+
+async function fetchExternalEstimate(race) {
+  const slug = slugForRace(race);
+  if (!slug) return null;
+  const url = `${NBC_BASE}/${slug}`;
+  if (!externalEstimateCache.has(url)) {
+    externalEstimateCache.set(url, fetchJson(url)
+      .then((data) => ({ ok: true, data }))
+      .catch((error) => ({ ok: false, error })));
+  }
+  const cached = await externalEstimateCache.get(url);
+  if (!cached.ok) return null;
+  const candidates = Array.isArray(cached.data.races) ? cached.data.races : [];
+  const districtTables = Array.isArray(cached.data.districtTables)
+    ? cached.data.districtTables.flatMap((table) => table.races || [])
+    : [];
+  const sourceRaces = [...candidates, ...districtTables];
+  const matched = sourceRaces.find((item) => raceMatchesExternalSummary(race, item.summary || item)) || sourceRaces[0];
+  return matched ? normalizeNbcRaceEstimate(race, matched, url) : null;
+}
+
+function externalCountyEstimateFor(county, externalEstimate) {
+  if (!county || !externalEstimate?.counties) return null;
+  return externalEstimate.counties[normalizeName(county.name || county.id || "")] || null;
+}
+
+function applyExternalEstimateToDetail(detail, externalEstimate) {
+  if (!externalEstimate) return detail;
+  const counties = (detail.counties || []).map((county) => {
+    const countyEstimate = externalCountyEstimateFor(county, externalEstimate);
+    return countyEstimate
+      ? {
+        ...county,
+        estimatedVoteReporting: countyEstimate.estimatedVoteReporting,
+        estimatedVoteReportingSource: "nbc-news-percent-in"
+      }
+      : county;
+  });
+  return {
+    ...detail,
+    estimatedVoteReporting: externalEstimate.estimatedVoteReporting ?? detail.estimatedVoteReporting ?? null,
+    estimatedVoteReportingSource: externalEstimate.estimatedVoteReporting !== null && externalEstimate.estimatedVoteReporting !== undefined
+      ? externalEstimate.estimatedVoteReportingSource
+      : detail.estimatedVoteReportingSource,
+    estimatedVoteReportingSourceUrl: externalEstimate.sourceUrl || detail.estimatedVoteReportingSourceUrl || "",
+    counties
+  };
 }
 
 function calculateGroupEstimatedVoteReporting(races) {
-  if (!races || races.length === 0) return 0;
-  
-  // Calculate group-level estimated vote reporting as weighted average of individual race estimates
+  if (!races || races.length === 0) return null;
+
   let totalWeight = 0;
   let weightedSum = 0;
-  
+
   for (const race of races) {
-    const raceEstimate = calculateEstimatedVoteReporting(race);
+    if (race.estimatedVoteReporting === null || race.estimatedVoteReporting === undefined) continue;
     const totalVotes = (race.candidates || []).reduce((sum, candidate) => sum + Number(candidate.votes || 0), 0);
-    
-    // Use vote count as weight, with minimum weight to ensure all races contribute
     const weight = Math.max(100, totalVotes);
-    weightedSum += raceEstimate * weight;
+    weightedSum += Number(race.estimatedVoteReporting) * weight;
     totalWeight += weight;
   }
-  
-  if (totalWeight === 0) return 0;
-  return Math.round((weightedSum / totalWeight) * 100) / 100;
+
+  if (totalWeight === 0) return null;
+  return roundPercent(weightedSum / totalWeight);
 }
 
 function normalizeRace(race, group) {
@@ -380,7 +477,8 @@ function normalizeRace(race, group) {
     pollsClose: isoDate(race.polls_close),
     lastUpdated: isoDate(race.last_updated),
     percentReporting: Number(race.percent_reporting || 0),
-    estimatedVoteReporting: calculateEstimatedVoteReporting(race),
+    estimatedVoteReporting: null,
+    estimatedVoteReportingSource: "external-estimate-pending",
     hasBreakdown: Boolean(race.has_breakdown),
     hasMap: Boolean(race.has_map),
     marker,
@@ -394,41 +492,22 @@ function normalizeRace(race, group) {
   };
 }
 
-function normalizeRegionResults(regionResults, race) {
+function normalizeRegionResults(regionResults, race, externalEstimate = null) {
   if (!regionResults || typeof regionResults !== "object") return [];
   return Object.entries(regionResults).map(([key, region]) => {
     const candidates = (region.candidates || []).map((candidate) => withManualCall(normalizeCandidate(candidate), race))
       .sort((a, b) => b.votes - a.votes || b.percent - a.percent);
-    const precinctReporting = Number(region.percent_reporting || 0);
-    
-    // For counties, use a more conservative estimation approach
-    // Counties report precincts more accurately than statewide, but still need adjustment
-    // when precincts show 100% as they're rarely actually complete
-    let estimatedReporting;
-    if (precinctReporting < 80) {
-      // Low precinct reporting: use precinct reporting directly
-      estimatedReporting = precinctReporting;
-    } else if (precinctReporting < 90) {
-      // Medium precinct reporting: slight adjustment
-      estimatedReporting = precinctReporting * 0.98;
-    } else if (precinctReporting < 95) {
-      // High precinct reporting: moderate adjustment
-      estimatedReporting = precinctReporting * 0.95;
-    } else if (precinctReporting < 99) {
-      // Nearly complete: significant adjustment
-      estimatedReporting = precinctReporting * 0.92;
-    } else {
-      // 99-100% precinct reporting: cap at realistic maximum
-      estimatedReporting = Math.min(99.9, precinctReporting * 0.90);
-    }
-    
+    const precinctReporting = clampPercent(region.percent_reporting);
+    const externalCounty = externalCountyEstimateFor({ id: key, name: region.name }, externalEstimate);
+
     return {
       id: key,
       name: region.name || key.replace(/_/g, " "),
       type: region.type || "County",
       fips: region.fips || "",
-      percentReporting: precinctReporting,
-      estimatedVoteReporting: estimatedReporting,
+      percentReporting: precinctReporting ?? 0,
+      estimatedVoteReporting: externalCounty?.estimatedVoteReporting ?? null,
+      estimatedVoteReportingSource: externalCounty?.source ? "nbc-news-percent-in" : "external-estimate-pending",
       candidates
     };
   }).sort((a, b) => a.name.localeCompare(b.name));
@@ -437,7 +516,7 @@ function normalizeRegionResults(regionResults, race) {
 function voteHistoryPoint(race) {
   return {
     at: new Date().toISOString(),
-    reporting: Number(race.percentReporting || 0),
+    reporting: Number(race.estimatedVoteReporting ?? race.percentReporting ?? 0),
     candidates: (race.candidates || []).map((candidate) => ({
       name: candidate.name,
       party: candidate.party,
@@ -470,13 +549,26 @@ async function fetchRaceDetail(id) {
     name: detail.province || "Race"
   };
   const race = normalizeRace({ id, ...detail, type: detail.election_type, election_type: detail.election_scope }, group);
+  const externalEstimate = await fetchExternalEstimate({
+    ...race,
+    state: race.state || detail.province,
+    province: detail.province,
+    type: race.type || detail.election_type,
+    electionType: race.electionType || detail.election_type,
+    electionScope: detail.election_scope || race.electionScope,
+    district: race.district ?? detail.district
+  });
+  const counties = normalizeRegionResults(detail.region_results, { id, ...detail }, externalEstimate);
   return {
     ...race,
+    estimatedVoteReporting: externalEstimate?.estimatedVoteReporting ?? null,
+    estimatedVoteReportingSource: externalEstimate?.estimatedVoteReporting === null || !externalEstimate ? "external-estimate-pending" : externalEstimate.estimatedVoteReportingSource,
+    estimatedVoteReportingSourceUrl: externalEstimate?.sourceUrl || "",
     electionType: detail.election_type || race.electionType,
     electionScope: detail.election_scope || race.electionScope,
     registeredVoters: detail.registered_voters || null,
     maps: detail.maps || [],
-    counties: normalizeRegionResults(detail.region_results, { id, ...detail })
+    counties
   };
 }
 
@@ -531,10 +623,16 @@ async function fetchGroup(group) {
   }
   const selectedRaces = requiredRaces.length ? requiredRaces : races.slice(0, 7);
   
-  // Calculate estimated vote reporting for each individual race
-  const racesWithEstimate = selectedRaces.map(race => ({
-    ...race,
-    estimatedVoteReporting: calculateEstimatedVoteReporting(race)
+  const racesWithEstimate = await Promise.all(selectedRaces.map(async (race) => {
+    const externalEstimate = await fetchExternalEstimate(race);
+    return {
+      ...race,
+      estimatedVoteReporting: externalEstimate?.estimatedVoteReporting ?? race.estimatedVoteReporting ?? null,
+      estimatedVoteReportingSource: externalEstimate?.estimatedVoteReporting !== undefined && externalEstimate?.estimatedVoteReporting !== null
+        ? externalEstimate.estimatedVoteReportingSource
+        : "external-estimate-pending",
+      estimatedVoteReportingSourceUrl: externalEstimate?.sourceUrl || race.estimatedVoteReportingSourceUrl || ""
+    };
   }));
   
   // Calculate group-level estimate from individual race estimates
@@ -577,7 +675,8 @@ export async function buildLiveResults() {
     provider: {
       name: "civicAPI",
       url: "https://civicapi.org/",
-      attribution: "Live race data provided by civicAPI where available. Race calls are manual Federal Elections Analysis calls from local config."
+      attribution: "Live race data provided by civicAPI where available. Race calls are manual Federal Elections Analysis calls from local config.",
+      estimatedVoteReporting: "Estimated-in percentages are scraped from external news/official result feeds when available, currently NBC News percent-in feeds for supported races."
     },
     refreshSeconds: 15,
     groups,
@@ -586,7 +685,9 @@ export async function buildLiveResults() {
 }
 
 export async function buildRaceResultDetail(id) {
-  return fetchRaceDetail(id);
+  const detail = await fetchRaceDetail(id);
+  const externalEstimate = await fetchExternalEstimate(detail);
+  return applyExternalEstimateToDetail(detail, externalEstimate);
 }
 
 async function writeRaceDetails(data) {
@@ -596,8 +697,10 @@ async function writeRaceDetails(data) {
   for (const race of races) {
     try {
       const detail = MANUAL_RACES[String(race.id)] || await buildRaceResultDetail(race.id);
-      detail.voteHistory = appendVoteHistory(detail);
-      writeFileSync(new URL(`${race.id}.json`, DETAIL_DIR_URL), JSON.stringify(detail, null, 2), "utf8");
+      const externalEstimate = await fetchExternalEstimate(race);
+      const hydratedDetail = applyExternalEstimateToDetail(detail, externalEstimate);
+      hydratedDetail.voteHistory = appendVoteHistory(hydratedDetail);
+      writeFileSync(new URL(`${race.id}.json`, DETAIL_DIR_URL), JSON.stringify(hydratedDetail, null, 2), "utf8");
       written += 1;
     } catch (error) {
       console.warn(`Could not write race detail for ${race.id}: ${error.message}`);

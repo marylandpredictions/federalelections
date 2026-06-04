@@ -33,8 +33,9 @@ function percentLabel(value) {
 }
 
 function estimatedInLabel(value) {
-  const number = Number(value || 0);
-  return Number.isFinite(number) ? `${number.toFixed(1)}%` : "0.0%";
+  if (value === null || value === undefined || value === "") return "Estimate pending";
+  const number = Number(value);
+  return Number.isFinite(number) ? `${number.toFixed(1)}%` : "Estimate pending";
 }
 
 function dateLabel(value) {
@@ -363,7 +364,7 @@ function resultsListUpdateKey(data, query = "") {
     races: flattenRaces(data).map((race) => [
       race.id,
       race.leaderName,
-      race.estimatedVoteReporting || race.percentReporting,
+      race.estimatedVoteReporting,
       (race.calls || []).length,
       (race.calls || []).map((call) => call.calledAt || ""),
       (race.candidates || []).slice(0, 2).map((candidate) => [candidate.name, candidate.percent, candidate.callLabel || ""])
