@@ -1151,10 +1151,23 @@ function candidateRaceCallLabel(race, candidate) {
   return raceCandidate?.callLabel || "";
 }
 
+function isMultiWinnerRace(race) {
+  const count = Number(race?.winners || race?.advancingCount || 1);
+  const text = `${race?.type || ""} ${race?.electionScope || ""} ${race?.electionName || ""}`.toLowerCase();
+  return count > 1 || text.includes("open primary") || text.includes("top-two");
+}
+
+function raceCallMarkSymbol(race, candidate) {
+  const label = String(candidateRaceCallLabel(race, candidate) || "").toLowerCase();
+  if (!label) return "";
+  if (label.includes("advance") || isMultiWinnerRace(race)) return "&#8594;";
+  return "&#10003;";
+}
+
 function candidateCallMark(race, candidate) {
   const label = candidateRaceCallLabel(race, candidate);
   if (!label) return "";
-  return `<span class="result-candidate-check" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">&#8594;</span>`;
+  return `<span class="result-candidate-check" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">${raceCallMarkSymbol(race, candidate)}</span>`;
 }
 
 function callBadge(candidate, race) {
@@ -1162,7 +1175,7 @@ function callBadge(candidate, race) {
   const compactLabel = String(candidate.callLabel)
     .replace(/^Projected winner$/i, "Projected")
     .replace(/^Advanced to general election$/i, "Advanced");
-  return `<span class="result-call-badge"><i aria-hidden="true">&#8594;</i>${escapeHtml(compactLabel)}</span>`;
+  return `<span class="result-call-badge"><i aria-hidden="true">${raceCallMarkSymbol(race, candidate)}</i>${escapeHtml(compactLabel)}</span>`;
 }
 
 function callVerb(label, race, count) {
@@ -1215,7 +1228,7 @@ function raceCallBanner(race) {
   return `
     <div class="result-call-alert" style="--candidate-color:${escapeHtml(fill)}" role="status">
       <div class="result-call-copy">
-        <span>${escapeHtml(callLabel)} <i aria-hidden="true">&#8594;</i></span>
+        <span>${escapeHtml(callLabel)} <i aria-hidden="true">${primary ? raceCallMarkSymbol(race, primary) : "&#10003;"}</i></span>
         <strong>${escapeHtml(callDeckText(race, bannerCandidates))}</strong>
         <small>Race called by Federal Elections Analysis${callTime ? ` at ${escapeHtml(callTime)}` : ""}.</small>
       </div>
@@ -1375,8 +1388,10 @@ function countyTooltipMarkup(county, race, titlePrefix = "") {
   const rows = countyTopCandidates(county, race, 3);
   const title = titlePrefix || `${county.name} County`;
   const reporting = county.estimatedVoteReporting ?? county.percentIn ?? county.percent_in ?? null;
+  const description = countyContextDescription(county, race);
   return `
     <strong>${escapeHtml(title)}</strong>
+    ${description ? `<p class="result-county-description">${escapeHtml(description)}</p>` : ""}
     <table>
       <thead><tr><th></th><th>Votes</th><th>Pct</th></tr></thead>
       <tbody>
@@ -1391,6 +1406,47 @@ function countyTooltipMarkup(county, race, titlePrefix = "") {
     </table>
     <small>${estimatedInLabel(reporting)} estimated in</small>
   `;
+}
+
+function countyContextDescription(county, race) {
+  const name = String(county?.name || "").replace(/\s+County$/i, "");
+  const state = String(race?.state || "").toUpperCase();
+  const direct = {
+    CA: {
+      "Los Angeles": "A large Southern California county anchored by Los Angeles and its surrounding suburbs.",
+      "San Diego": "A Southern California county covering San Diego and the border-area suburbs.",
+      "Orange": "A dense Southern California county with coastal suburbs and inland cities.",
+      "San Francisco": "A compact urban county covering the city of San Francisco.",
+      "Santa Clara": "A Bay Area county anchored by San Jose and Silicon Valley suburbs.",
+      "Sacramento": "An urban Central Valley county that includes the state capital.",
+      "Alameda": "An East Bay county with Oakland, Berkeley, and inner Bay Area suburbs.",
+      "Contra Costa": "An East Bay county with inner suburbs and more exurban communities.",
+      "Fresno": "A Central Valley county anchored by Fresno and nearby agricultural communities.",
+      "Kern": "A southern Central Valley county with Bakersfield and desert communities.",
+      "Riverside": "An Inland Empire county with fast-growing suburbs and desert cities.",
+      "San Bernardino": "A large Inland Empire county stretching from suburbs into desert communities."
+    },
+    IA: {
+      "Polk": "A central Iowa county anchored by Des Moines.",
+      "Linn": "An eastern Iowa county anchored by Cedar Rapids.",
+      "Scott": "An eastern Iowa county in the Quad Cities region.",
+      "Johnson": "An eastern Iowa county anchored by Iowa City."
+    },
+    NJ: {
+      "Essex": "A North Jersey county anchored by Newark and dense inner suburbs.",
+      "Hudson": "A dense county across from New York City with urban waterfront communities.",
+      "Bergen": "A populous North Jersey county with suburban communities near New York City."
+    }
+  };
+  if (direct[state]?.[name]) return direct[state][name];
+  const type = county?.type || "County";
+  if (state === "CA") return `A California ${type.toLowerCase()} included in this race's local returns.`;
+  if (state === "IA") return `An Iowa ${type.toLowerCase()} included in this race's county returns.`;
+  if (state === "MT") return `A Montana ${type.toLowerCase()} included in this race's county returns.`;
+  if (state === "NJ") return `A New Jersey ${type.toLowerCase()} included in this race's county returns.`;
+  if (state === "NM") return `A New Mexico ${type.toLowerCase()} included in this race's county returns.`;
+  if (state === "SD") return `A South Dakota ${type.toLowerCase()} included in this race's county returns.`;
+  return "";
 }
 
 function regionAbbreviation(name) {
@@ -1724,14 +1780,24 @@ async function districtShapeMap(race) {
       fixedBounds ? expandedBounds(activeBounds, .28) : stateBoundsForContext
     ]) || activeBounds;
     const { width, height, lonScale } = mapDimensions(bounds, 760, 540);
+    const activeCenter = [
+      (activeBounds.minLon + activeBounds.maxLon) / 2,
+      (activeBounds.minLat + activeBounds.maxLat) / 2
+    ];
+    const [activeX, activeY] = projectPoint(activeCenter, bounds, width, height, lonScale);
+    const initialZoom = 2.05;
+    const initialPanX = (width / 2 - activeX) * initialZoom;
+    const initialPanY = (height / 2 - activeY) * initialZoom;
     const districtTitle = `${race.state || ""}-${districtNumber} District`;
     const districtTooltip = countyTooltipMarkup({
       name: districtTitle,
       candidates: race.candidates || [],
-      percentReporting: race.percentReporting
+      percentReporting: race.percentReporting,
+      estimatedVoteReporting: race.estimatedVoteReporting
     }, race, districtTitle);
     return `
-      <svg class="result-county-map result-district-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.electionName || "House district")} map">
+      <svg class="result-county-map result-district-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.electionName || "House district")} map" data-initial-zoom="${initialZoom}" data-initial-pan-x="${initialPanX.toFixed(1)}" data-initial-pan-y="${initialPanY.toFixed(1)}">
+        ${resultForeignContextLayer({ state: race.state, bounds, width, height, lonScale })}
         ${resultStateContextLayer({ state: race.state, allFeatures: allStateFeatures, bounds, width, height, lonScale })}
         ${resultMapContextLayer({ state: race.state, allFeatures: stateCountyFeatures.length ? stateCountyFeatures : allCountyFeatures, activeFeatures: [feature], bounds, width, height, lonScale, labels: false })}
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(margin?.rawFill || fill)}" data-county-tooltip="${escapeHtml(districtTooltip)}"></path>
@@ -1809,6 +1875,7 @@ async function countyShapeMap(race) {
     }).join("");
     return `
       <svg class="result-county-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.stateName || race.state || "State")} county results map">
+        ${resultForeignContextLayer({ state: race.state, bounds, width, height, lonScale })}
         ${resultStateContextLayer({ state: race.state, allFeatures: allStateFeatures, bounds, width, height, lonScale })}
         ${contextLayer}
         ${paths}
@@ -1828,30 +1895,53 @@ function bindCountyHover() {
   if (!canvas) return;
   const tooltip = canvas.querySelector(".result-county-tooltip");
   const defaultText = caption?.dataset.defaultMapCaption || caption?.textContent || "";
+  const showPath = (path, event) => {
+    if (caption) {
+      caption.textContent = path.dataset.countyTitle || defaultText;
+      caption.classList.add("is-live");
+    }
+    if (tooltip && path.dataset.countyTooltip) {
+      tooltip.innerHTML = path.dataset.countyTooltip;
+      tooltip.classList.add("visible");
+      tooltip.setAttribute("aria-hidden", "false");
+      canvas.classList.add("is-county-active");
+      moveTooltip(event, canvas, tooltip);
+    }
+  };
+  const hidePath = () => {
+    if (caption) {
+      caption.textContent = defaultText;
+      caption.classList.remove("is-live");
+    }
+    tooltip?.classList.remove("visible");
+    tooltip?.setAttribute("aria-hidden", "true");
+    canvas.classList.remove("is-county-active");
+  };
   canvas.querySelectorAll(".result-county-map path:not(.map-context)").forEach((path) => {
     const show = (event) => {
-      if (caption) {
-        caption.textContent = path.dataset.countyTitle || defaultText;
-        caption.classList.add("is-live");
-      }
-      if (tooltip && path.dataset.countyTooltip) {
-        tooltip.innerHTML = path.dataset.countyTooltip;
-        tooltip.classList.add("visible");
-        moveTooltip(event, canvas, tooltip);
-      }
-    };
-    const hide = () => {
-      if (caption) {
-        caption.textContent = defaultText;
-        caption.classList.remove("is-live");
-      }
-      tooltip?.classList.remove("visible");
+      showPath(path, event);
     };
     path.addEventListener("mouseenter", show);
     path.addEventListener("mousemove", (event) => moveTooltip(event, canvas, tooltip));
-    path.addEventListener("mouseleave", hide);
+    path.addEventListener("mouseleave", hidePath);
+    path.addEventListener("pointerup", (event) => {
+      if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
+      event.preventDefault();
+      showPath(path, event);
+    });
+    path.addEventListener("resultmaptap", (event) => {
+      showPath(path, event.detail || event);
+    });
+    path.addEventListener("click", (event) => {
+      event.preventDefault();
+      showPath(path, event);
+    });
     path.addEventListener("focus", show);
-    path.addEventListener("blur", hide);
+    path.addEventListener("blur", hidePath);
+  });
+  canvas.addEventListener("click", (event) => {
+    if (event.target.closest?.(".result-county-map path:not(.map-context)")) return;
+    hidePath();
   });
 }
 
@@ -1970,7 +2060,21 @@ async function refreshAnalysisNotes(race) {
 
 function voteHistoryChart(race) {
   race = voteHistoryRaceForDisplay(race);
-  const points = Array.isArray(race.voteHistory) ? race.voteHistory : [];
+  let points = Array.isArray(race.voteHistory) ? race.voteHistory : [];
+  if (!points.length && (race.candidates || []).some((candidate) => Number(candidate.votes || 0) > 0)) {
+    points = [{
+      at: race.lastUpdated || new Date().toISOString(),
+      reporting: Number(race.estimatedVoteReporting ?? race.percentReporting ?? 0),
+      candidates: (race.candidates || []).map((candidate) => ({
+        name: candidate.name,
+        party: candidate.party,
+        partyCode: candidate.partyCode,
+        votes: Number(candidate.votes || 0),
+        percent: Number(candidate.percent || 0),
+        color: candidate.color || ""
+      }))
+    }];
+  }
   if (!points.length || !points.some((point) => (point.candidates || []).some((candidate) => Number(candidate.votes || 0) > 0))) {
     return `
       <section class="result-vote-history-panel result-vote-history-empty">
@@ -1989,6 +2093,14 @@ function voteHistoryChart(race) {
       || (point.candidates || []).find((entry) => slugifyName(entry.name) === slug);
   };
   const orderedPoints = [...points].sort((a, b) => new Date(a.at || a.updatedAt || 0) - new Date(b.at || b.updatedAt || 0));
+  if (orderedPoints.length === 1) {
+    const original = orderedPoints[0];
+    const startAt = new Date(original.at || original.updatedAt || race.lastUpdated || Date.now());
+    orderedPoints.unshift({
+      ...original,
+      at: new Date(startAt.getTime() - 5 * 60 * 1000).toISOString()
+    });
+  }
   const latestPoint = orderedPoints.at(-1) || {};
   const latestTopSlugs = new Set([...(latestPoint.candidates || [])]
     .sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))
@@ -2190,6 +2302,39 @@ function resultStateContextLayer({ state, allFeatures = [], bounds, width, heigh
   return paths ? `<g class="result-map-state-context" aria-hidden="true">${paths}</g>` : "";
 }
 
+function resultForeignContextLayer({ state, bounds, width, height, lonScale }) {
+  const stateKey = String(state || "").toUpperCase();
+  const shapes = [];
+  if (["CA", "NM"].includes(stateKey)) {
+    shapes.push({
+      name: "Mexico",
+      points: [[-126.5, 24.5], [-97.0, 24.5], [-97.0, 32.72], [-114.8, 32.72], [-117.16, 32.52], [-126.5, 32.52]]
+    });
+  }
+  if (["MT", "ND", "ME"].includes(stateKey)) {
+    shapes.push({
+      name: "Canada",
+      points: [[-142.0, 49.0], [-52.0, 49.0], [-52.0, 72.0], [-142.0, 72.0]]
+    });
+  }
+  const visibleBounds = expandedBounds(bounds, .04);
+  const paths = shapes.map((shape) => {
+    const shapeBounds = shape.points.reduce((box, [lon, lat]) => ({
+      minLon: Math.min(box.minLon, lon),
+      minLat: Math.min(box.minLat, lat),
+      maxLon: Math.max(box.maxLon, lon),
+      maxLat: Math.max(box.maxLat, lat)
+    }), { minLon: Infinity, minLat: Infinity, maxLon: -Infinity, maxLat: -Infinity });
+    if (!boundsOverlap(shapeBounds, visibleBounds)) return "";
+    const d = shape.points.map((point, index) => {
+      const [x, y] = projectPoint(point, bounds, width, height, lonScale);
+      return `${index ? "L" : "M"}${x.toFixed(2)},${y.toFixed(2)}`;
+    }).join("");
+    return `<path class="map-context map-context-foreign" d="${d}Z"><title>${escapeHtml(shape.name)}</title></path>`;
+  }).join("");
+  return paths ? `<g class="result-map-foreign-context" aria-hidden="true">${paths}</g>` : "";
+}
+
 function fallbackRoadLayer({ state, bounds, width, height, lonScale }) {
   const config = RESULT_MAP_CONTEXT[String(state || "").toUpperCase()] || {};
   const visibleBounds = expandedBounds(bounds, .18);
@@ -2287,8 +2432,15 @@ function bindVoteHistoryHover() {
 function bindMapZoom() {
   const frame = page.querySelector(".result-map-frame");
   if (!frame) return;
+  const map = frame.querySelector(".result-county-map");
   const controls = page.querySelectorAll("[data-map-zoom]");
+  const maxZoom = 8;
   let { zoom, panX, panY } = resultMapViewState;
+  if (map?.dataset.initialZoom && zoom === 1 && panX === 0 && panY === 0) {
+    zoom = Number(map.dataset.initialZoom) || zoom;
+    panX = Number(map.dataset.initialPanX) || 0;
+    panY = Number(map.dataset.initialPanY) || 0;
+  }
   let pointerStart = null;
   const clampPan = () => {
     if (zoom <= 1.01) {
@@ -2307,13 +2459,13 @@ function bindMapZoom() {
     applyMapViewportState();
     controls.forEach((control) => {
       const mode = control.dataset.mapZoom;
-      control.disabled = (mode === "in" && zoom >= 2.35) || (mode === "out" && zoom <= .92);
+      control.disabled = (mode === "in" && zoom >= maxZoom) || (mode === "out" && zoom <= .92);
     });
   };
   controls.forEach((control) => {
     control.addEventListener("click", () => {
       const mode = control.dataset.mapZoom;
-      if (mode === "in") zoom = Math.min(2.35, zoom + .25);
+      if (mode === "in") zoom = Math.min(maxZoom, zoom + .4);
       if (mode === "out") zoom = Math.max(.92, zoom - .12);
       if (mode === "reset") {
         zoom = 1;
@@ -2325,13 +2477,14 @@ function bindMapZoom() {
   });
   frame.addEventListener("wheel", (event) => {
     event.preventDefault();
-    zoom = event.deltaY < 0 ? Math.min(2.35, zoom + .18) : Math.max(.92, zoom - .12);
+    zoom = event.deltaY < 0 ? Math.min(maxZoom, zoom + .28) : Math.max(.92, zoom - .16);
     apply();
   }, { passive: false });
   frame.addEventListener("pointerdown", (event) => {
     if (event.button !== undefined && event.button !== 0) return;
     event.preventDefault();
-    pointerStart = { x: event.clientX, y: event.clientY, panX, panY };
+    const targetPath = event.target?.closest?.(".result-county-map path:not(.map-context)") || null;
+    pointerStart = { x: event.clientX, y: event.clientY, panX, panY, targetPath };
     frame.setPointerCapture?.(event.pointerId);
     frame.classList.add("is-panning");
   });
@@ -2343,6 +2496,13 @@ function bindMapZoom() {
     apply();
   });
   const endPan = (event) => {
+    const start = pointerStart;
+    if (start?.targetPath && Math.hypot(event.clientX - start.x, event.clientY - start.y) < 9) {
+      start.targetPath.dispatchEvent(new CustomEvent("resultmaptap", {
+        bubbles: false,
+        detail: event
+      }));
+    }
     pointerStart = null;
     frame.releasePointerCapture?.(event.pointerId);
     frame.classList.remove("is-panning");

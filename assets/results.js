@@ -413,8 +413,6 @@ function renderGroups() {
   groups.forEach((group) => cards.push({ weight: groupWeight(group), html: resultGroupCard(group) }));
   groupsNode.innerHTML = cards.length ? masonryGroupsMarkup(cards) : `<p class="meta">No current election-night races match this search.</p>`;
   bindFavoriteButtons();
-  renderArchive();
-  renderUpcoming();
 }
 
 function renderArchive() {
@@ -620,29 +618,47 @@ async function loadResults(forceLive = false) {
   if (statusLabel) statusLabel.textContent = forceLive ? "Refreshing..." : "Loading results...";
   if (refreshButton) refreshButton.disabled = true;
   try {
-    let source = "cache";
-    try {
-      liveResultsData = await fetchResults("/api/live-results");
-      source = "live";
-    } catch {
-      liveResultsData = await fetchResults("data/live-results.json");
-    }
-    if (!flattenRaces(liveResultsData).length && source !== "live") {
+    let source = forceLive ? "live" : "cache";
+    if (forceLive) {
       try {
         liveResultsData = await fetchResults("/api/live-results");
-        source = "live";
       } catch {
+        liveResultsData = await fetchResults("data/live-results.json");
+        source = "cache";
+      }
+    } else {
+      try {
+        liveResultsData = await fetchResults("data/live-results.json");
+      } catch {
+        liveResultsData = await fetchResults("/api/live-results");
+        source = "live";
       }
     }
     liveResultsData = await applyManualCalls(liveResultsData);
-    await loadUpcomingRaces();
     renderMeta(liveResultsData, source);
     renderGroups();
+    setTimeout(async () => {
+      await loadUpcomingRaces();
+      renderSecondarySections();
+    }, 0);
+    if (!forceLive) {
+      setTimeout(async () => {
+        try {
+          const fresh = await applyManualCalls(await fetchResults("/api/live-results"));
+          liveResultsData = fresh;
+          renderMeta(liveResultsData, "live");
+          renderGroups();
+          renderSecondarySections();
+        } catch {
+        }
+      }, 25);
+    }
   } catch (error) {
     if (previousData) {
       liveResultsData = previousData;
       renderMeta(liveResultsData, "cache");
       renderGroups();
+      renderSecondarySections();
       if (statusLabel) statusLabel.textContent = "Refresh failed; showing cached races";
     } else {
       if (statusLabel) statusLabel.textContent = "Live results unavailable";
@@ -654,12 +670,21 @@ async function loadResults(forceLive = false) {
   }
 }
 
-searchInput?.addEventListener("input", renderGroups);
+function renderSecondarySections() {
+  renderArchive();
+  renderUpcoming();
+}
+
+searchInput?.addEventListener("input", () => {
+  renderGroups();
+  renderSecondarySections();
+});
 refreshButton?.addEventListener("click", () => loadResults(true));
 window.addEventListener("resize", () => {
   if (!liveResultsData) return;
   resultsListUpdateKeyCache = "";
   renderGroups();
+  renderSecondarySections();
 }, { passive: true });
 
 loadResults();

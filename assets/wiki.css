@@ -4325,6 +4325,14 @@ button.race-board-row {
   opacity: .9;
 }
 
+.map-context-foreign {
+  fill: color-mix(in srgb, #d6d9e2 7%, #111927);
+  stroke: color-mix(in srgb, #d6d9e2 36%, transparent);
+  stroke-width: .8;
+  pointer-events: none;
+  opacity: .72;
+}
+
 .result-district-map .map-context-county {
   fill: transparent;
   stroke: color-mix(in srgb, #17233f 18%, transparent);
@@ -4366,10 +4374,21 @@ button.race-board-row {
   opacity: .74;
 }
 
+.result-map-canvas.is-county-active .map-context-label-top,
+.result-map-canvas.is-county-active .map-context-label {
+  opacity: .18;
+}
+
 .result-county-map text {
   user-select: none;
   -webkit-user-select: none;
   pointer-events: none;
+}
+
+.result-county-description {
+  margin: 5px 0 7px;
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
+  font: 700 .76rem/1.28 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .result-county-map path:hover,
@@ -5346,8 +5365,8 @@ button.race-board-row {
   right: 10px;
   z-index: 5;
   display: none;
-  width: min(430px, calc(100% - 20px));
-  max-height: min(420px, calc(100% - 56px));
+  width: min(340px, calc(100% - 20px));
+  max-height: min(315px, calc(100% - 56px));
   overflow: auto;
   padding: 10px;
   border: 1px solid var(--line);
@@ -5407,12 +5426,19 @@ button.race-board-row {
 .vote-history-expanded-row {
   position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
-  gap: 7px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 6px;
   align-items: center;
   min-width: 0;
   padding: 6px 0 6px 10px;
   border-bottom: 1px solid color-mix(in srgb, var(--line) 48%, transparent);
+}
+
+.vote-history-expanded-row small {
+  grid-column: 2 / -1;
+  justify-self: end;
+  color: var(--muted);
+  font-size: .68rem;
 }
 
 .vote-history-expanded-row:last-child {
