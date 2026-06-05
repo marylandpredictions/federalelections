@@ -5,6 +5,9 @@ let countyMapDataPromise = null;
 let districtMapDataPromise = null;
 let usStateMapDataPromise = null;
 let majorHighwayDataPromise = null;
+let countryContextDataPromise = null;
+let countyDescriptionsPromise = null;
+let countyDescriptionData = { byFips: {}, byStateName: {}, byName: {} };
 let governorForecastPromise = null;
 let resultMapViewState = {
   zoom: 1,
@@ -1411,6 +1414,13 @@ function countyTooltipMarkup(county, race, titlePrefix = "") {
 function countyContextDescription(county, race) {
   const name = String(county?.name || "").replace(/\s+County$/i, "");
   const state = String(race?.state || "").toUpperCase();
+  const fips = String(county?.fips || county?.id || "").padStart(5, "0");
+  if (/^\d{5}$/.test(fips) && countyDescriptionData.byFips?.[fips]) return countyDescriptionData.byFips[fips];
+  const fullCountyName = `${name} County`.toLowerCase();
+  if (countyDescriptionData.byStateName?.[`${state}:${fullCountyName}`]) return countyDescriptionData.byStateName[`${state}:${fullCountyName}`];
+  if (countyDescriptionData.byStateName?.[`${state}:${String(county?.name || "").toLowerCase()}`]) return countyDescriptionData.byStateName[`${state}:${String(county.name).toLowerCase()}`];
+  if (countyDescriptionData.byName?.[fullCountyName]) return countyDescriptionData.byName[fullCountyName];
+  if (countyDescriptionData.byName?.[String(county?.name || "").toLowerCase()]) return countyDescriptionData.byName[String(county.name).toLowerCase()];
   const direct = {
     CA: {
       "Los Angeles": "A large Southern California county anchored by Los Angeles and its surrounding suburbs.",
@@ -1535,6 +1545,36 @@ async function loadMajorHighwayData() {
     });
   }
   return majorHighwayDataPromise;
+}
+
+async function loadCountryContextData() {
+  if (!countryContextDataPromise) {
+    countryContextDataPromise = fetch("data/result-country-context.geojson", { cache: "force-cache" }).then((response) => {
+      if (!response.ok) throw new Error(`Country context map returned ${response.status}`);
+      return response.json();
+    });
+  }
+  return countryContextDataPromise;
+}
+
+async function loadCountyDescriptions() {
+  if (!countyDescriptionsPromise) {
+    countyDescriptionsPromise = fetch("data/result-county-descriptions.json", { cache: "force-cache" })
+      .then((response) => response.ok ? response.json() : { byFips: {}, byName: {} })
+      .then((data) => {
+        countyDescriptionData = {
+          byFips: data.byFips || {},
+          byStateName: data.byStateName || {},
+          byName: data.byName || {}
+        };
+        return countyDescriptionData;
+      })
+      .catch(() => {
+        countyDescriptionData = { byFips: {}, byStateName: {}, byName: {} };
+        return countyDescriptionData;
+      });
+  }
+  return countyDescriptionsPromise;
 }
 
 function regionLookupKey(value) {
@@ -1766,9 +1806,13 @@ async function districtShapeMap(race) {
     const allStateFeatures = await loadUsStateMapData()
       .then((geojson) => (geojson.features || []))
       .catch(() => []);
+    const countryFeatures = await loadCountryContextData()
+      .then((geojson) => (geojson.features || []))
+      .catch(() => []);
     const highwayFeatures = await loadMajorHighwayData()
       .then((geojson) => (geojson.features || []))
       .catch(() => []);
+    await loadCountyDescriptions();
     const stateCountyFeatures = allCountyFeatures.filter((item) => item.properties?.STATE === stateFips(race.state));
     const stateBoundsForContext = stateCountyFeatures.length ? stateBounds(stateCountyFeatures) : null;
     const fixedBounds = RESULT_MAP_VIEW_BOUNDS[String(race.state || "").toUpperCase()];
@@ -1797,7 +1841,7 @@ async function districtShapeMap(race) {
     }, race, districtTitle);
     return `
       <svg class="result-county-map result-district-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.electionName || "House district")} map" data-initial-zoom="${initialZoom}" data-initial-pan-x="${initialPanX.toFixed(1)}" data-initial-pan-y="${initialPanY.toFixed(1)}">
-        ${resultForeignContextLayer({ state: race.state, bounds, width, height, lonScale })}
+        ${resultForeignContextLayer({ state: race.state, countryFeatures, bounds, width, height, lonScale })}
         ${resultStateContextLayer({ state: race.state, allFeatures: allStateFeatures, bounds, width, height, lonScale })}
         ${resultMapContextLayer({ state: race.state, allFeatures: stateCountyFeatures.length ? stateCountyFeatures : allCountyFeatures, activeFeatures: [feature], bounds, width, height, lonScale, labels: false })}
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(margin?.rawFill || fill)}" data-county-tooltip="${escapeHtml(districtTooltip)}"></path>
@@ -1822,9 +1866,12 @@ async function countyShapeMap(race) {
     const geojson = await loadCountyMapData();
     const stateGeojson = await loadUsStateMapData().catch(() => ({ features: [] }));
     const highwayGeojson = await loadMajorHighwayData().catch(() => ({ features: [] }));
+    const countryGeojson = await loadCountryContextData().catch(() => ({ features: [] }));
+    await loadCountyDescriptions();
     const allFeatures = geojson.features || [];
     const allStateFeatures = stateGeojson.features || [];
     const highwayFeatures = highwayGeojson.features || [];
+    const countryFeatures = countryGeojson.features || [];
     const features = allFeatures.filter((feature) => feature.properties?.STATE === fips);
     if (!features.length) return regionMap(race);
     const lookup = countyLookup(race);
@@ -1867,7 +1914,13 @@ async function countyShapeMap(race) {
       const title = county && leader
         ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${estimatedInLabel(county.estimatedVoteReporting)} estimated in`
         : "";
-      const tooltip = county ? countyTooltipMarkup(county, race, `${feature.properties?.NAME || county.name} County`) : "";
+      const tooltipCounty = county ? {
+        ...county,
+        fips: county.fips || feature.id,
+        id: county.id || feature.id,
+        type: county.type || feature.properties?.LSAD || "County"
+      } : null;
+      const tooltip = tooltipCounty ? countyTooltipMarkup(tooltipCounty, race, `${feature.properties?.NAME || county.name} County`) : "";
       return `
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(rawFill)}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
         </path>
@@ -1875,7 +1928,7 @@ async function countyShapeMap(race) {
     }).join("");
     return `
       <svg class="result-county-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.stateName || race.state || "State")} county results map">
-        ${resultForeignContextLayer({ state: race.state, bounds, width, height, lonScale })}
+        ${resultForeignContextLayer({ state: race.state, countryFeatures, bounds, width, height, lonScale })}
         ${resultStateContextLayer({ state: race.state, allFeatures: allStateFeatures, bounds, width, height, lonScale })}
         ${contextLayer}
         ${paths}
@@ -2302,35 +2355,19 @@ function resultStateContextLayer({ state, allFeatures = [], bounds, width, heigh
   return paths ? `<g class="result-map-state-context" aria-hidden="true">${paths}</g>` : "";
 }
 
-function resultForeignContextLayer({ state, bounds, width, height, lonScale }) {
+function resultForeignContextLayer({ state, countryFeatures = [], bounds, width, height, lonScale }) {
   const stateKey = String(state || "").toUpperCase();
-  const shapes = [];
-  if (["CA", "NM"].includes(stateKey)) {
-    shapes.push({
-      name: "Mexico",
-      points: [[-126.5, 24.5], [-97.0, 24.5], [-97.0, 32.72], [-114.8, 32.72], [-117.16, 32.52], [-126.5, 32.52]]
-    });
-  }
-  if (["MT", "ND", "ME"].includes(stateKey)) {
-    shapes.push({
-      name: "Canada",
-      points: [[-142.0, 49.0], [-52.0, 49.0], [-52.0, 72.0], [-142.0, 72.0]]
-    });
-  }
-  const visibleBounds = expandedBounds(bounds, .04);
-  const paths = shapes.map((shape) => {
-    const shapeBounds = shape.points.reduce((box, [lon, lat]) => ({
-      minLon: Math.min(box.minLon, lon),
-      minLat: Math.min(box.minLat, lat),
-      maxLon: Math.max(box.maxLon, lon),
-      maxLat: Math.max(box.maxLat, lat)
-    }), { minLon: Infinity, minLat: Infinity, maxLon: -Infinity, maxLat: -Infinity });
-    if (!boundsOverlap(shapeBounds, visibleBounds)) return "";
-    const d = shape.points.map((point, index) => {
-      const [x, y] = projectPoint(point, bounds, width, height, lonScale);
-      return `${index ? "L" : "M"}${x.toFixed(2)},${y.toFixed(2)}`;
-    }).join("");
-    return `<path class="map-context map-context-foreign" d="${d}Z"><title>${escapeHtml(shape.name)}</title></path>`;
+  const allowed = new Set();
+  if (["CA", "NM", "AZ", "TX"].includes(stateKey)) allowed.add("MEX");
+  if (["MT", "ND", "ME", "WA", "ID", "MN", "NY", "VT", "NH"].includes(stateKey)) allowed.add("CAN");
+  if (!allowed.size) return "";
+  const visibleBounds = expandedBounds(bounds, .08);
+  const paths = (countryFeatures || []).filter((feature) => {
+    const iso = feature.properties?.iso3 || feature.properties?.["ISO3166-1-Alpha-3"];
+    return allowed.has(iso) && boundsOverlap(stateBounds([feature]), visibleBounds);
+  }).map((feature) => {
+    const name = feature.properties?.name || feature.properties?.iso3 || "Country";
+    return `<path class="map-context map-context-foreign" d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}"><title>${escapeHtml(name)}</title></path>`;
   }).join("");
   return paths ? `<g class="result-map-foreign-context" aria-hidden="true">${paths}</g>` : "";
 }
