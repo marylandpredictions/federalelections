@@ -1040,7 +1040,7 @@ function candidateRaceCallLabel(race, candidate) {
 function candidateCallMark(race, candidate) {
   const label = candidateRaceCallLabel(race, candidate);
   if (!label) return "";
-  return `<span class="result-candidate-check" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">✓</span>`;
+  return `<span class="result-candidate-check" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">→</span>`;
 }
 
 function callBadge(candidate, race) {
@@ -1445,9 +1445,8 @@ function contextFeatures(features, activeFeatures, activeBounds, factor = .35) {
 function contextPointBounds(state, activeBounds) {
   const config = RESULT_MAP_CONTEXT[String(state || "").toUpperCase()];
   if (!config) return null;
-  const visible = activeBounds ? expandedBounds(activeBounds, .34) : null;
+  const visible = activeBounds ? expandedBounds(activeBounds, .18) : null;
   const points = [
-    ...(config.cities || []).map((city) => [city.lon, city.lat]),
     ...(config.roads || []).flatMap((road) => road.points || [])
   ].filter((point) => point.length === 2)
     .filter(([lon, lat]) => !visible || (
@@ -1525,7 +1524,8 @@ async function districtShapeMap(race) {
     const allCountyFeatures = await loadCountyMapData()
       .then((geojson) => (geojson.features || []))
       .catch(() => []);
-    const bounds = mergeBounds([expandedBounds(activeBounds, .28), contextPointBounds(race.state, activeBounds)]) || activeBounds;
+    const stateCountyFeatures = allCountyFeatures.filter((item) => item.properties?.STATE === stateFips(race.state));
+    const bounds = mergeBounds([expandedBounds(activeBounds, .38), contextPointBounds(race.state, activeBounds)]) || activeBounds;
     const { width, height, lonScale } = mapDimensions(bounds, 760, 540);
     const districtTitle = `${race.state || ""}-${districtNumber} District`;
     const districtTooltip = countyTooltipMarkup({
@@ -1535,8 +1535,9 @@ async function districtShapeMap(race) {
     }, race, districtTitle);
     return `
       <svg class="result-county-map result-district-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.electionName || "House district")} map">
-        ${resultMapContextLayer({ state: race.state, allFeatures: allCountyFeatures, activeFeatures: [feature], bounds, width, height, lonScale })}
+        ${resultMapContextLayer({ state: race.state, allFeatures: stateCountyFeatures.length ? stateCountyFeatures : allCountyFeatures, activeFeatures: [feature], bounds, width, height, lonScale, labels: false })}
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(margin?.rawFill || fill)}" data-county-tooltip="${escapeHtml(districtTooltip)}"></path>
+        ${resultMapRoadLayer({ state: race.state, bounds, width, height, lonScale })}
       </svg>
     `;
   } catch (error) {
@@ -1563,10 +1564,14 @@ async function countyShapeMap(race) {
       : features;
     if (!visibleFeatures.length) return regionMap(race);
     const activeBounds = stateBounds(visibleFeatures);
-    const outsideFeatures = shouldFilterToJurisdiction(race, features, lookup)
+    const filterToJurisdiction = shouldFilterToJurisdiction(race, features, lookup);
+    const outsideFeatures = filterToJurisdiction
       ? allFeatures
       : allFeatures.filter((feature) => feature.properties?.STATE !== fips);
-    const bounds = mergeBounds([expandedBounds(activeBounds, .2), contextPointBounds(race.state, activeBounds)]) || activeBounds;
+    const bounds = mergeBounds([
+      expandedBounds(activeBounds, filterToJurisdiction ? .28 : .08),
+      contextPointBounds(race.state, activeBounds)
+    ]) || activeBounds;
     const { width, height, lonScale } = mapDimensions(bounds);
     const contextLayer = resultMapContextLayer({
       state: race.state,
@@ -1575,7 +1580,8 @@ async function countyShapeMap(race) {
       bounds,
       width,
       height,
-      lonScale
+      lonScale,
+      labels: false
     });
     const paths = visibleFeatures.map((feature) => {
       const county = lookup.get(feature.id) || lookup.get(String(feature.properties?.NAME || "").toLowerCase()) || lookup.get(regionLookupKey(feature.properties?.NAME));
@@ -1586,7 +1592,7 @@ async function countyShapeMap(race) {
       const rawFill = margin?.rawFill || "#566274";
       const title = county && leader
         ? `${county.name} County: ${leader.name} ${percentLabel(leader.percent)}, ${estimatedInLabel(county.estimatedVoteReporting)} estimated in`
-        : `${feature.properties?.NAME || "County"} County: waiting for reported votes`;
+        : "";
       const tooltip = county ? countyTooltipMarkup(county, race, `${feature.properties?.NAME || county.name} County`) : "";
       return `
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(rawFill)}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
@@ -1597,6 +1603,7 @@ async function countyShapeMap(race) {
       <svg class="result-county-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.stateName || race.state || "State")} county results map">
         ${contextLayer}
         ${paths}
+        ${resultMapRoadLayer({ state: race.state, bounds, width, height, lonScale })}
       </svg>
     `;
   } catch (error) {
@@ -1740,6 +1747,17 @@ async function analysisNoteMarkup(notes) {
   `;
 }
 
+async function refreshAnalysisNotes(race) {
+  const panel = page.querySelector(".analysis-note-panel");
+  if (!panel || !race?.id) return;
+  const notesData = await loadAnalysisNotes();
+  const analystNotes = notesData.races?.[String(race.id)] || [];
+  const replacement = document.createElement("div");
+  replacement.innerHTML = (await analysisNoteMarkup(analystNotes)).trim();
+  const nextPanel = replacement.firstElementChild;
+  if (nextPanel) panel.replaceWith(nextPanel);
+}
+
 function voteHistoryChart(race) {
   race = voteHistoryRaceForDisplay(race);
   const points = Array.isArray(race.voteHistory) ? race.voteHistory : [];
@@ -1766,9 +1784,13 @@ function voteHistoryChart(race) {
     .sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))
     .slice(0, 5)
     .map((candidate) => slugifyName(candidate.name)));
+  const latestCandidates = [...(latestPoint.candidates || [])]
+    .sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))
+    .slice(0, 5);
   const candidates = sortedCandidates(race)
     .filter((candidate) => latestTopSlugs.has(slugifyName(candidate.name)))
     .slice(0, 5);
+  const displayCandidates = candidates.length ? candidates : latestCandidates;
   const visibleCandidateSlugsByPoint = orderedPoints.map((point) => new Set([...(point.candidates || [])]
     .sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))
     .slice(0, 5)
@@ -1777,14 +1799,14 @@ function voteHistoryChart(race) {
   const height = 250;
   const pad = { left: 58, right: 20, top: 18, bottom: 48 };
   const maxPercent = Math.max(1, Math.min(100, Math.ceil(Math.max(
-    ...orderedPoints.flatMap((point) => candidates.map((candidate) => Number(historyCandidateFor(point, candidate)?.percent || 0)))
+    ...orderedPoints.flatMap((point) => displayCandidates.map((candidate) => Number(historyCandidateFor(point, candidate)?.percent || 0)))
   ) / 5) * 5));
   const xFor = (index) => orderedPoints.length === 1 ? pad.left : pad.left + (index / (orderedPoints.length - 1)) * (width - pad.left - pad.right);
   const yFor = (percent, visible = true) => {
     if (!visible) return height - pad.bottom + 12;
     return height - pad.bottom - (Number(percent || 0) / maxPercent) * (height - pad.top - pad.bottom);
   };
-  const defs = candidates.map((candidate, index) => {
+  const defs = displayCandidates.map((candidate, index) => {
     if (!candidateRaceCallLabel(race, candidate)) return "";
     const color = candidateFill(race, candidate);
     return `
@@ -1794,7 +1816,7 @@ function voteHistoryChart(race) {
       </linearGradient>
     `;
   }).join("");
-  const paths = candidates.map((candidate, index) => {
+  const paths = displayCandidates.map((candidate, index) => {
     const color = candidateFill(race, candidate);
     const called = Boolean(candidateRaceCallLabel(race, candidate));
     const candidateSlug = slugifyName(candidate.name);
@@ -1803,7 +1825,7 @@ function voteHistoryChart(race) {
       const visible = visibleCandidateSlugsByPoint[index]?.has(candidateSlug);
       return `${index ? "L" : "M"}${xFor(index).toFixed(1)},${yFor(item?.percent || 0, visible).toFixed(1)}`;
     }).join(" ");
-    return `<path d="${d}" fill="none" stroke="${called ? `url(#vote-history-winner-${index})` : escapeHtml(color)}" stroke-width="${called ? 3.4 : 2.6}" stroke-linecap="round" stroke-linejoin="round"></path>`;
+    return `<path class="vote-history-line" d="${d}" fill="none" stroke="${called ? `url(#vote-history-winner-${index})` : escapeHtml(color)}" stroke-width="${called ? 3.4 : 2.8}" stroke-linecap="round" stroke-linejoin="round"></path>`;
   }).join("");
   const hits = orderedPoints.map((point, index) => {
     const x = xFor(index);
@@ -1814,7 +1836,7 @@ function voteHistoryChart(race) {
     const label = `
       <strong>${escapeHtml(preciseTimeLabel(point.at || point.updatedAt || point.timestamp || point.time || race.lastUpdated))}</strong>
       <div class="vote-history-tooltip-rows">
-        ${candidates.map((candidate) => {
+        ${displayCandidates.map((candidate) => {
         const item = historyCandidateFor(point, candidate);
         const candidateParty = item?.partyCode || item?.party || candidate.partyCode || candidate.party || "";
         const code = partyCode(candidateParty) || candidateParty || "O";
@@ -1907,25 +1929,30 @@ function projectPoint([lon, lat], bounds, width, height, lonScale = 1) {
   ];
 }
 
-function resultMapContextLayer({ state, allFeatures = [], activeFeatures = [], bounds, width, height, lonScale }) {
-  const nearby = contextFeatures(allFeatures, activeFeatures, bounds, .22).slice(0, 260);
+function resultMapContextLayer({ state, allFeatures = [], activeFeatures = [], bounds, width, height, lonScale, labels = false }) {
+  const nearby = contextFeatures(allFeatures, activeFeatures, bounds, .02).slice(0, 320);
   const nearbyPaths = nearby.map((feature) => `
     <path class="map-context map-context-county" d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}"></path>
   `).join("");
   const config = RESULT_MAP_CONTEXT[String(state || "").toUpperCase()] || {};
   const visibleBounds = expandedBounds(bounds, .08);
   const roads = (config.roads || []).map((road) => {
-    const points = (road.points || []).filter(([lon, lat]) => (
-      lon >= visibleBounds.minLon && lon <= visibleBounds.maxLon && lat >= visibleBounds.minLat && lat <= visibleBounds.maxLat
-    ));
+    const points = road.points || [];
     if (points.length < 2) return "";
+    const roadBounds = points.reduce((roadBounds, [lon, lat]) => ({
+      minLon: Math.min(roadBounds.minLon, lon),
+      minLat: Math.min(roadBounds.minLat, lat),
+      maxLon: Math.max(roadBounds.maxLon, lon),
+      maxLat: Math.max(roadBounds.maxLat, lat)
+    }), { minLon: Infinity, minLat: Infinity, maxLon: -Infinity, maxLat: -Infinity });
+    if (!boundsOverlap(roadBounds, visibleBounds)) return "";
     const d = points.map((point, index) => {
       const [x, y] = projectPoint(point, bounds, width, height, lonScale);
       return `${index ? "L" : "M"}${x.toFixed(2)},${y.toFixed(2)}`;
     }).join("");
     return `<path class="map-context-road" d="${d}"><title>${escapeHtml(road.name || "Major route")}</title></path>`;
   }).join("");
-  const cities = (config.cities || []).filter((city) => (
+  const cities = !labels ? "" : (config.cities || []).filter((city) => (
     city.lon >= visibleBounds.minLon && city.lon <= visibleBounds.maxLon && city.lat >= visibleBounds.minLat && city.lat <= visibleBounds.maxLat
   )).map((city) => {
     const [x, y] = projectPoint([city.lon, city.lat], bounds, width, height, lonScale);
@@ -1938,6 +1965,28 @@ function resultMapContextLayer({ state, allFeatures = [], activeFeatures = [], b
       ${cities}
     </g>
   `;
+}
+
+function resultMapRoadLayer({ state, bounds, width, height, lonScale }) {
+  const config = RESULT_MAP_CONTEXT[String(state || "").toUpperCase()] || {};
+  const visibleBounds = expandedBounds(bounds, .08);
+  const roads = (config.roads || []).map((road) => {
+    const points = road.points || [];
+    if (points.length < 2) return "";
+    const roadBounds = points.reduce((roadBounds, [lon, lat]) => ({
+      minLon: Math.min(roadBounds.minLon, lon),
+      minLat: Math.min(roadBounds.minLat, lat),
+      maxLon: Math.max(roadBounds.maxLon, lon),
+      maxLat: Math.max(roadBounds.maxLat, lat)
+    }), { minLon: Infinity, minLat: Infinity, maxLon: -Infinity, maxLat: -Infinity });
+    if (!boundsOverlap(roadBounds, visibleBounds)) return "";
+    const d = points.map((point, index) => {
+      const [x, y] = projectPoint(point, bounds, width, height, lonScale);
+      return `${index ? "L" : "M"}${x.toFixed(2)},${y.toFixed(2)}`;
+    }).join("");
+    return `<path class="map-context-road map-context-road-top" d="${d}"><title>${escapeHtml(road.name || "Major route")}</title></path>`;
+  }).join("");
+  return roads ? `<g class="result-map-roads" aria-hidden="true">${roads}</g>` : "";
 }
 
 function bindVoteHistoryHover() {
@@ -1988,7 +2037,19 @@ function bindMapZoom() {
   const controls = page.querySelectorAll("[data-map-zoom]");
   let { zoom, panX, panY } = resultMapViewState;
   let pointerStart = null;
+  const clampPan = () => {
+    if (zoom <= 1.01) {
+      panX = 0;
+      panY = 0;
+      return;
+    }
+    const maxX = Math.max(0, frame.clientWidth * (zoom - 1) * .42);
+    const maxY = Math.max(0, frame.clientHeight * (zoom - 1) * .42);
+    panX = Math.max(-maxX, Math.min(maxX, panX));
+    panY = Math.max(-maxY, Math.min(maxY, panY));
+  };
   const apply = () => {
+    clampPan();
     resultMapViewState = { zoom, panX, panY };
     applyMapViewportState();
     controls.forEach((control) => {
@@ -2130,6 +2191,8 @@ async function patchRaceDetail(race) {
 
   const favoritePanel = page.querySelector("[data-favorite-race-panel]");
   if (favoritePanel) favoritePanel.outerHTML = favoriteRacePanelMarkup(race);
+
+  await refreshAnalysisNotes(race);
 
   const mapFrame = page.querySelector(".result-map-frame");
   if (mapFrame) {
@@ -2553,6 +2616,7 @@ async function loadRaceDetail() {
       const lastUpdatedNode = page.querySelector("[data-result-last-updated]");
       if (lastUpdatedNode) lastUpdatedNode.textContent = `Last updated ${timeLabel(race.lastUpdated)}`;
       updateLastCheckedStamp();
+      await refreshAnalysisNotes(race);
       bindPollCountdown();
       return;
     }

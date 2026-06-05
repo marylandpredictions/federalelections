@@ -422,7 +422,15 @@ async function handleAdmin(request, response, url) {
     };
     const current = await readJsonFile(analysisNotesPath, { races: {}, raceKey: {} });
     current.races = current.races || {};
-    current.races[raceId] = [note, ...(Array.isArray(current.races[raceId]) ? current.races[raceId] : [])];
+    const existingNotes = Array.isArray(current.races[raceId]) ? current.races[raceId] : [];
+    const hasNoteIndex = payload.noteIndex !== null && payload.noteIndex !== undefined && payload.noteIndex !== "";
+    const noteIndex = hasNoteIndex ? Number(payload.noteIndex) : -1;
+    if (hasNoteIndex && Number.isInteger(noteIndex) && noteIndex >= 0 && noteIndex < existingNotes.length) {
+      existingNotes[noteIndex] = note;
+      current.races[raceId] = existingNotes;
+    } else {
+      current.races[raceId] = [note, ...existingNotes];
+    }
     await writeJsonFile(analysisNotesPath, current);
     sendJson(response, 200, { ok: true, note, notes: current.races[raceId] });
     return;

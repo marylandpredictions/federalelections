@@ -195,6 +195,16 @@
 
       <section class="admin-panel" style="grid-column: 1 / -1;">
         <h2>Analyst note</h2>
+        <div class="admin-field">
+          <label for="noteSelect">Edit existing note</label>
+          <select class="admin-select" id="noteSelect">
+            <option value="">Add a new note</option>
+          </select>
+        </div>
+        <div class="admin-actions">
+          <button class="admin-button secondary" id="loadNote" type="button">Load selected note</button>
+          <button class="admin-button secondary" id="newNote" type="button">Clear for new note</button>
+        </div>
         <div class="admin-grid">
           <div>
             <div class="admin-field">

@@ -4295,15 +4295,26 @@ button.race-board-row {
 }
 
 .result-map-context {
-  opacity: .72;
+  opacity: .88;
 }
 
 .map-context-county {
-  fill: #121722;
-  stroke: color-mix(in srgb, #d6d9e2 18%, transparent);
-  stroke-width: .55;
+  fill: #1a2435;
+  stroke: color-mix(in srgb, #d6d9e2 32%, transparent);
+  stroke-width: .62;
   cursor: default;
   pointer-events: none;
+  opacity: .9;
+}
+
+.result-district-map .map-context-county {
+  fill: #edf1f8;
+  stroke: color-mix(in srgb, #17233f 18%, transparent);
+  opacity: .24;
+}
+
+.result-district-map .map-context-road {
+  stroke: color-mix(in srgb, #ffffff 28%, transparent);
 }
 
 .map-context-road {
@@ -4317,7 +4328,14 @@ button.race-board-row {
   vector-effect: non-scaling-stroke;
 }
 
+.map-context-road-top {
+  stroke: color-mix(in srgb, #f8fbff 32%, transparent);
+  stroke-width: 1.15;
+  opacity: .72;
+}
+
 .map-context-label {
+  display: none;
   fill: color-mix(in srgb, #f8fbff 74%, transparent);
   stroke: color-mix(in srgb, #020b22 92%, transparent);
   stroke-width: 3;
@@ -5160,6 +5178,11 @@ button.race-board-row {
 
 .result-vote-history-panel path {
   filter: none;
+}
+
+.result-vote-history-panel .vote-history-line {
+  opacity: .98;
+  vector-effect: non-scaling-stroke;
 }
 
 .vote-history-axis-label {

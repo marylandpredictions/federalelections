@@ -3,7 +3,8 @@
     secret: sessionStorage.getItem("feaAdminSecret") || "",
     races: [],
     calls: { races: {} },
-    notes: { races: {} }
+    notes: { races: {} },
+    noteIndex: null
   };
 
   const $ = (id) => document.getElementById(id);
@@ -15,6 +16,7 @@
   const callRows = $("callRows");
   const callStatus = $("callStatus");
   const noteStatus = $("noteStatus");
+  const noteSelect = $("noteSelect");
 
   function setStatus(element, message, error = false) {
     element.textContent = message;
@@ -85,6 +87,61 @@
     callRows.innerHTML = calls.length ? calls.map(callRowMarkup).join("") : callRowMarkup();
   }
 
+  function currentNotes() {
+    const raceId = currentRace()?.id;
+    const notes = state.notes.races?.[raceId];
+    return Array.isArray(notes) ? notes : [];
+  }
+
+  function renderNoteSelect() {
+    if (!noteSelect) return;
+    const notes = currentNotes();
+    noteSelect.innerHTML = `
+      <option value="">Add a new note</option>
+      ${notes.map((note, index) => `
+        <option value="${index}">${escapeHtml(note.date || `Note ${index + 1}`)} - ${escapeHtml(note.author || "FEA")}</option>
+      `).join("")}
+    `;
+    noteSelect.value = state.noteIndex === null ? "" : String(state.noteIndex);
+  }
+
+  function clearNoteForm() {
+    state.noteIndex = null;
+    $("noteAuthor").value = "FEA Analysis Desk";
+    $("noteRole").value = "Analysis desk";
+    $("noteText").value = "";
+    $("noteImage").value = "";
+    $("noteEmbed").value = "";
+    const now = new Date();
+    $("noteDate").value = now.toLocaleString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit"
+    });
+    renderNoteSelect();
+    $("saveNote").textContent = "Add newest note";
+  }
+
+  function loadSelectedNote() {
+    const index = Number(noteSelect?.value);
+    const note = Number.isInteger(index) ? currentNotes()[index] : null;
+    if (!note) {
+      clearNoteForm();
+      return;
+    }
+    state.noteIndex = index;
+    $("noteAuthor").value = note.author || "FEA Analysis Desk";
+    $("noteRole").value = note.role || "Analysis desk";
+    $("noteDate").value = note.date || "";
+    $("noteText").value = note.text || "";
+    $("noteImage").value = typeof note.image === "string" ? note.image : note.image ? JSON.stringify(note.image) : "";
+    $("noteEmbed").value = typeof note.embed === "string" ? note.embed : note.embed ? JSON.stringify(note.embed) : "";
+    renderNoteSelect();
+    $("saveNote").textContent = "Save selected note";
+  }
+
   function renderRace() {
     const race = currentRace();
     if (!race) return;
@@ -95,14 +152,8 @@
       </button>
     `).join("");
     renderCalls();
-    const now = new Date();
-    $("noteDate").value = now.toLocaleString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit"
-    });
+    clearNoteForm();
+    renderNoteSelect();
   }
 
   function renderApp() {
@@ -156,6 +207,7 @@
     if (!race) return;
     setStatus(noteStatus, "Saving...");
     try {
+      const wasEditing = state.noteIndex !== null;
       const payload = await adminFetch("/api/admin/notes", {
         method: "POST",
         body: JSON.stringify({
@@ -165,14 +217,18 @@
           date: $("noteDate").value,
           text: $("noteText").value,
           image: $("noteImage").value,
-          embed: $("noteEmbed").value
+          embed: $("noteEmbed").value,
+          noteIndex: state.noteIndex
         })
       });
       state.notes.races[race.id] = payload.notes || [];
+      state.noteIndex = null;
       $("noteText").value = "";
       $("noteImage").value = "";
       $("noteEmbed").value = "";
-      setStatus(noteStatus, "Analyst note added as newest note.");
+      renderNoteSelect();
+      $("saveNote").textContent = "Add newest note";
+      setStatus(noteStatus, wasEditing ? "Analyst note updated." : "Analyst note added as newest note.");
     } catch (error) {
       setStatus(noteStatus, error.message, true);
     }
@@ -193,6 +249,11 @@
   });
   $("saveCalls").addEventListener("click", saveCalls);
   $("saveNote").addEventListener("click", saveNote);
+  $("loadNote")?.addEventListener("click", loadSelectedNote);
+  $("newNote")?.addEventListener("click", clearNoteForm);
+  noteSelect?.addEventListener("change", () => {
+    state.noteIndex = noteSelect.value === "" ? null : Number(noteSelect.value);
+  });
   callRows.addEventListener("click", (event) => {
     if (event.target.closest(".remove-call")) {
       event.target.closest(".admin-call-row")?.remove();
