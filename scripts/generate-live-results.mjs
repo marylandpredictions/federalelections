@@ -694,9 +694,7 @@ function appendVoteHistory(race) {
   if (latest && voteHistorySignature(latest) === pointSignature) {
     return stored.slice(-240);
   }
-  const pointKey = point.at.slice(0, 16);
-  const withoutCurrentMinute = stored.filter((item) => String(item.at || "").slice(0, 16) !== pointKey);
-  return [...withoutCurrentMinute, point].slice(-240);
+  return [...stored, point].slice(-240);
 }
 
 async function fetchRaceDetail(id) {

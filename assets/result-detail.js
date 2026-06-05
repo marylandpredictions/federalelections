@@ -362,6 +362,28 @@ function timeLabel(value) {
   }).format(date);
 }
 
+function preciseTimeLabel(value) {
+  if (!value) return "Awaiting update";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Awaiting update";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZoneName: "short"
+  }).format(date);
+}
+
+function compactVoteLabel(value) {
+  const number = Number(value || 0);
+  if (!Number.isFinite(number) || number <= 0) return "0";
+  if (number >= 1000000) return `${(number / 1000000).toFixed(number >= 10000000 ? 0 : 1)}M`;
+  if (number >= 1000) return `${(number / 1000).toFixed(number >= 100000 ? 0 : 1)}k`;
+  return number.toLocaleString("en-US");
+}
+
 function partyCode(party) {
   const value = String(party || "").toLowerCase();
   if (value.includes("dem")) return "D";
@@ -1581,17 +1603,34 @@ function voteHistoryChart(race) {
       </section>
     `;
   }
-  const candidates = sortedCandidates(race).slice(0, 5);
-  const width = 760;
-  const height = 220;
-  const pad = { left: 58, right: 20, top: 18, bottom: 44 };
-  const maxVotes = Math.max(1, ...points.flatMap((point) => (point.candidates || []).map((candidate) => Number(candidate.votes || 0))));
-  const xFor = (index) => points.length === 1 ? pad.left : pad.left + (index / (points.length - 1)) * (width - pad.left - pad.right);
-  const yFor = (votes) => height - pad.bottom - (Number(votes || 0) / maxVotes) * (height - pad.top - pad.bottom);
   const historyCandidateFor = (point, candidate) => {
     const slug = slugifyName(candidate.name);
     return (point.candidates || []).find((entry) => entry.name === candidate.name)
       || (point.candidates || []).find((entry) => slugifyName(entry.name) === slug);
+  };
+  const orderedPoints = [...points].sort((a, b) => new Date(a.at || a.updatedAt || 0) - new Date(b.at || b.updatedAt || 0));
+  const latestPoint = orderedPoints.at(-1) || {};
+  const latestTopTenSlugs = new Set([...(latestPoint.candidates || [])]
+    .sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))
+    .slice(0, 10)
+    .map((candidate) => slugifyName(candidate.name)));
+  const candidates = sortedCandidates(race)
+    .filter((candidate) => latestTopTenSlugs.has(slugifyName(candidate.name)))
+    .slice(0, 10);
+  const visibleCandidateSlugsByPoint = orderedPoints.map((point) => new Set([...(point.candidates || [])]
+    .sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))
+    .slice(0, 10)
+    .map((candidate) => slugifyName(candidate.name))));
+  const width = 760;
+  const height = 250;
+  const pad = { left: 58, right: 20, top: 18, bottom: 48 };
+  const maxPercent = Math.max(1, Math.min(100, Math.ceil(Math.max(
+    ...orderedPoints.flatMap((point) => candidates.map((candidate) => Number(historyCandidateFor(point, candidate)?.percent || 0)))
+  ) / 5) * 5));
+  const xFor = (index) => orderedPoints.length === 1 ? pad.left : pad.left + (index / (orderedPoints.length - 1)) * (width - pad.left - pad.right);
+  const yFor = (percent, visible = true) => {
+    if (!visible) return height - pad.bottom + 12;
+    return height - pad.bottom - (Number(percent || 0) / maxPercent) * (height - pad.top - pad.bottom);
   };
   const defs = candidates.map((candidate, index) => {
     if (!candidateRaceCallLabel(race, candidate)) return "";
@@ -1606,32 +1645,39 @@ function voteHistoryChart(race) {
   const paths = candidates.map((candidate, index) => {
     const color = candidateFill(race, candidate);
     const called = Boolean(candidateRaceCallLabel(race, candidate));
-    const d = points.map((point, index) => {
+    const candidateSlug = slugifyName(candidate.name);
+    const d = orderedPoints.map((point, index) => {
       const item = historyCandidateFor(point, candidate);
-      return `${index ? "L" : "M"}${xFor(index).toFixed(1)},${yFor(item?.votes || 0).toFixed(1)}`;
+      const visible = visibleCandidateSlugsByPoint[index]?.has(candidateSlug);
+      return `${index ? "L" : "M"}${xFor(index).toFixed(1)},${yFor(item?.percent || 0, visible).toFixed(1)}`;
     }).join(" ");
     return `<path d="${d}" fill="none" stroke="${called ? `url(#vote-history-winner-${index})` : escapeHtml(color)}" stroke-width="${called ? 3.4 : 2.6}" stroke-linecap="round" stroke-linejoin="round"></path>`;
   }).join("");
-  const hits = points.map((point, index) => {
+  const hits = orderedPoints.map((point, index) => {
     const x = xFor(index);
     const xPrev = index === 0 ? pad.left : xFor(index - 1);
-    const xNext = index === points.length - 1 ? width - pad.right : xFor(index + 1);
+    const xNext = index === orderedPoints.length - 1 ? width - pad.right : xFor(index + 1);
     const hitX = index === 0 ? pad.left : (xPrev + x) / 2;
-    const hitWidth = index === points.length - 1 ? (width - pad.right) - hitX : (xNext + x) / 2 - hitX;
+    const hitWidth = index === orderedPoints.length - 1 ? (width - pad.right) - hitX : (xNext + x) / 2 - hitX;
     const label = [
-      timeLabel(point.at || point.updatedAt || point.timestamp || point.time || race.lastUpdated),
+      preciseTimeLabel(point.at || point.updatedAt || point.timestamp || point.time || race.lastUpdated),
       ...candidates.map((candidate) => {
         const item = historyCandidateFor(point, candidate);
-        return `${candidate.name}: ${numberLabel(item?.votes || 0)} votes (${percentLabel(item?.percent || 0)})`;
+        const candidateParty = item?.partyCode || item?.party || candidate.partyCode || candidate.party || "";
+        return `${candidate.name} (${partyCode(candidateParty) || candidateParty}): ${percentLabel(item?.percent || 0)} (${numberLabel(item?.votes || 0)} votes)`;
       })
     ].join("\n");
     return `<rect class="vote-history-hit" x="${hitX.toFixed(1)}" y="${pad.top}" width="${Math.max(6, hitWidth).toFixed(1)}" height="${height - pad.top - pad.bottom}" data-history-x="${x.toFixed(1)}" data-history-tooltip="${escapeHtml(label)}"></rect>`;
   }).join("");
   const legend = candidates.map((candidate) => `
-    <span style="--candidate-color:${escapeHtml(candidateFill(race, candidate))}">
-      <i></i>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)}
+    <span class="vote-history-legend-item" style="--candidate-color:${escapeHtml(candidateFill(race, candidate))}">
+      <i></i>
+      <b>${escapeHtml(partyCode(candidate.partyCode || candidate.party) || "O")}</b>
+      <em>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)}</em>
+      <small>${percentLabel(historyCandidateFor(latestPoint, candidate)?.percent || 0)} (${compactVoteLabel(historyCandidateFor(latestPoint, candidate)?.votes || 0)})</small>
     </span>
   `).join("");
+  const ticks = [0, maxPercent / 2, maxPercent];
   return `
     <section class="result-vote-history-panel">
       <div class="section-head">
@@ -1641,9 +1687,13 @@ function voteHistoryChart(race) {
       </div>
       <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Vote history chart">
         <defs>${defs}</defs>
+        ${ticks.map((tick) => `
+          <line class="vote-history-grid" x1="${pad.left}" y1="${yFor(tick).toFixed(1)}" x2="${width - pad.right}" y2="${yFor(tick).toFixed(1)}"></line>
+          <text class="vote-history-tick" x="${pad.left - 10}" y="${(yFor(tick) + 4).toFixed(1)}">${tick.toFixed(0)}%</text>
+        `).join("")}
         <line x1="${pad.left}" y1="${height - pad.bottom}" x2="${width - pad.right}" y2="${height - pad.bottom}"></line>
         <line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${height - pad.bottom}"></line>
-        <text class="vote-history-axis-label vote-history-y-label" x="18" y="${pad.top + 4}" transform="rotate(-90 18 ${pad.top + 4})">Votes</text>
+        <text class="vote-history-axis-label vote-history-y-label" x="18" y="${pad.top + 4}" transform="rotate(-90 18 ${pad.top + 4})">Vote share</text>
         <text class="vote-history-axis-label" x="${(width + pad.left - pad.right) / 2}" y="${height - 8}">Time</text>
         ${paths}
         <line class="vote-history-hover-line" x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${height - pad.bottom}"></line>
