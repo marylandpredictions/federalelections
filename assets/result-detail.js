@@ -2476,9 +2476,14 @@ function bindMapZoom() {
   const maxZoom = 8;
   let { zoom, panX, panY } = resultMapViewState;
   if (map?.dataset.initialZoom && zoom === 1 && panX === 0 && panY === 0) {
+    const internalWidth = Number(map.getAttribute("width")) || map.viewBox?.baseVal?.width || map.clientWidth || 1;
+    const renderedWidth = map.getBoundingClientRect().width || frame.clientWidth || internalWidth;
+    const renderedScale = Math.max(.25, Math.min(1.25, renderedWidth / internalWidth));
+    const isCompactDistrict = map.classList.contains("result-district-map") && frame.clientWidth < 560;
     zoom = Number(map.dataset.initialZoom) || zoom;
-    panX = Number(map.dataset.initialPanX) || 0;
-    panY = Number(map.dataset.initialPanY) || 0;
+    if (isCompactDistrict) zoom = Math.min(zoom, 1.42);
+    panX = (Number(map.dataset.initialPanX) || 0) * renderedScale;
+    panY = (Number(map.dataset.initialPanY) || 0) * renderedScale;
   }
   const activePointers = new Map();
   let dragStart = null;
