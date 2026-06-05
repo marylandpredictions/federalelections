@@ -618,15 +618,11 @@ function voteHistorySignature(point) {
   const candidates = (point?.candidates || [])
     .map((candidate) => [
       normalizeName(candidate.name),
-      Number(candidate.votes || 0),
-      Number(candidate.percent || 0).toFixed(3)
+      Number(candidate.votes || 0)
     ].join(":"))
     .sort()
     .join("|");
-  return [
-    Number(point?.reporting || 0).toFixed(3),
-    candidates
-  ].join("::");
+  return candidates;
 }
 
 function normalizeHistoryCandidate(candidate) {
