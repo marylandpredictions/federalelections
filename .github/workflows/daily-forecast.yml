@@ -68,13 +68,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase --autostash origin "$GITHUB_REF_NAME"
           git add data/*.json data/live-results-races/*.json
           if git diff --cached --quiet; then
             echo "No forecast data changes to commit."
             exit 0
           fi
           git commit -m "Update daily forecasts"
-          git pull --rebase --autostash origin "$GITHUB_REF_NAME"
           git push origin "HEAD:$GITHUB_REF_NAME" || {
             git pull --rebase --autostash origin "$GITHUB_REF_NAME"
             git push origin "HEAD:$GITHUB_REF_NAME"

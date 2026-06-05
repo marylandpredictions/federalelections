@@ -32,7 +32,7 @@ const MANUAL_INCUMBENTS_BY_RACE = {
   "80203": ["Mariannette Miller-Meeks"],
   "80461": ["Larry Rhoden"],
   "80512": ["Mike Rounds"],
-  "81014": ["Ben R Lujan"],
+  "81014": ["Ben Lujan"],
   "81044": ["Frank Pallone Jr.."],
   "81048": ["Rob Menendez"],
   "81057": ["Cory Booker"]
