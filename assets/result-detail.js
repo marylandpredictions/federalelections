@@ -1393,29 +1393,23 @@ function countyTooltipMarkup(county, race, titlePrefix = "") {
   const title = titlePrefix || `${county.name} County`;
   const reporting = county.estimatedVoteReporting ?? county.percentIn ?? county.percent_in ?? null;
   const description = countyContextDescription(county, race);
-  const leader = regionLeader(county);
-  const margin = resultMarginInfo(race, county);
-  const totalVotes = (county.candidates || []).reduce((sum, candidate) => sum + Number(candidate.votes || 0), 0);
-  const summary = leader
-    ? `${leader.name} leads by ${margin ? `${margin.percentMargin.toFixed(1)} pts` : percentLabel(leader.percent)}${totalVotes ? ` with ${numberLabel(totalVotes)} votes counted` : ""}.`
-    : "County-level results unavailable.";
   return `
     <strong>${escapeHtml(title)}</strong>
     ${description ? `<p class="result-county-description">${escapeHtml(description)}</p>` : ""}
-    <p class="result-county-description">${escapeHtml(summary)}</p>
-    ${county.partialCounty ? `<p class="result-county-description">Partial county area inside district.</p>` : ""}
-    <table>
-      <thead><tr><th></th><th>Votes</th><th>Pct</th></tr></thead>
-      <tbody>
-        ${rows.map((candidate) => `
-          <tr class="${candidateRaceCallLabel(race, candidate) ? "is-called" : ""}" style="--candidate-color:${escapeHtml(candidateFill(race, candidate))}">
-            <td><span class="result-tooltip-candidate"><i aria-hidden="true"></i><span>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)} (${escapeHtml(candidate.partyCode || partyCode(candidate.party) || "O")})</span></span></td>
-            <td>${numberLabel(candidate.votes)}</td>
-            <td>${percentLabel(candidate.percent)}</td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
+    ${rows.length ? `
+      <table>
+        <thead><tr><th></th><th>Votes</th><th>Pct</th></tr></thead>
+        <tbody>
+          ${rows.map((candidate) => `
+            <tr class="${candidateRaceCallLabel(race, candidate) ? "is-called" : ""}" style="--candidate-color:${escapeHtml(candidateFill(race, candidate))}">
+              <td><span class="result-tooltip-candidate"><i aria-hidden="true"></i><span>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)} (${escapeHtml(candidate.partyCode || partyCode(candidate.party) || "O")})</span></span></td>
+              <td>${numberLabel(candidate.votes)}</td>
+              <td>${percentLabel(candidate.percent)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    ` : ""}
     <small>${estimatedInLabel(reporting)} estimated in</small>
   `;
 }
@@ -1933,7 +1927,6 @@ async function districtCountyBreakdownMap(race, districtNumber = raceDistrictNum
     const features = collection?.features || [];
     if (!features.length) return "";
     const lookup = countyLookup(race);
-    const activeBounds = stateBounds(features);
     const allCountyFeatures = await loadCountyMapData()
       .then((geojson) => (geojson.features || []))
       .catch(() => []);
@@ -1948,6 +1941,26 @@ async function districtCountyBreakdownMap(race, districtNumber = raceDistrictNum
       .catch(() => []);
     await loadCountyDescriptions();
     const stateCountyFeatures = allCountyFeatures.filter((item) => item.properties?.STATE === stateFips(race.state));
+    const districtCountyKeys = new Set(features.flatMap((feature) => {
+      const props = feature.properties || {};
+      const countyName = cleanCountyName(props.countyName || props.NAME || "");
+      return [
+        String(props.countyFips || `${props.STATEFP || ""}${props.COUNTYFP || ""}`).padStart(5, "0"),
+        regionLookupKey(countyName),
+        regionLookupKey(props.countyName)
+      ].filter(Boolean);
+    }));
+    const supplementalFeatures = stateCountyFeatures.filter((feature) => {
+      const county = districtCountyFeatureLookup(lookup, feature);
+      if (!county) return false;
+      const featureKeys = [
+        String(feature.id || "").padStart(5, "0"),
+        regionLookupKey(feature.properties?.NAME)
+      ].filter(Boolean);
+      return !featureKeys.some((key) => districtCountyKeys.has(key));
+    });
+    const activeFeatures = [...features, ...supplementalFeatures];
+    const activeBounds = stateBounds(activeFeatures);
     const backgroundBounds = resultMapBackgroundBounds(race.state, activeBounds);
     const bounds = mergeBounds([
       expandedBounds(activeBounds, .48),
@@ -1955,24 +1968,28 @@ async function districtCountyBreakdownMap(race, districtNumber = raceDistrictNum
       backgroundBounds ? expandedBounds(activeBounds, .18) : null
     ]) || activeBounds;
     const { width, height, lonScale } = mapDimensions(bounds, 760, 540);
-    const paths = features.map((feature) => {
+    const renderCountyPiece = (feature, options = {}) => {
       const props = feature.properties || {};
-      const countyFips = String(props.countyFips || `${props.STATEFP || ""}${props.COUNTYFP || ""}`).padStart(5, "0");
+      const countyFips = String(props.countyFips || props.id || feature.id || `${props.STATEFP || ""}${props.COUNTYFP || ""}`).padStart(5, "0");
       const countyName = cleanCountyName(props.countyName || props.NAME || countyFips);
       const county = districtCountyFeatureLookup(lookup, feature);
+      if (!county && !options.allowMissingTooltip) {
+        return `
+          <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="#566274" class="is-waiting map-context" data-fill-percent="#566274" data-fill-votes="#566274" data-fill-raw="#566274">
+          </path>
+        `;
+      }
       const tooltipCounty = county ? {
         ...county,
         fips: county.fips || countyFips,
         id: county.id || countyFips,
         name: county.name || countyName,
-        type: county.type || "County",
-        partialCounty: Boolean(props.partialCounty || String(props.PARTFLG || "").toUpperCase() === "Y")
+        type: county.type || "County"
       } : {
         id: countyFips,
         fips: countyFips,
         name: countyName,
         type: "County",
-        partialCounty: Boolean(props.partialCounty || String(props.PARTFLG || "").toUpperCase() === "Y"),
         candidates: [],
         estimatedVoteReporting: race.estimatedVoteReporting
       };
@@ -1981,16 +1998,19 @@ async function districtCountyBreakdownMap(race, districtNumber = raceDistrictNum
       const fill = margin?.percentFill || "#566274";
       const voteFill = margin?.voteFill || "#566274";
       const rawFill = margin?.rawFill || "#566274";
-      const partialLabel = tooltipCounty.partialCounty ? " (partial)" : "";
       const title = leader
-        ? `${countyName}${partialLabel}: ${leader.name} ${percentLabel(leader.percent)}, ${estimatedInLabel(tooltipCounty.estimatedVoteReporting)} estimated in`
-        : `${countyName}${partialLabel}: County-level results unavailable`;
-      const tooltip = countyTooltipMarkup(tooltipCounty, race, `${countyName}${partialLabel}`);
+        ? `${countyName}: ${leader.name} ${percentLabel(leader.percent)}, ${estimatedInLabel(tooltipCounty.estimatedVoteReporting)} estimated in`
+        : `${countyName}: County-level results unavailable`;
+      const tooltip = countyTooltipMarkup(tooltipCounty, race, countyName);
       return `
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(rawFill)}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
         </path>
       `;
-    }).join("");
+    };
+    const paths = [
+      ...features.map((feature) => renderCountyPiece(feature)),
+      ...supplementalFeatures.map((feature) => renderCountyPiece(feature, { allowMissingTooltip: true }))
+    ].join("");
     const districtId = districtMapId(race.state, districtNumber);
     const cycle = activeCongressCycle(race);
     return `
