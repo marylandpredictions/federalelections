@@ -1,8 +1,8 @@
 {
   "model": "2026 gubernatorial forecast",
-  "modelDate": "2026-06-04",
-  "generatedAt": "2026-06-04T19:13:33.326Z",
-  "runDate": "Jun 4, 2026",
+  "modelDate": "2026-06-05",
+  "generatedAt": "2026-06-05T12:41:44.117Z",
+  "runDate": "Jun 5, 2026",
   "settings": {
     "simulations": 100000,
     "electionDate": "2026-11-03",
@@ -20,11 +20,11 @@
     ]
   },
   "sourceSummary": {
-    "genericBallotMargin": 5.921331447591513,
-    "gubernatorialNationalShift": 1.07,
+    "genericBallotMargin": 5.900048808514448,
+    "gubernatorialNationalShift": 1.06,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-06-04T19:13:29.532Z",
+      "checkedAt": "2026-06-05T12:41:40.575Z",
       "governorFinance": {
         "ok": true,
         "states": 0,
@@ -38,116 +38,117 @@
       "pollfinityAverages": {
         "ok": true,
         "status": 200,
-        "ms": 195,
+        "ms": 59,
         "url": "https://pollfinity.com/averages.json"
       },
       "twoSeventyGovernorPollsAK": {
         "ok": true,
         "status": 200,
-        "ms": 254,
+        "ms": 123,
         "url": "https://www.270towin.com/2026-governor-polls/alaska"
       },
       "twoSeventyGovernorPollsAZ": {
         "ok": true,
         "status": 200,
-        "ms": 43,
+        "ms": 55,
         "url": "https://www.270towin.com/2026-governor-polls/arizona"
       },
       "twoSeventyGovernorPollsFL": {
         "ok": true,
         "status": 200,
-        "ms": 41,
+        "ms": 22,
         "url": "https://www.270towin.com/2026-governor-polls/florida"
       },
       "twoSeventyGovernorPollsGA": {
         "ok": true,
         "status": 200,
-        "ms": 59,
+        "ms": 24,
         "url": "https://www.270towin.com/2026-governor-polls/georgia"
       },
       "twoSeventyGovernorPollsIA": {
         "ok": true,
         "status": 200,
-        "ms": 36,
+        "ms": 22,
         "url": "https://www.270towin.com/2026-governor-polls/iowa"
       },
       "ddhqGenericBallot": {
         "ok": false,
         "status": 429,
-        "ms": 679,
+        "ms": 331,
         "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
         "error": "<!DOCTYPE html><html lang=\"en\" data-astro-cid-nbv56vs3> <head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" con"
       },
       "twoSeventyGovernorPollsKS": {
         "ok": true,
         "status": 200,
-        "ms": 285,
+        "ms": 159,
         "url": "https://www.270towin.com/2026-governor-polls/kansas"
       },
       "twoSeventyGovernorPollsME": {
         "ok": true,
         "status": 200,
-        "ms": 41,
+        "ms": 20,
         "url": "https://www.270towin.com/2026-governor-polls/maine"
       },
       "twoSeventyGovernorPollsMI": {
         "ok": true,
         "status": 200,
-        "ms": 244,
+        "ms": 21,
         "url": "https://www.270towin.com/2026-governor-polls/michigan"
       },
       "twoSeventyGovernorPollsMN": {
         "ok": true,
         "status": 200,
-        "ms": 61,
+        "ms": 50,
         "url": "https://www.270towin.com/2026-governor-polls/minnesota"
       },
       "twoSeventyGovernorPollsNV": {
         "ok": true,
         "status": 200,
-        "ms": 39,
+        "ms": 18,
         "url": "https://www.270towin.com/2026-governor-polls/nevada"
       },
       "twoSeventyGovernorPollsNH": {
         "ok": true,
         "status": 200,
-        "ms": 39,
+        "ms": 104,
         "url": "https://www.270towin.com/2026-governor-polls/new-hampshire"
       },
       "twoSeventyGovernorPollsNM": {
         "ok": true,
         "status": 200,
-        "ms": 36,
+        "ms": 54,
         "url": "https://www.270towin.com/2026-governor-polls/new-mexico"
       },
       "twoSeventyGovernorPollsOH": {
         "ok": true,
         "status": 200,
-        "ms": 38,
+        "ms": 19,
         "url": "https://www.270towin.com/2026-governor-polls/ohio"
       },
       "twoSeventyGovernorPollsOR": {
         "ok": true,
         "status": 200,
-        "ms": 35,
+        "ms": 18,
         "url": "https://www.270towin.com/2026-governor-polls/oregon"
       },
       "twoSeventyGovernorPollsSC": {
         "ok": true,
         "status": 200,
-        "ms": 40,
+        "ms": 50,
         "url": "https://www.270towin.com/2026-governor-polls/south-carolina"
       },
       "twoSeventyGovernorPollsWI": {
         "ok": true,
         "status": 200,
-        "ms": 50,
+        "ms": 19,
         "url": "https://www.270towin.com/2026-governor-polls/wisconsin"
       },
       "twoSeventyGovernorPolls": {
         "checked": 16,
         "parsed": 8,
-        "noPolls": 8,
+        "primarySignals": 3,
+        "noPolls": 5,
         "failed": 0,
         "states": {
           "AK": {
@@ -178,7 +179,11 @@
           },
           "IA": {
             "ok": true,
-            "parsed": false,
+            "parsed": true,
+            "primarySignal": true,
+            "polls": 1,
+            "margin": -0.3,
+            "matchup": "Republican Primary",
             "url": "https://www.270towin.com/2026-governor-polls/iowa"
           },
           "KS": {
@@ -222,7 +227,11 @@
           },
           "NM": {
             "ok": true,
-            "parsed": false,
+            "parsed": true,
+            "primarySignal": true,
+            "polls": 3,
+            "margin": 0.55,
+            "matchup": "Democratic Primary",
             "url": "https://www.270towin.com/2026-governor-polls/new-mexico"
           },
           "OH": {
@@ -243,7 +252,11 @@
           },
           "SC": {
             "ok": true,
-            "parsed": false,
+            "parsed": true,
+            "primarySignal": true,
+            "polls": 17,
+            "margin": 0.08,
+            "matchup": "Republican Primary",
             "url": "https://www.270towin.com/2026-governor-polls/south-carolina"
           },
           "WI": {
@@ -259,44 +272,44 @@
       "governorFinanceSourceAK": {
         "ok": true,
         "status": 200,
-        "ms": 1439,
+        "ms": 1316,
         "url": "https://aws.state.ak.us/ApocReports/"
       },
       "governorFinanceSourceAZ": {
         "ok": true,
         "status": 200,
-        "ms": 423,
+        "ms": 342,
         "url": "https://seethemoney.az.gov/"
       },
       "governorFinanceSourceGA": {
         "ok": true,
         "status": 200,
-        "ms": 247,
+        "ms": 160,
         "url": "https://media.ethics.ga.gov/search/campaign/Campaign_ByName.aspx"
       },
       "governorFinanceSourceIA": {
         "ok": true,
         "status": 200,
-        "ms": 291,
+        "ms": 375,
         "url": "https://webapp.iecdb.iowa.gov/PublicView/"
       },
       "governorFinanceSourceMI": {
         "ok": false,
         "status": "fetch-error",
-        "ms": 171,
+        "ms": 170,
         "url": "https://cfrsearch.nictusa.com/",
         "error": "fetch failed"
       },
       "governorFinanceSourceNV": {
         "ok": true,
         "status": 200,
-        "ms": 105,
+        "ms": 61,
         "url": "https://www.nvsos.gov/SOSCandidateServices/AnonymousAccess/CEFDSearchUU/Search.aspx"
       },
       "governorFinanceSourceWI": {
         "ok": true,
         "status": 200,
-        "ms": 419,
+        "ms": 280,
         "url": "https://cfis.wi.gov/"
       },
       "governorOnlineFinance": {
@@ -498,19 +511,20 @@
   "medianDemGovernors": 24,
   "medianRepGovernors": 26,
   "distribution": {
-    "18": 12,
-    "19": 155,
-    "20": 899,
-    "21": 3729,
-    "22": 10384,
-    "23": 19183,
-    "24": 24896,
-    "25": 21980,
-    "26": 12714,
-    "27": 4811,
-    "28": 1084,
-    "29": 147,
-    "30": 6
+    "16": 1,
+    "18": 17,
+    "19": 130,
+    "20": 902,
+    "21": 3640,
+    "22": 10229,
+    "23": 19484,
+    "24": 25095,
+    "25": 21779,
+    "26": 12778,
+    "27": 4733,
+    "28": 1073,
+    "29": 132,
+    "30": 7
   },
   "stateHistory": {
     "AL": [
@@ -531,6 +545,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.00206,
         "rep": 0.99794
       }
@@ -555,6 +574,11 @@
         "date": "2026-06-04",
         "dem": 0.38758,
         "rep": 0.61242
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.38749,
+        "rep": 0.61251
       }
     ],
     "AZ": [
@@ -577,6 +601,11 @@
         "date": "2026-06-04",
         "dem": 0.64651,
         "rep": 0.35349
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.6464,
+        "rep": 0.3536
       }
     ],
     "AR": [
@@ -597,6 +626,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.001,
         "rep": 0.999
       }
@@ -621,6 +655,11 @@
         "date": "2026-06-04",
         "dem": 0.99538,
         "rep": 0.00462
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.99538,
+        "rep": 0.00462
       }
     ],
     "CO": [
@@ -641,6 +680,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.98875,
         "rep": 0.01125
       }
@@ -665,6 +709,11 @@
         "date": "2026-06-04",
         "dem": 0.99559,
         "rep": 0.00441
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.99559,
+        "rep": 0.00441
       }
     ],
     "FL": [
@@ -685,6 +734,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.02375,
         "rep": 0.97625
       }
@@ -709,6 +763,11 @@
         "date": "2026-06-04",
         "dem": 0.62384,
         "rep": 0.37616
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.62373,
+        "rep": 0.37627
       }
     ],
     "HI": [
@@ -729,6 +788,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.999,
         "rep": 0.001
       }
@@ -753,6 +817,11 @@
         "date": "2026-06-04",
         "dem": 0.001,
         "rep": 0.999
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.001,
+        "rep": 0.999
       }
     ],
     "IL": [
@@ -773,6 +842,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.99379,
         "rep": 0.00621
       }
@@ -797,6 +871,11 @@
         "date": "2026-06-04",
         "dem": 0.4667,
         "rep": 0.5333
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.45745,
+        "rep": 0.54255
       }
     ],
     "KS": [
@@ -817,6 +896,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.04042,
         "rep": 0.95958
       }
@@ -841,6 +925,11 @@
         "date": "2026-06-04",
         "dem": 0.96912,
         "rep": 0.03088
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.96912,
+        "rep": 0.03088
       }
     ],
     "MD": [
@@ -861,6 +950,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.999,
         "rep": 0.001
       }
@@ -885,6 +979,11 @@
         "date": "2026-06-04",
         "dem": 0.999,
         "rep": 0.001
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.999,
+        "rep": 0.001
       }
     ],
     "MI": [
@@ -907,6 +1006,11 @@
         "date": "2026-06-04",
         "dem": 0.7875,
         "rep": 0.2125
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.78741,
+        "rep": 0.21259
       }
     ],
     "MN": [
@@ -929,6 +1033,11 @@
         "date": "2026-06-04",
         "dem": 0.84891,
         "rep": 0.15109
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.84885,
+        "rep": 0.15115
       }
     ],
     "NE": [
@@ -949,6 +1058,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.00192,
         "rep": 0.99808
       }
@@ -973,6 +1087,11 @@
         "date": "2026-06-04",
         "dem": 0.40857,
         "rep": 0.59143
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.40845,
+        "rep": 0.59155
       }
     ],
     "NH": [
@@ -995,6 +1114,11 @@
         "date": "2026-06-04",
         "dem": 0.0914,
         "rep": 0.9086
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.09133,
+        "rep": 0.90867
       }
     ],
     "NM": [
@@ -1017,6 +1141,11 @@
         "date": "2026-06-04",
         "dem": 0.8188,
         "rep": 0.1812
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.83295,
+        "rep": 0.16705
       }
     ],
     "NY": [
@@ -1037,6 +1166,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.99459,
         "rep": 0.00541
       }
@@ -1061,6 +1195,11 @@
         "date": "2026-06-04",
         "dem": 0.44912,
         "rep": 0.55088
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.44904,
+        "rep": 0.55096
       }
     ],
     "OK": [
@@ -1081,6 +1220,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.00389,
         "rep": 0.99611
       }
@@ -1105,6 +1249,11 @@
         "date": "2026-06-04",
         "dem": 0.91096,
         "rep": 0.08904
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.9109,
+        "rep": 0.0891
       }
     ],
     "PA": [
@@ -1127,6 +1276,11 @@
         "date": "2026-06-04",
         "dem": 0.98991,
         "rep": 0.01009
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.9899,
+        "rep": 0.0101
       }
     ],
     "RI": [
@@ -1147,6 +1301,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.99664,
         "rep": 0.00336
       }
@@ -1171,6 +1330,11 @@
         "date": "2026-06-04",
         "dem": 0.01728,
         "rep": 0.98272
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.01728,
+        "rep": 0.98272
       }
     ],
     "SD": [
@@ -1191,6 +1355,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.001,
         "rep": 0.999
       }
@@ -1215,6 +1384,11 @@
         "date": "2026-06-04",
         "dem": 0.00206,
         "rep": 0.99794
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.00206,
+        "rep": 0.99794
       }
     ],
     "TX": [
@@ -1237,6 +1411,11 @@
         "date": "2026-06-04",
         "dem": 0.02445,
         "rep": 0.97555
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.02443,
+        "rep": 0.97557
       }
     ],
     "VT": [
@@ -1257,6 +1436,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.00544,
+        "rep": 0.99456
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.00544,
         "rep": 0.99456
       }
@@ -1281,6 +1465,11 @@
         "date": "2026-06-04",
         "dem": 0.61666,
         "rep": 0.38334
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.61655,
+        "rep": 0.38345
       }
     ],
     "WY": [
@@ -1301,6 +1490,11 @@
       },
       {
         "date": "2026-06-04",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-05",
         "dem": 0.00206,
         "rep": 0.99794
       }
@@ -1417,7 +1611,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.00206,
@@ -1425,7 +1624,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00215,
+      "tippingPower": 0.00205,
       "movementDrivers": [],
       "history": [
         {
@@ -1447,12 +1646,17 @@
           "date": "2026-06-04",
           "dem": 0.00206,
           "rep": 0.99794
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.00206,
+          "rep": 0.99794
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -1477,7 +1681,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Alaska Governor",
-      "margin": -2.58,
+      "margin": -2.59,
       "fundamentalsMargin": -2.27,
       "ratingMargin": -5,
       "candidateAndLocal": 0.4,
@@ -1556,15 +1760,20 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Tilt R",
-      "demProbability": 0.38758,
-      "repProbability": 0.61242,
+      "demProbability": 0.38749,
+      "repProbability": 0.61251,
       "winnerParty": "R",
-      "winnerProbability": 0.61242,
+      "winnerProbability": 0.61251,
       "competitive": true,
-      "tippingPower": 0.09001,
+      "tippingPower": 0.09146,
       "movementDrivers": [],
       "history": [
         {
@@ -1586,12 +1795,17 @@
           "date": "2026-06-04",
           "dem": 0.38758,
           "rep": 0.61242
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.38749,
+          "rep": 0.61251
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -1712,15 +1926,20 @@
         ],
         "pollMatchups": [
           "Hobbs vs. Schweikert"
-        ]
+        ],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Tilt D",
-      "demProbability": 0.64651,
-      "repProbability": 0.35349,
+      "demProbability": 0.6464,
+      "repProbability": 0.3536,
       "winnerParty": "D",
-      "winnerProbability": 0.64651,
+      "winnerProbability": 0.6464,
       "competitive": true,
-      "tippingPower": 0.081,
+      "tippingPower": 0.08071,
       "movementDrivers": [],
       "history": [
         {
@@ -1742,12 +1961,17 @@
           "date": "2026-06-04",
           "dem": 0.64651,
           "rep": 0.35349
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.6464,
+          "rep": 0.3536
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -1861,7 +2085,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.001,
@@ -1869,7 +2098,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00102,
+      "tippingPower": 0.00119,
       "movementDrivers": [],
       "history": [
         {
@@ -1891,12 +2120,17 @@
           "date": "2026-06-04",
           "dem": 0.001,
           "rep": 0.999
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.001,
+          "rep": 0.999
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -2019,7 +2253,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.99538,
@@ -2027,7 +2266,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99538,
       "competitive": false,
-      "tippingPower": 0.0041,
+      "tippingPower": 0.00405,
       "movementDrivers": [],
       "history": [
         {
@@ -2049,12 +2288,17 @@
           "date": "2026-06-04",
           "dem": 0.99538,
           "rep": 0.00462
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.99538,
+          "rep": 0.00462
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -2162,7 +2406,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.98875,
@@ -2170,7 +2419,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.98875,
       "competitive": false,
-      "tippingPower": 0.00869,
+      "tippingPower": 0.00804,
       "movementDrivers": [],
       "history": [
         {
@@ -2192,12 +2441,17 @@
           "date": "2026-06-04",
           "dem": 0.98875,
           "rep": 0.01125
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.98875,
+          "rep": 0.01125
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -2301,7 +2555,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.99559,
@@ -2309,7 +2568,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99559,
       "competitive": false,
-      "tippingPower": 0.00469,
+      "tippingPower": 0.00451,
       "movementDrivers": [],
       "history": [
         {
@@ -2331,12 +2590,17 @@
           "date": "2026-06-04",
           "dem": 0.99559,
           "rep": 0.00441
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.99559,
+          "rep": 0.00441
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -2450,7 +2714,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.02375,
@@ -2458,7 +2727,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.97625,
       "competitive": false,
-      "tippingPower": 0.0151,
+      "tippingPower": 0.01429,
       "movementDrivers": [],
       "history": [
         {
@@ -2480,12 +2749,17 @@
           "date": "2026-06-04",
           "dem": 0.02375,
           "rep": 0.97625
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.02375,
+          "rep": 0.97625
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -2610,15 +2884,20 @@
         ],
         "pollMatchups": [
           "Bottoms vs. Jones"
-        ]
+        ],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Tilt D",
-      "demProbability": 0.62384,
-      "repProbability": 0.37616,
+      "demProbability": 0.62373,
+      "repProbability": 0.37627,
       "winnerParty": "D",
-      "winnerProbability": 0.62384,
+      "winnerProbability": 0.62373,
       "competitive": true,
-      "tippingPower": 0.07572,
+      "tippingPower": 0.07481,
       "movementDrivers": [],
       "history": [
         {
@@ -2640,12 +2919,17 @@
           "date": "2026-06-04",
           "dem": 0.62384,
           "rep": 0.37616
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.62373,
+          "rep": 0.37627
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -2749,7 +3033,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.999,
@@ -2757,7 +3046,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00105,
+      "tippingPower": 0.00088,
       "movementDrivers": [],
       "history": [
         {
@@ -2779,12 +3068,17 @@
           "date": "2026-06-04",
           "dem": 0.999,
           "rep": 0.001
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.999,
+          "rep": 0.001
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -2893,7 +3187,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.001,
@@ -2901,7 +3200,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.0012,
+      "tippingPower": 0.00127,
       "movementDrivers": [],
       "history": [
         {
@@ -2923,12 +3222,17 @@
           "date": "2026-06-04",
           "dem": 0.001,
           "rep": 0.999
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.001,
+          "rep": 0.999
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -3042,7 +3346,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.99379,
@@ -3050,7 +3359,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99379,
       "competitive": false,
-      "tippingPower": 0.00576,
+      "tippingPower": 0.00609,
       "movementDrivers": [],
       "history": [
         {
@@ -3072,12 +3381,17 @@
           "date": "2026-06-04",
           "dem": 0.99379,
           "rep": 0.00621
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.99379,
+          "rep": 0.00621
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -3102,7 +3416,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Iowa Governor",
-      "margin": -0.89,
+      "margin": -1.14,
       "fundamentalsMargin": -7.79,
       "ratingMargin": 0,
       "candidateAndLocal": 2.1,
@@ -3187,16 +3501,33 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": -0.3,
+        "primaryPollCount": 1,
+        "primaryPollSources": [
+          "270toWin primary polling signal"
+        ],
+        "primaryPollSourceUrls": [
+          "https://www.270towin.com/2026-governor-polls/iowa"
+        ],
+        "primaryPollMatchups": [
+          "Republican Primary"
+        ]
       },
       "modelRating": "Toss-up",
-      "demProbability": 0.4667,
-      "repProbability": 0.5333,
+      "demProbability": 0.45745,
+      "repProbability": 0.54255,
       "winnerParty": "R",
-      "winnerProbability": 0.5333,
+      "winnerProbability": 0.54255,
       "competitive": true,
-      "tippingPower": 0.07861,
-      "movementDrivers": [],
+      "tippingPower": 0.08057,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": -0.25,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -3217,12 +3548,17 @@
           "date": "2026-06-04",
           "dem": 0.4667,
           "rep": 0.5333
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.45745,
+          "rep": 0.54255
         }
       ],
       "movement": {
-        "sinceLastRun": -0.1,
-        "sinceWeek": -13.2,
-        "previousDate": "2026-06-03",
+        "sinceLastRun": -0.9,
+        "sinceWeek": -14.1,
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -3331,7 +3667,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.04042,
@@ -3339,7 +3680,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.95958,
       "competitive": false,
-      "tippingPower": 0.01953,
+      "tippingPower": 0.01944,
       "movementDrivers": [],
       "history": [
         {
@@ -3361,12 +3702,17 @@
           "date": "2026-06-04",
           "dem": 0.04042,
           "rep": 0.95958
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.04042,
+          "rep": 0.95958
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -3475,7 +3821,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.96912,
@@ -3483,7 +3834,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.96912,
       "competitive": false,
-      "tippingPower": 0.01842,
+      "tippingPower": 0.01781,
       "movementDrivers": [],
       "history": [
         {
@@ -3505,12 +3856,17 @@
           "date": "2026-06-04",
           "dem": 0.96912,
           "rep": 0.03088
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.96912,
+          "rep": 0.03088
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -3619,7 +3975,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.999,
@@ -3627,7 +3988,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00075,
+      "tippingPower": 0.00082,
       "movementDrivers": [],
       "history": [
         {
@@ -3649,12 +4010,17 @@
           "date": "2026-06-04",
           "dem": 0.999,
           "rep": 0.001
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.999,
+          "rep": 0.001
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -3758,7 +4124,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.999,
@@ -3766,7 +4137,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00097,
+      "tippingPower": 0.00093,
       "movementDrivers": [],
       "history": [
         {
@@ -3788,12 +4159,17 @@
           "date": "2026-06-04",
           "dem": 0.999,
           "rep": 0.001
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.999,
+          "rep": 0.001
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -3912,15 +4288,20 @@
         ],
         "pollMatchups": [
           "Benson vs. Duggan vs. Cox"
-        ]
+        ],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Lean D",
-      "demProbability": 0.7875,
-      "repProbability": 0.2125,
+      "demProbability": 0.78741,
+      "repProbability": 0.21259,
       "winnerParty": "D",
-      "winnerProbability": 0.7875,
+      "winnerProbability": 0.78741,
       "competitive": false,
-      "tippingPower": 0.06566,
+      "tippingPower": 0.06702,
       "movementDrivers": [],
       "history": [
         {
@@ -3942,12 +4323,17 @@
           "date": "2026-06-04",
           "dem": 0.7875,
           "rep": 0.2125
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.78741,
+          "rep": 0.21259
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -4056,15 +4442,20 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Likely D",
-      "demProbability": 0.84891,
-      "repProbability": 0.15109,
+      "demProbability": 0.84885,
+      "repProbability": 0.15115,
       "winnerParty": "D",
-      "winnerProbability": 0.84891,
+      "winnerProbability": 0.84885,
       "competitive": false,
-      "tippingPower": 0.05926,
+      "tippingPower": 0.06081,
       "movementDrivers": [],
       "history": [
         {
@@ -4086,12 +4477,17 @@
           "date": "2026-06-04",
           "dem": 0.84891,
           "rep": 0.15109
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.84885,
+          "rep": 0.15115
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -4205,7 +4601,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.00192,
@@ -4213,7 +4614,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99808,
       "competitive": false,
-      "tippingPower": 0.00219,
+      "tippingPower": 0.0021,
       "movementDrivers": [],
       "history": [
         {
@@ -4235,12 +4636,17 @@
           "date": "2026-06-04",
           "dem": 0.00192,
           "rep": 0.99808
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.00192,
+          "rep": 0.99808
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -4362,15 +4768,20 @@
         ],
         "pollMatchups": [
           "Ford vs. Lombardo"
-        ]
+        ],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Tilt R",
-      "demProbability": 0.40857,
-      "repProbability": 0.59143,
+      "demProbability": 0.40845,
+      "repProbability": 0.59155,
       "winnerParty": "R",
-      "winnerProbability": 0.59143,
+      "winnerProbability": 0.59155,
       "competitive": true,
-      "tippingPower": 0.0843,
+      "tippingPower": 0.08496,
       "movementDrivers": [],
       "history": [
         {
@@ -4392,12 +4803,17 @@
           "date": "2026-06-04",
           "dem": 0.40857,
           "rep": 0.59143
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.40845,
+          "rep": 0.59155
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -4422,7 +4838,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "New Hampshire Governor",
-      "margin": -9.72,
+      "margin": -9.73,
       "fundamentalsMargin": -3.38,
       "ratingMargin": -10.5,
       "candidateAndLocal": -1.6,
@@ -4518,15 +4934,20 @@
         ],
         "pollMatchups": [
           "Warmington vs. Ayotte"
-        ]
+        ],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Likely R",
-      "demProbability": 0.0914,
-      "repProbability": 0.9086,
+      "demProbability": 0.09133,
+      "repProbability": 0.90867,
       "winnerParty": "R",
-      "winnerProbability": 0.9086,
+      "winnerProbability": 0.90867,
       "competitive": false,
-      "tippingPower": 0.04922,
+      "tippingPower": 0.04739,
       "movementDrivers": [],
       "history": [
         {
@@ -4548,12 +4969,17 @@
           "date": "2026-06-04",
           "dem": 0.0914,
           "rep": 0.9086
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.09133,
+          "rep": 0.90867
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -4578,7 +5004,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "New Mexico Governor",
-      "margin": 7.42,
+      "margin": 7.87,
       "fundamentalsMargin": 1.71,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.6,
@@ -4667,16 +5093,33 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0.55,
+        "primaryPollCount": 3,
+        "primaryPollSources": [
+          "270toWin primary polling signal"
+        ],
+        "primaryPollSourceUrls": [
+          "https://www.270towin.com/2026-governor-polls/new-mexico"
+        ],
+        "primaryPollMatchups": [
+          "Democratic Primary"
+        ]
       },
       "modelRating": "Lean D",
-      "demProbability": 0.8188,
-      "repProbability": 0.1812,
+      "demProbability": 0.83295,
+      "repProbability": 0.16705,
       "winnerParty": "D",
-      "winnerProbability": 0.8188,
+      "winnerProbability": 0.83295,
       "competitive": false,
-      "tippingPower": 0.0679,
-      "movementDrivers": [],
+      "tippingPower": 0.06414,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.45,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -4697,12 +5140,17 @@
           "date": "2026-06-04",
           "dem": 0.8188,
           "rep": 0.1812
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.83295,
+          "rep": 0.16705
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "sinceLastRun": 1.4,
+        "sinceWeek": 1.4,
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -4811,7 +5259,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.99459,
@@ -4819,7 +5272,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99459,
       "competitive": false,
-      "tippingPower": 0.00498,
+      "tippingPower": 0.00541,
       "movementDrivers": [],
       "history": [
         {
@@ -4841,12 +5294,17 @@
           "date": "2026-06-04",
           "dem": 0.99459,
           "rep": 0.00541
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.99459,
+          "rep": 0.00541
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -4975,15 +5433,20 @@
         ],
         "pollMatchups": [
           "Acton vs. Ramaswamy"
-        ]
+        ],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Toss-up",
-      "demProbability": 0.44912,
-      "repProbability": 0.55088,
+      "demProbability": 0.44904,
+      "repProbability": 0.55096,
       "winnerParty": "R",
-      "winnerProbability": 0.55088,
+      "winnerProbability": 0.55096,
       "competitive": true,
-      "tippingPower": 0.07919,
+      "tippingPower": 0.07904,
       "movementDrivers": [],
       "history": [
         {
@@ -5005,12 +5468,17 @@
           "date": "2026-06-04",
           "dem": 0.44912,
           "rep": 0.55088
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.44904,
+          "rep": 0.55096
         }
       ],
       "movement": {
-        "sinceLastRun": 1.4,
+        "sinceLastRun": 0,
         "sinceWeek": 1.4,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -5119,7 +5587,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.00389,
@@ -5127,7 +5600,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99611,
       "competitive": false,
-      "tippingPower": 0.00349,
+      "tippingPower": 0.00322,
       "movementDrivers": [],
       "history": [
         {
@@ -5149,12 +5622,17 @@
           "date": "2026-06-04",
           "dem": 0.00389,
           "rep": 0.99611
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.00389,
+          "rep": 0.99611
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -5277,15 +5755,20 @@
         ],
         "pollMatchups": [
           "Kotek vs. Drazan"
-        ]
+        ],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Likely D",
-      "demProbability": 0.91096,
-      "repProbability": 0.08904,
+      "demProbability": 0.9109,
+      "repProbability": 0.0891,
       "winnerParty": "D",
-      "winnerProbability": 0.91096,
+      "winnerProbability": 0.9109,
       "competitive": false,
-      "tippingPower": 0.04604,
+      "tippingPower": 0.0465,
       "movementDrivers": [],
       "history": [
         {
@@ -5307,12 +5790,17 @@
           "date": "2026-06-04",
           "dem": 0.91096,
           "rep": 0.08904
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.9109,
+          "rep": 0.0891
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -5437,15 +5925,20 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe D",
-      "demProbability": 0.98991,
-      "repProbability": 0.01009,
+      "demProbability": 0.9899,
+      "repProbability": 0.0101,
       "winnerParty": "D",
-      "winnerProbability": 0.98991,
+      "winnerProbability": 0.9899,
       "competitive": false,
-      "tippingPower": 0.00875,
+      "tippingPower": 0.00894,
       "movementDrivers": [],
       "history": [
         {
@@ -5467,12 +5960,17 @@
           "date": "2026-06-04",
           "dem": 0.98991,
           "rep": 0.01009
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.9899,
+          "rep": 0.0101
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -5576,7 +6074,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe D",
       "demProbability": 0.99664,
@@ -5584,7 +6087,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99664,
       "competitive": false,
-      "tippingPower": 0.00363,
+      "tippingPower": 0.00353,
       "movementDrivers": [],
       "history": [
         {
@@ -5606,12 +6109,17 @@
           "date": "2026-06-04",
           "dem": 0.99664,
           "rep": 0.00336
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.99664,
+          "rep": 0.00336
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -5731,7 +6239,18 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0.08,
+        "primaryPollCount": 17,
+        "primaryPollSources": [
+          "270toWin primary polling signal"
+        ],
+        "primaryPollSourceUrls": [
+          "https://www.270towin.com/2026-governor-polls/south-carolina"
+        ],
+        "primaryPollMatchups": [
+          "Republican Primary"
+        ]
       },
       "modelRating": "Safe R",
       "demProbability": 0.01728,
@@ -5739,7 +6258,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.98272,
       "competitive": false,
-      "tippingPower": 0.01135,
+      "tippingPower": 0.01173,
       "movementDrivers": [],
       "history": [
         {
@@ -5761,12 +6280,17 @@
           "date": "2026-06-04",
           "dem": 0.01728,
           "rep": 0.98272
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.01728,
+          "rep": 0.98272
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -5880,7 +6404,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.001,
@@ -5888,7 +6417,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00088,
+      "tippingPower": 0.00118,
       "movementDrivers": [],
       "history": [
         {
@@ -5910,12 +6439,17 @@
           "date": "2026-06-04",
           "dem": 0.001,
           "rep": 0.999
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.001,
+          "rep": 0.999
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -6035,7 +6569,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.00206,
@@ -6043,7 +6582,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00202,
+      "tippingPower": 0.0019,
       "movementDrivers": [],
       "history": [
         {
@@ -6065,12 +6604,17 @@
           "date": "2026-06-04",
           "dem": 0.00206,
           "rep": 0.99794
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.00206,
+          "rep": 0.99794
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -6197,15 +6741,20 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe R",
-      "demProbability": 0.02445,
-      "repProbability": 0.97555,
+      "demProbability": 0.02443,
+      "repProbability": 0.97557,
       "winnerParty": "R",
-      "winnerProbability": 0.97555,
+      "winnerProbability": 0.97557,
       "competitive": false,
-      "tippingPower": 0.01924,
+      "tippingPower": 0.01935,
       "movementDrivers": [],
       "history": [
         {
@@ -6227,12 +6776,17 @@
           "date": "2026-06-04",
           "dem": 0.02445,
           "rep": 0.97555
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.02443,
+          "rep": 0.97557
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -6346,7 +6900,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.00544,
@@ -6354,7 +6913,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99456,
       "competitive": false,
-      "tippingPower": 0.00517,
+      "tippingPower": 0.00552,
       "movementDrivers": [],
       "history": [
         {
@@ -6376,12 +6935,17 @@
           "date": "2026-06-04",
           "dem": 0.00544,
           "rep": 0.99456
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.00544,
+          "rep": 0.99456
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -6501,15 +7065,20 @@
         ],
         "pollMatchups": [
           "Rodriguez vs. Tiffany"
-        ]
+        ],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Tilt D",
-      "demProbability": 0.61666,
-      "repProbability": 0.38334,
+      "demProbability": 0.61655,
+      "repProbability": 0.38345,
       "winnerParty": "D",
-      "winnerProbability": 0.61666,
+      "winnerProbability": 0.61655,
       "competitive": true,
-      "tippingPower": 0.07626,
+      "tippingPower": 0.07645,
       "movementDrivers": [],
       "history": [
         {
@@ -6531,12 +7100,17 @@
           "date": "2026-06-04",
           "dem": 0.61666,
           "rep": 0.38334
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.61655,
+          "rep": 0.38345
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     },
@@ -6645,7 +7219,12 @@
         "pollCount": 0,
         "pollSources": [],
         "pollSourceUrls": [],
-        "pollMatchups": []
+        "pollMatchups": [],
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.00206,
@@ -6653,7 +7232,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.0017,
+      "tippingPower": 0.00189,
       "movementDrivers": [],
       "history": [
         {
@@ -6675,12 +7254,17 @@
           "date": "2026-06-04",
           "dem": 0.00206,
           "rep": 0.99794
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.00206,
+          "rep": 0.99794
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": "2026-06-03",
+        "previousDate": "2026-06-04",
         "weekDate": "2026-06-01"
       }
     }
@@ -6723,6 +7307,11 @@
     },
     {
       "date": "2026-06-04",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-05",
       "demGovernors": 24,
       "repGovernors": 26
     }
