@@ -9,6 +9,7 @@ let resultMapViewState = {
   panX: 0,
   panY: 0
 };
+let resultPartyViewEnabled = false;
 const PROFILE_BG_COLOR_CACHE_VERSION = "ring-v2";
 const PROFILE_BG_COLOR_CACHE = new Map();
 const PROFILE_BG_COLOR_PROMISES = new Map();
@@ -1590,6 +1591,7 @@ async function analysisNoteMarkup(notes) {
 }
 
 function voteHistoryChart(race) {
+  race = voteHistoryRaceForDisplay(race);
   const points = Array.isArray(race.voteHistory) ? race.voteHistory : [];
   if (!points.length || !points.some((point) => (point.candidates || []).some((candidate) => Number(candidate.votes || 0) > 0))) {
     return `
@@ -1610,16 +1612,16 @@ function voteHistoryChart(race) {
   };
   const orderedPoints = [...points].sort((a, b) => new Date(a.at || a.updatedAt || 0) - new Date(b.at || b.updatedAt || 0));
   const latestPoint = orderedPoints.at(-1) || {};
-  const latestTopTenSlugs = new Set([...(latestPoint.candidates || [])]
+  const latestTopSlugs = new Set([...(latestPoint.candidates || [])]
     .sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))
-    .slice(0, 10)
+    .slice(0, 5)
     .map((candidate) => slugifyName(candidate.name)));
   const candidates = sortedCandidates(race)
-    .filter((candidate) => latestTopTenSlugs.has(slugifyName(candidate.name)))
-    .slice(0, 10);
+    .filter((candidate) => latestTopSlugs.has(slugifyName(candidate.name)))
+    .slice(0, 5);
   const visibleCandidateSlugsByPoint = orderedPoints.map((point) => new Set([...(point.candidates || [])]
     .sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))
-    .slice(0, 10)
+    .slice(0, 5)
     .map((candidate) => slugifyName(candidate.name))));
   const width = 760;
   const height = 250;
@@ -1659,24 +1661,28 @@ function voteHistoryChart(race) {
     const xNext = index === orderedPoints.length - 1 ? width - pad.right : xFor(index + 1);
     const hitX = index === 0 ? pad.left : (xPrev + x) / 2;
     const hitWidth = index === orderedPoints.length - 1 ? (width - pad.right) - hitX : (xNext + x) / 2 - hitX;
-    const label = [
-      preciseTimeLabel(point.at || point.updatedAt || point.timestamp || point.time || race.lastUpdated),
-      ...candidates.map((candidate) => {
+    const label = `
+      <strong>${escapeHtml(preciseTimeLabel(point.at || point.updatedAt || point.timestamp || point.time || race.lastUpdated))}</strong>
+      <div class="vote-history-tooltip-rows">
+        ${candidates.map((candidate) => {
         const item = historyCandidateFor(point, candidate);
         const candidateParty = item?.partyCode || item?.party || candidate.partyCode || candidate.party || "";
-        return `${candidate.name} (${partyCode(candidateParty) || candidateParty}): ${percentLabel(item?.percent || 0)} (${numberLabel(item?.votes || 0)} votes)`;
-      })
-    ].join("\n");
+        const code = partyCode(candidateParty) || candidateParty || "O";
+        const color = item?.color || candidateFill(race, candidate);
+        return `
+          <span class="vote-history-tooltip-row" style="--candidate-color:${escapeHtml(color)}">
+            <i></i>
+            <b>${escapeHtml(code)}</b>
+            <em>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)}</em>
+            <strong>${percentLabel(item?.percent || 0)}</strong>
+            <small>${compactVoteLabel(item?.votes || 0)}</small>
+          </span>
+        `;
+      }).join("")}
+      </div>
+    `;
     return `<rect class="vote-history-hit" x="${hitX.toFixed(1)}" y="${pad.top}" width="${Math.max(6, hitWidth).toFixed(1)}" height="${height - pad.top - pad.bottom}" data-history-x="${x.toFixed(1)}" data-history-tooltip="${escapeHtml(label)}"></rect>`;
   }).join("");
-  const legend = candidates.map((candidate) => `
-    <span class="vote-history-legend-item" style="--candidate-color:${escapeHtml(candidateFill(race, candidate))}">
-      <i></i>
-      <b>${escapeHtml(partyCode(candidate.partyCode || candidate.party) || "O")}</b>
-      <em>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)}</em>
-      <small>${percentLabel(historyCandidateFor(latestPoint, candidate)?.percent || 0)} (${compactVoteLabel(historyCandidateFor(latestPoint, candidate)?.votes || 0)})</small>
-    </span>
-  `).join("");
   const ticks = [0, maxPercent / 2, maxPercent];
   return `
     <section class="result-vote-history-panel">
@@ -1700,7 +1706,6 @@ function voteHistoryChart(race) {
         ${hits}
       </svg>
       <div class="vote-history-tooltip" aria-hidden="true"></div>
-      <div class="vote-history-legend">${legend}</div>
     </section>
   `;
 }
@@ -1715,7 +1720,7 @@ function bindVoteHistoryHover() {
       line.setAttribute("x1", hit.dataset.historyX || "0");
       line.setAttribute("x2", hit.dataset.historyX || "0");
       line.classList.add("visible");
-      tooltip.innerHTML = escapeHtml(hit.dataset.historyTooltip || "").replace(/\n/g, "<br>");
+      tooltip.innerHTML = hit.dataset.historyTooltip || "";
       tooltip.classList.add("visible");
       const rect = panel.getBoundingClientRect();
       tooltip.style.left = `${Math.min(rect.width - tooltip.offsetWidth - 8, Math.max(8, event.clientX - rect.left + 12))}px`;
@@ -1863,7 +1868,8 @@ async function patchRaceDetail(race) {
   if (countyPanelReporting) countyPanelReporting.textContent = `${estimatedInLabel(race.estimatedVoteReporting)} estimated in.`;
 
   const candidatesNode = page.querySelector(".result-full-candidates");
-  if (candidatesNode) candidatesNode.innerHTML = candidateRows(race);
+  const displayRace = resultPartyViewEnabled && isOpenPrimary(race) ? { ...race, candidates: combineCandidatesByParty(race) } : race;
+  if (candidatesNode) candidatesNode.innerHTML = candidateRows(displayRace);
 
   const callSlot = page.querySelector("[data-result-call-slot]");
   if (callSlot) callSlot.innerHTML = raceCallBanner(race);
@@ -1874,7 +1880,10 @@ async function patchRaceDetail(race) {
   const mapFrame = page.querySelector(".result-map-frame");
   if (mapFrame) {
     const marginMode = mapFrame.dataset.marginMode || "percent";
-    mapFrame.innerHTML = await countyShapeMap(race);
+    const mapRace = resultPartyViewEnabled && isOpenPrimary(race)
+      ? { ...race, candidates: combineCandidatesByParty(race), counties: combineCountiesByParty(race) }
+      : race;
+    mapFrame.innerHTML = await countyShapeMap(mapRace);
     mapFrame.dataset.marginMode = marginMode;
     applyMapViewportState();
     applyMapMarginColors();
@@ -1883,7 +1892,8 @@ async function patchRaceDetail(race) {
 
   const countyPanel = page.querySelector(".result-county-panel");
   const countyContent = countyPanel?.querySelector(".county-results-table, .meta");
-  if (countyContent) countyContent.outerHTML = countyRows(race).trim();
+  const countyRace = resultPartyViewEnabled && isOpenPrimary(race) ? { ...race, counties: combineCountiesByParty(race) } : race;
+  if (countyContent) countyContent.outerHTML = countyRows(countyRace).trim();
 
   const historyPanel = page.querySelector(".result-vote-history-panel, .result-vote-history-empty");
   if (historyPanel) {
@@ -2005,6 +2015,62 @@ function combineCandidatesByParty(race) {
   return combined.sort((a, b) => b.votes - a.votes);
 }
 
+function combineVoteHistoryPointByParty(point) {
+  const candidates = point?.candidates || [];
+  const partyGroups = {};
+  candidates.forEach((candidate) => {
+    const code = candidate.partyCode || partyCode(candidate.party) || "Other";
+    if (!partyGroups[code]) {
+      partyGroups[code] = {
+        partyCode: code,
+        party: candidate.party || code,
+        votes: 0
+      };
+    }
+    partyGroups[code].votes += Number(candidate.votes || 0);
+  });
+  const totalVotes = Object.values(partyGroups).reduce((sum, group) => sum + group.votes, 0);
+  const partyColors = {
+    D: "#1030b2",
+    R: "#e03a3e",
+    I: "#9b59b6",
+    L: "#f1c40f",
+    G: "#2a9d8f",
+    P: "#e74c3c",
+    Other: "#95a5a6"
+  };
+  const candidatesByParty = Object.values(partyGroups).map((group) => {
+    const name = group.partyCode === "D"
+      ? "Democrats"
+      : group.partyCode === "R"
+        ? "Republicans"
+        : group.partyCode === "I"
+          ? "Independents"
+          : group.party || group.partyCode;
+    return {
+      name,
+      party: group.party,
+      partyCode: group.partyCode,
+      votes: group.votes,
+      percent: totalVotes > 0 ? (group.votes / totalVotes) * 100 : 0,
+      color: partyColors[group.partyCode] || partyColors.Other
+    };
+  }).sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0));
+  return {
+    ...point,
+    candidates: candidatesByParty
+  };
+}
+
+function voteHistoryRaceForDisplay(race) {
+  if (!resultPartyViewEnabled || !isOpenPrimary(race)) return race;
+  return {
+    ...race,
+    candidates: combineCandidatesByParty(race),
+    voteHistory: (race.voteHistory || []).map(combineVoteHistoryPointByParty)
+  };
+}
+
 function combineCountiesByParty(race) {
   const counties = race.counties || [];
   
@@ -2070,38 +2136,52 @@ function combineCountiesByParty(race) {
 function bindPartyCombineToggle(race) {
   const toggle = page.querySelector("[data-party-combine-toggle]");
   if (!toggle) return;
-  
-  let showCombined = false;
-  let originalRace = { ...race };
-  let originalMapMarkup = page.querySelector(".result-map-frame")?.innerHTML;
+
+  const syncToggle = () => {
+    toggle.textContent = resultPartyViewEnabled ? "Candidate View" : "Party View";
+    toggle.style.background = resultPartyViewEnabled ? "rgba(16, 48, 178, 0.3)" : "";
+    toggle.style.color = resultPartyViewEnabled ? "#ffffff" : "";
+  };
+  syncToggle();
   
   toggle.addEventListener("click", async () => {
-    showCombined = !showCombined;
-    toggle.textContent = showCombined ? "Candidate View" : "Party View";
-    toggle.style.background = showCombined ? "rgba(16, 48, 178, 0.3)" : "";
-    toggle.style.color = showCombined ? "#ffffff" : "";
+    resultPartyViewEnabled = !resultPartyViewEnabled;
+    syncToggle();
     
     const candidatesNode = page.querySelector(".result-full-candidates");
     const mapFrame = page.querySelector(".result-map-frame");
+    const countyPanel = page.querySelector(".result-county-panel");
+    const countyContent = countyPanel?.querySelector(".county-results-table, .meta");
+    const historyPanel = page.querySelector(".result-vote-history-panel, .result-vote-history-empty");
+    const displayRace = resultPartyViewEnabled ? { ...race, candidates: combineCandidatesByParty(race) } : race;
+    const mapRace = resultPartyViewEnabled
+      ? { ...race, candidates: combineCandidatesByParty(race), counties: combineCountiesByParty(race) }
+      : race;
     
     if (candidatesNode) {
-      const displayRace = showCombined ? { ...race, candidates: combineCandidatesByParty(race) } : originalRace;
       candidatesNode.innerHTML = candidateRows(displayRace);
     }
     
     if (mapFrame) {
-      if (showCombined) {
-        const partyRace = { 
-          ...race, 
-          candidates: combineCandidatesByParty(race),
-          counties: combineCountiesByParty(race)
-        };
-        const newMapMarkup = await countyShapeMap(partyRace);
-        mapFrame.innerHTML = newMapMarkup;
-        bindCountyHover();
-      } else {
-        mapFrame.innerHTML = originalMapMarkup;
-        bindCountyHover();
+      const marginMode = mapFrame.dataset.marginMode || "percent";
+      mapFrame.innerHTML = await countyShapeMap(mapRace);
+      mapFrame.dataset.marginMode = marginMode;
+      applyMapViewportState();
+      applyMapMarginColors();
+      bindCountyHover();
+    }
+
+    if (countyContent) {
+      countyContent.outerHTML = countyRows(mapRace).trim();
+    }
+
+    if (historyPanel) {
+      const replacement = document.createElement("div");
+      replacement.innerHTML = voteHistoryChart(race).trim();
+      const nextPanel = replacement.firstElementChild;
+      if (nextPanel) {
+        historyPanel.replaceWith(nextPanel);
+        bindVoteHistoryHover();
       }
     }
   });

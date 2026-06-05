@@ -5139,7 +5139,7 @@ button.race-board-row {
 .vote-history-tooltip {
   position: absolute;
   z-index: 4;
-  max-width: 280px;
+  width: min(360px, calc(100% - 16px));
   padding: 8px 10px;
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -5158,6 +5158,69 @@ button.race-board-row {
   transform: translateY(0);
 }
 
+.vote-history-tooltip > strong {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--ink);
+  font: 950 .76rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.vote-history-tooltip-rows {
+  display: grid;
+  gap: 5px;
+}
+
+.vote-history-tooltip-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+  padding-left: 8px;
+}
+
+.vote-history-tooltip-row::before {
+  content: "";
+  position: absolute;
+  inset: 1px auto 1px 0;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--candidate-color);
+}
+
+.vote-history-tooltip-row i {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--candidate-color);
+}
+
+.vote-history-tooltip-row b {
+  display: inline-grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
+  border-radius: 999px;
+  color: var(--ink);
+  font: 950 .56rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.vote-history-tooltip-row em {
+  min-width: 0;
+  color: var(--ink);
+  font-style: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vote-history-tooltip-row strong,
+.vote-history-tooltip-row small {
+  white-space: nowrap;
+}
+
 .result-vote-history-panel {
   position: relative;
 }
@@ -5167,76 +5230,6 @@ button.race-board-row {
   color: var(--muted);
   font: 900 1rem/1.35 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-align: center;
-}
-
-.vote-history-legend {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.vote-history-legend-item {
-  position: relative;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 8px;
-  align-items: center;
-  min-width: 0;
-  padding: 7px 8px 7px 12px;
-  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
-  border-radius: 5px;
-  background: rgba(2, 11, 34, .54);
-  color: var(--muted);
-  font: 850 .72rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
-  overflow: hidden;
-}
-
-.vote-history-legend-item::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 4px;
-  background: var(--candidate-color);
-}
-
-.vote-history-legend-item i {
-  width: 11px;
-  height: 11px;
-  border-radius: 999px;
-  background: var(--candidate-color);
-}
-
-.vote-history-legend-item b {
-  display: inline-grid;
-  place-items: center;
-  width: 19px;
-  height: 19px;
-  border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
-  border-radius: 999px;
-  color: var(--ink);
-  font: 950 .62rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
-}
-
-.vote-history-legend-item em {
-  min-width: 0;
-  color: var(--ink);
-  font-style: normal;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.vote-history-legend-item small {
-  color: var(--muted);
-  font: 850 .66rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
-  white-space: nowrap;
-}
-
-@media (max-width: 680px) {
-  .vote-history-legend {
-    grid-template-columns: 1fr;
-  }
 }
 
 .county-results-table {
