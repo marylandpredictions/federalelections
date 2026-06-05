@@ -296,7 +296,7 @@ const RESULT_MAP_VIEW_BOUNDS = {
 const RESULT_MAP_BACKGROUND_BOUNDS = {
   CA: { minLon: -126.5, minLat: 30.5, maxLon: -107.8, maxLat: 44.2 },
   IA: { minLon: -98.8, minLat: 38.0, maxLon: -86.4, maxLat: 46.0 },
-  MT: { minLon: -119.2, minLat: 42.4, maxLon: -101.2, maxLat: 50.0 },
+  MT: { minLon: -122.2, minLat: 40.2, maxLon: -96.2, maxLat: 53.4 },
   NJ: { minLon: -77.4, minLat: 37.8, maxLon: -72.4, maxLat: 41.9 },
   NM: { minLon: -113.6, minLat: 30.5, maxLon: -99.8, maxLat: 38.9 },
   SD: { minLon: -106.0, minLat: 40.3, maxLon: -93.2, maxLat: 48.1 },
@@ -1412,6 +1412,7 @@ function countyTooltipMarkup(county, race, titlePrefix = "") {
 }
 
 function countyContextDescription(county, race) {
+  if (county?.isDistrict) return `${county.name || race?.electionName || "District"} results.`;
   const name = String(county?.name || "").replace(/\s+County$/i, "");
   const state = String(race?.state || "").toUpperCase();
   const fips = String(county?.fips || county?.id || "").padStart(5, "0");
@@ -1835,6 +1836,7 @@ async function districtShapeMap(race) {
     const districtTitle = `${race.state || ""}-${districtNumber} District`;
     const districtTooltip = countyTooltipMarkup({
       name: districtTitle,
+      isDistrict: true,
       candidates: race.candidates || [],
       percentReporting: race.percentReporting,
       estimatedVoteReporting: race.estimatedVoteReporting
@@ -2310,7 +2312,7 @@ function resultMapContextLayer({ state, allFeatures = [], activeFeatures = [], b
     <path class="map-context map-context-county" d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}"></path>
   `).join("");
   const config = RESULT_MAP_CONTEXT[String(state || "").toUpperCase()] || {};
-  const visibleBounds = expandedBounds(bounds, .08);
+  const visibleBounds = expandedBounds(bounds, .28);
   const roads = (config.roads || []).map((road) => {
     const points = road.points || [];
     if (points.length < 2) return "";
@@ -2344,7 +2346,7 @@ function resultMapContextLayer({ state, allFeatures = [], activeFeatures = [], b
 
 function resultStateContextLayer({ state, allFeatures = [], bounds, width, height, lonScale }) {
   const stateName = STATE_NAME_BY_ABBR[String(state || "").toUpperCase()] || "";
-  const visibleBounds = expandedBounds(bounds, .14);
+  const visibleBounds = expandedBounds(bounds, .28);
   const paths = (allFeatures || [])
     .filter((feature) => boundsOverlap(stateBounds([feature]), visibleBounds))
     .map((feature) => {
@@ -2361,7 +2363,7 @@ function resultForeignContextLayer({ state, countryFeatures = [], bounds, width,
   if (["CA", "NM", "AZ", "TX"].includes(stateKey)) allowed.add("MEX");
   if (["MT", "ND", "ME", "WA", "ID", "MN", "NY", "VT", "NH"].includes(stateKey)) allowed.add("CAN");
   if (!allowed.size) return "";
-  const visibleBounds = expandedBounds(bounds, .08);
+  const visibleBounds = expandedBounds(bounds, .28);
   const paths = (countryFeatures || []).filter((feature) => {
     const iso = feature.properties?.iso3 || feature.properties?.["ISO3166-1-Alpha-3"];
     return allowed.has(iso) && boundsOverlap(stateBounds([feature]), visibleBounds);
@@ -2395,7 +2397,7 @@ function fallbackRoadLayer({ state, bounds, width, height, lonScale }) {
 }
 
 function resultMapRoadLayer({ state, bounds, width, height, lonScale, highwayFeatures = [] }) {
-  const visibleBounds = expandedBounds(bounds, .14);
+  const visibleBounds = expandedBounds(bounds, .28);
   const roads = (highwayFeatures || [])
     .filter((feature) => {
       const featureBounds = geometryBounds(feature.geometry);
@@ -2414,7 +2416,7 @@ function resultMapRoadLayer({ state, bounds, width, height, lonScale, highwayFea
 
 function resultMapLabelLayer({ state, bounds, width, height, lonScale }) {
   const config = RESULT_MAP_CONTEXT[String(state || "").toUpperCase()] || {};
-  const visibleBounds = expandedBounds(bounds, .16);
+  const visibleBounds = expandedBounds(bounds, .3);
   const labels = (config.cities || []).filter((city) => (
     city.lon >= visibleBounds.minLon && city.lon <= visibleBounds.maxLon && city.lat >= visibleBounds.minLat && city.lat <= visibleBounds.maxLat
   )).map((city) => {
@@ -2478,15 +2480,17 @@ function bindMapZoom() {
     panX = Number(map.dataset.initialPanX) || 0;
     panY = Number(map.dataset.initialPanY) || 0;
   }
-  let pointerStart = null;
+  const activePointers = new Map();
+  let dragStart = null;
+  let pinchStart = null;
   const clampPan = () => {
     if (zoom <= 1.01) {
       panX = 0;
       panY = 0;
       return;
     }
-    const maxX = Math.max(0, frame.clientWidth * (zoom - 1) * .24);
-    const maxY = Math.max(0, frame.clientHeight * (zoom - 1) * .24);
+    const maxX = Math.max(0, frame.clientWidth * .56);
+    const maxY = Math.max(0, frame.clientHeight * .56);
     panX = Math.max(-maxX, Math.min(maxX, panX));
     panY = Math.max(-maxY, Math.min(maxY, panY));
   };
@@ -2517,32 +2521,78 @@ function bindMapZoom() {
     zoom = event.deltaY < 0 ? Math.min(maxZoom, zoom + .28) : Math.max(.92, zoom - .16);
     apply();
   }, { passive: false });
+  const pointerDistance = () => {
+    const points = [...activePointers.values()];
+    if (points.length < 2) return 0;
+    return Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+  };
+  const pointerCenter = () => {
+    const points = [...activePointers.values()];
+    if (points.length < 2) return null;
+    return {
+      x: (points[0].x + points[1].x) / 2,
+      y: (points[0].y + points[1].y) / 2
+    };
+  };
   frame.addEventListener("pointerdown", (event) => {
     if (event.button !== undefined && event.button !== 0) return;
     event.preventDefault();
+    activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     const targetPath = event.target?.closest?.(".result-county-map path:not(.map-context)") || null;
-    pointerStart = { x: event.clientX, y: event.clientY, panX, panY, targetPath };
+    if (activePointers.size >= 2) {
+      const center = pointerCenter();
+      pinchStart = {
+        distance: pointerDistance() || 1,
+        zoom,
+        panX,
+        panY,
+        centerX: center?.x || event.clientX,
+        centerY: center?.y || event.clientY
+      };
+      dragStart = null;
+    } else {
+      dragStart = { x: event.clientX, y: event.clientY, panX, panY, targetPath };
+      pinchStart = null;
+    }
     frame.setPointerCapture?.(event.pointerId);
     frame.classList.add("is-panning");
   });
   frame.addEventListener("pointermove", (event) => {
-    if (!pointerStart) return;
+    if (!activePointers.has(event.pointerId)) return;
     event.preventDefault();
-    panX = pointerStart.panX + event.clientX - pointerStart.x;
-    panY = pointerStart.panY + event.clientY - pointerStart.y;
+    activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (activePointers.size >= 2 && pinchStart) {
+      const distance = pointerDistance() || pinchStart.distance;
+      const center = pointerCenter();
+      zoom = Math.max(.92, Math.min(maxZoom, pinchStart.zoom * (distance / pinchStart.distance)));
+      panX = pinchStart.panX + ((center?.x || pinchStart.centerX) - pinchStart.centerX);
+      panY = pinchStart.panY + ((center?.y || pinchStart.centerY) - pinchStart.centerY);
+    } else if (dragStart) {
+      panX = dragStart.panX + event.clientX - dragStart.x;
+      panY = dragStart.panY + event.clientY - dragStart.y;
+    }
     apply();
   });
   const endPan = (event) => {
-    const start = pointerStart;
+    const start = dragStart;
+    const hadPointer = activePointers.has(event.pointerId);
+    activePointers.delete(event.pointerId);
     if (start?.targetPath && Math.hypot(event.clientX - start.x, event.clientY - start.y) < 9) {
       start.targetPath.dispatchEvent(new CustomEvent("resultmaptap", {
         bubbles: false,
         detail: event
       }));
     }
-    pointerStart = null;
+    if (activePointers.size === 1) {
+      const point = [...activePointers.values()][0];
+      dragStart = { x: point.x, y: point.y, panX, panY, targetPath: null };
+      pinchStart = null;
+    } else {
+      dragStart = null;
+      pinchStart = null;
+    }
     frame.releasePointerCapture?.(event.pointerId);
-    frame.classList.remove("is-panning");
+    if (!activePointers.size || !hadPointer) frame.classList.remove("is-panning");
   };
   frame.addEventListener("pointerup", endPan);
   frame.addEventListener("pointercancel", endPan);
