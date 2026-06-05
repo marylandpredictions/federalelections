@@ -1681,7 +1681,33 @@ function voteHistoryChart(race) {
       }).join("")}
       </div>
     `;
-    return `<rect class="vote-history-hit" x="${hitX.toFixed(1)}" y="${pad.top}" width="${Math.max(6, hitWidth).toFixed(1)}" height="${height - pad.top - pad.bottom}" data-history-x="${x.toFixed(1)}" data-history-tooltip="${escapeHtml(label)}"></rect>`;
+    const expanded = `
+      <div class="vote-history-expanded-head">
+        <span>
+          <small>Vote snapshot</small>
+          <strong>${escapeHtml(preciseTimeLabel(point.at || point.updatedAt || point.timestamp || point.time || race.lastUpdated))}</strong>
+        </span>
+        <button type="button" data-history-expanded-close aria-label="Close vote snapshot">Close</button>
+      </div>
+      <div class="vote-history-expanded-rows">
+        ${[...(point.candidates || [])]
+        .sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))
+        .map((candidate) => {
+          const code = partyCode(candidate.partyCode || candidate.party) || candidate.partyCode || "O";
+          const color = candidate.color || candidateFill(race, candidate);
+          return `
+            <span class="vote-history-expanded-row" style="--candidate-color:${escapeHtml(color)}">
+              <i></i>
+              <b>${escapeHtml(code)}</b>
+              <em>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)}</em>
+              <strong>${percentLabel(candidate.percent || 0)}</strong>
+              <small>${numberLabel(candidate.votes || 0)} votes</small>
+            </span>
+          `;
+        }).join("")}
+      </div>
+    `;
+    return `<rect class="vote-history-hit" x="${hitX.toFixed(1)}" y="${pad.top}" width="${Math.max(6, hitWidth).toFixed(1)}" height="${height - pad.top - pad.bottom}" data-history-x="${x.toFixed(1)}" data-history-tooltip="${escapeHtml(label)}" data-history-expanded="${escapeHtml(expanded)}"></rect>`;
   }).join("");
   const ticks = [0, maxPercent / 2, maxPercent];
   return `
@@ -1706,6 +1732,7 @@ function voteHistoryChart(race) {
         ${hits}
       </svg>
       <div class="vote-history-tooltip" aria-hidden="true"></div>
+      <div class="vote-history-expanded" aria-live="polite" aria-hidden="true"></div>
     </section>
   `;
 }
@@ -1713,6 +1740,7 @@ function voteHistoryChart(race) {
 function bindVoteHistoryHover() {
   const panel = page.querySelector(".result-vote-history-panel");
   const tooltip = panel?.querySelector(".vote-history-tooltip");
+  const expanded = panel?.querySelector(".vote-history-expanded");
   const line = panel?.querySelector(".vote-history-hover-line");
   if (!panel || !tooltip || !line) return;
   panel.querySelectorAll(".vote-history-hit").forEach((hit) => {
@@ -1733,6 +1761,21 @@ function bindVoteHistoryHover() {
     hit.addEventListener("mousemove", show);
     hit.addEventListener("mouseenter", show);
     hit.addEventListener("mouseleave", hide);
+    hit.addEventListener("click", (event) => {
+      event.preventDefault();
+      if (!expanded) return;
+      line.setAttribute("x1", hit.dataset.historyX || "0");
+      line.setAttribute("x2", hit.dataset.historyX || "0");
+      line.classList.add("visible");
+      expanded.innerHTML = hit.dataset.historyExpanded || "";
+      expanded.classList.add("visible");
+      expanded.setAttribute("aria-hidden", "false");
+      expanded.querySelector("[data-history-expanded-close]")?.addEventListener("click", () => {
+        expanded.classList.remove("visible");
+        expanded.setAttribute("aria-hidden", "true");
+        line.classList.remove("visible");
+      }, { once: true });
+    });
   });
 }
 

@@ -5221,6 +5221,130 @@ button.race-board-row {
   white-space: nowrap;
 }
 
+.vote-history-expanded {
+  position: absolute;
+  top: 44px;
+  right: 10px;
+  z-index: 5;
+  display: none;
+  width: min(430px, calc(100% - 20px));
+  max-height: min(420px, calc(100% - 56px));
+  overflow: auto;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #020b22;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .38);
+}
+
+.vote-history-expanded.visible {
+  display: block;
+}
+
+.vote-history-expanded-head {
+  position: sticky;
+  top: -10px;
+  z-index: 1;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin: -10px -10px 8px;
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+  background: #020b22;
+}
+
+.vote-history-expanded-head small {
+  display: block;
+  color: var(--muted);
+  font: 900 .58rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.vote-history-expanded-head strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--ink);
+  font: 950 .78rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.vote-history-expanded-head button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(198, 210, 255, .08);
+  color: var(--ink);
+  cursor: pointer;
+  font: 950 .62rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  padding: 7px 9px;
+}
+
+.vote-history-expanded-rows {
+  display: grid;
+  gap: 5px;
+}
+
+.vote-history-expanded-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+  gap: 7px;
+  align-items: center;
+  min-width: 0;
+  padding: 6px 0 6px 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 48%, transparent);
+}
+
+.vote-history-expanded-row:last-child {
+  border-bottom: 0;
+}
+
+.vote-history-expanded-row::before {
+  content: "";
+  position: absolute;
+  inset: 5px auto 5px 0;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--candidate-color);
+}
+
+.vote-history-expanded-row i {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--candidate-color);
+}
+
+.vote-history-expanded-row b {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
+  border-radius: 999px;
+  color: var(--ink);
+  font: 950 .58rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.vote-history-expanded-row em {
+  min-width: 0;
+  color: var(--ink);
+  font-style: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vote-history-expanded-row strong,
+.vote-history-expanded-row small {
+  white-space: nowrap;
+}
+
+.vote-history-expanded-row small {
+  color: var(--muted);
+}
+
 .result-vote-history-panel {
   position: relative;
 }
@@ -5230,6 +5354,29 @@ button.race-board-row {
   color: var(--muted);
   font: 900 1rem/1.35 "Telegraf", "Segoe UI", Arial, sans-serif;
   text-align: center;
+}
+
+@media (max-width: 720px) {
+  .vote-history-tooltip {
+    display: none;
+  }
+
+  .vote-history-expanded {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    max-height: 340px;
+    margin-top: 8px;
+  }
+
+  .vote-history-expanded-row {
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+  }
+
+  .vote-history-expanded-row small {
+    grid-column: 3 / -1;
+  }
 }
 
 .county-results-table {
