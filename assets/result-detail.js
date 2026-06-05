@@ -290,6 +290,19 @@ const RESULT_MAP_VIEW_BOUNDS = {
   SC: { minLon: -83.8, minLat: 31.8, maxLon: -78.2, maxLat: 35.5 }
 };
 
+const RESULT_MAP_BACKGROUND_BOUNDS = {
+  CA: { minLon: -126.5, minLat: 30.5, maxLon: -107.8, maxLat: 44.2 },
+  IA: { minLon: -98.8, minLat: 38.0, maxLon: -86.4, maxLat: 46.0 },
+  MT: { minLon: -119.2, minLat: 42.4, maxLon: -101.2, maxLat: 50.0 },
+  NJ: { minLon: -77.4, minLat: 37.8, maxLon: -72.4, maxLat: 41.9 },
+  NM: { minLon: -113.6, minLat: 30.5, maxLon: -99.8, maxLat: 38.9 },
+  SD: { minLon: -106.0, minLat: 40.3, maxLon: -93.2, maxLat: 48.1 },
+  NV: { minLon: -121.6, minLat: 33.6, maxLon: -110.8, maxLat: 43.4 },
+  ND: { minLon: -106.8, minLat: 44.4, maxLon: -93.8, maxLat: 50.1 },
+  ME: { minLon: -73.4, minLat: 41.8, maxLon: -65.5, maxLat: 48.4 },
+  SC: { minLon: -85.2, minLat: 30.8, maxLon: -76.8, maxLat: 36.3 }
+};
+
 const STATE_NAME_BY_ABBR = {
   AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California", CO: "Colorado", CT: "Connecticut",
   DE: "Delaware", FL: "Florida", GA: "Georgia", HI: "Hawaii", ID: "Idaho", IL: "Illinois", IN: "Indiana",
@@ -1604,6 +1617,13 @@ function contextPointBounds(state, activeBounds) {
   }), { minLon: Infinity, minLat: Infinity, maxLon: -Infinity, maxLat: -Infinity });
 }
 
+function resultMapBackgroundBounds(state, activeBounds) {
+  const stateKey = String(state || "").toUpperCase();
+  return RESULT_MAP_BACKGROUND_BOUNDS[stateKey]
+    || RESULT_MAP_VIEW_BOUNDS[stateKey]
+    || (activeBounds ? expandedBounds(activeBounds, .5) : null);
+}
+
 function mapDimensions(bounds, maxWidth = 700, maxHeight = 520) {
   const lonRange = Math.max(.1, bounds.maxLon - bounds.minLon);
   const latRange = Math.max(.1, bounds.maxLat - bounds.minLat);
@@ -1696,7 +1716,9 @@ async function districtShapeMap(race) {
     const stateCountyFeatures = allCountyFeatures.filter((item) => item.properties?.STATE === stateFips(race.state));
     const stateBoundsForContext = stateCountyFeatures.length ? stateBounds(stateCountyFeatures) : null;
     const fixedBounds = RESULT_MAP_VIEW_BOUNDS[String(race.state || "").toUpperCase()];
+    const backgroundBounds = resultMapBackgroundBounds(race.state, activeBounds);
     const bounds = mergeBounds([
+      backgroundBounds,
       expandedBounds(activeBounds, .72),
       contextPointBounds(race.state, activeBounds),
       fixedBounds ? expandedBounds(activeBounds, .28) : stateBoundsForContext
@@ -1751,8 +1773,9 @@ async function countyShapeMap(race) {
       : allFeatures.filter((feature) => feature.properties?.STATE !== fips);
     const stateOutlineBounds = filterToJurisdiction ? stateBounds(features) : null;
     const fixedBounds = RESULT_MAP_VIEW_BOUNDS[String(race.state || "").toUpperCase()];
+    const backgroundBounds = resultMapBackgroundBounds(race.state, activeBounds);
     const bounds = mergeBounds([
-      fixedBounds,
+      backgroundBounds || fixedBounds,
       stateOutlineBounds,
       expandedBounds(activeBounds, filterToJurisdiction ? .28 : .08),
       contextPointBounds(race.state, activeBounds)
@@ -2156,7 +2179,7 @@ function resultMapContextLayer({ state, allFeatures = [], activeFeatures = [], b
 
 function resultStateContextLayer({ state, allFeatures = [], bounds, width, height, lonScale }) {
   const stateName = STATE_NAME_BY_ABBR[String(state || "").toUpperCase()] || "";
-  const visibleBounds = expandedBounds(bounds, .02);
+  const visibleBounds = expandedBounds(bounds, .14);
   const paths = (allFeatures || [])
     .filter((feature) => boundsOverlap(stateBounds([feature]), visibleBounds))
     .map((feature) => {
@@ -2169,7 +2192,7 @@ function resultStateContextLayer({ state, allFeatures = [], bounds, width, heigh
 
 function fallbackRoadLayer({ state, bounds, width, height, lonScale }) {
   const config = RESULT_MAP_CONTEXT[String(state || "").toUpperCase()] || {};
-  const visibleBounds = expandedBounds(bounds, .08);
+  const visibleBounds = expandedBounds(bounds, .18);
   const roads = (config.roads || []).map((road) => {
     const points = road.points || [];
     if (points.length < 2) return "";
@@ -2190,7 +2213,7 @@ function fallbackRoadLayer({ state, bounds, width, height, lonScale }) {
 }
 
 function resultMapRoadLayer({ state, bounds, width, height, lonScale, highwayFeatures = [] }) {
-  const visibleBounds = expandedBounds(bounds, .02);
+  const visibleBounds = expandedBounds(bounds, .14);
   const roads = (highwayFeatures || [])
     .filter((feature) => {
       const featureBounds = geometryBounds(feature.geometry);
@@ -2209,7 +2232,7 @@ function resultMapRoadLayer({ state, bounds, width, height, lonScale, highwayFea
 
 function resultMapLabelLayer({ state, bounds, width, height, lonScale }) {
   const config = RESULT_MAP_CONTEXT[String(state || "").toUpperCase()] || {};
-  const visibleBounds = expandedBounds(bounds, .04);
+  const visibleBounds = expandedBounds(bounds, .16);
   const labels = (config.cities || []).filter((city) => (
     city.lon >= visibleBounds.minLon && city.lon <= visibleBounds.maxLon && city.lat >= visibleBounds.minLat && city.lat <= visibleBounds.maxLat
   )).map((city) => {
