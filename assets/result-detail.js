@@ -308,15 +308,23 @@ const RESULT_MAP_CONTEXT = {
       { name: "Santa Barbara", lon: -119.7, lat: 34.42 },
       { name: "Los Angeles", lon: -118.24, lat: 34.05 },
       { name: "San Diego", lon: -117.16, lat: 32.72 },
+      { name: "Bakersfield", lon: -119.02, lat: 35.37 },
+      { name: "Palm Springs", lon: -116.55, lat: 33.83 },
       { name: "Las Vegas", lon: -115.14, lat: 36.17 },
+      { name: "Elko", lon: -115.76, lat: 40.83 },
       { name: "Phoenix", lon: -112.07, lat: 33.45 },
+      { name: "Flagstaff", lon: -111.65, lat: 35.2 },
+      { name: "Mexicali", lon: -115.47, lat: 32.66 },
       { name: "Salt Lake City", lon: -111.89, lat: 40.76 }
     ],
     roads: [
       { name: "I-5", points: [[-122.32, 41.98], [-121.49, 38.58], [-119.79, 36.74], [-118.24, 34.05], [-117.16, 32.72]] },
       { name: "US-101", points: [[-124.16, 40.8], [-122.42, 37.77], [-121.89, 37.34], [-119.7, 34.42], [-118.24, 34.05]] },
       { name: "I-80", points: [[-122.3, 37.9], [-121.49, 38.58], [-119.81, 39.53], [-111.89, 40.76]] },
-      { name: "I-15", points: [[-117.16, 32.72], [-115.14, 36.17], [-111.89, 40.76]] }
+      { name: "I-15", points: [[-117.16, 32.72], [-115.14, 36.17], [-111.89, 40.76]] },
+      { name: "CA-99", points: [[-121.49, 38.58], [-120.95, 37.64], [-119.79, 36.74], [-119.02, 35.37], [-118.24, 34.05]] },
+      { name: "I-10", points: [[-118.24, 34.05], [-116.55, 33.83], [-115.14, 36.17], [-112.07, 33.45]] },
+      { name: "US-395", points: [[-119.81, 39.53], [-118.4, 37.36], [-117.86, 36.03], [-117.16, 32.72]] }
     ]
   },
   IA: {
@@ -343,11 +351,15 @@ const RESULT_MAP_CONTEXT = {
       { name: "Billings", lon: -108.5, lat: 45.78 },
       { name: "Boise", lon: -116.2, lat: 43.62 },
       { name: "Spokane", lon: -117.43, lat: 47.66 },
+      { name: "Butte", lon: -112.53, lat: 46.0 },
+      { name: "Bozeman", lon: -111.04, lat: 45.68 },
       { name: "Bismarck", lon: -100.78, lat: 46.81 }
     ],
     roads: [
       { name: "I-90", points: [[-116.2, 43.62], [-113.99, 46.87], [-112.04, 46.59], [-108.5, 45.78], [-104.05, 44.37]] },
-      { name: "I-15", points: [[-112.04, 46.59], [-111.3, 47.51], [-111.98, 49.0]] }
+      { name: "I-15", points: [[-112.04, 46.59], [-111.3, 47.51], [-111.98, 49.0]] },
+      { name: "US-93", points: [[-114.32, 48.2], [-113.99, 46.87], [-114.07, 45.68], [-116.2, 43.62]] },
+      { name: "US-2", points: [[-117.43, 47.66], [-114.32, 48.2], [-111.3, 47.51], [-108.5, 45.78]] }
     ]
   },
   NJ: {
@@ -1569,7 +1581,11 @@ async function districtShapeMap(race) {
     const stateCountyFeatures = allCountyFeatures.filter((item) => item.properties?.STATE === stateFips(race.state));
     const stateBoundsForContext = stateCountyFeatures.length ? stateBounds(stateCountyFeatures) : null;
     const fixedBounds = RESULT_MAP_VIEW_BOUNDS[String(race.state || "").toUpperCase()];
-    const bounds = fixedBounds || mergeBounds([stateBoundsForContext, expandedBounds(activeBounds, .38), contextPointBounds(race.state, activeBounds)]) || activeBounds;
+    const bounds = mergeBounds([
+      expandedBounds(activeBounds, .72),
+      contextPointBounds(race.state, activeBounds),
+      fixedBounds ? expandedBounds(activeBounds, .28) : stateBoundsForContext
+    ]) || activeBounds;
     const { width, height, lonScale } = mapDimensions(bounds, 760, 540);
     const districtTitle = `${race.state || ""}-${districtNumber} District`;
     const districtTooltip = countyTooltipMarkup({
@@ -2122,8 +2138,8 @@ function bindMapZoom() {
       panY = 0;
       return;
     }
-    const maxX = Math.max(0, frame.clientWidth * (zoom - 1) * .42);
-    const maxY = Math.max(0, frame.clientHeight * (zoom - 1) * .42);
+    const maxX = Math.max(0, frame.clientWidth * (zoom - 1) * .24);
+    const maxY = Math.max(0, frame.clientHeight * (zoom - 1) * .24);
     panX = Math.max(-maxX, Math.min(maxX, panX));
     panY = Math.max(-maxY, Math.min(maxY, panY));
   };
@@ -2133,13 +2149,13 @@ function bindMapZoom() {
     applyMapViewportState();
     controls.forEach((control) => {
       const mode = control.dataset.mapZoom;
-      control.disabled = (mode === "in" && zoom >= 2.5) || (mode === "out" && zoom <= 1);
+      control.disabled = (mode === "in" && zoom >= 2.35) || (mode === "out" && zoom <= 1);
     });
   };
   controls.forEach((control) => {
     control.addEventListener("click", () => {
       const mode = control.dataset.mapZoom;
-      if (mode === "in") zoom = Math.min(2.5, zoom + .25);
+      if (mode === "in") zoom = Math.min(2.35, zoom + .25);
       if (mode === "out") zoom = Math.max(1, zoom - .25);
       if (mode === "reset") {
         zoom = 1;
@@ -2151,11 +2167,12 @@ function bindMapZoom() {
   });
   frame.addEventListener("wheel", (event) => {
     event.preventDefault();
-    zoom = event.deltaY < 0 ? Math.min(2.75, zoom + .18) : Math.max(.8, zoom - .18);
+    zoom = event.deltaY < 0 ? Math.min(2.35, zoom + .18) : Math.max(1, zoom - .18);
     apply();
   }, { passive: false });
   frame.addEventListener("pointerdown", (event) => {
     if (event.button !== undefined && event.button !== 0) return;
+    event.preventDefault();
     pointerStart = { x: event.clientX, y: event.clientY, panX, panY };
     frame.setPointerCapture?.(event.pointerId);
     frame.classList.add("is-panning");

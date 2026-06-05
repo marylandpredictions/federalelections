@@ -4252,7 +4252,8 @@ button.race-board-row {
   border: 1px solid #d6d9e2;
   border-radius: 18px;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--dem) 8%, transparent), transparent 48%, color-mix(in srgb, var(--rep) 7%, transparent)),
+    radial-gradient(circle at 28% 24%, color-mix(in srgb, #273b75 18%, transparent), transparent 32rem),
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 6%, transparent), transparent 48%, color-mix(in srgb, var(--rep) 6%, transparent)),
     #020b22;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff 8%, transparent), 0 18px 46px color-mix(in srgb, #000 22%, transparent);
   cursor: grab;
@@ -4282,6 +4283,8 @@ button.race-board-row {
   transform: translate(var(--result-map-pan-x, 0), var(--result-map-pan-y, 0)) scale(var(--result-map-zoom, 1));
   transform-origin: center;
   transition: transform .18s var(--ease-out);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .result-county-map path {
@@ -4300,16 +4303,16 @@ button.race-board-row {
 }
 
 .map-context-state {
-  fill: #161b22;
-  stroke: color-mix(in srgb, #d6d9e2 24%, transparent);
-  stroke-width: .85;
+  fill: #151b23;
+  stroke: color-mix(in srgb, #d6d9e2 34%, transparent);
+  stroke-width: .95;
   pointer-events: none;
   opacity: .9;
 }
 
 .map-context-state.is-active-state {
-  fill: #1b2330;
-  stroke: color-mix(in srgb, #d6d9e2 36%, transparent);
+  fill: #192231;
+  stroke: color-mix(in srgb, #d6d9e2 44%, transparent);
   opacity: .98;
 }
 
@@ -4334,19 +4337,18 @@ button.race-board-row {
 
 .map-context-road {
   fill: none;
-  stroke: color-mix(in srgb, #d6d9e2 22%, transparent);
-  stroke-width: 1.35;
+  stroke: color-mix(in srgb, #d6d9e2 24%, transparent);
+  stroke-width: 1.45;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-dasharray: 5 8;
   pointer-events: none;
   vector-effect: non-scaling-stroke;
 }
 
 .map-context-road-top {
-  stroke: color-mix(in srgb, #f8fbff 32%, transparent);
-  stroke-width: 1.15;
-  opacity: .72;
+  stroke: color-mix(in srgb, #f8fbff 26%, transparent);
+  stroke-width: 1.65;
+  opacity: .84;
 }
 
 .map-context-label {
@@ -4361,7 +4363,13 @@ button.race-board-row {
 }
 
 .map-context-label-top {
-  opacity: .58;
+  opacity: .74;
+}
+
+.result-county-map text {
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
 }
 
 .result-county-map path:hover,
