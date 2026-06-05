@@ -302,6 +302,7 @@ function normalizeUpcomingRace(race, index = 0) {
     electionName: race.electionName || race.name || "Upcoming race",
     type: race.office || race.type || "Race",
     district: race.district ?? null,
+    geometryCycle: race.geometryCycle || null,
     candidates: Array.isArray(race.candidates) ? race.candidates : [],
     marker: race.marker || { kind: "open-primary", short: "P", label: "Primary" },
     missingFields: race.missingFields || []

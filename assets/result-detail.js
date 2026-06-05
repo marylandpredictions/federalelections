@@ -3,6 +3,7 @@ const raceId = new URLSearchParams(window.location.search).get("id");
 const FAVORITE_RACES_KEY = "fea.favoriteResultRaces.v1";
 let countyMapDataPromise = null;
 let districtMapDataPromise = null;
+const districtCountyMapDataPromises = new Map();
 let usStateMapDataPromise = null;
 let majorHighwayDataPromise = null;
 let countryContextDataPromise = null;
@@ -1392,9 +1393,17 @@ function countyTooltipMarkup(county, race, titlePrefix = "") {
   const title = titlePrefix || `${county.name} County`;
   const reporting = county.estimatedVoteReporting ?? county.percentIn ?? county.percent_in ?? null;
   const description = countyContextDescription(county, race);
+  const leader = regionLeader(county);
+  const margin = resultMarginInfo(race, county);
+  const totalVotes = (county.candidates || []).reduce((sum, candidate) => sum + Number(candidate.votes || 0), 0);
+  const summary = leader
+    ? `${leader.name} leads by ${margin ? `${margin.percentMargin.toFixed(1)} pts` : percentLabel(leader.percent)}${totalVotes ? ` with ${numberLabel(totalVotes)} votes counted` : ""}.`
+    : "County-level results unavailable.";
   return `
     <strong>${escapeHtml(title)}</strong>
     ${description ? `<p class="result-county-description">${escapeHtml(description)}</p>` : ""}
+    <p class="result-county-description">${escapeHtml(summary)}</p>
+    ${county.partialCounty ? `<p class="result-county-description">Partial county area inside district.</p>` : ""}
     <table>
       <thead><tr><th></th><th>Votes</th><th>Pct</th></tr></thead>
       <tbody>
@@ -1498,12 +1507,13 @@ function regionMap(race) {
 
 function stateFips(state) {
   const codes = {
-    CA: "06",
-    IA: "19",
-    MT: "30",
-    NJ: "34",
-    NM: "35",
-    SD: "46"
+    AL: "01", AK: "02", AZ: "04", AR: "05", CA: "06", CO: "08", CT: "09", DE: "10",
+    DC: "11", FL: "12", GA: "13", HI: "15", ID: "16", IL: "17", IN: "18", IA: "19",
+    KS: "20", KY: "21", LA: "22", ME: "23", MD: "24", MA: "25", MI: "26", MN: "27",
+    MS: "28", MO: "29", MT: "30", NE: "31", NV: "32", NH: "33", NJ: "34", NM: "35",
+    NY: "36", NC: "37", ND: "38", OH: "39", OK: "40", OR: "41", PA: "42", RI: "44",
+    SC: "45", SD: "46", TN: "47", TX: "48", UT: "49", VT: "50", VA: "51", WA: "53",
+    WV: "54", WI: "55", WY: "56"
   };
   return codes[String(state || "").toUpperCase()] || "";
 }
@@ -1526,6 +1536,39 @@ async function loadDistrictMapData() {
     });
   }
   return districtMapDataPromise;
+}
+
+function activeCongressCycle(race) {
+  const raw = race?.geometryCycle || race?.congress || race?.mapGeometryCycle || 119;
+  const parsed = Number(String(raw).replace(/\D/g, ""));
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 119;
+}
+
+function districtMapId(state, districtNumber) {
+  const stateKey = String(state || "").toUpperCase();
+  if (!stateKey || !districtNumber && districtNumber !== 0) return "";
+  const district = Number(districtNumber);
+  if (!Number.isFinite(district)) return "";
+  return `${stateKey}-${district === 0 ? "AL" : String(district).padStart(2, "0")}`;
+}
+
+async function loadDistrictCountyMapData(race) {
+  const districtNumber = raceDistrictNumber(race);
+  const id = districtMapId(race?.state, districtNumber);
+  const cycle = activeCongressCycle(race);
+  if (!id) return null;
+  const cacheKey = `${cycle}:${id}`;
+  if (!districtCountyMapDataPromises.has(cacheKey)) {
+    districtCountyMapDataPromises.set(cacheKey, fetch(`data/maps/congress/${cycle}/${id}.json`, { cache: "force-cache" })
+      .then((response) => {
+        if (!response.ok) return null;
+        return response.json();
+      })
+      .catch(() => null));
+  }
+  const data = await districtCountyMapDataPromises.get(cacheKey);
+  if (!data?.features?.length) return null;
+  return data;
 }
 
 async function loadUsStateMapData() {
@@ -1597,6 +1640,25 @@ function countyLookup(race) {
     lookup.set(regionLookupKey(county.name), county);
   }
   return lookup;
+}
+
+function cleanCountyName(value) {
+  return String(value || "")
+    .replace(/\s+(County|Parish|Borough|Census Area|Municipality)$/i, "")
+    .trim();
+}
+
+function districtCountyFeatureLookup(lookup, feature) {
+  const props = feature.properties || {};
+  const countyFips = props.countyFips || `${props.STATEFP || ""}${props.COUNTYFP || ""}`;
+  const countyName = props.countyName || props.NAME || "";
+  const cleanName = cleanCountyName(countyName);
+  return lookup.get(String(countyFips).padStart(5, "0"))
+    || lookup.get(String(countyName).toLowerCase())
+    || lookup.get(String(cleanName).toLowerCase())
+    || lookup.get(regionLookupKey(countyName))
+    || lookup.get(regionLookupKey(cleanName))
+    || null;
 }
 
 function raceDistrictNumber(race) {
@@ -1781,14 +1843,22 @@ function lineGeometryPath(geometry, bounds, width, height, lonScale = 1) {
 }
 
 async function districtShapeMap(race) {
+  const districtNumber = raceDistrictNumber(race);
+  if (!districtNumber) return "";
+  const districtCountyMarkup = await districtCountyBreakdownMap(race, districtNumber);
+  if (districtCountyMarkup) return districtCountyMarkup;
+  if (activeCongressCycle(race) !== 119) {
+    return `
+      <div class="result-map-empty">District county-breakdown geometry is not available for this congressional cycle yet.</div>
+      <p class="result-map-caption">This race is marked for ${escapeHtml(activeCongressCycle(race))}th Congress geometry, but the site currently has 119th Congress district-county files.</p>
+    `;
+  }
   if (REDISTRICTED_RESULT_STATES.has(String(race.state || "").toUpperCase())) {
     return `
       <div class="result-map-empty">District map unavailable while updated post-redistricting boundaries are being added.</div>
       <p class="result-map-caption">This district has changed or may change through the 2025-26 redistricting cycle, so the older GeoJSON shape is not shown.</p>
     `;
   }
-  const districtNumber = raceDistrictNumber(race);
-  if (!districtNumber) return "";
   try {
     const geojson = await loadDistrictMapData();
     const feature = (geojson.features || []).find((item) => (
@@ -1847,6 +1917,88 @@ async function districtShapeMap(race) {
         ${resultStateContextLayer({ state: race.state, allFeatures: allStateFeatures, bounds, width, height, lonScale })}
         ${resultMapContextLayer({ state: race.state, allFeatures: stateCountyFeatures.length ? stateCountyFeatures : allCountyFeatures, activeFeatures: [feature], bounds, width, height, lonScale, labels: false })}
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(margin?.rawFill || fill)}" data-county-tooltip="${escapeHtml(districtTooltip)}"></path>
+        ${resultMapRoadLayer({ state: race.state, bounds, width, height, lonScale, highwayFeatures })}
+        ${resultMapLabelLayer({ state: race.state, bounds, width, height, lonScale })}
+      </svg>
+    `;
+  } catch (error) {
+    console.warn(error);
+    return "";
+  }
+}
+
+async function districtCountyBreakdownMap(race, districtNumber = raceDistrictNumber(race)) {
+  try {
+    const collection = await loadDistrictCountyMapData(race);
+    const features = collection?.features || [];
+    if (!features.length) return "";
+    const lookup = countyLookup(race);
+    const activeBounds = stateBounds(features);
+    const allCountyFeatures = await loadCountyMapData()
+      .then((geojson) => (geojson.features || []))
+      .catch(() => []);
+    const allStateFeatures = await loadUsStateMapData()
+      .then((geojson) => (geojson.features || []))
+      .catch(() => []);
+    const countryFeatures = await loadCountryContextData()
+      .then((geojson) => (geojson.features || []))
+      .catch(() => []);
+    const highwayFeatures = await loadMajorHighwayData()
+      .then((geojson) => (geojson.features || []))
+      .catch(() => []);
+    await loadCountyDescriptions();
+    const stateCountyFeatures = allCountyFeatures.filter((item) => item.properties?.STATE === stateFips(race.state));
+    const backgroundBounds = resultMapBackgroundBounds(race.state, activeBounds);
+    const bounds = mergeBounds([
+      expandedBounds(activeBounds, .48),
+      contextPointBounds(race.state, activeBounds),
+      backgroundBounds ? expandedBounds(activeBounds, .18) : null
+    ]) || activeBounds;
+    const { width, height, lonScale } = mapDimensions(bounds, 760, 540);
+    const paths = features.map((feature) => {
+      const props = feature.properties || {};
+      const countyFips = String(props.countyFips || `${props.STATEFP || ""}${props.COUNTYFP || ""}`).padStart(5, "0");
+      const countyName = cleanCountyName(props.countyName || props.NAME || countyFips);
+      const county = districtCountyFeatureLookup(lookup, feature);
+      const tooltipCounty = county ? {
+        ...county,
+        fips: county.fips || countyFips,
+        id: county.id || countyFips,
+        name: county.name || countyName,
+        type: county.type || "County",
+        partialCounty: Boolean(props.partialCounty || String(props.PARTFLG || "").toUpperCase() === "Y")
+      } : {
+        id: countyFips,
+        fips: countyFips,
+        name: countyName,
+        type: "County",
+        partialCounty: Boolean(props.partialCounty || String(props.PARTFLG || "").toUpperCase() === "Y"),
+        candidates: [],
+        estimatedVoteReporting: race.estimatedVoteReporting
+      };
+      const leader = county ? regionLeader(county) : null;
+      const margin = county ? resultMarginInfo(race, county) : null;
+      const fill = margin?.percentFill || "#566274";
+      const voteFill = margin?.voteFill || "#566274";
+      const rawFill = margin?.rawFill || "#566274";
+      const partialLabel = tooltipCounty.partialCounty ? " (partial)" : "";
+      const title = leader
+        ? `${countyName}${partialLabel}: ${leader.name} ${percentLabel(leader.percent)}, ${estimatedInLabel(tooltipCounty.estimatedVoteReporting)} estimated in`
+        : `${countyName}${partialLabel}: County-level results unavailable`;
+      const tooltip = countyTooltipMarkup(tooltipCounty, race, `${countyName}${partialLabel}`);
+      return `
+        <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(rawFill)}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
+        </path>
+      `;
+    }).join("");
+    const districtId = districtMapId(race.state, districtNumber);
+    const cycle = activeCongressCycle(race);
+    return `
+      <svg class="result-county-map result-district-map result-district-county-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.electionName || districtId || "House district")} county-breakdown map" data-geometry-cycle="${cycle}" data-district-id="${escapeHtml(districtId)}">
+        ${resultForeignContextLayer({ state: race.state, countryFeatures, bounds, width, height, lonScale })}
+        ${resultStateContextLayer({ state: race.state, allFeatures: allStateFeatures, bounds, width, height, lonScale })}
+        ${resultMapContextLayer({ state: race.state, allFeatures: stateCountyFeatures.length ? stateCountyFeatures : allCountyFeatures, activeFeatures: features, bounds, width, height, lonScale, labels: false })}
+        ${paths}
         ${resultMapRoadLayer({ state: race.state, bounds, width, height, lonScale, highwayFeatures })}
         ${resultMapLabelLayer({ state: race.state, bounds, width, height, lonScale })}
       </svg>

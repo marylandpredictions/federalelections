@@ -443,6 +443,13 @@ function districtNumber(value) {
   return String(Number(match[0]));
 }
 
+function geometryCycleForRace(race) {
+  const type = String(race?.type || race?.electionType || "").toLowerCase();
+  const name = String(race?.electionName || race?.election_name || "").toLowerCase();
+  if ((type.includes("house") || name.includes("house")) && districtNumber(race?.district)) return 119;
+  return null;
+}
+
 function normalizeNbcRaceEstimate(race, nbcRace, sourceUrl) {
   const summary = nbcRace.summary || nbcRace;
   const percent = roundPercent(summary.percentIn);
@@ -571,6 +578,7 @@ function normalizeNbcRace(id, source, data, nbcRace, options = {}) {
   }
   const leader = candidates[0] || null;
   const sourceUrl = nbcUrlFor(source);
+  const district = source.district ?? (summary.district ? `${raceBase.state}-${String(summary.district).padStart(2, "0")}` : null);
   const counties = (nbcRace.areas || []).map((area) => {
     const areaRace = { ...raceBase, id: String(id) };
     const areaCandidates = (area.candidates || [])
@@ -596,7 +604,8 @@ function normalizeNbcRace(id, source, data, nbcRace, options = {}) {
     country: "US",
     state: raceBase.state,
     stateName: source.stateName || data.stateName || raceBase.state,
-    district: source.district ?? (summary.district ? `${raceBase.state}-${String(summary.district).padStart(2, "0")}` : null),
+    district,
+    geometryCycle: geometryCycleForRace({ ...raceBase, district }),
     municipality: source.municipality ?? null,
     electionName: raceBase.electionName,
     electionType: raceBase.type,
@@ -811,6 +820,7 @@ function normalizeRace(race, group, options = {}) {
     state: race.province || group.state,
     stateName: group.name,
     district: race.district ?? null,
+    geometryCycle: geometryCycleForRace(race),
     municipality: race.municipality ?? null,
     electionName: race.election_name || `${group.name} ${race.type || "Race"}`,
     electionType: race.election_type || "",

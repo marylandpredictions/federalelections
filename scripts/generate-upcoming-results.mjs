@@ -32,6 +32,18 @@ function electionMarkerFor(race, candidates) {
   return { kind: "general", label: "General election", short: "G" };
 }
 
+function districtNumber(value) {
+  if (value === null || value === undefined || value === "") return "";
+  const match = String(value).match(/\d+/);
+  return match ? String(Number(match[0])) : "";
+}
+
+function geometryCycleForRace(race) {
+  const office = String(race?.office || race?.type || race?.election_name || "").toLowerCase();
+  if (office.includes("house") && districtNumber(race?.district)) return 119;
+  return null;
+}
+
 function normalizeUpcomingRace(race, index = 0) {
   const candidates = (race.candidates || []).map((candidate) => ({
     name: candidate.name || "Unknown candidate",
@@ -53,6 +65,7 @@ function normalizeUpcomingRace(race, index = 0) {
     electionName: race.election_name || race.type || "Upcoming race",
     office: race.type || "",
     district: race.district ?? null,
+    geometryCycle: race.geometryCycle || geometryCycleForRace(race),
     municipality: race.municipality ?? null,
     hasMap: Boolean(race.has_map),
     candidates,
