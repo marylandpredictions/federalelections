@@ -10,6 +10,7 @@ let resultMapViewState = {
   panY: 0
 };
 let resultPartyViewEnabled = false;
+let resultLastCheckedAt = new Date().toISOString();
 const PROFILE_BG_COLOR_CACHE_VERSION = "ring-v2";
 const PROFILE_BG_COLOR_CACHE = new Map();
 const PROFILE_BG_COLOR_PROMISES = new Map();
@@ -271,6 +272,105 @@ const ANALYST_PROFILES = {
   "gamerdoglover": {
     name: "gamerdoglover",
     image: "assets/img/analysts/gamerdoglover.png"
+  }
+};
+
+const RESULT_MAP_CONTEXT = {
+  CA: {
+    cities: [
+      { name: "Eureka", lon: -124.16, lat: 40.8 },
+      { name: "Reno", lon: -119.81, lat: 39.53 },
+      { name: "Sacramento", lon: -121.49, lat: 38.58 },
+      { name: "San Francisco", lon: -122.42, lat: 37.77 },
+      { name: "San Jose", lon: -121.89, lat: 37.34 },
+      { name: "Fresno", lon: -119.79, lat: 36.74 },
+      { name: "Santa Barbara", lon: -119.7, lat: 34.42 },
+      { name: "Los Angeles", lon: -118.24, lat: 34.05 },
+      { name: "San Diego", lon: -117.16, lat: 32.72 },
+      { name: "Las Vegas", lon: -115.14, lat: 36.17 },
+      { name: "Phoenix", lon: -112.07, lat: 33.45 },
+      { name: "Salt Lake City", lon: -111.89, lat: 40.76 }
+    ],
+    roads: [
+      { name: "I-5", points: [[-122.32, 41.98], [-121.49, 38.58], [-119.79, 36.74], [-118.24, 34.05], [-117.16, 32.72]] },
+      { name: "US-101", points: [[-124.16, 40.8], [-122.42, 37.77], [-121.89, 37.34], [-119.7, 34.42], [-118.24, 34.05]] },
+      { name: "I-80", points: [[-122.3, 37.9], [-121.49, 38.58], [-119.81, 39.53], [-111.89, 40.76]] },
+      { name: "I-15", points: [[-117.16, 32.72], [-115.14, 36.17], [-111.89, 40.76]] }
+    ]
+  },
+  IA: {
+    cities: [
+      { name: "Sioux City", lon: -96.4, lat: 42.5 },
+      { name: "Des Moines", lon: -93.62, lat: 41.59 },
+      { name: "Cedar Rapids", lon: -91.67, lat: 41.98 },
+      { name: "Davenport", lon: -90.58, lat: 41.52 },
+      { name: "Omaha", lon: -95.94, lat: 41.26 },
+      { name: "Minneapolis", lon: -93.27, lat: 44.98 },
+      { name: "Kansas City", lon: -94.58, lat: 39.1 },
+      { name: "Chicago", lon: -87.63, lat: 41.88 }
+    ],
+    roads: [
+      { name: "I-80", points: [[-96.1, 41.25], [-93.62, 41.59], [-91.67, 41.98], [-90.58, 41.52], [-87.63, 41.88]] },
+      { name: "I-35", points: [[-93.27, 44.98], [-93.62, 41.59], [-94.58, 39.1]] }
+    ]
+  },
+  MT: {
+    cities: [
+      { name: "Missoula", lon: -113.99, lat: 46.87 },
+      { name: "Helena", lon: -112.04, lat: 46.59 },
+      { name: "Great Falls", lon: -111.3, lat: 47.51 },
+      { name: "Billings", lon: -108.5, lat: 45.78 },
+      { name: "Boise", lon: -116.2, lat: 43.62 },
+      { name: "Spokane", lon: -117.43, lat: 47.66 },
+      { name: "Bismarck", lon: -100.78, lat: 46.81 }
+    ],
+    roads: [
+      { name: "I-90", points: [[-116.2, 43.62], [-113.99, 46.87], [-112.04, 46.59], [-108.5, 45.78], [-104.05, 44.37]] },
+      { name: "I-15", points: [[-112.04, 46.59], [-111.3, 47.51], [-111.98, 49.0]] }
+    ]
+  },
+  NJ: {
+    cities: [
+      { name: "Newark", lon: -74.17, lat: 40.74 },
+      { name: "Jersey City", lon: -74.04, lat: 40.72 },
+      { name: "Trenton", lon: -74.76, lat: 40.22 },
+      { name: "Atlantic City", lon: -74.42, lat: 39.36 },
+      { name: "New York", lon: -74.0, lat: 40.71 },
+      { name: "Philadelphia", lon: -75.17, lat: 39.95 }
+    ],
+    roads: [
+      { name: "I-95", points: [[-75.17, 39.95], [-74.76, 40.22], [-74.17, 40.74], [-74.0, 40.71]] },
+      { name: "Garden State Pkwy", points: [[-74.17, 40.74], [-74.42, 39.36], [-74.93, 38.94]] }
+    ]
+  },
+  NM: {
+    cities: [
+      { name: "Albuquerque", lon: -106.65, lat: 35.08 },
+      { name: "Santa Fe", lon: -105.94, lat: 35.69 },
+      { name: "Las Cruces", lon: -106.78, lat: 32.32 },
+      { name: "El Paso", lon: -106.49, lat: 31.76 },
+      { name: "Amarillo", lon: -101.83, lat: 35.22 },
+      { name: "Phoenix", lon: -112.07, lat: 33.45 },
+      { name: "Denver", lon: -104.99, lat: 39.74 }
+    ],
+    roads: [
+      { name: "I-25", points: [[-106.78, 32.32], [-106.65, 35.08], [-105.94, 35.69], [-104.99, 39.74]] },
+      { name: "I-40", points: [[-112.07, 33.45], [-106.65, 35.08], [-101.83, 35.22]] }
+    ]
+  },
+  SD: {
+    cities: [
+      { name: "Rapid City", lon: -103.23, lat: 44.08 },
+      { name: "Pierre", lon: -100.35, lat: 44.37 },
+      { name: "Sioux Falls", lon: -96.73, lat: 43.55 },
+      { name: "Bismarck", lon: -100.78, lat: 46.81 },
+      { name: "Omaha", lon: -95.94, lat: 41.26 },
+      { name: "Minneapolis", lon: -93.27, lat: 44.98 }
+    ],
+    roads: [
+      { name: "I-90", points: [[-103.23, 44.08], [-100.35, 44.37], [-96.73, 43.55]] },
+      { name: "I-29", points: [[-96.73, 43.55], [-96.78, 46.88]] }
+    ]
   }
 };
 
@@ -1320,6 +1420,18 @@ function expandedBounds(bounds, factor = .35) {
   };
 }
 
+function mergeBounds(items) {
+  const bounds = { minLon: Infinity, minLat: Infinity, maxLon: -Infinity, maxLat: -Infinity };
+  for (const item of items) {
+    if (!item) continue;
+    bounds.minLon = Math.min(bounds.minLon, item.minLon);
+    bounds.minLat = Math.min(bounds.minLat, item.minLat);
+    bounds.maxLon = Math.max(bounds.maxLon, item.maxLon);
+    bounds.maxLat = Math.max(bounds.maxLat, item.maxLat);
+  }
+  return Number.isFinite(bounds.minLon) ? bounds : items.find(Boolean);
+}
+
 function boundsOverlap(a, b) {
   return a.minLon <= b.maxLon && a.maxLon >= b.minLon && a.minLat <= b.maxLat && a.maxLat >= b.minLat;
 }
@@ -1328,6 +1440,26 @@ function contextFeatures(features, activeFeatures, activeBounds, factor = .35) {
   const expanded = expandedBounds(activeBounds, factor);
   const activeSet = new Set(activeFeatures);
   return features.filter((feature) => !activeSet.has(feature) && boundsOverlap(stateBounds([feature]), expanded));
+}
+
+function contextPointBounds(state, activeBounds) {
+  const config = RESULT_MAP_CONTEXT[String(state || "").toUpperCase()];
+  if (!config) return null;
+  const visible = activeBounds ? expandedBounds(activeBounds, .34) : null;
+  const points = [
+    ...(config.cities || []).map((city) => [city.lon, city.lat]),
+    ...(config.roads || []).flatMap((road) => road.points || [])
+  ].filter((point) => point.length === 2)
+    .filter(([lon, lat]) => !visible || (
+      lon >= visible.minLon && lon <= visible.maxLon && lat >= visible.minLat && lat <= visible.maxLat
+    ));
+  if (!points.length) return null;
+  return points.reduce((bounds, [lon, lat]) => ({
+    minLon: Math.min(bounds.minLon, lon),
+    minLat: Math.min(bounds.minLat, lat),
+    maxLon: Math.max(bounds.maxLon, lon),
+    maxLat: Math.max(bounds.maxLat, lat)
+  }), { minLon: Infinity, minLat: Infinity, maxLon: -Infinity, maxLat: -Infinity });
 }
 
 function mapDimensions(bounds, maxWidth = 700, maxHeight = 520) {
@@ -1389,8 +1521,12 @@ async function districtShapeMap(race) {
     const margin = resultMarginInfo(race, race);
     const fill = margin?.percentFill || (leader && Number(leader.votes || 0) ? candidateFill(race, leader) : "#566274");
     const voteFill = margin?.voteFill || fill;
-    const bounds = stateBounds([feature]);
-    const { width, height, lonScale } = mapDimensions(bounds, 700, 500);
+    const activeBounds = stateBounds([feature]);
+    const allCountyFeatures = await loadCountyMapData()
+      .then((geojson) => (geojson.features || []))
+      .catch(() => []);
+    const bounds = mergeBounds([expandedBounds(activeBounds, .28), contextPointBounds(race.state, activeBounds)]) || activeBounds;
+    const { width, height, lonScale } = mapDimensions(bounds, 760, 540);
     const districtTitle = `${race.state || ""}-${districtNumber} District`;
     const districtTooltip = countyTooltipMarkup({
       name: districtTitle,
@@ -1399,6 +1535,7 @@ async function districtShapeMap(race) {
     }, race, districtTitle);
     return `
       <svg class="result-county-map result-district-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.electionName || "House district")} map">
+        ${resultMapContextLayer({ state: race.state, allFeatures: allCountyFeatures, activeFeatures: [feature], bounds, width, height, lonScale })}
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(margin?.rawFill || fill)}" data-county-tooltip="${escapeHtml(districtTooltip)}"></path>
       </svg>
     `;
@@ -1425,8 +1562,21 @@ async function countyShapeMap(race) {
       ? features.filter((feature) => lookup.has(feature.id) || lookup.has(String(feature.properties?.NAME || "").toLowerCase()) || lookup.has(regionLookupKey(feature.properties?.NAME)))
       : features;
     if (!visibleFeatures.length) return regionMap(race);
-    const bounds = stateBounds(visibleFeatures);
+    const activeBounds = stateBounds(visibleFeatures);
+    const outsideFeatures = shouldFilterToJurisdiction(race, features, lookup)
+      ? allFeatures
+      : allFeatures.filter((feature) => feature.properties?.STATE !== fips);
+    const bounds = mergeBounds([expandedBounds(activeBounds, .2), contextPointBounds(race.state, activeBounds)]) || activeBounds;
     const { width, height, lonScale } = mapDimensions(bounds);
+    const contextLayer = resultMapContextLayer({
+      state: race.state,
+      allFeatures: outsideFeatures,
+      activeFeatures: visibleFeatures,
+      bounds,
+      width,
+      height,
+      lonScale
+    });
     const paths = visibleFeatures.map((feature) => {
       const county = lookup.get(feature.id) || lookup.get(String(feature.properties?.NAME || "").toLowerCase()) || lookup.get(regionLookupKey(feature.properties?.NAME));
       const leader = county ? regionLeader(county) : null;
@@ -1445,6 +1595,7 @@ async function countyShapeMap(race) {
     }).join("");
     return `
       <svg class="result-county-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.stateName || race.state || "State")} county results map">
+        ${contextLayer}
         ${paths}
       </svg>
     `;
@@ -1741,6 +1892,54 @@ function voteHistoryChart(race) {
   `;
 }
 
+function projectPoint([lon, lat], bounds, width, height, lonScale = 1) {
+  const lonRange = Math.max(.1, (bounds.maxLon - bounds.minLon) * lonScale);
+  const latRange = Math.max(.1, bounds.maxLat - bounds.minLat);
+  const pad = 16;
+  const usableWidth = width - pad * 2;
+  const usableHeight = height - pad * 2;
+  const scale = Math.min(usableWidth / lonRange, usableHeight / latRange);
+  const offsetX = (width - lonRange * scale) / 2;
+  const offsetY = (height - latRange * scale) / 2;
+  return [
+    offsetX + ((lon - bounds.minLon) * lonScale) * scale,
+    offsetY + (bounds.maxLat - lat) * scale
+  ];
+}
+
+function resultMapContextLayer({ state, allFeatures = [], activeFeatures = [], bounds, width, height, lonScale }) {
+  const nearby = contextFeatures(allFeatures, activeFeatures, bounds, .22).slice(0, 260);
+  const nearbyPaths = nearby.map((feature) => `
+    <path class="map-context map-context-county" d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}"></path>
+  `).join("");
+  const config = RESULT_MAP_CONTEXT[String(state || "").toUpperCase()] || {};
+  const visibleBounds = expandedBounds(bounds, .08);
+  const roads = (config.roads || []).map((road) => {
+    const points = (road.points || []).filter(([lon, lat]) => (
+      lon >= visibleBounds.minLon && lon <= visibleBounds.maxLon && lat >= visibleBounds.minLat && lat <= visibleBounds.maxLat
+    ));
+    if (points.length < 2) return "";
+    const d = points.map((point, index) => {
+      const [x, y] = projectPoint(point, bounds, width, height, lonScale);
+      return `${index ? "L" : "M"}${x.toFixed(2)},${y.toFixed(2)}`;
+    }).join("");
+    return `<path class="map-context-road" d="${d}"><title>${escapeHtml(road.name || "Major route")}</title></path>`;
+  }).join("");
+  const cities = (config.cities || []).filter((city) => (
+    city.lon >= visibleBounds.minLon && city.lon <= visibleBounds.maxLon && city.lat >= visibleBounds.minLat && city.lat <= visibleBounds.maxLat
+  )).map((city) => {
+    const [x, y] = projectPoint([city.lon, city.lat], bounds, width, height, lonScale);
+    return `<text class="map-context-label" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${escapeHtml(city.name)}</text>`;
+  }).join("");
+  return `
+    <g class="result-map-context" aria-hidden="true">
+      ${nearbyPaths}
+      ${roads}
+      ${cities}
+    </g>
+  `;
+}
+
 function bindVoteHistoryHover() {
   const panel = page.querySelector(".result-vote-history-panel");
   const tooltip = panel?.querySelector(".vote-history-tooltip");
@@ -1899,7 +2098,14 @@ function applyMapMarginColors() {
   });
 }
 
+function updateLastCheckedStamp(value = new Date().toISOString()) {
+  resultLastCheckedAt = value;
+  const lastCheckedNode = page.querySelector("[data-result-last-checked]");
+  if (lastCheckedNode) lastCheckedNode.textContent = `Last checked ${timeLabel(resultLastCheckedAt)}`;
+}
+
 async function patchRaceDetail(race) {
+  updateLastCheckedStamp();
   const reporting = Math.max(0, Math.min(100, Number(race.estimatedVoteReporting ?? 0)));
   const reportingStat = page.querySelector(".result-reporting-stat");
   if (reportingStat) reportingStat.textContent = `${estimatedInLabel(race.estimatedVoteReporting)} estimated in`;
@@ -1908,6 +2114,7 @@ async function patchRaceDetail(race) {
 
   const lastUpdatedNode = page.querySelector("[data-result-last-updated]");
   if (lastUpdatedNode) lastUpdatedNode.textContent = `Last updated ${timeLabel(race.lastUpdated)}`;
+  updateLastCheckedStamp(resultLastCheckedAt);
   const countyCountNode = page.querySelector("[data-result-county-count]");
   if (countyCountNode) countyCountNode.textContent = `${numberLabel((race.counties || []).length)} counties`;
 
@@ -2263,6 +2470,7 @@ async function renderRace(race) {
         <div class="result-night-meta result-night-meta-top">
           <span data-poll-close="${escapeHtml(closeIso)}" class="result-poll-close-stat">${escapeHtml(pollCloseLabel(closeIso))}</span>
           <span data-result-last-updated>Last updated ${escapeHtml(timeLabel(race.lastUpdated))}</span>
+          <span data-result-last-checked>Last checked ${escapeHtml(timeLabel(resultLastCheckedAt))}</span>
           <span data-result-county-count>${numberLabel((race.counties || []).length)} counties</span>
         </div>
         <div class="result-reporting-label-row">
@@ -2344,6 +2552,7 @@ async function loadRaceDetail() {
     if (raceDetailInitialized && updateKey === raceDetailUpdateKeyCache) {
       const lastUpdatedNode = page.querySelector("[data-result-last-updated]");
       if (lastUpdatedNode) lastUpdatedNode.textContent = `Last updated ${timeLabel(race.lastUpdated)}`;
+      updateLastCheckedStamp();
       bindPollCountdown();
       return;
     }

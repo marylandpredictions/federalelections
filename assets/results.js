@@ -1,4 +1,5 @@
 const updatedLabel = document.getElementById("results-updated");
+const checkedLabel = document.getElementById("results-checked");
 const statusLabel = document.getElementById("results-status");
 const groupsNode = document.getElementById("results-groups");
 const archiveNode = document.getElementById("results-archive");
@@ -491,6 +492,7 @@ function renderUpcoming() {
 
 function renderMeta(data, source) {
   if (updatedLabel) updatedLabel.textContent = timeLabel(data.generatedAt);
+  if (checkedLabel) checkedLabel.textContent = timeLabel(new Date().toISOString());
   if (statusLabel) {
     const errorCount = data.errors?.length || 0;
     const latestDate = latestLiveDateKey(flattenRaces(data));

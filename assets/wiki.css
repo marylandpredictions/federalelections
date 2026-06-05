@@ -4294,6 +4294,40 @@ button.race-board-row {
   transition: fill .18s ease, filter .18s ease, transform .18s ease, stroke-width .18s ease;
 }
 
+.result-map-context {
+  opacity: .72;
+}
+
+.map-context-county {
+  fill: #121722;
+  stroke: color-mix(in srgb, #d6d9e2 18%, transparent);
+  stroke-width: .55;
+  cursor: default;
+  pointer-events: none;
+}
+
+.map-context-road {
+  fill: none;
+  stroke: color-mix(in srgb, #d6d9e2 22%, transparent);
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 5 8;
+  pointer-events: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.map-context-label {
+  fill: color-mix(in srgb, #f8fbff 74%, transparent);
+  stroke: color-mix(in srgb, #020b22 92%, transparent);
+  stroke-width: 3;
+  paint-order: stroke;
+  font: 900 clamp(.58rem, 1.3vw, .92rem)/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  letter-spacing: 0;
+  pointer-events: none;
+  text-anchor: middle;
+}
+
 .result-county-map path:hover,
 .result-county-map path:focus {
   filter: brightness(1.35) drop-shadow(0 0 9px rgba(198, 210, 255, .66));
@@ -4304,10 +4338,6 @@ button.race-board-row {
 
 .result-county-map path.is-waiting {
   fill: #566274;
-}
-
-.result-county-map path.map-context {
-  display: none;
 }
 
 .result-district-map path {

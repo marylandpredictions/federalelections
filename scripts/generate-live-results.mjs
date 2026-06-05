@@ -584,6 +584,7 @@ function normalizeNbcRace(id, source, data, nbcRace, options = {}) {
       percentReporting: roundPercent(area.percentIn) ?? 0,
       estimatedVoteReporting: roundPercent(area.percentIn),
       estimatedVoteReportingSource: "nbc-news-percent-in",
+      estimatedVoteReportingSourceUrl: sourceUrl,
       candidates: areaCandidates
     };
   }).filter((area) => area.name).sort((a, b) => a.name.localeCompare(b.name));
@@ -736,7 +737,8 @@ function applyExternalEstimateToDetail(detail, externalEstimate) {
       ? {
         ...county,
         estimatedVoteReporting: countyEstimate.estimatedVoteReporting,
-        estimatedVoteReportingSource: "nbc-news-percent-in"
+        estimatedVoteReportingSource: "nbc-news-percent-in",
+        estimatedVoteReportingSourceUrl: countyEstimate.sourceUrl || externalEstimate.sourceUrl || detail.estimatedVoteReportingSourceUrl || ""
       }
       : county;
   });
