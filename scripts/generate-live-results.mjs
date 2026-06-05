@@ -6,6 +6,7 @@ const DETAIL_DIR_URL = new URL("../data/live-results-races/", import.meta.url);
 const CALLS_URL = new URL("../data/result-calls.json", import.meta.url);
 const FEATURED_CANDIDATES_URL = new URL("../data/result-featured-candidates.json", import.meta.url);
 const NBC_BASE = "https://www.nbcnews.com/firecracker/api/v2/state-results/2026-primary-elections";
+const CIVIC_RACE_BASE = "https://civicapi.org/api/v2/race";
 let featuredCandidates = readFeaturedCandidates();
 let manualCalls = readManualCalls();
 const externalEstimateCache = new Map();
@@ -648,6 +649,24 @@ function readStaticRaceDetail(id) {
   };
 }
 
+async function fetchCivicRaceDetail(id, options = {}) {
+  const source = NBC_RACE_SOURCES[String(id)] || {};
+  const url = `${CIVIC_RACE_BASE}/${encodeURIComponent(id)}`;
+  const data = await fetchJson(url);
+  const group = {
+    state: source.state || data.province || data.state || "",
+    name: source.stateName || data.stateName || data.province || data.state || ""
+  };
+  const race = normalizeRace({ ...data, id: String(id) }, group, {
+    ...options,
+    source: "CivicAPI",
+    sourceUrl: url,
+    sourceNote: "NBC does not currently expose this race directly, so candidate and vote totals come from CivicAPI. Estimated-in remains from NBC where available."
+  });
+  const externalEstimate = await fetchBestExternalEstimate(race);
+  return applyExternalEstimateToDetail(race, externalEstimate);
+}
+
 async function fetchExternalEstimate(race) {
   const slug = slugForRace(race);
   if (!slug) return null;
@@ -750,7 +769,7 @@ function calculateGroupEstimatedVoteReporting(races) {
   return roundPercent(weightedSum / totalWeight);
 }
 
-function normalizeRace(race, group) {
+function normalizeRace(race, group, options = {}) {
   const candidateHasVotes = (race.candidates || []).some((candidate) => Number(candidate.votes || 0) || Number(candidate.percent || 0));
   const candidates = (race.candidates || []).map((candidate, index) => ({ ...normalizeCandidate(candidate), sourceOrder: index }))
     .sort((a, b) => {
@@ -770,9 +789,21 @@ function normalizeRace(race, group) {
     : calledCandidates;
   const leader = candidates[0] || null;
   const marker = electionMarkerFor(race, candidates);
+  const normalizedRace = {
+    ...race,
+    id: String(race.id),
+    electionName: race.election_name || `${group.name} ${race.type || "Race"}`,
+    electionType: race.election_type || "",
+    electionScope: race.election_scope || race.election_type || ""
+  };
+  const counties = options.includeCounties === false
+    ? undefined
+    : normalizeRegionResults(race.region_results || race.regionResults, normalizedRace, options.externalEstimate || null);
   return {
-    id: race.id,
-    source: "Legacy local cache",
+    id: String(race.id),
+    source: options.source || "Legacy local cache",
+    sourceUrl: options.sourceUrl || "",
+    sourceNote: options.sourceNote || "",
     type: race.type || "Race",
     country: race.country || "US",
     state: race.province || group.state,
@@ -798,7 +829,11 @@ function normalizeRace(race, group) {
     otherCandidateCount: Math.max(0, candidates.length - 1),
     calls: calls.map((call) => ({ ...call })),
     featuredCandidateNames: featuredNamesForRace(race.id),
-    candidates: finalCandidates
+    candidates: finalCandidates,
+    registeredVoters: race.registered_voters ?? null,
+    maps: Array.isArray(race.maps) ? race.maps : [],
+    voteHistory: Array.isArray(race.voteHistory) ? race.voteHistory : [],
+    counties
   };
 }
 
@@ -921,7 +956,17 @@ function appendVoteHistory(race) {
 async function fetchRaceDetail(id) {
   const nbcRace = await fetchNbcRaceDetail(id);
   if (nbcRace) return nbcRace;
-  if (STATIC_NBC_UNSUPPORTED_RACES.has(String(id))) return readStaticRaceDetail(id);
+  if (STATIC_NBC_UNSUPPORTED_RACES.has(String(id))) {
+    try {
+      return await fetchCivicRaceDetail(id);
+    } catch (error) {
+      const fallback = readStaticRaceDetail(id);
+      return {
+        ...fallback,
+        sourceNote: `${fallback.sourceNote || "Using local cache."} CivicAPI fallback failed: ${error.message}`
+      };
+    }
+  }
   throw new Error(`No NBC result source configured for race ${id}`);
 }
 
@@ -997,10 +1042,10 @@ export async function buildLiveResults() {
     model: "live election results",
     generatedAt: new Date().toISOString(),
     provider: {
-      name: "NBC News",
+      name: "NBC News / CivicAPI fallback",
       url: "https://www.nbcnews.com/politics/2026-primary-elections",
-      attribution: "Live race data is pulled from NBC News result feeds where NBC exposes a matching race. Race calls are manual Federal Elections Analysis calls from local config.",
-      estimatedVoteReporting: "Estimated-in percentages come from NBC News percent-in fields for supported races."
+      attribution: "Live race data is pulled from NBC News result feeds where NBC exposes a matching race. CivicAPI is used only for covered races NBC does not expose directly. Race calls are manual Federal Elections Analysis calls from local config.",
+      estimatedVoteReporting: "Estimated-in percentages come from NBC News percent-in fields or NBC statewide fallback fields where available."
     },
     refreshSeconds: 15,
     groups,

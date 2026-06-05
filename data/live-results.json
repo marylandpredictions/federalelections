@@ -1,11 +1,11 @@
 {
   "model": "live election results",
-  "generatedAt": "2026-06-05T03:37:55.771Z",
+  "generatedAt": "2026-06-05T04:29:19.112Z",
   "provider": {
-    "name": "NBC News",
+    "name": "NBC News / CivicAPI fallback",
     "url": "https://www.nbcnews.com/politics/2026-primary-elections",
-    "attribution": "Live race data is pulled from NBC News result feeds where NBC exposes a matching race. Race calls are manual Federal Elections Analysis calls from local config.",
-    "estimatedVoteReporting": "Estimated-in percentages come from NBC News percent-in fields for supported races."
+    "attribution": "Live race data is pulled from NBC News result feeds where NBC exposes a matching race. CivicAPI is used only for covered races NBC does not expose directly. Race calls are manual Federal Elections Analysis calls from local config.",
+    "estimatedVoteReporting": "Estimated-in percentages come from NBC News percent-in fields or NBC statewide fallback fields where available."
   },
   "refreshSeconds": 15,
   "groups": [
@@ -33,7 +33,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T08:00:00.000Z",
-          "lastUpdated": "2026-06-05T02:17:54.076Z",
+          "lastUpdated": "2026-06-05T02:18:11.789Z",
           "percentReporting": 59.6,
           "estimatedVoteReporting": 59.6,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -938,7 +938,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T08:00:00.000Z",
-          "lastUpdated": "2026-06-05T02:17:58.387Z",
+          "lastUpdated": "2026-06-05T02:17:58.252Z",
           "percentReporting": 64.3,
           "estimatedVoteReporting": 64.3,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -1185,7 +1185,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T08:00:00.000Z",
-          "lastUpdated": "2026-06-05T02:21:30.571Z",
+          "lastUpdated": "2026-06-05T02:17:57.457Z",
           "percentReporting": 58.9,
           "estimatedVoteReporting": 58.9,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -1455,7 +1455,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T08:00:00.000Z",
-          "lastUpdated": "2026-06-05T02:18:56.899Z",
+          "lastUpdated": "2026-06-05T02:22:23.750Z",
           "percentReporting": 59.1,
           "estimatedVoteReporting": 59.1,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -1663,9 +1663,11 @@
           "voteHistory": []
         },
         {
-          "id": 79778,
-          "source": "Static local cache",
-          "type": "Insurance Commissioner",
+          "id": "79778",
+          "source": "CivicAPI",
+          "sourceUrl": "https://civicapi.org/api/v2/race/79778",
+          "sourceNote": "NBC does not currently expose this race directly, so candidate and vote totals come from CivicAPI. Estimated-in remains from NBC where available.",
+          "type": "Race",
           "country": "US",
           "state": "CA",
           "stateName": "California",
@@ -1677,8 +1679,8 @@
           "electionDate": "2026-06-02T05:00:00.000Z",
           "pollsOpen": "2026-06-02T14:00:00.000Z",
           "pollsClose": "2026-06-03T03:00:00.000Z",
-          "lastUpdated": "2026-06-05T01:53:08.830Z",
-          "percentReporting": 60.1,
+          "lastUpdated": "2026-06-05T04:29:04.757Z",
+          "percentReporting": 59.9,
           "estimatedVoteReporting": 59.6,
           "estimatedVoteReportingSource": "nbc-news-statewide-percent-in-fallback",
           "hasBreakdown": false,
@@ -1839,7 +1841,6 @@
               "callLabel": ""
             }
           ],
-          "estimatedVoteReportingSourceUrl": "https://www.nbcnews.com/firecracker/api/v2/state-results/2026-primary-elections/california-governor-results",
           "registeredVoters": null,
           "maps": [
             {
@@ -1847,484 +1848,8 @@
               "map": "assets/California.svg"
             }
           ],
-          "voteHistory": [
-            {
-              "at": "2026-06-04T22:09:15.684Z",
-              "sourceUpdatedAt": "",
-              "reporting": 57.4,
-              "candidates": [
-                {
-                  "name": "Jane Kim",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 1171799,
-                  "percent": 23.93,
-                  "color": "#00b0b0"
-                },
-                {
-                  "name": "Ben Allen",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 945452,
-                  "percent": 19.31,
-                  "color": "#4874a3"
-                },
-                {
-                  "name": "Stacy Korsgaden",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 845381,
-                  "percent": 17.26,
-                  "color": "#009A9A"
-                },
-                {
-                  "name": "Robert Howell",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 423591,
-                  "percent": 8.65,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Merritt Farren",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 356223,
-                  "percent": 7.27,
-                  "color": "#e0bb24"
-                },
-                {
-                  "name": "Patrick Wolff",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 345045,
-                  "percent": 7.05,
-                  "color": "#45cd47"
-                },
-                {
-                  "name": "Sean Lee",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 301798,
-                  "percent": 6.16,
-                  "color": "#e258f8"
-                },
-                {
-                  "name": "Steven Bradford",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 228309,
-                  "percent": 4.66,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Eduardo Vargas",
-                  "party": "Peace and Freedom",
-                  "partyCode": "P",
-                  "votes": 128462,
-                  "percent": 2.62,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Eric Aarnio",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 101291,
-                  "percent": 2.07,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Keith Davis",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 49760,
-                  "percent": 1.02,
-                  "color": "#009A9A"
-                }
-              ]
-            },
-            {
-              "at": "2026-06-04T22:25:28.358Z",
-              "sourceUpdatedAt": "",
-              "reporting": 57.5,
-              "candidates": [
-                {
-                  "name": "Jane Kim",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 1183239,
-                  "percent": 23.96,
-                  "color": "#00b0b0"
-                },
-                {
-                  "name": "Ben Allen",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 955311,
-                  "percent": 19.35,
-                  "color": "#4874a3"
-                },
-                {
-                  "name": "Stacy Korsgaden",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 851777,
-                  "percent": 17.25,
-                  "color": "#009A9A"
-                },
-                {
-                  "name": "Robert Howell",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 426107,
-                  "percent": 8.63,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Merritt Farren",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 358802,
-                  "percent": 7.27,
-                  "color": "#e0bb24"
-                },
-                {
-                  "name": "Patrick Wolff",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 348317,
-                  "percent": 7.05,
-                  "color": "#45cd47"
-                },
-                {
-                  "name": "Sean Lee",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 303226,
-                  "percent": 6.14,
-                  "color": "#e258f8"
-                },
-                {
-                  "name": "Steven Bradford",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 230015,
-                  "percent": 4.66,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Eduardo Vargas",
-                  "party": "Peace and Freedom",
-                  "partyCode": "P",
-                  "votes": 129328,
-                  "percent": 2.62,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Eric Aarnio",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 101855,
-                  "percent": 2.06,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Keith Davis",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 50086,
-                  "percent": 1.01,
-                  "color": "#009A9A"
-                }
-              ]
-            },
-            {
-              "at": "2026-06-04T23:43:23.999Z",
-              "sourceUpdatedAt": "",
-              "reporting": 57.6,
-              "candidates": [
-                {
-                  "name": "Jane Kim",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 1188274,
-                  "percent": 23.97,
-                  "color": "#00b0b0"
-                },
-                {
-                  "name": "Ben Allen",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 959546,
-                  "percent": 19.36,
-                  "color": "#4874a3"
-                },
-                {
-                  "name": "Stacy Korsgaden",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 854449,
-                  "percent": 17.24,
-                  "color": "#009A9A"
-                },
-                {
-                  "name": "Robert Howell",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 427839,
-                  "percent": 8.63,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Merritt Farren",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 360516,
-                  "percent": 7.27,
-                  "color": "#e0bb24"
-                },
-                {
-                  "name": "Patrick Wolff",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 350065,
-                  "percent": 7.06,
-                  "color": "#45cd47"
-                },
-                {
-                  "name": "Sean Lee",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 304254,
-                  "percent": 6.14,
-                  "color": "#e258f8"
-                },
-                {
-                  "name": "Steven Bradford",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 230518,
-                  "percent": 4.65,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Eduardo Vargas",
-                  "party": "Peace and Freedom",
-                  "partyCode": "P",
-                  "votes": 129603,
-                  "percent": 2.61,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Eric Aarnio",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 102278,
-                  "percent": 2.06,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Keith Davis",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 50213,
-                  "percent": 1.01,
-                  "color": "#009A9A"
-                }
-              ]
-            },
-            {
-              "at": "2026-06-04T23:55:42.312Z",
-              "sourceUpdatedAt": "2026-06-04T23:54:39.365Z",
-              "reporting": 57.6,
-              "candidates": [
-                {
-                  "name": "Jane Kim",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 1221818,
-                  "percent": 24.17,
-                  "color": "#00b0b0"
-                },
-                {
-                  "name": "Ben Allen",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 980472,
-                  "percent": 19.39,
-                  "color": "#4874a3"
-                },
-                {
-                  "name": "Stacy Korsgaden",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 865754,
-                  "percent": 17.12,
-                  "color": "#009A9A"
-                },
-                {
-                  "name": "Robert Howell",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 432928,
-                  "percent": 8.56,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Merritt Farren",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 365640,
-                  "percent": 7.23,
-                  "color": "#e0bb24"
-                },
-                {
-                  "name": "Patrick Wolff",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 356690,
-                  "percent": 7.06,
-                  "color": "#45cd47"
-                },
-                {
-                  "name": "Sean Lee",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 308095,
-                  "percent": 6.09,
-                  "color": "#e258f8"
-                },
-                {
-                  "name": "Steven Bradford",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 236456,
-                  "percent": 4.68,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Eduardo Vargas",
-                  "party": "Peace and Freedom",
-                  "partyCode": "P",
-                  "votes": 132815,
-                  "percent": 2.63,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Eric Aarnio",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 103955,
-                  "percent": 2.06,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Keith Davis",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 51033,
-                  "percent": 1.01,
-                  "color": "#009A9A"
-                }
-              ]
-            },
-            {
-              "at": "2026-06-05T01:54:02.236Z",
-              "sourceUpdatedAt": "2026-06-05T01:53:08.830Z",
-              "reporting": 59.6,
-              "candidates": [
-                {
-                  "name": "Jane Kim",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 1263574,
-                  "percent": 24.29,
-                  "color": "#00b0b0"
-                },
-                {
-                  "name": "Ben Allen",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 1008644,
-                  "percent": 19.39,
-                  "color": "#4874a3"
-                },
-                {
-                  "name": "Stacy Korsgaden",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 894608,
-                  "percent": 17.2,
-                  "color": "#009A9A"
-                },
-                {
-                  "name": "Robert Howell",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 441923,
-                  "percent": 8.49,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Merritt Farren",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 374613,
-                  "percent": 7.2,
-                  "color": "#e0bb24"
-                },
-                {
-                  "name": "Patrick Wolff",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 367327,
-                  "percent": 7.06,
-                  "color": "#45cd47"
-                },
-                {
-                  "name": "Sean Lee",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 315847,
-                  "percent": 6.07,
-                  "color": "#e258f8"
-                },
-                {
-                  "name": "Steven Bradford",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 242199,
-                  "percent": 4.66,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Eduardo Vargas",
-                  "party": "Peace and Freedom",
-                  "partyCode": "P",
-                  "votes": 135955,
-                  "percent": 2.61,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Eric Aarnio",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 105687,
-                  "percent": 2.03,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Keith Davis",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 52006,
-                  "percent": 1,
-                  "color": "#009A9A"
-                }
-              ]
-            }
-          ],
-          "sourceNote": "NBC does not currently expose a result feed for this covered race, so this card uses the last local result file until an NBC source is configured."
+          "voteHistory": [],
+          "estimatedVoteReportingSourceUrl": "https://www.nbcnews.com/firecracker/api/v2/state-results/2026-primary-elections/california-governor-results"
         },
         {
           "id": "79884",
@@ -2342,7 +1867,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T08:00:00.000Z",
-          "lastUpdated": "2026-06-05T02:17:59.329Z",
+          "lastUpdated": "2026-06-05T02:18:10.614Z",
           "percentReporting": 51.1,
           "estimatedVoteReporting": 51.1,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -2536,9 +2061,11 @@
           "voteHistory": []
         },
         {
-          "id": 79881,
-          "source": "Static local cache",
-          "type": "Superintendent of Public Instruction",
+          "id": "79881",
+          "source": "CivicAPI",
+          "sourceUrl": "https://civicapi.org/api/v2/race/79881",
+          "sourceNote": "NBC does not currently expose this race directly, so candidate and vote totals come from CivicAPI. Estimated-in remains from NBC where available.",
+          "type": "Race",
           "country": "US",
           "state": "CA",
           "stateName": "California",
@@ -2550,8 +2077,8 @@
           "electionDate": "2026-06-02T05:00:00.000Z",
           "pollsOpen": "2026-06-02T14:00:00.000Z",
           "pollsClose": "2026-06-03T03:00:00.000Z",
-          "lastUpdated": "2026-06-05T01:53:17.130Z",
-          "percentReporting": 60,
+          "lastUpdated": "2026-06-05T04:28:00.925Z",
+          "percentReporting": 59.8,
           "estimatedVoteReporting": 59.6,
           "estimatedVoteReportingSource": "nbc-news-statewide-percent-in-fallback",
           "hasBreakdown": false,
@@ -2704,7 +2231,6 @@
               "callLabel": ""
             }
           ],
-          "estimatedVoteReportingSourceUrl": "https://www.nbcnews.com/firecracker/api/v2/state-results/2026-primary-elections/california-governor-results",
           "registeredVoters": null,
           "maps": [
             {
@@ -2712,444 +2238,8 @@
               "map": "assets/California.svg"
             }
           ],
-          "voteHistory": [
-            {
-              "at": "2026-06-04T22:09:15.843Z",
-              "sourceUpdatedAt": "",
-              "reporting": 57.4,
-              "candidates": [
-                {
-                  "name": "Sonja Shaw",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 1089048,
-                  "percent": 24.46,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Richard Barrera",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 841112,
-                  "percent": 18.89,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Wendy Castaneda Leal",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 426229,
-                  "percent": 9.57,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Al Muratsuchi",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 381196,
-                  "percent": 8.56,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Nichelle Henderson",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 368804,
-                  "percent": 8.28,
-                  "color": "#CD7F32"
-                },
-                {
-                  "name": "Anthony Rendon",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 363625,
-                  "percent": 8.17,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Josh Newman",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 321161,
-                  "percent": 7.21,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Frank Lara",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 306849,
-                  "percent": 6.89,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Ainye Long",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 248998,
-                  "percent": 5.59,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Gus Mattammal",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 105745,
-                  "percent": 2.37,
-                  "color": "#CD7F32"
-                }
-              ]
-            },
-            {
-              "at": "2026-06-04T22:25:28.403Z",
-              "sourceUpdatedAt": "",
-              "reporting": 57.5,
-              "candidates": [
-                {
-                  "name": "Sonja Shaw",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 1097160,
-                  "percent": 24.44,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Richard Barrera",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 850336,
-                  "percent": 18.94,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Wendy Castaneda Leal",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 430182,
-                  "percent": 9.58,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Al Muratsuchi",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 385144,
-                  "percent": 8.58,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Nichelle Henderson",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 371913,
-                  "percent": 8.28,
-                  "color": "#CD7F32"
-                },
-                {
-                  "name": "Anthony Rendon",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 366229,
-                  "percent": 8.16,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Josh Newman",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 323143,
-                  "percent": 7.2,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Frank Lara",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 308951,
-                  "percent": 6.88,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Ainye Long",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 250562,
-                  "percent": 5.58,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Gus Mattammal",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 106399,
-                  "percent": 2.37,
-                  "color": "#CD7F32"
-                }
-              ]
-            },
-            {
-              "at": "2026-06-04T23:43:24.044Z",
-              "sourceUpdatedAt": "",
-              "reporting": 57.6,
-              "candidates": [
-                {
-                  "name": "Sonja Shaw",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 1104607,
-                  "percent": 24.45,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Richard Barrera",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 857197,
-                  "percent": 18.97,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Wendy Castaneda Leal",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 432449,
-                  "percent": 9.57,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Al Muratsuchi",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 387987,
-                  "percent": 8.59,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Nichelle Henderson",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 373680,
-                  "percent": 8.27,
-                  "color": "#CD7F32"
-                },
-                {
-                  "name": "Anthony Rendon",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 368203,
-                  "percent": 8.15,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Josh Newman",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 324878,
-                  "percent": 7.19,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Frank Lara",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 310538,
-                  "percent": 6.87,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Ainye Long",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 252002,
-                  "percent": 5.58,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Gus Mattammal",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 107169,
-                  "percent": 2.37,
-                  "color": "#CD7F32"
-                }
-              ]
-            },
-            {
-              "at": "2026-06-04T23:55:42.380Z",
-              "sourceUpdatedAt": "2026-06-04T23:54:47.470Z",
-              "reporting": 57.6,
-              "candidates": [
-                {
-                  "name": "Sonja Shaw",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 1117513,
-                  "percent": 24.31,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Richard Barrera",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 871488,
-                  "percent": 18.96,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Wendy Castaneda Leal",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 438511,
-                  "percent": 9.54,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Al Muratsuchi",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 395370,
-                  "percent": 8.6,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Nichelle Henderson",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 386024,
-                  "percent": 8.4,
-                  "color": "#CD7F32"
-                },
-                {
-                  "name": "Anthony Rendon",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 376240,
-                  "percent": 8.19,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Josh Newman",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 328720,
-                  "percent": 7.15,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Frank Lara",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 318896,
-                  "percent": 6.94,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Ainye Long",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 255339,
-                  "percent": 5.56,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Gus Mattammal",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 108305,
-                  "percent": 2.36,
-                  "color": "#CD7F32"
-                }
-              ]
-            },
-            {
-              "at": "2026-06-05T01:54:02.339Z",
-              "sourceUpdatedAt": "2026-06-05T01:53:17.130Z",
-              "reporting": 59.6,
-              "candidates": [
-                {
-                  "name": "Sonja Shaw",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 1151429,
-                  "percent": 24.35,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Richard Barrera",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 904328,
-                  "percent": 19.13,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Wendy Castaneda Leal",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 448839,
-                  "percent": 9.49,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Al Muratsuchi",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 406329,
-                  "percent": 8.59,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Nichelle Henderson",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 397782,
-                  "percent": 8.41,
-                  "color": "#CD7F32"
-                },
-                {
-                  "name": "Anthony Rendon",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 385031,
-                  "percent": 8.14,
-                  "color": "#9A36FF"
-                },
-                {
-                  "name": "Josh Newman",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 336690,
-                  "percent": 7.12,
-                  "color": "#DA0041"
-                },
-                {
-                  "name": "Frank Lara",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 326278,
-                  "percent": 6.9,
-                  "color": "#7edbff"
-                },
-                {
-                  "name": "Ainye Long",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 260966,
-                  "percent": 5.52,
-                  "color": "#af81a2"
-                },
-                {
-                  "name": "Gus Mattammal",
-                  "party": "Nonpartisan",
-                  "partyCode": "N",
-                  "votes": 110741,
-                  "percent": 2.34,
-                  "color": "#CD7F32"
-                }
-              ]
-            }
-          ],
-          "sourceNote": "NBC does not currently expose a result feed for this covered race, so this card uses the last local result file until an NBC source is configured."
+          "voteHistory": [],
+          "estimatedVoteReportingSourceUrl": "https://www.nbcnews.com/firecracker/api/v2/state-results/2026-primary-elections/california-governor-results"
         },
         {
           "id": "79907",
@@ -3167,7 +2257,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T08:00:00.000Z",
-          "lastUpdated": "2026-06-05T02:20:06.649Z",
+          "lastUpdated": "2026-06-05T02:25:38.515Z",
           "percentReporting": 64.1,
           "estimatedVoteReporting": 64.1,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -3348,7 +2438,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T08:00:00.000Z",
-          "lastUpdated": "2026-06-05T02:17:55.825Z",
+          "lastUpdated": "2026-06-05T02:18:19.784Z",
           "percentReporting": 58.7,
           "estimatedVoteReporting": 58.7,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -3511,7 +2601,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T08:00:00.000Z",
-          "lastUpdated": "2026-06-05T02:23:19.573Z",
+          "lastUpdated": "2026-06-05T02:18:19.538Z",
           "percentReporting": 55.6,
           "estimatedVoteReporting": 55.6,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -3789,7 +2879,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T08:00:00.000Z",
-          "lastUpdated": "2026-06-05T02:18:01.781Z",
+          "lastUpdated": "2026-06-05T02:18:04.935Z",
           "percentReporting": 51.7,
           "estimatedVoteReporting": 51.7,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -4020,7 +3110,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T06:00:00.000Z",
-          "lastUpdated": "2026-06-05T00:49:46.558Z",
+          "lastUpdated": "2026-06-05T00:43:14.405Z",
           "percentReporting": 98.6,
           "estimatedVoteReporting": 98.6,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -4096,7 +3186,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T06:00:00.000Z",
-          "lastUpdated": "2026-06-05T00:49:46.558Z",
+          "lastUpdated": "2026-06-05T00:43:14.405Z",
           "percentReporting": 99,
           "estimatedVoteReporting": 99,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -4172,7 +3262,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T06:00:00.000Z",
-          "lastUpdated": "2026-06-05T00:43:19.232Z",
+          "lastUpdated": "2026-06-05T00:42:57.042Z",
           "percentReporting": 99,
           "estimatedVoteReporting": 99,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -4293,7 +3383,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T06:00:00.000Z",
-          "lastUpdated": "2026-06-05T00:43:19.232Z",
+          "lastUpdated": "2026-06-05T00:42:57.042Z",
           "percentReporting": 0,
           "estimatedVoteReporting": 0,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -4366,7 +3456,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T07:00:00.000Z",
-          "lastUpdated": "2026-06-04T22:28:42.289Z",
+          "lastUpdated": "2026-06-04T22:28:45.426Z",
           "percentReporting": 98,
           "estimatedVoteReporting": 98,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -4487,7 +3577,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T07:00:00.000Z",
-          "lastUpdated": "2026-06-04T22:28:42.289Z",
+          "lastUpdated": "2026-06-04T22:28:45.426Z",
           "percentReporting": 98.7,
           "estimatedVoteReporting": 98.7,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -4578,7 +3668,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T07:00:00.000Z",
-          "lastUpdated": "2026-06-04T22:29:58.055Z",
+          "lastUpdated": "2026-06-04T22:46:08.136Z",
           "percentReporting": 98,
           "estimatedVoteReporting": 98,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -4694,7 +3784,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T05:00:00.000Z",
-          "lastUpdated": "2026-06-05T03:35:34.060Z",
+          "lastUpdated": "2026-06-05T03:35:00.205Z",
           "percentReporting": 93.5,
           "estimatedVoteReporting": 93.5,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -4800,7 +3890,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T05:00:00.000Z",
-          "lastUpdated": "2026-06-05T03:35:34.060Z",
+          "lastUpdated": "2026-06-05T03:35:00.205Z",
           "percentReporting": 0,
           "estimatedVoteReporting": 0,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -4863,7 +3953,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T05:00:00.000Z",
-          "lastUpdated": "2026-06-05T03:35:17.122Z",
+          "lastUpdated": "2026-06-05T03:35:03.529Z",
           "percentReporting": 92.8,
           "estimatedVoteReporting": 92.8,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -5096,7 +4186,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T05:00:00.000Z",
-          "lastUpdated": "2026-06-05T03:35:04.323Z",
+          "lastUpdated": "2026-06-05T03:35:28.390Z",
           "percentReporting": 91.8,
           "estimatedVoteReporting": 91.8,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -5326,8 +4416,8 @@
               "apiWinner": true,
               "headshotUrl": "https://media-cldnry.s-nbcnews.com/image/upload/v5/firecracker/headshots/2026/NM_S00_D_B_LUJAN.png",
               "incumbent": true,
-              "callStatus": "",
-              "callLabel": ""
+              "callStatus": "projected",
+              "callLabel": "Projected"
             },
             {
               "name": "Matt Dodson",
@@ -5427,7 +4517,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T06:00:00.000Z",
-          "lastUpdated": "2026-06-05T00:54:00.502Z",
+          "lastUpdated": "2026-06-05T00:53:49.356Z",
           "percentReporting": 98.4,
           "estimatedVoteReporting": 98.4,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -5518,7 +4608,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T06:00:00.000Z",
-          "lastUpdated": "2026-06-05T00:54:00.502Z",
+          "lastUpdated": "2026-06-05T00:53:49.356Z",
           "percentReporting": 98.4,
           "estimatedVoteReporting": 98.4,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -5604,7 +4694,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T06:00:00.000Z",
-          "lastUpdated": "2026-06-04T18:48:32.996Z",
+          "lastUpdated": "2026-06-04T18:49:13.732Z",
           "percentReporting": 99,
           "estimatedVoteReporting": 99,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
@@ -5680,7 +4770,7 @@
           "electionDate": "2026-06-02T00:00:00.000Z",
           "pollsOpen": null,
           "pollsClose": "2026-06-03T06:00:00.000Z",
-          "lastUpdated": "2026-06-04T18:47:30.699Z",
+          "lastUpdated": "2026-06-04T18:47:34.249Z",
           "percentReporting": 98.9,
           "estimatedVoteReporting": 98.9,
           "estimatedVoteReportingSource": "nbc-news-percent-in",
