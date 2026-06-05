@@ -3,6 +3,7 @@ const raceId = new URLSearchParams(window.location.search).get("id");
 const FAVORITE_RACES_KEY = "fea.favoriteResultRaces.v1";
 let countyMapDataPromise = null;
 let districtMapDataPromise = null;
+let usStateMapDataPromise = null;
 let governorForecastPromise = null;
 let resultMapViewState = {
   zoom: 1,
@@ -273,6 +274,26 @@ const ANALYST_PROFILES = {
     name: "gamerdoglover",
     image: "assets/img/analysts/gamerdoglover.png"
   }
+};
+
+const RESULT_MAP_VIEW_BOUNDS = {
+  CA: { minLon: -125.2, minLat: 31.7, maxLon: -111.2, maxLat: 42.6 },
+  IA: { minLon: -97.0, minLat: 39.0, maxLon: -87.2, maxLat: 45.4 },
+  MT: { minLon: -117.4, minLat: 43.4, maxLon: -103.6, maxLat: 49.2 },
+  NJ: { minLon: -76.0, minLat: 38.7, maxLon: -73.3, maxLat: 41.4 },
+  NM: { minLon: -112.0, minLat: 31.1, maxLon: -101.4, maxLat: 37.8 },
+  SD: { minLon: -104.5, minLat: 41.0, maxLon: -95.0, maxLat: 47.3 }
+};
+
+const STATE_NAME_BY_ABBR = {
+  AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California", CO: "Colorado", CT: "Connecticut",
+  DE: "Delaware", FL: "Florida", GA: "Georgia", HI: "Hawaii", ID: "Idaho", IL: "Illinois", IN: "Indiana",
+  IA: "Iowa", KS: "Kansas", KY: "Kentucky", LA: "Louisiana", ME: "Maine", MD: "Maryland", MA: "Massachusetts",
+  MI: "Michigan", MN: "Minnesota", MS: "Mississippi", MO: "Missouri", MT: "Montana", NE: "Nebraska",
+  NV: "Nevada", NH: "New Hampshire", NJ: "New Jersey", NM: "New Mexico", NY: "New York", NC: "North Carolina",
+  ND: "North Dakota", OH: "Ohio", OK: "Oklahoma", OR: "Oregon", PA: "Pennsylvania", RI: "Rhode Island",
+  SC: "South Carolina", SD: "South Dakota", TN: "Tennessee", TX: "Texas", UT: "Utah", VT: "Vermont",
+  VA: "Virginia", WA: "Washington", WV: "West Virginia", WI: "Wisconsin", WY: "Wyoming", DC: "District of Columbia"
 };
 
 const RESULT_MAP_CONTEXT = {
@@ -1355,6 +1376,16 @@ async function loadDistrictMapData() {
   return districtMapDataPromise;
 }
 
+async function loadUsStateMapData() {
+  if (!usStateMapDataPromise) {
+    usStateMapDataPromise = fetch("data/result-us-states.geojson", { cache: "force-cache" }).then((response) => {
+      if (!response.ok) throw new Error(`US state map returned ${response.status}`);
+      return response.json();
+    });
+  }
+  return usStateMapDataPromise;
+}
+
 function regionLookupKey(value) {
   return String(value || "")
     .toLowerCase()
@@ -1532,9 +1563,13 @@ async function districtShapeMap(race) {
     const allCountyFeatures = await loadCountyMapData()
       .then((geojson) => (geojson.features || []))
       .catch(() => []);
+    const allStateFeatures = await loadUsStateMapData()
+      .then((geojson) => (geojson.features || []))
+      .catch(() => []);
     const stateCountyFeatures = allCountyFeatures.filter((item) => item.properties?.STATE === stateFips(race.state));
     const stateBoundsForContext = stateCountyFeatures.length ? stateBounds(stateCountyFeatures) : null;
-    const bounds = mergeBounds([stateBoundsForContext, expandedBounds(activeBounds, .38), contextPointBounds(race.state, activeBounds)]) || activeBounds;
+    const fixedBounds = RESULT_MAP_VIEW_BOUNDS[String(race.state || "").toUpperCase()];
+    const bounds = fixedBounds || mergeBounds([stateBoundsForContext, expandedBounds(activeBounds, .38), contextPointBounds(race.state, activeBounds)]) || activeBounds;
     const { width, height, lonScale } = mapDimensions(bounds, 760, 540);
     const districtTitle = `${race.state || ""}-${districtNumber} District`;
     const districtTooltip = countyTooltipMarkup({
@@ -1544,6 +1579,7 @@ async function districtShapeMap(race) {
     }, race, districtTitle);
     return `
       <svg class="result-county-map result-district-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.electionName || "House district")} map">
+        ${resultStateContextLayer({ state: race.state, allFeatures: allStateFeatures, bounds, width, height, lonScale })}
         ${resultMapContextLayer({ state: race.state, allFeatures: stateCountyFeatures.length ? stateCountyFeatures : allCountyFeatures, activeFeatures: [feature], bounds, width, height, lonScale, labels: false })}
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(margin?.rawFill || fill)}" data-county-tooltip="${escapeHtml(districtTooltip)}"></path>
         ${resultMapRoadLayer({ state: race.state, bounds, width, height, lonScale })}
@@ -1565,7 +1601,9 @@ async function countyShapeMap(race) {
   if (!fips) return regionMap(race);
   try {
     const geojson = await loadCountyMapData();
+    const stateGeojson = await loadUsStateMapData().catch(() => ({ features: [] }));
     const allFeatures = geojson.features || [];
+    const allStateFeatures = stateGeojson.features || [];
     const features = allFeatures.filter((feature) => feature.properties?.STATE === fips);
     if (!features.length) return regionMap(race);
     const lookup = countyLookup(race);
@@ -1579,13 +1617,15 @@ async function countyShapeMap(race) {
       ? allFeatures
       : allFeatures.filter((feature) => feature.properties?.STATE !== fips);
     const stateOutlineBounds = filterToJurisdiction ? stateBounds(features) : null;
+    const fixedBounds = RESULT_MAP_VIEW_BOUNDS[String(race.state || "").toUpperCase()];
     const bounds = mergeBounds([
+      fixedBounds,
       stateOutlineBounds,
       expandedBounds(activeBounds, filterToJurisdiction ? .28 : .08),
       contextPointBounds(race.state, activeBounds)
     ]) || activeBounds;
     const { width, height, lonScale } = mapDimensions(bounds);
-    const contextLayer = resultMapContextLayer({
+    const contextLayer = filterToJurisdiction ? resultMapContextLayer({
       state: race.state,
       allFeatures: outsideFeatures,
       activeFeatures: visibleFeatures,
@@ -1594,7 +1634,7 @@ async function countyShapeMap(race) {
       height,
       lonScale,
       labels: false
-    });
+    }) : "";
     const paths = visibleFeatures.map((feature) => {
       const county = lookup.get(feature.id) || lookup.get(String(feature.properties?.NAME || "").toLowerCase()) || lookup.get(regionLookupKey(feature.properties?.NAME));
       const leader = county ? regionLeader(county) : null;
@@ -1613,6 +1653,7 @@ async function countyShapeMap(race) {
     }).join("");
     return `
       <svg class="result-county-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.stateName || race.state || "State")} county results map">
+        ${resultStateContextLayer({ state: race.state, allFeatures: allStateFeatures, bounds, width, height, lonScale })}
         ${contextLayer}
         ${paths}
         ${resultMapRoadLayer({ state: race.state, bounds, width, height, lonScale })}
@@ -1963,7 +2004,7 @@ function resultMapContextLayer({ state, allFeatures = [], activeFeatures = [], b
       const [x, y] = projectPoint(point, bounds, width, height, lonScale);
       return `${index ? "L" : "M"}${x.toFixed(2)},${y.toFixed(2)}`;
     }).join("");
-    return `<path class="map-context-road" d="${d}"><title>${escapeHtml(road.name || "Major route")}</title></path>`;
+    return `<path class="map-context map-context-road" d="${d}"><title>${escapeHtml(road.name || "Major route")}</title></path>`;
   }).join("");
   const cities = !labels ? "" : (config.cities || []).filter((city) => (
     city.lon >= visibleBounds.minLon && city.lon <= visibleBounds.maxLon && city.lat >= visibleBounds.minLat && city.lat <= visibleBounds.maxLat
@@ -1978,6 +2019,19 @@ function resultMapContextLayer({ state, allFeatures = [], activeFeatures = [], b
       ${cities}
     </g>
   `;
+}
+
+function resultStateContextLayer({ state, allFeatures = [], bounds, width, height, lonScale }) {
+  const stateName = STATE_NAME_BY_ABBR[String(state || "").toUpperCase()] || "";
+  const visibleBounds = expandedBounds(bounds, .02);
+  const paths = (allFeatures || [])
+    .filter((feature) => boundsOverlap(stateBounds([feature]), visibleBounds))
+    .map((feature) => {
+      const name = String(feature.properties?.name || "");
+      const isActive = stateName && name === stateName;
+      return `<path class="map-context map-context-state ${isActive ? "is-active-state" : ""}" d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}"><title>${escapeHtml(name)}</title></path>`;
+    }).join("");
+  return paths ? `<g class="result-map-state-context" aria-hidden="true">${paths}</g>` : "";
 }
 
 function resultMapRoadLayer({ state, bounds, width, height, lonScale }) {
@@ -1997,7 +2051,7 @@ function resultMapRoadLayer({ state, bounds, width, height, lonScale }) {
       const [x, y] = projectPoint(point, bounds, width, height, lonScale);
       return `${index ? "L" : "M"}${x.toFixed(2)},${y.toFixed(2)}`;
     }).join("");
-    return `<path class="map-context-road map-context-road-top" d="${d}"><title>${escapeHtml(road.name || "Major route")}</title></path>`;
+    return `<path class="map-context map-context-road map-context-road-top" d="${d}"><title>${escapeHtml(road.name || "Major route")}</title></path>`;
   }).join("");
   return roads ? `<g class="result-map-roads" aria-hidden="true">${roads}</g>` : "";
 }

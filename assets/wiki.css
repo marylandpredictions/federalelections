@@ -4258,6 +4258,7 @@ button.race-board-row {
   cursor: grab;
   touch-action: none;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 .result-map-frame.is-panning {
@@ -4298,17 +4299,31 @@ button.race-board-row {
   opacity: .88;
 }
 
+.map-context-state {
+  fill: #161b22;
+  stroke: color-mix(in srgb, #d6d9e2 24%, transparent);
+  stroke-width: .85;
+  pointer-events: none;
+  opacity: .9;
+}
+
+.map-context-state.is-active-state {
+  fill: #1b2330;
+  stroke: color-mix(in srgb, #d6d9e2 36%, transparent);
+  opacity: .98;
+}
+
 .map-context-county {
-  fill: #151b25;
-  stroke: color-mix(in srgb, #d6d9e2 22%, transparent);
-  stroke-width: .46;
+  fill: transparent;
+  stroke: color-mix(in srgb, #d6d9e2 16%, transparent);
+  stroke-width: .34;
   cursor: default;
   pointer-events: none;
   opacity: .9;
 }
 
 .result-district-map .map-context-county {
-  fill: #eef2f8;
+  fill: transparent;
   stroke: color-mix(in srgb, #17233f 18%, transparent);
   opacity: .28;
 }
