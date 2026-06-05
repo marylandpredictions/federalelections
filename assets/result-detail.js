@@ -597,8 +597,6 @@ function candidateCustomColor(race, candidate) {
   if (isHexColor(extractedColor)) return extractedColor;
   const profileColor = candidatePhotoColor(race, candidate);
   if (isHexColor(profileColor)) return profileColor;
-  const directColor = String(candidate?.color || "").trim();
-  if (isHexColor(directColor)) return directColor;
   return "";
 }
 
@@ -1088,7 +1086,7 @@ function candidateRow(candidate, race, maxPercent) {
       <div class="result-full-candidate-name">
         <span class="result-candidate-avatar ${partyClass(code)}">${photo ? `<img src="${escapeHtml(photo)}" alt="">` : escapeHtml(candidateInitials(candidate.name))}</span>
         <div>
-          <strong>${escapeHtml(candidate.name)}${incumbentMark(race, candidate)} ${candidateCallMark(race, candidate)}</strong>
+          <strong>${escapeHtml(candidate.name)}${incumbentMark(race, candidate)}</strong>
         </div>
         ${callBadge(candidate, race)}
       </div>
@@ -1169,7 +1167,7 @@ function countyTooltipMarkup(county, race, titlePrefix = "") {
       <thead><tr><th></th><th>Votes</th><th>Pct</th></tr></thead>
       <tbody>
         ${rows.map((candidate) => `
-          <tr style="--candidate-color:${escapeHtml(candidateFill(race, candidate))}">
+          <tr class="${candidateRaceCallLabel(race, candidate) ? "is-called" : ""}" style="--candidate-color:${escapeHtml(candidateFill(race, candidate))}">
             <td><span class="result-tooltip-candidate"><i aria-hidden="true"></i><span>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)} (${escapeHtml(candidate.partyCode || partyCode(candidate.party) || "O")})</span></span></td>
             <td>${numberLabel(candidate.votes)}</td>
             <td>${percentLabel(candidate.percent)}</td>
@@ -1501,7 +1499,7 @@ function moveTooltip(event, canvas, tooltip) {
 function countyCandidateCells(county, race) {
   const candidates = countyTopCandidates(county, race, 3);
   return candidates.map((candidate) => `
-    <span>
+    <span class="${candidateRaceCallLabel(race, candidate) ? "is-called" : ""}" style="--candidate-color:${escapeHtml(candidateFill(race, candidate))}">
       <strong>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)}</strong>
       <small>${numberLabel(candidate.votes)} / ${percentLabel(candidate.percent)}</small>
     </span>
@@ -1669,10 +1667,9 @@ function voteHistoryChart(race) {
         const item = historyCandidateFor(point, candidate);
         const candidateParty = item?.partyCode || item?.party || candidate.partyCode || candidate.party || "";
         const code = partyCode(candidateParty) || candidateParty || "O";
-        const color = item?.color || candidateFill(race, candidate);
+        const color = candidateFill(race, candidate);
         return `
           <span class="vote-history-tooltip-row" style="--candidate-color:${escapeHtml(color)}">
-            <i></i>
             <b>${escapeHtml(code)}</b>
             <em>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)}</em>
             <strong>${percentLabel(item?.percent || 0)}</strong>
@@ -1695,10 +1692,9 @@ function voteHistoryChart(race) {
         .sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))
         .map((candidate) => {
           const code = partyCode(candidate.partyCode || candidate.party) || candidate.partyCode || "O";
-          const color = candidate.color || candidateFill(race, candidate);
+          const color = candidateFill(race, candidate);
           return `
             <span class="vote-history-expanded-row" style="--candidate-color:${escapeHtml(color)}">
-              <i></i>
               <b>${escapeHtml(code)}</b>
               <em>${escapeHtml(candidate.name)} ${candidateCallMark(race, candidate)}</em>
               <strong>${percentLabel(candidate.percent || 0)}</strong>
@@ -1711,6 +1707,9 @@ function voteHistoryChart(race) {
     return `<rect class="vote-history-hit" x="${hitX.toFixed(1)}" y="${pad.top}" width="${Math.max(6, hitWidth).toFixed(1)}" height="${height - pad.top - pad.bottom}" data-history-x="${x.toFixed(1)}" data-history-tooltip="${escapeHtml(label)}" data-history-expanded="${escapeHtml(expanded)}"></rect>`;
   }).join("");
   const ticks = [0, maxPercent / 2, maxPercent];
+  const timeTicks = orderedPoints
+    .map((point, index) => ({ point, index }))
+    .filter((_, index, list) => list.length <= 4 || index === 0 || index === list.length - 1 || index === Math.floor((list.length - 1) / 2));
   return `
     <section class="result-vote-history-panel">
       <div class="section-head">
@@ -1723,6 +1722,10 @@ function voteHistoryChart(race) {
         ${ticks.map((tick) => `
           <line class="vote-history-grid" x1="${pad.left}" y1="${yFor(tick).toFixed(1)}" x2="${width - pad.right}" y2="${yFor(tick).toFixed(1)}"></line>
           <text class="vote-history-tick" x="${pad.left - 10}" y="${(yFor(tick) + 4).toFixed(1)}">${tick.toFixed(0)}%</text>
+        `).join("")}
+        ${timeTicks.map(({ point, index }) => `
+          <line class="vote-history-time-grid" x1="${xFor(index).toFixed(1)}" y1="${pad.top}" x2="${xFor(index).toFixed(1)}" y2="${height - pad.bottom}"></line>
+          <text class="vote-history-time-tick" x="${xFor(index).toFixed(1)}" y="${height - 28}">${escapeHtml(new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(new Date(point.at || point.updatedAt || point.timestamp || point.time || race.lastUpdated)))}</text>
         `).join("")}
         <line x1="${pad.left}" y1="${height - pad.bottom}" x2="${width - pad.right}" y2="${height - pad.bottom}"></line>
         <line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${height - pad.bottom}"></line>
@@ -2183,8 +2186,8 @@ function bindPartyCombineToggle(race) {
 
   const syncToggle = () => {
     toggle.textContent = resultPartyViewEnabled ? "Candidate View" : "Party View";
-    toggle.style.background = resultPartyViewEnabled ? "rgba(16, 48, 178, 0.3)" : "";
-    toggle.style.color = resultPartyViewEnabled ? "#ffffff" : "";
+    toggle.classList.toggle("active", resultPartyViewEnabled);
+    toggle.setAttribute("aria-pressed", String(resultPartyViewEnabled));
   };
   syncToggle();
   
