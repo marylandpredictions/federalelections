@@ -252,7 +252,8 @@
   $("loadNote")?.addEventListener("click", loadSelectedNote);
   $("newNote")?.addEventListener("click", clearNoteForm);
   noteSelect?.addEventListener("change", () => {
-    state.noteIndex = noteSelect.value === "" ? null : Number(noteSelect.value);
+    if (noteSelect.value === "") clearNoteForm();
+    else loadSelectedNote();
   });
   callRows.addEventListener("click", (event) => {
     if (event.target.closest(".remove-call")) {

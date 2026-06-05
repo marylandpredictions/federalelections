@@ -4,6 +4,7 @@ const FAVORITE_RACES_KEY = "fea.favoriteResultRaces.v1";
 let countyMapDataPromise = null;
 let districtMapDataPromise = null;
 let usStateMapDataPromise = null;
+let majorHighwayDataPromise = null;
 let governorForecastPromise = null;
 let resultMapViewState = {
   zoom: 1,
@@ -282,7 +283,11 @@ const RESULT_MAP_VIEW_BOUNDS = {
   MT: { minLon: -117.4, minLat: 43.4, maxLon: -103.6, maxLat: 49.2 },
   NJ: { minLon: -76.0, minLat: 38.7, maxLon: -73.3, maxLat: 41.4 },
   NM: { minLon: -112.0, minLat: 31.1, maxLon: -101.4, maxLat: 37.8 },
-  SD: { minLon: -104.5, minLat: 41.0, maxLon: -95.0, maxLat: 47.3 }
+  SD: { minLon: -104.5, minLat: 41.0, maxLon: -95.0, maxLat: 47.3 },
+  NV: { minLon: -120.4, minLat: 34.7, maxLon: -113.4, maxLat: 42.4 },
+  ND: { minLon: -105.0, minLat: 45.4, maxLon: -95.5, maxLat: 49.5 },
+  ME: { minLon: -72.0, minLat: 42.7, maxLon: -66.6, maxLat: 47.7 },
+  SC: { minLon: -83.8, minLat: 31.8, maxLon: -78.2, maxLat: 35.5 }
 };
 
 const STATE_NAME_BY_ABBR = {
@@ -403,6 +408,61 @@ const RESULT_MAP_CONTEXT = {
     roads: [
       { name: "I-90", points: [[-103.23, 44.08], [-100.35, 44.37], [-96.73, 43.55]] },
       { name: "I-29", points: [[-96.73, 43.55], [-96.78, 46.88]] }
+    ]
+  },
+  NV: {
+    cities: [
+      { name: "Reno", lon: -119.81, lat: 39.53 },
+      { name: "Carson City", lon: -119.77, lat: 39.16 },
+      { name: "Las Vegas", lon: -115.14, lat: 36.17 },
+      { name: "Elko", lon: -115.76, lat: 40.83 },
+      { name: "Salt Lake City", lon: -111.89, lat: 40.76 },
+      { name: "Fresno", lon: -119.79, lat: 36.74 }
+    ],
+    roads: [
+      { name: "I-80", points: [[-119.81, 39.53], [-115.76, 40.83], [-111.89, 40.76]] },
+      { name: "I-15", points: [[-115.14, 36.17], [-113.58, 37.1], [-111.89, 40.76]] }
+    ]
+  },
+  ND: {
+    cities: [
+      { name: "Fargo", lon: -96.79, lat: 46.88 },
+      { name: "Bismarck", lon: -100.78, lat: 46.81 },
+      { name: "Grand Forks", lon: -97.03, lat: 47.93 },
+      { name: "Minot", lon: -101.29, lat: 48.23 },
+      { name: "Billings", lon: -108.5, lat: 45.78 },
+      { name: "Minneapolis", lon: -93.27, lat: 44.98 }
+    ],
+    roads: [
+      { name: "I-94", points: [[-104.05, 46.28], [-100.78, 46.81], [-96.79, 46.88], [-93.27, 44.98]] },
+      { name: "I-29", points: [[-96.73, 43.55], [-96.79, 46.88], [-97.03, 47.93]] }
+    ]
+  },
+  ME: {
+    cities: [
+      { name: "Portland", lon: -70.26, lat: 43.66 },
+      { name: "Augusta", lon: -69.78, lat: 44.31 },
+      { name: "Bangor", lon: -68.78, lat: 44.8 },
+      { name: "Lewiston", lon: -70.21, lat: 44.1 },
+      { name: "Boston", lon: -71.06, lat: 42.36 }
+    ],
+    roads: [
+      { name: "I-95", points: [[-71.06, 42.36], [-70.26, 43.66], [-69.78, 44.31], [-68.78, 44.8], [-67.84, 46.12]] }
+    ]
+  },
+  SC: {
+    cities: [
+      { name: "Columbia", lon: -81.03, lat: 34.0 },
+      { name: "Charleston", lon: -79.93, lat: 32.78 },
+      { name: "Greenville", lon: -82.4, lat: 34.85 },
+      { name: "Myrtle Beach", lon: -78.89, lat: 33.69 },
+      { name: "Charlotte", lon: -80.84, lat: 35.23 },
+      { name: "Savannah", lon: -81.1, lat: 32.08 }
+    ],
+    roads: [
+      { name: "I-26", points: [[-82.4, 34.85], [-81.03, 34.0], [-79.93, 32.78]] },
+      { name: "I-95", points: [[-81.1, 32.08], [-80.2, 33.92], [-79.46, 34.2]] },
+      { name: "I-85", points: [[-84.39, 33.75], [-82.4, 34.85], [-80.84, 35.23]] }
     ]
   }
 };
@@ -1398,6 +1458,16 @@ async function loadUsStateMapData() {
   return usStateMapDataPromise;
 }
 
+async function loadMajorHighwayData() {
+  if (!majorHighwayDataPromise) {
+    majorHighwayDataPromise = fetch("data/result-major-highways.geojson", { cache: "force-cache" }).then((response) => {
+      if (!response.ok) throw new Error(`Major highway map returned ${response.status}`);
+      return response.json();
+    });
+  }
+  return majorHighwayDataPromise;
+}
+
 function regionLookupKey(value) {
   return String(value || "")
     .toLowerCase()
@@ -1445,6 +1515,13 @@ function coordinateRings(geometry) {
   return [];
 }
 
+function coordinateLines(geometry) {
+  if (!geometry) return [];
+  if (geometry.type === "LineString") return [geometry.coordinates || []];
+  if (geometry.type === "MultiLineString") return geometry.coordinates || [];
+  return [];
+}
+
 function stateBounds(features) {
   const bounds = { minLon: Infinity, minLat: Infinity, maxLon: -Infinity, maxLat: -Infinity };
   for (const feature of features) {
@@ -1458,6 +1535,21 @@ function stateBounds(features) {
     }
   }
   return bounds;
+}
+
+function geometryBounds(geometry) {
+  const bounds = { minLon: Infinity, minLat: Infinity, maxLon: -Infinity, maxLat: -Infinity };
+  const points = [
+    ...coordinateRings(geometry).flat(),
+    ...coordinateLines(geometry).flat()
+  ];
+  for (const [lon, lat] of points) {
+    bounds.minLon = Math.min(bounds.minLon, lon);
+    bounds.maxLon = Math.max(bounds.maxLon, lon);
+    bounds.minLat = Math.min(bounds.minLat, lat);
+    bounds.maxLat = Math.max(bounds.maxLat, lat);
+  }
+  return Number.isFinite(bounds.minLon) ? bounds : null;
 }
 
 function expandedBounds(bounds, factor = .35) {
@@ -1551,6 +1643,26 @@ function geometryPath(geometry, bounds, width, height, lonScale = 1) {
   }).join("");
 }
 
+function lineGeometryPath(geometry, bounds, width, height, lonScale = 1) {
+  const lonRange = Math.max(.1, (bounds.maxLon - bounds.minLon) * lonScale);
+  const latRange = Math.max(.1, bounds.maxLat - bounds.minLat);
+  const pad = 16;
+  const usableWidth = width - pad * 2;
+  const usableHeight = height - pad * 2;
+  const scale = Math.min(usableWidth / lonRange, usableHeight / latRange);
+  const offsetX = (width - lonRange * scale) / 2;
+  const offsetY = (height - latRange * scale) / 2;
+  const project = ([lon, lat]) => [
+    offsetX + ((lon - bounds.minLon) * lonScale) * scale,
+    offsetY + (bounds.maxLat - lat) * scale
+  ];
+  return coordinateLines(geometry).map((line) => {
+    const points = line.map(project);
+    if (points.length < 2) return "";
+    return points.map(([x, y], index) => `${index ? "L" : "M"}${x.toFixed(2)},${y.toFixed(2)}`).join("");
+  }).filter(Boolean).join("");
+}
+
 async function districtShapeMap(race) {
   if (REDISTRICTED_RESULT_STATES.has(String(race.state || "").toUpperCase())) {
     return `
@@ -1578,6 +1690,9 @@ async function districtShapeMap(race) {
     const allStateFeatures = await loadUsStateMapData()
       .then((geojson) => (geojson.features || []))
       .catch(() => []);
+    const highwayFeatures = await loadMajorHighwayData()
+      .then((geojson) => (geojson.features || []))
+      .catch(() => []);
     const stateCountyFeatures = allCountyFeatures.filter((item) => item.properties?.STATE === stateFips(race.state));
     const stateBoundsForContext = stateCountyFeatures.length ? stateBounds(stateCountyFeatures) : null;
     const fixedBounds = RESULT_MAP_VIEW_BOUNDS[String(race.state || "").toUpperCase()];
@@ -1598,7 +1713,7 @@ async function districtShapeMap(race) {
         ${resultStateContextLayer({ state: race.state, allFeatures: allStateFeatures, bounds, width, height, lonScale })}
         ${resultMapContextLayer({ state: race.state, allFeatures: stateCountyFeatures.length ? stateCountyFeatures : allCountyFeatures, activeFeatures: [feature], bounds, width, height, lonScale, labels: false })}
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(margin?.rawFill || fill)}" data-county-tooltip="${escapeHtml(districtTooltip)}"></path>
-        ${resultMapRoadLayer({ state: race.state, bounds, width, height, lonScale })}
+        ${resultMapRoadLayer({ state: race.state, bounds, width, height, lonScale, highwayFeatures })}
         ${resultMapLabelLayer({ state: race.state, bounds, width, height, lonScale })}
       </svg>
     `;
@@ -1618,8 +1733,10 @@ async function countyShapeMap(race) {
   try {
     const geojson = await loadCountyMapData();
     const stateGeojson = await loadUsStateMapData().catch(() => ({ features: [] }));
+    const highwayGeojson = await loadMajorHighwayData().catch(() => ({ features: [] }));
     const allFeatures = geojson.features || [];
     const allStateFeatures = stateGeojson.features || [];
+    const highwayFeatures = highwayGeojson.features || [];
     const features = allFeatures.filter((feature) => feature.properties?.STATE === fips);
     if (!features.length) return regionMap(race);
     const lookup = countyLookup(race);
@@ -1672,7 +1789,7 @@ async function countyShapeMap(race) {
         ${resultStateContextLayer({ state: race.state, allFeatures: allStateFeatures, bounds, width, height, lonScale })}
         ${contextLayer}
         ${paths}
-        ${resultMapRoadLayer({ state: race.state, bounds, width, height, lonScale })}
+        ${resultMapRoadLayer({ state: race.state, bounds, width, height, lonScale, highwayFeatures })}
         ${resultMapLabelLayer({ state: race.state, bounds, width, height, lonScale })}
       </svg>
     `;
@@ -2050,7 +2167,7 @@ function resultStateContextLayer({ state, allFeatures = [], bounds, width, heigh
   return paths ? `<g class="result-map-state-context" aria-hidden="true">${paths}</g>` : "";
 }
 
-function resultMapRoadLayer({ state, bounds, width, height, lonScale }) {
+function fallbackRoadLayer({ state, bounds, width, height, lonScale }) {
   const config = RESULT_MAP_CONTEXT[String(state || "").toUpperCase()] || {};
   const visibleBounds = expandedBounds(bounds, .08);
   const roads = (config.roads || []).map((road) => {
@@ -2070,6 +2187,24 @@ function resultMapRoadLayer({ state, bounds, width, height, lonScale }) {
     return `<path class="map-context map-context-road map-context-road-top" d="${d}"><title>${escapeHtml(road.name || "Major route")}</title></path>`;
   }).join("");
   return roads ? `<g class="result-map-roads" aria-hidden="true">${roads}</g>` : "";
+}
+
+function resultMapRoadLayer({ state, bounds, width, height, lonScale, highwayFeatures = [] }) {
+  const visibleBounds = expandedBounds(bounds, .02);
+  const roads = (highwayFeatures || [])
+    .filter((feature) => {
+      const featureBounds = geometryBounds(feature.geometry);
+      return featureBounds && boundsOverlap(featureBounds, visibleBounds);
+    })
+    .slice(0, 320)
+    .map((feature) => {
+      const d = lineGeometryPath(feature.geometry, bounds, width, height, lonScale);
+      if (!d) return "";
+      const route = feature.properties?.ROUTE_NUM || feature.properties?.NUMBER || "Highway";
+      return `<path class="map-context map-context-road map-context-road-top" d="${d}"><title>${escapeHtml(route)}</title></path>`;
+    })
+    .join("");
+  return roads ? `<g class="result-map-roads" aria-hidden="true">${roads}</g>` : fallbackRoadLayer({ state, bounds, width, height, lonScale });
 }
 
 function resultMapLabelLayer({ state, bounds, width, height, lonScale }) {
@@ -2149,14 +2284,14 @@ function bindMapZoom() {
     applyMapViewportState();
     controls.forEach((control) => {
       const mode = control.dataset.mapZoom;
-      control.disabled = (mode === "in" && zoom >= 2.35) || (mode === "out" && zoom <= 1);
+      control.disabled = (mode === "in" && zoom >= 2.35) || (mode === "out" && zoom <= .92);
     });
   };
   controls.forEach((control) => {
     control.addEventListener("click", () => {
       const mode = control.dataset.mapZoom;
       if (mode === "in") zoom = Math.min(2.35, zoom + .25);
-      if (mode === "out") zoom = Math.max(1, zoom - .25);
+      if (mode === "out") zoom = Math.max(.92, zoom - .12);
       if (mode === "reset") {
         zoom = 1;
         panX = 0;
@@ -2167,7 +2302,7 @@ function bindMapZoom() {
   });
   frame.addEventListener("wheel", (event) => {
     event.preventDefault();
-    zoom = event.deltaY < 0 ? Math.min(2.35, zoom + .18) : Math.max(1, zoom - .18);
+    zoom = event.deltaY < 0 ? Math.min(2.35, zoom + .18) : Math.max(.92, zoom - .12);
     apply();
   }, { passive: false });
   frame.addEventListener("pointerdown", (event) => {
@@ -2242,6 +2377,7 @@ function applyMapViewportState() {
   frame.style.setProperty("--result-map-zoom", zoom.toFixed(2));
   frame.style.setProperty("--result-map-pan-x", `${panX.toFixed(1)}px`);
   frame.style.setProperty("--result-map-pan-y", `${panY.toFixed(1)}px`);
+  frame.style.setProperty("--result-map-label-size", `${Math.max(.34, .8 / Math.pow(Math.max(.92, zoom), 1.5)).toFixed(3)}rem`);
 }
 
 function applyMapMarginColors() {
@@ -2690,15 +2826,29 @@ async function renderRace(race) {
 
 async function fetchRace() {
   if (!raceId) throw new Error("Missing race id.");
+  const fetchStaticRace = async () => {
+    const staticResponse = await fetch(`data/live-results-races/${encodeURIComponent(raceId)}.json`, { cache: "no-store" });
+    if (!staticResponse.ok) throw new Error(`Race detail returned ${staticResponse.status}`);
+    return staticResponse.json();
+  };
+  const mergeStoredHistory = async (race) => {
+    try {
+      const stored = await fetchStaticRace();
+      const storedHistory = Array.isArray(stored.voteHistory) ? stored.voteHistory : [];
+      const liveHistory = Array.isArray(race.voteHistory) ? race.voteHistory : [];
+      if (storedHistory.length > liveHistory.length) return { ...race, voteHistory: storedHistory };
+    } catch {
+      // Static detail history is an optional fallback when the live API has no persisted snapshots yet.
+    }
+    return race;
+  };
   try {
     const liveResponse = await fetch(`/api/live-results/race?id=${encodeURIComponent(raceId)}`, { cache: "no-store" });
-    if (liveResponse.ok) return liveResponse.json();
+    if (liveResponse.ok) return mergeStoredHistory(await liveResponse.json());
   } catch {
     // Static deployments do not have the live API; fall back to generated JSON.
   }
-  const staticResponse = await fetch(`data/live-results-races/${encodeURIComponent(raceId)}.json`, { cache: "no-store" });
-  if (!staticResponse.ok) throw new Error(`Race detail returned ${staticResponse.status}`);
-  return staticResponse.json();
+  return fetchStaticRace();
 }
 
 let raceDetailInitialized = false;
