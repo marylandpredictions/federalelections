@@ -5,7 +5,6 @@ const OUTPUT_URL = new URL("../data/live-results.json", import.meta.url);
 const DETAIL_DIR_URL = new URL("../data/live-results-races/", import.meta.url);
 const CALLS_URL = new URL("../data/result-calls.json", import.meta.url);
 const FEATURED_CANDIDATES_URL = new URL("../data/result-featured-candidates.json", import.meta.url);
-const CIVIC_BASE = "https://civicapi.org/api/v2";
 const NBC_BASE = "https://www.nbcnews.com/firecracker/api/v2/state-results/2026-primary-elections";
 let featuredCandidates = readFeaturedCandidates();
 let manualCalls = readManualCalls();
@@ -40,6 +39,47 @@ const REQUIRED_RACES_BY_STATE = {
 
 const MANUAL_RACES = {
 };
+
+const NBC_RACE_SOURCES = {
+  79777: { state: "CA", slug: "california-governor-results", type: "Governor", name: "California Governor Open Primary" },
+  79779: { state: "CA", slug: "california-lieutenant-governor-results", type: "Lieutenant Governor", name: "California Lieutenant Governor Open Primary" },
+  79778: { state: "CA", slug: "", type: "Insurance Commissioner", name: "California Insurance Commissioner Open Primary", staticOnly: true },
+  79881: { state: "CA", slug: "", type: "Superintendent of Public Instruction", name: "California Superintendent of Public Instruction Open Primary", staticOnly: true },
+  79893: { state: "CA", slug: "california-us-house-district-1-results", type: "House of Representatives", district: "CA-01", name: "California US House 1 Open Primary" },
+  79932: { state: "CA", slug: "california-us-house-district-7-results", type: "House of Representatives", district: "CA-07", name: "California US House 7 Open Primary" },
+  79884: { state: "CA", slug: "california-us-house-district-11-results", type: "House of Representatives", district: "CA-11", name: "California US House 11 Open Primary" },
+  79896: { state: "CA", slug: "california-us-house-district-22-results", type: "House of Representatives", district: "CA-22", name: "California US House 22 Open Primary" },
+  79907: { state: "CA", slug: "california-us-house-district-32-results", type: "House of Representatives", district: "CA-32", name: "California US House 32 Open Primary" },
+  79909: { state: "CA", slug: "california-us-house-district-34-results", type: "House of Representatives", district: "CA-34", name: "California US House 34 Open Primary" },
+  79916: { state: "CA", slug: "california-us-house-district-40-results", type: "House of Representatives", district: "CA-40", name: "California US House 40 Open Primary" },
+  79924: { state: "CA", slug: "california-us-house-district-48-results", type: "House of Representatives", district: "CA-48", name: "California US House 48 Open Primary" },
+  79938: { state: "CA", slug: "los-angeles-mayor-results", type: "Mayor", municipality: "Los Angeles", name: "Los Angeles Mayor Open Primary" },
+  79945: { state: "IA", slug: "iowa-governor-results", party: "R", type: "Governor", name: "Iowa Governor Republican Primary" },
+  79944: { state: "IA", slug: "iowa-governor-results", party: "D", type: "Governor", name: "Iowa Governor Democratic Primary" },
+  80211: { state: "IA", slug: "iowa-senate-results", party: "R", type: "Senate", name: "Iowa US Senate Republican Primary" },
+  80210: { state: "IA", slug: "iowa-senate-results", party: "D", type: "Senate", name: "Iowa US Senate Democratic Primary" },
+  80460: { state: "MT", slug: "montana-senate-results", party: "R", type: "Senate", name: "Montana US Senate Republican Primary" },
+  80458: { state: "MT", slug: "montana-senate-results", party: "D", type: "Senate", name: "Montana US Senate Democratic Primary" },
+  80452: { state: "MT", slug: "montana-us-house-district-1-results", party: "D", type: "House of Representatives", district: "MT-01", name: "Montana US House 1 Democratic Primary" },
+  81058: { state: "NJ", slug: "new-jersey-senate-results", party: "R", type: "US Senate", name: "New Jersey US Senate Republican Primary" },
+  81057: { state: "NJ", slug: "new-jersey-senate-results", party: "D", type: "US Senate", name: "New Jersey US Senate Democratic Primary" },
+  81046: { state: "NJ", slug: "new-jersey-us-house-district-7-results", party: "D", type: "US House", district: "NJ-07", name: "New Jersey US House 7 Democratic Primary" },
+  81048: { state: "NJ", slug: "new-jersey-us-house-district-8-results", party: "D", type: "US House", district: "NJ-08", name: "New Jersey US House 8 Democratic Primary" },
+  81055: { state: "NJ", slug: "new-jersey-us-house-district-12-results", party: "D", type: "US House", district: "NJ-12", name: "New Jersey US House 12 Democratic Primary" },
+  80691: { state: "NM", slug: "new-mexico-governor-results", party: "R", type: "Governor", name: "New Mexico Governor Republican Primary" },
+  80690: { state: "NM", slug: "new-mexico-governor-results", party: "D", type: "Governor", name: "New Mexico Governor Democratic Primary" },
+  81014: { state: "NM", slug: "new-mexico-senate-results", party: "D", type: "Senate", name: "New Mexico US Senate Democratic Primary" },
+  81015: { state: "NM", slug: "new-mexico-senate-results", party: "R", type: "Senate", name: "New Mexico US Senate Republican Primary" },
+  80461: { state: "SD", slug: "south-dakota-governor-results", party: "R", type: "Governor", name: "South Dakota Governor Republican Primary" },
+  80512: { state: "SD", slug: "south-dakota-senate-results", party: "R", type: "Senate", name: "South Dakota US Senate Republican Primary" }
+};
+
+const NBC_SLUG_CACHE = new Map();
+const STATIC_NBC_UNSUPPORTED_RACES = new Set(
+  Object.entries(NBC_RACE_SOURCES)
+    .filter(([, source]) => source.staticOnly)
+    .map(([id]) => String(id))
+);
 
 const POLL_CLOSE_UTC_BY_STATE = {
   CA: "2026-06-03T03:00:00Z",
@@ -201,8 +241,8 @@ function normalizeCandidate(candidate) {
   let party = /no party preference/i.test(candidate.party || "") ? "Independent" : (candidate.party || "");
   const name = String(candidate.name || "").toLowerCase();
   
-  // CA races where civicAPI incorrectly marks candidates as Nonpartisan
-  // Correct party affiliations based on actual candidate party registrations
+  // CA races where legacy/local feeds may mark candidates as Nonpartisan.
+  // Correct party affiliations based on actual candidate party registrations.
   const partyLower = party.toLowerCase();
   if (partyLower === "nonpartisan" || partyLower === "n" || partyLower === "") {
     const partyCorrections = {
@@ -423,6 +463,191 @@ function normalizeNbcRaceEstimate(race, nbcRace, sourceUrl) {
   };
 }
 
+function nbcUrlFor(source) {
+  return source?.slug ? `${NBC_BASE}/${source.slug}` : "";
+}
+
+function partyNameFromNbc(value) {
+  const text = String(value || "").toLowerCase();
+  if (text === "dem" || text === "d" || text.includes("democratic")) return "Democratic";
+  if (text === "gop" || text === "rep" || text === "r" || text.includes("republican")) return "Republican";
+  if (text.includes("green")) return "Green";
+  if (text.includes("lib")) return "Libertarian";
+  if (text.includes("ind") || text.includes("np") || text.includes("no party")) return "Independent";
+  if (text === "other" || text === "oth") return "Independent";
+  return value ? String(value) : "";
+}
+
+function normalizeNbcCandidate(candidate, race) {
+  const party = partyNameFromNbc(candidate.party);
+  return withManualCall({
+    name: candidate.name || [candidate.firstName, candidate.lastName].filter(Boolean).join(" ") || "Unknown",
+    party,
+    partyCode: partyCode(party),
+    color: "",
+    votes: Number(candidate.votes || 0),
+    percent: Number(candidate.percentVote ?? candidate.formattedPercentVote ?? 0),
+    winner: Boolean(candidate.isWinner || candidate.winner),
+    apiWinner: Boolean(candidate.isWinner || candidate.winner),
+    headshotUrl: candidate.headshotUrl || "",
+    incumbent: Boolean(candidate.isIncumbent),
+    callStatus: "",
+    callLabel: ""
+  }, race);
+}
+
+function nbcRaceParty(summary = {}) {
+  const text = normalizeName(`${summary.officeName || ""} ${summary.raceName || ""}`);
+  if (/\br\b/.test(text)) return "R";
+  if (/\bd\b/.test(text)) return "D";
+  return "";
+}
+
+function nbcRaceMatchesSource(nbcRace, source = {}) {
+  const summary = nbcRace.summary || {};
+  if (source.party && nbcRaceParty(summary) !== source.party) return false;
+  const sourceDistrict = districtNumber(source.district);
+  if (sourceDistrict && districtNumber(summary.district) !== sourceDistrict) return false;
+  return true;
+}
+
+async function fetchNbcSource(source) {
+  const url = nbcUrlFor(source);
+  if (!url) return null;
+  if (!NBC_SLUG_CACHE.has(url)) {
+    NBC_SLUG_CACHE.set(url, fetchJson(url)
+      .then((data) => ({ ok: true, data }))
+      .catch((error) => ({ ok: false, error })));
+  }
+  const cached = await NBC_SLUG_CACHE.get(url);
+  if (!cached.ok) throw cached.error;
+  return cached.data;
+}
+
+function electionScopeFromNbc(summary = {}, source = {}) {
+  if (source.party === "D") return "Democratic Primary";
+  if (source.party === "R") return "Republican Primary";
+  const raceName = normalizeName(`${summary.raceName || ""} ${summary.officeName || ""}`);
+  if (/\bd\b/.test(raceName)) return "Democratic Primary";
+  if (/\br\b/.test(raceName)) return "Republican Primary";
+  if (raceName.includes("primary") || String(source.name || "").toLowerCase().includes("primary")) return "Open Primary";
+  return summary.electionTypeCode || "";
+}
+
+function electionTypeFromNbc(summary = {}, source = {}) {
+  return source.type || summary.office || summary.officeName || "Race";
+}
+
+function normalizeNbcRace(id, source, data, nbcRace, options = {}) {
+  const summary = nbcRace.summary || {};
+  const raceBase = {
+    id: String(id),
+    state: source.state || data.stateAbbr || "",
+    province: source.state || data.stateAbbr || "",
+    type: electionTypeFromNbc(summary, source),
+    electionName: source.name || summary.linkText || summary.officeName || "Race",
+    electionScope: electionScopeFromNbc(summary, source),
+    election_scope: electionScopeFromNbc(summary, source),
+    pollsClose: isoDate(summary.pollsCloseUTC),
+    polls_close: isoDate(summary.pollsCloseUTC)
+  };
+  const rawCandidates = Array.isArray(summary.candidates) ? summary.candidates : [];
+  const hasVotes = rawCandidates.some((candidate) => Number(candidate.votes || 0) || Number(candidate.percentVote || 0));
+  let candidates = rawCandidates.map((candidate, index) => ({ ...normalizeNbcCandidate(candidate, raceBase), sourceOrder: index }));
+  candidates = candidates.sort((a, b) => {
+    if (hasVotes) return b.votes - a.votes || b.percent - a.percent;
+    const rankDelta = featuredRank(id, a.name) - featuredRank(id, b.name);
+    return Number.isFinite(rankDelta) ? rankDelta : a.sourceOrder - b.sourceOrder;
+  }).map(({ sourceOrder, ...candidate }) => candidate);
+  const explicitCalls = manualCalls.races?.[String(id)]?.calls || [];
+  const automaticCalls = explicitCalls.length ? [] : automaticUncontestedCalls(raceBase, candidates);
+  const calls = explicitCalls.length ? explicitCalls : automaticCalls;
+  if (automaticCalls.length) {
+    candidates = candidates.map((candidate) => {
+      const call = automaticCalls.find((item) => normalizeName(item.candidate) === normalizeName(candidate.name));
+      return call ? { ...candidate, callStatus: call.status || "winner", callLabel: callLabelFor(raceBase, call) } : candidate;
+    });
+  }
+  const leader = candidates[0] || null;
+  const sourceUrl = nbcUrlFor(source);
+  const counties = (nbcRace.areas || []).map((area) => {
+    const areaRace = { ...raceBase, id: String(id) };
+    const areaCandidates = (area.candidates || [])
+      .map((candidate) => normalizeNbcCandidate(candidate, areaRace))
+      .sort((a, b) => b.votes - a.votes || b.percent - a.percent);
+    return {
+      id: slugify(area.name || area.areaId || ""),
+      name: area.name || "",
+      type: area.areaType || "County",
+      fips: area.fips || area.id || "",
+      percentReporting: roundPercent(area.percentIn) ?? 0,
+      estimatedVoteReporting: roundPercent(area.percentIn),
+      estimatedVoteReportingSource: "nbc-news-percent-in",
+      candidates: areaCandidates
+    };
+  }).filter((area) => area.name).sort((a, b) => a.name.localeCompare(b.name));
+  return {
+    id: String(id),
+    source: "NBC News",
+    sourceUrl,
+    type: raceBase.type,
+    country: "US",
+    state: raceBase.state,
+    stateName: source.stateName || data.stateName || raceBase.state,
+    district: source.district ?? (summary.district ? `${raceBase.state}-${String(summary.district).padStart(2, "0")}` : null),
+    municipality: source.municipality ?? null,
+    electionName: raceBase.electionName,
+    electionType: raceBase.type,
+    electionScope: raceBase.electionScope,
+    electionDate: isoDate(nbcRace.electionDate || data.electionDate),
+    pollsOpen: null,
+    pollsClose: raceBase.pollsClose,
+    lastUpdated: isoDate(data.currentTime || data.lastUpdated || data.updatedAt || nbcRace.lastUpdated),
+    percentReporting: roundPercent(summary.percentIn) ?? 0,
+    estimatedVoteReporting: roundPercent(summary.percentIn),
+    estimatedVoteReportingSource: "nbc-news-percent-in",
+    estimatedVoteReportingSourceUrl: sourceUrl,
+    hasBreakdown: counties.length > 0,
+    hasMap: Boolean(nbcRace.mapData || counties.length),
+    marker: electionMarkerFor(raceBase, candidates),
+    leaderName: leader?.name || "",
+    leaderParty: leader?.party || "",
+    leaderPartyCode: leader?.partyCode || "",
+    otherCandidateCount: Math.max(0, candidates.length - 1),
+    calls: calls.map((call) => ({ ...call })),
+    featuredCandidateNames: featuredNamesForRace(id),
+    candidates,
+    registeredVoters: null,
+    maps: [],
+    voteHistory: [],
+    counties: options.includeCounties === false ? undefined : counties
+  };
+}
+
+async function fetchNbcRaceDetail(id, options = {}) {
+  const source = NBC_RACE_SOURCES[String(id)];
+  if (!source || source.staticOnly) return null;
+  const data = await fetchNbcSource(source);
+  const sourceRaces = Array.isArray(data?.races) ? data.races : [];
+  const matched = sourceRaces.find((race) => nbcRaceMatchesSource(race, source))
+    || (sourceRaces.length === 1 ? sourceRaces[0] : null);
+  if (!matched) throw new Error(`NBC source ${source.slug} did not include matching race ${id}`);
+  return normalizeNbcRace(id, source, data, matched, options);
+}
+
+function readStaticRaceDetail(id) {
+  const rawText = readFileSync(new URL(`${id}.json`, DETAIL_DIR_URL), "utf8");
+  const cleanText = rawText.includes("<<<<<<<")
+    ? rawText.replace(/<<<<<<<[^\r\n]*\r?\n([\s\S]*?)\r?\n=======\r?\n[\s\S]*?\r?\n>>>>>>>[^\r\n]*(?:\r?\n)?/g, "$1\n")
+    : rawText;
+  const raw = JSON.parse(cleanText);
+  return {
+    ...raw,
+    source: normalizeName(raw.source) === "civicapi" ? "Static local cache" : raw.source,
+    sourceNote: raw.sourceNote || "NBC does not currently expose a result feed for this covered race, so this card uses the last local result file until an NBC source is configured."
+  };
+}
+
 async function fetchExternalEstimate(race) {
   const slug = slugForRace(race);
   if (!slug) return null;
@@ -547,7 +772,7 @@ function normalizeRace(race, group) {
   const marker = electionMarkerFor(race, candidates);
   return {
     id: race.id,
-    source: "civicAPI",
+    source: "Legacy local cache",
     type: race.type || "Race",
     country: race.country || "US",
     state: race.province || group.state,
@@ -694,34 +919,10 @@ function appendVoteHistory(race) {
 }
 
 async function fetchRaceDetail(id) {
-  const detail = await fetchJson(`${CIVIC_BASE}/race/${id}`);
-  const group = {
-    state: detail.province,
-    name: detail.province || "Race"
-  };
-  const race = normalizeRace({ id, ...detail, type: detail.election_type, election_type: detail.election_scope }, group);
-  const externalEstimate = await fetchBestExternalEstimate({
-    ...race,
-    state: race.state || detail.province,
-    province: detail.province,
-    type: race.type || detail.election_type,
-    electionType: race.electionType || detail.election_type,
-    electionScope: detail.election_scope || race.electionScope,
-    district: race.district ?? detail.district
-  });
-  const counties = normalizeRegionResults(detail.region_results, { id, ...detail }, externalEstimate);
-  return {
-    ...race,
-    estimatedVoteReporting: externalEstimate?.estimatedVoteReporting ?? null,
-    estimatedVoteReportingSource: externalEstimate?.estimatedVoteReporting === null || !externalEstimate ? "external-estimate-pending" : externalEstimate.estimatedVoteReportingSource,
-    estimatedVoteReportingSourceUrl: externalEstimate?.sourceUrl || "",
-    electionType: detail.election_type || race.electionType,
-    electionScope: detail.election_scope || race.electionScope,
-    registeredVoters: detail.registered_voters || null,
-    maps: detail.maps || [],
-    voteHistory: voteHistoryFromCivicDetail(detail),
-    counties
-  };
+  const nbcRace = await fetchNbcRaceDetail(id);
+  if (nbcRace) return nbcRace;
+  if (STATIC_NBC_UNSUPPORTED_RACES.has(String(id))) return readStaticRaceDetail(id);
+  throw new Error(`No NBC result source configured for race ${id}`);
 }
 
 async function fetchJson(url) {
@@ -736,23 +937,6 @@ async function fetchJson(url) {
 }
 
 async function fetchGroup(group) {
-  const searches = await Promise.all((group.queries || [group.query]).map(async (query) => {
-    const url = `${CIVIC_BASE}/race/search?query=${encodeURIComponent(query)}`;
-    const data = await fetchJson(url);
-    return { query, data };
-  }));
-  const seen = new Set();
-  const rawRaces = searches.flatMap(({ data }) => data.races || []).filter((race) => {
-    if (seen.has(race.id)) return false;
-    seen.add(race.id);
-    return true;
-  });
-  const races = rawRaces
-    .filter((race) => race.country === "US")
-    .filter((race) => !group.state || race.province === group.state)
-    .filter((race) => electionYear(race.election_date) === 2026)
-    .map((race) => normalizeRace(race, group))
-    .sort((a, b) => racePriority(b) - racePriority(a) || String(a.electionName).localeCompare(String(b.electionName)));
   const requiredIds = REQUIRED_RACES_BY_STATE[group.state] || [];
   const requiredRaces = [];
   for (const id of requiredIds) {
@@ -768,24 +952,12 @@ async function fetchGroup(group) {
         counties: undefined
       });
     } catch (error) {
-      const cachedRace = races.find((race) => String(race.id) === String(id));
-      if (cachedRace) requiredRaces.push(cachedRace);
-      else console.warn(`Could not load required ${group.state} result race ${id}: ${error.message}`);
+      console.warn(`Could not load required ${group.state} result race ${id}: ${error.message}`);
     }
   }
-  const selectedRaces = requiredRaces.length ? requiredRaces : races.slice(0, 7);
-  
-  const racesWithEstimate = await Promise.all(selectedRaces.map(async (race) => {
-    const externalEstimate = await fetchBestExternalEstimate(race);
-    return {
-      ...race,
-      estimatedVoteReporting: externalEstimate?.estimatedVoteReporting ?? race.estimatedVoteReporting ?? null,
-      estimatedVoteReportingSource: externalEstimate?.estimatedVoteReporting !== undefined && externalEstimate?.estimatedVoteReporting !== null
-        ? externalEstimate.estimatedVoteReportingSource
-        : "external-estimate-pending",
-      estimatedVoteReportingSourceUrl: externalEstimate?.sourceUrl || race.estimatedVoteReportingSourceUrl || ""
-    };
-  }));
+  const selectedRaces = requiredRaces
+    .sort((a, b) => racePriority(b) - racePriority(a) || String(a.electionName).localeCompare(String(b.electionName)));
+  const racesWithEstimate = selectedRaces;
   
   // Calculate group-level estimate from individual race estimates
   const estimatedVoteReporting = calculateGroupEstimatedVoteReporting(racesWithEstimate);
@@ -793,8 +965,8 @@ async function fetchGroup(group) {
   return {
     state: group.state,
     stateName: group.name,
-    sourceQuery: (group.queries || [group.query]).join(" / "),
-    totalAvailable: Math.max(races.length, ...searches.map(({ data }) => Number(data.count || 0))),
+    sourceQuery: "NBC News result feeds",
+    totalAvailable: selectedRaces.length,
     featuredCount: selectedRaces.length,
     estimatedVoteReporting,
     races: racesWithEstimate
@@ -813,7 +985,7 @@ export async function buildLiveResults() {
       groups.push({
         state: group.state,
         stateName: group.name,
-        sourceQuery: group.query,
+        sourceQuery: "NBC News result feeds",
         totalAvailable: 0,
         featuredCount: 0,
         races: []
@@ -825,10 +997,10 @@ export async function buildLiveResults() {
     model: "live election results",
     generatedAt: new Date().toISOString(),
     provider: {
-      name: "civicAPI",
-      url: "https://civicapi.org/",
-      attribution: "Live race data provided by civicAPI where available. Race calls are manual Federal Elections Analysis calls from local config.",
-      estimatedVoteReporting: "Estimated-in percentages are scraped from external news/official result feeds when available, currently NBC News percent-in feeds for supported races."
+      name: "NBC News",
+      url: "https://www.nbcnews.com/politics/2026-primary-elections",
+      attribution: "Live race data is pulled from NBC News result feeds where NBC exposes a matching race. Race calls are manual Federal Elections Analysis calls from local config.",
+      estimatedVoteReporting: "Estimated-in percentages come from NBC News percent-in fields for supported races."
     },
     refreshSeconds: 15,
     groups,

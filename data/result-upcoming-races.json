@@ -1,9 +1,9 @@
 {
-  "description": "Upcoming result races shown below the live board. CivicAPI is checked first; if CivicAPI has not published a covered race yet, manually sourced candidate lists can fill the public card until CivicAPI data exists.",
-  "automationNote": "CivicAPI v2 did not return the June 9, 2026 NV/ND/ME/SC covered races as of the latest pull. The generator still searches CivicAPI and writes only real CivicAPI returns; manualRaces keep sourced candidate lists visible until CivicAPI publishes those records.",
+  "description": "Upcoming result races shown below the live board. Current and past live-result pulls use NBC News result feeds where NBC exposes a matching race. Future races stay in this local config until an NBC result slug exists.",
+  "automationNote": "NBC result feeds are slug-based result pages, not a broad upcoming-race discovery API. Add future covered races here, then add NBC slugs to scripts/generate-live-results.mjs when NBC publishes those result feeds.",
   "civicDiscovery": {
-    "enabled": true,
-    "note": "scripts/generate-upcoming-results.mjs searches CivicAPI using these names plus manual race names. It only writes races CivicAPI actually returns.",
+    "enabled": false,
+    "note": "CivicAPI discovery is disabled. Upcoming races are local/NBC-ready config entries until NBC publishes result feeds.",
     "searchQueries": []
   },
   "manualRaces": [
@@ -970,6 +970,1183 @@
       ]
     }
   ],
-  "generatedRaces": [],
-  "generatedAt": "2026-06-03T19:15:02.228Z"
+  "generatedRaces": [
+    {
+      "id": "upcoming-ME-2026-06-09-6",
+      "source": "Maine candidate list / Govbase",
+      "sourceUrl": "https://govbase.com/tools/elections/me/me_2026-06-09_state",
+      "state": "ME",
+      "stateName": "Maine",
+      "electionDate": "2026-06-09",
+      "electionName": "Maine Governor",
+      "office": "Governor",
+      "district": null,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Shenna Bellows",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Troy Dale Jackson",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Angus King III",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Jonathan Bush",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Bobby Charles",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "David Jones",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "James Libby",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Garrett Mason",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Owen McCarthy",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Ben Midgley",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Robert J. Wessels",
+          "party": "Republican",
+          "partyCode": "R"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-ME-2026-06-09-8",
+      "source": "Govbase",
+      "sourceUrl": "https://govbase.com/tools/elections/me/me_2026-06-09_state",
+      "state": "ME",
+      "stateName": "Maine",
+      "electionDate": "2026-06-09",
+      "electionName": "Maine US House District 1",
+      "office": "US House",
+      "district": 1,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Chellie Pingree",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Joshua Pietrowicz",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Ronald C. Russell",
+          "party": "Republican",
+          "partyCode": "R"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-ME-2026-06-09-9",
+      "source": "Govbase",
+      "sourceUrl": "https://govbase.com/tools/elections/me/me_2026-06-09_state",
+      "state": "ME",
+      "stateName": "Maine",
+      "electionDate": "2026-06-09",
+      "electionName": "Maine US House District 2",
+      "office": "US House",
+      "district": 2,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Paul LePage",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Joe Baldacci",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Matthew Dunlap",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Paige Loud",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Jordan Wood",
+          "party": "Democratic",
+          "partyCode": "D"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-ME-2026-06-09-7",
+      "source": "Govbase",
+      "sourceUrl": "https://govbase.com/tools/elections/me/me_2026-06-09_state",
+      "state": "ME",
+      "stateName": "Maine",
+      "electionDate": "2026-06-09",
+      "electionName": "Maine US Senate",
+      "office": "US Senate",
+      "district": null,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Susan Collins",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "David Costello",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Janet T. Mills",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Graham Platner",
+          "party": "Democratic",
+          "partyCode": "D"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-NV-2026-06-09-0",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/nevada-primary-election-ce7547ab-8608-4d13-a052-599516c4b3ba",
+      "state": "NV",
+      "stateName": "Nevada",
+      "electionDate": "2026-06-09",
+      "electionName": "Nevada Governor",
+      "office": "Governor",
+      "district": null,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Aaron Ford",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Alexis Hill",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Barak Zilberberg",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Donald J. Beaudry Jr.",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Emile Bouari",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Irina Hansen",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "James Cooper",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Jose M. Zelaya",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Joseph \"Joe\" Lombardo",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "M. Kameron Hawkins",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Matthew R. Winterhawk",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Miqehl Bayfield",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Sunshine Arterburn",
+          "party": "Democratic",
+          "partyCode": "D"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-NV-2026-06-09-1",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/nevada-primary-election-ce7547ab-8608-4d13-a052-599516c4b3ba",
+      "state": "NV",
+      "stateName": "Nevada",
+      "electionDate": "2026-06-09",
+      "electionName": "Nevada US House District 1",
+      "office": "US House",
+      "district": 1,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Alice \"Dina\" Costandina Titus",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Carrie Ann Buck",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Gabriel Cornejo",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Jim Blockey",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Joy Hoover",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Luis Paniagua",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Marie Encar Arnold",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Michael Boris",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Rick \"Indicted\" Saga",
+          "party": "Republican",
+          "partyCode": "R"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-NV-2026-06-09-2",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/nevada-primary-election-ce7547ab-8608-4d13-a052-599516c4b3ba",
+      "state": "NV",
+      "stateName": "Nevada",
+      "electionDate": "2026-06-09",
+      "electionName": "Nevada US House District 2",
+      "office": "US House",
+      "district": 2,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Andrea Lowe",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Bruce Grego",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "David Alton Flippo",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Fred \"Doc\" J. Simon Jr.",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Gamaliel \"Gamy\" Zavala Enriquez",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "George Forbush",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Gerold Lee Gorman",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "James Arnold Settelmeyer",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Jennifer Billat",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Jerry Olsen",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Jesse Watts",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "John Kerns",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Joshua Hebert",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Kathy Durham",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Mark Jolle",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Matthew Fonken",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Michael Smith",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Morgan Wadsworth",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Rick Shepherd",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Robert \"Greg\" G. Kidd",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Samuel White",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Sherman Tylawsky",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Teresa Benitez-Thompson",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Tom Doyle",
+          "party": "Republican",
+          "partyCode": "R"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-NV-2026-06-09-3",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/nevada-primary-election-ce7547ab-8608-4d13-a052-599516c4b3ba",
+      "state": "NV",
+      "stateName": "Nevada",
+      "electionDate": "2026-06-09",
+      "electionName": "Nevada US House District 3",
+      "office": "US House",
+      "district": 3,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Aurangzeb \"Aury\" Nafees Nagy",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Brandon West",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "James A. Lally",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Jeff Gunter",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Marty O'Donnell",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Suzanne \"Susie\" Kelley Lee",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Tera Anderson",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Terrill Robinson",
+          "party": "Democratic",
+          "partyCode": "D"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-NV-2026-06-09-4",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/nevada-primary-election-ce7547ab-8608-4d13-a052-599516c4b3ba",
+      "state": "NV",
+      "stateName": "Nevada",
+      "electionDate": "2026-06-09",
+      "electionName": "Nevada US House District 4",
+      "office": "US House",
+      "district": 4,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Anthony D. Snowden",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Cody K. Whipple",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Ronda Baldwin Kennedy",
+          "party": "Republican",
+          "partyCode": "R"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-ND-2026-06-09-5",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/north-dakota-primary-election-902cbbe3-4edf-407b-856b-21317fc30d56",
+      "state": "ND",
+      "stateName": "North Dakota",
+      "electionDate": "2026-06-09",
+      "electionName": "North Dakota US House At-Large",
+      "office": "US House",
+      "district": "At-Large",
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Alexander Balazs",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Julie Fedorchak",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Trygve Hammer",
+          "party": "Democratic",
+          "partyCode": "D"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-SC-2026-06-09-10",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/south-carolina-primary-election-61e76eb2-a1e7-49cf-be0c-36d99e547336",
+      "state": "SC",
+      "stateName": "South Carolina",
+      "electionDate": "2026-06-09",
+      "electionName": "South Carolina Governor",
+      "office": "Governor",
+      "district": null,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Alan Wilson",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Billy Webster",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Jacqueline Hicks DuBose",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Jermaine Johnson",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Joshua \"Josh\" Kimbrell",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Mullins McLeod",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Nancy Mace",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Pamela S. Evette",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Ralph W. Norman",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Rom Reddy",
+          "party": "Republican",
+          "partyCode": "R"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-SC-2026-06-09-12",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/south-carolina-primary-election-61e76eb2-a1e7-49cf-be0c-36d99e547336",
+      "state": "SC",
+      "stateName": "South Carolina",
+      "electionDate": "2026-06-09",
+      "electionName": "South Carolina US House District 1",
+      "office": "US House",
+      "district": 1,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Alex Pelbath",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Ben Frasier",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Cindy Wagers Riley",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Dan Brown",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Francina Dantzler",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Jay Byars",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Jenny Costa Honeycutt",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Kendal Ludden",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Logan S. Cunningham",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Mac Deford",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Marshall \"Mark\" Sanford",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Marvin \"Mark\" M. Smith",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Matthew Fulmer",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Max Diaz",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Mayra Rivera-Vazquez",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Nancy Lacore",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Sam McCown",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Tyler Dykes",
+          "party": "Republican",
+          "partyCode": "R"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-SC-2026-06-09-13",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/south-carolina-primary-election-61e76eb2-a1e7-49cf-be0c-36d99e547336",
+      "state": "SC",
+      "stateName": "South Carolina",
+      "electionDate": "2026-06-09",
+      "electionName": "South Carolina US House District 2",
+      "office": "US House",
+      "district": 2,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Daniel J. Shrief",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "David Robinson II",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Hamp Redmond",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Joe Wilson",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Roger Pruitt",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Sam Gibbons",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Zyon Khalifa",
+          "party": "Democratic",
+          "partyCode": "D"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-SC-2026-06-09-14",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/south-carolina-primary-election-61e76eb2-a1e7-49cf-be0c-36d99e547336",
+      "state": "SC",
+      "stateName": "South Carolina",
+      "electionDate": "2026-06-09",
+      "electionName": "South Carolina US House District 3",
+      "office": "US House",
+      "district": 3,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Ernest E. Mackins",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Eunice Lehmacher",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Sheri Biggs",
+          "party": "Republican",
+          "partyCode": "R"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-SC-2026-06-09-15",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/south-carolina-primary-election-61e76eb2-a1e7-49cf-be0c-36d99e547336",
+      "state": "SC",
+      "stateName": "South Carolina",
+      "electionDate": "2026-06-09",
+      "electionName": "South Carolina US House District 4",
+      "office": "US House",
+      "district": 4,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Courtney McClain",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "David Atchley",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Robert E. Lee",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "William Timmons",
+          "party": "Republican",
+          "partyCode": "R"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-SC-2026-06-09-16",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/south-carolina-primary-election-61e76eb2-a1e7-49cf-be0c-36d99e547336",
+      "state": "SC",
+      "stateName": "South Carolina",
+      "electionDate": "2026-06-09",
+      "electionName": "South Carolina US House District 5",
+      "office": "US House",
+      "district": 5,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Andrew Clough",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Mallory Dittmer",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Wes Climer",
+          "party": "Republican",
+          "partyCode": "R"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-SC-2026-06-09-17",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/south-carolina-primary-election-61e76eb2-a1e7-49cf-be0c-36d99e547336",
+      "state": "SC",
+      "stateName": "South Carolina",
+      "electionDate": "2026-06-09",
+      "electionName": "South Carolina US House District 6",
+      "office": "US House",
+      "district": 6,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Frederick R. Goodwin",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "James \"Jim\" E. Clyburn",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "John Peterson",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Maurice Washington",
+          "party": "Republican",
+          "partyCode": "R"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-SC-2026-06-09-18",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/south-carolina-primary-election-61e76eb2-a1e7-49cf-be0c-36d99e547336",
+      "state": "SC",
+      "stateName": "South Carolina",
+      "electionDate": "2026-06-09",
+      "electionName": "South Carolina US House District 7",
+      "office": "US House",
+      "district": 7,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "John Gregory Vincent",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Russell Fry",
+          "party": "Republican",
+          "partyCode": "R"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    },
+    {
+      "id": "upcoming-SC-2026-06-09-11",
+      "source": "BallotReady",
+      "sourceUrl": "https://www.ballotready.org/elections/south-carolina-primary-election-61e76eb2-a1e7-49cf-be0c-36d99e547336",
+      "state": "SC",
+      "stateName": "South Carolina",
+      "electionDate": "2026-06-09",
+      "electionName": "South Carolina US Senate",
+      "office": "US Senate",
+      "district": null,
+      "municipality": null,
+      "hasMap": false,
+      "candidates": [
+        {
+          "name": "Annie Andrews",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Brandon P. Brown",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Calvin Cowen",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Darius L. Mitchell",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Kyle Freeman",
+          "party": "Democratic",
+          "partyCode": "D"
+        },
+        {
+          "name": "Lindsey O. Graham",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Mark Lynch",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Patrick \"Pat\" Herrmann",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Paul Dans",
+          "party": "Republican",
+          "partyCode": "R"
+        },
+        {
+          "name": "Thomas Keith Dismukes",
+          "party": "Republican",
+          "partyCode": "R"
+        }
+      ],
+      "marker": {
+        "kind": "general",
+        "label": "General election",
+        "short": "G"
+      },
+      "missingFields": [
+        "id",
+        "map"
+      ]
+    }
+  ],
+  "generatedAt": "2026-06-05T03:03:49.542Z"
 }

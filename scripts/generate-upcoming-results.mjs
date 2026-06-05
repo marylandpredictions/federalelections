@@ -2,7 +2,6 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 const UPCOMING_URL = new URL("../data/result-upcoming-races.json", import.meta.url);
-const CIVIC_BASE = "https://civicapi.org/api/v2";
 
 function readUpcomingConfig() {
   return JSON.parse(readFileSync(UPCOMING_URL, "utf8"));
@@ -33,11 +32,11 @@ function electionMarkerFor(race, candidates) {
   return { kind: "general", label: "General election", short: "G" };
 }
 
-function normalizeCivicRace(race) {
+function normalizeUpcomingRace(race, index = 0) {
   const candidates = (race.candidates || []).map((candidate) => ({
     name: candidate.name || "Unknown candidate",
     party: /no party preference/i.test(candidate.party || "") ? "Independent" : (candidate.party || ""),
-    partyCode: partyCode(candidate.party)
+    partyCode: candidate.partyCode || partyCode(candidate.party)
   }));
   const missingFields = [];
   if (!race.id) missingFields.push("id");
@@ -45,11 +44,12 @@ function normalizeCivicRace(race) {
   if (!candidates.length) missingFields.push("candidates");
   if (!race.has_map) missingFields.push("map");
   return {
-    id: race.id ? String(race.id) : "",
-    source: "civicAPI",
-    state: race.province || "",
-    stateName: race.province || "",
-    electionDate: isoDate(race.election_date),
+    id: race.id ? String(race.id) : `upcoming-${race.state || "US"}-${race.electionDate || race.election_date || "date"}-${index}`,
+    source: race.source || "manual-upcoming",
+    sourceUrl: race.sourceUrl || "",
+    state: race.province || race.state || "",
+    stateName: race.stateName || race.province || race.state || "",
+    electionDate: isoDate(race.electionDate || race.election_date),
     electionName: race.election_name || race.type || "Upcoming race",
     office: race.type || "",
     district: race.district ?? null,
@@ -59,32 +59,6 @@ function normalizeCivicRace(race) {
     marker: electionMarkerFor(race, candidates),
     missingFields
   };
-}
-
-async function fetchJson(url) {
-  const response = await fetch(url, {
-    headers: {
-      accept: "application/json",
-      "user-agent": "Federal Elections Analysis upcoming results generator"
-    }
-  });
-  if (!response.ok) throw new Error(`${url} returned ${response.status}`);
-  return response.json();
-}
-
-async function searchCivic(query) {
-  const data = await fetchJson(`${CIVIC_BASE}/race/search?query=${encodeURIComponent(query)}`);
-  return data.races || [];
-}
-
-async function fetchRaceDetail(id) {
-  if (!id) return null;
-  try {
-    return await fetchJson(`${CIVIC_BASE}/race/${encodeURIComponent(id)}`);
-  } catch (error) {
-    console.warn(`Upcoming CivicAPI detail failed for "${id}": ${error.message}`);
-    return null;
-  }
 }
 
 function dedupeRaces(races) {
@@ -99,27 +73,14 @@ function dedupeRaces(races) {
 
 export async function buildUpcomingResults() {
   const config = readUpcomingConfig();
-  if (!config.civicDiscovery?.enabled) return config;
-  const manualQueries = (config.manualRaces || []).map((race) => race.electionName).filter(Boolean);
-  const queries = [...new Set([...(config.civicDiscovery.searchQueries || []), ...manualQueries])];
   const today = new Date().toISOString().slice(0, 10);
-  const raw = [];
-  const searchResults = await Promise.allSettled(queries.map((query) => searchCivic(query)));
-  searchResults.forEach((result, index) => {
-    if (result.status === "fulfilled") raw.push(...result.value);
-    else console.warn(`Upcoming CivicAPI search failed for "${queries[index]}": ${result.reason?.message || result.reason}`);
-  });
-  const searchedRaces = dedupeRaces(raw)
-    .filter((race) => race.country === "US")
-    .filter((race) => {
-      const date = isoDate(race.election_date);
-      return date && date >= today;
-    });
-  const detailed = await Promise.all(searchedRaces.map(async (race) => {
-    const detail = await fetchRaceDetail(race.id);
-    return normalizeCivicRace(detail ? { ...race, ...detail, id: race.id || detail.id } : race);
-  }));
-  const generated = dedupeRaces(detailed)
+  const generated = dedupeRaces((config.manualRaces || []).map((race, index) => normalizeUpcomingRace({
+    ...race,
+    province: race.state,
+    election_name: race.electionName,
+    election_date: race.electionDate,
+    type: race.office
+  }, index)))
     .filter((race) => race.electionDate && race.electionDate >= today)
     .sort((a, b) => a.electionDate.localeCompare(b.electionDate) || a.electionName.localeCompare(b.electionName));
   const firstDate = generated[0]?.electionDate || "";
@@ -133,5 +94,5 @@ export async function buildUpcomingResults() {
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const data = await buildUpcomingResults();
   writeFileSync(UPCOMING_URL, JSON.stringify(data, null, 2), "utf8");
-  console.log(`Wrote ${data.generatedRaces?.length || 0} CivicAPI upcoming race(s)`);
+  console.log(`Wrote ${data.generatedRaces?.length || 0} upcoming race(s) from local/NBC-ready config`);
 }
