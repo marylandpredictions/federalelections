@@ -435,7 +435,9 @@ function percentLabel(value) {
 function estimatedInLabel(value) {
   if (value === null || value === undefined || value === "") return "Estimate pending";
   const number = Number(value);
-  return Number.isFinite(number) ? `${number.toFixed(1)}%` : "Estimate pending";
+  if (!Number.isFinite(number)) return "Estimate pending";
+  if (number >= 95) return ">95%";
+  return `${number.toFixed(1)}%`;
 }
 
 function signedPointMargin(value) {
@@ -1033,14 +1035,20 @@ function resultMarginInfo(race, region) {
 
 function candidateRaceCallLabel(race, candidate) {
   if (candidate?.callLabel) return candidate.callLabel;
-  const raceCandidate = (race?.candidates || []).find((item) => String(item.name || "").toLowerCase() === String(candidate?.name || "").toLowerCase());
+  const candidateSlug = slugifyName(candidate?.name);
+  const raceCandidate = (race?.candidates || []).find((item) => {
+    const raceSlug = slugifyName(item.name);
+    return raceSlug === candidateSlug
+      || (candidateSlug && raceSlug.endsWith(candidateSlug))
+      || (raceSlug && candidateSlug.endsWith(raceSlug));
+  });
   return raceCandidate?.callLabel || "";
 }
 
 function candidateCallMark(race, candidate) {
   const label = candidateRaceCallLabel(race, candidate);
   if (!label) return "";
-  return `<span class="result-candidate-check" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">→</span>`;
+  return `<span class="result-candidate-check" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">&#8594;</span>`;
 }
 
 function callBadge(candidate, race) {
@@ -1525,7 +1533,8 @@ async function districtShapeMap(race) {
       .then((geojson) => (geojson.features || []))
       .catch(() => []);
     const stateCountyFeatures = allCountyFeatures.filter((item) => item.properties?.STATE === stateFips(race.state));
-    const bounds = mergeBounds([expandedBounds(activeBounds, .38), contextPointBounds(race.state, activeBounds)]) || activeBounds;
+    const stateBoundsForContext = stateCountyFeatures.length ? stateBounds(stateCountyFeatures) : null;
+    const bounds = mergeBounds([stateBoundsForContext, expandedBounds(activeBounds, .38), contextPointBounds(race.state, activeBounds)]) || activeBounds;
     const { width, height, lonScale } = mapDimensions(bounds, 760, 540);
     const districtTitle = `${race.state || ""}-${districtNumber} District`;
     const districtTooltip = countyTooltipMarkup({
@@ -1538,6 +1547,7 @@ async function districtShapeMap(race) {
         ${resultMapContextLayer({ state: race.state, allFeatures: stateCountyFeatures.length ? stateCountyFeatures : allCountyFeatures, activeFeatures: [feature], bounds, width, height, lonScale, labels: false })}
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(margin?.rawFill || fill)}" data-county-tooltip="${escapeHtml(districtTooltip)}"></path>
         ${resultMapRoadLayer({ state: race.state, bounds, width, height, lonScale })}
+        ${resultMapLabelLayer({ state: race.state, bounds, width, height, lonScale })}
       </svg>
     `;
   } catch (error) {
@@ -1568,7 +1578,9 @@ async function countyShapeMap(race) {
     const outsideFeatures = filterToJurisdiction
       ? allFeatures
       : allFeatures.filter((feature) => feature.properties?.STATE !== fips);
+    const stateOutlineBounds = filterToJurisdiction ? stateBounds(features) : null;
     const bounds = mergeBounds([
+      stateOutlineBounds,
       expandedBounds(activeBounds, filterToJurisdiction ? .28 : .08),
       contextPointBounds(race.state, activeBounds)
     ]) || activeBounds;
@@ -1604,6 +1616,7 @@ async function countyShapeMap(race) {
         ${contextLayer}
         ${paths}
         ${resultMapRoadLayer({ state: race.state, bounds, width, height, lonScale })}
+        ${resultMapLabelLayer({ state: race.state, bounds, width, height, lonScale })}
       </svg>
     `;
   } catch (error) {
@@ -1930,7 +1943,7 @@ function projectPoint([lon, lat], bounds, width, height, lonScale = 1) {
 }
 
 function resultMapContextLayer({ state, allFeatures = [], activeFeatures = [], bounds, width, height, lonScale, labels = false }) {
-  const nearby = contextFeatures(allFeatures, activeFeatures, bounds, .02).slice(0, 320);
+  const nearby = contextFeatures(allFeatures, activeFeatures, bounds, .2).slice(0, 520);
   const nearbyPaths = nearby.map((feature) => `
     <path class="map-context map-context-county" d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}"></path>
   `).join("");
@@ -1987,6 +2000,18 @@ function resultMapRoadLayer({ state, bounds, width, height, lonScale }) {
     return `<path class="map-context-road map-context-road-top" d="${d}"><title>${escapeHtml(road.name || "Major route")}</title></path>`;
   }).join("");
   return roads ? `<g class="result-map-roads" aria-hidden="true">${roads}</g>` : "";
+}
+
+function resultMapLabelLayer({ state, bounds, width, height, lonScale }) {
+  const config = RESULT_MAP_CONTEXT[String(state || "").toUpperCase()] || {};
+  const visibleBounds = expandedBounds(bounds, .04);
+  const labels = (config.cities || []).filter((city) => (
+    city.lon >= visibleBounds.minLon && city.lon <= visibleBounds.maxLon && city.lat >= visibleBounds.minLat && city.lat <= visibleBounds.maxLat
+  )).map((city) => {
+    const [x, y] = projectPoint([city.lon, city.lat], bounds, width, height, lonScale);
+    return `<text class="map-context-label map-context-label-top" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${escapeHtml(city.name)}</text>`;
+  }).join("");
+  return labels ? `<g class="result-map-labels" aria-hidden="true">${labels}</g>` : "";
 }
 
 function bindVoteHistoryHover() {

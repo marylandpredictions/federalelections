@@ -4299,18 +4299,18 @@ button.race-board-row {
 }
 
 .map-context-county {
-  fill: #1a2435;
-  stroke: color-mix(in srgb, #d6d9e2 32%, transparent);
-  stroke-width: .62;
+  fill: #151b25;
+  stroke: color-mix(in srgb, #d6d9e2 22%, transparent);
+  stroke-width: .46;
   cursor: default;
   pointer-events: none;
   opacity: .9;
 }
 
 .result-district-map .map-context-county {
-  fill: #edf1f8;
+  fill: #eef2f8;
   stroke: color-mix(in srgb, #17233f 18%, transparent);
-  opacity: .24;
+  opacity: .28;
 }
 
 .result-district-map .map-context-road {
@@ -4335,7 +4335,6 @@ button.race-board-row {
 }
 
 .map-context-label {
-  display: none;
   fill: color-mix(in srgb, #f8fbff 74%, transparent);
   stroke: color-mix(in srgb, #020b22 92%, transparent);
   stroke-width: 3;
@@ -4344,6 +4343,10 @@ button.race-board-row {
   letter-spacing: 0;
   pointer-events: none;
   text-anchor: middle;
+}
+
+.map-context-label-top {
+  opacity: .58;
 }
 
 .result-county-map path:hover,
