@@ -1415,7 +1415,7 @@ function countyTooltipMarkup(county, race, titlePrefix = "") {
 }
 
 function countyContextDescription(county, race) {
-  if (county?.isDistrict) return `${county.name || race?.electionName || "District"} results.`;
+  if (county?.isDistrict) return county.name || race?.electionName || "District";
   const name = String(county?.name || "").replace(/\s+County$/i, "");
   const state = String(race?.state || "").toUpperCase();
   const fips = String(county?.fips || county?.id || "").padStart(5, "0");
@@ -1941,25 +1941,11 @@ async function districtCountyBreakdownMap(race, districtNumber = raceDistrictNum
       .catch(() => []);
     await loadCountyDescriptions();
     const stateCountyFeatures = allCountyFeatures.filter((item) => item.properties?.STATE === stateFips(race.state));
-    const districtCountyKeys = new Set(features.flatMap((feature) => {
-      const props = feature.properties || {};
-      const countyName = cleanCountyName(props.countyName || props.NAME || "");
-      return [
-        String(props.countyFips || `${props.STATEFP || ""}${props.COUNTYFP || ""}`).padStart(5, "0"),
-        regionLookupKey(countyName),
-        regionLookupKey(props.countyName)
-      ].filter(Boolean);
-    }));
-    const supplementalFeatures = stateCountyFeatures.filter((feature) => {
-      const county = districtCountyFeatureLookup(lookup, feature);
-      if (!county) return false;
-      const featureKeys = [
-        String(feature.id || "").padStart(5, "0"),
-        regionLookupKey(feature.properties?.NAME)
-      ].filter(Boolean);
-      return !featureKeys.some((key) => districtCountyKeys.has(key));
-    });
-    const activeFeatures = [...features, ...supplementalFeatures];
+    // District maps should use the Census county-within-district geometry as
+    // the source of truth. Do not append full county shapes from the results
+    // feed when a feed county does not match the district geometry; that draws
+    // stale or out-of-district counties as if they belonged to the race.
+    const activeFeatures = features;
     const activeBounds = stateBounds(activeFeatures);
     const backgroundBounds = resultMapBackgroundBounds(race.state, activeBounds);
     const bounds = mergeBounds([
@@ -1998,19 +1984,14 @@ async function districtCountyBreakdownMap(race, districtNumber = raceDistrictNum
       const fill = margin?.percentFill || "#566274";
       const voteFill = margin?.voteFill || "#566274";
       const rawFill = margin?.rawFill || "#566274";
-      const title = leader
-        ? `${countyName}: ${leader.name} ${percentLabel(leader.percent)}, ${estimatedInLabel(tooltipCounty.estimatedVoteReporting)} estimated in`
-        : `${countyName}: County-level results unavailable`;
+      const title = countyName;
       const tooltip = countyTooltipMarkup(tooltipCounty, race, countyName);
       return `
         <path d="${geometryPath(feature.geometry, bounds, width, height, lonScale)}" fill="${escapeHtml(fill)}" class="${leader ? "" : "is-waiting"}" data-fill-percent="${escapeHtml(fill)}" data-fill-votes="${escapeHtml(voteFill)}" data-fill-raw="${escapeHtml(rawFill)}" data-county-title="${escapeHtml(title)}" data-county-tooltip="${escapeHtml(tooltip)}">
         </path>
       `;
     };
-    const paths = [
-      ...features.map((feature) => renderCountyPiece(feature)),
-      ...supplementalFeatures.map((feature) => renderCountyPiece(feature, { allowMissingTooltip: true }))
-    ].join("");
+    const paths = features.map((feature) => renderCountyPiece(feature)).join("");
     const districtId = districtMapId(race.state, districtNumber);
     const cycle = activeCongressCycle(race);
     return `

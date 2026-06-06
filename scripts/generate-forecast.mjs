@@ -778,6 +778,7 @@ function primaryRisk(race) {
 }
 
 function caucusDiscount(race) {
+  if (!race.independent || race.independent === "none") return 0;
   if (race.hold === race.caucusTarget) return 0;
   if (race.independent.includes("uncertain")) return -1.1;
   if (race.independent.includes("expected") || race.independent.includes("possible")) return -.45;
@@ -1120,8 +1121,19 @@ function runModel(sourceData) {
   const enriched = adjustedRaces.map((race) => {
     const candidates = candidateInfo(race);
     const withCandidates = { ...race, ...candidates };
+    const independentTreatment = withCandidates.independent && withCandidates.independent !== "none"
+      ? withCandidates.independent
+      : "none";
+    const caucusSpoilerAdjustment = caucusDiscount(withCandidates);
+    const rcvAdjustment = rcvBaselineAdjustment(withCandidates);
+    const sourceInputs = {
+      ...(withCandidates.sourceInputs || {}),
+      independentTreatment,
+      caucusSpoilerAdjustment,
+      rcvAdjustment
+    };
     const electorateComposition = stateElectorateComposition(withCandidates);
-    const withComposition = { ...withCandidates, electorateComposition };
+    const withComposition = { ...withCandidates, sourceInputs, electorateComposition };
     const pollSignal = pollWeightMetrics(withComposition);
     const margin = baselineMargin(withComposition);
     const quality = inputQuality(withComposition, pollSignal);
@@ -1144,7 +1156,7 @@ function runModel(sourceData) {
       challengerStrength: withCandidates.challengerStrength || "none",
       candidateHistoryAdjustment: candidateHistoryAdjustment(race),
       primaryScenarioAdjustment: primaryScenarioAdjustment(withCandidates),
-      rcvAdjustment: rcvBaselineAdjustment(race),
+      rcvAdjustment,
       demographicPull,
       extraCandidateDemographicPulls: extraCandidateDemographicPulls(withComposition)
     };
