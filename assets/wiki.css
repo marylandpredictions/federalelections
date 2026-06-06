@@ -6283,6 +6283,46 @@ button.race-board-row {
   font-weight: 500;
 }
 
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes flash-update {
+  0% { fill-opacity: 1; }
+  50% { fill-opacity: 0.3; }
+  100% { fill-opacity: 1; }
+}
+
+@keyframes percent-change-fade {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+
+.result-county-map path[data-county-tooltip].just-updated {
+  animation: flash-update 1.5s ease-in-out;
+}
+
+.live-indicator {
+  animation: pulse-live 2s ease-in-out infinite;
+}
+
+.candidate-percent-change {
+  position: absolute;
+  right: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dem);
+  animation: percent-change-fade 2s ease-out forwards;
+  pointer-events: none;
+}
+
+.candidate-percent-change.negative {
+  color: var(--rep);
+}
+
 .history-grid {
   fill: none;
   stroke: var(--chart-grid);

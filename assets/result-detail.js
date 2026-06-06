@@ -1313,7 +1313,7 @@ function candidateRow(candidate, race, maxPercent) {
   const fill = candidateFill(race, candidate);
   const photo = candidatePhotoUrl(race, candidate);
   return `
-    <article class="result-full-candidate ${partyClass(code)}-glow ${candidate.callLabel ? "called" : ""}" style="--candidate-color:${escapeHtml(fill)}">
+    <article class="result-full-candidate ${partyClass(code)}-glow ${candidate.callLabel ? "called" : ""}" style="--candidate-color:${escapeHtml(fill)}" data-candidate-name="${escapeHtml(candidate.name)}">
       <div class="result-full-candidate-name">
         <span class="result-candidate-avatar ${partyClass(code)}">${photo ? `<img src="${escapeHtml(photo)}" alt="">` : escapeHtml(candidateInitials(candidate.name))}</span>
         <div>
@@ -2877,7 +2877,37 @@ async function patchRaceDetail(race) {
 
   const candidatesNode = page.querySelector(".result-full-candidates");
   const displayRace = resultPartyViewEnabled && isOpenPrimary(race) ? { ...race, candidates: combineCandidatesByParty(race) } : race;
+  
+  const previousCandidatePercents = new Map();
+  candidatesNode?.querySelectorAll("article[data-candidate-name]").forEach(article => {
+    const name = article.dataset.candidateName;
+    const percentText = article.querySelector(".result-full-numbers b")?.textContent || "";
+    const match = percentText.match(/([\d.]+)/);
+    if (match) {
+      previousCandidatePercents.set(name.toLowerCase(), parseFloat(match[1]));
+    }
+  });
+  
   if (candidatesNode) candidatesNode.innerHTML = candidateRows(displayRace);
+  
+  candidatesNode?.querySelectorAll("article[data-candidate-name]").forEach(article => {
+    const name = article.dataset.candidateName;
+    const percentText = article.querySelector(".result-full-numbers b")?.textContent || "";
+    const match = percentText.match(/([\d.]+)/);
+    if (match) {
+      const newPercent = parseFloat(match[1]);
+      const oldPercent = previousCandidatePercents.get(name.toLowerCase());
+      if (oldPercent !== undefined && Math.abs(newPercent - oldPercent) > 0.1) {
+        const change = newPercent - oldPercent;
+        const changeEl = document.createElement("span");
+        changeEl.className = `candidate-percent-change ${change < 0 ? "negative" : ""}`;
+        changeEl.textContent = `${change >= 0 ? "+" : ""}${change.toFixed(1)}%`;
+        article.style.position = "relative";
+        article.appendChild(changeEl);
+        setTimeout(() => changeEl.remove(), 2000);
+      }
+    }
+  });
 
   const callSlot = page.querySelector("[data-result-call-slot]");
   if (callSlot) callSlot.innerHTML = raceCallBanner(race);
@@ -2893,10 +2923,34 @@ async function patchRaceDetail(race) {
     const mapRace = resultPartyViewEnabled && isOpenPrimary(race)
       ? { ...race, candidates: combineCandidatesByParty(race), counties: combineCountiesByParty(race) }
       : race;
+    
+    const previousCountyVotes = new Map();
+    mapFrame.querySelectorAll("path[data-county-tooltip]").forEach(path => {
+      const tooltip = path.dataset.countyTooltip;
+      const match = tooltip.match(/(\d+(?:,\d+)*) votes/);
+      if (match) {
+        previousCountyVotes.set(tooltip, parseInt(match[1].replace(/,/g, "")));
+      }
+    });
+    
     mapFrame.innerHTML = await countyShapeMap(mapRace);
     mapFrame.dataset.marginMode = marginMode;
     applyMapViewportState();
     applyMapMarginColors();
+    
+    mapFrame.querySelectorAll("path[data-county-tooltip]").forEach(path => {
+      const tooltip = path.dataset.countyTooltip;
+      const match = tooltip.match(/(\d+(?:,\d+)*) votes/);
+      if (match) {
+        const newVotes = parseInt(match[1].replace(/,/g, ""));
+        const oldVotes = previousCountyVotes.get(tooltip);
+        if (oldVotes !== undefined && newVotes > oldVotes) {
+          path.classList.add("just-updated");
+          setTimeout(() => path.classList.remove("just-updated"), 1500);
+        }
+      }
+    });
+    
     bindCountyHover();
   }
 
@@ -3224,6 +3278,7 @@ async function renderRace(race) {
         <div data-result-call-slot>${raceCallBanner(race)}</div>
 
         <div class="result-night-meta result-night-meta-top">
+          <span class="live-indicator" aria-hidden="true">● LIVE</span>
           <span data-poll-close="${escapeHtml(closeIso)}" class="result-poll-close-stat">${escapeHtml(pollCloseLabel(closeIso))}</span>
           <span data-result-last-updated>Last updated ${escapeHtml(timeLabel(race.lastUpdated))}</span>
           <span data-result-last-checked>Last checked ${escapeHtml(timeLabel(resultLastCheckedAt))}</span>

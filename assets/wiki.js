@@ -1628,20 +1628,22 @@ function renderLineChart(chart, points, options) {
       const currentDate = chartDates[i];
       const nextDate = chartDates[i + 1];
       const gapDays = (nextDate - currentDate) / oneDay;
-      if (gapDays > 1.5) {
+      if (gapDays > 7) {
         const startX = coords[i].x;
         const endX = coords[i + 1].x;
         const gapWidth = endX - startX;
-        gaps.push({
-          x: startX,
-          width: gapWidth,
-          days: Math.round(gapDays)
-        });
+        if (gapWidth > 10) {
+          gaps.push({
+            x: startX,
+            width: gapWidth,
+            days: Math.round(gapDays)
+          });
+        }
       }
     }
     return gaps.map((gap) => `
       <rect class="history-data-gap" x="${gap.x}" y="${plot.top}" width="${gap.width}" height="${plotHeight}"></rect>
-      <text class="history-data-gap-label" x="${gap.x + gap.width / 2}" y="${plot.top + plotHeight / 2}" text-anchor="middle" dominant-baseline="middle">Data lost (${gap.days} days)</text>
+      ${gap.width > 40 ? `<text class="history-data-gap-label" x="${gap.x + gap.width / 2}" y="${plot.top + plotHeight / 2}" text-anchor="middle" dominant-baseline="middle">Data lost (${gap.days} days)</text>` : ""}
     `).join("");
   })() : "";
   const dotRadius = options.dotRadius ?? (coords.length === 1 ? 3.2 : 1.8);
