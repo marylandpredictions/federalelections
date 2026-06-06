@@ -738,7 +738,11 @@ function updateSummary() {
 }
 
 function updateHomeHouseSummary() {
-  if (!houseForecast) return;
+  console.log("[wiki.js] updateHomeHouseSummary called, houseForecast:", houseForecast);
+  if (!houseForecast) {
+    console.log("[wiki.js] houseForecast is null, skipping update");
+    return;
+  }
   const favoredIsDem = houseForecast.demControlProbability >= houseForecast.repControlProbability;
   const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
   const favoredProbability = Math.max(houseForecast.demControlProbability, houseForecast.repControlProbability);
@@ -759,7 +763,11 @@ function updateHomeHouseSummary() {
 }
 
 function updateHomeGovernorSummary() {
-  if (!governorForecast) return;
+  console.log("[wiki.js] updateHomeGovernorSummary called, governorForecast:", governorForecast);
+  if (!governorForecast) {
+    console.log("[wiki.js] governorForecast is null, skipping update");
+    return;
+  }
   const demRaces = governorForecast.projectedDemRaceWins ?? governorForecast.races?.filter((race) => race.demProbability >= .5).length ?? 0;
   const repRaces = governorForecast.projectedRepRaceWins ?? Math.max(0, (governorForecast.races?.length ?? 36) - demRaces);
   const favoredIsDem = demRaces >= repRaces;
@@ -797,8 +805,13 @@ function presidentSummary() {
 }
 
 function updateHomePresidentSummary() {
+  console.log("[wiki.js] updateHomePresidentSummary called, presidentForecasts:", presidentForecasts);
   const summary = presidentSummary();
-  if (!summary) return;
+  console.log("[wiki.js] presidentSummary:", summary);
+  if (!summary) {
+    console.log("[wiki.js] presidentSummary is null, skipping update");
+    return;
+  }
   const favoredIsDem = summary.demWin >= summary.repWin;
   const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
   const favoredProbability = Math.max(summary.demWin, summary.repWin);
@@ -3316,27 +3329,41 @@ function renderEmbed(target, embed) {
 
 async function loadArticles() {
   try {
+    console.log("[wiki.js] Loading articles.json");
     const response = await fetch("data/articles.json", { cache: "no-store" });
+    console.log("[wiki.js] articles.json status:", response.status);
     if (!response.ok) return [];
     const data = await response.json();
+    console.log("[wiki.js] articles.json loaded, type:", typeof data, "isArray:", Array.isArray(data), "length:", Array.isArray(data) ? data.length : "N/A");
     return Array.isArray(data) ? data : [];
   } catch (error) {
+    console.error("[wiki.js] articles.json error:", error);
     return [];
   }
 }
 
 async function loadForecast() {
+  console.log("[wiki.js] Loading forecast.json");
   const response = await fetch("data/forecast.json", { cache: "no-store" });
+  console.log("[wiki.js] forecast.json status:", response.status);
   if (!response.ok) throw new Error(`Forecast data returned ${response.status}`);
-  return response.json();
+  const data = await response.json();
+  console.log("[wiki.js] forecast.json loaded, keys:", Object.keys(data));
+  console.log("[wiki.js] forecast.json settings:", data.settings);
+  return data;
 }
 
 async function loadHouseForecast() {
   try {
+    console.log("[wiki.js] Loading house-forecast.json");
     const response = await fetch("data/house-forecast.json", { cache: "no-store" });
+    console.log("[wiki.js] house-forecast.json status:", response.status);
     if (!response.ok) return null;
-    return response.json();
-  } catch {
+    const data = await response.json();
+    console.log("[wiki.js] house-forecast.json loaded, keys:", Object.keys(data));
+    return data;
+  } catch (error) {
+    console.error("[wiki.js] house-forecast.json error:", error);
     return null;
   }
 }
@@ -3355,31 +3382,45 @@ async function loadHouseDistrictShapes() {
 
 async function loadGovernorForecast() {
   try {
+    console.log("[wiki.js] Loading governor-forecast.json");
     const response = await fetch("data/governor-forecast.json", { cache: "no-store" });
+    console.log("[wiki.js] governor-forecast.json status:", response.status);
     if (!response.ok) return null;
-    return response.json();
-  } catch {
+    const data = await response.json();
+    console.log("[wiki.js] governor-forecast.json loaded, keys:", Object.keys(data));
+    return data;
+  } catch (error) {
+    console.error("[wiki.js] governor-forecast.json error:", error);
     return null;
   }
 }
 
 async function loadPresidentForecasts() {
+  console.log("[wiki.js] Loading president forecasts");
   const files = [];
   PRESIDENT_DEM_CANDIDATES.forEach((dem) => {
     PRESIDENT_REP_CANDIDATES.forEach((rep) => {
       files.push(`data/president-forecast-${dem}-${rep}.json`);
     });
   });
+  console.log("[wiki.js] President forecast files to load:", files);
   const results = await Promise.all(files.map(async (file) => {
     try {
+      console.log(`[wiki.js] Loading ${file}`);
       const response = await fetch(file, { cache: "no-store" });
+      console.log(`[wiki.js] ${file} status:`, response.status);
       if (!response.ok) return null;
-      return response.json();
-    } catch {
+      const data = await response.json();
+      console.log(`[wiki.js] ${file} loaded, keys:`, Object.keys(data));
+      return data;
+    } catch (error) {
+      console.error(`[wiki.js] ${file} error:`, error);
       return null;
     }
   }));
-  return results.filter(Boolean);
+  const filtered = results.filter(Boolean);
+  console.log("[wiki.js] President forecasts loaded successfully:", filtered.length);
+  return filtered;
 }
 
 function renderLoadError(error) {
