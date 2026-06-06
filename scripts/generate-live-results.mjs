@@ -10,6 +10,7 @@ const CIVIC_RACE_BASE = "https://civicapi.org/api/v2/race";
 let featuredCandidates = readFeaturedCandidates();
 let manualCalls = readManualCalls();
 const externalEstimateCache = new Map();
+const LIVE_SOURCE_CACHE_MS = 12_000;
 
 const STATE_ESTIMATE_FALLBACK_SLUGS = {
   CA: "california-governor-results",
@@ -81,6 +82,23 @@ const STATIC_NBC_UNSUPPORTED_RACES = new Set(
     .filter(([, source]) => source.staticOnly)
     .map(([id]) => String(id))
 );
+
+async function cachedFetchJson(cache, url) {
+  const now = Date.now();
+  const cached = cache.get(url);
+  if (cached && now - cached.at < LIVE_SOURCE_CACHE_MS) {
+    const result = await cached.promise;
+    if (!result.ok) throw result.error;
+    return result.data;
+  }
+  const promise = fetchJson(url)
+    .then((data) => ({ ok: true, data }))
+    .catch((error) => ({ ok: false, error }));
+  cache.set(url, { at: now, promise });
+  const result = await promise;
+  if (!result.ok) throw result.error;
+  return result.data;
+}
 
 const POLL_CLOSE_UTC_BY_STATE = {
   CA: "2026-06-03T03:00:00Z",
@@ -522,14 +540,7 @@ function nbcRaceMatchesSource(nbcRace, source = {}) {
 async function fetchNbcSource(source) {
   const url = nbcUrlFor(source);
   if (!url) return null;
-  if (!NBC_SLUG_CACHE.has(url)) {
-    NBC_SLUG_CACHE.set(url, fetchJson(url)
-      .then((data) => ({ ok: true, data }))
-      .catch((error) => ({ ok: false, error })));
-  }
-  const cached = await NBC_SLUG_CACHE.get(url);
-  if (!cached.ok) throw cached.error;
-  return cached.data;
+  return cachedFetchJson(NBC_SLUG_CACHE, url);
 }
 
 function electionScopeFromNbc(summary = {}, source = {}) {
@@ -681,16 +692,15 @@ async function fetchExternalEstimate(race) {
   const slug = slugForRace(race);
   if (!slug) return null;
   const url = `${NBC_BASE}/${slug}`;
-  if (!externalEstimateCache.has(url)) {
-    externalEstimateCache.set(url, fetchJson(url)
-      .then((data) => ({ ok: true, data }))
-      .catch((error) => ({ ok: false, error })));
+  let data;
+  try {
+    data = await cachedFetchJson(externalEstimateCache, url);
+  } catch {
+    return null;
   }
-  const cached = await externalEstimateCache.get(url);
-  if (!cached.ok) return null;
-  const candidates = Array.isArray(cached.data.races) ? cached.data.races : [];
-  const districtTables = Array.isArray(cached.data.districtTables)
-    ? cached.data.districtTables.flatMap((table) => table.races || [])
+  const candidates = Array.isArray(data.races) ? data.races : [];
+  const districtTables = Array.isArray(data.districtTables)
+    ? data.districtTables.flatMap((table) => table.races || [])
     : [];
   const sourceRaces = [...candidates, ...districtTables];
   const matched = sourceRaces.find((item) => raceMatchesExternalSummary(race, item.summary || item))
@@ -703,14 +713,13 @@ async function fetchStatewideEstimateFallback(race) {
   const slug = STATE_ESTIMATE_FALLBACK_SLUGS[state];
   if (!slug || slug === slugForRace(race)) return null;
   const url = `${NBC_BASE}/${slug}`;
-  if (!externalEstimateCache.has(url)) {
-    externalEstimateCache.set(url, fetchJson(url)
-      .then((data) => ({ ok: true, data }))
-      .catch((error) => ({ ok: false, error })));
+  let data;
+  try {
+    data = await cachedFetchJson(externalEstimateCache, url);
+  } catch {
+    return null;
   }
-  const cached = await externalEstimateCache.get(url);
-  if (!cached.ok) return null;
-  const sourceRace = Array.isArray(cached.data.races) ? cached.data.races[0] : null;
+  const sourceRace = Array.isArray(data.races) ? data.races[0] : null;
   if (!sourceRace) return null;
   const estimate = normalizeNbcRaceEstimate(race, sourceRace, url);
   return {
@@ -1084,7 +1093,7 @@ export async function buildRaceResultDetailWithHistory(id, options = {}) {
   return hydratedDetail;
 }
 
-async function writeRaceDetails(data) {
+export async function writeRaceDetails(data) {
   mkdirSync(DETAIL_DIR_URL, { recursive: true });
   const races = data.groups.flatMap((group) => group.races || []);
   let written = 0;
@@ -1099,9 +1108,14 @@ async function writeRaceDetails(data) {
   return written;
 }
 
+export async function writeLiveResultsSnapshot(data, options = {}) {
+  writeFileSync(OUTPUT_URL, JSON.stringify(data, null, 2), "utf8");
+  if (options.details) return writeRaceDetails(data);
+  return 0;
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const data = await buildLiveResults();
-  writeFileSync(OUTPUT_URL, JSON.stringify(data, null, 2), "utf8");
-  const detailCount = await writeRaceDetails(data);
+  const detailCount = await writeLiveResultsSnapshot(data, { details: true });
   console.log(`Wrote live results for ${data.groups.reduce((sum, group) => sum + group.races.length, 0)} featured races and ${detailCount} detail files`);
 }

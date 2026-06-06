@@ -3,7 +3,7 @@ import { createWriteStream } from "node:fs";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { extname, join, resolve } from "node:path";
 import tls from "node:tls";
-import { buildLiveResults, buildRaceResultDetailWithHistory, reloadManualResultConfig } from "./scripts/generate-live-results.mjs";
+import { buildLiveResults, buildRaceResultDetailWithHistory, reloadManualResultConfig, writeLiveResultsSnapshot } from "./scripts/generate-live-results.mjs";
 
 async function loadLocalEnv() {
   try {
@@ -273,6 +273,7 @@ async function handleLiveResults(request, response) {
   try {
     liveResultsCache = await buildLiveResults();
     liveResultsCacheAt = now;
+    await writeLiveResultsSnapshot(liveResultsCache, { details: false });
     sendJson(response, 200, liveResultsCache);
   } catch (error) {
     console.error(error);
@@ -295,6 +296,21 @@ async function handleLiveResultRace(request, response, url) {
   } catch (error) {
     console.error(error);
     sendJson(response, 502, { ok: false, error: "Live race detail source unavailable." });
+  }
+}
+
+async function refreshPersistedLiveResults(raceId = "") {
+  try {
+    const data = await buildLiveResults();
+    liveResultsCache = data;
+    liveResultsCacheAt = Date.now();
+    await writeLiveResultsSnapshot(data, { details: false });
+    if (/^\d+$/.test(String(raceId))) {
+      await buildRaceResultDetailWithHistory(String(raceId), { persist: true });
+    }
+  } catch (error) {
+    console.warn(`Could not refresh persisted live results after admin save: ${error.message}`);
+    liveResultsCache = null;
   }
 }
 
@@ -375,6 +391,7 @@ async function handleAdmin(request, response, url) {
     await writeJsonFile(callsPath, current);
     reloadManualResultConfig();
     liveResultsCache = null;
+    await refreshPersistedLiveResults(raceId);
     sendJson(response, 200, { ok: true, calls: current.races[raceId]?.calls || [] });
     return;
   }
@@ -432,6 +449,9 @@ async function handleAdmin(request, response, url) {
       current.races[raceId] = [note, ...existingNotes];
     }
     await writeJsonFile(analysisNotesPath, current);
+    reloadManualResultConfig();
+    liveResultsCache = null;
+    await refreshPersistedLiveResults(raceId);
     sendJson(response, 200, { ok: true, note, notes: current.races[raceId] });
     return;
   }

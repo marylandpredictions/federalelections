@@ -1655,6 +1655,36 @@ function districtCountyFeatureLookup(lookup, feature) {
     || null;
 }
 
+function featureCountyName(feature) {
+  const props = feature?.properties || {};
+  return cleanCountyName(props.countyName || props.NAME || "");
+}
+
+function districtGeometryMatchesResults(features, race) {
+  const resultNames = (race?.counties || [])
+    .map((county) => regionLookupKey(cleanCountyName(county?.name || "")))
+    .filter(Boolean);
+  if (!resultNames.length || !features?.length) return true;
+  const geometryNames = new Set(features
+    .map((feature) => regionLookupKey(featureCountyName(feature)))
+    .filter(Boolean));
+  const matched = resultNames.filter((name) => geometryNames.has(name)).length;
+  return matched === resultNames.length && geometryNames.size === new Set(resultNames).size;
+}
+
+function resultCountyFeaturesForRace(stateCountyFeatures, lookup) {
+  return stateCountyFeatures.filter((feature) => {
+    const props = feature.properties || {};
+    const fips = String(feature.id || props.GEOID || `${props.STATE || ""}${props.COUNTY || ""}`).padStart(5, "0");
+    const name = cleanCountyName(props.NAME || "");
+    return lookup.has(fips)
+      || lookup.has(String(props.NAME || "").toLowerCase())
+      || lookup.has(String(name || "").toLowerCase())
+      || lookup.has(regionLookupKey(props.NAME))
+      || lookup.has(regionLookupKey(name));
+  });
+}
+
 function raceDistrictNumber(race) {
   if (race.district) {
     const parsed = Number(String(race.district).replace(/\D/g, ""));
@@ -1941,11 +1971,14 @@ async function districtCountyBreakdownMap(race, districtNumber = raceDistrictNum
       .catch(() => []);
     await loadCountyDescriptions();
     const stateCountyFeatures = allCountyFeatures.filter((item) => item.properties?.STATE === stateFips(race.state));
-    // District maps should use the Census county-within-district geometry as
-    // the source of truth. Do not append full county shapes from the results
-    // feed when a feed county does not match the district geometry; that draws
-    // stale or out-of-district counties as if they belonged to the race.
-    const activeFeatures = features;
+    // Prefer the Census county-within-district file when it agrees with the
+    // result feed. If NBC/DDHQ reports a different county set for a covered
+    // special/open primary, fall back to the feed's county set so stale
+    // district geometry does not draw old counties into the live results map.
+    const resultCountyFeatures = resultCountyFeaturesForRace(stateCountyFeatures, lookup);
+    const activeFeatures = districtGeometryMatchesResults(features, race) || !resultCountyFeatures.length
+      ? features
+      : resultCountyFeatures;
     const activeBounds = stateBounds(activeFeatures);
     const backgroundBounds = resultMapBackgroundBounds(race.state, activeBounds);
     const bounds = mergeBounds([
@@ -1991,14 +2024,14 @@ async function districtCountyBreakdownMap(race, districtNumber = raceDistrictNum
         </path>
       `;
     };
-    const paths = features.map((feature) => renderCountyPiece(feature)).join("");
+    const paths = activeFeatures.map((feature) => renderCountyPiece(feature)).join("");
     const districtId = districtMapId(race.state, districtNumber);
     const cycle = activeCongressCycle(race);
     return `
       <svg class="result-county-map result-district-map result-district-county-map" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.electionName || districtId || "House district")} county-breakdown map" data-geometry-cycle="${cycle}" data-district-id="${escapeHtml(districtId)}">
         ${resultForeignContextLayer({ state: race.state, countryFeatures, bounds, width, height, lonScale })}
         ${resultStateContextLayer({ state: race.state, allFeatures: allStateFeatures, bounds, width, height, lonScale })}
-        ${resultMapContextLayer({ state: race.state, allFeatures: stateCountyFeatures.length ? stateCountyFeatures : allCountyFeatures, activeFeatures: features, bounds, width, height, lonScale, labels: false })}
+        ${resultMapContextLayer({ state: race.state, allFeatures: stateCountyFeatures.length ? stateCountyFeatures : allCountyFeatures, activeFeatures, bounds, width, height, lonScale, labels: false })}
         ${paths}
         ${resultMapRoadLayer({ state: race.state, bounds, width, height, lonScale, highwayFeatures })}
         ${resultMapLabelLayer({ state: race.state, bounds, width, height, lonScale })}
