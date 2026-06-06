@@ -2900,8 +2900,10 @@ async function patchRaceDetail(race) {
       if (oldPercent !== undefined && Math.abs(newPercent - oldPercent) > 0.1) {
         const change = newPercent - oldPercent;
         const changeEl = document.createElement("span");
-        changeEl.className = `candidate-percent-change ${change < 0 ? "negative" : ""}`;
+        changeEl.className = "candidate-percent-change";
         changeEl.textContent = `${change >= 0 ? "+" : ""}${change.toFixed(1)}%`;
+        const candidateColor = article.style.getPropertyValue("--candidate-color");
+        changeEl.style.backgroundColor = candidateColor || "#566274";
         article.style.position = "relative";
         article.appendChild(changeEl);
         setTimeout(() => changeEl.remove(), 2000);
