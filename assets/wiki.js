@@ -3343,7 +3343,7 @@ async function loadHouseForecast() {
 
 async function loadHouseDistrictShapes() {
   if (!houseShapeGeoPromise) {
-    houseShapeGeoPromise = fetch("data/house-districts-119.geojson", { cache: "no-store" })
+    houseShapeGeoPromise = fetch("data/house-districts-119.geojson", { cache: "force-cache" })
       .then((response) => {
         if (!response.ok) throw new Error(`House district shapes returned ${response.status}`);
         return response.json();

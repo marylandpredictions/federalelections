@@ -689,4 +689,4 @@ window.addEventListener("resize", () => {
 }, { passive: true });
 
 loadResults();
-setInterval(() => loadResults(false), 15000);
+setInterval(() => loadResults(false), 30000);

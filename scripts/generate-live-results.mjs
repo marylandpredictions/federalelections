@@ -11,6 +11,10 @@ let featuredCandidates = readFeaturedCandidates();
 let manualCalls = readManualCalls();
 const externalEstimateCache = new Map();
 const LIVE_SOURCE_CACHE_MS = 12_000;
+const raceDetailCache = new Map();
+const RACE_DETAIL_CACHE_MS = 30_000;
+const civicApiCache = new Map();
+const CIVIC_API_CACHE_MS = 60_000;
 
 const STATE_ESTIMATE_FALLBACK_SLUGS = {
   CA: "california-governor-results",
@@ -673,7 +677,7 @@ function readStaticRaceDetail(id) {
 async function fetchCivicRaceDetail(id, options = {}) {
   const source = NBC_RACE_SOURCES[String(id)] || {};
   const url = `${CIVIC_RACE_BASE}/${encodeURIComponent(id)}`;
-  const data = await fetchJson(url);
+  const data = await cachedFetchJson(civicApiCache, url);
   const group = {
     state: source.state || data.province || data.state || "",
     name: source.stateName || data.stateName || data.province || data.state || ""
@@ -974,12 +978,62 @@ function appendVoteHistory(race) {
   return [...stored, point].slice(-240);
 }
 
+function isRaceCloseOrUncalled(race) {
+  if (!race) return true;
+  const percentReporting = Number(race.estimatedVoteReporting ?? race.percentReporting ?? 0);
+  const hasCall = race.calls && race.calls.length > 0;
+  const candidates = race.candidates || [];
+  
+  // If reporting is below 95%, always check
+  if (percentReporting < 95) return true;
+  
+  // If above 95% but no call, check if race is close
+  if (!hasCall && candidates.length >= 2) {
+    const sorted = [...candidates].sort((a, b) => b.votes - a.votes);
+    if (sorted.length >= 2) {
+      const leader = sorted[0];
+      const runnerUp = sorted[1];
+      const leaderVotes = leader.votes || 0;
+      const runnerUpVotes = runnerUp.votes || 0;
+      const totalVotes = leaderVotes + runnerUpVotes;
+      if (totalVotes > 0) {
+        const margin = Math.abs(leaderVotes - runnerUpVotes) / totalVotes;
+        // If margin is less than 5%, consider it close and keep checking
+        if (margin < 0.05) return true;
+      }
+    }
+  }
+  
+  return false;
+}
+
 async function fetchRaceDetail(id) {
+  // Check cache for races that are >95% reporting and not close/uncalled
+  const cached = raceDetailCache.get(String(id));
+  if (cached) {
+    const age = Date.now() - cached.timestamp;
+    if (age < RACE_DETAIL_CACHE_MS && !isRaceCloseOrUncalled(cached.data)) {
+      return cached.data;
+    }
+  }
+  
   const nbcRace = await fetchNbcRaceDetail(id);
-  if (nbcRace) return nbcRace;
+  if (nbcRace) {
+    // Cache the result if it's >95% reporting and not close/uncalled
+    if (!isRaceCloseOrUncalled(nbcRace)) {
+      raceDetailCache.set(String(id), { data: nbcRace, timestamp: Date.now() });
+    }
+    return nbcRace;
+  }
+  
   if (STATIC_NBC_UNSUPPORTED_RACES.has(String(id))) {
     try {
-      return await fetchCivicRaceDetail(id);
+      const civicRace = await fetchCivicRaceDetail(id);
+      // Cache the result if it's >95% reporting and not close/uncalled
+      if (!isRaceCloseOrUncalled(civicRace)) {
+        raceDetailCache.set(String(id), { data: civicRace, timestamp: Date.now() });
+      }
+      return civicRace;
     } catch (error) {
       const fallback = readStaticRaceDetail(id);
       return {
