@@ -61,7 +61,8 @@ const contentTypes = {
   ".svg": "image/svg+xml",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
-  ".png": "image/png"
+  ".png": "image/png",
+  ".geojson": "application/json; charset=utf-8"
 };
 
 const compressibleTypes = [
@@ -552,11 +553,15 @@ async function serveStatic(request, response) {
       headers["Cache-Control"] = "public, max-age=31536000, immutable"; // 1 year
     } else if (fileExt === ".html") {
       headers["Cache-Control"] = "public, max-age=60"; // 1 minute for HTML
+    } else if (fileExt === ".json") {
+      // For JSON files in /data, use a shorter cache to allow updates
+      headers["Cache-Control"] = "public, max-age=300"; // 5 minutes
     }
     
     response.writeHead(200, headers);
     response.end(body);
-  } catch {
+  } catch (error) {
+    console.error(`Error serving ${requestedPath}:`, error);
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     response.end("Not found");
   }
