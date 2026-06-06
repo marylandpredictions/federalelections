@@ -13,10 +13,10 @@
     "79778": {
       base: "assets/img/candidates/california-insurance-commissioner",
       photos: {
-        "ben-allen": "ben-allen.png",
-        "steven-craig-bradford": "steven-craig-bradford.png",
-        "jane-kim": "jane-kim.png",
-        "stacy-a-korsgaden": "stacy-a-korsgaden.png"
+        "ben-allen": "ben-allen.webp",
+        "steven-craig-bradford": "steven-craig-bradford.webp",
+        "jane-kim": "jane-kim.webp",
+        "stacy-a-korsgaden": "stacy-a-korsgaden.webp"
       },
       colors: {
         "ben-allen": "#17a7e8",
@@ -28,9 +28,9 @@
     "79893": {
       base: "assets/img/candidates/california-us-house-1",
       photos: {
-        "audrey-denney": "audrey-denney.png",
-        "mike-mcguire": "mike-mcguire.png",
-        "james-gallagher": "james-gallagher.png"
+        "audrey-denney": "audrey-denney.webp",
+        "mike-mcguire": "mike-mcguire.webp",
+        "james-gallagher": "james-gallagher.webp"
       },
       colors: {
         "audrey-denney": "#6c5cff",
@@ -41,15 +41,15 @@
     "79777": {
       base: "assets/img/candidates/california-governor",
       photos: {
-        "antonio-villaraigosa": "villaraigosa.png",
-        "tony-k-thurmond": "thurmond.png",
-        "eric-swalwell": "swalwell.png",
-        "tom-steyer": "steyer.png",
-        "katie-porter": "porter.png",
-        "matt-mahan": "mahan.png",
-        "xavier-becerra": "becerra.png",
-        "steve-hilton": "hilton.png",
-        "chad-bianco": "bianco.png"
+        "antonio-villaraigosa": "villaraigosa.webp",
+        "tony-k-thurmond": "thurmond.webp",
+        "eric-swalwell": "swalwell.webp",
+        "tom-steyer": "steyer.webp",
+        "katie-porter": "porter.webp",
+        "matt-mahan": "mahan.webp",
+        "xavier-becerra": "becerra.webp",
+        "steve-hilton": "hilton.webp",
+        "chad-bianco": "bianco.webp"
       },
       colors: {
         "antonio-villaraigosa": "#24dcae",
@@ -66,12 +66,12 @@
     "79779": {
       base: "assets/img/candidates/california-lieutenant-governor",
       photos: {
-        "josh-fryday": "josh-fryday.png",
-        "fiona-ma": "fiona-ma.png",
-        "michael-tubbs": "michael-tubbs.png",
-        "oliver-ma": "oliver-ma.png",
-        "david-fennell": "david-fennell.png",
-        "gloria-romero": "gloria-romero.png"
+        "josh-fryday": "josh-fryday.webp",
+        "fiona-ma": "fiona-ma.webp",
+        "michael-tubbs": "michael-tubbs.webp",
+        "oliver-ma": "oliver-ma.webp",
+        "david-fennell": "david-fennell.webp",
+        "gloria-romero": "gloria-romero.webp"
       },
       colors: {
         "josh-fryday": "#0091ff",
@@ -85,12 +85,12 @@
     "79881": {
       base: "assets/img/candidates/california-superintendent",
       photos: {
-        "richard-barrera": "richard-barrera.png",
-        "nichelle-m-henderson": "nichelle-henderson.png",
-        "al-muratsuchi": "al-muratsuchi.png",
-        "josh-newman": "josh-newman.png",
-        "anthony-rendon": "anthony-rendon.png",
-        "sonja-shaw": "sonja-shaw.png"
+        "richard-barrera": "richard-barrera.webp",
+        "nichelle-m-henderson": "nichelle-henderson.webp",
+        "al-muratsuchi": "al-muratsuchi.webp",
+        "josh-newman": "josh-newman.webp",
+        "anthony-rendon": "anthony-rendon.webp",
+        "sonja-shaw": "sonja-shaw.webp"
       },
       colors: {
         "richard-barrera": "#0091ff",
@@ -104,9 +104,9 @@
     "79884": {
       base: "assets/img/candidates/california-us-house-11",
       photos: {
-        "saikat-chakrabarti": "saikat-chakrabarti.png",
-        "connie-chan": "connie-chan.png",
-        "scott-wiener": "scott-wiener.png"
+        "saikat-chakrabarti": "saikat-chakrabarti.webp",
+        "connie-chan": "connie-chan.webp",
+        "scott-wiener": "scott-wiener.webp"
       },
       colors: {
         "saikat-chakrabarti": "#6b42d8",
@@ -117,9 +117,9 @@
     "79896": {
       base: "assets/img/candidates/california-us-house-22",
       photos: {
-        "jasmeet-bains": "jasmeet-bains.png",
-        "randy-villegas": "randy-villegas.png",
-        "david-g-valadao": "david-g-valadao.png"
+        "jasmeet-bains": "jasmeet-bains.webp",
+        "randy-villegas": "randy-villegas.webp",
+        "david-g-valadao": "david-g-valadao.webp"
       },
       colors: {
         "jasmeet-bains": "#4361ff",
@@ -130,10 +130,10 @@
     "79907": {
       base: "assets/img/candidates/california-us-house-32",
       photos: {
-        "jake-levine": "jake-levine.png",
-        "marena-lin": "marena-lin.png",
-        "brad-sherman": "brad-sherman.png",
-        "larry-thompson": "larry-thompson.png"
+        "jake-levine": "jake-levine.webp",
+        "marena-lin": "marena-lin.webp",
+        "brad-sherman": "brad-sherman.webp",
+        "larry-thompson": "larry-thompson.webp"
       },
       colors: {
         "jake-levine": "#0091ff",
@@ -145,10 +145,10 @@
     "79916": {
       base: "assets/img/candidates/california-us-house-40",
       photos: {
-        "joe-kerr": "joe-kerr.png",
-        "esther-kim-varet": "esther-kim-varet.png",
-        "ken-calvert": "ken-calvert.png",
-        "young-kim": "young-kim.png"
+        "joe-kerr": "joe-kerr.webp",
+        "esther-kim-varet": "esther-kim-varet.webp",
+        "ken-calvert": "ken-calvert.webp",
+        "young-kim": "young-kim.webp"
       },
       colors: {
         "joe-kerr": "#0091ff",
@@ -160,8 +160,8 @@
     "79932": {
       base: "assets/img/candidates/california-us-house-7",
       photos: {
-        "doris-matsui": "doris-matsui.png",
-        "mai-vang": "mai-vang.png"
+        "doris-matsui": "doris-matsui.webp",
+        "mai-vang": "mai-vang.webp"
       },
       colors: {
         "doris-matsui": "#0091ff",
@@ -273,7 +273,7 @@
     const slug = slugify(candidate?.name);
     const set = PHOTO_SETS[String(race?.id)];
     if (set?.photos?.[slug]) return `${set.base}/${set.photos[slug]}`;
-    return `assets/img/candidates/live-results/${slug}.png`;
+    return `assets/img/candidates/live-results/${slug}.webp`;
   }
 
   function isRealCandidate(candidate) {
@@ -401,7 +401,7 @@
         <div id="broadcast-call-slot" class="broadcast-call-slot" aria-live="polite"></div>
         <div class="broadcast-ticker-shell">
           <div class="broadcast-ticker-brand">
-            <img src="assets/img/FEA_White.png" alt="Federal Elections Analysis">
+            <img src="assets/img/FEA_White.webp" alt="Federal Elections Analysis">
             <strong>LIVE</strong>
           </div>
           <div class="broadcast-ticker-viewport">

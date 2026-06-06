@@ -7,8 +7,6 @@ const CALLS_URL = new URL("../data/result-calls.json", import.meta.url);
 const FEATURED_CANDIDATES_URL = new URL("../data/result-featured-candidates.json", import.meta.url);
 const NBC_BASE = "https://www.nbcnews.com/firecracker/api/v2/state-results/2026-primary-elections";
 const CIVIC_RACE_BASE = "https://civicapi.org/api/v2/race";
-let featuredCandidates = readFeaturedCandidates();
-let manualCalls = readManualCalls();
 const externalEstimateCache = new Map();
 const LIVE_SOURCE_CACHE_MS = 12_000;
 const raceDetailCache = new Map();
@@ -162,12 +160,11 @@ function readFeaturedCandidates() {
 }
 
 export function reloadManualResultConfig() {
-  featuredCandidates = readFeaturedCandidates();
-  manualCalls = readManualCalls();
   externalEstimateCache.clear();
 }
 
 function featuredNamesForRace(raceId) {
+  const featuredCandidates = readFeaturedCandidates();
   return featuredCandidates.races?.[String(raceId)] || [];
 }
 
@@ -185,6 +182,7 @@ function slugify(value) {
 }
 
 function callForCandidate(raceId, candidateName) {
+  const manualCalls = readManualCalls();
   const raceCalls = manualCalls.races?.[String(raceId)]?.calls || [];
   return raceCalls.find((call) => String(call.candidate || "").toLowerCase() === String(candidateName || "").toLowerCase()) || null;
 }
@@ -582,6 +580,7 @@ function normalizeNbcRace(id, source, data, nbcRace, options = {}) {
     const rankDelta = featuredRank(id, a.name) - featuredRank(id, b.name);
     return Number.isFinite(rankDelta) ? rankDelta : a.sourceOrder - b.sourceOrder;
   }).map(({ sourceOrder, ...candidate }) => candidate);
+  const manualCalls = readManualCalls();
   const explicitCalls = manualCalls.races?.[String(id)]?.calls || [];
   const automaticCalls = explicitCalls.length ? [] : automaticUncontestedCalls(raceBase, candidates);
   const calls = explicitCalls.length ? explicitCalls : automaticCalls;
@@ -803,6 +802,7 @@ function normalizeRace(race, group, options = {}) {
     })
     .map(({ sourceOrder, ...candidate }) => candidate);
   const calledCandidates = candidates.map((candidate) => withManualCall(candidate, race));
+  const manualCalls = readManualCalls();
   const explicitCalls = manualCalls.races?.[String(race.id)]?.calls || [];
   const calls = explicitCalls.length ? explicitCalls : automaticUncontestedCalls(race, candidates);
   const finalCandidates = calls.length && !explicitCalls.length

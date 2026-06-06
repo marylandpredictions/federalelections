@@ -49,10 +49,10 @@ const CANDIDATE_PHOTO_SETS = {
   "79778": {
     base: "assets/img/candidates/california-insurance-commissioner",
     photos: {
-      "ben-allen": "ben-allen.png",
-      "steven-craig-bradford": "steven-craig-bradford.png",
-      "jane-kim": "jane-kim.png",
-      "stacy-a-korsgaden": "stacy-a-korsgaden.png"
+      "ben-allen": "ben-allen.webp",
+      "steven-craig-bradford": "steven-craig-bradford.webp",
+      "jane-kim": "jane-kim.webp",
+      "stacy-a-korsgaden": "stacy-a-korsgaden.webp"
     },
     colors: {
       "ben-allen": "#17a7e8",
@@ -64,9 +64,9 @@ const CANDIDATE_PHOTO_SETS = {
   "79893": {
     base: "assets/img/candidates/california-us-house-1",
     photos: {
-      "audrey-denney": "audrey-denney.png",
-      "mike-mcguire": "mike-mcguire.png",
-      "james-gallagher": "james-gallagher.png"
+      "audrey-denney": "audrey-denney.webp",
+      "mike-mcguire": "mike-mcguire.webp",
+      "james-gallagher": "james-gallagher.webp"
     },
     colors: {
       "audrey-denney": "#6c5cff",
@@ -77,12 +77,12 @@ const CANDIDATE_PHOTO_SETS = {
   "79779": {
     base: "assets/img/candidates/california-lieutenant-governor",
     photos: {
-      "josh-fryday": "josh-fryday.png",
-      "fiona-ma": "fiona-ma.png",
-      "michael-tubbs": "michael-tubbs.png",
-      "oliver-ma": "oliver-ma.png",
-      "david-fennell": "david-fennell.png",
-      "gloria-romero": "gloria-romero.png"
+      "josh-fryday": "josh-fryday.webp",
+      "fiona-ma": "fiona-ma.webp",
+      "michael-tubbs": "michael-tubbs.webp",
+      "oliver-ma": "oliver-ma.webp",
+      "david-fennell": "david-fennell.webp",
+      "gloria-romero": "gloria-romero.webp"
     },
     colors: {
       "josh-fryday": "#0091ff",
@@ -96,9 +96,9 @@ const CANDIDATE_PHOTO_SETS = {
   "79884": {
     base: "assets/img/candidates/california-us-house-11",
     photos: {
-      "saikat-chakrabarti": "saikat-chakrabarti.png",
-      "connie-chan": "connie-chan.png",
-      "scott-wiener": "scott-wiener.png"
+      "saikat-chakrabarti": "saikat-chakrabarti.webp",
+      "connie-chan": "connie-chan.webp",
+      "scott-wiener": "scott-wiener.webp"
     },
     colors: {
       "saikat-chakrabarti": "#6b42d8",
@@ -109,9 +109,9 @@ const CANDIDATE_PHOTO_SETS = {
   "79896": {
     base: "assets/img/candidates/california-us-house-22",
     photos: {
-      "jasmeet-bains": "jasmeet-bains.png",
-      "randy-villegas": "randy-villegas.png",
-      "david-g-valadao": "david-g-valadao.png"
+      "jasmeet-bains": "jasmeet-bains.webp",
+      "randy-villegas": "randy-villegas.webp",
+      "david-g-valadao": "david-g-valadao.webp"
     },
     colors: {
       "jasmeet-bains": "#4361ff",
@@ -122,10 +122,10 @@ const CANDIDATE_PHOTO_SETS = {
   "79907": {
     base: "assets/img/candidates/california-us-house-32",
     photos: {
-      "jake-levine": "jake-levine.png",
-      "marena-lin": "marena-lin.png",
-      "brad-sherman": "brad-sherman.png",
-      "larry-thompson": "larry-thompson.png"
+      "jake-levine": "jake-levine.webp",
+      "marena-lin": "marena-lin.webp",
+      "brad-sherman": "brad-sherman.webp",
+      "larry-thompson": "larry-thompson.webp"
     },
     colors: {
       "jake-levine": "#0091ff",
@@ -137,8 +137,8 @@ const CANDIDATE_PHOTO_SETS = {
   "79932": {
     base: "assets/img/candidates/california-us-house-7",
     photos: {
-      "doris-matsui": "doris-matsui.png",
-      "mai-vang": "mai-vang.png"
+      "doris-matsui": "doris-matsui.webp",
+      "mai-vang": "mai-vang.webp"
     },
     colors: {
       "doris-matsui": "#0091ff",
@@ -148,10 +148,10 @@ const CANDIDATE_PHOTO_SETS = {
   "79916": {
     base: "assets/img/candidates/california-us-house-40",
     photos: {
-      "joe-kerr": "joe-kerr.png",
-      "esther-kim-varet": "esther-kim-varet.png",
-      "ken-calvert": "ken-calvert.png",
-      "young-kim": "young-kim.png"
+      "joe-kerr": "joe-kerr.webp",
+      "esther-kim-varet": "esther-kim-varet.webp",
+      "ken-calvert": "ken-calvert.webp",
+      "young-kim": "young-kim.webp"
     },
     colors: {
       "joe-kerr": "#0091ff",
@@ -163,15 +163,15 @@ const CANDIDATE_PHOTO_SETS = {
   "79777": {
     base: "assets/img/candidates/california-governor",
     photos: {
-      "antonio-villaraigosa": "villaraigosa.png",
-      "tony-k-thurmond": "thurmond.png",
-      "eric-swalwell": "swalwell.png",
-      "tom-steyer": "steyer.png",
-      "katie-porter": "porter.png",
-      "matt-mahan": "mahan.png",
-      "xavier-becerra": "becerra.png",
-      "steve-hilton": "hilton.png",
-      "chad-bianco": "bianco.png"
+      "antonio-villaraigosa": "villaraigosa.webp",
+      "tony-k-thurmond": "thurmond.webp",
+      "eric-swalwell": "swalwell.webp",
+      "tom-steyer": "steyer.webp",
+      "katie-porter": "porter.webp",
+      "matt-mahan": "mahan.webp",
+      "xavier-becerra": "becerra.webp",
+      "steve-hilton": "hilton.webp",
+      "chad-bianco": "bianco.webp"
     },
     colors: {
       "antonio-villaraigosa": "#24dcae",
@@ -188,12 +188,12 @@ const CANDIDATE_PHOTO_SETS = {
   "79881": {
     base: "assets/img/candidates/california-superintendent",
     photos: {
-      "richard-barrera": "richard-barrera.png",
-      "nichelle-m-henderson": "nichelle-henderson.png",
-      "al-muratsuchi": "al-muratsuchi.png",
-      "josh-newman": "josh-newman.png",
-      "anthony-rendon": "anthony-rendon.png",
-      "sonja-shaw": "sonja-shaw.png"
+      "richard-barrera": "richard-barrera.webp",
+      "nichelle-m-henderson": "nichelle-henderson.webp",
+      "al-muratsuchi": "al-muratsuchi.webp",
+      "josh-newman": "josh-newman.webp",
+      "anthony-rendon": "anthony-rendon.webp",
+      "sonja-shaw": "sonja-shaw.webp"
     },
     colors: {
       "richard-barrera": "#0091ff",
@@ -207,77 +207,77 @@ const CANDIDATE_PHOTO_SETS = {
 };
 
 const GLOBAL_CANDIDATE_PHOTOS = {
-  "abel-chavez": { file: "abel-chavez.png", color: "#6263f5" },
-  "adam-hamawy": { file: "adam-hamawy.png", color: "#1493f6" },
-  "adam-miller": { file: "adam-miller.png", color: "#c5162e" },
-  "adam-steen": { file: "adam-steen.png", color: "#c5162e" },
-  "adrian-o-mapp": { file: "adrian-o-mapp.png", color: "#1493f6" },
-  "ammar-campa-najjar": { file: "ammar-campa-najjar.png", color: "#1493f6" },
-  "angela-gonzales-torres": { file: "angela-gonzales-torres.png", color: "#6263f5" },
-  "ashley-hinson": { file: "ashley-hinson.png", color: "#c5162e" },
-  "ben-r-lujan": { file: "ben-r-lujan.png", color: "#1493f6" },
-  "brad-cohen": { file: "brad-cohen.png", color: "#25d6d6" },
-  "brad-sherman": { file: "brad-sherman-ia.png", color: "#c5162e" },
-  "brian-varela": { file: "brian-varela.png", color: "#1493f6" },
-  "cory-booker": { file: "cory-booker.png", color: "#1493f6" },
-  "deb-haaland": { file: "deb-haaland.png", color: "#1493f6" },
-  "duke-rodriguez": { file: "duke-rodriguez.png", color: "#d97a18" },
-  "dusty-johnson": { file: "dusty-johnson.png", color: "#c5162e" },
-  "greggory-d-hull": { file: "greggory-d-hull.png", color: "#d97a18" },
-  "jay-vaingankar": { file: "jay-vaingankar.png", color: "#25d6d6" },
-  "jim-carlin": { file: "jim-carlin.png", color: "#c5162e" },
-  "jim-desmond": { file: "jim-desmond.png", color: "#d97a18" },
-  "jimmy-gomez": { file: "jimmy-gomez.png", color: "#6263f5" },
-  "jon-hansen": { file: "jon-hansen.png", color: "#c5162e" },
-  "josh-turek": { file: "josh-turek.png", color: "#1493f6" },
-  "justin-murphy": { file: "justin-murphy.png", color: "#c5162e" },
-  "karen-bass": { file: "karen-ruth-bass.png", color: "#1493f6" },
-  "karen-ruth-bass": { file: "karen-ruth-bass.png", color: "#1493f6" },
-  "kurt-alme": { file: "kurt-alme.png", color: "#c5162e" },
-  "larry-rhoden": { file: "larry-rhoden.png", color: "#c5162e" },
-  "marni-von-wilpert": { file: "marni-von-wilpert.png", color: "#25d6d6" },
-  "matt-adams": { file: "matt-adams.png", color: "#6263f5" },
-  "matt-rains": { file: "matt-rains.png", color: "#6263f5" },
-  "michael-roth": { file: "michael-roth.png", color: "#6263f5" },
-  "mike-rounds": { file: "mike-rounds.png", color: "#c5162e" },
-  "mussab-ali": { file: "mussab-ali.png", color: "#1493f6" },
-  "nithya-raman": { file: "nithya-raman.png", color: "#1493f6" },
-  "rae-chen-huang": { file: "rae-chen-huang.png", color: "#6263f5" },
-  "randy-feenstra": { file: "randy-feenstra.png", color: "#c5162e" },
-  "rebecca-bennett": { file: "rebecca-bennett.png", color: "#25d6d6" },
-  "rob-menendez": { file: "rob-menendez.png", color: "#6263f5" },
-  "rob-sand": { file: "rob-sand.png", color: "#1493f6" },
-  "robert-s-lebovics": { file: "robert-s-lebovics.png", color: "#c5162e" },
-  "russell-cleveland": { file: "russell-cleveland.png", color: "#1493f6" },
-  "ryan-busse": { file: "ryan-busse.png", color: "#25d6d6" },
-  "sam-bregman": { file: "sam-bregman.png", color: "#6263f5" },
-  "sam-forstag": { file: "sam-forstag.png", color: "#45cd47" },
-  "sam-wang": { file: "sam-wang.png", color: "#d97a18" },
-  "spencer-pratt": { file: "spencer-pratt.png", color: "#6263f5" },
-  "sue-altman": { file: "sue-altman.png", color: "#1493f6" },
-  "tina-shah": { file: "tina-shah.png", color: "#45cd47" },
-  "toby-doeden": { file: "toby-doeden.png", color: "#c5162e" },
-  "verlina-reynolds-jackson": { file: "verlina-reynolds-jackson.png", color: "#25d6d6" },
-  "zach-lahn": { file: "zach-lahn.png", color: "#d97a18" },
-  "zach-wahls": { file: "zach-wahls.png", color: "#1493f6" }
+  "abel-chavez": { file: "abel-chavez.webp", color: "#6263f5" },
+  "adam-hamawy": { file: "adam-hamawy.webp", color: "#1493f6" },
+  "adam-miller": { file: "adam-miller.webp", color: "#c5162e" },
+  "adam-steen": { file: "adam-steen.webp", color: "#c5162e" },
+  "adrian-o-mapp": { file: "adrian-o-mapp.webp", color: "#1493f6" },
+  "ammar-campa-najjar": { file: "ammar-campa-najjar.webp", color: "#1493f6" },
+  "angela-gonzales-torres": { file: "angela-gonzales-torres.webp", color: "#6263f5" },
+  "ashley-hinson": { file: "ashley-hinson.webp", color: "#c5162e" },
+  "ben-r-lujan": { file: "ben-r-lujan.webp", color: "#1493f6" },
+  "brad-cohen": { file: "brad-cohen.webp", color: "#25d6d6" },
+  "brad-sherman": { file: "brad-sherman-ia.webp", color: "#c5162e" },
+  "brian-varela": { file: "brian-varela.webp", color: "#1493f6" },
+  "cory-booker": { file: "cory-booker.webp", color: "#1493f6" },
+  "deb-haaland": { file: "deb-haaland.webp", color: "#1493f6" },
+  "duke-rodriguez": { file: "duke-rodriguez.webp", color: "#d97a18" },
+  "dusty-johnson": { file: "dusty-johnson.webp", color: "#c5162e" },
+  "greggory-d-hull": { file: "greggory-d-hull.webp", color: "#d97a18" },
+  "jay-vaingankar": { file: "jay-vaingankar.webp", color: "#25d6d6" },
+  "jim-carlin": { file: "jim-carlin.webp", color: "#c5162e" },
+  "jim-desmond": { file: "jim-desmond.webp", color: "#d97a18" },
+  "jimmy-gomez": { file: "jimmy-gomez.webp", color: "#6263f5" },
+  "jon-hansen": { file: "jon-hansen.webp", color: "#c5162e" },
+  "josh-turek": { file: "josh-turek.webp", color: "#1493f6" },
+  "justin-murphy": { file: "justin-murphy.webp", color: "#c5162e" },
+  "karen-bass": { file: "karen-ruth-bass.webp", color: "#1493f6" },
+  "karen-ruth-bass": { file: "karen-ruth-bass.webp", color: "#1493f6" },
+  "kurt-alme": { file: "kurt-alme.webp", color: "#c5162e" },
+  "larry-rhoden": { file: "larry-rhoden.webp", color: "#c5162e" },
+  "marni-von-wilpert": { file: "marni-von-wilpert.webp", color: "#25d6d6" },
+  "matt-adams": { file: "matt-adams.webp", color: "#6263f5" },
+  "matt-rains": { file: "matt-rains.webp", color: "#6263f5" },
+  "michael-roth": { file: "michael-roth.webp", color: "#6263f5" },
+  "mike-rounds": { file: "mike-rounds.webp", color: "#c5162e" },
+  "mussab-ali": { file: "mussab-ali.webp", color: "#1493f6" },
+  "nithya-raman": { file: "nithya-raman.webp", color: "#1493f6" },
+  "rae-chen-huang": { file: "rae-chen-huang.webp", color: "#6263f5" },
+  "randy-feenstra": { file: "randy-feenstra.webp", color: "#c5162e" },
+  "rebecca-bennett": { file: "rebecca-bennett.webp", color: "#25d6d6" },
+  "rob-menendez": { file: "rob-menendez.webp", color: "#6263f5" },
+  "rob-sand": { file: "rob-sand.webp", color: "#1493f6" },
+  "robert-s-lebovics": { file: "robert-s-lebovics.webp", color: "#c5162e" },
+  "russell-cleveland": { file: "russell-cleveland.webp", color: "#1493f6" },
+  "ryan-busse": { file: "ryan-busse.webp", color: "#25d6d6" },
+  "sam-bregman": { file: "sam-bregman.webp", color: "#6263f5" },
+  "sam-forstag": { file: "sam-forstag.webp", color: "#45cd47" },
+  "sam-wang": { file: "sam-wang.webp", color: "#d97a18" },
+  "spencer-pratt": { file: "spencer-pratt.webp", color: "#6263f5" },
+  "sue-altman": { file: "sue-altman.webp", color: "#1493f6" },
+  "tina-shah": { file: "tina-shah.webp", color: "#45cd47" },
+  "toby-doeden": { file: "toby-doeden.webp", color: "#c5162e" },
+  "verlina-reynolds-jackson": { file: "verlina-reynolds-jackson.webp", color: "#25d6d6" },
+  "zach-lahn": { file: "zach-lahn.webp", color: "#d97a18" },
+  "zach-wahls": { file: "zach-wahls.webp", color: "#1493f6" }
 };
 
 const ANALYST_PROFILES = {
   "fea-analysis-desk": {
     name: "FEA Analysis Desk",
-    image: "assets/img/FEA_Icon.png"
+    image: "assets/img/FEA_Icon.webp"
   },
   "federal-elections-analysis": {
     name: "Federal Elections Analysis",
-    image: "assets/img/FEA_Icon.png"
+    image: "assets/img/FEA_Icon.webp"
   },
   "nathan-wang": {
     name: "Nathan Wang",
-    image: "assets/img/analysts/nathan-wang.png"
+    image: "assets/img/analysts/nathan-wang.webp"
   },
   "gamerdoglover": {
     name: "gamerdoglover",
-    image: "assets/img/analysts/gamerdoglover.png"
+    image: "assets/img/analysts/gamerdoglover.webp"
   }
 };
 

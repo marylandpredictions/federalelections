@@ -1621,6 +1621,29 @@ function renderLineChart(chart, points, options) {
   const backgroundBands = hasUsableDates && electionX ? `
     <rect class="history-runway" x="${currentX}" y="${plot.top}" width="${electionX - currentX}" height="${plotHeight}"></rect>
   ` : "";
+  const dataGaps = hasUsableDates && coords.length > 1 ? (() => {
+    const gaps = [];
+    const oneDay = 86400000;
+    for (let i = 0; i < coords.length - 1; i++) {
+      const currentDate = chartDates[i];
+      const nextDate = chartDates[i + 1];
+      const gapDays = (nextDate - currentDate) / oneDay;
+      if (gapDays > 1.5) {
+        const startX = coords[i].x;
+        const endX = coords[i + 1].x;
+        const gapWidth = endX - startX;
+        gaps.push({
+          x: startX,
+          width: gapWidth,
+          days: Math.round(gapDays)
+        });
+      }
+    }
+    return gaps.map((gap) => `
+      <rect class="history-data-gap" x="${gap.x}" y="${plot.top}" width="${gap.width}" height="${plotHeight}"></rect>
+      <text class="history-data-gap-label" x="${gap.x + gap.width / 2}" y="${plot.top + plotHeight / 2}" text-anchor="middle" dominant-baseline="middle">Data lost (${gap.days} days)</text>
+    `).join("");
+  })() : "";
   const dotRadius = options.dotRadius ?? (coords.length === 1 ? 3.2 : 1.8);
   const zoomControls = hasZoomControls && hasUsableDates && electionDate && electionDate > latestChartDate ? `
     <div class="history-zoom-controls ${mobileZoomActive && !options.zoomControls ? "mobile-only" : ""}" aria-label="Chart time range">
@@ -1632,6 +1655,7 @@ function renderLineChart(chart, points, options) {
     ${zoomControls}
     <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${options.label}">
       ${backgroundBands}
+      ${dataGaps}
       ${ticks.map((tick) => `<path class="history-grid ${tick === (options.midline ?? .5) ? "history-midline" : ""}" d="M${plot.left} ${yFor(tick)}H${width - plot.right}"></path><text class="history-axis" x="${plot.left - 12}" y="${yFor(tick) + 4}">${valueFormat(tick)}</text>`).join("")}
       ${[1, 2, 3, 4, 5].map((step) => {
         const x = plot.left + (plotWidth / 6) * step;
