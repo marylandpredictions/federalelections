@@ -42,6 +42,8 @@ let governorForecast = null;
 let presidentForecasts = null;
 let houseShapeGeo = null;
 let houseShapeGeoPromise = null;
+let usStatesGeo = null;
+let usStatesGeoPromise = null;
 let articles = [];
 let mapColorMode = "rating";
 let houseViewMode = "shape";
@@ -2169,6 +2171,13 @@ async function renderHouseShapeMap() {
     return;
   }
 
+  let statesGeo;
+  try {
+    statesGeo = usStatesGeo || await loadUsStatesShapes();
+  } catch (error) {
+    console.warn("US states background could not load:", error);
+  }
+
   const districtById = new Map(houseForecast.districts.map((district) => [district.id, district]));
   const width = 980;
   const height = 610;
@@ -2188,6 +2197,18 @@ async function renderHouseShapeMap() {
       layer.attr("transform", event.transform);
     });
   svg.call(zoom);
+
+  if (statesGeo && statesGeo.features) {
+    layer.selectAll(".state-border")
+      .data(statesGeo.features || [])
+      .join("path")
+      .attr("class", "state-border")
+      .attr("d", (feature) => projectedFeaturePath(feature, projection))
+      .attr("fill", "none")
+      .attr("stroke", "#ccc")
+      .attr("stroke-width", "1")
+      .attr("pointer-events", "none");
+  }
 
   layer.selectAll("path")
     .data(geo.features || [])
@@ -3378,6 +3399,18 @@ async function loadHouseDistrictShapes() {
   }
   houseShapeGeo = await houseShapeGeoPromise;
   return houseShapeGeo;
+}
+
+async function loadUsStatesShapes() {
+  if (!usStatesGeoPromise) {
+    usStatesGeoPromise = fetch("data/result-us-states.geojson", { cache: "force-cache" })
+      .then((response) => {
+        if (!response.ok) throw new Error(`US states shapes returned ${response.status}`);
+        return response.json();
+      });
+  }
+  usStatesGeo = await usStatesGeoPromise;
+  return usStatesGeo;
 }
 
 async function loadGovernorForecast() {
