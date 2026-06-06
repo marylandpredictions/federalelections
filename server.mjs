@@ -77,41 +77,8 @@ const cacheableExtensions = [".js", ".css", ".svg", ".png", ".jpg", ".jpeg", ".w
 
 function sendJson(response, status, payload, pathname = "") {
   const jsonString = JSON.stringify(payload);
-  const acceptEncoding = response.getHeader("accept-encoding") || "";
-  
-  if (acceptEncoding.includes("br")) {
-    response.writeHead(status, {
-      "Content-Type": "application/json; charset=utf-8",
-      "Content-Encoding": "br",
-      "Vary": "Accept-Encoding"
-    });
-    pipeline(
-      Buffer.from(jsonString),
-      createBrotliCompress(),
-      response
-    ).catch(() => {
-      response.end(jsonString);
-    });
-    logBandwidth(pathname, jsonString.length);
-  } else if (acceptEncoding.includes("gzip")) {
-    response.writeHead(status, {
-      "Content-Type": "application/json; charset=utf-8",
-      "Content-Encoding": "gzip",
-      "Vary": "Accept-Encoding"
-    });
-    pipeline(
-      Buffer.from(jsonString),
-      createGzip(),
-      response
-    ).catch(() => {
-      response.end(jsonString);
-    });
-    logBandwidth(pathname, jsonString.length);
-  } else {
-    response.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
-    response.end(jsonString);
-    logBandwidth(pathname, jsonString.length);
-  }
+  response.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
+  response.end(jsonString);
 }
 
 function timingSafeEqualString(left, right) {
@@ -345,33 +312,7 @@ async function handleLiveResults(request, response) {
       "ETag": currentETag,
       "Cache-Control": "public, max-age=10"
     });
-    const jsonString = JSON.stringify(liveResultsCache);
-    const acceptEncoding = request.headers["accept-encoding"] || "";
-    
-    if (acceptEncoding.includes("br")) {
-      response.setHeader("Content-Encoding", "br");
-      response.setHeader("Vary", "Accept-Encoding");
-      pipeline(
-        Buffer.from(jsonString),
-        createBrotliCompress(),
-        response
-      ).catch(() => {
-        response.end(jsonString);
-      });
-    } else if (acceptEncoding.includes("gzip")) {
-      response.setHeader("Content-Encoding", "gzip");
-      response.setHeader("Vary", "Accept-Encoding");
-      pipeline(
-        Buffer.from(jsonString),
-        createGzip(),
-        response
-      ).catch(() => {
-        response.end(jsonString);
-      });
-    } else {
-      response.end(jsonString);
-    }
-    logBandwidth("/api/live-results", jsonString.length);
+    response.end(JSON.stringify(liveResultsCache));
     return;
   }
 
@@ -386,34 +327,7 @@ async function handleLiveResults(request, response) {
       "ETag": newETag,
       "Cache-Control": "public, max-age=10"
     });
-    
-    const jsonString = JSON.stringify(liveResultsCache);
-    const acceptEncoding = request.headers["accept-encoding"] || "";
-    
-    if (acceptEncoding.includes("br")) {
-      response.setHeader("Content-Encoding", "br");
-      response.setHeader("Vary", "Accept-Encoding");
-      pipeline(
-        Buffer.from(jsonString),
-        createBrotliCompress(),
-        response
-      ).catch(() => {
-        response.end(jsonString);
-      });
-    } else if (acceptEncoding.includes("gzip")) {
-      response.setHeader("Content-Encoding", "gzip");
-      response.setHeader("Vary", "Accept-Encoding");
-      pipeline(
-        Buffer.from(jsonString),
-        createGzip(),
-        response
-      ).catch(() => {
-        response.end(jsonString);
-      });
-    } else {
-      response.end(jsonString);
-    }
-    logBandwidth("/api/live-results", jsonString.length);
+    response.end(JSON.stringify(liveResultsCache));
   } catch (error) {
     console.error(error);
     sendJson(response, 502, { ok: false, error: "Live results source unavailable." }, "/api/live-results");
@@ -640,39 +554,8 @@ async function serveStatic(request, response) {
       headers["Cache-Control"] = "public, max-age=60"; // 1 minute for HTML
     }
     
-    // Add compression for compressible types
-    const acceptEncoding = request.headers["accept-encoding"] || "";
-    const shouldCompress = compressibleTypes.some(type => contentType.includes(type));
-    
-    if (shouldCompress && acceptEncoding.includes("br")) {
-      headers["Content-Encoding"] = "br";
-      headers["Vary"] = "Accept-Encoding";
-      response.writeHead(200, headers);
-      pipeline(
-        Buffer.from(body),
-        createBrotliCompress(),
-        response
-      ).catch(() => {
-        response.end(body);
-      });
-      logBandwidth(requestedPath, body.length);
-    } else if (shouldCompress && acceptEncoding.includes("gzip")) {
-      headers["Content-Encoding"] = "gzip";
-      headers["Vary"] = "Accept-Encoding";
-      response.writeHead(200, headers);
-      pipeline(
-        Buffer.from(body),
-        createGzip(),
-        response
-      ).catch(() => {
-        response.end(body);
-      });
-      logBandwidth(requestedPath, body.length);
-    } else {
-      response.writeHead(200, headers);
-      response.end(body);
-      logBandwidth(requestedPath, body.length);
-    }
+    response.writeHead(200, headers);
+    response.end(body);
   } catch {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     response.end("Not found");
@@ -681,17 +564,6 @@ async function serveStatic(request, response) {
 
 createServer(async (request, response) => {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
-  
-  // Log bandwidth periodically
-  if (totalRequests % 100 === 0 && totalRequests > 0) {
-    console.log(`[Bandwidth] Total requests: ${totalRequests}, Total bytes: ${(totalBytesSent / 1024 / 1024).toFixed(2)} MB`);
-    const topPaths = [...bandwidthLog.entries()]
-      .sort((a, b) => b[1].bytes - a[1].bytes)
-      .slice(0, 5);
-    console.log("[Bandwidth] Top paths by bytes:", topPaths.map(([path, data]) => 
-      `${path}: ${data.count} requests, ${(data.bytes / 1024 / 1024).toFixed(2)} MB`
-    ));
-  }
   
   if (url.pathname === "/api/contact") {
     await handleContact(request, response);
