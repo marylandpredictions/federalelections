@@ -1,10 +1,10 @@
 {
   "model": "2026 gubernatorial forecast",
   "modelDate": "2026-06-06",
-  "generatedAt": "2026-06-06T18:49:55.340Z",
+  "generatedAt": "2026-06-06T20:39:54.346Z",
   "runDate": "Jun 6, 2026",
   "settings": {
-    "simulations": 50000,
+    "simulations": 100000,
     "electionDate": "2026-11-03",
     "currentDemGovernors": 24,
     "currentRepGovernors": 26,
@@ -24,7 +24,7 @@
     "gubernatorialNationalShift": 1.06,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-06-06T18:49:50.387Z",
+      "checkedAt": "2026-06-06T20:39:49.479Z",
       "governorFinance": {
         "ok": true,
         "states": 0,
@@ -38,116 +38,122 @@
       "pollfinityAverages": {
         "ok": true,
         "status": 200,
-        "ms": 136,
+        "ms": 155,
         "url": "https://pollfinity.com/averages.json"
       },
       "twoSeventyGovernorPollsAK": {
         "ok": true,
         "status": 200,
-        "ms": 201,
+        "ms": 457,
         "url": "https://www.270towin.com/2026-governor-polls/alaska"
+      },
+      "ddhqGenericBallot": {
+        "ok": false,
+        "status": 429,
+        "ms": 513,
+        "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
+        "error": "<!DOCTYPE html><html lang=\"en\" data-astro-cid-nbv56vs3> <head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" con"
       },
       "twoSeventyGovernorPollsAZ": {
         "ok": true,
         "status": 200,
-        "ms": 71,
+        "ms": 92,
         "url": "https://www.270towin.com/2026-governor-polls/arizona"
       },
       "twoSeventyGovernorPollsFL": {
         "ok": true,
         "status": 200,
-        "ms": 237,
+        "ms": 48,
         "url": "https://www.270towin.com/2026-governor-polls/florida"
-      },
-      "ddhqGenericBallot": {
-        "ok": false,
-        "status": 429,
-        "ms": 561,
-        "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
-        "error": "<!DOCTYPE html><html lang=\"en\" data-astro-cid-nbv56vs3> <head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" con"
       },
       "twoSeventyGovernorPollsGA": {
         "ok": true,
         "status": 200,
-        "ms": 71,
+        "ms": 96,
         "url": "https://www.270towin.com/2026-governor-polls/georgia"
       },
       "twoSeventyGovernorPollsIA": {
         "ok": true,
         "status": 200,
-        "ms": 36,
+        "ms": 53,
         "url": "https://www.270towin.com/2026-governor-polls/iowa"
       },
       "twoSeventyGovernorPollsKS": {
         "ok": true,
         "status": 200,
-        "ms": 355,
+        "ms": 490,
         "url": "https://www.270towin.com/2026-governor-polls/kansas"
       },
       "twoSeventyGovernorPollsME": {
         "ok": true,
         "status": 200,
-        "ms": 46,
+        "ms": 86,
         "url": "https://www.270towin.com/2026-governor-polls/maine"
       },
       "twoSeventyGovernorPollsMI": {
         "ok": true,
         "status": 200,
-        "ms": 42,
+        "ms": 48,
         "url": "https://www.270towin.com/2026-governor-polls/michigan"
       },
       "twoSeventyGovernorPollsMN": {
         "ok": true,
         "status": 200,
-        "ms": 45,
+        "ms": 67,
         "url": "https://www.270towin.com/2026-governor-polls/minnesota"
+      },
+      "governorFinanceSourceAK": {
+        "ok": true,
+        "status": 200,
+        "ms": 1522,
+        "url": "https://aws.state.ak.us/ApocReports/"
       },
       "twoSeventyGovernorPollsNV": {
         "ok": true,
         "status": 200,
-        "ms": 43,
+        "ms": 93,
         "url": "https://www.270towin.com/2026-governor-polls/nevada"
       },
       "twoSeventyGovernorPollsNH": {
         "ok": true,
         "status": 200,
-        "ms": 71,
+        "ms": 159,
         "url": "https://www.270towin.com/2026-governor-polls/new-hampshire"
       },
       "twoSeventyGovernorPollsNM": {
         "ok": true,
         "status": 200,
-        "ms": 70,
+        "ms": 119,
         "url": "https://www.270towin.com/2026-governor-polls/new-mexico"
       },
       "twoSeventyGovernorPollsOH": {
         "ok": true,
         "status": 200,
-        "ms": 34,
+        "ms": 61,
         "url": "https://www.270towin.com/2026-governor-polls/ohio"
+      },
+      "governorFinanceSourceAZ": {
+        "ok": true,
+        "status": 200,
+        "ms": 475,
+        "url": "https://seethemoney.az.gov/"
       },
       "twoSeventyGovernorPollsOR": {
         "ok": true,
         "status": 200,
-        "ms": 34,
+        "ms": 142,
         "url": "https://www.270towin.com/2026-governor-polls/oregon"
       },
       "twoSeventyGovernorPollsSC": {
         "ok": true,
         "status": 200,
-        "ms": 66,
+        "ms": 36,
         "url": "https://www.270towin.com/2026-governor-polls/south-carolina"
-      },
-      "governorFinanceSourceAK": {
-        "ok": true,
-        "status": 200,
-        "ms": 1499,
-        "url": "https://aws.state.ak.us/ApocReports/"
       },
       "twoSeventyGovernorPollsWI": {
         "ok": true,
         "status": 200,
-        "ms": 48,
+        "ms": 35,
         "url": "https://www.270towin.com/2026-governor-polls/wisconsin"
       },
       "twoSeventyGovernorPolls": {
@@ -275,41 +281,35 @@
           }
         }
       },
-      "governorFinanceSourceAZ": {
-        "ok": true,
-        "status": 200,
-        "ms": 486,
-        "url": "https://seethemoney.az.gov/"
-      },
       "governorFinanceSourceGA": {
         "ok": true,
         "status": 200,
-        "ms": 311,
+        "ms": 718,
         "url": "https://media.ethics.ga.gov/search/campaign/Campaign_ByName.aspx"
       },
       "governorFinanceSourceIA": {
         "ok": true,
         "status": 200,
-        "ms": 743,
+        "ms": 302,
         "url": "https://webapp.iecdb.iowa.gov/PublicView/"
       },
       "governorFinanceSourceMI": {
         "ok": false,
         "status": "fetch-error",
-        "ms": 170,
+        "ms": 273,
         "url": "https://cfrsearch.nictusa.com/",
         "error": "fetch failed"
       },
       "governorFinanceSourceNV": {
         "ok": true,
         "status": 200,
-        "ms": 189,
+        "ms": 151,
         "url": "https://www.nvsos.gov/SOSCandidateServices/AnonymousAccess/CEFDSearchUU/Search.aspx"
       },
       "governorFinanceSourceWI": {
         "ok": true,
         "status": 200,
-        "ms": 823,
+        "ms": 734,
         "url": "https://cfis.wi.gov/"
       },
       "governorOnlineFinance": {
@@ -506,26 +506,24 @@
   "modelWarnings": [],
   "projectedDemRaceWins": 18,
   "projectedRepRaceWins": 18,
-  "averageDemGovernors": 24.1,
-  "averageRepGovernors": 25.9,
+  "averageDemGovernors": 24.11,
+  "averageRepGovernors": 25.89,
   "medianDemGovernors": 24,
   "medianRepGovernors": 26,
   "distribution": {
-    "17": 1,
-    "18": 16,
-    "19": 163,
-    "20": 926,
-    "21": 3777,
-    "22": 10385,
-    "23": 19604,
-    "24": 24705,
-    "25": 21837,
-    "26": 12766,
-    "27": 4605,
-    "28": 1075,
-    "29": 131,
-    "30": 8,
-    "31": 1
+    "18": 14,
+    "19": 152,
+    "20": 898,
+    "21": 3639,
+    "22": 10501,
+    "23": 19083,
+    "24": 24953,
+    "25": 22278,
+    "26": 12699,
+    "27": 4615,
+    "28": 1047,
+    "29": 111,
+    "30": 10
   },
   "stateHistory": {
     "AL": [
@@ -905,11 +903,12 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00202,
+      "tippingPower": 0.00188,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -5.8,
+          "detail": "Combined governor model margin changed."
         }
       ],
       "history": [
@@ -1039,11 +1038,17 @@
       "winnerParty": "R",
       "winnerProbability": 0.61251,
       "competitive": true,
-      "tippingPower": 0.09217,
+      "tippingPower": 0.08988,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 7.21,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Likely R to Lean R"
         }
       ],
       "history": [
@@ -1190,11 +1195,22 @@
       "winnerParty": "D",
       "winnerProbability": 0.6464,
       "competitive": true,
-      "tippingPower": 0.0809,
+      "tippingPower": 0.08084,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Polling",
+          "change": 2.56,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
+          "label": "Projected margin",
+          "change": 1.28,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.1,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -1334,11 +1350,17 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00097,
+      "tippingPower": 0.00088,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -3.48,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.05,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -1487,11 +1509,17 @@
       "winnerParty": "D",
       "winnerProbability": 0.99538,
       "competitive": false,
-      "tippingPower": 0.00373,
+      "tippingPower": 0.00394,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 1.27,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.1,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -1625,11 +1653,22 @@
       "winnerParty": "D",
       "winnerProbability": 0.98875,
       "competitive": false,
-      "tippingPower": 0.00837,
+      "tippingPower": 0.00891,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 5.94,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.15,
+          "detail": "Candidate coalition profile changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Likely D to Safe D"
         }
       ],
       "history": [
@@ -1759,11 +1798,22 @@
       "winnerParty": "D",
       "winnerProbability": 0.99559,
       "competitive": false,
-      "tippingPower": 0.00438,
+      "tippingPower": 0.00434,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 4.36,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.08,
+          "detail": "Candidate coalition profile changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Likely D to Safe D"
         }
       ],
       "history": [
@@ -1903,11 +1953,12 @@
       "winnerParty": "R",
       "winnerProbability": 0.97625,
       "competitive": false,
-      "tippingPower": 0.01496,
+      "tippingPower": 0.01442,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -8.15,
+          "detail": "Combined governor model margin changed."
         }
       ],
       "history": [
@@ -2058,11 +2109,22 @@
       "winnerParty": "D",
       "winnerProbability": 0.62373,
       "competitive": true,
-      "tippingPower": 0.07463,
+      "tippingPower": 0.07493,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Polling",
+          "change": 1.7,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
+          "label": "Projected margin",
+          "change": 1.36,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.09,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -2192,11 +2254,12 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.0012,
+      "tippingPower": 0.00129,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 0.51,
+          "detail": "Combined governor model margin changed."
         }
       ],
       "history": [
@@ -2331,11 +2394,17 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00127,
+      "tippingPower": 0.00117,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -4.85,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.05,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -2475,11 +2544,12 @@
       "winnerParty": "D",
       "winnerProbability": 0.99379,
       "competitive": false,
-      "tippingPower": 0.00618,
+      "tippingPower": 0.00609,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -3.4,
+          "detail": "Combined governor model margin changed."
         }
       ],
       "history": [
@@ -2621,11 +2691,17 @@
       "winnerParty": "R",
       "winnerProbability": 0.54255,
       "competitive": true,
-      "tippingPower": 0.07837,
+      "tippingPower": 0.07991,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -3.14,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.1,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -2760,11 +2836,22 @@
       "winnerParty": "R",
       "winnerProbability": 0.95958,
       "competitive": false,
-      "tippingPower": 0.02006,
+      "tippingPower": 0.01919,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -16.4,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.05,
+          "detail": "Candidate coalition profile changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Toss-up to Lean R"
         }
       ],
       "history": [
@@ -2899,11 +2986,22 @@
       "winnerParty": "D",
       "winnerProbability": 0.96912,
       "competitive": false,
-      "tippingPower": 0.01819,
+      "tippingPower": 0.0188,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 9.12,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.07,
+          "detail": "Candidate coalition profile changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Lean D to Likely D"
         }
       ],
       "history": [
@@ -3038,11 +3136,17 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00085,
+      "tippingPower": 0.00106,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 1.19,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.09,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -3172,11 +3276,17 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00068,
+      "tippingPower": 0.00089,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 1.14,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.11,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -3321,11 +3431,27 @@
       "winnerParty": "D",
       "winnerProbability": 0.78741,
       "competitive": false,
-      "tippingPower": 0.06769,
+      "tippingPower": 0.06792,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 6.62,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Polling",
+          "change": 2.31,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.07,
+          "detail": "Candidate coalition profile changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Toss-up to Lean D"
         }
       ],
       "history": [
@@ -3460,11 +3586,17 @@
       "winnerParty": "D",
       "winnerProbability": 0.84885,
       "competitive": false,
-      "tippingPower": 0.06082,
+      "tippingPower": 0.05972,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 2.31,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Lean D to Likely D"
         }
       ],
       "history": [
@@ -3604,11 +3736,17 @@
       "winnerParty": "R",
       "winnerProbability": 0.99808,
       "competitive": false,
-      "tippingPower": 0.00214,
+      "tippingPower": 0.0022,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -1.7,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.13,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -3756,11 +3894,22 @@
       "winnerParty": "R",
       "winnerProbability": 0.59155,
       "competitive": true,
-      "tippingPower": 0.08462,
+      "tippingPower": 0.08384,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -2.47,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Polling",
+          "change": -0.49,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.05,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -3907,11 +4056,27 @@
       "winnerParty": "R",
       "winnerProbability": 0.90867,
       "competitive": false,
-      "tippingPower": 0.04847,
+      "tippingPower": 0.047,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -9.93,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Polling",
+          "change": -2.49,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.12,
+          "detail": "Candidate coalition profile changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Toss-up to Likely R"
         }
       ],
       "history": [
@@ -4057,11 +4222,17 @@
       "winnerParty": "D",
       "winnerProbability": 0.83295,
       "competitive": false,
-      "tippingPower": 0.0647,
+      "tippingPower": 0.06599,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -2.73,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.12,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -4196,11 +4367,22 @@
       "winnerParty": "D",
       "winnerProbability": 0.99459,
       "competitive": false,
-      "tippingPower": 0.00519,
+      "tippingPower": 0.00526,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 3.91,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.12,
+          "detail": "Candidate coalition profile changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Likely D to Safe D"
         }
       ],
       "history": [
@@ -4355,11 +4537,27 @@
       "winnerParty": "R",
       "winnerProbability": 0.55096,
       "competitive": true,
-      "tippingPower": 0.07729,
+      "tippingPower": 0.08086,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 2.14,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Polling",
+          "change": -0.58,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.08,
+          "detail": "Candidate coalition profile changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Lean R to Toss-up"
         }
       ],
       "history": [
@@ -4494,11 +4692,12 @@
       "winnerParty": "R",
       "winnerProbability": 0.99611,
       "competitive": false,
-      "tippingPower": 0.00358,
+      "tippingPower": 0.00346,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -4.3,
+          "detail": "Combined governor model margin changed."
         }
       ],
       "history": [
@@ -4647,11 +4846,22 @@
       "winnerParty": "D",
       "winnerProbability": 0.9109,
       "competitive": false,
-      "tippingPower": 0.04667,
+      "tippingPower": 0.04616,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -2.57,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Polling",
+          "change": 1.42,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.06,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -4802,11 +5012,22 @@
       "winnerParty": "D",
       "winnerProbability": 0.9899,
       "competitive": false,
-      "tippingPower": 0.00909,
+      "tippingPower": 0.00907,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 2.47,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.19,
+          "detail": "Candidate coalition profile changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Likely D to Safe D"
         }
       ],
       "history": [
@@ -4936,11 +5157,17 @@
       "winnerParty": "D",
       "winnerProbability": 0.99664,
       "competitive": false,
-      "tippingPower": 0.00367,
+      "tippingPower": 0.00371,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -2.06,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": 0.09,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -5092,11 +5319,22 @@
       "winnerParty": "R",
       "winnerProbability": 0.98272,
       "competitive": false,
-      "tippingPower": 0.01108,
+      "tippingPower": 0.01079,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -2.22,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.06,
+          "detail": "Candidate coalition profile changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Safe R to Likely R"
         }
       ],
       "history": [
@@ -5236,11 +5474,17 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00106,
+      "tippingPower": 0.00097,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -5.12,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.12,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -5386,11 +5630,17 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00204,
+      "tippingPower": 0.00184,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -5.8,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.09,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [
@@ -5543,11 +5793,22 @@
       "winnerParty": "R",
       "winnerProbability": 0.97557,
       "competitive": false,
-      "tippingPower": 0.01853,
+      "tippingPower": 0.01986,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -2.81,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.07,
+          "detail": "Candidate coalition profile changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Likely R to Safe R"
         }
       ],
       "history": [
@@ -5687,11 +5948,22 @@
       "winnerParty": "R",
       "winnerProbability": 0.99456,
       "competitive": false,
-      "tippingPower": 0.00552,
+      "tippingPower": 0.00565,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -18.3,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.27,
+          "detail": "Candidate coalition profile changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Toss-up to Safe R"
         }
       ],
       "history": [
@@ -5837,11 +6109,17 @@
       "winnerParty": "D",
       "winnerProbability": 0.61655,
       "competitive": true,
-      "tippingPower": 0.0767,
+      "tippingPower": 0.0754,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": 2.56,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Polling",
+          "change": 0.85,
+          "detail": "Weighted governor polling margin changed."
         }
       ],
       "history": [
@@ -5976,11 +6254,17 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00221,
+      "tippingPower": 0.00188,
       "movementDrivers": [
         {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
+          "label": "Projected margin",
+          "change": -5.8,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Demographic pull",
+          "change": -0.06,
+          "detail": "Candidate coalition profile changed."
         }
       ],
       "history": [

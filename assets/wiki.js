@@ -1342,7 +1342,7 @@ function renderGovernorLeverage() {
 function renderGovernorHistory() {
   const chart = document.getElementById("governor-history-chart");
   if (!chart || !governorForecast) return;
-  const points = governorForecast.controlHistory?.length ? governorForecast.controlHistory : [{ date: governorForecast.modelDate, dem: governorForecast.demMajorityProbability, rep: governorForecast.repMajorityProbability }];
+  const points = governorForecast.controlHistory?.length ? governorForecast.controlHistory : governorForecast.governorCountHistory?.length ? governorForecast.governorCountHistory.map((point) => ({ date: point.date, dem: point.demGovernors / 36, rep: point.repGovernors / 36 })) : [{ date: governorForecast.modelDate, dem: governorForecast.demMajorityProbability, rep: governorForecast.repMajorityProbability }];
   renderLineChart(chart, points, {
     label: "Governor majority probability history",
     pointHtml: (point) => `${point.date}<br>D ${pct(point.dem)} / R ${pct(point.rep ?? 1 - point.dem)}`,

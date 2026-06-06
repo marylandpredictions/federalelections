@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-06-06T18:48:58.619Z",
+  "generatedAt": "2026-06-06T20:41:06.305Z",
   "modelDate": "2026-06-06",
   "runDate": "Jun 6, 2026",
   "updateTime": "around 6:20 AM Central",
   "settings": {
-    "simulations": 50000,
+    "simulations": 100000,
     "safeDemSeats": 34,
     "demControlThreshold": 51,
     "runDate": "Jun 6, 2026",
@@ -38,11 +38,11 @@
     }
   },
   "sourceStatus": {
-    "checkedAt": "2026-06-06T18:48:54.407Z",
+    "checkedAt": "2026-06-06T20:41:02.165Z",
     "censusPopulation": {
       "ok": true,
       "status": 200,
-      "ms": 1792,
+      "ms": 1162,
       "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2024/state/totals/NST-EST2024-POPCHG2020-2024.csv",
       "rows": 66,
       "states": 51,
@@ -51,27 +51,27 @@
     "civicApiDocs": {
       "ok": true,
       "status": 200,
-      "ms": 1654,
+      "ms": 1101,
       "url": "https://www.civicapi.org/api-documentation"
     },
     "civicApiEndpoint": {
       "ok": false,
       "status": 404,
-      "ms": 44,
+      "ms": 71,
       "url": "https://www.civicapi.org/api/v1/upcomingraces",
       "error": "{\"message\":\"Route GET:/v1/upcomingraces not found\",\"error\":\"Not Found\",\"statusCode\":404}"
     },
     "ddhqGenericBallot": {
       "ok": false,
       "status": 429,
-      "ms": 2009,
+      "ms": 2044,
       "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
       "error": "<!DOCTYPE html><html lang=\"en\" data-astro-cid-nbv56vs3> <head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" con"
     },
     "electoralVoteSenatePolls": {
       "ok": true,
       "status": 200,
-      "ms": 1946,
+      "ms": 2010,
       "url": "https://electoral-vote.com/evp2026/Senate/senate_polls.csv",
       "rows": 35,
       "currentCycleRows": 0
@@ -79,7 +79,7 @@
     "mitSenateReturns": {
       "ok": true,
       "status": 200,
-      "ms": 1728,
+      "ms": 1055,
       "url": "https://raw.githubusercontent.com/MEDSL/constituency-returns/master/1976-2018-senate.csv",
       "rows": 3421,
       "states": 50
@@ -87,7 +87,7 @@
     "openFecCandidateSummary": {
       "ok": true,
       "status": 200,
-      "ms": 2600,
+      "ms": 2667,
       "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
       "rows": 4115,
       "senateStates": 44,
@@ -96,7 +96,7 @@
     "pollfinityAverages": {
       "ok": true,
       "status": 200,
-      "ms": 381,
+      "ms": 869,
       "url": "https://pollfinity.com/averages.json",
       "genericBallotPolls": 0,
       "genericBallotMargin": 0,
@@ -106,13 +106,13 @@
     "raceToTheWhGenericBallot": {
       "ok": true,
       "status": 200,
-      "ms": 1959,
+      "ms": 2195,
       "url": "https://www.racetothewh.com/polls/genericballot"
     },
     "raceToTheWhSenatePolls": {
       "ok": true,
       "status": 200,
-      "ms": 2102,
+      "ms": 1881,
       "url": "https://www.racetothewh.com/senate/26polls",
       "hasStaticRows": false,
       "note": "Reachable, but no stable row-level poll data was present in the fetched HTML."
@@ -120,236 +120,236 @@
     "realClearPollingSenate": {
       "ok": false,
       "status": 403,
-      "ms": 669,
+      "ms": 1612,
       "url": "https://www.realclearpolling.com/latest-polls/senate",
       "error": "<html lang=\"en\"><head><title>realclearpolling.com</title><style>#cmsg{animation: A 1.5s;}@keyframes A{0%{opacity:0;}99%{opacity:0;}100%{opacity:1;}}</style></head><body style=\"marg"
     },
     "twoSeventyToWinLatestPolls": {
       "ok": true,
       "status": 200,
-      "ms": 1944,
+      "ms": 933,
       "url": "https://www.270towin.com/polls/latest-2026-senate-election-polls/"
     },
     "twoSeventyToWinPollingIndex": {
       "ok": true,
       "status": 200,
-      "ms": 1531,
+      "ms": 933,
       "url": "https://www.270towin.com/content/2026-senate-polling"
     },
     "twoSeventyToWinPollsAK": {
       "ok": true,
       "status": 200,
-      "ms": 668,
+      "ms": 790,
       "url": "https://www.270towin.com/2026-senate-polls/alaska"
     },
     "twoSeventyToWinPollsAL": {
       "ok": true,
       "status": 200,
-      "ms": 620,
+      "ms": 959,
       "url": "https://www.270towin.com/2026-senate-polls/alabama"
     },
     "twoSeventyToWinPollsAR": {
       "ok": true,
       "status": 200,
-      "ms": 658,
+      "ms": 1775,
       "url": "https://www.270towin.com/2026-senate-polls/arkansas"
     },
     "twoSeventyToWinPollsCO": {
       "ok": true,
       "status": 200,
-      "ms": 656,
+      "ms": 935,
       "url": "https://www.270towin.com/2026-senate-polls/colorado"
     },
     "twoSeventyToWinPollsDE": {
       "ok": true,
       "status": 200,
-      "ms": 652,
+      "ms": 1780,
       "url": "https://www.270towin.com/2026-senate-polls/delaware"
     },
     "twoSeventyToWinPollsFL": {
       "ok": true,
       "status": 200,
-      "ms": 607,
+      "ms": 782,
       "url": "https://www.270towin.com/2026-senate-polls/florida"
     },
     "twoSeventyToWinPollsGA": {
       "ok": true,
       "status": 200,
-      "ms": 659,
+      "ms": 786,
       "url": "https://www.270towin.com/2026-senate-polls/georgia"
     },
     "twoSeventyToWinPollsIA": {
       "ok": true,
       "status": 200,
-      "ms": 603,
+      "ms": 894,
       "url": "https://www.270towin.com/2026-senate-polls/iowa"
     },
     "twoSeventyToWinPollsID": {
       "ok": true,
       "status": 200,
-      "ms": 662,
+      "ms": 1770,
       "url": "https://www.270towin.com/2026-senate-polls/idaho"
     },
     "twoSeventyToWinPollsIL": {
       "ok": true,
       "status": 200,
-      "ms": 644,
+      "ms": 859,
       "url": "https://www.270towin.com/2026-senate-polls/illinois"
     },
     "twoSeventyToWinPollsKS": {
       "ok": true,
       "status": 200,
-      "ms": 661,
+      "ms": 1230,
       "url": "https://www.270towin.com/2026-senate-polls/kansas"
     },
     "twoSeventyToWinPollsKY": {
       "ok": true,
       "status": 200,
-      "ms": 628,
+      "ms": 893,
       "url": "https://www.270towin.com/2026-senate-polls/kentucky"
     },
     "twoSeventyToWinPollsLA": {
       "ok": true,
       "status": 200,
-      "ms": 641,
+      "ms": 1348,
       "url": "https://www.270towin.com/2026-senate-polls/louisiana"
     },
     "twoSeventyToWinPollsMA": {
       "ok": true,
       "status": 200,
-      "ms": 655,
+      "ms": 1754,
       "url": "https://www.270towin.com/2026-senate-polls/massachusetts"
     },
     "twoSeventyToWinPollsME": {
       "ok": true,
       "status": 200,
-      "ms": 620,
+      "ms": 901,
       "url": "https://www.270towin.com/2026-senate-polls/maine"
     },
     "twoSeventyToWinPollsMI": {
       "ok": true,
       "status": 200,
-      "ms": 610,
+      "ms": 1756,
       "url": "https://www.270towin.com/2026-senate-polls/michigan"
     },
     "twoSeventyToWinPollsMN": {
       "ok": true,
       "status": 200,
-      "ms": 616,
+      "ms": 887,
       "url": "https://www.270towin.com/2026-senate-polls/minnesota"
     },
     "twoSeventyToWinPollsMS": {
       "ok": true,
       "status": 200,
-      "ms": 673,
+      "ms": 1937,
       "url": "https://www.270towin.com/2026-senate-polls/mississippi"
     },
     "twoSeventyToWinPollsMT": {
       "ok": true,
       "status": 200,
-      "ms": 645,
+      "ms": 2597,
       "url": "https://www.270towin.com/2026-senate-polls/montana"
     },
     "twoSeventyToWinPollsNC": {
       "ok": true,
       "status": 200,
-      "ms": 621,
+      "ms": 1650,
       "url": "https://www.270towin.com/2026-senate-polls/north-carolina"
     },
     "twoSeventyToWinPollsNE": {
       "ok": true,
       "status": 200,
-      "ms": 582,
+      "ms": 1773,
       "url": "https://www.270towin.com/2026-senate-polls/nebraska"
     },
     "twoSeventyToWinPollsNH": {
       "ok": true,
       "status": 200,
-      "ms": 630,
+      "ms": 2568,
       "url": "https://www.270towin.com/2026-senate-polls/new-hampshire"
     },
     "twoSeventyToWinPollsNJ": {
       "ok": true,
       "status": 200,
-      "ms": 657,
+      "ms": 1917,
       "url": "https://www.270towin.com/2026-senate-polls/new-jersey"
     },
     "twoSeventyToWinPollsNM": {
       "ok": true,
       "status": 200,
-      "ms": 635,
+      "ms": 1781,
       "url": "https://www.270towin.com/2026-senate-polls/new-mexico"
     },
     "twoSeventyToWinPollsOH": {
       "ok": true,
       "status": 200,
-      "ms": 571,
+      "ms": 984,
       "url": "https://www.270towin.com/2026-senate-polls/ohio"
     },
     "twoSeventyToWinPollsOK": {
       "ok": true,
       "status": 200,
-      "ms": 656,
+      "ms": 2594,
       "url": "https://www.270towin.com/2026-senate-polls/oklahoma"
     },
     "twoSeventyToWinPollsOR": {
       "ok": true,
       "status": 200,
-      "ms": 646,
+      "ms": 1350,
       "url": "https://www.270towin.com/2026-senate-polls/oregon"
     },
     "twoSeventyToWinPollsRI": {
       "ok": true,
       "status": 200,
-      "ms": 647,
+      "ms": 1770,
       "url": "https://www.270towin.com/2026-senate-polls/rhode-island"
     },
     "twoSeventyToWinPollsSC": {
       "ok": true,
       "status": 200,
-      "ms": 609,
+      "ms": 1770,
       "url": "https://www.270towin.com/2026-senate-polls/south-carolina"
     },
     "twoSeventyToWinPollsSD": {
       "ok": true,
       "status": 200,
-      "ms": 650,
+      "ms": 921,
       "url": "https://www.270towin.com/2026-senate-polls/south-dakota"
     },
     "twoSeventyToWinPollsTN": {
       "ok": true,
       "status": 200,
-      "ms": 666,
+      "ms": 973,
       "url": "https://www.270towin.com/2026-senate-polls/tennessee"
     },
     "twoSeventyToWinPollsTX": {
       "ok": true,
       "status": 200,
-      "ms": 649,
+      "ms": 929,
       "url": "https://www.270towin.com/2026-senate-polls/texas"
     },
     "twoSeventyToWinPollsVA": {
       "ok": true,
       "status": 200,
-      "ms": 726,
+      "ms": 918,
       "url": "https://www.270towin.com/2026-senate-polls/virginia"
     },
     "twoSeventyToWinPollsWV": {
       "ok": true,
       "status": 200,
-      "ms": 663,
+      "ms": 973,
       "url": "https://www.270towin.com/2026-senate-polls/west-virginia"
     },
     "twoSeventyToWinPollsWY": {
       "ok": true,
       "status": 200,
-      "ms": 681,
+      "ms": 974,
       "url": "https://www.270towin.com/2026-senate-polls/wyoming"
     },
     "twoSeventyToWinRacePolls": {
       "ok": true,
       "status": 200,
-      "ms": 745,
+      "ms": 2610,
       "url": "https://www.270towin.com/2026-senate-polls/{state}",
       "pages": 35,
       "okPages": 35,
@@ -359,14 +359,14 @@
     "usPollingDataGenericBallot": {
       "ok": true,
       "status": 200,
-      "ms": 2886,
+      "ms": 1280,
       "url": "https://uspollingdata.com/polls/generic-ballot/",
       "margin": 7
     },
     "usPollingDataSenatePolling": {
       "ok": true,
       "status": 200,
-      "ms": 1815,
+      "ms": 1941,
       "url": "https://uspollingdata.com/polls/senate-polling/",
       "hasSenateTable": true,
       "note": "Reachable, but not blended because several listed races/candidates do not match this Senate cycle ledger."
@@ -374,7 +374,7 @@
     "votehubGenericBallot": {
       "ok": true,
       "status": 200,
-      "ms": 942,
+      "ms": 2216,
       "url": "https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026",
       "rows": 487,
       "usablePolls": 376,
@@ -1718,12 +1718,127 @@
   "modelWarnings": [],
   "controlHistory": [
     {
+      "date": "2026-05-16",
+      "dem": 0.36985,
+      "rep": 0.63015
+    },
+    {
+      "date": "2026-05-17",
+      "dem": 0.507175,
+      "rep": 0.49282499999999996
+    },
+    {
+      "date": "2026-05-18",
+      "dem": 0.4739,
+      "rep": 0.5261
+    },
+    {
+      "date": "2026-05-19",
+      "dem": 0.48965,
+      "rep": 0.5103500000000001
+    },
+    {
+      "date": "2026-05-20",
+      "dem": 0.48495,
+      "rep": 0.51505
+    },
+    {
+      "date": "2026-05-21",
+      "dem": 0.4853,
+      "rep": 0.5146999999999999
+    },
+    {
+      "date": "2026-05-22",
+      "dem": 0.488175,
+      "rep": 0.511825
+    },
+    {
+      "date": "2026-05-23",
+      "dem": 0.488475,
+      "rep": 0.511525
+    },
+    {
+      "date": "2026-05-24",
+      "dem": 0.494425,
+      "rep": 0.505575
+    },
+    {
+      "date": "2026-05-25",
+      "dem": 0.4947,
+      "rep": 0.5053000000000001
+    },
+    {
+      "date": "2026-05-26",
+      "dem": 0.498075,
+      "rep": 0.501925
+    },
+    {
+      "date": "2026-05-27",
+      "dem": 0.500275,
+      "rep": 0.499725
+    },
+    {
       "date": "2026-06-06",
       "dem": 0.50229,
       "rep": 0.49771
     }
   ],
   "seatHistory": [
+    {
+      "date": "2026-05-17",
+      "dem": 51,
+      "rep": 49
+    },
+    {
+      "date": "2026-05-18",
+      "dem": 50,
+      "rep": 50
+    },
+    {
+      "date": "2026-05-19",
+      "dem": 50,
+      "rep": 50
+    },
+    {
+      "date": "2026-05-20",
+      "dem": 50,
+      "rep": 50
+    },
+    {
+      "date": "2026-05-21",
+      "dem": 50,
+      "rep": 50
+    },
+    {
+      "date": "2026-05-22",
+      "dem": 50,
+      "rep": 50
+    },
+    {
+      "date": "2026-05-23",
+      "dem": 50,
+      "rep": 50
+    },
+    {
+      "date": "2026-05-24",
+      "dem": 50,
+      "rep": 50
+    },
+    {
+      "date": "2026-05-25",
+      "dem": 50,
+      "rep": 50
+    },
+    {
+      "date": "2026-05-26",
+      "dem": 50,
+      "rep": 50
+    },
+    {
+      "date": "2026-05-27",
+      "dem": 51,
+      "rep": 49
+    },
     {
       "date": "2026-06-06",
       "dem": 51,
@@ -1984,23 +2099,66 @@
         "runoff pending",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.00715
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.014525
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.012725
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.02485
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.023568
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.025056000000000002
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.023712
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.024336
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.023544000000000002
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.024048
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.03696
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.037559999999999996
+        },
         {
           "date": "2026-06-06",
           "dem": 0.015692
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -2.2,
+        "sinceWeek": -2.2,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -2396,23 +2554,66 @@
         "ranked-choice",
         "near toss-up"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.3512
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.4973
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.48535
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.496425
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.47774399999999995
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.476496
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.4934055
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.477528
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.479328
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.49553700000000006
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.5028134999999999
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.5039895
+        },
         {
           "date": "2026-06-06",
           "dem": 0.511267
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 0.7,
+        "sinceWeek": 0.7,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -2661,23 +2862,66 @@
       "uncertaintyBadges": [
         "thin polling"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.0014
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.0056
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.004375
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.009675
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.008759999999999999
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.008519999999999998
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.008136
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.008688
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.008832
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.008688
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.007056
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.006168
+        },
         {
           "date": "2026-06-06",
           "dem": 0.001
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -0.5,
+        "sinceWeek": -0.5,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -2912,23 +3156,66 @@
         "primary unresolved",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.9829
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.98715
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.9824
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.970225
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.9692077
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.9696069
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.9706049
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.9694572
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.9701059
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.9711538
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.9729502
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.97307495
+        },
         {
           "date": "2026-06-06",
           "dem": 0.999
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 2.6,
+        "sinceWeek": 2.6,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -3158,23 +3445,66 @@
         "primary unresolved",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.990675
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.992075
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.9913
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.983425
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.9803354
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.9823314
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.98155795
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.98235635
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.9826557499999999
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.9818074499999999
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.98300505
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.9827555499999999
+        },
         {
           "date": "2026-06-06",
           "dem": 0.999
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 1.6,
+        "sinceWeek": 1.6,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -3494,23 +3824,66 @@
       "uncertaintyBadges": [
         "primary unresolved"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.0244
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.01265
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.025925
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.0324
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.03096
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.032208
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.031296
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.030528
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.031968
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.030431999999999997
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.032496
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.031008
+        },
         {
           "date": "2026-06-06",
           "dem": 0.004498
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -2.7,
+        "sinceWeek": -2.7,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -3927,23 +4300,66 @@
       "uncertaintyBadges": [
         "runoff pending"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.865375
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.916825
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.8787
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.8745
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.8785601249999999
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.8759979999999999
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.876769125
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.8739582499999999
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.87933125
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.8839828750000001
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.860252125
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.859903875
+        },
         {
           "date": "2026-06-06",
           "dem": 0.886077
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 2.6,
+        "sinceWeek": 2.6,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -4188,23 +4604,66 @@
         "thin polling",
         "independent factor"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.00125
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.004825
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.0045
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.0177
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.015456
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.016272
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.015527999999999998
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.01512
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.017159999999999998
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.015936
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.010824
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.010847999999999998
+        },
         {
           "date": "2026-06-06",
           "dem": 0.001
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -1,
+        "sinceWeek": -1,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -4453,23 +4912,66 @@
       "uncertaintyBadges": [
         "thin polling"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.986825
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.987225
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.98555
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.978625
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.97566975
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.97497115
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.97576955
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.9761438
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.97601905
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.9770919
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.9800859
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.980036
+        },
         {
           "date": "2026-06-06",
           "dem": 0.999
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 1.9,
+        "sinceWeek": 1.9,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -4759,23 +5261,66 @@
       "uncertaintyBadges": [
         "primary unresolved"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.25635
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.2699
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.275225
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.2875
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.242184
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.24007199999999998
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.24211199999999997
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.24311999999999998
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.23685599999999998
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.243768
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.24372000000000002
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.241056
+        },
         {
           "date": "2026-06-06",
           "dem": 0.250524
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 0.9,
+        "sinceWeek": 0.9,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -5018,23 +5563,66 @@
         "primary unresolved",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.16145
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.171625
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.15555
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.201975
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.15467999999999998
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.155664
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.156192
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.15936
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.15415199999999998
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.154584
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.15803999999999999
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.15708
+        },
         {
           "date": "2026-06-06",
           "dem": 0.107814
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -4.9,
+        "sinceWeek": -4.9,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -5283,23 +5871,66 @@
       "uncertaintyBadges": [
         "thin polling"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.00765
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.019325
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.017
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.02985
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.030191999999999997
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.028031999999999998
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.029424
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.028703999999999997
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.029183999999999998
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.028392
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.015335999999999999
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.015672
+        },
         {
           "date": "2026-06-06",
           "dem": 0.001
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -1.5,
+        "sinceWeek": -1.5,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -5551,23 +6182,66 @@
         "runoff pending",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.00775
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.022125
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.0208
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.03585
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.037056
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.037391999999999995
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.035448
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.036719999999999996
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.037752
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.037536
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.035808
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.036744
+        },
         {
           "date": "2026-06-06",
           "dem": 0.015481
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -2.1,
+        "sinceWeek": -2.1,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -6051,23 +6725,66 @@
         "independent factor",
         "ranked-choice"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.69555
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.723325
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.674525
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.6594
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.69792525
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.693693
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.6993360000000001
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.698346
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.70010325
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.7118099999999999
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.70990425
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.7078252500000001
+        },
         {
           "date": "2026-06-06",
           "dem": 0.728429
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 2.1,
+        "sinceWeek": 2.1,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -6317,23 +7034,66 @@
         "primary unresolved",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.995625
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.995425
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.9952
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.988625
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.9857994499999999
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.9875709
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.9872715
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.9869721
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.9880699
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.9875709
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.9886188
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.9884691000000001
+        },
         {
           "date": "2026-06-06",
           "dem": 0.999
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 1.1,
+        "sinceWeek": 1.1,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -7009,23 +7769,66 @@
       "uncertaintyBadges": [
         "primary unresolved"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.65305
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.656825
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.66225
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.66135
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.6933465
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.6950789999999999
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.69604425
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.7001775
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.69792525
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.697059
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.680856625
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.679576125
+        },
         {
           "date": "2026-06-06",
           "dem": 0.665593
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -1.4,
+        "sinceWeek": -1.4,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -7268,23 +8071,66 @@
         "primary unresolved",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.710525
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.6786
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.665
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.64505
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.6740601249999999
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.672040875
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.6759316249999999
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.6773845
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.67861575
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.679871625
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.6839593749999999
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.6793298750000001
+        },
         {
           "date": "2026-06-06",
           "dem": 0.748505
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 6.9,
+        "sinceWeek": 6.9,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -7533,23 +8379,66 @@
       "uncertaintyBadges": [
         "thin polling"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.006275
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.016175
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.01285
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.023675
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.022775999999999998
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.022344
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.021575999999999998
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.023903999999999998
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.023351999999999998
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.023712
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.017783999999999998
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.018552
+        },
         {
           "date": "2026-06-06",
           "dem": 0.001
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -1.8,
+        "sinceWeek": -1.8,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -7836,23 +8725,66 @@
         "primary unresolved",
         "independent factor"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.1371
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.213325
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.24935
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.279625
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.229176
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.23027999999999998
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.23239200000000002
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.232176
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.23815199999999997
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.23724
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.235848
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.239688
+        },
         {
           "date": "2026-06-06",
           "dem": 0.238877
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -0.1,
+        "sinceWeek": -0.1,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -8360,23 +9292,66 @@
       "uncertaintyBadges": [
         "stable inputs"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.851175
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.939325
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.88825
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.89355
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.891445375
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.890251375
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.889803625
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.8896046249999999
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.8982499
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.895276125
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.8999964
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.9000213499999999
+        },
         {
           "date": "2026-06-06",
           "dem": 0.9291
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 2.9,
+        "sinceWeek": 2.9,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -8686,23 +9661,66 @@
       "uncertaintyBadges": [
         "independent factor"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.221825
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.34685
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.3364
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.3536
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.29870399999999997
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.30076800000000004
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.306672
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.302784
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.30779999999999996
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.308544
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.30756
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.32140799999999997
+        },
         {
           "date": "2026-06-06",
           "dem": 0.320903
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -0.1,
+        "sinceWeek": -0.1,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -9256,23 +10274,66 @@
       "uncertaintyBadges": [
         "primary unresolved"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.6875
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.7969
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.757475
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.7518
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.79152975
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.789327
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.796174125
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.7913565
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.796771125
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.791307
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.7992835
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.7882627499999999
+        },
         {
           "date": "2026-06-06",
           "dem": 0.864671
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 7.6,
+        "sinceWeek": 7.6,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -9526,23 +10587,66 @@
         "thin polling",
         "primary unresolved"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.9918
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.9922
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.99055
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.980375
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.97841425
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.97921265
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.97856395
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.97986135
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.9792625500000001
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.9799362
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.98150805
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.9804352000000001
+        },
         {
           "date": "2026-06-06",
           "dem": 0.999
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 1.9,
+        "sinceWeek": 1.9,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -9772,23 +10876,66 @@
         "primary unresolved",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.98805
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.990225
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.989275
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.979325
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.97761585
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.97731645
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.97756595
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.9764432000000001
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.9777156499999999
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.9774412
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.97871365
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.9788633499999999
+        },
         {
           "date": "2026-06-06",
           "dem": 0.999
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 2,
+        "sinceWeek": 2,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -10257,23 +11404,66 @@
       "uncertaintyBadges": [
         "stable inputs"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.4942
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.572925
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.565525
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.573975
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.5683509999999999
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.564774
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.5677384999999999
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.57134
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.5762155
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.5753825
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.580209
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.583737
+        },
         {
           "date": "2026-06-06",
           "dem": 0.619626
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 3.6,
+        "sinceWeek": 3.6,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -10515,23 +11705,66 @@
         "primary unresolved",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.0018
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.00355
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.003175
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.009025
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.007944
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.008400000000000001
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.008280000000000001
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.008759999999999999
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.008183999999999999
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.007992
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.0078
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.007752
+        },
         {
           "date": "2026-06-06",
           "dem": 0.001
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -0.7,
+        "sinceWeek": -0.7,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -10778,23 +12011,66 @@
       "uncertaintyBadges": [
         "thin polling"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.991175
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.9925
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.990625
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.981125
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.9807845000000001
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.98026055
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.9792875
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.980036
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.9806847000000001
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.9809092500000001
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.98669765
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.9878204
+        },
         {
           "date": "2026-06-06",
           "dem": 0.999
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 1.1,
+        "sinceWeek": 1.1,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -11063,23 +12339,66 @@
         "thin polling",
         "primary unresolved"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.993625
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.999
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.99565
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.99215
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.9899162
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.98989125
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.99058985
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.99058985
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.99053995
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.99039025
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.9907395499999999
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.9907146
+        },
         {
           "date": "2026-06-06",
           "dem": 0.999
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 0.8,
+        "sinceWeek": 0.8,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -11329,23 +12648,66 @@
         "primary unresolved",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.217475
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.225075
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.213
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.2472
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.205368
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.20596799999999998
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.20299199999999998
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.20671199999999998
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.20618399999999998
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.205344
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.20887199999999997
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.203136
+        },
         {
           "date": "2026-06-06",
           "dem": 0.167264
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -3.6,
+        "sinceWeek": -3.6,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -11584,23 +12946,66 @@
         "independent factor",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.002925
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.006675
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.005075
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.020825
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.018264
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.018312000000000002
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.019824
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.01956
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.020544
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.020736
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.021408
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.019607999999999997
+        },
         {
           "date": "2026-06-06",
           "dem": 0.001
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -1.9,
+        "sinceWeek": -1.9,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -11842,23 +13247,66 @@
         "primary unresolved",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.00935
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.01845
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.015775
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.029525
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.028752
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.026591999999999998
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.027767999999999998
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.029448
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.027
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.026615999999999997
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.028703999999999997
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.02772
+        },
         {
           "date": "2026-06-06",
           "dem": 0.004825
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -2.3,
+        "sinceWeek": -2.3,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -12322,23 +13770,66 @@
       "uncertaintyBadges": [
         "near toss-up"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.373375
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.541725
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.49705
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.49795
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.442104
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.43910399999999994
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.44174399999999997
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.437976
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.44901599999999997
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.45021599999999995
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.47568
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.47592
+        },
         {
           "date": "2026-06-06",
           "dem": 0.486095
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 1,
+        "sinceWeek": 1,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -12574,23 +14065,66 @@
         "primary unresolved",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.8949
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.9444
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.93155
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.90065
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.90551035
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.9049364999999999
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.90585965
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.9055602500000001
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.9105253
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.9119225
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.90705725
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.91184765
+        },
         {
           "date": "2026-06-06",
           "dem": 0.922549
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 1.1,
+        "sinceWeek": 1.1,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -12839,23 +14373,66 @@
       "uncertaintyBadges": [
         "thin polling"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.00055
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.0044
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.003675
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.007875
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.007416
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.0070799999999999995
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.0062640000000000005
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.008256
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.008256
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.00804
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.005279999999999999
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.005736
+        },
         {
           "date": "2026-06-06",
           "dem": 0.001
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -0.5,
+        "sinceWeek": -0.5,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     },
@@ -13091,23 +14668,66 @@
         "primary unresolved",
         "low input confidence"
       ],
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-05-16",
+          "dem": 0.0006
+        },
+        {
+          "date": "2026-05-17",
+          "dem": 0.0037
+        },
+        {
+          "date": "2026-05-18",
+          "dem": 0.00205
+        },
+        {
+          "date": "2026-05-19",
+          "dem": 0.00645
+        },
+        {
+          "date": "2026-05-20",
+          "dem": 0.0057599999999999995
+        },
+        {
+          "date": "2026-05-21",
+          "dem": 0.006
+        },
+        {
+          "date": "2026-05-22",
+          "dem": 0.005712
+        },
+        {
+          "date": "2026-05-23",
+          "dem": 0.005255999999999999
+        },
+        {
+          "date": "2026-05-24",
+          "dem": 0.006024
+        },
+        {
+          "date": "2026-05-25",
+          "dem": 0.0056879999999999995
+        },
+        {
+          "date": "2026-05-26",
+          "dem": 0.005808
+        },
+        {
+          "date": "2026-05-27",
+          "dem": 0.006215999999999999
+        },
         {
           "date": "2026-06-06",
           "dem": 0.001
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -0.5,
+        "sinceWeek": -0.5,
+        "previousDate": "2026-05-27",
+        "weekDate": "2026-05-27"
       },
       "extraHistory": []
     }
