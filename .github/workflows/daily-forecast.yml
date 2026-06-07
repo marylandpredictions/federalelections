@@ -67,6 +67,9 @@ jobs:
       - name: Verify forecast freshness
         run: node scripts/verify-forecast-freshness.mjs
 
+      - name: Verify forecast history was preserved
+        run: node scripts/verify-forecast-history.mjs
+
       - name: Commit forecast data
         run: |
           git config user.name "github-actions[bot]"
