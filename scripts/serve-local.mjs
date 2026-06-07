@@ -13,7 +13,8 @@ const contentTypes = {
   ".svg": "image/svg+xml",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
-  ".png": "image/png"
+  ".png": "image/png",
+  ".webp": "image/webp"
 };
 
 createServer(async (request, response) => {

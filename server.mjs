@@ -62,6 +62,7 @@ const contentTypes = {
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
   ".png": "image/png",
+  ".webp": "image/webp",
   ".geojson": "application/json; charset=utf-8"
 };
 
@@ -74,7 +75,7 @@ const compressibleTypes = [
   "image/svg+xml"
 ];
 
-const cacheableExtensions = [".js", ".css", ".svg", ".png", ".jpg", ".jpeg", ".woff", ".woff2", ".ttf", ".eot", ".geojson"];
+const cacheableExtensions = [".js", ".css", ".svg", ".png", ".jpg", ".jpeg", ".webp", ".woff", ".woff2", ".ttf", ".eot", ".geojson"];
 
 function sendJson(response, status, payload, pathname = "") {
   const jsonString = JSON.stringify(payload);

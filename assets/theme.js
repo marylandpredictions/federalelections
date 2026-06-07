@@ -26,7 +26,7 @@
         logo.className = "footer-logo-link";
         logo.href = "/";
         logo.setAttribute("aria-label", "Federal Elections Analysis home");
-        logo.innerHTML = '<img src="assets/img/FEA_Icon.png" alt=""><span>Federal Elections Analysis</span>';
+        logo.innerHTML = '<img src="assets/img/FEA_Icon.webp" alt=""><span>Federal Elections Analysis</span>';
         footer.prepend(logo);
       }
       const copyHost = footer.querySelector(":scope > div");
