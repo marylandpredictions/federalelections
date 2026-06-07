@@ -1,6 +1,7 @@
 const page = document.getElementById("result-page");
 const raceId = new URLSearchParams(window.location.search).get("id");
 const FAVORITE_RACES_KEY = "fea.favoriteResultRaces.v1";
+const RESULT_SEEN_PERCENTS_KEY = "fea.resultSeenPercents.v1";
 let countyMapDataPromise = null;
 let districtMapDataPromise = null;
 const districtCountyMapDataPromises = new Map();
@@ -540,6 +541,66 @@ function percentLabel(value) {
   if (!Number.isFinite(number)) return "0.0%";
   if (number >= 100) return ">99%";
   return `${number.toFixed(1)}%`;
+}
+
+function resultSeenStorageKey(id = raceId) {
+  return `${RESULT_SEEN_PERCENTS_KEY}:${id || "unknown"}`;
+}
+
+function candidatePercentSnapshot(race) {
+  return Object.fromEntries((race?.candidates || []).map((candidate) => [
+    String(candidate.name || "").toLowerCase(),
+    Number(candidate.percent || 0)
+  ]).filter(([name]) => name));
+}
+
+function readSeenCandidatePercents(id = raceId) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(resultSeenStorageKey(id)) || "{}");
+    return parsed && typeof parsed.candidates === "object" ? parsed.candidates : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeSeenCandidatePercents(race) {
+  if (!race?.id || document.visibilityState !== "visible") return;
+  try {
+    localStorage.setItem(resultSeenStorageKey(race.id), JSON.stringify({
+      at: new Date().toISOString(),
+      candidates: candidatePercentSnapshot(race)
+    }));
+  } catch {
+    // Local storage is optional; result rendering should not depend on it.
+  }
+}
+
+function displayRaceForCurrentView(race) {
+  return resultPartyViewEnabled && isOpenPrimary(race)
+    ? { ...race, candidates: combineCandidatesByParty(race) }
+    : race;
+}
+
+function showCandidatePercentChanges(candidatesNode, baselinePercents) {
+  if (!candidatesNode || !baselinePercents) return;
+  candidatesNode.querySelectorAll("article[data-candidate-name]").forEach((article) => {
+    const name = String(article.dataset.candidateName || "").toLowerCase();
+    const percentText = article.querySelector(".result-full-numbers b")?.textContent || "";
+    const match = percentText.match(/([\d.]+)/);
+    if (!name || !match) return;
+    const newPercent = parseFloat(match[1]);
+    const oldPercent = Number(baselinePercents[name]);
+    if (!Number.isFinite(oldPercent) || Math.abs(newPercent - oldPercent) < .1) return;
+    const change = newPercent - oldPercent;
+    const changeEl = document.createElement("span");
+    changeEl.className = "candidate-percent-change";
+    changeEl.textContent = `${change >= 0 ? "+" : ""}${change.toFixed(1)}%`;
+    const candidateColor = article.style.getPropertyValue("--candidate-color");
+    changeEl.style.backgroundColor = candidateColor || "#566274";
+    article.style.position = "relative";
+    article.appendChild(changeEl);
+    setTimeout(() => changeEl.remove(), 2600);
+  });
 }
 
 function estimatedInLabel(value) {
@@ -2674,14 +2735,24 @@ function bindMapZoom() {
   const activePointers = new Map();
   let dragStart = null;
   let pinchStart = null;
+  const stablePanLimits = () => {
+    const mapRect = map?.getBoundingClientRect();
+    const computedX = Math.max(frame.clientWidth * 1.25, (mapRect?.width || frame.clientWidth) * .72);
+    const computedY = Math.max(frame.clientHeight * 1.25, (mapRect?.height || frame.clientHeight) * .72);
+    if (!frame.dataset.panLimitX) frame.dataset.panLimitX = String(computedX);
+    if (!frame.dataset.panLimitY) frame.dataset.panLimitY = String(computedY);
+    return {
+      maxX: Number(frame.dataset.panLimitX) || computedX,
+      maxY: Number(frame.dataset.panLimitY) || computedY
+    };
+  };
   const clampPan = () => {
     if (zoom <= 1.01) {
       panX = 0;
       panY = 0;
       return;
     }
-    const maxX = Math.max(0, frame.clientWidth * .56);
-    const maxY = Math.max(0, frame.clientHeight * .56);
+    const { maxX, maxY } = stablePanLimits();
     panX = Math.max(-maxX, Math.min(maxX, panX));
     panY = Math.max(-maxY, Math.min(maxY, panY));
   };
@@ -2876,7 +2947,7 @@ async function patchRaceDetail(race) {
   if (countyPanelReporting) countyPanelReporting.textContent = `${estimatedInLabel(race.estimatedVoteReporting)} estimated in.`;
 
   const candidatesNode = page.querySelector(".result-full-candidates");
-  const displayRace = resultPartyViewEnabled && isOpenPrimary(race) ? { ...race, candidates: combineCandidatesByParty(race) } : race;
+  const displayRace = displayRaceForCurrentView(race);
   
   const previousCandidatePercents = new Map();
   candidatesNode?.querySelectorAll("article[data-candidate-name]").forEach(article => {
@@ -2888,28 +2959,11 @@ async function patchRaceDetail(race) {
     }
   });
   
+  const storedCandidatePercents = readSeenCandidatePercents(race.id);
+  const baselinePercents = storedCandidatePercents || Object.fromEntries(previousCandidatePercents);
   if (candidatesNode) candidatesNode.innerHTML = candidateRows(displayRace);
-  
-  candidatesNode?.querySelectorAll("article[data-candidate-name]").forEach(article => {
-    const name = article.dataset.candidateName;
-    const percentText = article.querySelector(".result-full-numbers b")?.textContent || "";
-    const match = percentText.match(/([\d.]+)/);
-    if (match) {
-      const newPercent = parseFloat(match[1]);
-      const oldPercent = previousCandidatePercents.get(name.toLowerCase());
-      if (oldPercent !== undefined && Math.abs(newPercent - oldPercent) > 0.1) {
-        const change = newPercent - oldPercent;
-        const changeEl = document.createElement("span");
-        changeEl.className = "candidate-percent-change";
-        changeEl.textContent = `${change >= 0 ? "+" : ""}${change.toFixed(1)}%`;
-        const candidateColor = article.style.getPropertyValue("--candidate-color");
-        changeEl.style.backgroundColor = candidateColor || "#566274";
-        article.style.position = "relative";
-        article.appendChild(changeEl);
-        setTimeout(() => changeEl.remove(), 2000);
-      }
-    }
-  });
+  showCandidatePercentChanges(candidatesNode, baselinePercents);
+  writeSeenCandidatePercents({ ...displayRace, id: race.id });
 
   const callSlot = page.querySelector("[data-result-call-slot]");
   if (callSlot) callSlot.innerHTML = raceCallBanner(race);
@@ -3340,6 +3394,9 @@ async function renderRace(race) {
   bindPollCountdown();
   bindFavoriteRaceControls(race);
   bindPartyCombineToggle(race);
+  const initialDisplayRace = displayRaceForCurrentView(race);
+  showCandidatePercentChanges(page.querySelector(".result-full-candidates"), readSeenCandidatePercents(race.id));
+  writeSeenCandidatePercents({ ...initialDisplayRace, id: race.id });
 }
 
 async function fetchRace() {
@@ -3371,6 +3428,7 @@ async function fetchRace() {
 
 let raceDetailInitialized = false;
 let raceDetailUpdateKeyCache = "";
+let showSeenPercentChangesOnNextLoad = false;
 
 async function loadRaceDetail() {
   try {
@@ -3381,6 +3439,12 @@ async function loadRaceDetail() {
       if (lastUpdatedNode) lastUpdatedNode.textContent = `Last updated ${timeLabel(race.lastUpdated)}`;
       updateLastCheckedStamp();
       await refreshAnalysisNotes(race);
+      if (showSeenPercentChangesOnNextLoad && document.visibilityState === "visible") {
+        const displayRace = displayRaceForCurrentView(race);
+        showCandidatePercentChanges(page.querySelector(".result-full-candidates"), readSeenCandidatePercents(race.id));
+        writeSeenCandidatePercents({ ...displayRace, id: race.id });
+        showSeenPercentChangesOnNextLoad = false;
+      }
       bindPollCountdown();
       return;
     }
@@ -3390,6 +3454,7 @@ async function loadRaceDetail() {
     } else {
       await patchRaceDetail(race);
     }
+    showSeenPercentChangesOnNextLoad = false;
     raceDetailUpdateKeyCache = updateKey;
   } catch (error) {
     raceDetailInitialized = false;
@@ -3408,3 +3473,9 @@ async function loadRaceDetail() {
 
 loadRaceDetail();
 setInterval(loadRaceDetail, 30000);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    showSeenPercentChangesOnNextLoad = true;
+    loadRaceDetail();
+  }
+});

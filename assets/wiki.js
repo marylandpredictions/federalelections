@@ -3389,12 +3389,25 @@ async function loadArticles() {
   }
 }
 
+async function readJsonResponse(response, label) {
+  const text = await response.text();
+  const cleaned = text.includes("<<<<<<<")
+    ? text.replace(/<<<<<<<[^\r\n]*\r?\n([\s\S]*?)\r?\n=======\r?\n[\s\S]*?\r?\n>>>>>>>[^\r\n]*(?:\r?\n)?/g, "$1\n")
+    : text;
+  try {
+    return JSON.parse(cleaned);
+  } catch (error) {
+    const preview = cleaned.slice(0, 90).replace(/\s+/g, " ").trim();
+    throw new Error(`${label} could not parse: ${error.message}${preview ? ` Preview: ${preview}` : ""}`);
+  }
+}
+
 async function loadForecast() {
   console.log("[wiki.js] Loading forecast.json");
   const response = await fetch("data/forecast.json", { cache: "no-store" });
   console.log("[wiki.js] forecast.json status:", response.status);
   if (!response.ok) throw new Error(`Forecast data returned ${response.status}`);
-  const data = await response.json();
+  const data = await readJsonResponse(response, "data/forecast.json");
   console.log("[wiki.js] forecast.json loaded, keys:", Object.keys(data));
   console.log("[wiki.js] forecast.json settings:", data.settings);
   return data;
@@ -3406,7 +3419,7 @@ async function loadHouseForecast() {
     const response = await fetch("data/house-forecast.json", { cache: "no-store" });
     console.log("[wiki.js] house-forecast.json status:", response.status);
     if (!response.ok) return null;
-    const data = await response.json();
+    const data = await readJsonResponse(response, "data/house-forecast.json");
     console.log("[wiki.js] house-forecast.json loaded, keys:", Object.keys(data));
     return data;
   } catch (error) {
@@ -3445,7 +3458,7 @@ async function loadGovernorForecast() {
     const response = await fetch("data/governor-forecast.json", { cache: "no-store" });
     console.log("[wiki.js] governor-forecast.json status:", response.status);
     if (!response.ok) return null;
-    const data = await response.json();
+    const data = await readJsonResponse(response, "data/governor-forecast.json");
     console.log("[wiki.js] governor-forecast.json loaded, keys:", Object.keys(data));
     return data;
   } catch (error) {
@@ -3469,7 +3482,7 @@ async function loadPresidentForecasts() {
       const response = await fetch(file, { cache: "no-store" });
       console.log(`[wiki.js] ${file} status:`, response.status);
       if (!response.ok) return null;
-      const data = await response.json();
+      const data = await readJsonResponse(response, file);
       console.log(`[wiki.js] ${file} loaded, keys:`, Object.keys(data));
       return data;
     } catch (error) {

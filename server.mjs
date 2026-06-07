@@ -446,7 +446,15 @@ async function handleAdmin(request, response, url) {
     reloadManualResultConfig();
     liveResultsCache = null;
     await refreshPersistedLiveResults(raceId);
-    sendJson(response, 200, { ok: true, calls: current.races[raceId]?.calls || [] });
+    sendJson(response, 200, {
+      ok: true,
+      calls: current.races[raceId]?.calls || [],
+      persistedFiles: [
+        "data/result-calls.json",
+        "data/live-results.json",
+        `data/live-results-races/${raceId}.json`
+      ]
+    });
     return;
   }
 
@@ -506,7 +514,16 @@ async function handleAdmin(request, response, url) {
     reloadManualResultConfig();
     liveResultsCache = null;
     await refreshPersistedLiveResults(raceId);
-    sendJson(response, 200, { ok: true, note, notes: current.races[raceId] });
+    sendJson(response, 200, {
+      ok: true,
+      note,
+      notes: current.races[raceId],
+      persistedFiles: [
+        "data/result-analysis-notes.json",
+        "data/live-results.json",
+        `data/live-results-races/${raceId}.json`
+      ]
+    });
     return;
   }
 

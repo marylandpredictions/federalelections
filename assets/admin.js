@@ -196,7 +196,10 @@
       });
       state.calls.races[race.id] = { calls: payload.calls || [] };
       renderCalls();
-      setStatus(callStatus, "Calls saved. The site will pick this up on its next refresh.");
+      const files = (payload.persistedFiles || []).join(", ");
+      setStatus(callStatus, files
+        ? `Calls saved to repo data files: ${files}.`
+        : "Calls saved. The site will pick this up on its next refresh.");
     } catch (error) {
       setStatus(callStatus, error.message, true);
     }
@@ -228,7 +231,9 @@
       $("noteEmbed").value = "";
       renderNoteSelect();
       $("saveNote").textContent = "Add newest note";
-      setStatus(noteStatus, wasEditing ? "Analyst note updated." : "Analyst note added as newest note.");
+      const files = (payload.persistedFiles || []).join(", ");
+      const message = wasEditing ? "Analyst note updated" : "Analyst note added as newest note";
+      setStatus(noteStatus, files ? `${message} in repo data files: ${files}.` : `${message}.`);
     } catch (error) {
       setStatus(noteStatus, error.message, true);
     }
