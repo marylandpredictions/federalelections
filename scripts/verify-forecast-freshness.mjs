@@ -27,7 +27,17 @@ function todayLabel(date = new Date()) {
 }
 
 function readJson(file) {
-  return JSON.parse(readFileSync(new URL(file, DATA_URL), "utf8"));
+  const text = readFileSync(new URL(file, DATA_URL), "utf8");
+  if (/^\s*(<<<<<<<|=======|>>>>>>>)/m.test(text)) {
+    failures.push(`${file} contains unresolved Git conflict markers`);
+    return {};
+  }
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    failures.push(`${file} is not valid JSON: ${error.message}`);
+    return {};
+  }
 }
 
 function fileDate(data) {

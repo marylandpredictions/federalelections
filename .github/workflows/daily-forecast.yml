@@ -61,6 +61,9 @@ jobs:
           done
           node scripts/update-president-aggregate.mjs
 
+      - name: Verify generated JSON
+        run: node scripts/verify-data-json.mjs
+
       - name: Verify forecast freshness
         run: node scripts/verify-forecast-freshness.mjs
 
