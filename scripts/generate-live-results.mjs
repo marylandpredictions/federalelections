@@ -17,31 +17,84 @@ const CIVIC_API_CACHE_MS = 60_000;
 const STATE_ESTIMATE_FALLBACK_SLUGS = {
   CA: "california-governor-results",
   IA: "iowa-senate-results",
+  ME: "maine-senate-results",
   MT: "montana-senate-results",
+  ND: "north-dakota-house-results",
+  NV: "nevada-governor-results",
   NJ: "new-jersey-senate-results",
   NM: "new-mexico-senate-results",
+  SC: "south-carolina-senate-results",
   SD: "south-dakota-senate-results"
 };
 
 const FEATURED_GROUPS = [
   { state: "CA", name: "California", queries: ["California Governor", "California Lieutenant Governor", "California Insurance Commissioner", "California Superintendent Public Instruction", "California US House", "California Los Angeles Mayor"] },
   { state: "IA", name: "Iowa", queries: ["Iowa US Senate", "Iowa US House", "Iowa Governor"] },
+  { state: "ME", name: "Maine", queries: ["Maine US Senate", "Maine US House", "Maine Governor"] },
   { state: "MT", name: "Montana", queries: ["Montana US Senate", "Montana US House", "Montana Governor"] },
+  { state: "ND", name: "North Dakota", queries: ["North Dakota US House"] },
+  { state: "NV", name: "Nevada", queries: ["Nevada US House", "Nevada Governor"] },
   { state: "NJ", name: "New Jersey", queries: ["New Jersey US Senate", "New Jersey US House", "New Jersey Governor"] },
   { state: "NM", name: "New Mexico", queries: ["New Mexico US Senate", "New Mexico US House", "New Mexico Governor"] },
+  { state: "SC", name: "South Carolina", queries: ["South Carolina US Senate", "South Carolina US House", "South Carolina Governor"] },
   { state: "SD", name: "South Dakota", queries: ["South Dakota US Senate", "South Dakota US House", "South Dakota Governor"] }
 ];
 
 const REQUIRED_RACES_BY_STATE = {
   CA: [79777, 79779, 79778, 79881, 79893, 79932, 79884, 79896, 79907, 79909, 79916, 79924, 79938],
   IA: [79945, 79944, 80211, 80210],
+  ME: ["me-gov-r-2026", "me-gov-d-2026", "me-sen-r-2026", "me-sen-d-2026", "me-house-1-r-2026", "me-house-1-d-2026", "me-house-2-r-2026", "me-house-2-d-2026"],
   MT: [80460, 80458, 80452],
+  ND: ["nd-house-at-large-2026"],
+  NV: ["nv-gov-r-2026", "nv-gov-d-2026", "nv-house-1-r-2026", "nv-house-1-d-2026", "nv-house-2-r-2026", "nv-house-2-d-2026", "nv-house-3-r-2026", "nv-house-3-d-2026", "nv-house-4-r-2026", "nv-house-4-d-2026"],
   NJ: [81058, 81057, 81046, 81048, 81055],
   NM: [80691, 80690, 81014, 81015],
+  SC: ["sc-gov-r-2026", "sc-gov-d-2026", "sc-sen-r-2026", "sc-sen-d-2026", "sc-house-1-r-2026", "sc-house-1-d-2026", "sc-house-2-r-2026", "sc-house-2-d-2026", "sc-house-3-r-2026", "sc-house-3-d-2026", "sc-house-4-r-2026", "sc-house-4-d-2026", "sc-house-5-r-2026", "sc-house-5-d-2026", "sc-house-6-r-2026", "sc-house-6-d-2026", "sc-house-7-r-2026", "sc-house-7-d-2026"],
   SD: [80461, 80512]
 };
 
 const MANUAL_RACES = {
+  "nd-house-at-large-2026": {
+    id: "nd-house-at-large-2026",
+    source: "NBC News / local candidate config",
+    sourceUrl: `${NBC_BASE}/north-dakota-house-results`,
+    type: "US House",
+    country: "US",
+    state: "ND",
+    stateName: "North Dakota",
+    district: "ND-AL",
+    geometryCycle: 119,
+    municipality: null,
+    electionName: "North Dakota US House At-Large Primary",
+    electionType: "US House",
+    electionScope: "Primary",
+    electionDate: "2026-06-09T00:00:00.000Z",
+    pollsOpen: null,
+    pollsClose: "2026-06-10T01:00:00.000Z",
+    lastUpdated: null,
+    percentReporting: 0,
+    estimatedVoteReporting: null,
+    estimatedVoteReportingSource: "external-estimate-pending",
+    estimatedVoteReportingSourceUrl: `${NBC_BASE}/north-dakota-house-results`,
+    hasBreakdown: false,
+    hasMap: true,
+    marker: { kind: "open-primary", label: "Primary", short: "P" },
+    leaderName: "",
+    leaderParty: "",
+    leaderPartyCode: "",
+    otherCandidateCount: 2,
+    calls: [],
+    featuredCandidateNames: ["Julie Fedorchak", "Trygve Hammer", "Alexander Balazs"],
+    candidates: [
+      { name: "Julie Fedorchak", party: "Republican", partyCode: "R", color: "", votes: 0, percent: 0, winner: false, apiWinner: false, headshotUrl: "", incumbent: true, callStatus: "", callLabel: "" },
+      { name: "Trygve Hammer", party: "Democratic", partyCode: "D", color: "", votes: 0, percent: 0, winner: false, apiWinner: false, headshotUrl: "", incumbent: false, callStatus: "", callLabel: "" },
+      { name: "Alexander Balazs", party: "Republican", partyCode: "R", color: "", votes: 0, percent: 0, winner: false, apiWinner: false, headshotUrl: "", incumbent: false, callStatus: "", callLabel: "" }
+    ],
+    registeredVoters: null,
+    maps: [],
+    voteHistory: [],
+    counties: []
+  }
 };
 
 const NBC_RACE_SOURCES = {
@@ -76,6 +129,44 @@ const NBC_RACE_SOURCES = {
   81015: { state: "NM", slug: "new-mexico-senate-results", party: "R", type: "Senate", name: "New Mexico US Senate Republican Primary" },
   80461: { state: "SD", slug: "south-dakota-governor-results", party: "R", type: "Governor", name: "South Dakota Governor Republican Primary" },
   80512: { state: "SD", slug: "south-dakota-senate-results", party: "R", type: "Senate", name: "South Dakota US Senate Republican Primary" }
+  ,
+  "me-gov-r-2026": { state: "ME", stateName: "Maine", slug: "maine-governor-results", party: "R", type: "Governor", name: "Maine Governor Republican Primary" },
+  "me-gov-d-2026": { state: "ME", stateName: "Maine", slug: "maine-governor-results", party: "D", type: "Governor", name: "Maine Governor Democratic Primary" },
+  "me-sen-r-2026": { state: "ME", stateName: "Maine", slug: "maine-senate-results", party: "R", type: "US Senate", name: "Maine US Senate Republican Primary" },
+  "me-sen-d-2026": { state: "ME", stateName: "Maine", slug: "maine-senate-results", party: "D", type: "US Senate", name: "Maine US Senate Democratic Primary" },
+  "me-house-1-r-2026": { state: "ME", stateName: "Maine", slug: "maine-us-house-district-1-results", party: "R", type: "US House", district: "ME-01", name: "Maine US House 1 Republican Primary" },
+  "me-house-1-d-2026": { state: "ME", stateName: "Maine", slug: "maine-us-house-district-1-results", party: "D", type: "US House", district: "ME-01", name: "Maine US House 1 Democratic Primary" },
+  "me-house-2-r-2026": { state: "ME", stateName: "Maine", slug: "maine-us-house-district-2-results", party: "R", type: "US House", district: "ME-02", name: "Maine US House 2 Republican Primary" },
+  "me-house-2-d-2026": { state: "ME", stateName: "Maine", slug: "maine-us-house-district-2-results", party: "D", type: "US House", district: "ME-02", name: "Maine US House 2 Democratic Primary" },
+  "nd-house-at-large-2026": { state: "ND", stateName: "North Dakota", slug: "north-dakota-house-results", type: "US House", district: "ND-AL", name: "North Dakota US House At-Large Primary", staticOnly: true },
+  "nv-gov-r-2026": { state: "NV", stateName: "Nevada", slug: "nevada-governor-results", party: "R", type: "Governor", name: "Nevada Governor Republican Primary" },
+  "nv-gov-d-2026": { state: "NV", stateName: "Nevada", slug: "nevada-governor-results", party: "D", type: "Governor", name: "Nevada Governor Democratic Primary" },
+  "nv-house-1-r-2026": { state: "NV", stateName: "Nevada", slug: "nevada-us-house-district-1-results", party: "R", type: "US House", district: "NV-01", name: "Nevada US House 1 Republican Primary" },
+  "nv-house-1-d-2026": { state: "NV", stateName: "Nevada", slug: "nevada-us-house-district-1-results", party: "D", type: "US House", district: "NV-01", name: "Nevada US House 1 Democratic Primary" },
+  "nv-house-2-r-2026": { state: "NV", stateName: "Nevada", slug: "nevada-us-house-district-2-results", party: "R", type: "US House", district: "NV-02", name: "Nevada US House 2 Republican Primary" },
+  "nv-house-2-d-2026": { state: "NV", stateName: "Nevada", slug: "nevada-us-house-district-2-results", party: "D", type: "US House", district: "NV-02", name: "Nevada US House 2 Democratic Primary" },
+  "nv-house-3-r-2026": { state: "NV", stateName: "Nevada", slug: "nevada-us-house-district-3-results", party: "R", type: "US House", district: "NV-03", name: "Nevada US House 3 Republican Primary" },
+  "nv-house-3-d-2026": { state: "NV", stateName: "Nevada", slug: "nevada-us-house-district-3-results", party: "D", type: "US House", district: "NV-03", name: "Nevada US House 3 Democratic Primary" },
+  "nv-house-4-r-2026": { state: "NV", stateName: "Nevada", slug: "nevada-us-house-district-4-results", party: "R", type: "US House", district: "NV-04", name: "Nevada US House 4 Republican Primary" },
+  "nv-house-4-d-2026": { state: "NV", stateName: "Nevada", slug: "nevada-us-house-district-4-results", party: "D", type: "US House", district: "NV-04", name: "Nevada US House 4 Democratic Primary" },
+  "sc-gov-r-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-governor-results", party: "R", type: "Governor", name: "South Carolina Governor Republican Primary" },
+  "sc-gov-d-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-governor-results", party: "D", type: "Governor", name: "South Carolina Governor Democratic Primary" },
+  "sc-sen-r-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-senate-results", party: "R", type: "US Senate", name: "South Carolina US Senate Republican Primary" },
+  "sc-sen-d-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-senate-results", party: "D", type: "US Senate", name: "South Carolina US Senate Democratic Primary" },
+  "sc-house-1-r-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-1-results", party: "R", type: "US House", district: "SC-01", name: "South Carolina US House 1 Republican Primary" },
+  "sc-house-1-d-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-1-results", party: "D", type: "US House", district: "SC-01", name: "South Carolina US House 1 Democratic Primary" },
+  "sc-house-2-r-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-2-results", party: "R", type: "US House", district: "SC-02", name: "South Carolina US House 2 Republican Primary" },
+  "sc-house-2-d-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-2-results", party: "D", type: "US House", district: "SC-02", name: "South Carolina US House 2 Democratic Primary" },
+  "sc-house-3-r-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-3-results", party: "R", type: "US House", district: "SC-03", name: "South Carolina US House 3 Republican Primary" },
+  "sc-house-3-d-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-3-results", party: "D", type: "US House", district: "SC-03", name: "South Carolina US House 3 Democratic Primary" },
+  "sc-house-4-r-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-4-results", party: "R", type: "US House", district: "SC-04", name: "South Carolina US House 4 Republican Primary" },
+  "sc-house-4-d-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-4-results", party: "D", type: "US House", district: "SC-04", name: "South Carolina US House 4 Democratic Primary" },
+  "sc-house-5-r-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-5-results", party: "R", type: "US House", district: "SC-05", name: "South Carolina US House 5 Republican Primary" },
+  "sc-house-5-d-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-5-results", party: "D", type: "US House", district: "SC-05", name: "South Carolina US House 5 Democratic Primary" },
+  "sc-house-6-r-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-6-results", party: "R", type: "US House", district: "SC-06", name: "South Carolina US House 6 Republican Primary" },
+  "sc-house-6-d-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-6-results", party: "D", type: "US House", district: "SC-06", name: "South Carolina US House 6 Democratic Primary" },
+  "sc-house-7-r-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-7-results", party: "R", type: "US House", district: "SC-07", name: "South Carolina US House 7 Republican Primary" },
+  "sc-house-7-d-2026": { state: "SC", stateName: "South Carolina", slug: "south-carolina-us-house-district-7-results", party: "D", type: "US House", district: "SC-07", name: "South Carolina US House 7 Democratic Primary" }
 };
 
 const NBC_SLUG_CACHE = new Map();
@@ -105,9 +196,13 @@ async function cachedFetchJson(cache, url) {
 const POLL_CLOSE_UTC_BY_STATE = {
   CA: "2026-06-03T03:00:00Z",
   IA: "2026-06-03T01:00:00Z",
+  ME: "2026-06-10T00:00:00Z",
   MT: "2026-06-03T02:00:00Z",
+  ND: "2026-06-10T01:00:00Z",
+  NV: "2026-06-10T02:00:00Z",
   NJ: "2026-06-03T00:00:00Z",
   NM: "2026-06-03T01:00:00Z",
+  SC: "2026-06-09T23:00:00Z",
   SD: "2026-06-03T01:00:00Z"
 };
 
@@ -123,7 +218,9 @@ const TYPE_PRIORITY = {
 
 function isoDate(value) {
   if (value === null || value === undefined || value === "") return null;
-  const date = new Date(value);
+  const raw = String(value);
+  const normalized = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?$/.test(raw) ? `${raw}Z` : raw;
+  const date = new Date(normalized);
   if (Number.isNaN(date.getTime()) || date.getUTCFullYear() < 2020) return null;
   return date.toISOString();
 }
@@ -533,6 +630,9 @@ function nbcRaceParty(summary = {}) {
 
 function nbcRaceMatchesSource(nbcRace, source = {}) {
   const summary = nbcRace.summary || {};
+  const officeName = String(summary.officeName || "");
+  if (!source.rcv && /\bRCV\b/i.test(officeName)) return false;
+  if (source.rcv && !/\bRCV\b/i.test(officeName)) return false;
   if (source.party && nbcRaceParty(summary) !== source.party) return false;
   const sourceDistrict = districtNumber(source.district);
   if (sourceDistrict && districtNumber(summary.district) !== sourceDistrict) return false;
@@ -1008,6 +1108,10 @@ function isRaceCloseOrUncalled(race) {
 }
 
 async function fetchRaceDetail(id) {
+  if (MANUAL_RACES[String(id)]) {
+    return MANUAL_RACES[String(id)];
+  }
+
   // Check cache for races that are >95% reporting and not close/uncalled
   const cached = raceDetailCache.get(String(id));
   if (cached) {

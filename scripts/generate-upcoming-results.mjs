@@ -94,7 +94,7 @@ export async function buildUpcomingResults() {
     election_date: race.electionDate,
     type: race.office
   }, index)))
-    .filter((race) => race.electionDate && race.electionDate >= today)
+    .filter((race) => race.electionDate && race.electionDate > today)
     .sort((a, b) => a.electionDate.localeCompare(b.electionDate) || a.electionName.localeCompare(b.electionName));
   const firstDate = generated[0]?.electionDate || "";
   return {
