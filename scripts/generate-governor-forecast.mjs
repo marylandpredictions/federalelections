@@ -199,6 +199,18 @@ function modeledPollMatch(title, race) {
   return false;
 }
 
+function reducedWeightGovernorPollMatch(title, race) {
+  if (race.state !== "IA") return false;
+  const normalizedTitle = String(title || "").toLowerCase();
+  const demSpecific = specificCandidateName(race.demCandidate || race.dem || "");
+  const repSpecific = specificCandidateName(race.repCandidate || race.rep || "");
+  const demNames = candidateLastNames(demSpecific);
+  const repNames = candidateLastNames(repSpecific);
+  const demMatches = demNames.length ? demNames.some((name) => normalizedTitle.includes(name)) : false;
+  const repMatches = repNames.length ? repNames.some((name) => normalizedTitle.includes(name)) : false;
+  return demMatches || repMatches;
+}
+
 function parsePercent(value) {
   const match = String(value || "").replace(/,/g, "").match(/-?\d+(?:\.\d+)?/);
   return match ? Number(match[0]) : null;
@@ -386,12 +398,15 @@ function inferHeaderParty(headerHtml, candidateName, race) {
 
 function parseTwoSeventyGovernorPage(html, race) {
   const blocks = [...html.matchAll(/<h4[^>]*>([\s\S]*?)<\/h4>[\s\S]*?<table id="polls"[\s\S]*?<\/table>/gi)];
-  const parsed = [];
+  const directParsed = [];
+  const fallbackParsed = [];
   for (const block of blocks) {
     const title = stripHtml(block[1]);
     const table = block[0];
     if (!/ vs\.? /i.test(title)) continue;
-    if (!modeledPollMatch(title, race)) continue;
+    const directMatch = modeledPollMatch(title, race);
+    const fallbackMatch = !directMatch && reducedWeightGovernorPollMatch(title, race);
+    if (!directMatch && !fallbackMatch) continue;
     const headerMatches = [...table.matchAll(/<th[^>]*class="[^"]*\bcan_name\b[^"]*"[^>]*>([\s\S]*?)<\/th>/gi)];
     const candidates = headerMatches.map((match) => ({
       name: stripHtml(match[1]).replace(/\*$/, "").trim(),
@@ -406,15 +421,18 @@ function parseTwoSeventyGovernorPage(html, race) {
       const cells = [...avgRow.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((match) => stripHtml(match[1]));
       const values = cells.slice(1, 1 + candidates.length).map(parsePercent);
       if (Number.isFinite(values[demIndex]) && Number.isFinite(values[repIndex])) {
-        parsed.push({
+        const row = {
           margin: values[demIndex] - values[repIndex],
           polls: Number((cells[0] || "").match(/Average of\s+(\d+)/i)?.[1] || 1),
-          source: "270toWin polling average",
+          source: fallbackMatch ? "270toWin reduced-weight alternate governor polling average" : "270toWin polling average",
           sourceUrl: `https://www.270towin.com/2026-governor-polls/${stateSlug(race.state)}`,
           matchup: title,
           demCandidate: candidates[demIndex].name,
-          repCandidate: candidates[repIndex].name
-        });
+          repCandidate: candidates[repIndex].name,
+          reducedWeight: fallbackMatch,
+          weightScale: fallbackMatch ? .35 : 1
+        };
+        (fallbackMatch ? fallbackParsed : directParsed).push(row);
         continue;
       }
     }
@@ -426,18 +444,21 @@ function parseTwoSeventyGovernorPage(html, race) {
       if (Number.isFinite(cells[demIndex]) && Number.isFinite(cells[repIndex])) margins.push(cells[demIndex] - cells[repIndex]);
     }
     if (margins.length) {
-      parsed.push({
+      const row = {
         margin: margins.reduce((sum, value) => sum + value, 0) / margins.length,
         polls: margins.length,
-        source: "270toWin latest governor polls",
+        source: fallbackMatch ? "270toWin reduced-weight alternate governor polls" : "270toWin latest governor polls",
         sourceUrl: `https://www.270towin.com/2026-governor-polls/${stateSlug(race.state)}`,
         matchup: title,
         demCandidate: candidates[demIndex].name,
-        repCandidate: candidates[repIndex].name
-      });
+        repCandidate: candidates[repIndex].name,
+        reducedWeight: fallbackMatch,
+        weightScale: fallbackMatch ? .35 : 1
+      };
+      (fallbackMatch ? fallbackParsed : directParsed).push(row);
     }
   }
-  return parsed.sort((a, b) => b.polls - a.polls)[0] || null;
+  return directParsed.sort((a, b) => b.polls - a.polls)[0] || fallbackParsed.sort((a, b) => b.polls - a.polls)[0] || null;
 }
 
 function parseTwoSeventyGovernorPrimarySignal(html, race) {
@@ -585,7 +606,9 @@ function mergeGovernorPolling(status, ...sources) {
       polls: rows.reduce((sum, row) => sum + Number(row.polls || 0), 0),
       sources: rows.map((row) => row.source || "Governor polling source"),
       sourceUrls: rows.map((row) => row.sourceUrl).filter(Boolean),
-      matchups: rows.map((row) => row.matchup).filter(Boolean)
+      matchups: rows.map((row) => row.matchup).filter(Boolean),
+      reducedWeight: rows.every((row) => row.reducedWeight),
+      weightScale: rows.every((row) => row.reducedWeight) ? Math.min(...rows.map((row) => Number(row.weightScale || 1))) : 1
     };
   }
   status.governorPollingMerged = { states: Object.keys(merged).length };
@@ -1153,14 +1176,15 @@ function buildRace(baseRace, nationalShift, sourceData) {
   let pollMargin = 0;
   const governorPoll = sourceData?.governorPolling?.governorPolls?.[race.state];
   if (governorPoll && governorPoll.polls > 0) {
-    const pollWeight = clamp(.2 + Math.log1p(governorPoll.polls) * .12, .25, .5);
+    const pollWeight = clamp(.2 + Math.log1p(governorPoll.polls) * .12, .25, .5) * (governorPoll.weightScale || 1);
     pollMargin = governorPoll.margin * pollWeight;
   }
+  const directGovernorPoll = governorPoll?.reducedWeight ? null : governorPoll;
   const governorPrimarySignal = sourceData?.twoSeventyGovernor?.governorPrimarySignals?.[race.state];
   const primaryPollSignal = governorPrimarySignal?.polls ? governorPrimarySignal.margin : 0;
   
   const rawMargin = (ratingMargin * .52) + (fundamentals * .38) + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin + primaryPollSignal;
-  const margin = governorMarginGuardrail(race, rawMargin, ratingMargin, fundamentals, governorPoll);
+  const margin = governorMarginGuardrail(race, rawMargin, ratingMargin, fundamentals, directGovernorPoll);
   const error = governorRaceError(race);
   const demProbability = clamp(normalCdf(margin, 0, error), 0.001, 0.999);
   const winnerParty = demProbability >= .5 ? "D" : "R";
@@ -1185,6 +1209,8 @@ function buildRace(baseRace, nationalShift, sourceData) {
       pollSources: governorPoll?.sources || [],
       pollSourceUrls: governorPoll?.sourceUrls || [],
       pollMatchups: governorPoll?.matchups || [],
+      pollReducedWeight: Boolean(governorPoll?.reducedWeight),
+      pollWeightScale: governorPoll?.weightScale || 1,
       primaryPollSignal,
       primaryPollCount: governorPrimarySignal?.polls || 0,
       primaryPollSources: governorPrimarySignal?.source ? [governorPrimarySignal.source] : [],

@@ -2,25 +2,10 @@ name: Daily forecast
 
 on:
   schedule:
-    # Primary target: early morning Central (roughly 5:00-6:30 AM CT / 6:00-7:30 AM ET).
-    # GitHub scheduled workflows can be delayed or dropped, so these staggered
-    # entries provide backup chances through late morning. The model scripts
-    # are date-idempotent and the commit step only writes when data changes.
-    - cron: "0 10 * * *"
+    # Primary target: early morning Central. Keep this to one scheduled run so
+    # generated JSON files are not repeatedly committed and rebased over each
+    # other by overlapping backup runs.
     - cron: "20 10 * * *"
-    - cron: "40 10 * * *"
-    - cron: "0 11 * * *"
-    - cron: "20 11 * * *"
-    - cron: "45 11 * * *"
-    - cron: "10 12 * * *"
-    - cron: "35 12 * * *"
-    - cron: "0 13 * * *"
-    - cron: "30 13 * * *"
-    - cron: "0 14 * * *"
-    - cron: "30 14 * * *"
-    - cron: "0 15 * * *"
-    - cron: "30 15 * * *"
-    - cron: "0 16 * * *"
   workflow_dispatch:
   repository_dispatch:
     types: [daily-forecast]
@@ -29,8 +14,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: daily-forecast
-  cancel-in-progress: false
+  group: daily-forecast-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   generate:
@@ -46,6 +31,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      - name: Sync branch before generation
+        run: git pull --ff-only origin "$GITHUB_REF_NAME"
 
       - name: Generate forecast data
         run: |
@@ -74,14 +62,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git pull --rebase --autostash origin "$GITHUB_REF_NAME"
           git add data/*.json data/live-results-races/*.json
           if git diff --cached --quiet; then
             echo "No forecast data changes to commit."
             exit 0
           fi
           git commit -m "Update daily forecasts"
-          git push origin "HEAD:$GITHUB_REF_NAME" || {
-            git pull --rebase --autostash origin "$GITHUB_REF_NAME"
-            git push origin "HEAD:$GITHUB_REF_NAME"
-          }
+          git push origin "HEAD:$GITHUB_REF_NAME"

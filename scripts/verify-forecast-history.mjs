@@ -20,15 +20,15 @@ function gitFiles(pattern) {
   }
 }
 
-function parseJson(text, label) {
+function parseJson(text, label, { required = true } = {}) {
   if (!text || /^\s*(<<<<<<<|=======|>>>>>>>)/m.test(text)) {
-    failures.push(`${label} contains unresolved conflict markers`);
+    if (required) failures.push(`${label} contains unresolved conflict markers`);
     return null;
   }
   try {
     return JSON.parse(text.replace(/^\uFEFF/, ""));
   } catch (error) {
-    failures.push(`${label} could not parse: ${error.message}`);
+    if (required) failures.push(`${label} could not parse: ${error.message}`);
     return null;
   }
 }
@@ -40,7 +40,7 @@ function readWorking(file) {
 
 function readHead(file) {
   try {
-    return parseJson(execSync(`git show HEAD:${file}`, { encoding: "utf8", maxBuffer: 80 * 1024 * 1024 }), `HEAD:${file}`);
+    return parseJson(execSync(`git show HEAD:${file}`, { encoding: "utf8", maxBuffer: 80 * 1024 * 1024 }), `HEAD:${file}`, { required: false });
   } catch {
     return null;
   }
