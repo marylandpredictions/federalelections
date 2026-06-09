@@ -1721,6 +1721,16 @@ function districtCountyFeatureLookup(lookup, feature) {
     || null;
 }
 
+function featureStateFips(feature) {
+  const props = feature?.properties || {};
+  return String(props.STATE || props.STATEFP || "").padStart(2, "0");
+}
+
+function featureCountyFips(feature) {
+  const props = feature?.properties || {};
+  return String(feature?.id || props.GEOID || props.countyFips || `${props.STATE || props.STATEFP || ""}${props.COUNTY || props.COUNTYFP || ""}`).padStart(5, "0");
+}
+
 function featureCountyName(feature) {
   const props = feature?.properties || {};
   return cleanCountyName(props.countyName || props.NAME || "");
@@ -1741,7 +1751,7 @@ function districtGeometryMatchesResults(features, race) {
 function resultCountyFeaturesForRace(stateCountyFeatures, lookup) {
   return stateCountyFeatures.filter((feature) => {
     const props = feature.properties || {};
-    const fips = String(feature.id || props.GEOID || `${props.STATE || ""}${props.COUNTY || ""}`).padStart(5, "0");
+    const fips = featureCountyFips(feature);
     const name = cleanCountyName(props.NAME || "");
     return lookup.has(fips)
       || lookup.has(String(props.NAME || "").toLowerCase())
@@ -1766,8 +1776,7 @@ function isHouseRace(race) {
 
 function shouldFilterToJurisdiction(race, features, lookup) {
   if (race.district || race.municipality) return true;
-  const matchedCounties = features.filter((feature) => lookup.has(feature.id) || lookup.has(String(feature.properties?.NAME || "").toLowerCase()) || lookup.has(regionLookupKey(feature.properties?.NAME))).length;
-  return matchedCounties > 0 && matchedCounties < features.length;
+  return false;
 }
 
 function coordinateRings(geometry) {
@@ -1974,7 +1983,7 @@ async function districtShapeMap(race) {
       .then((geojson) => (geojson.features || []))
       .catch(() => []);
     await loadCountyDescriptions();
-    const stateCountyFeatures = allCountyFeatures.filter((item) => item.properties?.STATE === stateFips(race.state));
+    const stateCountyFeatures = allCountyFeatures.filter((item) => featureStateFips(item) === stateFips(race.state));
     const stateBoundsForContext = stateCountyFeatures.length ? stateBounds(stateCountyFeatures) : null;
     const fixedBounds = RESULT_MAP_VIEW_BOUNDS[String(race.state || "").toUpperCase()];
     const backgroundBounds = resultMapBackgroundBounds(race.state, activeBounds);
@@ -2036,7 +2045,7 @@ async function districtCountyBreakdownMap(race, districtNumber = raceDistrictNum
       .then((geojson) => (geojson.features || []))
       .catch(() => []);
     await loadCountyDescriptions();
-    const stateCountyFeatures = allCountyFeatures.filter((item) => item.properties?.STATE === stateFips(race.state));
+    const stateCountyFeatures = allCountyFeatures.filter((item) => featureStateFips(item) === stateFips(race.state));
     // Prefer the Census county-within-district file when it agrees with the
     // result feed. If NBC/DDHQ reports a different county set for a covered
     // special/open primary, fall back to the feed's county set so stale
@@ -2126,18 +2135,18 @@ async function countyShapeMap(race) {
     const allStateFeatures = stateGeojson.features || [];
     const highwayFeatures = highwayGeojson.features || [];
     const countryFeatures = countryGeojson.features || [];
-    const features = allFeatures.filter((feature) => feature.properties?.STATE === fips);
+    const features = allFeatures.filter((feature) => featureStateFips(feature) === fips);
     if (!features.length) return regionMap(race);
     const lookup = countyLookup(race);
     const visibleFeatures = shouldFilterToJurisdiction(race, features, lookup)
-      ? features.filter((feature) => lookup.has(feature.id) || lookup.has(String(feature.properties?.NAME || "").toLowerCase()) || lookup.has(regionLookupKey(feature.properties?.NAME)))
+      ? features.filter((feature) => lookup.has(featureCountyFips(feature)) || lookup.has(String(feature.properties?.NAME || "").toLowerCase()) || lookup.has(regionLookupKey(feature.properties?.NAME)))
       : features;
     if (!visibleFeatures.length) return regionMap(race);
     const activeBounds = stateBounds(visibleFeatures);
     const filterToJurisdiction = shouldFilterToJurisdiction(race, features, lookup);
     const outsideFeatures = filterToJurisdiction
       ? allFeatures
-      : allFeatures.filter((feature) => feature.properties?.STATE !== fips);
+      : allFeatures.filter((feature) => featureStateFips(feature) !== fips);
     const stateOutlineBounds = filterToJurisdiction ? stateBounds(features) : null;
     const fixedBounds = RESULT_MAP_VIEW_BOUNDS[String(race.state || "").toUpperCase()];
     const backgroundBounds = resultMapBackgroundBounds(race.state, activeBounds);
@@ -2159,7 +2168,7 @@ async function countyShapeMap(race) {
       labels: false
     }) : "";
     const paths = visibleFeatures.map((feature) => {
-      const county = lookup.get(feature.id) || lookup.get(String(feature.properties?.NAME || "").toLowerCase()) || lookup.get(regionLookupKey(feature.properties?.NAME));
+      const county = lookup.get(featureCountyFips(feature)) || lookup.get(String(feature.properties?.NAME || "").toLowerCase()) || lookup.get(regionLookupKey(feature.properties?.NAME));
       const leader = county ? regionLeader(county) : null;
       const margin = county ? resultMarginInfo(race, county) : null;
       const fill = margin?.percentFill || "#566274";
@@ -2170,8 +2179,8 @@ async function countyShapeMap(race) {
         : "";
       const tooltipCounty = county ? {
         ...county,
-        fips: county.fips || feature.id,
-        id: county.id || feature.id,
+        fips: county.fips || featureCountyFips(feature),
+        id: county.id || featureCountyFips(feature),
         type: county.type || feature.properties?.LSAD || "County"
       } : null;
       const tooltip = tooltipCounty ? countyTooltipMarkup(tooltipCounty, race, `${feature.properties?.NAME || county.name} County`) : "";

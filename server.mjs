@@ -107,6 +107,10 @@ function isAdminRequest(request, url) {
   return timingSafeEqualString(headerSecret || querySecret, adminSecret);
 }
 
+function isValidRaceId(value) {
+  return /^[A-Za-z0-9_-]{2,80}$/.test(String(value || ""));
+}
+
 async function readJsonFile(filePath, fallback) {
   try {
     return JSON.parse(await readFile(filePath, "utf8"));
@@ -119,6 +123,61 @@ async function writeJsonFile(filePath, payload) {
   const temporaryPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
   await writeFile(temporaryPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
   await rename(temporaryPath, filePath);
+}
+
+function gitHubAdminConfig() {
+  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || "";
+  const repository = process.env.GITHUB_REPOSITORY || "";
+  const branch = process.env.GITHUB_BRANCH || process.env.RENDER_GIT_BRANCH || process.env.BRANCH || "main";
+  if (!token || !repository) return null;
+  return { token, repository, branch };
+}
+
+async function commitJsonFileToGitHub(relativePath, payload, message) {
+  const config = gitHubAdminConfig();
+  if (!config) return { skipped: true, reason: "GitHub persistence env is not configured." };
+  const content = `${JSON.stringify(payload, null, 2)}\n`;
+  const encodedPath = relativePath.split(/[\\/]+/).map(encodeURIComponent).join("/");
+  const apiUrl = `https://api.github.com/repos/${config.repository}/contents/${encodedPath}`;
+  const headers = {
+    "Accept": "application/vnd.github+json",
+    "Authorization": `Bearer ${config.token}`,
+    "Content-Type": "application/json",
+    "User-Agent": "Federal-Elections-Analysis-admin"
+  };
+  let sha = "";
+  const current = await fetch(`${apiUrl}?ref=${encodeURIComponent(config.branch)}`, { headers });
+  if (current.ok) {
+    const data = await current.json();
+    sha = data.sha || "";
+  } else if (current.status !== 404) {
+    throw new Error(`GitHub read for ${relativePath} returned ${current.status}`);
+  }
+  const update = await fetch(apiUrl, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({
+      message,
+      content: Buffer.from(content, "utf8").toString("base64"),
+      branch: config.branch,
+      ...(sha ? { sha } : {})
+    })
+  });
+  const data = await update.json().catch(() => ({}));
+  if (!update.ok) {
+    throw new Error(data.message || `GitHub write for ${relativePath} returned ${update.status}`);
+  }
+  return { committed: true, path: relativePath, branch: config.branch, sha: data.commit?.sha || "" };
+}
+
+async function persistAdminJsonFile(filePath, relativePath, payload, message) {
+  await writeJsonFile(filePath, payload);
+  try {
+    return await commitJsonFileToGitHub(relativePath, payload, message);
+  } catch (error) {
+    console.warn(`Admin GitHub persistence failed for ${relativePath}: ${error.message}`);
+    return { committed: false, path: relativePath, error: error.message };
+  }
 }
 
 function escapeHeader(value) {
@@ -342,7 +401,7 @@ async function handleLiveResultRace(request, response, url) {
     return;
   }
   const id = url.searchParams.get("id");
-  if (!/^\d+$/.test(id || "")) {
+  if (!isValidRaceId(id)) {
     sendJson(response, 400, { ok: false, error: "Missing race id." }, "/api/live-results/race");
     return;
   }
@@ -360,7 +419,7 @@ async function refreshPersistedLiveResults(raceId = "") {
     liveResultsCache = data;
     liveResultsCacheAt = Date.now();
     await writeLiveResultsSnapshot(data, { details: false });
-    if (/^\d+$/.test(String(raceId))) {
+    if (isValidRaceId(raceId)) {
       await buildRaceResultDetailWithHistory(String(raceId), { persist: true });
     }
   } catch (error) {
@@ -416,7 +475,7 @@ async function handleAdmin(request, response, url) {
       return;
     }
     const raceId = String(payload.raceId || "").trim();
-    if (!/^\d+$/.test(raceId)) {
+    if (!isValidRaceId(raceId)) {
       sendJson(response, 400, { ok: false, error: "Choose a valid race." });
       return;
     }
@@ -443,13 +502,19 @@ async function handleAdmin(request, response, url) {
     current.races = current.races || {};
     if (cleanedCalls.length) current.races[raceId] = { calls: cleanedCalls };
     else delete current.races[raceId];
-    await writeJsonFile(callsPath, current);
+    const persistence = await persistAdminJsonFile(
+      callsPath,
+      "data/result-calls.json",
+      current,
+      `Update live result calls for race ${raceId}`
+    );
     reloadManualResultConfig();
     liveResultsCache = null;
     await refreshPersistedLiveResults(raceId);
     sendJson(response, 200, {
       ok: true,
       calls: current.races[raceId]?.calls || [],
+      persistence,
       persistedFiles: [
         "data/result-calls.json",
         "data/live-results.json",
@@ -469,7 +534,7 @@ async function handleAdmin(request, response, url) {
     }
     const raceId = String(payload.raceId || "").trim();
     const text = String(payload.text || "").trim();
-    if (!/^\d+$/.test(raceId)) {
+    if (!isValidRaceId(raceId)) {
       sendJson(response, 400, { ok: false, error: "Choose a valid race." });
       return;
     }
@@ -511,7 +576,12 @@ async function handleAdmin(request, response, url) {
     } else {
       current.races[raceId] = [note, ...existingNotes];
     }
-    await writeJsonFile(analysisNotesPath, current);
+    const persistence = await persistAdminJsonFile(
+      analysisNotesPath,
+      "data/result-analysis-notes.json",
+      current,
+      `Update analyst notes for race ${raceId}`
+    );
     reloadManualResultConfig();
     liveResultsCache = null;
     await refreshPersistedLiveResults(raceId);
@@ -519,6 +589,7 @@ async function handleAdmin(request, response, url) {
       ok: true,
       note,
       notes: current.races[raceId],
+      persistence,
       persistedFiles: [
         "data/result-analysis-notes.json",
         "data/live-results.json",

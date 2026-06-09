@@ -62,13 +62,13 @@ const MANUAL_RACES = {
     country: "US",
     state: "ND",
     stateName: "North Dakota",
-    district: "ND-AL",
+    district: null,
     geometryCycle: 119,
     municipality: null,
     electionName: "North Dakota US House At-Large Primary",
     electionType: "US House",
     electionScope: "Primary",
-    electionDate: "2026-06-09T00:00:00.000Z",
+    electionDate: "2026-06-09T12:00:00.000Z",
     pollsOpen: null,
     pollsClose: "2026-06-10T01:00:00.000Z",
     lastUpdated: null,
@@ -128,8 +128,7 @@ const NBC_RACE_SOURCES = {
   81014: { state: "NM", slug: "new-mexico-senate-results", party: "D", type: "Senate", name: "New Mexico US Senate Democratic Primary" },
   81015: { state: "NM", slug: "new-mexico-senate-results", party: "R", type: "Senate", name: "New Mexico US Senate Republican Primary" },
   80461: { state: "SD", slug: "south-dakota-governor-results", party: "R", type: "Governor", name: "South Dakota Governor Republican Primary" },
-  80512: { state: "SD", slug: "south-dakota-senate-results", party: "R", type: "Senate", name: "South Dakota US Senate Republican Primary" }
-  ,
+  80512: { state: "SD", slug: "south-dakota-senate-results", party: "R", type: "Senate", name: "South Dakota US Senate Republican Primary" },
   "me-gov-r-2026": { state: "ME", stateName: "Maine", slug: "maine-governor-results", party: "R", type: "Governor", name: "Maine Governor Republican Primary" },
   "me-gov-d-2026": { state: "ME", stateName: "Maine", slug: "maine-governor-results", party: "D", type: "Governor", name: "Maine Governor Democratic Primary" },
   "me-sen-r-2026": { state: "ME", stateName: "Maine", slug: "maine-senate-results", party: "R", type: "US Senate", name: "Maine US Senate Republican Primary" },
@@ -223,6 +222,13 @@ function isoDate(value) {
   const date = new Date(normalized);
   if (Number.isNaN(date.getTime()) || date.getUTCFullYear() < 2020) return null;
   return date.toISOString();
+}
+
+function isoElectionDate(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const match = String(value).match(/^(\d{4}-\d{2}-\d{2})/);
+  if (match) return `${match[1]}T12:00:00.000Z`;
+  return isoDate(value);
 }
 
 function electionYear(value) {
@@ -724,7 +730,7 @@ function normalizeNbcRace(id, source, data, nbcRace, options = {}) {
     electionName: raceBase.electionName,
     electionType: raceBase.type,
     electionScope: raceBase.electionScope,
-    electionDate: isoDate(nbcRace.electionDate || data.electionDate),
+    electionDate: isoElectionDate(nbcRace.electionDate || data.electionDate),
     pollsOpen: null,
     pollsClose: raceBase.pollsClose,
     lastUpdated: isoDate(data.currentTime || data.lastUpdated || data.updatedAt || nbcRace.lastUpdated),
@@ -938,7 +944,7 @@ function normalizeRace(race, group, options = {}) {
     electionName: race.election_name || `${group.name} ${race.type || "Race"}`,
     electionType: race.election_type || "",
     electionScope: race.election_scope || race.election_type || "",
-    electionDate: isoDate(race.election_date),
+    electionDate: isoElectionDate(race.election_date),
     pollsOpen: isoDate(race.polls_open),
     pollsClose: isoDate(race.polls_close),
     lastUpdated: isoDate(race.last_updated),
@@ -1010,6 +1016,10 @@ function voteHistorySignature(point) {
   return candidates;
 }
 
+function voteHistoryTotalVotes(point) {
+  return (point?.candidates || []).reduce((sum, candidate) => sum + Number(candidate.votes || 0), 0);
+}
+
 function normalizeHistoryCandidate(candidate) {
   return {
     name: candidate.name || candidate.candidate || candidate.candidate_name || "",
@@ -1070,6 +1080,9 @@ function appendVoteHistory(race) {
   }
   stored = mergeVoteHistory(race.voteHistory || [], stored);
   const point = voteHistoryPoint(race);
+  if (!voteHistoryTotalVotes(point) && !stored.some((entry) => voteHistoryTotalVotes(entry))) {
+    return [];
+  }
   const latest = stored.at(-1);
   const pointSignature = voteHistorySignature(point);
   if (latest && voteHistorySignature(latest) === pointSignature) {
@@ -1121,16 +1134,23 @@ async function fetchRaceDetail(id) {
     }
   }
   
-  const nbcRace = await fetchNbcRaceDetail(id);
-  if (nbcRace) {
-    // Cache the result if it's >95% reporting and not close/uncalled
-    if (!isRaceCloseOrUncalled(nbcRace)) {
-      raceDetailCache.set(String(id), { data: nbcRace, timestamp: Date.now() });
+  let nbcError = null;
+  try {
+    const nbcRace = await fetchNbcRaceDetail(id);
+    if (nbcRace) {
+      // Cache the result if it's >95% reporting and not close/uncalled
+      if (!isRaceCloseOrUncalled(nbcRace)) {
+        raceDetailCache.set(String(id), { data: nbcRace, timestamp: Date.now() });
+      }
+      return nbcRace;
     }
-    return nbcRace;
+  } catch (error) {
+    nbcError = error;
   }
-  
-  if (STATIC_NBC_UNSUPPORTED_RACES.has(String(id))) {
+
+  const source = NBC_RACE_SOURCES[String(id)];
+  const canTryCivic = /^\d+$/.test(String(id));
+  if (canTryCivic || STATIC_NBC_UNSUPPORTED_RACES.has(String(id))) {
     try {
       const civicRace = await fetchCivicRaceDetail(id);
       // Cache the result if it's >95% reporting and not close/uncalled
@@ -1139,13 +1159,20 @@ async function fetchRaceDetail(id) {
       }
       return civicRace;
     } catch (error) {
-      const fallback = readStaticRaceDetail(id);
-      return {
-        ...fallback,
-        sourceNote: `${fallback.sourceNote || "Using local cache."} CivicAPI fallback failed: ${error.message}`
-      };
+      if (STATIC_NBC_UNSUPPORTED_RACES.has(String(id))) {
+        const fallback = readStaticRaceDetail(id);
+        return {
+          ...fallback,
+          sourceNote: `${fallback.sourceNote || "Using local cache."} CivicAPI fallback failed: ${error.message}`
+        };
+      }
+      if (nbcError) {
+        throw new Error(`${nbcError.message}; CivicAPI fallback failed: ${error.message}`);
+      }
+      throw error;
     }
   }
+  if (source && nbcError) throw nbcError;
   throw new Error(`No NBC result source configured for race ${id}`);
 }
 
