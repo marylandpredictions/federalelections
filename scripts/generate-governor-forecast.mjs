@@ -1175,13 +1175,16 @@ function buildRace(baseRace, nationalShift, sourceData) {
   // Polling integration
   let pollMargin = 0;
   const governorPoll = sourceData?.governorPolling?.governorPolls?.[race.state];
+  const governorPrimarySignal = sourceData?.twoSeventyGovernor?.governorPrimarySignals?.[race.state];
+  const useReducedPrimaryFallback = !governorPoll?.polls && race.state === "IA" && governorPrimarySignal?.polls;
   if (governorPoll && governorPoll.polls > 0) {
     const pollWeight = clamp(.2 + Math.log1p(governorPoll.polls) * .12, .25, .5) * (governorPoll.weightScale || 1);
     pollMargin = governorPoll.margin * pollWeight;
+  } else if (useReducedPrimaryFallback) {
+    pollMargin = governorPrimarySignal.margin * .5;
   }
   const directGovernorPoll = governorPoll?.reducedWeight ? null : governorPoll;
-  const governorPrimarySignal = sourceData?.twoSeventyGovernor?.governorPrimarySignals?.[race.state];
-  const primaryPollSignal = governorPrimarySignal?.polls ? governorPrimarySignal.margin : 0;
+  const primaryPollSignal = governorPrimarySignal?.polls && !useReducedPrimaryFallback ? governorPrimarySignal.margin : 0;
   
   const rawMargin = (ratingMargin * .52) + (fundamentals * .38) + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin + primaryPollSignal;
   const margin = governorMarginGuardrail(race, rawMargin, ratingMargin, fundamentals, directGovernorPoll);
@@ -1205,12 +1208,12 @@ function buildRace(baseRace, nationalShift, sourceData) {
       nationalFinance,
       candidateHistory,
       pollMargin,
-      pollCount: governorPoll?.polls || 0,
-      pollSources: governorPoll?.sources || [],
-      pollSourceUrls: governorPoll?.sourceUrls || [],
-      pollMatchups: governorPoll?.matchups || [],
-      pollReducedWeight: Boolean(governorPoll?.reducedWeight),
-      pollWeightScale: governorPoll?.weightScale || 1,
+      pollCount: governorPoll?.polls || (useReducedPrimaryFallback ? governorPrimarySignal.polls : 0),
+      pollSources: governorPoll?.sources || (useReducedPrimaryFallback ? [governorPrimarySignal.source] : []),
+      pollSourceUrls: governorPoll?.sourceUrls || (useReducedPrimaryFallback ? [governorPrimarySignal.sourceUrl].filter(Boolean) : []),
+      pollMatchups: governorPoll?.matchups || (useReducedPrimaryFallback ? [governorPrimarySignal.matchup] : []),
+      pollReducedWeight: Boolean(governorPoll?.reducedWeight || useReducedPrimaryFallback),
+      pollWeightScale: governorPoll?.weightScale || (useReducedPrimaryFallback ? .5 : 1),
       primaryPollSignal,
       primaryPollCount: governorPrimarySignal?.polls || 0,
       primaryPollSources: governorPrimarySignal?.source ? [governorPrimarySignal.source] : [],

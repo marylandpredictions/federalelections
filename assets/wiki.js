@@ -28,7 +28,7 @@ const MONTANA_CHART_ANNOTATIONS = [
 ];
 
 const PRESIDENT_PRIMARY_MARKERS = [
-  { date: "2026-05-27", label: "Model reworked" },
+  { date: "2026-05-27", label: "Model reworked", fullOnly: true },
   { date: "2028-02-01", label: "Presidential primaries", className: "history-primary-marker", fullOnly: true }
 ];
 
@@ -1590,7 +1590,8 @@ function renderLineChart(chart, points, options) {
   const demLabelY = closeEndLabels ? latest.demY - 12 : latest.demY <= latest.repY ? latest.demY - 4 : latest.demY + 14;
   const repLabelY = closeEndLabels ? latest.repY + 22 : latest.repY <= latest.demY ? latest.repY - 4 : latest.repY + 14;
   const extraLabelY = latestExtraY === null ? null : latestExtraY - 6;
-  const annotations = (options.annotations || CHART_ANNOTATIONS).map((annotation) => {
+  const visibleAnnotations = !useFullRunway && hasZoomControls ? [] : (options.annotations || CHART_ANNOTATIONS);
+  const annotations = visibleAnnotations.map((annotation) => {
     const index = points.findIndex((point) => point.date === annotation.date);
     if (index === -1) return null;
     const x = coords[index].x;
@@ -1602,7 +1603,7 @@ function renderLineChart(chart, points, options) {
     const labelY = plot.top + 96;
     return `<g class="history-annotation"><path d="M${x} ${plot.top}V${height - plot.bottom}"></path><text x="${labelX}" y="${labelY}" transform="rotate(-90 ${labelX} ${labelY})">${annotation.label}</text></g>`;
   }).filter(Boolean).join("");
-  const annotationKey = (options.annotations || CHART_ANNOTATIONS).some((annotation) => (
+  const annotationKey = visibleAnnotations.some((annotation) => (
     annotation.marker && points.some((point) => point.date === annotation.date)
   )) ? `<div class="history-annotation-key"><span>*</span> Model reworked</div>` : "";
   const electionX = hasUsableDates && electionDate && electionDate > latestChartDate && useFullRunway ? width - plot.right : null;
@@ -1621,7 +1622,7 @@ function renderLineChart(chart, points, options) {
   const backgroundBands = hasUsableDates && electionX ? `
     <rect class="history-runway" x="${currentX}" y="${plot.top}" width="${electionX - currentX}" height="${plotHeight}"></rect>
   ` : "";
-  const dataGaps = hasUsableDates && coords.length > 1 ? (() => {
+  const dataGaps = useFullRunway && hasUsableDates && coords.length > 1 ? (() => {
     const gaps = [];
     const oneDay = 86400000;
     for (let i = 0; i < coords.length - 1; i++) {

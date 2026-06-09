@@ -1,7 +1,7 @@
 {
   "model": "2026 gubernatorial forecast",
   "modelDate": "2026-06-08",
-  "generatedAt": "2026-06-08T15:22:26.153Z",
+  "generatedAt": "2026-06-09T00:15:45.182Z",
   "runDate": "Jun 8, 2026",
   "settings": {
     "simulations": 100000,
@@ -24,7 +24,7 @@
     "gubernatorialNationalShift": 1.06,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-06-08T15:22:22.245Z",
+      "checkedAt": "2026-06-09T00:15:39.637Z",
       "governorFinance": {
         "ok": true,
         "states": 0,
@@ -38,104 +38,116 @@
       "pollfinityAverages": {
         "ok": true,
         "status": 200,
-        "ms": 49,
+        "ms": 326,
         "url": "https://pollfinity.com/averages.json"
       },
       "twoSeventyGovernorPollsAK": {
         "ok": true,
         "status": 200,
-        "ms": 22,
+        "ms": 629,
+        "url": "https://www.270towin.com/2026-governor-polls/alaska"
+      },
+      "twoSeventyGovernorPollsAZ": {
+        "ok": true,
+        "status": 200,
+        "ms": 41,
         "url": "https://www.270towin.com/2026-governor-polls/arizona"
+      },
+      "ddhqGenericBallot": {
+        "ok": false,
+        "status": 429,
+        "ms": 773,
+        "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
+        "error": "<!DOCTYPE html><html lang=\"en\" data-astro-cid-nbv56vs3> <head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" con"
       },
       "twoSeventyGovernorPollsFL": {
         "ok": true,
         "status": 200,
-        "ms": 24,
+        "ms": 99,
         "url": "https://www.270towin.com/2026-governor-polls/florida"
       },
       "twoSeventyGovernorPollsGA": {
         "ok": true,
         "status": 200,
-        "ms": 33,
+        "ms": 92,
         "url": "https://www.270towin.com/2026-governor-polls/georgia"
       },
       "twoSeventyGovernorPollsIA": {
         "ok": true,
         "status": 200,
-        "ms": 23,
+        "ms": 45,
         "url": "https://www.270towin.com/2026-governor-polls/iowa"
-      },
-      "ddhqGenericBallot": {
-        "ok": false,
-        "status": 429,
-        "ms": 293,
-        "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
-        "error": "<!DOCTYPE html><html lang=\"en\" data-astro-cid-nbv56vs3> <head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" con"
       },
       "twoSeventyGovernorPollsKS": {
         "ok": true,
         "status": 200,
-        "ms": 195,
+        "ms": 430,
         "url": "https://www.270towin.com/2026-governor-polls/kansas"
       },
       "twoSeventyGovernorPollsME": {
         "ok": true,
         "status": 200,
-        "ms": 20,
+        "ms": 70,
         "url": "https://www.270towin.com/2026-governor-polls/maine"
       },
       "twoSeventyGovernorPollsMI": {
         "ok": true,
         "status": 200,
-        "ms": 21,
+        "ms": 48,
         "url": "https://www.270towin.com/2026-governor-polls/michigan"
       },
       "twoSeventyGovernorPollsMN": {
         "ok": true,
         "status": 200,
-        "ms": 22,
+        "ms": 217,
         "url": "https://www.270towin.com/2026-governor-polls/minnesota"
       },
       "twoSeventyGovernorPollsNV": {
         "ok": true,
         "status": 200,
-        "ms": 25,
+        "ms": 41,
         "url": "https://www.270towin.com/2026-governor-polls/nevada"
       },
       "twoSeventyGovernorPollsNH": {
         "ok": true,
         "status": 200,
-        "ms": 23,
+        "ms": 56,
         "url": "https://www.270towin.com/2026-governor-polls/new-hampshire"
       },
       "twoSeventyGovernorPollsNM": {
         "ok": true,
         "status": 200,
-        "ms": 24,
+        "ms": 63,
         "url": "https://www.270towin.com/2026-governor-polls/new-mexico"
       },
       "twoSeventyGovernorPollsOH": {
         "ok": true,
         "status": 200,
-        "ms": 19,
+        "ms": 64,
         "url": "https://www.270towin.com/2026-governor-polls/ohio"
+      },
+      "governorFinanceSourceAK": {
+        "ok": true,
+        "status": 200,
+        "ms": 2006,
+        "url": "https://aws.state.ak.us/ApocReports/"
       },
       "twoSeventyGovernorPollsOR": {
         "ok": true,
         "status": 200,
-        "ms": 24,
+        "ms": 132,
         "url": "https://www.270towin.com/2026-governor-polls/oregon"
       },
       "twoSeventyGovernorPollsSC": {
         "ok": true,
         "status": 200,
-        "ms": 22,
+        "ms": 88,
         "url": "https://www.270towin.com/2026-governor-polls/south-carolina"
       },
       "twoSeventyGovernorPollsWI": {
         "ok": true,
         "status": 200,
-        "ms": 20,
+        "ms": 53,
         "url": "https://www.270towin.com/2026-governor-polls/wisconsin"
       },
       "twoSeventyGovernorPolls": {
@@ -263,47 +275,41 @@
           }
         }
       },
-      "governorFinanceSourceAK": {
-        "ok": true,
-        "status": 200,
-        "ms": 1332,
-        "url": "https://aws.state.ak.us/ApocReports/"
-      },
       "governorFinanceSourceAZ": {
         "ok": true,
         "status": 200,
-        "ms": 425,
+        "ms": 629,
         "url": "https://seethemoney.az.gov/"
       },
       "governorFinanceSourceGA": {
         "ok": true,
         "status": 200,
-        "ms": 53,
+        "ms": 293,
         "url": "https://media.ethics.ga.gov/search/campaign/Campaign_ByName.aspx"
       },
       "governorFinanceSourceIA": {
         "ok": true,
         "status": 200,
-        "ms": 299,
+        "ms": 687,
         "url": "https://webapp.iecdb.iowa.gov/PublicView/"
       },
       "governorFinanceSourceMI": {
         "ok": false,
         "status": "fetch-error",
-        "ms": 403,
+        "ms": 211,
         "url": "https://cfrsearch.nictusa.com/",
         "error": "fetch failed"
       },
       "governorFinanceSourceNV": {
         "ok": true,
         "status": 200,
-        "ms": 73,
+        "ms": 137,
         "url": "https://www.nvsos.gov/SOSCandidateServices/AnonymousAccess/CEFDSearchUU/Search.aspx"
       },
       "governorFinanceSourceWI": {
         "ok": true,
         "status": 200,
-        "ms": 475,
+        "ms": 776,
         "url": "https://cfis.wi.gov/"
       },
       "governorOnlineFinance": {
@@ -400,7 +406,9 @@
           ],
           "matchups": [
             "Hobbs vs. Schweikert"
-          ]
+          ],
+          "reducedWeight": false,
+          "weightScale": 1
         },
         "GA": {
           "margin": 6,
@@ -413,7 +421,9 @@
           ],
           "matchups": [
             "Bottoms vs. Jones"
-          ]
+          ],
+          "reducedWeight": false,
+          "weightScale": 1
         },
         "MI": {
           "margin": 5.33,
@@ -426,7 +436,9 @@
           ],
           "matchups": [
             "Benson vs. Duggan vs. Cox"
-          ]
+          ],
+          "reducedWeight": false,
+          "weightScale": 1
         },
         "NV": {
           "margin": -1.33,
@@ -439,7 +451,9 @@
           ],
           "matchups": [
             "Ford vs. Lombardo"
-          ]
+          ],
+          "reducedWeight": false,
+          "weightScale": 1
         },
         "NH": {
           "margin": -7.5,
@@ -452,7 +466,9 @@
           ],
           "matchups": [
             "Warmington vs. Ayotte"
-          ]
+          ],
+          "reducedWeight": false,
+          "weightScale": 1
         },
         "OH": {
           "margin": -1.22,
@@ -465,7 +481,9 @@
           ],
           "matchups": [
             "Acton vs. Ramaswamy"
-          ]
+          ],
+          "reducedWeight": false,
+          "weightScale": 1
         },
         "OR": {
           "margin": 5,
@@ -478,7 +496,9 @@
           ],
           "matchups": [
             "Kotek vs. Drazan"
-          ]
+          ],
+          "reducedWeight": false,
+          "weightScale": 1
         },
         "WI": {
           "margin": 3,
@@ -491,7 +511,9 @@
           ],
           "matchups": [
             "Rodriguez vs. Tiffany"
-          ]
+          ],
+          "reducedWeight": false,
+          "weightScale": 1
         }
       }
     },
@@ -500,24 +522,26 @@
   "modelWarnings": [],
   "projectedDemRaceWins": 18,
   "projectedRepRaceWins": 18,
-  "averageDemGovernors": 24.1,
-  "averageRepGovernors": 25.9,
+  "averageDemGovernors": 24.11,
+  "averageRepGovernors": 25.89,
   "medianDemGovernors": 24,
   "medianRepGovernors": 26,
   "distribution": {
-    "18": 6,
-    "19": 150,
-    "20": 922,
-    "21": 3724,
-    "22": 10363,
-    "23": 19470,
-    "24": 24875,
-    "25": 21916,
-    "26": 12722,
-    "27": 4669,
-    "28": 1016,
-    "29": 153,
-    "30": 14
+    "17": 1,
+    "18": 13,
+    "19": 159,
+    "20": 924,
+    "21": 3734,
+    "22": 10212,
+    "23": 19534,
+    "24": 24871,
+    "25": 21842,
+    "26": 12913,
+    "27": 4638,
+    "28": 1024,
+    "29": 128,
+    "30": 6,
+    "31": 1
   },
   "stateHistory": {
     "AL": [
@@ -997,8 +1021,8 @@
       },
       {
         "date": "2026-06-08",
-        "dem": 0.45738,
-        "rep": 0.54262
+        "dem": 0.46196,
+        "rep": 0.53804
       }
     ],
     "KS": [
@@ -1965,6 +1989,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -1977,7 +2003,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00205,
+      "tippingPower": 0.00196,
       "movementDrivers": [],
       "history": [
         {
@@ -2124,6 +2150,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -2136,7 +2164,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.61259,
       "competitive": true,
-      "tippingPower": 0.09037,
+      "tippingPower": 0.09051,
       "movementDrivers": [],
       "history": [
         {
@@ -2300,6 +2328,8 @@
         "pollMatchups": [
           "Hobbs vs. Schweikert"
         ],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -2312,7 +2342,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.64628,
       "competitive": true,
-      "tippingPower": 0.0813,
+      "tippingPower": 0.08171,
       "movementDrivers": [],
       "history": [
         {
@@ -2469,6 +2499,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -2481,7 +2513,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00087,
+      "tippingPower": 0.00101,
       "movementDrivers": [],
       "history": [
         {
@@ -2647,6 +2679,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -2659,7 +2693,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99538,
       "competitive": false,
-      "tippingPower": 0.00386,
+      "tippingPower": 0.00445,
       "movementDrivers": [],
       "history": [
         {
@@ -2810,6 +2844,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -2822,7 +2858,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.98875,
       "competitive": false,
-      "tippingPower": 0.00942,
+      "tippingPower": 0.00897,
       "movementDrivers": [],
       "history": [
         {
@@ -2969,6 +3005,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -2981,7 +3019,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99559,
       "competitive": false,
-      "tippingPower": 0.00457,
+      "tippingPower": 0.00421,
       "movementDrivers": [],
       "history": [
         {
@@ -3138,6 +3176,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -3150,7 +3190,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.97625,
       "competitive": false,
-      "tippingPower": 0.01512,
+      "tippingPower": 0.01433,
       "movementDrivers": [],
       "history": [
         {
@@ -3318,6 +3358,8 @@
         "pollMatchups": [
           "Bottoms vs. Jones"
         ],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -3330,7 +3372,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.62363,
       "competitive": true,
-      "tippingPower": 0.07701,
+      "tippingPower": 0.07703,
       "movementDrivers": [],
       "history": [
         {
@@ -3477,6 +3519,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -3489,7 +3533,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00111,
+      "tippingPower": 0.00103,
       "movementDrivers": [],
       "history": [
         {
@@ -3641,6 +3685,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -3653,7 +3699,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00114,
+      "tippingPower": 0.00121,
       "movementDrivers": [],
       "history": [
         {
@@ -3810,6 +3856,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -3822,7 +3870,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99379,
       "competitive": false,
-      "tippingPower": 0.00542,
+      "tippingPower": 0.00596,
       "movementDrivers": [],
       "history": [
         {
@@ -3889,7 +3937,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Iowa Governor",
-      "margin": -1.14,
+      "margin": -1.02,
       "fundamentalsMargin": -7.79,
       "ratingMargin": 0,
       "candidateAndLocal": 2.1,
@@ -3970,12 +4018,20 @@
         "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0,
-        "pollSources": [],
-        "pollSourceUrls": [],
-        "pollMatchups": [],
-        "primaryPollSignal": -0.3,
+        "pollMargin": -0.15,
+        "pollCount": 1,
+        "pollSources": [
+          "270toWin primary polling signal"
+        ],
+        "pollSourceUrls": [
+          "https://www.270towin.com/2026-governor-polls/iowa"
+        ],
+        "pollMatchups": [
+          "Republican Primary"
+        ],
+        "pollReducedWeight": true,
+        "pollWeightScale": 0.5,
+        "primaryPollSignal": 0,
         "primaryPollCount": 1,
         "primaryPollSources": [
           "270toWin primary polling signal"
@@ -3988,13 +4044,24 @@
         ]
       },
       "modelRating": "Toss-up",
-      "demProbability": 0.45738,
-      "repProbability": 0.54262,
+      "demProbability": 0.46196,
+      "repProbability": 0.53804,
       "winnerParty": "R",
-      "winnerProbability": 0.54262,
+      "winnerProbability": 0.53804,
       "competitive": true,
-      "tippingPower": 0.07955,
-      "movementDrivers": [],
+      "tippingPower": 0.07954,
+      "movementDrivers": [
+        {
+          "label": "Polling",
+          "change": -0.15,
+          "detail": "Weighted governor polling margin changed."
+        },
+        {
+          "label": "Projected margin",
+          "change": 0.12,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -4028,13 +4095,13 @@
         },
         {
           "date": "2026-06-08",
-          "dem": 0.45738,
-          "rep": 0.54262
+          "dem": 0.46196,
+          "rep": 0.53804
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": -14.1,
+        "sinceLastRun": 0.5,
+        "sinceWeek": -13.7,
         "previousDate": "2026-06-07",
         "weekDate": "2026-06-01"
       }
@@ -4145,6 +4212,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -4157,7 +4226,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.95958,
       "competitive": false,
-      "tippingPower": 0.01994,
+      "tippingPower": 0.02006,
       "movementDrivers": [],
       "history": [
         {
@@ -4309,6 +4378,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -4321,7 +4392,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.96912,
       "competitive": false,
-      "tippingPower": 0.01761,
+      "tippingPower": 0.01824,
       "movementDrivers": [],
       "history": [
         {
@@ -4473,6 +4544,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -4485,7 +4558,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.0009,
+      "tippingPower": 0.0008,
       "movementDrivers": [],
       "history": [
         {
@@ -4632,6 +4705,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -4644,7 +4719,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00084,
+      "tippingPower": 0.00095,
       "movementDrivers": [],
       "history": [
         {
@@ -4806,6 +4881,8 @@
         "pollMatchups": [
           "Benson vs. Duggan vs. Cox"
         ],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -4818,7 +4895,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.78731,
       "competitive": false,
-      "tippingPower": 0.06632,
+      "tippingPower": 0.06741,
       "movementDrivers": [],
       "history": [
         {
@@ -4970,6 +5047,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -4982,7 +5061,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.84877,
       "competitive": false,
-      "tippingPower": 0.05985,
+      "tippingPower": 0.06091,
       "movementDrivers": [],
       "history": [
         {
@@ -5139,6 +5218,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -5151,7 +5232,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99808,
       "competitive": false,
-      "tippingPower": 0.00215,
+      "tippingPower": 0.00225,
       "movementDrivers": [],
       "history": [
         {
@@ -5316,6 +5397,8 @@
         "pollMatchups": [
           "Ford vs. Lombardo"
         ],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -5328,7 +5411,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.59167,
       "competitive": true,
-      "tippingPower": 0.08493,
+      "tippingPower": 0.08315,
       "movementDrivers": [],
       "history": [
         {
@@ -5492,6 +5575,8 @@
         "pollMatchups": [
           "Warmington vs. Ayotte"
         ],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -5504,7 +5589,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.90874,
       "competitive": false,
-      "tippingPower": 0.04787,
+      "tippingPower": 0.04687,
       "movementDrivers": [],
       "history": [
         {
@@ -5661,6 +5746,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0.55,
         "primaryPollCount": 3,
         "primaryPollSources": [
@@ -5679,7 +5766,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.83286,
       "competitive": false,
-      "tippingPower": 0.06597,
+      "tippingPower": 0.0645,
       "movementDrivers": [],
       "history": [
         {
@@ -5831,6 +5918,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -5843,7 +5932,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99459,
       "competitive": false,
-      "tippingPower": 0.00509,
+      "tippingPower": 0.00539,
       "movementDrivers": [],
       "history": [
         {
@@ -6015,6 +6104,8 @@
         "pollMatchups": [
           "Acton vs. Ramaswamy"
         ],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -6027,7 +6118,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.55107,
       "competitive": true,
-      "tippingPower": 0.07805,
+      "tippingPower": 0.07933,
       "movementDrivers": [],
       "history": [
         {
@@ -6179,6 +6270,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -6191,7 +6284,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99611,
       "competitive": false,
-      "tippingPower": 0.00324,
+      "tippingPower": 0.0033,
       "movementDrivers": [],
       "history": [
         {
@@ -6357,6 +6450,8 @@
         "pollMatchups": [
           "Kotek vs. Drazan"
         ],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -6369,7 +6464,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.91085,
       "competitive": false,
-      "tippingPower": 0.04663,
+      "tippingPower": 0.04611,
       "movementDrivers": [],
       "history": [
         {
@@ -6537,6 +6632,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -6549,7 +6646,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.98989,
       "competitive": false,
-      "tippingPower": 0.00919,
+      "tippingPower": 0.00891,
       "movementDrivers": [],
       "history": [
         {
@@ -6696,6 +6793,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -6708,7 +6807,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99664,
       "competitive": false,
-      "tippingPower": 0.00347,
+      "tippingPower": 0.00371,
       "movementDrivers": [],
       "history": [
         {
@@ -6871,6 +6970,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0.07,
         "primaryPollCount": 22,
         "primaryPollSources": [
@@ -6889,7 +6990,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.98272,
       "competitive": false,
-      "tippingPower": 0.01085,
+      "tippingPower": 0.01108,
       "movementDrivers": [],
       "history": [
         {
@@ -7046,6 +7147,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -7058,7 +7161,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00109,
+      "tippingPower": 0.00112,
       "movementDrivers": [],
       "history": [
         {
@@ -7221,6 +7324,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -7233,7 +7338,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00232,
+      "tippingPower": 0.0022,
       "movementDrivers": [],
       "history": [
         {
@@ -7403,6 +7508,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -7415,7 +7522,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.97559,
       "competitive": false,
-      "tippingPower": 0.01842,
+      "tippingPower": 0.01897,
       "movementDrivers": [],
       "history": [
         {
@@ -7572,6 +7679,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -7584,7 +7693,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99457,
       "competitive": false,
-      "tippingPower": 0.00539,
+      "tippingPower": 0.00499,
       "movementDrivers": [],
       "history": [
         {
@@ -7747,6 +7856,8 @@
         "pollMatchups": [
           "Rodriguez vs. Tiffany"
         ],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -7759,7 +7870,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.61644,
       "competitive": true,
-      "tippingPower": 0.07612,
+      "tippingPower": 0.07582,
       "movementDrivers": [],
       "history": [
         {
@@ -7911,6 +8022,8 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
@@ -7923,7 +8036,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00197,
+      "tippingPower": 0.00201,
       "movementDrivers": [],
       "history": [
         {
