@@ -550,7 +550,7 @@ function resultSeenStorageKey(id = raceId) {
 function candidatePercentSnapshot(race) {
   return Object.fromEntries((race?.candidates || []).map((candidate) => [
     String(candidate.name || "").toLowerCase(),
-    Number(candidate.percent || 0)
+    Number(Number(candidate.percent || 0).toFixed(3))
   ]).filter(([name]) => name));
 }
 
@@ -575,6 +575,14 @@ function writeSeenCandidatePercents(race) {
   }
 }
 
+function maybeShowSeenPercentChanges(race) {
+  if (document.visibilityState !== "visible") return;
+  const displayRace = displayRaceForCurrentView(race);
+  showCandidatePercentChanges(page.querySelector(".result-full-candidates"), readSeenCandidatePercents(race.id));
+  writeSeenCandidatePercents({ ...displayRace, id: race.id });
+  showSeenPercentChangesOnNextLoad = false;
+}
+
 function displayRaceForCurrentView(race) {
   return resultPartyViewEnabled && isOpenPrimary(race)
     ? { ...race, candidates: combineCandidatesByParty(race) }
@@ -585,10 +593,8 @@ function showCandidatePercentChanges(candidatesNode, baselinePercents) {
   if (!candidatesNode || !baselinePercents) return;
   candidatesNode.querySelectorAll("article[data-candidate-name]").forEach((article) => {
     const name = String(article.dataset.candidateName || "").toLowerCase();
-    const percentText = article.querySelector(".result-full-numbers b")?.textContent || "";
-    const match = percentText.match(/([\d.]+)/);
-    if (!name || !match) return;
-    const newPercent = parseFloat(match[1]);
+    if (!name) return;
+    const newPercent = Number(article.dataset.candidatePercent);
     const oldPercent = Number(baselinePercents[name]);
     if (!Number.isFinite(oldPercent) || Math.abs(newPercent - oldPercent) < .1) return;
     const change = newPercent - oldPercent;
@@ -597,9 +603,8 @@ function showCandidatePercentChanges(candidatesNode, baselinePercents) {
     changeEl.textContent = `${change >= 0 ? "+" : ""}${change.toFixed(1)}%`;
     const candidateColor = article.style.getPropertyValue("--candidate-color");
     changeEl.style.backgroundColor = candidateColor || "#566274";
-    article.style.position = "relative";
-    article.appendChild(changeEl);
-    setTimeout(() => changeEl.remove(), 2600);
+    article.querySelector(".result-full-numbers")?.appendChild(changeEl);
+    setTimeout(() => changeEl.remove(), 3200);
   });
 }
 
@@ -1374,7 +1379,7 @@ function candidateRow(candidate, race, maxPercent) {
   const fill = candidateFill(race, candidate);
   const photo = candidatePhotoUrl(race, candidate);
   return `
-    <article class="result-full-candidate ${partyClass(code)}-glow ${candidate.callLabel ? "called" : ""}" style="--candidate-color:${escapeHtml(fill)}" data-candidate-name="${escapeHtml(candidate.name)}">
+    <article class="result-full-candidate ${partyClass(code)}-glow ${candidate.callLabel ? "called" : ""}" style="--candidate-color:${escapeHtml(fill)}" data-candidate-name="${escapeHtml(candidate.name)}" data-candidate-percent="${Number(candidate.percent || 0).toFixed(3)}">
       <div class="result-full-candidate-name">
         <span class="result-candidate-avatar ${partyClass(code)}">${photo ? `<img src="${escapeHtml(photo)}" alt="">` : escapeHtml(candidateInitials(candidate.name))}</span>
         <div>
@@ -2963,7 +2968,7 @@ async function patchRaceDetail(race) {
   const baselinePercents = storedCandidatePercents || Object.fromEntries(previousCandidatePercents);
   if (candidatesNode) candidatesNode.innerHTML = candidateRows(displayRace);
   showCandidatePercentChanges(candidatesNode, baselinePercents);
-  writeSeenCandidatePercents({ ...displayRace, id: race.id });
+  if (document.visibilityState === "visible") writeSeenCandidatePercents({ ...displayRace, id: race.id });
 
   const callSlot = page.querySelector("[data-result-call-slot]");
   if (callSlot) callSlot.innerHTML = raceCallBanner(race);
@@ -3440,10 +3445,7 @@ async function loadRaceDetail() {
       updateLastCheckedStamp();
       await refreshAnalysisNotes(race);
       if (showSeenPercentChangesOnNextLoad && document.visibilityState === "visible") {
-        const displayRace = displayRaceForCurrentView(race);
-        showCandidatePercentChanges(page.querySelector(".result-full-candidates"), readSeenCandidatePercents(race.id));
-        writeSeenCandidatePercents({ ...displayRace, id: race.id });
-        showSeenPercentChangesOnNextLoad = false;
+        maybeShowSeenPercentChanges(race);
       }
       bindPollCountdown();
       return;
@@ -3454,7 +3456,8 @@ async function loadRaceDetail() {
     } else {
       await patchRaceDetail(race);
     }
-    showSeenPercentChangesOnNextLoad = false;
+    if (showSeenPercentChangesOnNextLoad) maybeShowSeenPercentChanges(race);
+    else showSeenPercentChangesOnNextLoad = false;
     raceDetailUpdateKeyCache = updateKey;
   } catch (error) {
     raceDetailInitialized = false;

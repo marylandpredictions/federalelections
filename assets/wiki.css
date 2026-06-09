@@ -6308,15 +6308,18 @@ button.race-board-row {
 }
 
 .candidate-percent-change {
-  position: absolute;
-  right: -50px;
-  top: 50%;
-  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.45rem;
+  vertical-align: middle;
   font-size: 12px;
-  font-weight: 600;
+  line-height: 1;
+  font-weight: 900;
   color: white;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 0.18rem 0.42rem;
+  border-radius: 0.28rem;
+  box-shadow: 0 0 0 1px color-mix(in srgb, white 36%, transparent), 0 6px 16px rgba(0, 0, 0, 0.28);
   animation: percent-change-fade 2s ease-out forwards;
   pointer-events: none;
 }
