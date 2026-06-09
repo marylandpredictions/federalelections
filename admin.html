@@ -143,9 +143,105 @@
     .admin-status.error {
       color: #ff6b76;
     }
+    .admin-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .admin-toggle-row label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c6d2ff;
+      font-weight: 900;
+      font-size: 0.86rem;
+    }
+    .admin-preview-card {
+      --candidate-color: #2f74ff;
+      border: 1px solid #d6d9e2;
+      border-radius: 16px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 92% 10%, rgba(255, 255, 255, .14), transparent 24%),
+        linear-gradient(135deg, rgba(16, 48, 178, .98), rgba(6, 15, 42, .98) 54%, color-mix(in srgb, var(--candidate-color) 48%, #e03a3e));
+      box-shadow: 0 18px 48px rgba(0, 0, 0, .34);
+    }
+    .admin-preview-card::before {
+      content: "";
+      display: block;
+      height: 6px;
+      background: linear-gradient(90deg, var(--candidate-color), #fff, #e03a3e);
+    }
+    .admin-preview-card-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 18px;
+    }
+    .admin-preview-label {
+      margin: 0 0 8px;
+      color: #ffccd1;
+      font-size: .76rem;
+      font-weight: 950;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .admin-preview-card h3 {
+      margin: 0 0 8px;
+      font-size: clamp(1.55rem, 4vw, 2.55rem);
+      line-height: .98;
+    }
+    .admin-preview-card small {
+      color: #c6d2ff;
+      font-weight: 850;
+    }
+    .admin-preview-avatars {
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      padding-left: 18px;
+    }
+    .admin-preview-avatar {
+      width: 82px;
+      height: 82px;
+      margin-left: -16px;
+      border: 2px solid rgba(255, 255, 255, .9);
+      border-radius: 999px;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: var(--candidate-color);
+      color: #fff;
+      font-weight: 950;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .32);
+      position: relative;
+    }
+    .admin-preview-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: relative;
+      z-index: 1;
+    }
+    .admin-preview-avatar span {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+    }
+    .admin-preview-empty {
+      color: #c6d2ff;
+      font-weight: 800;
+    }
     @media (max-width: 850px) {
       .admin-grid,
       .admin-call-row {
+        grid-template-columns: 1fr;
+      }
+      .admin-preview-card-inner {
         grid-template-columns: 1fr;
       }
     }
@@ -155,8 +251,8 @@
   <main class="admin-shell">
     <section class="admin-hero">
       <p class="kicker">Federal Elections Analysis</p>
-      <h1>Results admin.</h1>
-      <p>Make race calls and add analyst notes without editing JSON by hand. Changes save to the same files the live site already reads.</p>
+      <h1>Broadcast admin.</h1>
+      <p>Control the OBS overlay ticker, race calls, and analyst notes. Public results pages are hidden, but the overlay and data feeds still update.</p>
     </section>
 
     <section class="admin-panel" id="loginPanel">
@@ -174,6 +270,13 @@
     <section class="admin-grid" id="adminApp" hidden>
       <aside class="admin-panel">
         <h2>Race</h2>
+        <div class="admin-toggle-row">
+          <span class="admin-muted" id="raceModeLabel">Latest result races only</span>
+          <label for="showAllRaces">
+            <input id="showAllRaces" type="checkbox">
+            View all races
+          </label>
+        </div>
         <div class="admin-field">
           <label for="raceSelect">Select race</label>
           <select class="admin-select" id="raceSelect"></select>
@@ -191,6 +294,30 @@
           <button class="admin-button" id="saveCalls" type="button">Save calls</button>
         </div>
         <p class="admin-status" id="callStatus"></p>
+      </section>
+
+      <section class="admin-panel">
+        <h2>OBS ticker</h2>
+        <p class="admin-muted">One line per ticker item. The overlay mixes these with live race calls and latest result updates.</p>
+        <div class="admin-field">
+          <label for="tickerText">Scrolling text</label>
+          <textarea class="admin-textarea" id="tickerText" placeholder="CA Governor Open Primary: Becerra and Hilton advance"></textarea>
+        </div>
+        <div class="admin-field">
+          <label for="producerNote">Producer note</label>
+          <input class="admin-input" id="producerNote" placeholder="Optional internal note">
+        </div>
+        <div class="admin-actions">
+          <button class="admin-button" id="saveOverlay" type="button">Save overlay ticker</button>
+          <a class="admin-button secondary" href="call-overlay.html" target="_blank" rel="noopener">Open OBS overlay</a>
+        </div>
+        <p class="admin-status" id="overlayStatus"></p>
+      </section>
+
+      <section class="admin-panel">
+        <h2>Call graphic preview</h2>
+        <p class="admin-muted">Select a called race to show the graphic that will spawn on the OBS overlay. This panel is useful for screenshots.</p>
+        <div id="callPreview" class="admin-preview-empty">No call selected yet.</div>
       </section>
 
       <section class="admin-panel" style="grid-column: 1 / -1;">

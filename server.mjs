@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import { createWriteStream } from "node:fs";
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
 import { extname, join, resolve } from "node:path";
 import tls from "node:tls";
 import { createGzip, createBrotliCompress } from "node:zlib";
@@ -31,6 +31,7 @@ const contactTo = process.env.CONTACT_TO || "federalelectionsanalysis@gmail.com"
 const submissionsPath = resolve(root, "data", "contact-submissions.jsonl");
 const callsPath = resolve(root, "data", "result-calls.json");
 const analysisNotesPath = resolve(root, "data", "result-analysis-notes.json");
+const overlayConfigPath = resolve(root, "data", "overlay-config.json");
 const adminPath = `/${String(process.env.ADMIN_PATH || "1234ab").replace(/^\/+/, "")}`;
 const adminSecret = process.env.ADMIN_SECRET || process.env.ADMIN_PASSWORD || "";
 const maxBodyBytes = 24 * 1024;
@@ -441,6 +442,35 @@ function raceListFromLiveResults(data) {
   }))).sort((a, b) => a.state.localeCompare(b.state) || a.label.localeCompare(b.label));
 }
 
+async function raceListFromDetailFiles(latestRaceIds = new Set()) {
+  const detailDir = resolve(root, "data", "live-results-races");
+  let files = [];
+  try {
+    files = await readdir(detailDir);
+  } catch {
+    return [];
+  }
+  const races = [];
+  for (const file of files) {
+    if (!file.endsWith(".json")) continue;
+    const race = await readJsonFile(resolve(detailDir, file), null);
+    if (!race?.id || latestRaceIds.has(String(race.id))) continue;
+    races.push({
+      id: String(race.id),
+      label: race.electionName || race.name || `Race ${race.id}`,
+      state: race.state || "",
+      candidates: (race.candidates || []).map((candidate) => ({
+        name: candidate.name,
+        party: candidate.party || "",
+        partyCode: candidate.partyCode || "",
+        color: candidate.color || "",
+        headshotUrl: candidate.headshotUrl || ""
+      }))
+    });
+  }
+  return races.sort((a, b) => a.state.localeCompare(b.state) || a.label.localeCompare(b.label));
+}
+
 async function handleAdmin(request, response, url) {
   if (!adminEnabled()) {
     sendJson(response, 503, { ok: false, error: "Admin is disabled. Set ADMIN_SECRET in the server environment." });
@@ -452,16 +482,58 @@ async function handleAdmin(request, response, url) {
   }
 
   if (request.method === "GET" && url.pathname === "/api/admin/bootstrap") {
-    const [liveResults, calls, notes] = await Promise.all([
+    const [liveResults, calls, notes, overlay] = await Promise.all([
       readJsonFile(resolve(root, "data", "live-results.json"), { groups: [] }),
       readJsonFile(callsPath, { races: {}, raceIdGuide: {} }),
-      readJsonFile(analysisNotesPath, { races: {}, raceKey: {} })
+      readJsonFile(analysisNotesPath, { races: {}, raceKey: {} }),
+      readJsonFile(overlayConfigPath, { tickerItems: [], producerNote: "" })
     ]);
+    const latestRaces = raceListFromLiveResults(liveResults);
+    const latestRaceIds = new Set(latestRaces.map((race) => String(race.id)));
+    const allRaces = [...latestRaces, ...(await raceListFromDetailFiles(latestRaceIds))];
     sendJson(response, 200, {
       ok: true,
-      races: raceListFromLiveResults(liveResults),
+      races: latestRaces,
+      latestRaces,
+      allRaces,
+      latestRaceIds: [...latestRaceIds],
       calls,
-      notes
+      notes,
+      overlay
+    });
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/admin/overlay") {
+    let payload;
+    try {
+      payload = await readJsonBody(request);
+    } catch {
+      sendJson(response, 400, { ok: false, error: "Invalid overlay payload." });
+      return;
+    }
+    const tickerItems = String(payload.tickerText || "")
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .slice(0, 30)
+      .map((text) => ({ tag: "FEA", text }));
+    const overlay = {
+      updatedAt: new Date().toISOString(),
+      producerNote: String(payload.producerNote || "").trim().slice(0, 500),
+      tickerItems
+    };
+    const persistence = await persistAdminJsonFile(
+      overlayConfigPath,
+      "data/overlay-config.json",
+      overlay,
+      "Update OBS overlay ticker"
+    );
+    sendJson(response, 200, {
+      ok: true,
+      overlay,
+      persistence,
+      persistedFiles: ["data/overlay-config.json"]
     });
     return;
   }
@@ -605,6 +677,12 @@ async function handleAdmin(request, response, url) {
 async function serveStatic(request, response) {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
   let requestedPath = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
+  const hiddenResultPaths = new Set(["/results", "/results.html", "/result", "/result.html"]);
+  if (hiddenResultPaths.has(url.pathname)) {
+    response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" });
+    response.end("Results pages are currently hidden.");
+    return;
+  }
 
   if (requestedPath === adminPath) {
     requestedPath = "/admin.html";

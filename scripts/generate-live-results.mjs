@@ -45,7 +45,7 @@ const REQUIRED_RACES_BY_STATE = {
   IA: [79945, 79944, 80211, 80210],
   ME: ["me-gov-r-2026", "me-gov-d-2026", "me-sen-r-2026", "me-sen-d-2026", "me-house-1-r-2026", "me-house-1-d-2026", "me-house-2-r-2026", "me-house-2-d-2026"],
   MT: [80460, 80458, 80452],
-  ND: ["nd-house-at-large-2026"],
+  ND: ["nd-house-at-large-r-2026", "nd-house-at-large-d-2026"],
   NV: ["nv-gov-r-2026", "nv-gov-d-2026", "nv-house-1-r-2026", "nv-house-1-d-2026", "nv-house-2-r-2026", "nv-house-2-d-2026", "nv-house-3-r-2026", "nv-house-3-d-2026", "nv-house-4-r-2026", "nv-house-4-d-2026"],
   NJ: [81058, 81057, 81046, 81048, 81055],
   NM: [80691, 80690, 81014, 81015],
@@ -53,49 +53,7 @@ const REQUIRED_RACES_BY_STATE = {
   SD: [80461, 80512]
 };
 
-const MANUAL_RACES = {
-  "nd-house-at-large-2026": {
-    id: "nd-house-at-large-2026",
-    source: "NBC News / local candidate config",
-    sourceUrl: `${NBC_BASE}/north-dakota-house-results`,
-    type: "US House",
-    country: "US",
-    state: "ND",
-    stateName: "North Dakota",
-    district: null,
-    geometryCycle: 119,
-    municipality: null,
-    electionName: "North Dakota US House At-Large Primary",
-    electionType: "US House",
-    electionScope: "Primary",
-    electionDate: "2026-06-09T12:00:00.000Z",
-    pollsOpen: null,
-    pollsClose: "2026-06-10T01:00:00.000Z",
-    lastUpdated: null,
-    percentReporting: 0,
-    estimatedVoteReporting: null,
-    estimatedVoteReportingSource: "external-estimate-pending",
-    estimatedVoteReportingSourceUrl: `${NBC_BASE}/north-dakota-house-results`,
-    hasBreakdown: false,
-    hasMap: true,
-    marker: { kind: "open-primary", label: "Primary", short: "P" },
-    leaderName: "",
-    leaderParty: "",
-    leaderPartyCode: "",
-    otherCandidateCount: 2,
-    calls: [],
-    featuredCandidateNames: ["Julie Fedorchak", "Trygve Hammer", "Alexander Balazs"],
-    candidates: [
-      { name: "Julie Fedorchak", party: "Republican", partyCode: "R", color: "", votes: 0, percent: 0, winner: false, apiWinner: false, headshotUrl: "", incumbent: true, callStatus: "", callLabel: "" },
-      { name: "Trygve Hammer", party: "Democratic", partyCode: "D", color: "", votes: 0, percent: 0, winner: false, apiWinner: false, headshotUrl: "", incumbent: false, callStatus: "", callLabel: "" },
-      { name: "Alexander Balazs", party: "Republican", partyCode: "R", color: "", votes: 0, percent: 0, winner: false, apiWinner: false, headshotUrl: "", incumbent: false, callStatus: "", callLabel: "" }
-    ],
-    registeredVoters: null,
-    maps: [],
-    voteHistory: [],
-    counties: []
-  }
-};
+const MANUAL_RACES = {};
 
 const NBC_RACE_SOURCES = {
   79777: { state: "CA", slug: "california-governor-results", type: "Governor", name: "California Governor Open Primary" },
@@ -137,7 +95,8 @@ const NBC_RACE_SOURCES = {
   "me-house-1-d-2026": { state: "ME", stateName: "Maine", slug: "maine-us-house-district-1-results", party: "D", type: "US House", district: "ME-01", name: "Maine US House 1 Democratic Primary" },
   "me-house-2-r-2026": { state: "ME", stateName: "Maine", slug: "maine-us-house-district-2-results", party: "R", type: "US House", district: "ME-02", name: "Maine US House 2 Republican Primary" },
   "me-house-2-d-2026": { state: "ME", stateName: "Maine", slug: "maine-us-house-district-2-results", party: "D", type: "US House", district: "ME-02", name: "Maine US House 2 Democratic Primary" },
-  "nd-house-at-large-2026": { state: "ND", stateName: "North Dakota", slug: "north-dakota-house-results", type: "US House", district: "ND-AL", name: "North Dakota US House At-Large Primary", staticOnly: true },
+  "nd-house-at-large-r-2026": { state: "ND", stateName: "North Dakota", slug: "north-dakota-house-results", party: "R", type: "US House", district: null, atLarge: true, name: "North Dakota US House At-Large Republican Primary" },
+  "nd-house-at-large-d-2026": { state: "ND", stateName: "North Dakota", slug: "north-dakota-house-results", party: "D", type: "US House", district: null, atLarge: true, name: "North Dakota US House At-Large Democratic Primary" },
   "nv-gov-r-2026": { state: "NV", stateName: "Nevada", slug: "nevada-governor-results", party: "R", type: "Governor", name: "Nevada Governor Republican Primary" },
   "nv-gov-d-2026": { state: "NV", stateName: "Nevada", slug: "nevada-governor-results", party: "D", type: "Governor", name: "Nevada Governor Democratic Primary" },
   "nv-house-1-r-2026": { state: "NV", stateName: "Nevada", slug: "nevada-us-house-district-1-results", party: "R", type: "US House", district: "NV-01", name: "Nevada US House 1 Republican Primary" },
@@ -628,6 +587,8 @@ function normalizeNbcCandidate(candidate, race) {
 }
 
 function nbcRaceParty(summary = {}) {
+  const summaryParty = partyCode(partyNameFromNbc(summary.party || summary.partyCode || summary.electionTypeCode || ""));
+  if (summaryParty) return summaryParty;
   const text = normalizeName(`${summary.officeName || ""} ${summary.raceName || ""}`);
   if (/\br\b/.test(text)) return "R";
   if (/\bd\b/.test(text)) return "D";
@@ -698,7 +659,7 @@ function normalizeNbcRace(id, source, data, nbcRace, options = {}) {
   }
   const leader = candidates[0] || null;
   const sourceUrl = nbcUrlFor(source);
-  const district = source.district ?? (summary.district ? `${raceBase.state}-${String(summary.district).padStart(2, "0")}` : null);
+  const district = source.atLarge ? null : (source.district ?? (summary.district ? `${raceBase.state}-${String(summary.district).padStart(2, "0")}` : null));
   const counties = (nbcRace.areas || []).map((area) => {
     const areaRace = { ...raceBase, id: String(id) };
     const areaCandidates = (area.candidates || [])
@@ -759,7 +720,20 @@ async function fetchNbcRaceDetail(id, options = {}) {
   const source = NBC_RACE_SOURCES[String(id)];
   if (!source || source.staticOnly) return null;
   const data = await fetchNbcSource(source);
-  const sourceRaces = Array.isArray(data?.races) ? data.races : [];
+  const topLevelRaces = Array.isArray(data?.races) ? data.races : [];
+  const districtTableRaces = Array.isArray(data?.districtTables)
+    ? data.districtTables.flatMap((table) => (table.races || []).map((race) => ({
+      ...race,
+      summary: {
+        ...race,
+        party: table.party,
+        electionTypeCode: table.electionTypeCode,
+        officeName: table.title,
+        raceName: table.title
+      }
+    })))
+    : [];
+  const sourceRaces = [...topLevelRaces, ...districtTableRaces];
   const matched = sourceRaces.find((race) => nbcRaceMatchesSource(race, source))
     || (sourceRaces.length === 1 ? sourceRaces[0] : null);
   if (!matched) throw new Error(`NBC source ${source.slug} did not include matching race ${id}`);

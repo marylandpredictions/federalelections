@@ -8,6 +8,7 @@
   let tickerSignature = "";
   let callsDataCache = null;
   let resultsDataCache = null;
+  let overlayConfigCache = null;
 
   const PHOTO_SETS = {
     "79778": {
@@ -370,7 +371,7 @@
         const calls = Array.isArray(value?.calls) ? value.calls : [];
         return { raceId, race, calls, automatic: false };
       })
-      .filter((entry) => entry.calls.length);
+      .filter((entry) => entry.race && entry.calls.length);
 
     const manuallyCalledRaceIds = new Set(entries.map((entry) => String(entry.raceId)));
     const autoEntries = races
@@ -426,8 +427,11 @@
     }).format(new Date());
   }
 
-  function tickerItems(calls, races) {
-    const items = [];
+  function tickerItems(calls, races, overlayConfig = {}) {
+    const customItems = (overlayConfig.tickerItems || [])
+      .filter((item) => item?.text)
+      .map((item) => ({ tag: item.tag || "FEA", text: item.text }));
+    const items = [...customItems];
     calls.slice(0, 8).forEach((call) => {
       items.push({ tag: "Race call", text: call.text });
     });
@@ -457,10 +461,10 @@
     return items;
   }
 
-  function updateTicker(calls, races) {
+  function updateTicker(calls, races, overlayConfig = {}) {
     const track = document.getElementById("broadcast-ticker-track");
     if (!track) return;
-    const items = tickerItems(calls, races);
+    const items = tickerItems(calls, races, overlayConfig);
     const signature = items.map((item) => `${item.tag}:${item.text}`).join("||");
     if (signature === tickerSignature) return;
     tickerSignature = signature;
@@ -551,21 +555,23 @@
   async function update() {
     ensureLayout();
     try {
-      const [callsData, resultsData] = await Promise.all([
+      const [callsData, resultsData, overlayConfig] = await Promise.all([
         fetchJson("data/result-calls.json"),
-        fetchJson("data/live-results.json")
+        fetchJson("data/live-results.json"),
+        fetchJson("data/overlay-config.json").catch(() => ({ tickerItems: [] }))
       ]);
       callsDataCache = callsData;
       resultsDataCache = resultsData;
+      overlayConfigCache = overlayConfig;
       const races = flattenRaces(resultsData);
       const calls = collectCalls(callsData, races);
-      updateTicker(calls, races);
+      updateTicker(calls, races, overlayConfig);
       queueNewCalls(calls);
     } catch (error) {
       console.error(error);
       const races = flattenRaces(resultsDataCache);
       const calls = collectCalls(callsDataCache, races);
-      updateTicker(calls, races);
+      updateTicker(calls, races, overlayConfigCache || {});
     }
   }
 
