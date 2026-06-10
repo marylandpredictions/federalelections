@@ -488,25 +488,57 @@
     return `Recent calls: ${names}`;
   }
 
-  function getRaceCallSummary(calls) {
-    const count = calls.length;
-    if (count === 0) return "0 races called today";
-    if (count === 1) return "1 race called today";
-    return `${count} races called today`;
+  function getRaceCallSummary(calls, races) {
+    const calledCount = calls.length;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const totalRaces = races.filter(race => {
+      const electionDate = new Date(race.electionDate || race.pollsClose || race.pollCloseAt);
+      const electionDateMidnight = new Date(electionDate);
+      electionDateMidnight.setHours(0, 0, 0, 0);
+      return electionDateMidnight.getTime() === today.getTime();
+    }).length;
+    const uncalledCount = Math.max(0, totalRaces - calledCount);
+    
+    if (calledCount === 0 && uncalledCount === 0) return "No races today";
+    if (uncalledCount === 0) return `${calledCount} races called`;
+    return `${calledCount} called · ${uncalledCount} uncalled`;
   }
 
   function getPollClosingTimes(races) {
     const now = new Date();
-    const upcoming = races
-      .filter(race => {
-        const pollClose = new Date(race.pollsClose || race.pollCloseAt);
-        return pollClose > now && pollClose < new Date(now.getTime() + 2 * 60 * 60 * 1000);
-      })
-      .slice(0, 3)
-      .map(race => race.state)
-      .join(', ');
-    if (!upcoming) return "All polls closed";
-    return `Polls closing soon: ${upcoming}`;
+    const stateCloses = new Map();
+    races.forEach(race => {
+      const pollClose = new Date(race.pollsClose || race.pollCloseAt);
+      if (pollClose > now && pollClose < new Date(now.getTime() + 2 * 60 * 60 * 1000)) {
+        if (!stateCloses.has(race.state) || pollClose < stateCloses.get(race.state)) {
+          stateCloses.set(race.state, pollClose);
+        }
+      }
+    });
+    
+    const sortedStates = Array.from(stateCloses.entries())
+      .sort((a, b) => a[1] - b[1])
+      .slice(0, 3);
+    
+    if (sortedStates.length === 0) return "All polls closed";
+    
+    if (sortedStates.length === 1) {
+      const time = new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        timeZone: "America/New_York"
+      }).format(sortedStates[0][1]);
+      return `Polls close at ${time} ET`;
+    }
+    
+    const stateNames = sortedStates.map(([state]) => state).join(', ');
+    const firstTime = new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone: "America/New_York"
+    }).format(sortedStates[0][1]);
+    return `Polls closing soon: ${stateNames} at ${firstTime} ET`;
   }
 
   function updateInfoPanel(calls, races) {
@@ -514,7 +546,7 @@
     if (!panel) return;
     
     const infoTypes = [
-      () => getRaceCallSummary(calls),
+      () => getRaceCallSummary(calls, races),
       () => getRecentCallsInfo(calls),
       () => getPollClosingTimes(races)
     ];
