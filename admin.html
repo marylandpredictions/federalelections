@@ -320,6 +320,33 @@
         <div id="callPreview" class="admin-preview-empty">No call selected yet.</div>
       </section>
 
+      <section class="admin-panel">
+        <h2>2026 Election Night Testing</h2>
+        <p class="admin-muted">Test the 2026 Election Night page with mock data before election night. These controls are only visible to admin users.</p>
+        <div class="admin-field">
+          <label for="testMode">Test mode</label>
+          <select class="admin-select" id="testMode">
+            <option value="pre_election">Pre-election preview</option>
+            <option value="mock">Mock data mode</option>
+            <option value="simulation">Simulation mode</option>
+          </select>
+        </div>
+        <div class="admin-field">
+          <label for="simulationState">Simulation state (for simulation mode)</label>
+          <select class="admin-select" id="simulationState">
+            <option value="pre_election">Pre-election</option>
+            <option value="polls_closed_no_votes">Polls closed, no votes</option>
+            <option value="reporting">Votes reporting</option>
+            <option value="called">Races called</option>
+          </select>
+        </div>
+        <div class="admin-actions">
+          <button class="admin-button" id="applyTestMode" type="button">Apply test mode</button>
+          <a class="admin-button secondary" id="openElectionNightTest" href="/election-night?mock=true" target="_blank" rel="noopener">Open test page</a>
+        </div>
+        <p class="admin-status" id="testModeStatus"></p>
+      </section>
+
       <section class="admin-panel" style="grid-column: 1 / -1;">
         <h2>Analyst note</h2>
         <div class="admin-field">

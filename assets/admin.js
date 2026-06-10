@@ -7,7 +7,9 @@
     calls: { races: {} },
     notes: { races: {} },
     overlay: { tickerItems: [], producerNote: "" },
-    noteIndex: null
+    noteIndex: null,
+    testMode: "pre_election",
+    simulationState: "pre_election"
   };
 
   const $ = (id) => document.getElementById(id);
@@ -24,6 +26,11 @@
   const showAllRaces = $("showAllRaces");
   const raceModeLabel = $("raceModeLabel");
   const callPreview = $("callPreview");
+  const testMode = $("testMode");
+  const simulationState = $("simulationState");
+  const applyTestMode = $("applyTestMode");
+  const openElectionNightTest = $("openElectionNightTest");
+  const testModeStatus = $("testModeStatus");
 
   const PHOTO_FOLDERS = {
     "79777": "california-governor",
@@ -454,6 +461,26 @@
       return [...callRows.querySelectorAll(".call-candidate")].at(-1);
     })();
     target.value = button.dataset.candidate;
+  });
+
+  // Election Night Testing Panel
+  applyTestMode?.addEventListener("click", () => {
+    const selectedMode = testMode.value;
+    const selectedState = simulationState.value;
+    
+    state.testMode = selectedMode;
+    state.simulationState = selectedState;
+    
+    // Update the test page link
+    let testUrl = "/election-night";
+    if (selectedMode === "mock") {
+      testUrl += "?mock=true";
+    } else if (selectedMode === "simulation") {
+      testUrl += "?simulation=true";
+    }
+    openElectionNightTest.href = testUrl;
+    
+    setStatus(testModeStatus, `Test mode set to ${selectedMode}${selectedMode === "simulation" ? ` (${selectedState})` : ""}. Click "Open test page" to view.`);
   });
 
   if (state.secret) {
