@@ -1,15 +1,687 @@
 // 2026 Election Night Results Page
 // Uses existing map files and starts with no results
 
+// Map rendering functions copied from wiki.js and result-detail.js
+const FIPS_TO_STATE = {
+  "01": "AL", "02": "AK", "04": "AZ", "05": "AR", "06": "CA", "08": "CO", "09": "CT", "10": "DE", "11": "DC",
+  "12": "FL", "13": "GA", "15": "HI", "16": "ID", "17": "IL", "18": "IN", "19": "IA", "20": "KS",
+  "21": "KY", "22": "LA", "23": "ME", "24": "MD", "25": "MA", "26": "MI", "27": "MN", "28": "MS", "29": "MO",
+  "30": "MT", "31": "NE", "32": "NV", "33": "NH", "34": "NJ", "35": "NM", "36": "NY", "37": "NC",
+  "38": "ND", "39": "OH", "40": "OK", "41": "OR", "42": "PA", "44": "RI", "45": "SC", "46": "SD",
+  "47": "TN", "48": "TX", "49": "UT", "50": "VT", "51": "VA", "53": "WA", "54": "WV", "55": "WI", "56": "WY"
+};
+
+const STATE_NAMES = {
+  AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California", CO: "Colorado", CT: "Connecticut",
+  DE: "Delaware", DC: "District of Columbia", FL: "Florida", GA: "Georgia", HI: "Hawaii", ID: "Idaho", IL: "Illinois",
+  IN: "Indiana", IA: "Iowa", KS: "Kansas", KY: "Kentucky", LA: "Louisiana", ME: "Maine", MD: "Maryland",
+  MA: "Massachusetts", MI: "Michigan", MN: "Minnesota", MS: "Mississippi", MO: "Missouri", MT: "Montana",
+  NE: "Nebraska", NV: "Nevada", NH: "New Hampshire", NJ: "New Jersey", NM: "New Mexico", NY: "New York",
+  NC: "North Carolina", ND: "North Dakota", OH: "Ohio", OK: "Oklahoma", OR: "Oregon", PA: "Pennsylvania",
+  RI: "Rhode Island", SC: "South Carolina", SD: "South Dakota", TN: "Tennessee", TX: "Texas", UT: "Utah",
+  VT: "Vermont", VA: "Virginia", WA: "Washington", WV: "West Virginia", WI: "Wisconsin", WY: "Wyoming"
+};
+
+function projectedRingPath(ring, projection) {
+  const points = ring
+    .map((point) => projection(point))
+    .filter(Boolean);
+  if (points.length < 3) return "";
+  return `${points.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`).join("")}Z`;
+}
+
+function projectedFeaturePath(feature, projection) {
+  const geometry = feature?.geometry;
+  if (!geometry) return "";
+  const polygons = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates || [];
+  return polygons
+    .flatMap((polygon) => polygon.map((ring) => projectedRingPath(ring, projection)))
+    .filter(Boolean)
+    .join("");
+}
+
+async function renderStatewideMap(mode, raceData) {
+  const container = document.getElementById("election-map");
+  if (!container) return;
+  if (!window.d3 || !window.topojson) {
+    container.innerHTML = `<p class="map-note">State map rendering needs D3 to load.</p>`;
+    return;
+  }
+
+  try {
+    const us = await d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json");
+    const features = topojson.feature(us, us.objects.states).features;
+    const width = 960;
+    const height = 610;
+    const projection = d3.geoAlbersUsa().fitSize([width, height], { type: "FeatureCollection", features });
+    const path = d3.geoPath(projection);
+    
+    container.innerHTML = "";
+    const svg = d3.select(container)
+      .append("svg")
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("role", "img")
+      .attr("aria-label", `United States map of ${mode} results`);
+
+    const raceByState = new Map();
+    if (raceData && raceData.length) {
+      raceData.forEach(race => {
+        if (race.state) raceByState.set(race.state, race);
+      });
+    }
+
+    svg.selectAll("path")
+      .data(features)
+      .join("path")
+      .attr("class", (feature) => {
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        const race = raceByState.get(state);
+        return race ? "state-shape" : "state-shape state-muted";
+      })
+      .attr("d", path)
+      .attr("fill", (feature) => {
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        const race = raceByState.get(state);
+        if (!race) return "#566274";
+        return resultsColor(race);
+      })
+      .attr("tabindex", (feature) => raceByState.has(FIPS_TO_STATE[String(feature.id).padStart(2, "0")]) ? 0 : -1)
+      .on("mouseenter focus", (event, feature) => {
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        const race = raceByState.get(state);
+        updateMapHoverCard(race, STATE_NAMES[state] || state);
+      })
+      .on("click keydown", (event, feature) => {
+        if (event.type === "keydown" && event.key !== "Enter") return;
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        const race = raceByState.get(state);
+        if (race) selectRace(race.id);
+      })
+      .append("title")
+      .text((feature) => {
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        const race = raceByState.get(state);
+        return race ? `${STATE_NAMES[state]}: ${race.electionName || state}` : STATE_NAMES[state];
+      });
+  } catch (error) {
+    console.error("Failed to render statewide map:", error);
+    container.innerHTML = `<p class="map-note">State map could not load. ${error.message || ""}</p>`;
+  }
+}
+
+async function renderHouseDistrictMap(raceData) {
+  const container = document.getElementById("election-map");
+  if (!container) return;
+  if (!window.d3) {
+    container.innerHTML = `<p class="map-note">District map rendering needs D3 to load.</p>`;
+    return;
+  }
+
+  try {
+    const geo = await d3.json("data/house-districts-119.geojson");
+    const width = 980;
+    const height = 610;
+    const projection = d3.geoAlbersUsa().fitSize([width, height], geo);
+
+    container.innerHTML = "";
+    const svg = d3.select(container)
+      .append("svg")
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("role", "img")
+      .attr("aria-label", "Interactive 119th Congressional District map");
+
+    const raceById = new Map();
+    if (raceData && raceData.length) {
+      raceData.forEach(race => {
+        if (race.id) raceById.set(race.id, race);
+      });
+    }
+
+    svg.selectAll("path")
+      .data(geo.features || [])
+      .join("path")
+      .attr("class", (feature) => {
+        const race = raceById.get(feature.properties?.id);
+        return race ? "district-shape" : "district-shape state-muted";
+      })
+      .attr("data-district", (feature) => feature.properties?.id || "")
+      .attr("d", (feature) => projectedFeaturePath(feature, projection))
+      .attr("fill-rule", "evenodd")
+      .attr("fill", (feature) => {
+        const race = raceById.get(feature.properties?.id);
+        if (!race) return "#566274";
+        return resultsColor(race);
+      })
+      .attr("tabindex", (feature) => raceById.has(feature.properties?.id) ? 0 : -1)
+      .attr("aria-label", (feature) => {
+        const race = raceById.get(feature.properties?.id);
+        return race ? `${race.electionName || feature.properties?.id}` : `${feature.properties?.stateName || "District"} not modeled`;
+      })
+      .on("mouseenter focus", (event, feature) => {
+        const race = raceById.get(feature.properties?.id);
+        updateMapHoverCard(race, feature.properties?.id || "District");
+      })
+      .on("click keydown", (event, feature) => {
+        if (event.type === "keydown" && event.key !== "Enter") return;
+        const race = raceById.get(feature.properties?.id);
+        if (race) selectRace(race.id);
+      })
+      .append("title")
+      .text((feature) => {
+        const race = raceById.get(feature.properties?.id);
+        return race ? `${race.electionName || feature.properties?.id}` : `${feature.properties?.stateName || "District"} not modeled`;
+      });
+  } catch (error) {
+    console.error("Failed to render district map:", error);
+    container.innerHTML = `<p class="map-note">District map could not load. ${error.message || ""}</p>`;
+  }
+}
+
+function resultsColor(race) {
+  if (!race || !race.candidates || !race.candidates.length) return "#566274";
+  
+  const winner = race.candidates.find(c => c.isWinner);
+  if (winner) {
+    const party = String(winner.party || "").toUpperCase();
+    if (party === "D") return "#2d7cff";
+    if (party === "R") return "#f3536a";
+    if (party === "I") return "#5fc529";
+    if (party === "L") return "#ffd700";
+    if (party === "G") return "#00a86b";
+  }
+  
+  // If no winner, use leader
+  const leader = race.candidates.reduce((a, b) => (b.percent || 0) > (a.percent || 0) ? b : a);
+  if (leader && leader.percent) {
+    const party = String(leader.party || "").toUpperCase();
+    if (party === "D") return "#2d7cff";
+    if (party === "R") return "#f3536a";
+    if (party === "I") return "#5fc529";
+    if (party === "L") return "#ffd700";
+    if (party === "G") return "#00a86b";
+  }
+  
+  return "#566274";
+}
+
+// County map data loading functions (copied from result-detail.js)
+let countyMapDataPromise = null;
+let usStateMapDataPromise = null;
+let majorHighwayDataPromise = null;
+let countryContextDataPromise = null;
+let countyDescriptionsPromise = null;
+let countyDescriptionData = { byFips: {}, byStateName: {}, byName: {} };
+
+async function loadCountyMapData() {
+  if (!countyMapDataPromise) {
+    countyMapDataPromise = fetch("data/result-counties.geojson", { cache: "force-cache" }).then((response) => {
+      if (!response.ok) throw new Error(`County map returned ${response.status}`);
+      return response.json();
+    });
+  }
+  return countyMapDataPromise;
+}
+
+async function loadUsStateMapData() {
+  if (!usStateMapDataPromise) {
+    usStateMapDataPromise = fetch("data/result-us-states.geojson", { cache: "force-cache" }).then((response) => {
+      if (!response.ok) throw new Error(`US state map returned ${response.status}`);
+      return response.json();
+    });
+  }
+  return usStateMapDataPromise;
+}
+
+async function loadMajorHighwayData() {
+  if (!majorHighwayDataPromise) {
+    majorHighwayDataPromise = fetch("data/result-major-highways.geojson", { cache: "force-cache" }).then((response) => {
+      if (!response.ok) throw new Error(`Major highway map returned ${response.status}`);
+      return response.json();
+    });
+  }
+  return majorHighwayDataPromise;
+}
+
+async function loadCountryContextData() {
+  if (!countryContextDataPromise) {
+    countryContextDataPromise = fetch("data/result-country-context.geojson", { cache: "force-cache" }).then((response) => {
+      if (!response.ok) throw new Error(`Country context map returned ${response.status}`);
+      return response.json();
+    });
+  }
+  return countryContextDataPromise;
+}
+
+async function loadCountyDescriptions() {
+  if (!countyDescriptionsPromise) {
+    countyDescriptionsPromise = fetch("data/result-county-descriptions.json", { cache: "force-cache" })
+      .then((response) => response.ok ? response.json() : { byFips: {}, byName: {} })
+      .then((data) => {
+        countyDescriptionData = {
+          byFips: data.byFips || {},
+          byStateName: data.byStateName || {},
+          byName: data.byName || {}
+        };
+        return countyDescriptionData;
+      })
+      .catch(() => {
+        countyDescriptionData = { byFips: {}, byStateName: {}, byName: {} };
+        return countyDescriptionData;
+      });
+  }
+  return countyDescriptionsPromise;
+}
+
+// County map helper functions (copied from result-detail.js)
+function coordinateRings(geometry) {
+  if (!geometry) return [];
+  const type = geometry.type;
+  const coordinates = geometry.coordinates;
+  if (type === "Polygon") return coordinates;
+  if (type === "MultiPolygon") return coordinates.flat();
+  return [];
+}
+
+function coordinateLines(geometry) {
+  if (!geometry) return [];
+  const type = geometry.type;
+  const coordinates = geometry.coordinates;
+  if (type === "LineString") return [coordinates];
+  if (type === "MultiLineString") return coordinates;
+  if (type === "Polygon") return coordinates;
+  if (type === "MultiPolygon") return coordinates.flat();
+  return [];
+}
+
+function stateBounds(features) {
+  if (!features || !features.length) return null;
+  let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
+  features.forEach(feature => {
+    const rings = coordinateRings(feature.geometry);
+    rings.forEach(ring => {
+      ring.forEach(([lon, lat]) => {
+        minLon = Math.min(minLon, lon);
+        maxLon = Math.max(maxLon, lon);
+        minLat = Math.min(minLat, lat);
+        maxLat = Math.max(maxLat, lat);
+      });
+    });
+  });
+  if (!isFinite(minLon)) return null;
+  return { minLon, maxLon, minLat, maxLat };
+}
+
+function expandedBounds(bounds, factor) {
+  if (!bounds) return null;
+  const lonRange = bounds.maxLon - bounds.minLon;
+  const latRange = bounds.maxLat - bounds.minLat;
+  const lonPadding = lonRange * factor;
+  const latPadding = latRange * factor;
+  return {
+    minLon: bounds.minLon - lonPadding,
+    maxLon: bounds.maxLon + lonPadding,
+    minLat: bounds.minLat - latPadding,
+    maxLat: bounds.maxLat + latPadding
+  };
+}
+
+function mergeBounds(boundsList) {
+  const valid = boundsList.filter(Boolean);
+  if (!valid.length) return null;
+  let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
+  valid.forEach(bounds => {
+    minLon = Math.min(minLon, bounds.minLon);
+    maxLon = Math.max(maxLon, bounds.maxLon);
+    minLat = Math.min(minLat, bounds.minLat);
+    maxLat = Math.max(maxLat, bounds.maxLat);
+  });
+  return { minLon, maxLon, minLat, maxLat };
+}
+
+function mapDimensions(bounds, maxWidth = 960, maxHeight = 610) {
+  if (!bounds) return { width: maxWidth, height: maxHeight, lonScale: 1 };
+  const lonRange = bounds.maxLon - bounds.minLon;
+  const latRange = bounds.maxLat - bounds.minLat;
+  const midLat = (bounds.minLat + bounds.maxLat) / 2;
+  const lonScale = Math.max(.35, Math.cos(midLat * Math.PI / 180));
+  const adjustedLonRange = lonRange * lonScale;
+  const scale = Math.min(maxWidth / adjustedLonRange, maxHeight / latRange);
+  const width = Math.min(maxWidth, adjustedLonRange * scale);
+  const height = Math.min(maxHeight, latRange * scale);
+  return { width, height, lonScale };
+}
+
+function geometryPath(geometry, bounds, width, height, lonScale = 1) {
+  const lonRange = Math.max(.1, (bounds.maxLon - bounds.minLon) * lonScale);
+  const latRange = Math.max(.1, bounds.maxLat - bounds.minLat);
+  const pad = 16;
+  const usableWidth = width - pad * 2;
+  const usableHeight = height - pad * 2;
+  const scale = Math.min(usableWidth / lonRange, usableHeight / latRange);
+  const offsetX = (width - lonRange * scale) / 2;
+  const offsetY = (height - latRange * scale) / 2;
+  const project = ([lon, lat]) => [
+    offsetX + ((lon - bounds.minLon) * lonScale) * scale,
+    offsetY + (bounds.maxLat - lat) * scale
+  ];
+  return coordinateRings(geometry).map((ring) => {
+    const points = ring.map(project);
+    if (!points.length) return "";
+    return `M${points.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join("L")}Z`;
+  }).join("");
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function stateFips(state) {
+  const fipsByState = {
+    AL: "01", AK: "02", AZ: "04", AR: "05", CA: "06", CO: "08", CT: "09", DE: "10", DC: "11",
+    FL: "12", GA: "13", HI: "15", ID: "16", IL: "17", IN: "18", IA: "19", KS: "20",
+    KY: "21", LA: "22", ME: "23", MD: "24", MA: "25", MI: "26", MN: "27", MS: "28", MO: "29",
+    MT: "30", NE: "31", NV: "32", NH: "33", NJ: "34", NM: "35", NY: "36", NC: "37",
+    ND: "38", OH: "39", OK: "40", OR: "41", PA: "42", RI: "44", SC: "45", SD: "46",
+    TN: "47", TX: "48", UT: "49", VT: "50", VA: "51", WA: "53", WV: "54", WI: "55", WY: "56"
+  };
+  return fipsByState[String(state || "").toUpperCase()] || "";
+}
+
+function featureStateFips(feature) {
+  return String(feature.properties?.STATEFP || feature.properties?.stateFips || "").padStart(2, "0");
+}
+
+function featureCountyFips(feature) {
+  return String(feature.properties?.COUNTYFP || feature.properties?.countyFips || feature.properties?.GEOID || "").padStart(5, "0").slice(-5);
+}
+
+// County map rendering function (simplified from result-detail.js)
+async function renderCountyMap(race) {
+  const container = document.getElementById("election-map");
+  if (!container || !race) return;
+  
+  try {
+    const geojson = await loadCountyMapData();
+    const stateGeojson = await loadUsStateMapData().catch(() => ({ features: [] }));
+    const highwayGeojson = await loadMajorHighwayData().catch(() => ({ features: [] }));
+    const countryGeojson = await loadCountryContextData().catch(() => ({ features: [] }));
+    
+    const fips = stateFips(race.state);
+    if (!fips) {
+      container.innerHTML = `<p class="map-note">County map not available for this race.</p>`;
+      return;
+    }
+    
+    const allFeatures = geojson.features || [];
+    const allStateFeatures = stateGeojson.features || [];
+    const highwayFeatures = highwayGeojson.features || [];
+    const countryFeatures = countryGeojson.features || [];
+    const features = allFeatures.filter((feature) => featureStateFips(feature) === fips);
+    
+    if (!features.length) {
+      container.innerHTML = `<p class="map-note">County data not available for this state.</p>`;
+      return;
+    }
+    
+    const activeBounds = stateBounds(features);
+    const bounds = expandedBounds(activeBounds, 0.1);
+    const { width, height, lonScale } = mapDimensions(bounds);
+    
+    container.innerHTML = "";
+    const svg = d3.select(container)
+      .append("svg")
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("role", "img")
+      .attr("aria-label", `${STATE_NAMES[race.state] || race.state} county results map`);
+    
+    // Render country context
+    if (countryFeatures.length) {
+      svg.selectAll(".country-context")
+        .data(countryFeatures)
+        .join("path")
+        .attr("class", "map-context")
+        .attr("d", (feature) => geometryPath(feature.geometry, bounds, width, height, lonScale))
+        .attr("fill", "none")
+        .attr("stroke", "#ccc")
+        .attr("stroke-width", 0.5);
+    }
+    
+    // Render state context
+    if (allStateFeatures.length) {
+      svg.selectAll(".state-context")
+        .data(allStateFeatures)
+        .join("path")
+        .attr("class", "map-context")
+        .attr("d", (feature) => geometryPath(feature.geometry, bounds, width, height, lonScale))
+        .attr("fill", "none")
+        .attr("stroke", "#999")
+        .attr("stroke-width", 1);
+    }
+    
+    // Render counties
+    const countyLookup = new Map();
+    if (race.counties && race.counties.length) {
+      race.counties.forEach(county => {
+        if (county.fips) countyLookup.set(county.fips, county);
+      });
+    }
+    
+    svg.selectAll("path.county")
+      .data(features)
+      .join("path")
+      .attr("class", "county")
+      .attr("d", (feature) => geometryPath(feature.geometry, bounds, width, height, lonScale))
+      .attr("fill", (feature) => {
+        const county = countyLookup.get(featureCountyFips(feature));
+        if (!county) return "#566274";
+        const leader = county.candidates?.reduce((a, b) => (b.percent || 0) > (a.percent || 0) ? b : a);
+        if (leader) {
+          const party = String(leader.party || "").toUpperCase();
+          if (party === "D") return "#2d7cff";
+          if (party === "R") return "#f3536a";
+          if (party === "I") return "#5fc529";
+        }
+        return "#566274";
+      })
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 0.5)
+      .attr("tabindex", 0)
+      .on("mouseenter focus", (event, feature) => {
+        const county = countyLookup.get(featureCountyFips(feature));
+        const name = feature.properties?.NAME || "Unknown";
+        updateMapHoverCard(county, `${name} County`);
+      })
+      .append("title")
+      .text((feature) => feature.properties?.NAME || "County");
+      
+  } catch (error) {
+    console.error("Failed to render county map:", error);
+    container.innerHTML = `<p class="map-note">County map could not load. ${error.message || ""}</p>`;
+  }
+}
+
+// District county map rendering function (simplified from result-detail.js)
+let districtMapDataPromise = null;
+
+async function loadDistrictMapData() {
+  if (!districtMapDataPromise) {
+    districtMapDataPromise = fetch("data/house-districts-119.geojson", { cache: "force-cache" }).then((response) => {
+      if (!response.ok) throw new Error(`District map returned ${response.status}`);
+      return response.json();
+    });
+  }
+  return districtMapDataPromise;
+}
+
+async function renderDistrictCountyMap(race) {
+  const container = document.getElementById("election-map");
+  if (!container || !race) return;
+  
+  try {
+    const districtGeo = await loadDistrictMapData();
+    const districtNumber = race.district || 1;
+    const state = race.state;
+    
+    // Find the district feature
+    const districtFeature = (districtGeo.features || []).find((item) => (
+      String(item.properties?.state || "").toUpperCase() === String(state || "").toUpperCase()
+      && Number(item.properties?.district) === districtNumber
+    ));
+    
+    if (!districtFeature) {
+      container.innerHTML = `<p class="map-note">District geometry not available.</p>`;
+      return;
+    }
+    
+    const geojson = await loadCountyMapData();
+    const stateGeojson = await loadUsStateMapData().catch(() => ({ features: [] }));
+    const highwayGeojson = await loadMajorHighwayData().catch(() => ({ features: [] }));
+    const countryGeojson = await loadCountryContextData().catch(() => ({ features: [] }));
+    
+    const fips = stateFips(state);
+    if (!fips) {
+      container.innerHTML = `<p class="map-note">District county map not available.</p>`;
+      return;
+    }
+    
+    const allCountyFeatures = geojson.features || [];
+    const allStateFeatures = stateGeojson.features || [];
+    const highwayFeatures = highwayGeojson.features || [];
+    const countryFeatures = countryGeojson.features || [];
+    const stateCountyFeatures = allCountyFeatures.filter((item) => featureStateFips(item) === fips);
+    
+    if (!stateCountyFeatures.length) {
+      container.innerHTML = `<p class="map-note">County data not available for this state.</p>`;
+      return;
+    }
+    
+    const activeBounds = stateBounds([districtFeature]);
+    const bounds = expandedBounds(activeBounds, 0.2);
+    const { width, height, lonScale } = mapDimensions(bounds, 760, 540);
+    
+    container.innerHTML = "";
+    const svg = d3.select(container)
+      .append("svg")
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("role", "img")
+      .attr("aria-label", `${STATE_NAMES[state] || state} ${districtNumber} District county breakdown map`);
+    
+    // Render country context
+    if (countryFeatures.length) {
+      svg.selectAll(".country-context")
+        .data(countryFeatures)
+        .join("path")
+        .attr("class", "map-context")
+        .attr("d", (feature) => geometryPath(feature.geometry, bounds, width, height, lonScale))
+        .attr("fill", "none")
+        .attr("stroke", "#ccc")
+        .attr("stroke-width", 0.5);
+    }
+    
+    // Render state context
+    if (allStateFeatures.length) {
+      svg.selectAll(".state-context")
+        .data(allStateFeatures)
+        .join("path")
+        .attr("class", "map-context")
+        .attr("d", (feature) => geometryPath(feature.geometry, bounds, width, height, lonScale))
+        .attr("fill", "none")
+        .attr("stroke", "#999")
+        .attr("stroke-width", 1);
+    }
+    
+    // Render district outline
+    svg.append("path")
+      .attr("class", "district-outline")
+      .attr("d", geometryPath(districtFeature.geometry, bounds, width, height, lonScale))
+      .attr("fill", "none")
+      .attr("stroke", "#2d7cff")
+      .attr("stroke-width", 2);
+    
+    // Render counties
+    const countyLookup = new Map();
+    if (race.counties && race.counties.length) {
+      race.counties.forEach(county => {
+        if (county.fips) countyLookup.set(county.fips, county);
+      });
+    }
+    
+    svg.selectAll("path.county")
+      .data(stateCountyFeatures)
+      .join("path")
+      .attr("class", "county")
+      .attr("d", (feature) => geometryPath(feature.geometry, bounds, width, height, lonScale))
+      .attr("fill", (feature) => {
+        const county = countyLookup.get(featureCountyFips(feature));
+        if (!county) return "#566274";
+        const leader = county.candidates?.reduce((a, b) => (b.percent || 0) > (a.percent || 0) ? b : a);
+        if (leader) {
+          const party = String(leader.party || "").toUpperCase();
+          if (party === "D") return "#2d7cff";
+          if (party === "R") return "#f3536a";
+          if (party === "I") return "#5fc529";
+        }
+        return "#566274";
+      })
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 0.5)
+      .attr("tabindex", 0)
+      .on("mouseenter focus", (event, feature) => {
+        const county = countyLookup.get(featureCountyFips(feature));
+        const name = feature.properties?.NAME || "Unknown";
+        updateMapHoverCard(county, `${name} County`);
+      })
+      .append("title")
+      .text((feature) => feature.properties?.NAME || "County");
+      
+  } catch (error) {
+    console.error("Failed to render district county map:", error);
+    container.innerHTML = `<p class="map-note">District county map could not load. ${error.message || ""}</p>`;
+  }
+}
+
+function updateMapHoverCard(race, title) {
+  const hoverCard = document.getElementById("map-hover-card");
+  if (!hoverCard) return;
+  
+  if (race) {
+    const winner = race.candidates?.find(c => c.isWinner);
+    const leader = race.candidates?.reduce((a, b) => (b.percent || 0) > (a.percent || 0) ? b : a);
+    const topCandidate = winner || leader;
+    
+    hoverCard.innerHTML = `
+      <strong>${title}</strong>
+      ${topCandidate ? `<div>${topCandidate.name}: ${topCandidate.percent?.toFixed(1) || 0}%</div>` : ""}
+      ${race.reportingPercent ? `<div style="font-size:0.85rem;color:#c6d2ff;">${race.reportingPercent}% reporting</div>` : ""}
+    `;
+    hoverCard.style.display = "block";
+  } else {
+    hoverCard.innerHTML = `<strong>${title}</strong>`;
+    hoverCard.style.display = "block";
+  }
+}
+
+// Global functions for event handlers
+let currentPage = null;
+
+function selectRace(raceId) {
+  if (currentPage) currentPage.selectRace(raceId);
+}
+
 class ElectionNightPage {
   constructor() {
     this.selectedMode = "house";
     this.selectedRaceId = null;
     this.focusedRace = null;
-    this.mapData = null;
     this.raceData = [];
     this.lastUpdated = null;
     
+    currentPage = this;
     this.init();
   }
 
@@ -22,7 +694,7 @@ class ElectionNightPage {
     // Mode toggle buttons
     document.querySelectorAll(".button-link[data-mode]").forEach(button => {
       button.addEventListener("click", (e) => {
-        const mode = e.target.dataset.mode;
+        const mode = e.currentTarget.dataset.mode;
         this.switchMode(mode);
       });
     });
@@ -30,99 +702,50 @@ class ElectionNightPage {
     // Clear focus button
     const clearFocusButton = document.getElementById("clear-focus");
     if (clearFocusButton) {
-      clearFocusButton.addEventListener("click", () => {
+      clearFocusButton.addEventListener("click", (e) => {
+        e.preventDefault();
         this.clearFocus();
       });
     }
   }
 
   async loadInitialData() {
-    await this.loadMap();
+    await this.loadRaceData();
     await this.renderSummary();
     await this.renderRaceList();
+    await this.renderMap();
   }
 
-  async loadMap() {
+  async loadRaceData() {
     try {
-      const mapFile = this.selectedMode === "house" 
-        ? "data/house-districts-119.geojson"
-        : "data/result-us-states.geojson";
+      // Try to load race data from live results
+      const response = await fetch("data/live-results.json");
+      if (!response.ok) {
+        this.raceData = [];
+        return;
+      }
       
-      const response = await fetch(mapFile);
-      if (!response.ok) throw new Error("Failed to load map");
-      
-      this.mapData = await response.json();
-      this.renderMap();
+      const data = await response.json();
+      this.raceData = data.races || [];
     } catch (error) {
-      console.error("Failed to load map:", error);
-      this.renderMapError();
+      console.error("Failed to load race data:", error);
+      this.raceData = [];
     }
   }
 
-  renderMap() {
-    const mapContainer = document.getElementById("election-map");
-    if (!mapContainer || !this.mapData) return;
+  async renderMap() {
+    // Filter race data by selected mode
+    const modeRaces = this.raceData.filter(race => {
+      if (this.selectedMode === "house") return race.type === "house";
+      if (this.selectedMode === "senate") return race.type === "senate";
+      if (this.selectedMode === "governor") return race.type === "governor";
+      return false;
+    });
 
-    // Use D3 to render the map
-    const width = mapContainer.clientWidth || 800;
-    const height = 500;
-    
-    const svg = d3.select("#election-map")
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height);
-
-    const projection = this.selectedMode === "house"
-      ? d3.geoAlbersUsa()
-      : d3.geoAlbersUsa();
-    
-    const path = d3.geoPath().projection(projection);
-
-    svg.selectAll("path")
-      .data(this.mapData.features)
-      .enter()
-      .append("path")
-      .attr("d", path)
-      .attr("fill", "#d6d9e2")
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 0.5)
-      .on("click", (event, d) => this.handleMapClick(d))
-      .on("mouseover", (event, d) => this.handleMapHover(d))
-      .on("mouseout", () => this.handleMapHoverOut());
-  }
-
-  renderMapError() {
-    const mapContainer = document.getElementById("election-map");
-    if (!mapContainer) return;
-
-    mapContainer.innerHTML = `
-      <p style="text-align: center; color: #c6d2ff; padding: 100px 0;">
-        Map will appear when results are available
-      </p>
-    `;
-  }
-
-  handleMapClick(feature) {
-    // Handle map click to select race
-    const raceId = feature.properties?.id || feature.properties?.GEOID;
-    if (raceId) {
-      this.selectRace(raceId);
-    }
-  }
-
-  handleMapHover(feature) {
-    const hoverCard = document.getElementById("map-hover-card");
-    if (!hoverCard || !feature) return;
-
-    const name = feature.properties?.name || feature.properties?.STATE_NAME || feature.properties?.district || "Unknown";
-    hoverCard.innerHTML = `<strong>${name}</strong>`;
-    hoverCard.style.display = "block";
-  }
-
-  handleMapHoverOut() {
-    const hoverCard = document.getElementById("map-hover-card");
-    if (hoverCard) {
-      hoverCard.style.display = "none";
+    if (this.selectedMode === "house") {
+      await renderHouseDistrictMap(modeRaces);
+    } else {
+      await renderStatewideMap(this.selectedMode, modeRaces);
     }
   }
 
@@ -132,7 +755,6 @@ class ElectionNightPage {
     this.selectedMode = mode;
     this.selectedRaceId = null;
     this.focusedRace = null;
-    this.mapData = null;
     this.raceData = [];
 
     // Update mode buttons
@@ -150,32 +772,112 @@ class ElectionNightPage {
     this.clearFocus();
 
     // Load new data
-    await this.loadMap();
+    await this.loadRaceData();
     await this.renderSummary();
     await this.renderRaceList();
+    await this.renderMap();
   }
 
   async renderSummary() {
-    // Start with no results
-    document.getElementById("total-races").textContent = "--";
-    document.getElementById("called-races").textContent = "-- called";
-    document.getElementById("reporting-status").textContent = "No votes reported";
-    document.getElementById("dem-seats").textContent = "--";
-    document.getElementById("rep-seats").textContent = "--";
-    document.getElementById("reporting-percent").textContent = "--%";
-    document.getElementById("last-updated").textContent = "--";
+    // Filter race data by selected mode
+    const modeRaces = this.raceData.filter(race => {
+      if (this.selectedMode === "house") return race.type === "house";
+      if (this.selectedMode === "senate") return race.type === "senate";
+      if (this.selectedMode === "governor") return race.type === "governor";
+      return false;
+    });
+
+    if (modeRaces.length === 0) {
+      document.getElementById("total-races").textContent = "--";
+      document.getElementById("called-races").textContent = "-- called";
+      document.getElementById("reporting-status").textContent = "No votes reported";
+      document.getElementById("dem-seats").textContent = "--";
+      document.getElementById("rep-seats").textContent = "--";
+      document.getElementById("reporting-percent").textContent = "--%";
+      document.getElementById("last-updated").textContent = "--";
+      return;
+    }
+
+    const totalRaces = modeRaces.length;
+    const calledRaces = modeRaces.filter(r => r.status === "called").length;
+    const demSeats = modeRaces.filter(r => {
+      const winner = r.candidates?.find(c => c.isWinner);
+      return winner && winner.party === "D";
+    }).length;
+    const repSeats = modeRaces.filter(r => {
+      const winner = r.candidates?.find(c => c.isWinner);
+      return winner && winner.party === "R";
+    }).length;
+
+    // Calculate average reporting percent
+    const reportingRaces = modeRaces.filter(r => r.reportingPercent !== undefined && r.reportingPercent > 0);
+    const avgReporting = reportingRaces.length > 0 
+      ? reportingRaces.reduce((sum, r) => sum + (r.reportingPercent || 0), 0) / reportingRaces.length 
+      : 0;
+
+    document.getElementById("total-races").textContent = totalRaces;
+    document.getElementById("called-races").textContent = `${calledRaces} called`;
+    document.getElementById("reporting-status").textContent = calledRaces > 0 ? `${calledRaces} races called` : "No races called yet";
+    document.getElementById("dem-seats").textContent = demSeats;
+    document.getElementById("rep-seats").textContent = repSeats;
+    document.getElementById("reporting-percent").textContent = avgReporting > 0 ? `${avgReporting.toFixed(1)}%` : "--%";
+    document.getElementById("last-updated").textContent = new Date().toLocaleTimeString();
   }
 
   async renderRaceList() {
     const raceListContainer = document.getElementById("race-list");
     if (!raceListContainer) return;
 
-    // Start with no races
-    raceListContainer.innerHTML = `
-      <p style="text-align: center; color: #c6d2ff; padding: 100px 0;">
-        No results available yet. Results will appear after polls close.
-      </p>
-    `;
+    // Filter race data by selected mode
+    const modeRaces = this.raceData.filter(race => {
+      if (this.selectedMode === "house") return race.type === "house";
+      if (this.selectedMode === "senate") return race.type === "senate";
+      if (this.selectedMode === "governor") return race.type === "governor";
+      return false;
+    });
+
+    if (modeRaces.length === 0) {
+      raceListContainer.innerHTML = `
+        <p style="text-align: center; color: #c6d2ff; padding: 100px 0;">
+          No results available yet. Results will appear after polls close.
+        </p>
+      `;
+      return;
+    }
+
+    const raceItems = modeRaces.map(race => {
+      const winner = race.candidates?.find(c => c.isWinner);
+      const leader = race.candidates?.reduce((a, b) => (b.percent || 0) > (a.percent || 0) ? b : a);
+      const topCandidate = winner || leader;
+
+      return `
+        <div class="race-item" data-race-id="${race.id}" style="
+          padding: 12px;
+          margin-bottom: 8px;
+          border: 1px solid #d6d9e2;
+          border-radius: 8px;
+          background: rgba(7, 20, 59, 0.6);
+          cursor: pointer;
+          transition: all 0.2s ease;
+        ">
+          <div style="font-weight: 700; margin-bottom: 4px;">${race.electionName || race.name}</div>
+          <div style="font-size: 0.85rem; color: #c6d2ff;">
+            ${topCandidate ? `${topCandidate.name}: ${topCandidate.percent?.toFixed(1) || 0}%` : "No votes"}
+            ${race.reportingPercent ? ` • ${race.reportingPercent}% reporting` : ""}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    raceListContainer.innerHTML = raceItems;
+
+    // Add click handlers
+    raceListContainer.querySelectorAll(".race-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const raceId = item.dataset.raceId;
+        this.selectRace(raceId);
+      });
+    });
   }
 
   async selectRace(raceId) {
@@ -254,6 +956,13 @@ class ElectionNightPage {
         ${candidateRows}
       </div>
     `;
+
+    // Render county map for the focused race
+    if (race.type === "house" && race.district) {
+      renderDistrictCountyMap(race);
+    } else if (race.state) {
+      renderCountyMap(race);
+    }
   }
 
   partyColor(party) {
@@ -274,6 +983,9 @@ class ElectionNightPage {
     if (focusedPanel) {
       focusedPanel.style.display = "none";
     }
+
+    // Re-render the main map when focus is cleared
+    this.renderMap();
   }
 }
 
