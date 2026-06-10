@@ -11,148 +11,8 @@
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
   <script src="assets/theme.js"></script>
   <link rel="stylesheet" href="assets/wiki.css">
-  <style>
-    body.election-night-page {
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(16, 48, 178, 0.24), transparent 28rem),
-        linear-gradient(135deg, #050b1c 0%, #071641 56%, #1b1026 100%);
-      color: #fff;
-    }
-    .election-night-shell {
-      width: min(1400px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 24px 0 64px;
-    }
-    .election-night-header {
-      text-align: center;
-      padding: 32px 0 24px;
-    }
-    .election-night-header h1 {
-      margin: 0 0 8px;
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      line-height: 1;
-      background: linear-gradient(90deg, #2d7cff, #f3536a);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .election-night-header p {
-      margin: 0;
-      color: #c6d2ff;
-      font-size: 1.1rem;
-    }
-    .mode-toggle {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin: 24px 0;
-      flex-wrap: wrap;
-    }
-    .mode-button {
-      border: 2px solid #d6d9e2;
-      border-radius: 12px;
-      background: rgba(7, 20, 59, 0.8);
-      color: #c6d2ff;
-      cursor: pointer;
-      font-weight: 900;
-      font-size: 1rem;
-      padding: 12px 24px;
-      transition: all 0.2s ease;
-    }
-    .mode-button:hover {
-      background: rgba(16, 48, 178, 0.6);
-      border-color: #2d7cff;
-    }
-    .mode-button.active {
-      background: linear-gradient(135deg, #1236b8, #651c44);
-      border-color: #2d7cff;
-      color: #fff;
-    }
-    .top-summary-bar {
-      border: 1px solid #d6d9e2;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(13, 38, 104, 0.96), rgba(28, 23, 74, 0.94));
-      padding: 20px;
-      margin: 24px 0;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-    }
-    .summary-item {
-      text-align: center;
-    }
-    .summary-item strong {
-      display: block;
-      font-size: 2rem;
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-    .summary-item span {
-      color: #c6d2ff;
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .main-content {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
-      gap: 24px;
-      margin-top: 24px;
-    }
-    .map-section {
-      border: 1px solid #d6d9e2;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(13, 38, 104, 0.96), rgba(28, 23, 74, 0.94));
-      padding: 20px;
-      min-height: 500px;
-    }
-    .race-list-section {
-      border: 1px solid #d6d9e2;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(13, 38, 104, 0.96), rgba(28, 23, 74, 0.94));
-      padding: 20px;
-      max-height: 700px;
-      overflow-y: auto;
-    }
-    .focused-race-panel {
-      border: 1px solid #d6d9e2;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(13, 38, 104, 0.96), rgba(28, 23, 74, 0.94));
-      padding: 20px;
-      margin-top: 24px;
-      display: none;
-    }
-    .focused-race-panel.active {
-      display: block;
-    }
-    .data-status {
-      text-align: center;
-      padding: 16px;
-      color: #c6d2ff;
-      font-size: 0.9rem;
-    }
-    .data-status.pre-election {
-      color: #ffd5d9;
-    }
-    .data-status.live {
-      color: #5fc529;
-    }
-    .data-status.mock {
-      color: #ffadb5;
-    }
-    @media (max-width: 900px) {
-      .main-content {
-        grid-template-columns: 1fr;
-      }
-      .race-list-section {
-        max-height: 400px;
-      }
-    }
-  </style>
 </head>
-<body class="election-night-page">
+<body>
   <header class="site-header">
     <a class="brand" href="/">
       <img class="brand-mark" src="assets/img/FEA_Icon.webp" alt="Federal Elections Analysis">
@@ -182,42 +42,66 @@
     </div>
   </header>
 
-  <main class="election-night-shell">
-    <section class="election-night-header">
-      <h1>2026 Election Night</h1>
-      <p>Live results for House, Senate, and gubernatorial races</p>
+  <main>
+    <section class="hero-grid" aria-labelledby="page-title">
+      <div class="hero-main">
+        <p class="kicker">2026 Election Night</p>
+        <h1 id="page-title">Live election results.</h1>
+        <p class="lede">Real-time results for House, Senate, and gubernatorial races.</p>
+        <div class="hero-actions">
+          <button class="button-link" data-mode="house">House</button>
+          <button class="button-link" data-mode="senate">Senate</button>
+          <button class="button-link" data-mode="governor">Governors</button>
+        </div>
+      </div>
+      <aside class="odds-panel" aria-label="Results summary">
+        <span class="panel-label" id="summary-label">House Results</span>
+        <div>
+          <div id="total-races" class="big-odds">--</div>
+          <p id="called-races" class="projected-seat-count">-- called</p>
+          <p id="reporting-status">No votes reported</p>
+        </div>
+        <dl>
+          <div><dt>Democratic seats</dt><dd id="dem-seats">--</dd></div>
+          <div><dt>Republican seats</dt><dd id="rep-seats">--</dd></div>
+          <div><dt>Reporting</dt><dd id="reporting-percent">--%</dd></div>
+          <div><dt>Last updated</dt><dd id="last-updated">--</dd></div>
+        </dl>
+        <p class="forecast-disclaimer">Results will appear after polls close. Pre-election data may be shown for races with available forecasts.</p>
+      </aside>
     </section>
 
-    <div class="mode-toggle" id="mode-toggle">
-      <button class="mode-button active" data-mode="house">House</button>
-      <button class="mode-button" data-mode="senate">Senate</button>
-      <button class="mode-button" data-mode="governor">Governors</button>
-    </div>
-
-    <div class="data-status" id="data-status">
-      Loading...
-    </div>
-
-    <div class="top-summary-bar" id="top-summary-bar">
-      <!-- Summary stats will be populated by JavaScript -->
-    </div>
-
-    <div class="main-content">
-      <div class="map-section" id="map-section">
-        <p style="text-align: center; color: #c6d2ff; padding: 100px 0;">Map will appear here</p>
+    <section class="map-panel" aria-labelledby="map-title">
+      <div class="section-head">
+        <div>
+          <p class="kicker">Map</p>
+          <h2 id="map-title">The 2026 results map.</h2>
+        </div>
+        <p id="map-subtitle">Select a race to view details.</p>
       </div>
-      <div class="race-list-section" id="race-list-section">
-        <p style="text-align: center; color: #c6d2ff; padding: 100px 0;">Race list will appear here</p>
+      <div class="map-wrap">
+        <div>
+          <div id="election-map"></div>
+          <div id="map-legend" class="map-legend" aria-label="Results legend"></div>
+        </div>
+        <aside id="map-hover-card" class="hover-card"></aside>
       </div>
-    </div>
+    </section>
 
-    <div class="focused-race-panel" id="focused-race-panel">
-      <h2 style="margin: 0 0 16px;">Focused Race</h2>
-      <div id="focused-race-content">
-        <p style="color: #c6d2ff;">Select a race to see details</p>
-      </div>
-      <button class="mode-button" id="clear-focus" style="margin-top: 16px;">Back to all races</button>
-    </div>
+    <section class="dashboard-grid" aria-label="Race list">
+      <article class="chart-panel chart-wide">
+        <span class="chart-label">Race List</span>
+        <div id="race-list" class="race-list"></div>
+      </article>
+    </section>
+
+    <section class="text-panel" id="focused-race-panel" aria-labelledby="focused-race-title" style="display: none;">
+      <p class="kicker">Race Details</p>
+      <h2 id="focused-race-title">Selected race</h2>
+      <div id="focused-race-content"></div>
+      <p><a class="button-link" id="clear-focus">Back to all races</a></p>
+    </section>
+
   </main>
 
   <footer class="site-footer">
@@ -242,7 +126,7 @@
       </section>
       <section class="footer-link-group" aria-label="Other links">
         <strong>Other</strong>
-        <a href="/election-night">2026 Election Night</a>
+        <a href="/election-night" class="active">2026 Election Night</a>
         <a href="/about">About</a>
         <a href="/contact">Contact</a>
         <a href="/terms">Terms</a>
@@ -251,6 +135,9 @@
     </nav>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+  <script src="assets/wiki.js"></script>
   <script src="assets/election-night.js"></script>
 </body>
 </html>
