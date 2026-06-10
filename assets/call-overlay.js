@@ -255,6 +255,7 @@
     return new Intl.DateTimeFormat("en-US", {
       hour: "numeric",
       minute: "2-digit",
+      timeZone: "America/New_York",
       timeZoneName: "short"
     }).format(date);
   }
@@ -473,13 +474,14 @@
   }
 
   function tickerItems(calls, races, overlayConfig = {}) {
-    const customItems = (overlayConfig.tickerItems || [])
-      .filter((item) => item?.text)
-      .map((item) => ({ tag: item.tag || "FEA", text: item.text }));
-    const items = [...customItems];
+    const items = [];
     calls.slice(0, 8).forEach((call) => {
       items.push({ tag: "Race call", text: call.text });
     });
+    const customItems = (overlayConfig.tickerItems || [])
+      .filter((item) => item?.text)
+      .map((item) => ({ tag: item.tag || "FEA", text: item.text }));
+    items.push(...customItems);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     races
@@ -500,11 +502,6 @@
           items.push({
             tag: race.state || "Update",
             text: `${race.electionName}: ${leader.name}`
-          });
-        } else {
-          items.push({
-            tag: race.state || "Status",
-            text: `${race.electionName}: awaiting reported results`
           });
         }
       });
