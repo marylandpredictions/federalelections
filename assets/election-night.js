@@ -101,19 +101,14 @@ async function renderStatewideMap(mode, raceData) {
         if (!race) return "#566274";
         return resultsColor(race);
       })
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 0.5)
+      .attr("stroke", "#000")
+      .attr("stroke-width", 0.3)
       .attr("tabindex", (feature) => raceByState.has(FIPS_TO_STATE[String(feature.id).padStart(2, "0")]) ? 0 : -1)
-      .on("mouseenter focus", (event, feature) => {
-        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
-        const race = raceByState.get(state);
-        updateMapHoverCard(race, STATE_NAMES[state] || state);
-      })
       .on("click keydown", (event, feature) => {
         if (event.type === "keydown" && event.key !== "Enter") return;
         const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
         const race = raceByState.get(state);
-        if (race) selectRace(race.id);
+        if (race) currentPage.selectRace(race.id);
       })
       .append("title")
       .text((feature) => {
@@ -186,21 +181,17 @@ async function renderHouseDistrictMap(raceData) {
         if (!race) return "#566274";
         return resultsColor(race);
       })
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 0.5)
+      .attr("stroke", "#000")
+      .attr("stroke-width", 0.3)
       .attr("tabindex", (feature) => raceById.has(feature.properties?.id) ? 0 : -1)
       .attr("aria-label", (feature) => {
         const race = raceById.get(feature.properties?.id);
         return race ? `${race.electionName || feature.properties?.id}` : `${feature.properties?.stateName || "District"} not modeled`;
       })
-      .on("mouseenter focus", (event, feature) => {
-        const race = raceById.get(feature.properties?.id);
-        updateMapHoverCard(race, feature.properties?.id || "District");
-      })
       .on("click keydown", (event, feature) => {
         if (event.type === "keydown" && event.key !== "Enter") return;
         const race = raceById.get(feature.properties?.id);
-        if (race) selectRace(race.id);
+        if (race) currentPage.selectRace(race.id);
       })
       .append("title")
       .text((feature) => {
@@ -684,24 +675,8 @@ async function renderDistrictCountyMap(race) {
 }
 
 function updateMapHoverCard(race, title) {
-  const hoverCard = document.getElementById("map-hover-card");
-  if (!hoverCard) return;
-  
-  if (race) {
-    const winner = race.candidates?.find(c => c.isWinner);
-    const leader = race.candidates?.reduce((a, b) => (b.percent || 0) > (a.percent || 0) ? b : a);
-    const topCandidate = winner || leader;
-    
-    hoverCard.innerHTML = `
-      <strong>${title}</strong>
-      ${topCandidate ? `<div>${topCandidate.name}: ${topCandidate.percent?.toFixed(1) || 0}%</div>` : ""}
-      ${race.reportingPercent ? `<div style="font-size:0.85rem;color:#c6d2ff;">${race.reportingPercent}% reporting</div>` : ""}
-    `;
-    hoverCard.style.display = "block";
-  } else {
-    hoverCard.innerHTML = `<strong>${title}</strong>`;
-    hoverCard.style.display = "block";
-  }
+  // Hover card removed, this function is no longer needed
+  return;
 }
 
 // Global functions for event handlers
