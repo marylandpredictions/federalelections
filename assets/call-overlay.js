@@ -364,6 +364,7 @@
   }
 
   function collectCalls(callsData, races) {
+    const currentYear = new Date().getFullYear();
     const entries = Object.entries(callsData?.races || {})
       .filter(([raceId]) => !raceFilter || String(raceId) === String(raceFilter))
       .map(([raceId, value]) => {
@@ -371,12 +372,22 @@
         const calls = Array.isArray(value?.calls) ? value.calls : [];
         return { raceId, race, calls, automatic: false };
       })
-      .filter((entry) => entry.race && entry.calls.length);
+      .filter((entry) => {
+        if (!entry.race || !entry.calls.length) return false;
+        const electionDate = new Date(entry.race.electionDate || entry.race.pollsClose || entry.race.pollCloseAt);
+        const raceYear = electionDate.getFullYear();
+        return raceYear >= currentYear - 1;
+      });
 
     const manuallyCalledRaceIds = new Set(entries.map((entry) => String(entry.raceId)));
     const autoEntries = races
       .filter((race) => !raceFilter || String(race.id) === String(raceFilter))
       .filter((race) => !manuallyCalledRaceIds.has(String(race.id)))
+      .filter((race) => {
+        const electionDate = new Date(race.electionDate || race.pollsClose || race.pollCloseAt);
+        const raceYear = electionDate.getFullYear();
+        return raceYear >= currentYear - 1;
+      })
       .map((race) => ({ raceId: String(race.id), race, calls: automaticUncontestedCalls(race), automatic: true }))
       .filter((entry) => entry.calls.length);
 
@@ -435,8 +446,14 @@
     calls.slice(0, 8).forEach((call) => {
       items.push({ tag: "Race call", text: call.text });
     });
+    const currentYear = new Date().getFullYear();
     races
-      .filter((race) => !raceFilter || String(race.id) === String(raceFilter))
+      .filter((race) => {
+        if (raceFilter && String(race.id) !== String(raceFilter)) return false;
+        const electionDate = new Date(race.electionDate || race.pollsClose || race.pollCloseAt);
+        const raceYear = electionDate.getFullYear();
+        return raceYear >= currentYear - 1;
+      })
       .slice()
       .sort((a, b) => Number(b.estimatedVoteReporting || b.percentReporting || 0) - Number(a.estimatedVoteReporting || a.percentReporting || 0))
       .slice(0, 12)
