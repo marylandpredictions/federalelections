@@ -364,7 +364,8 @@
   }
 
   function collectCalls(callsData, races) {
-    const currentYear = new Date().getFullYear();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const entries = Object.entries(callsData?.races || {})
       .filter(([raceId]) => !raceFilter || String(raceId) === String(raceFilter))
       .map(([raceId, value]) => {
@@ -375,8 +376,10 @@
       .filter((entry) => {
         if (!entry.race || !entry.calls.length) return false;
         const electionDate = new Date(entry.race.electionDate || entry.race.pollsClose || entry.race.pollCloseAt);
-        const raceYear = electionDate.getFullYear();
-        return raceYear >= currentYear - 1;
+        const latestCallTime = Math.max(...entry.calls.map((call) => Date.parse(call.calledAt || "") || 0), 0);
+        const electionDateMidnight = new Date(electionDate);
+        electionDateMidnight.setHours(0, 0, 0, 0);
+        return electionDateMidnight.getTime() === today.getTime() && latestCallTime >= today.getTime();
       });
 
     const manuallyCalledRaceIds = new Set(entries.map((entry) => String(entry.raceId)));
@@ -385,8 +388,9 @@
       .filter((race) => !manuallyCalledRaceIds.has(String(race.id)))
       .filter((race) => {
         const electionDate = new Date(race.electionDate || race.pollsClose || race.pollCloseAt);
-        const raceYear = electionDate.getFullYear();
-        return raceYear >= currentYear - 1;
+        const electionDateMidnight = new Date(electionDate);
+        electionDateMidnight.setHours(0, 0, 0, 0);
+        return electionDateMidnight.getTime() === today.getTime();
       })
       .map((race) => ({ raceId: String(race.id), race, calls: automaticUncontestedCalls(race), automatic: true }))
       .filter((entry) => entry.calls.length);
@@ -446,13 +450,15 @@
     calls.slice(0, 8).forEach((call) => {
       items.push({ tag: "Race call", text: call.text });
     });
-    const currentYear = new Date().getFullYear();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     races
       .filter((race) => {
         if (raceFilter && String(race.id) !== String(raceFilter)) return false;
         const electionDate = new Date(race.electionDate || race.pollsClose || race.pollCloseAt);
-        const raceYear = electionDate.getFullYear();
-        return raceYear >= currentYear - 1;
+        const electionDateMidnight = new Date(electionDate);
+        electionDateMidnight.setHours(0, 0, 0, 0);
+        return electionDateMidnight.getTime() === today.getTime();
       })
       .slice()
       .sort((a, b) => Number(b.estimatedVoteReporting || b.percentReporting || 0) - Number(a.estimatedVoteReporting || a.percentReporting || 0))
@@ -561,8 +567,11 @@
   }
 
   function queueNewCalls(calls) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     calls.slice().reverse().forEach((call) => {
       if (shownCalls.has(call.signature)) return;
+      if (call.latestTime < today.getTime()) return;
       shownCalls.add(call.signature);
       queuedCalls.push(call);
     });
