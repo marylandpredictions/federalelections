@@ -1130,6 +1130,11 @@ class ElectionNightPage {
     const zoom = svg.node().__zoom;
     if (!zoom) return;
 
+    // Get actual SVG dimensions
+    const svgNode = svg.node();
+    const svgWidth = svgNode.viewBox.baseVal.width;
+    const svgHeight = svgNode.viewBox.baseVal.height;
+
     const path = d3.geoPath();
 
     if (this.selectedMode === "house") {
@@ -1142,8 +1147,8 @@ class ElectionNightPage {
           const width = x1 - x0;
           const height = y1 - y0;
           
-          const k = 0.9 / Math.max(width / 960, height / 610);
-          const translate = [960 / 2 - k * (x0 + x1) / 2, 610 / 2 - k * (y0 + y1) / 2];
+          const k = 0.9 / Math.max(width / svgWidth, height / svgHeight);
+          const translate = [svgWidth / 2 - k * (x0 + x1) / 2, svgHeight / 2 - k * (y0 + y1) / 2];
           
           svg.transition()
             .duration(750)
@@ -1165,8 +1170,8 @@ class ElectionNightPage {
           const width = x1 - x0;
           const height = y1 - y0;
           
-          const k = 0.9 / Math.max(width / 960, height / 610);
-          const translate = [960 / 2 - k * (x0 + x1) / 2, 610 / 2 - k * (y0 + y1) / 2];
+          const k = 0.9 / Math.max(width / svgWidth, height / svgHeight);
+          const translate = [svgWidth / 2 - k * (x0 + x1) / 2, svgHeight / 2 - k * (y0 + y1) / 2];
           
           svg.transition()
             .duration(750)
