@@ -9,6 +9,8 @@
   let callsDataCache = null;
   let resultsDataCache = null;
   let overlayConfigCache = null;
+  let infoPanelIndex = 0;
+  let infoPanelInterval = null;
 
   const PHOTO_SETS = {
     "79778": {
@@ -445,6 +447,9 @@
     if (root.dataset.ready) return;
     root.innerHTML = `
       <section class="broadcast-overlay-stage">
+        <div id="broadcast-info-panel" class="broadcast-info-panel">
+          <div id="broadcast-info-content" class="broadcast-info-content"></div>
+        </div>
         <div id="broadcast-call-slot" class="broadcast-call-slot" aria-live="polite"></div>
         <div class="broadcast-ticker-shell">
           <div class="broadcast-ticker-brand">
@@ -471,6 +476,60 @@
       minute: "2-digit",
       timeZone: "America/New_York"
     }).format(new Date());
+  }
+
+  function getRecentCallsInfo(calls) {
+    const recentCalls = calls.slice(0, 3);
+    if (!recentCalls.length) return "No race calls yet today";
+    const names = recentCalls.map(c => {
+      const primary = c.calledCandidates[0]?.candidate?.name || c.calls[0]?.candidate;
+      return primary.split(' ').pop();
+    }).join(', ');
+    return `Recent calls: ${names}`;
+  }
+
+  function getRaceCallSummary(calls) {
+    const count = calls.length;
+    if (count === 0) return "0 races called today";
+    if (count === 1) return "1 race called today";
+    return `${count} races called today`;
+  }
+
+  function getPollClosingTimes(races) {
+    const now = new Date();
+    const upcoming = races
+      .filter(race => {
+        const pollClose = new Date(race.pollsClose || race.pollCloseAt);
+        return pollClose > now && pollClose < new Date(now.getTime() + 2 * 60 * 60 * 1000);
+      })
+      .slice(0, 3)
+      .map(race => race.state)
+      .join(', ');
+    if (!upcoming) return "All polls closed";
+    return `Polls closing soon: ${upcoming}`;
+  }
+
+  function updateInfoPanel(calls, races) {
+    const panel = document.getElementById("broadcast-info-content");
+    if (!panel) return;
+    
+    const infoTypes = [
+      () => getRaceCallSummary(calls),
+      () => getRecentCallsInfo(calls),
+      () => getPollClosingTimes(races)
+    ];
+    
+    const content = infoTypes[infoPanelIndex % infoTypes.length]();
+    panel.textContent = content;
+    infoPanelIndex++;
+  }
+
+  function startInfoPanelCycling(calls, races) {
+    if (infoPanelInterval) clearInterval(infoPanelInterval);
+    updateInfoPanel(calls, races);
+    infoPanelInterval = setInterval(() => {
+      updateInfoPanel(calls, races);
+    }, 8000);
   }
 
   function tickerItems(calls, races, overlayConfig = {}) {
@@ -619,11 +678,13 @@
       const calls = collectCalls(callsData, races);
       updateTicker(calls, races, overlayConfig);
       queueNewCalls(calls);
+      startInfoPanelCycling(calls, races);
     } catch (error) {
       console.error(error);
       const races = flattenRaces(resultsDataCache);
       const calls = collectCalls(callsDataCache, races);
       updateTicker(calls, races, overlayConfigCache || {});
+      startInfoPanelCycling(calls, races);
     }
   }
 
