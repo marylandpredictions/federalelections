@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 
 const DATA_URL = new URL("../data/", import.meta.url);
-const MODEL_TIME_ZONE = "America/Chicago";
+const MODEL_TIME_ZONE = "America/New_York";
 
 function todayKey(date = new Date()) {
   if (/^\d{4}-\d{2}-\d{2}$/.test(process.env.MODEL_DATE || "")) return process.env.MODEL_DATE;

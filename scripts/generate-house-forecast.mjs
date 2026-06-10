@@ -8,8 +8,8 @@ const previousForecast = readPreviousForecast();
 const SETTINGS = {
   simulations: 100000,
   controlThreshold: 218,
-  updateTime: "around 6:20 AM Central",
-  updateZone: "America/Chicago",
+  updateTime: "around 7:20 AM Eastern",
+  updateZone: "America/New_York",
   dataSources: [
     "270toWin / Inside Elections public House map data",
     "Cook Political Report public House ratings when reachable",

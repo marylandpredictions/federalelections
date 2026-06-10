@@ -5,7 +5,7 @@ const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const GOVERNOR_FINANCE_URL = new URL("../data/governor-finance.json", import.meta.url);
 const GOVERNOR_FINANCE_SOURCES_URL = new URL("../data/governor-finance-sources.json", import.meta.url);
 const previousForecast = readPreviousForecast();
-const MODEL_TIME_ZONE = "America/Chicago";
+const MODEL_TIME_ZONE = "America/New_York";
 
 async function fetchText(url, label, status, options = {}) {
   const startedAt = Date.now();

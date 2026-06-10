@@ -12,7 +12,7 @@ const SETTINGS = {
   electionDate: new Date("2026-11-03T12:00:00"),
   updateHour: 6,
   updateMinute: 0,
-  updateZone: "America/Chicago",
+  updateZone: "America/New_York",
   dataSources: [
     "Manual ratings and candidate ledger",
     "Public polling adapter when reachable from GitHub Actions",
@@ -2407,7 +2407,7 @@ async function writeForecast() {
     generatedAt,
     modelDate: MODEL_DATE_KEY,
     runDate: new Date(`${MODEL_DATE_KEY}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-    updateTime: "around 6:20 AM Central",
+    updateTime: "around 7:20 AM Eastern",
     settings: { ...SETTINGS, modelWeights: MODEL_WEIGHTS },
     sourceStatus: sourceData.status,
     sourceSummary: {

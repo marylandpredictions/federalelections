@@ -6,7 +6,7 @@ const repCandidateId = process.argv[3] || "vance";
 const FORECAST_URL = new URL(`../data/president-forecast-${demCandidateId}-${repCandidateId}.json`, import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const previousForecast = readPreviousForecast();
-const MODEL_TIME_ZONE = "America/Chicago";
+const MODEL_TIME_ZONE = "America/New_York";
 
 function modelDateKey(date = new Date()) {
   if (/^\d{4}-\d{2}-\d{2}$/.test(process.env.MODEL_DATE || "")) return process.env.MODEL_DATE;
