@@ -86,6 +86,9 @@ async function renderStatewideMap(mode, raceData) {
     
     svg.call(zoom);
     
+    // Store zoom instance for later use
+    svg.node().__zoom = zoom;
+    
     // Add zoom controls
     const zoomControls = svg.append("g")
       .attr("class", "zoom-controls")
@@ -271,6 +274,9 @@ async function renderHouseDistrictMap(raceData) {
       });
     
     svg.call(zoom);
+    
+    // Store zoom instance for later use
+    svg.node().__zoom = zoom;
     
     // Add zoom controls
     const zoomControls = svg.append("g")
@@ -917,21 +923,11 @@ class ElectionNightPage {
         this.switchMode(mode);
       });
     });
-
-    // Clear focus button
-    const clearFocusButton = document.getElementById("clear-focus");
-    if (clearFocusButton) {
-      clearFocusButton.addEventListener("click", (e) => {
-        e.preventDefault();
-        this.clearFocus();
-      });
-    }
   }
 
   async loadInitialData() {
     await this.loadRaceData();
     await this.renderSummary();
-    await this.renderRaceList();
     await this.renderMap();
   }
 
@@ -1120,12 +1116,64 @@ class ElectionNightPage {
     const race = this.raceData.find(r => r.id === raceId);
     if (!race) {
       console.error("Race not found:", raceId);
-      this.renderNoRaceData();
       return;
     }
 
-    this.focusedRace = race;
-    this.renderFocusedRace();
+    // Zoom into the selected race on the map
+    this.zoomToRace(race);
+  }
+
+  zoomToRace(race) {
+    const svg = d3.select("#election-map svg");
+    if (!svg) return;
+
+    const zoom = svg.node().__zoom;
+    if (!zoom) return;
+
+    const path = d3.geoPath();
+
+    if (this.selectedMode === "house") {
+      // For house districts, find the district feature and zoom to it
+      d3.json("data/house-districts-119.geojson").then(geojson => {
+        const feature = geojson.features.find(f => f.properties?.id === race.id);
+        if (feature) {
+          const bounds = path.bounds(feature);
+          const [[x0, y0], [x1, y1]] = bounds;
+          const width = x1 - x0;
+          const height = y1 - y0;
+          
+          const k = 0.9 / Math.max(width / 960, height / 610);
+          const translate = [960 / 2 - k * (x0 + x1) / 2, 610 / 2 - k * (y0 + y1) / 2];
+          
+          svg.transition()
+            .duration(750)
+            .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(k));
+        }
+      });
+    } else {
+      // For senate and governor, find the state feature and zoom to it
+      d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us => {
+        const features = topojson.feature(us, us.objects.states).features;
+        const feature = features.find(f => {
+          const state = FIPS_TO_STATE[String(f.id).padStart(2, "0")];
+          return state === race.state;
+        });
+        
+        if (feature) {
+          const bounds = path.bounds(feature);
+          const [[x0, y0], [x1, y1]] = bounds;
+          const width = x1 - x0;
+          const height = y1 - y0;
+          
+          const k = 0.9 / Math.max(width / 960, height / 610);
+          const translate = [960 / 2 - k * (x0 + x1) / 2, 610 / 2 - k * (y0 + y1) / 2];
+          
+          svg.transition()
+            .duration(750)
+            .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(k));
+        }
+      });
+    }
   }
 
   renderNoRaceData() {

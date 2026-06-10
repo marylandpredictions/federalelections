@@ -78,33 +78,19 @@
       <p style="color: #c6d2ff; font-size: 0.85rem; margin-top: 8px;">Last updated: <span id="last-updated">--</span></p>
     </section>
 
-    <section class="map-panel" aria-labelledby="map-title">
+    <section class="map-panel" aria-labelledby="map-title" style="max-width: 1200px; margin: 0 auto;">
       <div class="section-head">
         <div>
           <p class="kicker">Map</p>
           <h2 id="map-title">The 2026 results map.</h2>
         </div>
-        <p id="map-subtitle">Select a race to view details.</p>
+        <p id="map-subtitle">Click a state or district to zoom in. Click the reset button to zoom out.</p>
       </div>
-      <div class="map-wrap">
+      <div class="map-wrap" style="display: flex; justify-content: center;">
         <div>
-          <div id="election-map" style="min-height: 500px; width: 100%;"></div>
+          <div id="election-map" style="min-height: 700px; width: 100%;"></div>
         </div>
       </div>
-    </section>
-
-    <section class="dashboard-grid" aria-label="Race list">
-      <article class="chart-panel chart-wide">
-        <span class="chart-label">Race List</span>
-        <div id="race-list" class="race-list"></div>
-      </article>
-    </section>
-
-    <section class="text-panel" id="focused-race-panel" aria-labelledby="focused-race-title" style="display: none;">
-      <p class="kicker">Race Details</p>
-      <h2 id="focused-race-title">Selected race</h2>
-      <div id="focused-race-content"></div>
-      <p><a class="button-link" id="clear-focus">Back to all races</a></p>
     </section>
 
   </main>
