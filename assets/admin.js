@@ -72,11 +72,41 @@
     return `${parts[0][0]}${parts.at(-1)[0]}`.toUpperCase();
   }
 
-  function candidateColor(candidate = {}) {
+  const DEM_PALETTE = [
+    "#0391FF", "#5FC529", "#5560F5", "#32EBEB", "#2AE19F",
+    "#214BE1", "#9FE121", "#5E21E1", "#72A2FF", "#A985F8",
+    "#CA58F9", "#12A500", "#0033A5"
+  ];
+
+  const GOP_PALETTE = [
+    "#A50000", "#C66518", "#DFC30E", "#C00F79", "#E14F50",
+    "#FE9745", "#620000", "#FF8686", "#FF68B1"
+  ];
+
+  function stringToHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return Math.abs(hash);
+  }
+
+  function candidateColor(candidate = {}, race = {}) {
     if (/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(candidate.color || "")) return candidate.color;
-    if (candidate.partyCode === "R") return "#e03a3e";
-    if (candidate.partyCode === "D") return "#1030b2";
-    if (candidate.partyCode === "I") return "#2ec6a3";
+    
+    const partyCode = candidate.partyCode || "";
+    const candidateName = String(candidate.name || "").toLowerCase();
+    const hash = stringToHash(candidateName + String(race.id || ""));
+    
+    if (partyCode === "R" || partyCode === "Republican") {
+      return GOP_PALETTE[hash % GOP_PALETTE.length];
+    }
+    if (partyCode === "D" || partyCode === "Democrat") {
+      return DEM_PALETTE[hash % DEM_PALETTE.length];
+    }
+    if (partyCode === "I" || partyCode === "Independent") return "#2ec6a3";
     return "#7c6cff";
   }
 

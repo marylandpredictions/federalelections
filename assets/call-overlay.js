@@ -499,7 +499,7 @@
         if (leader && (Number(leader.votes || 0) || Number(race.estimatedVoteReporting || race.percentReporting || 0))) {
           items.push({
             tag: race.state || "Update",
-            text: `${race.electionName}: ${leader.name} ${percentLabel(leader.percent)} with ${percentLabel(race.estimatedVoteReporting || race.percentReporting)} estimated in`
+            text: `${race.electionName}: ${leader.name}`
           });
         } else {
           items.push({
@@ -548,7 +548,6 @@
     const color = candidateColor(primary, callEvent.race);
     const avatars = callEvent.calledCandidates.map((item) => avatarMarkup(item, callEvent.race)).join("");
     const raceName = callEvent.race?.electionName || "Election race";
-    const reporting = estimatedInLabel(callEvent.race?.estimatedVoteReporting || callEvent.race?.percentReporting);
     const calledAt = callTimeLabel(Math.max(...callEvent.calls.map((call) => Date.parse(call.calledAt || "") || 0), 0));
     return `
       <article class="broadcast-call-card" style="--candidate-color:${escapeHtml(color)}">
@@ -560,7 +559,7 @@
           <div class="broadcast-call-copy">
             <p>${escapeHtml(raceName)}</p>
             <h1>${escapeHtml(callEvent.text)}</h1>
-            <small>Race called by Federal Elections Analysis${calledAt ? ` at ${escapeHtml(calledAt)}` : ""}. ${escapeHtml(reporting)} reporting.</small>
+            <small>Race called by Federal Elections Analysis${calledAt ? ` at ${escapeHtml(calledAt)}` : ""}.</small>
           </div>
           <div class="broadcast-call-avatars">${avatars}</div>
         </div>
