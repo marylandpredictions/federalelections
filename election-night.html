@@ -13,62 +13,40 @@
   <link rel="stylesheet" href="assets/wiki.css">
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="/">
-      <img class="brand-mark" src="assets/img/FEA_Icon.webp" alt="Federal Elections Analysis">
-      <span><strong>Federal Elections Analysis</strong><small style="font-weight: 700;">Election analysis</small></span>
-    </a>
-    <nav class="site-nav" aria-label="Primary navigation">
-      <a href="/">Home</a>
-      <a href="/videos">Videos</a>
-      <a href="/articles">Articles</a>
-      <details class="nav-dropdown">
-        <summary>Forecasts</summary>
-        <div class="nav-dropdown-menu">
-          <a href="/senate">Senate</a>
-          <a href="/house">House</a>
-          <a href="/governor">Governors</a>
-          <a href="/president">2028 Pres</a>
-        </div>
-      </details>
-      <a href="/election-night" class="active">2026 Election Night</a>
-    </nav>
-    <div class="site-nav-right">
-      <a href="https://gofund.me/50724cf21" target="_blank" rel="noopener" class="donate-button">$ Donate</a>
-      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
-        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
-        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A8.5 8.5 0 1 1 11.21 3 6.5 6.5 0 0 0 21 12.79Z"></path></svg>
-      </button>
-    </div>
-  </header>
-
   <main>
-    <section class="hero-grid" aria-labelledby="page-title">
-      <div class="hero-main">
-        <p class="kicker">2026 Election Night</p>
-        <h1 id="page-title">Live election results.</h1>
-        <p class="lede">Real-time results for House, Senate, and gubernatorial races.</p>
-        <div class="hero-actions">
-          <button class="button-link" data-mode="house">House</button>
-          <button class="button-link" data-mode="senate">Senate</button>
-          <button class="button-link" data-mode="governor">Governors</button>
+    <section class="text-panel compact-page-head" aria-labelledby="page-title">
+      <p class="kicker">2026 Election Night</p>
+      <h1 id="page-title">Live election results.</h1>
+      <p class="lede">Real-time results for House, Senate, and gubernatorial races.</p>
+      <div class="hero-actions">
+        <button class="button-link" data-mode="house">House</button>
+        <button class="button-link" data-mode="senate">Senate</button>
+        <button class="button-link" data-mode="governor">Governors</button>
+      </div>
+    </section>
+
+    <section class="text-panel" aria-label="Results summary">
+      <p class="kicker" id="summary-label">House Results</p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 16px 0;">
+        <div>
+          <div id="total-races" style="font-size: 2.5rem; font-weight: 900; line-height: 1;">--</div>
+          <p id="called-races" style="color: #c6d2ff; margin: 4px 0 0;">-- called</p>
+        </div>
+        <div>
+          <div id="dem-seats" style="font-size: 2.5rem; font-weight: 900; line-height: 1; color: #2d7cff;">--</div>
+          <p style="color: #c6d2ff; margin: 4px 0 0;">Democratic seats</p>
+        </div>
+        <div>
+          <div id="rep-seats" style="font-size: 2.5rem; font-weight: 900; line-height: 1; color: #f3536a;">--</div>
+          <p style="color: #c6d2ff; margin: 4px 0 0;">Republican seats</p>
+        </div>
+        <div>
+          <div id="reporting-percent" style="font-size: 2.5rem; font-weight: 900; line-height: 1;">--%</div>
+          <p style="color: #c6d2ff; margin: 4px 0 0;">Reporting</p>
         </div>
       </div>
-      <aside class="odds-panel" aria-label="Results summary">
-        <span class="panel-label" id="summary-label">House Results</span>
-        <div>
-          <div id="total-races" class="big-odds">--</div>
-          <p id="called-races" class="projected-seat-count">-- called</p>
-          <p id="reporting-status">No votes reported</p>
-        </div>
-        <dl>
-          <div><dt>Democratic seats</dt><dd id="dem-seats">--</dd></div>
-          <div><dt>Republican seats</dt><dd id="rep-seats">--</dd></div>
-          <div><dt>Reporting</dt><dd id="reporting-percent">--%</dd></div>
-          <div><dt>Last updated</dt><dd id="last-updated">--</dd></div>
-        </dl>
-        <p class="forecast-disclaimer">Results will appear after polls close. Pre-election data may be shown for races with available forecasts.</p>
-      </aside>
+      <p id="reporting-status" style="color: #c6d2ff; margin-top: 16px;">No votes reported</p>
+      <p style="color: #c6d2ff; font-size: 0.85rem; margin-top: 8px;">Last updated: <span id="last-updated">--</span></p>
     </section>
 
     <section class="map-panel" aria-labelledby="map-title">
@@ -103,37 +81,6 @@
     </section>
 
   </main>
-
-  <footer class="site-footer">
-    <div>
-      <strong>Federal Elections Analysis</strong>
-      <p>Election modeling, public analysis, and team updates.</p>
-    </div>
-    <nav class="footer-columns" aria-label="Footer navigation">
-      <section class="footer-link-group" aria-label="Site links">
-        <strong>Site</strong>
-        <a href="/">Home</a>
-        <a href="/videos">Videos</a>
-        <a href="/articles">Articles</a>
-      </section>
-      <section class="footer-link-group" aria-label="Forecast links">
-        <strong>Forecasts</strong>
-        <a href="/senate">Senate</a>
-        <a href="/house">House</a>
-        <a href="/governor">Governors</a>
-        <a href="/president">2028 Pres</a>
-        <a href="/calibration">Calibration</a>
-      </section>
-      <section class="footer-link-group" aria-label="Other links">
-        <strong>Other</strong>
-        <a href="/election-night" class="active">2026 Election Night</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
-        <a href="/terms">Terms</a>
-        <a href="/privacy">Privacy</a>
-      </section>
-    </nav>
-  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>

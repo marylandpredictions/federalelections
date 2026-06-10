@@ -220,32 +220,50 @@ class ElectionNightPage {
     const race = this.focusedRace;
     const candidates = race.candidates || [];
 
-    const candidateRows = candidates.map(cand => `
-      <div class="admin-candidate">
-        <div>
-          <strong>${cand.name}</strong>
-          ${cand.isWinner ? " ✓" : ""}
-          ${cand.isIncumbent ? " (Inc.)" : ""}
-        </div>
-        <div>
-          ${cand.percent !== undefined ? cand.percent.toFixed(1) + "%" : "N/A"}
-          ${cand.votes !== undefined ? " • " + cand.votes.toLocaleString() + " votes" : ""}
-        </div>
-      </div>
-    `).join("");
+    const candidateRows = candidates.map(cand => {
+      const party = cand.party || "";
+      const partyClass = party === "D" ? "party-dem" : party === "R" ? "party-rep" : party === "I" ? "party-ind" : "party-other";
+      const winnerClass = cand.isWinner ? "is-winner" : "";
+      
+      return `
+        <article class="result-full-candidate ${partyClass} ${winnerClass}" data-candidate-name="${cand.name}" data-candidate-percent="${cand.percent || 0}" style="--candidate-color: ${this.partyColor(party)};">
+          <div class="result-full-header">
+            <div class="result-full-info">
+              <strong class="result-full-name">${cand.name}</strong>
+              ${cand.isIncumbent ? '<span class="result-full-incumbent">Incumbent</span>' : ''}
+              <span class="result-full-party">${party}</span>
+            </div>
+            <div class="result-full-numbers">
+              <span class="result-full-percent">${cand.percent !== undefined ? cand.percent.toFixed(1) + "%" : "N/A"}</span>
+              <span class="result-full-votes">${cand.votes !== undefined ? cand.votes.toLocaleString() + " votes" : "No votes"}</span>
+            </div>
+          </div>
+          ${cand.isWinner ? '<div class="result-full-winner-badge">Winner</div>' : ''}
+        </article>
+      `;
+    }).join("");
 
     focusedContent.innerHTML = `
-      <div style="margin-bottom: 16px;">
-        <h3 style="margin: 0 0 8px;">${race.electionName || race.name}</h3>
+      <div style="margin-bottom: 24px;">
+        <h3 style="margin: 0 0 8px; font-size: 1.5rem;">${race.electionName || race.name}</h3>
         <div style="color: #c6d2ff; font-size: 0.9rem;">
           ${race.reportingPercent !== undefined ? race.reportingPercent + "% reporting" : "No votes reported"}
         </div>
       </div>
-      <div style="margin-bottom: 16px;">
-        <h4 style="margin: 0 0 12px;">Candidates</h4>
+      <div class="result-full-candidates">
         ${candidateRows}
       </div>
     `;
+  }
+
+  partyColor(party) {
+    const p = String(party || "").toUpperCase();
+    if (p === "D") return "#2d7cff";
+    if (p === "R") return "#f3536a";
+    if (p === "I") return "#5fc529";
+    if (p === "L") return "#ffd700";
+    if (p === "G") return "#00a86b";
+    return "#566274";
   }
 
   clearFocus() {
