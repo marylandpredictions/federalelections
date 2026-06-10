@@ -894,7 +894,7 @@ function selectRace(raceId) {
 
 class ElectionNightPage {
   constructor() {
-    this.selectedMode = "house";
+    this.selectedMode = localStorage.getItem("electionNightMode") || "house";
     this.selectedRaceId = null;
     this.focusedRace = null;
     this.raceData = [];
@@ -985,6 +985,7 @@ class ElectionNightPage {
     if (this.selectedMode === mode) return;
 
     this.selectedMode = mode;
+    localStorage.setItem("electionNightMode", mode);
     this.selectedRaceId = null;
     this.focusedRace = null;
     this.raceData = [];
@@ -1115,20 +1116,16 @@ class ElectionNightPage {
   async selectRace(raceId) {
     this.selectedRaceId = raceId;
 
-    try {
-      // Try to load race details from existing data files
-      const response = await fetch(`data/live-results-races/${raceId}.json`);
-      if (!response.ok) {
-        this.renderNoRaceData();
-        return;
-      }
-
-      this.focusedRace = await response.json();
-      this.renderFocusedRace();
-    } catch (error) {
-      console.error("Failed to load race details:", error);
+    // Find race in loaded data
+    const race = this.raceData.find(r => r.id === raceId);
+    if (!race) {
+      console.error("Race not found:", raceId);
       this.renderNoRaceData();
+      return;
     }
+
+    this.focusedRace = race;
+    this.renderFocusedRace();
   }
 
   renderNoRaceData() {
