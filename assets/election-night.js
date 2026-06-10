@@ -41,16 +41,27 @@ function projectedFeaturePath(feature, projection) {
 }
 
 async function renderStatewideMap(mode, raceData) {
+  console.log("renderStatewideMap called with mode:", mode, "and raceData count:", raceData?.length);
+  
   const container = document.getElementById("election-map");
-  if (!container) return;
+  if (!container) {
+    console.error("Map container not found");
+    return;
+  }
   if (!window.d3 || !window.topojson) {
+    console.error("D3 or topojson not available");
     container.innerHTML = `<p class="map-note">State map rendering needs D3 to load.</p>`;
     return;
   }
 
   try {
+    console.log("Loading US atlas data...");
     const us = await d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json");
+    console.log("US atlas data loaded");
+    
     const features = topojson.feature(us, us.objects.states).features;
+    console.log("Features extracted:", features.length);
+    
     const width = 960;
     const height = 610;
     const projection = d3.geoAlbersUsa().fitSize([width, height], { type: "FeatureCollection", features });
@@ -59,9 +70,14 @@ async function renderStatewideMap(mode, raceData) {
     container.innerHTML = "";
     const svg = d3.select(container)
       .append("svg")
+      .attr("width", "100%")
+      .attr("height", "100%")
       .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("preserveAspectRatio", "xMidYMid meet")
       .attr("role", "img")
       .attr("aria-label", `United States map of ${mode} results`);
+    
+    console.log("SVG created, adding paths...");
 
     const raceByState = new Map();
     if (raceData && raceData.length) {
@@ -85,6 +101,8 @@ async function renderStatewideMap(mode, raceData) {
         if (!race) return "#566274";
         return resultsColor(race);
       })
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 0.5)
       .attr("tabindex", (feature) => raceByState.has(FIPS_TO_STATE[String(feature.id).padStart(2, "0")]) ? 0 : -1)
       .on("mouseenter focus", (event, feature) => {
         const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
@@ -103,6 +121,8 @@ async function renderStatewideMap(mode, raceData) {
         const race = raceByState.get(state);
         return race ? `${STATE_NAMES[state]}: ${race.electionName || state}` : STATE_NAMES[state];
       });
+    
+    console.log("Statewide map rendered successfully");
   } catch (error) {
     console.error("Failed to render statewide map:", error);
     container.innerHTML = `<p class="map-note">State map could not load. ${error.message || ""}</p>`;
@@ -110,15 +130,24 @@ async function renderStatewideMap(mode, raceData) {
 }
 
 async function renderHouseDistrictMap(raceData) {
+  console.log("renderHouseDistrictMap called with raceData count:", raceData?.length);
+  
   const container = document.getElementById("election-map");
-  if (!container) return;
+  if (!container) {
+    console.error("Map container not found");
+    return;
+  }
   if (!window.d3) {
+    console.error("D3 not available");
     container.innerHTML = `<p class="map-note">District map rendering needs D3 to load.</p>`;
     return;
   }
 
   try {
+    console.log("Loading house district geojson...");
     const geo = await d3.json("data/house-districts-119.geojson");
+    console.log("House district geojson loaded, features:", geo.features?.length);
+    
     const width = 980;
     const height = 610;
     const projection = d3.geoAlbersUsa().fitSize([width, height], geo);
@@ -126,9 +155,14 @@ async function renderHouseDistrictMap(raceData) {
     container.innerHTML = "";
     const svg = d3.select(container)
       .append("svg")
+      .attr("width", "100%")
+      .attr("height", "100%")
       .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("preserveAspectRatio", "xMidYMid meet")
       .attr("role", "img")
       .attr("aria-label", "Interactive 119th Congressional District map");
+    
+    console.log("SVG created for district map, adding paths...");
 
     const raceById = new Map();
     if (raceData && raceData.length) {
@@ -152,6 +186,8 @@ async function renderHouseDistrictMap(raceData) {
         if (!race) return "#566274";
         return resultsColor(race);
       })
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 0.5)
       .attr("tabindex", (feature) => raceById.has(feature.properties?.id) ? 0 : -1)
       .attr("aria-label", (feature) => {
         const race = raceById.get(feature.properties?.id);
@@ -171,6 +207,8 @@ async function renderHouseDistrictMap(raceData) {
         const race = raceById.get(feature.properties?.id);
         return race ? `${race.electionName || feature.properties?.id}` : `${feature.properties?.stateName || "District"} not modeled`;
       });
+    
+    console.log("House district map rendered successfully");
   } catch (error) {
     console.error("Failed to render district map:", error);
     container.innerHTML = `<p class="map-note">District map could not load. ${error.message || ""}</p>`;
@@ -734,6 +772,17 @@ class ElectionNightPage {
   }
 
   async renderMap() {
+    console.log("Rendering map for mode:", this.selectedMode);
+    
+    const container = document.getElementById("election-map");
+    if (!container) {
+      console.error("Map container not found in renderMap");
+      return;
+    }
+    
+    // Show loading message
+    container.innerHTML = `<p style="text-align: center; color: #c6d2ff; padding: 200px 0;">Loading map...</p>`;
+    
     // Filter race data by selected mode
     const modeRaces = this.raceData.filter(race => {
       if (this.selectedMode === "house") return race.type === "house";
@@ -741,6 +790,8 @@ class ElectionNightPage {
       if (this.selectedMode === "governor") return race.type === "governor";
       return false;
     });
+
+    console.log("Mode races count:", modeRaces.length);
 
     if (this.selectedMode === "house") {
       await renderHouseDistrictMap(modeRaces);
@@ -989,7 +1040,26 @@ class ElectionNightPage {
   }
 }
 
-// Initialize the page when DOM is ready
-document.addEventListener("DOMContentLoaded", () => {
-  new ElectionNightPage();
-});
+// Initialize the page when D3, topojson, and DOM are ready
+function initWhenReady() {
+  console.log("Checking if D3, topojson, and DOM are ready...");
+  console.log("D3 available:", !!window.d3);
+  console.log("Topojson available:", !!window.topojson);
+  console.log("DOM ready:", document.readyState === "complete" || document.readyState === "interactive");
+  console.log("Map container exists:", !!document.getElementById("election-map"));
+  
+  if (window.d3 && window.topojson && (document.readyState === "complete" || document.readyState === "interactive")) {
+    console.log("D3, topojson, and DOM ready, initializing page");
+    new ElectionNightPage();
+  } else {
+    console.log("Waiting for D3, topojson, and DOM to be ready...");
+    setTimeout(initWhenReady, 100);
+  }
+}
+
+// Start initialization
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initWhenReady);
+} else {
+  initWhenReady();
+}
