@@ -77,6 +77,106 @@ async function renderStatewideMap(mode, raceData) {
       .attr("role", "img")
       .attr("aria-label", `United States map of ${mode} results`);
     
+    // Add zoom behavior
+    const zoom = d3.zoom()
+      .scaleExtent([1, 8])
+      .on("zoom", (event) => {
+        svg.selectAll("path").attr("transform", event.transform);
+      });
+    
+    svg.call(zoom);
+    
+    // Add zoom controls
+    const zoomControls = svg.append("g")
+      .attr("class", "zoom-controls")
+      .attr("transform", `translate(${width - 100}, 20)`);
+    
+    zoomControls.append("rect")
+      .attr("width", 80)
+      .attr("height", 70)
+      .attr("fill", "rgba(0,0,0,0.7)")
+      .attr("rx", 5);
+    
+    zoomControls.append("text")
+      .attr("x", 40)
+      .attr("y", 20)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#fff")
+      .attr("font-size", "12px")
+      .text("Zoom");
+    
+    const zoomIn = zoomControls.append("g")
+      .attr("class", "zoom-in")
+      .attr("transform", "translate(20, 35)")
+      .style("cursor", "pointer");
+    
+    zoomIn.append("rect")
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("fill", "#fff")
+      .attr("rx", 3);
+    
+    zoomIn.append("text")
+      .attr("x", 10)
+      .attr("y", 15)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#000")
+      .attr("font-size", "16px")
+      .attr("font-weight", "bold")
+      .text("+");
+    
+    zoomIn.on("click", () => {
+      svg.transition().call(zoom.scaleBy, 1.3);
+    });
+    
+    const zoomOut = zoomControls.append("g")
+      .attr("class", "zoom-out")
+      .attr("transform", "translate(50, 35)")
+      .style("cursor", "pointer");
+    
+    zoomOut.append("rect")
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("fill", "#fff")
+      .attr("rx", 3);
+    
+    zoomOut.append("text")
+      .attr("x", 10)
+      .attr("y", 15)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#000")
+      .attr("font-size", "16px")
+      .attr("font-weight", "bold")
+      .text("-");
+    
+    zoomOut.on("click", () => {
+      svg.transition().call(zoom.scaleBy, 0.7);
+    });
+    
+    const zoomReset = zoomControls.append("g")
+      .attr("class", "zoom-reset")
+      .attr("transform", "translate(35, 60)")
+      .style("cursor", "pointer");
+    
+    zoomReset.append("rect")
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("fill", "#fff")
+      .attr("rx", 3);
+    
+    zoomReset.append("text")
+      .attr("x", 10)
+      .attr("y", 15)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#000")
+      .attr("font-size", "10px")
+      .attr("font-weight", "bold")
+      .text("R");
+    
+    zoomReset.on("click", () => {
+      svg.transition().call(zoom.transform, d3.zoomIdentity);
+    });
+    
     console.log("SVG created, adding paths...");
 
     const raceByState = new Map();
@@ -86,18 +186,23 @@ async function renderStatewideMap(mode, raceData) {
       });
     }
 
+    // For senate and governor, darken out states with no races
+    const darkenNoRaces = (mode === "senate" || mode === "governor");
+
     svg.selectAll("path")
       .data(features)
       .join("path")
       .attr("class", (feature) => {
         const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
         const race = raceByState.get(state);
+        if (darkenNoRaces && !race) return "state-shape state-muted";
         return race ? "state-shape" : "state-shape state-muted";
       })
       .attr("d", path)
       .attr("fill", (feature) => {
         const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
         const race = raceByState.get(state);
+        if (darkenNoRaces && !race) return "#2a2a2a";
         if (!race) return "#566274";
         return resultsColor(race);
       })
@@ -114,6 +219,7 @@ async function renderStatewideMap(mode, raceData) {
       .text((feature) => {
         const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
         const race = raceByState.get(state);
+        if (darkenNoRaces && !race) return `${STATE_NAMES[state]}: No election`;
         return race ? `${STATE_NAMES[state]}: ${race.electionName || state}` : STATE_NAMES[state];
       });
     
@@ -156,6 +262,106 @@ async function renderHouseDistrictMap(raceData) {
       .attr("preserveAspectRatio", "xMidYMid meet")
       .attr("role", "img")
       .attr("aria-label", "Interactive 119th Congressional District map");
+    
+    // Add zoom behavior
+    const zoom = d3.zoom()
+      .scaleExtent([1, 8])
+      .on("zoom", (event) => {
+        svg.selectAll("path").attr("transform", event.transform);
+      });
+    
+    svg.call(zoom);
+    
+    // Add zoom controls
+    const zoomControls = svg.append("g")
+      .attr("class", "zoom-controls")
+      .attr("transform", `translate(${width - 100}, 20)`);
+    
+    zoomControls.append("rect")
+      .attr("width", 80)
+      .attr("height", 70)
+      .attr("fill", "rgba(0,0,0,0.7)")
+      .attr("rx", 5);
+    
+    zoomControls.append("text")
+      .attr("x", 40)
+      .attr("y", 20)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#fff")
+      .attr("font-size", "12px")
+      .text("Zoom");
+    
+    const zoomIn = zoomControls.append("g")
+      .attr("class", "zoom-in")
+      .attr("transform", "translate(20, 35)")
+      .style("cursor", "pointer");
+    
+    zoomIn.append("rect")
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("fill", "#fff")
+      .attr("rx", 3);
+    
+    zoomIn.append("text")
+      .attr("x", 10)
+      .attr("y", 15)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#000")
+      .attr("font-size", "16px")
+      .attr("font-weight", "bold")
+      .text("+");
+    
+    zoomIn.on("click", () => {
+      svg.transition().call(zoom.scaleBy, 1.3);
+    });
+    
+    const zoomOut = zoomControls.append("g")
+      .attr("class", "zoom-out")
+      .attr("transform", "translate(50, 35)")
+      .style("cursor", "pointer");
+    
+    zoomOut.append("rect")
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("fill", "#fff")
+      .attr("rx", 3);
+    
+    zoomOut.append("text")
+      .attr("x", 10)
+      .attr("y", 15)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#000")
+      .attr("font-size", "16px")
+      .attr("font-weight", "bold")
+      .text("-");
+    
+    zoomOut.on("click", () => {
+      svg.transition().call(zoom.scaleBy, 0.7);
+    });
+    
+    const zoomReset = zoomControls.append("g")
+      .attr("class", "zoom-reset")
+      .attr("transform", "translate(35, 60)")
+      .style("cursor", "pointer");
+    
+    zoomReset.append("rect")
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("fill", "#fff")
+      .attr("rx", 3);
+    
+    zoomReset.append("text")
+      .attr("x", 10)
+      .attr("y", 15)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#000")
+      .attr("font-size", "10px")
+      .attr("font-weight", "bold")
+      .text("R");
+    
+    zoomReset.on("click", () => {
+      svg.transition().call(zoom.transform, d3.zoomIdentity);
+    });
     
     console.log("SVG created for district map, adding paths...");
 
@@ -731,8 +937,8 @@ class ElectionNightPage {
 
   async loadRaceData() {
     try {
-      // Try to load race data from live results
-      const response = await fetch("data/live-results.json");
+      // Try to load race data from election night races file
+      const response = await fetch("data/election-night-races.json");
       if (!response.ok) {
         this.raceData = [];
         return;
