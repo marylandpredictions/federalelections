@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>2026 Election Night Results | Federal Elections Analysis</title>
-  <meta name="description" content="Public 2026 election night dashboard for House, Senate, and gubernatorial results from Federal Elections Analysis.">
+  <title>2026 Election Night | Federal Elections Analysis</title>
+  <meta name="description" content="2026 election night dashboard for House, Senate, and gubernatorial results from Federal Elections Analysis.">
   <meta property="og:image" content="https://media.discordapp.net/attachments/1382924914482348064/1509778504353447998/FEA_40.png?ex=6a1a6a4d&is=6a1918cd&hm=6b77c0e3215672cbf44ea62d2fc2c9e4d907031812e13de98aeedc34dd23b5e1&=&format=webp&quality=lossless&width=2452&height=1380">
   <link rel="icon" href="assets/img/FEA_Icon.webp" type="image/webp">
   <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
@@ -45,9 +45,9 @@
   <main class="election-night-page">
     <section class="text-panel compact-page-head election-night-hero" aria-labelledby="page-title">
       <div>
-        <p class="kicker">2026 Election Night</p>
-        <h1 id="page-title">Live election results.</h1>
-        <p class="lede">A public dashboard for House, Senate, and gubernatorial races.</p>
+        <p class="kicker">Federal Elections Analysis</p>
+        <h1 id="page-title">2026 Election Night.</h1>
+        <p class="lede">Forecast-backed race board for House, Senate, and gubernatorial contests.</p>
       </div>
       <div class="hero-actions election-mode-toggle" role="tablist" aria-label="Election results mode">
         <button class="button-link" type="button" data-mode="house">House</button>
@@ -56,41 +56,27 @@
       </div>
     </section>
 
-    <section class="election-dashboard-grid">
-      <aside class="text-panel election-summary-panel" aria-label="Results summary">
-        <p class="kicker" id="summary-label">House Results</p>
-        <div class="election-summary-grid">
-          <article>
-            <strong id="total-races">--</strong>
-            <span id="called-races">-- called</span>
-          </article>
-          <article>
-            <strong id="dem-seats" class="party-dem-text">--</strong>
-            <span id="dem-summary-label">Democratic seats</span>
-          </article>
-          <article>
-            <strong id="rep-seats" class="party-rep-text">--</strong>
-            <span id="rep-summary-label">Republican seats</span>
-          </article>
-          <article>
-            <strong id="reporting-percent">--%</strong>
-            <span>Reporting</span>
-          </article>
-        </div>
-        <p id="reporting-status" class="meta">No votes reported</p>
-        <p class="meta">Last updated: <span id="last-updated">--</span></p>
-      </aside>
-
-      <aside class="text-panel election-race-list-panel" aria-labelledby="race-list-title">
-        <div class="section-head compact">
-          <div>
-            <p class="kicker">Race list</p>
-            <h2 id="race-list-title">Tracked races.</h2>
-          </div>
-          <button class="button-link compact-button" type="button" id="clear-focus-button">National view</button>
-        </div>
-        <div id="race-list" class="election-race-list"></div>
-      </aside>
+    <section class="election-dashboard-grid election-dashboard-grid-wide">
+      <article class="election-night-stat">
+        <span id="summary-label">House results</span>
+        <strong id="total-races">--</strong>
+        <small id="called-races">tracked contests</small>
+      </article>
+      <article class="election-night-stat election-night-stat-dem">
+        <span id="dem-summary-label">Democratic seats</span>
+        <strong id="dem-seats">--</strong>
+        <small id="dem-share-label">projected</small>
+      </article>
+      <article class="election-night-stat election-night-stat-rep">
+        <span id="rep-summary-label">Republican seats</span>
+        <strong id="rep-seats">--</strong>
+        <small id="rep-share-label">projected</small>
+      </article>
+      <article class="election-night-stat">
+        <span>Live status</span>
+        <strong id="reporting-percent">--</strong>
+        <small id="last-updated">loading</small>
+      </article>
     </section>
 
     <section class="map-panel election-map-panel" aria-labelledby="map-title">
@@ -99,20 +85,24 @@
           <p class="kicker">Map</p>
           <h2 id="map-title">The 2026 results map.</h2>
         </div>
-        <p id="map-subtitle">Click a state or district to focus it. Use National view to reset.</p>
+        <button class="button-link compact-button" type="button" data-clear-focus>National view</button>
       </div>
-      <div id="election-map" class="election-map-canvas" aria-live="polite"></div>
-    </section>
-
-    <section id="focused-race-panel" class="text-panel election-focus-panel" aria-labelledby="focused-race-title" hidden>
-      <div class="section-head compact">
-        <div>
-          <p class="kicker">Focused race</p>
-          <h2 id="focused-race-title">Race details.</h2>
+      <div class="election-map-shell">
+        <div id="election-map" class="election-map-canvas" aria-live="polite"></div>
+        <aside id="focused-race-panel" class="election-focus-panel election-focus-overlay" aria-labelledby="focused-race-title" hidden>
+          <div class="focused-card-head">
+            <span class="focused-pill">Key race</span>
+            <span class="focused-pill focused-pill-light" id="focused-race-rating">Tracked</span>
+            <button class="focused-close" type="button" data-clear-focus aria-label="Close selected race">×</button>
+          </div>
+          <h3 id="focused-race-title">Select a race.</h3>
+          <div id="focused-race-content"></div>
+        </aside>
+        <div class="election-map-hint">
+          <strong>Click a state or district</strong>
+          <span>to zoom and view race details.</span>
         </div>
-        <button class="button-link compact-button" type="button" data-clear-focus>Back to national view</button>
       </div>
-      <div id="focused-race-content"></div>
     </section>
   </main>
 

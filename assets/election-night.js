@@ -1,7 +1,3 @@
-// 2026 Election Night Results Page
-// Uses existing map files and starts with no results
-
-// Map rendering functions copied from wiki.js and result-detail.js
 const FIPS_TO_STATE = {
   "01": "AL", "02": "AK", "04": "AZ", "05": "AR", "06": "CA", "08": "CO", "09": "CT", "10": "DE", "11": "DC",
   "12": "FL", "13": "GA", "15": "HI", "16": "ID", "17": "IL", "18": "IN", "19": "IA", "20": "KS",
@@ -22,1418 +18,519 @@ const STATE_NAMES = {
   VT: "Vermont", VA: "Virginia", WA: "Washington", WV: "West Virginia", WI: "Wisconsin", WY: "Wyoming"
 };
 
-function projectedRingPath(ring, projection) {
-  const points = ring
-    .map((point) => projection(point))
-    .filter(Boolean);
-  if (points.length < 3) return "";
-  return `${points.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`).join("")}Z`;
+const PARTY_COLORS = {
+  D: "#1687e8",
+  R: "#df2e38",
+  I: "#8b5cf6",
+  L: "#d6a400",
+  G: "#39b86b",
+  U: "#9aa6b8"
+};
+
+const MODE_LABELS = {
+  house: "House",
+  senate: "Senate",
+  governor: "Governor"
+};
+
+function partyColor(party) {
+  return PARTY_COLORS[String(party || "U").toUpperCase()] || PARTY_COLORS.U;
 }
 
-function projectedFeaturePath(feature, projection) {
-  const geometry = feature?.geometry;
-  if (!geometry) return "";
-  const polygons = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates || [];
-  return polygons
-    .flatMap((polygon) => polygon.map((ring) => projectedRingPath(ring, projection)))
-    .filter(Boolean)
-    .join("");
+function formatPercent(value, digits = 1) {
+  if (!Number.isFinite(value)) return "--";
+  return `${value.toFixed(digits)}%`;
 }
 
-async function renderStatewideMap(mode, raceData) {
-  console.log("renderStatewideMap called with mode:", mode, "and raceData count:", raceData?.length);
-  
-  const container = document.getElementById("election-map");
-  if (!container) {
-    console.error("Map container not found");
-    return;
-  }
-  if (!window.d3 || !window.topojson) {
-    console.error("D3 or topojson not available");
-    container.innerHTML = `<p class="map-note">State map rendering needs D3 to load.</p>`;
-    return;
-  }
-
-  try {
-    console.log("Loading US atlas data...");
-    const us = await d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json");
-    console.log("US atlas data loaded");
-    
-    const features = topojson.feature(us, us.objects.states).features;
-    console.log("Features extracted:", features.length);
-    
-    const width = 960;
-    const height = 610;
-    const projection = d3.geoAlbersUsa().fitSize([width, height], { type: "FeatureCollection", features });
-    const path = d3.geoPath(projection);
-    
-    container.innerHTML = "";
-    const svg = d3.select(container)
-      .append("svg")
-      .attr("width", "100%")
-      .attr("height", "100%")
-      .attr("viewBox", `0 0 ${width} ${height}`)
-      .attr("role", "img")
-      .attr("aria-label", `United States map of ${mode} results`);
-    
-    // Add zoom behavior
-    const zoom = d3.zoom()
-      .scaleExtent([1, 8])
-      .on("zoom", (event) => {
-        svg.selectAll("path").attr("transform", event.transform);
-      });
-    
-    svg.call(zoom);
-    
-    // Store zoom behavior for later use
-    svg.node().__zoomBehavior = zoom;
-    
-    // Add zoom controls
-    const zoomControls = svg.append("g")
-      .attr("class", "zoom-controls")
-      .attr("transform", `translate(${width - 100}, 20)`);
-    
-    zoomControls.append("rect")
-      .attr("width", 80)
-      .attr("height", 70)
-      .attr("fill", "rgba(0,0,0,0.7)")
-      .attr("rx", 5);
-    
-    zoomControls.append("text")
-      .attr("x", 40)
-      .attr("y", 20)
-      .attr("text-anchor", "middle")
-      .attr("fill", "#fff")
-      .attr("font-size", "12px")
-      .text("Zoom");
-    
-    const zoomIn = zoomControls.append("g")
-      .attr("class", "zoom-in")
-      .attr("transform", "translate(20, 35)")
-      .style("cursor", "pointer");
-    
-    zoomIn.append("rect")
-      .attr("width", 20)
-      .attr("height", 20)
-      .attr("fill", "#fff")
-      .attr("rx", 3);
-    
-    zoomIn.append("text")
-      .attr("x", 10)
-      .attr("y", 15)
-      .attr("text-anchor", "middle")
-      .attr("fill", "#000")
-      .attr("font-size", "16px")
-      .attr("font-weight", "bold")
-      .text("+");
-    
-    zoomIn.on("click", () => {
-      svg.transition().call(zoom.scaleBy, 1.3);
-    });
-    
-    const zoomOut = zoomControls.append("g")
-      .attr("class", "zoom-out")
-      .attr("transform", "translate(50, 35)")
-      .style("cursor", "pointer");
-    
-    zoomOut.append("rect")
-      .attr("width", 20)
-      .attr("height", 20)
-      .attr("fill", "#fff")
-      .attr("rx", 3);
-    
-    zoomOut.append("text")
-      .attr("x", 10)
-      .attr("y", 15)
-      .attr("text-anchor", "middle")
-      .attr("fill", "#000")
-      .attr("font-size", "16px")
-      .attr("font-weight", "bold")
-      .text("-");
-    
-    zoomOut.on("click", () => {
-      svg.transition().call(zoom.scaleBy, 0.7);
-    });
-    
-    const zoomReset = zoomControls.append("g")
-      .attr("class", "zoom-reset")
-      .attr("transform", "translate(35, 60)")
-      .style("cursor", "pointer");
-    
-    zoomReset.append("rect")
-      .attr("width", 20)
-      .attr("height", 20)
-      .attr("fill", "#fff")
-      .attr("rx", 3);
-    
-    zoomReset.append("text")
-      .attr("x", 10)
-      .attr("y", 15)
-      .attr("text-anchor", "middle")
-      .attr("fill", "#000")
-      .attr("font-size", "10px")
-      .attr("font-weight", "bold")
-      .text("R");
-    
-    zoomReset.on("click", () => {
-      svg.transition().call(zoom.transform, d3.zoomIdentity);
-    });
-    
-    console.log("SVG created, adding paths...");
-
-    const raceByState = new Map();
-    if (raceData && raceData.length) {
-      raceData.forEach(race => {
-        if (race.state) raceByState.set(race.state, race);
-      });
-    }
-
-    // For senate and governor, darken out states with no races
-    const darkenNoRaces = (mode === "senate" || mode === "governor");
-
-    svg.selectAll("path")
-      .data(features)
-      .join("path")
-      .attr("class", (feature) => {
-        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
-        const race = raceByState.get(state);
-        if (darkenNoRaces && !race) return "state-shape state-muted";
-        return race ? "state-shape" : "state-shape state-muted";
-      })
-      .attr("d", path)
-      .attr("fill", (feature) => {
-        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
-        const race = raceByState.get(state);
-        if (darkenNoRaces && !race) return "#2a2a2a";
-        if (!race) return "#566274";
-        return resultsColor(race);
-      })
-      .attr("stroke", "#000")
-      .attr("stroke-width", 0.3)
-      .attr("tabindex", (feature) => raceByState.has(FIPS_TO_STATE[String(feature.id).padStart(2, "0")]) ? 0 : -1)
-      .style("cursor", (feature) => raceByState.has(FIPS_TO_STATE[String(feature.id).padStart(2, "0")]) ? "pointer" : "default")
-      .on("click keydown", (event, feature) => {
-        console.log("Click event on feature:", feature);
-        if (event.type === "keydown" && event.key !== "Enter") return;
-        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
-        console.log("State:", state);
-        const race = raceByState.get(state);
-        console.log("Race:", race);
-        if (race) {
-          console.log("Calling selectRace with race id:", race.id);
-          currentPage.selectRace(race.id);
-        }
-      })
-      .on("mouseover", (event, feature) => {
-        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
-        const race = raceByState.get(state);
-        let tooltipHtml = `<div style="font-weight: bold; margin-bottom: 4px;">${STATE_NAMES[state]}</div>`;
-        
-        if (darkenNoRaces && !race) {
-          tooltipHtml += `<div style="color: #aaa;">No election</div>`;
-        } else if (race) {
-          tooltipHtml += `<div style="margin-bottom: 4px;">${race.electionName || state}</div>`;
-          
-          if (race.candidates && race.candidates.length > 0) {
-            tooltipHtml += `<div style="font-size: 11px; margin-top: 6px;">`;
-            race.candidates.forEach(c => {
-              const partyColor = c.party === "D" ? "#2d7cff" : c.party === "R" ? "#f3536a" : "#5fc529";
-              const incumbent = c.isIncumbent ? " (i)" : "";
-              const winner = c.isWinner ? " ✓" : "";
-              tooltipHtml += `<div style="margin: 2px 0;"><span style="color: ${partyColor}; font-weight: bold;">${c.party}</span> ${c.name}${incumbent}${winner}: ${c.percent?.toFixed(1) || 0}%</div>`;
-            });
-            tooltipHtml += `</div>`;
-            
-            if (race.reportingPercent) {
-              tooltipHtml += `<div style="font-size: 10px; color: #aaa; margin-top: 4px;">${race.reportingPercent}% reporting</div>`;
-            }
-          }
-        }
-        
-        // Show custom tooltip
-        const tooltip = d3.select("body").append("div")
-          .attr("class", "map-tooltip")
-          .style("position", "absolute")
-          .style("background", "rgba(0, 0, 0, 0.9)")
-          .style("color", "#fff")
-          .style("padding", "10px 14px")
-          .style("border-radius", "6px")
-          .style("font-size", "12px")
-          .style("pointer-events", "none")
-          .style("z-index", "1000")
-          .style("max-width", "250px")
-          .style("line-height", "1.4")
-          .html(tooltipHtml);
-        
-        // Position tooltip
-        tooltip
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY + 10) + "px");
-      })
-      .on("mousemove", (event) => {
-        d3.select(".map-tooltip")
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY + 10) + "px");
-      })
-      .on("mouseout", () => {
-        d3.select(".map-tooltip").remove();
-      });
-    
-    console.log("Statewide map rendered successfully");
-  } catch (error) {
-    console.error("Failed to render statewide map:", error);
-    container.innerHTML = `<p class="map-note">State map could not load. ${error.message || ""}</p>`;
-  }
+function formatVotes(value) {
+  return Number.isFinite(value) && value > 0 ? value.toLocaleString() : "0";
 }
 
-async function renderHouseDistrictMap(raceData) {
-  console.log("renderHouseDistrictMap called with raceData count:", raceData?.length);
-  
-  const container = document.getElementById("election-map");
-  if (!container) {
-    console.error("Map container not found");
-    return;
-  }
-  if (!window.d3) {
-    console.error("D3 not available");
-    container.innerHTML = `<p class="map-note">District map rendering needs D3 to load.</p>`;
-    return;
-  }
-
-  try {
-    console.log("Loading house district geojson...");
-    const geo = await d3.json("data/house-districts-119.geojson");
-    console.log("House district geojson loaded, features:", geo.features?.length);
-    
-    const width = 960;
-    const height = 610;
-    const projection = d3.geoAlbersUsa().fitSize([width, height], geo);
-
-    container.innerHTML = "";
-    const svg = d3.select(container)
-      .append("svg")
-      .attr("width", "100%")
-      .attr("height", "100%")
-      .attr("viewBox", `0 0 ${width} ${height}`)
-      .attr("role", "img")
-      .attr("aria-label", "Interactive 119th Congressional District map");
-    
-    // Add zoom behavior
-    const zoom = d3.zoom()
-      .scaleExtent([1, 8])
-      .on("zoom", (event) => {
-        svg.selectAll("path").attr("transform", event.transform);
-      });
-    
-    svg.call(zoom);
-    
-    // Store zoom behavior for later use
-    svg.node().__zoomBehavior = zoom;
-    
-    // Add zoom controls
-    const zoomControls = svg.append("g")
-      .attr("class", "zoom-controls")
-      .attr("transform", `translate(${width - 100}, 20)`);
-    
-    zoomControls.append("rect")
-      .attr("width", 80)
-      .attr("height", 70)
-      .attr("fill", "rgba(0,0,0,0.7)")
-      .attr("rx", 5);
-    
-    zoomControls.append("text")
-      .attr("x", 40)
-      .attr("y", 20)
-      .attr("text-anchor", "middle")
-      .attr("fill", "#fff")
-      .attr("font-size", "12px")
-      .text("Zoom");
-    
-    const zoomIn = zoomControls.append("g")
-      .attr("class", "zoom-in")
-      .attr("transform", "translate(20, 35)")
-      .style("cursor", "pointer");
-    
-    zoomIn.append("rect")
-      .attr("width", 20)
-      .attr("height", 20)
-      .attr("fill", "#fff")
-      .attr("rx", 3);
-    
-    zoomIn.append("text")
-      .attr("x", 10)
-      .attr("y", 15)
-      .attr("text-anchor", "middle")
-      .attr("fill", "#000")
-      .attr("font-size", "16px")
-      .attr("font-weight", "bold")
-      .text("+");
-    
-    zoomIn.on("click", () => {
-      svg.transition().call(zoom.scaleBy, 1.3);
-    });
-    
-    const zoomOut = zoomControls.append("g")
-      .attr("class", "zoom-out")
-      .attr("transform", "translate(50, 35)")
-      .style("cursor", "pointer");
-    
-    zoomOut.append("rect")
-      .attr("width", 20)
-      .attr("height", 20)
-      .attr("fill", "#fff")
-      .attr("rx", 3);
-    
-    zoomOut.append("text")
-      .attr("x", 10)
-      .attr("y", 15)
-      .attr("text-anchor", "middle")
-      .attr("fill", "#000")
-      .attr("font-size", "16px")
-      .attr("font-weight", "bold")
-      .text("-");
-    
-    zoomOut.on("click", () => {
-      svg.transition().call(zoom.scaleBy, 0.7);
-    });
-    
-    const zoomReset = zoomControls.append("g")
-      .attr("class", "zoom-reset")
-      .attr("transform", "translate(35, 60)")
-      .style("cursor", "pointer");
-    
-    zoomReset.append("rect")
-      .attr("width", 20)
-      .attr("height", 20)
-      .attr("fill", "#fff")
-      .attr("rx", 3);
-    
-    zoomReset.append("text")
-      .attr("x", 10)
-      .attr("y", 15)
-      .attr("text-anchor", "middle")
-      .attr("fill", "#000")
-      .attr("font-size", "10px")
-      .attr("font-weight", "bold")
-      .text("R");
-    
-    zoomReset.on("click", () => {
-      svg.transition().call(zoom.transform, d3.zoomIdentity);
-    });
-    
-    console.log("SVG created for district map, adding paths...");
-
-    const raceById = new Map();
-    if (raceData && raceData.length) {
-      raceData.forEach(race => {
-        if (race.id) raceById.set(race.id, race);
-      });
-    }
-
-    svg.selectAll("path")
-      .data(geo.features || [])
-      .join("path")
-      .attr("class", (feature) => {
-        const race = raceById.get(feature.properties?.id);
-        return race ? "district-shape" : "district-shape state-muted";
-      })
-      .attr("data-district", (feature) => feature.properties?.id || "")
-      .attr("d", (feature) => projectedFeaturePath(feature, projection))
-      .attr("fill-rule", "evenodd")
-      .attr("fill", (feature) => {
-        const race = raceById.get(feature.properties?.id);
-        if (!race) return "#566274";
-        return resultsColor(race);
-      })
-      .attr("stroke", "#000")
-      .attr("stroke-width", 0.3)
-      .attr("tabindex", (feature) => raceById.has(feature.properties?.id) ? 0 : -1)
-      .attr("aria-label", (feature) => {
-        const race = raceById.get(feature.properties?.id);
-        return race ? `${race.electionName || feature.properties?.id}` : `${feature.properties?.stateName || "District"} not modeled`;
-      })
-      .style("cursor", (feature) => raceById.has(feature.properties?.id) ? "pointer" : "default")
-      .on("click keydown", (event, feature) => {
-        console.log("Click event on district feature:", feature);
-        if (event.type === "keydown" && event.key !== "Enter") return;
-        const race = raceById.get(feature.properties?.id);
-        console.log("District race:", race);
-        if (race) {
-          console.log("Calling selectRace with race id:", race.id);
-          currentPage.selectRace(race.id);
-        }
-      })
-      .on("mouseover", (event, feature) => {
-        const race = raceById.get(feature.properties?.id);
-        let tooltipHtml = `<div style="font-weight: bold; margin-bottom: 4px;">${race?.electionName || feature.properties?.id}</div>`;
-        
-        if (race && race.candidates && race.candidates.length > 0) {
-          tooltipHtml += `<div style="font-size: 11px; margin-top: 6px;">`;
-          race.candidates.forEach(c => {
-            const partyColor = c.party === "D" ? "#2d7cff" : c.party === "R" ? "#f3536a" : "#5fc529";
-            const incumbent = c.isIncumbent ? " (i)" : "";
-            const winner = c.isWinner ? " ✓" : "";
-            tooltipHtml += `<div style="margin: 2px 0;"><span style="color: ${partyColor}; font-weight: bold;">${c.party}</span> ${c.name}${incumbent}${winner}: ${c.percent?.toFixed(1) || 0}%</div>`;
-          });
-          tooltipHtml += `</div>`;
-          
-          if (race.reportingPercent) {
-            tooltipHtml += `<div style="font-size: 10px; color: #aaa; margin-top: 4px;">${race.reportingPercent}% reporting</div>`;
-          }
-        } else {
-          tooltipHtml += `<div style="color: #aaa;">${feature.properties?.stateName || "District"} not modeled</div>`;
-        }
-        
-        // Show custom tooltip
-        const tooltip = d3.select("body").append("div")
-          .attr("class", "map-tooltip")
-          .style("position", "absolute")
-          .style("background", "rgba(0, 0, 0, 0.9)")
-          .style("color", "#fff")
-          .style("padding", "10px 14px")
-          .style("border-radius", "6px")
-          .style("font-size", "12px")
-          .style("pointer-events", "none")
-          .style("z-index", "1000")
-          .style("max-width", "250px")
-          .style("line-height", "1.4")
-          .html(tooltipHtml);
-        
-        // Position tooltip
-        tooltip
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY + 10) + "px");
-      })
-      .on("mousemove", (event) => {
-        d3.select(".map-tooltip")
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY + 10) + "px");
-      })
-      .on("mouseout", () => {
-        d3.select(".map-tooltip").remove();
-      });
-    
-    console.log("House district map rendered successfully");
-  } catch (error) {
-    console.error("Failed to render district map:", error);
-    container.innerHTML = `<p class="map-note">District map could not load. ${error.message || ""}</p>`;
-  }
+function cleanStatus(status) {
+  return String(status || "").toLowerCase();
 }
 
-function resultsColor(race) {
-  if (!race || !race.candidates || !race.candidates.length) return "#566274";
-  
-  const winner = race.candidates.find(c => c.isWinner);
-  if (winner) {
-    const party = String(winner.party || "").toUpperCase();
-    if (party === "D") return "#2d7cff";
-    if (party === "R") return "#f3536a";
-    if (party === "I") return "#5fc529";
-    if (party === "L") return "#ffd700";
-    if (party === "G") return "#00a86b";
-  }
-  
-  // If no winner, use leader
-  const leader = race.candidates.reduce((a, b) => (b.percent || 0) > (a.percent || 0) ? b : a);
-  if (leader && leader.percent) {
-    const party = String(leader.party || "").toUpperCase();
-    if (party === "D") return "#2d7cff";
-    if (party === "R") return "#f3536a";
-    if (party === "I") return "#5fc529";
-    if (party === "L") return "#ffd700";
-    if (party === "G") return "#00a86b";
-  }
-  
-  return "#566274";
+function hasRealNominee(status) {
+  const value = cleanStatus(status);
+  return value === "nominee" || value === "presumptive" || value === "resolved-or-filed";
 }
 
-// County map data loading functions (copied from result-detail.js)
-let countyMapDataPromise = null;
-let usStateMapDataPromise = null;
-let majorHighwayDataPromise = null;
-let countryContextDataPromise = null;
-let countyDescriptionsPromise = null;
-let countyDescriptionData = { byFips: {}, byStateName: {}, byName: {} };
-
-async function loadCountyMapData() {
-  if (!countyMapDataPromise) {
-    countyMapDataPromise = fetch("data/result-counties.geojson", { cache: "force-cache" }).then((response) => {
-      if (!response.ok) throw new Error(`County map returned ${response.status}`);
-      return response.json();
-    });
-  }
-  return countyMapDataPromise;
+function candidateName(name, party, status) {
+  if (!name || !hasRealNominee(status)) return party === "D" ? "Democrat" : party === "R" ? "Republican" : "Candidate";
+  return name;
 }
 
-async function loadUsStateMapData() {
-  if (!usStateMapDataPromise) {
-    usStateMapDataPromise = fetch("data/result-us-states.geojson", { cache: "force-cache" }).then((response) => {
-      if (!response.ok) throw new Error(`US state map returned ${response.status}`);
-      return response.json();
-    });
-  }
-  return usStateMapDataPromise;
+function raceWinnerParty(race) {
+  if (!race) return "U";
+  if (race.winnerParty) return race.winnerParty;
+  if (Number.isFinite(race.margin)) return race.margin >= 0 ? "D" : "R";
+  const leader = race.candidates?.slice().sort((a, b) => (b.percent || 0) - (a.percent || 0))[0];
+  return leader?.party || "U";
 }
 
-async function loadMajorHighwayData() {
-  if (!majorHighwayDataPromise) {
-    majorHighwayDataPromise = fetch("data/result-major-highways.geojson", { cache: "force-cache" }).then((response) => {
-      if (!response.ok) throw new Error(`Major highway map returned ${response.status}`);
-      return response.json();
-    });
-  }
-  return majorHighwayDataPromise;
+function raceColor(race) {
+  const party = raceWinnerParty(race);
+  const base = partyColor(party);
+  const probability = race?.winnerProbability ?? Math.max(race?.demProbability || 0, race?.repProbability || 0);
+  const strength = Number.isFinite(probability) ? Math.max(0.24, Math.min(1, probability)) : 0.42;
+  return d3.interpolateRgb("#cfd6e5", base)(strength);
 }
 
-async function loadCountryContextData() {
-  if (!countryContextDataPromise) {
-    countryContextDataPromise = fetch("data/result-country-context.geojson", { cache: "force-cache" }).then((response) => {
-      if (!response.ok) throw new Error(`Country context map returned ${response.status}`);
-      return response.json();
-    });
-  }
-  return countryContextDataPromise;
+function topCandidates(race, limit = 3) {
+  return (race?.candidates || [])
+    .slice()
+    .sort((a, b) => (b.percent || 0) - (a.percent || 0))
+    .slice(0, limit);
 }
 
-async function loadCountyDescriptions() {
-  if (!countyDescriptionsPromise) {
-    countyDescriptionsPromise = fetch("data/result-county-descriptions.json", { cache: "force-cache" })
-      .then((response) => response.ok ? response.json() : { byFips: {}, byName: {} })
-      .then((data) => {
-        countyDescriptionData = {
-          byFips: data.byFips || {},
-          byStateName: data.byStateName || {},
-          byName: data.byName || {}
-        };
-        return countyDescriptionData;
-      })
-      .catch(() => {
-        countyDescriptionData = { byFips: {}, byStateName: {}, byName: {} };
-        return countyDescriptionData;
-      });
-  }
-  return countyDescriptionsPromise;
-}
-
-// County map helper functions (copied from result-detail.js)
-function coordinateRings(geometry) {
-  if (!geometry) return [];
-  const type = geometry.type;
-  const coordinates = geometry.coordinates;
-  if (type === "Polygon") return coordinates;
-  if (type === "MultiPolygon") return coordinates.flat();
-  return [];
-}
-
-function coordinateLines(geometry) {
-  if (!geometry) return [];
-  const type = geometry.type;
-  const coordinates = geometry.coordinates;
-  if (type === "LineString") return [coordinates];
-  if (type === "MultiLineString") return coordinates;
-  if (type === "Polygon") return coordinates;
-  if (type === "MultiPolygon") return coordinates.flat();
-  return [];
-}
-
-function stateBounds(features) {
-  if (!features || !features.length) return null;
-  let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
-  features.forEach(feature => {
-    const rings = coordinateRings(feature.geometry);
-    rings.forEach(ring => {
-      ring.forEach(([lon, lat]) => {
-        minLon = Math.min(minLon, lon);
-        maxLon = Math.max(maxLon, lon);
-        minLat = Math.min(minLat, lat);
-        maxLat = Math.max(maxLat, lat);
-      });
-    });
-  });
-  if (!isFinite(minLon)) return null;
-  return { minLon, maxLon, minLat, maxLat };
-}
-
-function expandedBounds(bounds, factor) {
-  if (!bounds) return null;
-  const lonRange = bounds.maxLon - bounds.minLon;
-  const latRange = bounds.maxLat - bounds.minLat;
-  const lonPadding = lonRange * factor;
-  const latPadding = latRange * factor;
+function buildCandidate(party, name, status, percent, votes = 0, extra = {}) {
   return {
-    minLon: bounds.minLon - lonPadding,
-    maxLon: bounds.maxLon + lonPadding,
-    minLat: bounds.minLat - latPadding,
-    maxLat: bounds.maxLat + latPadding
+    name: candidateName(name, party, status),
+    party,
+    status,
+    percent: Number.isFinite(percent) ? percent : 0,
+    votes: Number.isFinite(votes) ? votes : 0,
+    ...extra
   };
 }
 
-function mergeBounds(boundsList) {
-  const valid = boundsList.filter(Boolean);
-  if (!valid.length) return null;
-  let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
-  valid.forEach(bounds => {
-    minLon = Math.min(minLon, bounds.minLon);
-    maxLon = Math.max(maxLon, bounds.maxLon);
-    minLat = Math.min(minLat, bounds.minLat);
-    maxLat = Math.max(maxLat, bounds.maxLat);
-  });
-  return { minLon, maxLon, minLat, maxLat };
+function normalizeHouseRace(district) {
+  const demPercent = (district.demProbability || 0) * 100;
+  const repPercent = (district.repProbability || 0) * 100;
+  return {
+    id: district.id,
+    type: "house",
+    state: district.state,
+    district: district.district,
+    title: `${STATE_NAMES[district.state] || district.state} ${district.district === "AL" ? "At-Large" : `District ${district.district}`}`,
+    subtitle: district.rating || "Tracked race",
+    rating: district.rating || "",
+    margin: district.margin,
+    winnerParty: district.winnerParty || (demPercent >= repPercent ? "D" : "R"),
+    winnerProbability: Math.max(district.demProbability || 0, district.repProbability || 0),
+    demProbability: district.demProbability,
+    repProbability: district.repProbability,
+    candidates: [
+      buildCandidate("D", district.demCandidate, district.demStatus, demPercent, 0, { incumbent: district.demProfile?.incumbent }),
+      buildCandidate("R", district.repCandidate, district.repStatus, repPercent, 0, { incumbent: district.repProfile?.incumbent })
+    ],
+    reportingPercent: null
+  };
 }
 
-function mapDimensions(bounds, maxWidth = 960, maxHeight = 610) {
-  if (!bounds) return { width: maxWidth, height: maxHeight, lonScale: 1 };
-  const lonRange = bounds.maxLon - bounds.minLon;
-  const latRange = bounds.maxLat - bounds.minLat;
-  const midLat = (bounds.minLat + bounds.maxLat) / 2;
-  const lonScale = Math.max(.35, Math.cos(midLat * Math.PI / 180));
-  const adjustedLonRange = lonRange * lonScale;
-  const scale = Math.min(maxWidth / adjustedLonRange, maxHeight / latRange);
-  const width = Math.min(maxWidth, adjustedLonRange * scale);
-  const height = Math.min(maxHeight, latRange * scale);
-  return { width, height, lonScale };
+function normalizeSenateRace(race) {
+  const demPercent = (race.demProbability || 0) * 100;
+  const repPercent = (race.repProbability || 0) * 100;
+  return {
+    id: `senate-${race.state}`,
+    type: "senate",
+    state: race.state,
+    title: `${STATE_NAMES[race.state] || race.state} Senate`,
+    subtitle: race.rating || "Tracked race",
+    rating: race.rating || "",
+    margin: race.margin,
+    winnerParty: demPercent >= repPercent ? "D" : "R",
+    winnerProbability: Math.max(race.demProbability || 0, race.repProbability || 0),
+    demProbability: race.demProbability,
+    repProbability: race.repProbability,
+    candidates: [
+      buildCandidate("D", race.dem, race.demStatus, demPercent),
+      buildCandidate("R", race.rep, race.repStatus, repPercent)
+    ],
+    reportingPercent: null
+  };
 }
 
-function geometryPath(geometry, bounds, width, height, lonScale = 1) {
-  const lonRange = Math.max(.1, (bounds.maxLon - bounds.minLon) * lonScale);
-  const latRange = Math.max(.1, bounds.maxLat - bounds.minLat);
-  const pad = 16;
-  const usableWidth = width - pad * 2;
-  const usableHeight = height - pad * 2;
-  const scale = Math.min(usableWidth / lonRange, usableHeight / latRange);
-  const offsetX = (width - lonRange * scale) / 2;
-  const offsetY = (height - latRange * scale) / 2;
-  const project = ([lon, lat]) => [
-    offsetX + ((lon - bounds.minLon) * lonScale) * scale,
-    offsetY + (bounds.maxLat - lat) * scale
-  ];
-  return coordinateRings(geometry).map((ring) => {
-    const points = ring.map(project);
-    if (!points.length) return "";
-    return `M${points.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join("L")}Z`;
+function normalizeGovernorRace(race) {
+  const demPercent = (race.demProbability || 0) * 100;
+  const repPercent = (race.repProbability || 0) * 100;
+  return {
+    id: `governor-${race.state}`,
+    type: "governor",
+    state: race.state,
+    title: race.displayName || `${STATE_NAMES[race.state] || race.state} Governor`,
+    subtitle: race.rating || "Tracked race",
+    rating: race.rating || "",
+    margin: race.margin,
+    winnerParty: demPercent >= repPercent ? "D" : "R",
+    winnerProbability: Math.max(race.demProbability || 0, race.repProbability || 0),
+    demProbability: race.demProbability,
+    repProbability: race.repProbability,
+    candidates: [
+      buildCandidate("D", race.demCandidate || race.dem, race.demStatus, demPercent, 0, { incumbent: race.incumbentParty === "D" }),
+      buildCandidate("R", race.repCandidate || race.rep, race.repStatus, repPercent, 0, { incumbent: race.incumbentParty === "R" })
+    ],
+    reportingPercent: null
+  };
+}
+
+function tooltipMarkup(race, title) {
+  if (!race) {
+    return `<div class="election-map-tooltip-title">${title}</div><div class="election-map-tooltip-muted">No tracked race</div>`;
+  }
+
+  const rows = topCandidates(race, 2).map((candidate, index) => {
+    const color = partyColor(candidate.party);
+    return `
+      <tr class="${index === 0 ? "leading" : ""}">
+        <td><span class="tooltip-party-bar" style="background:${color}"></span>${candidate.name}${candidate.incumbent ? "*" : ""}</td>
+        <td>${formatPercent(candidate.percent)}</td>
+        <td>${formatVotes(candidate.votes)}</td>
+      </tr>
+    `;
   }).join("");
-}
 
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function stateFips(state) {
-  const fipsByState = {
-    AL: "01", AK: "02", AZ: "04", AR: "05", CA: "06", CO: "08", CT: "09", DE: "10", DC: "11",
-    FL: "12", GA: "13", HI: "15", ID: "16", IL: "17", IN: "18", IA: "19", KS: "20",
-    KY: "21", LA: "22", ME: "23", MD: "24", MA: "25", MI: "26", MN: "27", MS: "28", MO: "29",
-    MT: "30", NE: "31", NV: "32", NH: "33", NJ: "34", NM: "35", NY: "36", NC: "37",
-    ND: "38", OH: "39", OK: "40", OR: "41", PA: "42", RI: "44", SC: "45", SD: "46",
-    TN: "47", TX: "48", UT: "49", VT: "50", VA: "51", WA: "53", WV: "54", WI: "55", WY: "56"
-  };
-  return fipsByState[String(state || "").toUpperCase()] || "";
-}
-
-function featureStateFips(feature) {
-  return String(feature.properties?.STATEFP || feature.properties?.stateFips || "").padStart(2, "0");
-}
-
-function featureCountyFips(feature) {
-  return String(feature.properties?.COUNTYFP || feature.properties?.countyFips || feature.properties?.GEOID || "").padStart(5, "0").slice(-5);
-}
-
-// County map rendering function (simplified from result-detail.js)
-async function renderCountyMap(race) {
-  const container = document.getElementById("election-map");
-  if (!container || !race) return;
-  
-  try {
-    const geojson = await loadCountyMapData();
-    const stateGeojson = await loadUsStateMapData().catch(() => ({ features: [] }));
-    const highwayGeojson = await loadMajorHighwayData().catch(() => ({ features: [] }));
-    const countryGeojson = await loadCountryContextData().catch(() => ({ features: [] }));
-    
-    const fips = stateFips(race.state);
-    if (!fips) {
-      container.innerHTML = `<p class="map-note">County map not available for this race.</p>`;
-      return;
-    }
-    
-    const allFeatures = geojson.features || [];
-    const allStateFeatures = stateGeojson.features || [];
-    const highwayFeatures = highwayGeojson.features || [];
-    const countryFeatures = countryGeojson.features || [];
-    const features = allFeatures.filter((feature) => featureStateFips(feature) === fips);
-    
-    if (!features.length) {
-      container.innerHTML = `<p class="map-note">County data not available for this state.</p>`;
-      return;
-    }
-    
-    const activeBounds = stateBounds(features);
-    const bounds = expandedBounds(activeBounds, 0.1);
-    const { width, height, lonScale } = mapDimensions(bounds);
-    
-    container.innerHTML = "";
-    const svg = d3.select(container)
-      .append("svg")
-      .attr("viewBox", `0 0 ${width} ${height}`)
-      .attr("role", "img")
-      .attr("aria-label", `${STATE_NAMES[race.state] || race.state} county results map`);
-    
-    // Render country context
-    if (countryFeatures.length) {
-      svg.selectAll(".country-context")
-        .data(countryFeatures)
-        .join("path")
-        .attr("class", "map-context")
-        .attr("d", (feature) => geometryPath(feature.geometry, bounds, width, height, lonScale))
-        .attr("fill", "none")
-        .attr("stroke", "#ccc")
-        .attr("stroke-width", 0.5);
-    }
-    
-    // Render state context
-    if (allStateFeatures.length) {
-      svg.selectAll(".state-context")
-        .data(allStateFeatures)
-        .join("path")
-        .attr("class", "map-context")
-        .attr("d", (feature) => geometryPath(feature.geometry, bounds, width, height, lonScale))
-        .attr("fill", "none")
-        .attr("stroke", "#999")
-        .attr("stroke-width", 1);
-    }
-    
-    // Render counties
-    const countyLookup = new Map();
-    if (race.counties && race.counties.length) {
-      race.counties.forEach(county => {
-        if (county.fips) countyLookup.set(county.fips, county);
-      });
-    }
-    
-    svg.selectAll("path.county")
-      .data(features)
-      .join("path")
-      .attr("class", "county")
-      .attr("d", (feature) => geometryPath(feature.geometry, bounds, width, height, lonScale))
-      .attr("fill", (feature) => {
-        const county = countyLookup.get(featureCountyFips(feature));
-        if (!county) return "#566274";
-        const leader = county.candidates?.reduce((a, b) => (b.percent || 0) > (a.percent || 0) ? b : a);
-        if (leader) {
-          const party = String(leader.party || "").toUpperCase();
-          if (party === "D") return "#2d7cff";
-          if (party === "R") return "#f3536a";
-          if (party === "I") return "#5fc529";
-        }
-        return "#566274";
-      })
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 0.5)
-      .attr("tabindex", 0)
-      .on("mouseenter focus", (event, feature) => {
-        const county = countyLookup.get(featureCountyFips(feature));
-        const name = feature.properties?.NAME || "Unknown";
-        updateMapHoverCard(county, `${name} County`);
-      })
-      .append("title")
-      .text((feature) => feature.properties?.NAME || "County");
-      
-  } catch (error) {
-    console.error("Failed to render county map:", error);
-    container.innerHTML = `<p class="map-note">County map could not load. ${error.message || ""}</p>`;
-  }
-}
-
-// District county map rendering function (simplified from result-detail.js)
-let districtMapDataPromise = null;
-
-async function loadDistrictMapData() {
-  if (!districtMapDataPromise) {
-    districtMapDataPromise = fetch("data/house-districts-119.geojson", { cache: "force-cache" }).then((response) => {
-      if (!response.ok) throw new Error(`District map returned ${response.status}`);
-      return response.json();
-    });
-  }
-  return districtMapDataPromise;
-}
-
-async function renderDistrictCountyMap(race) {
-  const container = document.getElementById("election-map");
-  if (!container || !race) return;
-  
-  try {
-    const districtGeo = await loadDistrictMapData();
-    const districtNumber = race.district || 1;
-    const state = race.state;
-    
-    // Find the district feature
-    const districtFeature = (districtGeo.features || []).find((item) => (
-      String(item.properties?.state || "").toUpperCase() === String(state || "").toUpperCase()
-      && Number(item.properties?.district) === districtNumber
-    ));
-    
-    if (!districtFeature) {
-      container.innerHTML = `<p class="map-note">District geometry not available.</p>`;
-      return;
-    }
-    
-    const geojson = await loadCountyMapData();
-    const stateGeojson = await loadUsStateMapData().catch(() => ({ features: [] }));
-    const highwayGeojson = await loadMajorHighwayData().catch(() => ({ features: [] }));
-    const countryGeojson = await loadCountryContextData().catch(() => ({ features: [] }));
-    
-    const fips = stateFips(state);
-    if (!fips) {
-      container.innerHTML = `<p class="map-note">District county map not available.</p>`;
-      return;
-    }
-    
-    const allCountyFeatures = geojson.features || [];
-    const allStateFeatures = stateGeojson.features || [];
-    const highwayFeatures = highwayGeojson.features || [];
-    const countryFeatures = countryGeojson.features || [];
-    const stateCountyFeatures = allCountyFeatures.filter((item) => featureStateFips(item) === fips);
-    
-    if (!stateCountyFeatures.length) {
-      container.innerHTML = `<p class="map-note">County data not available for this state.</p>`;
-      return;
-    }
-    
-    const activeBounds = stateBounds([districtFeature]);
-    const bounds = expandedBounds(activeBounds, 0.2);
-    const { width, height, lonScale } = mapDimensions(bounds, 760, 540);
-    
-    container.innerHTML = "";
-    const svg = d3.select(container)
-      .append("svg")
-      .attr("viewBox", `0 0 ${width} ${height}`)
-      .attr("role", "img")
-      .attr("aria-label", `${STATE_NAMES[state] || state} ${districtNumber} District county breakdown map`);
-    
-    // Render country context
-    if (countryFeatures.length) {
-      svg.selectAll(".country-context")
-        .data(countryFeatures)
-        .join("path")
-        .attr("class", "map-context")
-        .attr("d", (feature) => geometryPath(feature.geometry, bounds, width, height, lonScale))
-        .attr("fill", "none")
-        .attr("stroke", "#ccc")
-        .attr("stroke-width", 0.5);
-    }
-    
-    // Render state context
-    if (allStateFeatures.length) {
-      svg.selectAll(".state-context")
-        .data(allStateFeatures)
-        .join("path")
-        .attr("class", "map-context")
-        .attr("d", (feature) => geometryPath(feature.geometry, bounds, width, height, lonScale))
-        .attr("fill", "none")
-        .attr("stroke", "#999")
-        .attr("stroke-width", 1);
-    }
-    
-    // Render district outline
-    svg.append("path")
-      .attr("class", "district-outline")
-      .attr("d", geometryPath(districtFeature.geometry, bounds, width, height, lonScale))
-      .attr("fill", "none")
-      .attr("stroke", "#2d7cff")
-      .attr("stroke-width", 2);
-    
-    // Render counties
-    const countyLookup = new Map();
-    if (race.counties && race.counties.length) {
-      race.counties.forEach(county => {
-        if (county.fips) countyLookup.set(county.fips, county);
-      });
-    }
-    
-    svg.selectAll("path.county")
-      .data(stateCountyFeatures)
-      .join("path")
-      .attr("class", "county")
-      .attr("d", (feature) => geometryPath(feature.geometry, bounds, width, height, lonScale))
-      .attr("fill", (feature) => {
-        const county = countyLookup.get(featureCountyFips(feature));
-        if (!county) return "#566274";
-        const leader = county.candidates?.reduce((a, b) => (b.percent || 0) > (a.percent || 0) ? b : a);
-        if (leader) {
-          const party = String(leader.party || "").toUpperCase();
-          if (party === "D") return "#2d7cff";
-          if (party === "R") return "#f3536a";
-          if (party === "I") return "#5fc529";
-        }
-        return "#566274";
-      })
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 0.5)
-      .attr("tabindex", 0)
-      .on("mouseenter focus", (event, feature) => {
-        const county = countyLookup.get(featureCountyFips(feature));
-        const name = feature.properties?.NAME || "Unknown";
-        updateMapHoverCard(county, `${name} County`);
-      })
-      .append("title")
-      .text((feature) => feature.properties?.NAME || "County");
-      
-  } catch (error) {
-    console.error("Failed to render district county map:", error);
-    container.innerHTML = `<p class="map-note">District county map could not load. ${error.message || ""}</p>`;
-  }
-}
-
-function updateMapHoverCard(race, title) {
-  // Hover card removed, this function is no longer needed
-  return;
-}
-
-// Global functions for event handlers
-let currentPage = null;
-
-function selectRace(raceId) {
-  if (currentPage) currentPage.selectRace(raceId);
+  const updated = race.reportingPercent == null ? "Forecast view" : `${formatPercent(race.reportingPercent, 0)} est. vote in`;
+  return `
+    <div class="election-map-tooltip-title">${race.title || title}</div>
+    <table class="election-map-tooltip-table">
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="election-map-tooltip-foot">
+      <span>${updated}</span>
+      <span>${race.rating || ""}</span>
+    </div>
+  `;
 }
 
 class ElectionNightPage {
   constructor() {
     this.selectedMode = localStorage.getItem("electionNightMode") || "house";
-    this.selectedRaceId = null;
-    this.focusedRace = null;
-    this.raceData = [];
-    this.lastUpdated = null;
-    
-    currentPage = this;
+    this.dataByMode = { house: [], senate: [], governor: [] };
+    this.geo = null;
+    this.stateFeatures = null;
+    this.currentRace = null;
+    this.svg = null;
+    this.viewport = null;
+    this.zoom = null;
+    this.path = null;
     this.init();
   }
 
-  init() {
+  async init() {
     this.bindEvents();
-    this.loadInitialData();
+    this.updateModeButtons();
+    await this.loadData();
+    this.renderSummary();
+    await this.renderMap();
   }
 
   bindEvents() {
-    // Mode toggle buttons
-    document.querySelectorAll(".button-link[data-mode]").forEach(button => {
-      button.addEventListener("click", (e) => {
-        const mode = e.currentTarget.dataset.mode;
-        this.switchMode(mode);
-      });
+    document.querySelectorAll("[data-mode]").forEach((button) => {
+      button.addEventListener("click", () => this.switchMode(button.dataset.mode));
     });
 
-    document.querySelectorAll("[data-clear-focus], #clear-focus-button").forEach(button => {
+    document.querySelectorAll("[data-clear-focus]").forEach((button) => {
       button.addEventListener("click", () => this.clearFocus());
     });
   }
 
-  async loadInitialData() {
-    await this.loadRaceData();
-    await this.renderSummary();
-    await this.renderRaceList();
-    await this.renderMap();
-    this.updateModeButtons();
+  async loadData() {
+    const [house, senate, governor] = await Promise.all([
+      this.safeJson("data/house-forecast.json"),
+      this.safeJson("data/forecast.json"),
+      this.safeJson("data/governor-forecast.json")
+    ]);
+
+    this.dataByMode.house = (house?.districts || []).map(normalizeHouseRace);
+    this.dataByMode.senate = (senate?.races || []).map(normalizeSenateRace);
+    this.dataByMode.governor = (governor?.races || []).map(normalizeGovernorRace);
   }
 
-  async loadRaceData() {
+  async safeJson(url) {
     try {
-      // Try to load race data from election night races file
-      const response = await fetch("data/election-night-races.json");
-      if (!response.ok) {
-        this.raceData = [];
-        return;
-      }
-      
-      const data = await response.json();
-      this.raceData = data.races || [];
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) return null;
+      return await response.json();
     } catch (error) {
-      console.error("Failed to load race data:", error);
-      this.raceData = [];
+      console.error(`Could not load ${url}`, error);
+      return null;
     }
   }
 
-  async renderMap() {
-    console.log("Rendering map for mode:", this.selectedMode);
-    
-    const container = document.getElementById("election-map");
-    if (!container) {
-      console.error("Map container not found in renderMap");
-      return;
-    }
-    
-    // Show loading message
-    container.innerHTML = `<p style="text-align: center; color: #c6d2ff; padding: 200px 0;">Loading map...</p>`;
-    
-    // Filter race data by selected mode
-    const modeRaces = this.raceData.filter(race => {
-      if (this.selectedMode === "house") return race.type === "house";
-      if (this.selectedMode === "senate") return race.type === "senate";
-      if (this.selectedMode === "governor") return race.type === "governor";
-      return false;
-    });
-
-    console.log("Mode races count:", modeRaces.length);
-
-    if (this.selectedMode === "house") {
-      await renderHouseDistrictMap(modeRaces);
-    } else {
-      await renderStatewideMap(this.selectedMode, modeRaces);
-    }
+  modeRaces() {
+    return this.dataByMode[this.selectedMode] || [];
   }
 
   async switchMode(mode) {
-    if (this.selectedMode === mode) return;
-
+    if (!MODE_LABELS[mode] || mode === this.selectedMode) return;
     this.selectedMode = mode;
     localStorage.setItem("electionNightMode", mode);
-    this.selectedRaceId = null;
-    this.focusedRace = null;
-    this.raceData = [];
-
+    this.currentRace = null;
     this.updateModeButtons();
-
-    // Update summary label
-    const summaryLabel = document.getElementById("summary-label");
-    if (summaryLabel) {
-      summaryLabel.textContent = `${mode.charAt(0).toUpperCase() + mode.slice(1)} Results`;
-    }
-
-    // Clear focus panel
-    this.clearFocus();
-
-    // Load new data
-    await this.loadRaceData();
-    await this.renderSummary();
-    await this.renderRaceList();
+    this.renderSummary();
+    this.hideFocusPanel();
     await this.renderMap();
   }
 
   updateModeButtons() {
-    document.querySelectorAll(".button-link[data-mode]").forEach(button => {
+    document.querySelectorAll("[data-mode]").forEach((button) => {
       const active = button.dataset.mode === this.selectedMode;
       button.classList.toggle("active", active);
       button.setAttribute("aria-selected", active ? "true" : "false");
     });
   }
 
-  async renderSummary() {
-    // Filter race data by selected mode
-    const modeRaces = this.raceData.filter(race => {
-      if (this.selectedMode === "house") return race.type === "house";
-      if (this.selectedMode === "senate") return race.type === "senate";
-      if (this.selectedMode === "governor") return race.type === "governor";
-      return false;
-    });
+  renderSummary() {
+    const races = this.modeRaces();
+    const total = races.length;
+    const dem = races.filter((race) => raceWinnerParty(race) === "D").length;
+    const rep = races.filter((race) => raceWinnerParty(race) === "R").length;
+    const competitive = races.filter((race) => (race.winnerProbability || 0) < 0.75).length;
 
-    if (modeRaces.length === 0) {
-      document.getElementById("total-races").textContent = "--";
-      document.getElementById("called-races").textContent = "-- called";
-      document.getElementById("reporting-status").textContent = "No votes reported";
-      document.getElementById("dem-seats").textContent = "--";
-      document.getElementById("rep-seats").textContent = "--";
-      document.getElementById("reporting-percent").textContent = "--%";
-      document.getElementById("last-updated").textContent = "--";
-      return;
-    }
-
-    const totalRaces = modeRaces.length;
-    const calledRaces = modeRaces.filter(r => r.status === "called").length;
-    const demSeats = modeRaces.filter(r => {
-      const winner = r.candidates?.find(c => c.isWinner);
-      return winner && winner.party === "D";
-    }).length;
-    const repSeats = modeRaces.filter(r => {
-      const winner = r.candidates?.find(c => c.isWinner);
-      return winner && winner.party === "R";
-    }).length;
-
-    // Calculate average reporting percent
-    const reportingRaces = modeRaces.filter(r => r.reportingPercent !== undefined && r.reportingPercent > 0);
-    const avgReporting = reportingRaces.length > 0 
-      ? reportingRaces.reduce((sum, r) => sum + (r.reportingPercent || 0), 0) / reportingRaces.length 
-      : 0;
-
-    document.getElementById("total-races").textContent = totalRaces;
-    document.getElementById("called-races").textContent = `${calledRaces} called`;
-    document.getElementById("reporting-status").textContent = calledRaces > 0 ? `${calledRaces} races called` : "No races called yet";
-    document.getElementById("dem-seats").textContent = demSeats;
-    document.getElementById("rep-seats").textContent = repSeats;
-    const demSummaryLabel = document.getElementById("dem-summary-label");
-    const repSummaryLabel = document.getElementById("rep-summary-label");
-    if (demSummaryLabel) demSummaryLabel.textContent = this.selectedMode === "governor" ? "Democratic races" : "Democratic seats";
-    if (repSummaryLabel) repSummaryLabel.textContent = this.selectedMode === "governor" ? "Republican races" : "Republican seats";
-    document.getElementById("reporting-percent").textContent = avgReporting > 0 ? `${avgReporting.toFixed(1)}%` : "--%";
-    document.getElementById("last-updated").textContent = new Date().toLocaleTimeString();
+    document.getElementById("summary-label").textContent = `${MODE_LABELS[this.selectedMode]} board`;
+    document.getElementById("total-races").textContent = total ? String(total) : "--";
+    document.getElementById("called-races").textContent = this.selectedMode === "house" ? "district forecasts" : "state forecasts";
+    document.getElementById("dem-seats").textContent = String(dem);
+    document.getElementById("rep-seats").textContent = String(rep);
+    document.getElementById("dem-summary-label").textContent = this.selectedMode === "governor" ? "Dem states" : "Dem seats";
+    document.getElementById("rep-summary-label").textContent = this.selectedMode === "governor" ? "GOP states" : "GOP seats";
+    document.getElementById("reporting-percent").textContent = String(competitive);
+    document.getElementById("last-updated").textContent = "competitive races";
   }
 
-  async renderRaceList() {
-    const raceListContainer = document.getElementById("race-list");
-    if (!raceListContainer) return;
-
-    // Filter race data by selected mode
-    const modeRaces = this.raceData.filter(race => {
-      if (this.selectedMode === "house") return race.type === "house";
-      if (this.selectedMode === "senate") return race.type === "senate";
-      if (this.selectedMode === "governor") return race.type === "governor";
-      return false;
-    });
-
-    if (modeRaces.length === 0) {
-      raceListContainer.innerHTML = `
-        <p style="text-align: center; color: #c6d2ff; padding: 100px 0;">
-          No results available yet. Results will appear after polls close.
-        </p>
-      `;
+  async renderMap() {
+    const container = document.getElementById("election-map");
+    if (!container) return;
+    if (!window.d3 || !window.topojson) {
+      container.innerHTML = `<p class="map-note">Map rendering needs D3 to load.</p>`;
       return;
     }
 
-    const raceItems = modeRaces.map(race => {
-      const winner = race.candidates?.find(c => c.isWinner);
-      const leader = race.candidates?.reduce((a, b) => (b.percent || 0) > (a.percent || 0) ? b : a);
-      const topCandidate = winner || leader;
-
-      return `
-        <button class="race-item ${this.selectedRaceId === race.id ? "active" : ""}" type="button" data-race-id="${race.id}">
-          <strong>${race.electionName || race.name}</strong>
-          <span>
-            ${topCandidate ? `${topCandidate.name}: ${topCandidate.percent?.toFixed(1) || 0}%` : "No votes"}
-            ${race.reportingPercent ? ` - ${race.reportingPercent}% reporting` : ""}
-          </span>
-        </button>
-      `;
-    }).join("");
-
-    raceListContainer.innerHTML = raceItems;
-
-    // Add click handlers
-    raceListContainer.querySelectorAll(".race-item").forEach(item => {
-      item.addEventListener("click", () => {
-        const raceId = item.dataset.raceId;
-        this.selectRace(raceId);
-      });
-    });
-  }
-
-  async selectRace(raceId) {
-    console.log("selectRace called with raceId:", raceId);
-    this.selectedRaceId = raceId;
-
-    // Find race in loaded data
-    const race = this.raceData.find(r => r.id === raceId);
-    if (!race) {
-      console.error("Race not found:", raceId);
-      return;
-    }
-
-    console.log("Race found:", race);
-    this.focusedRace = race;
-    this.renderFocusedRace();
-    this.renderRaceList();
-    // Zoom into the selected race on the map
-    this.zoomToRace(race);
-  }
-
-  zoomToRace(race) {
-    console.log("zoomToRace called with race:", race);
-    const svg = d3.select("#election-map svg");
-    if (!svg) {
-      console.error("SVG not found");
-      return;
-    }
-
-    const zoom = svg.node().__zoomBehavior;
-    if (!zoom) {
-      console.error("Zoom behavior not found");
-      return;
-    }
-
-    // Get actual SVG dimensions
-    const svgNode = svg.node();
-    const svgWidth = svgNode.viewBox.baseVal.width;
-    const svgHeight = svgNode.viewBox.baseVal.height;
-
-    console.log("SVG dimensions:", svgWidth, svgHeight);
-
+    container.innerHTML = `<div class="election-map-loading">Loading ${MODE_LABELS[this.selectedMode]} map...</div>`;
     if (this.selectedMode === "house") {
-      // For house districts, find the district feature and zoom to it
-      console.log("Zooming to house district:", race.id);
-      d3.json("data/house-districts-119.geojson").then(geojson => {
-        const width = 960;
-        const height = 610;
-        const projection = d3.geoAlbersUsa().fitSize([width, height], geojson);
-        const path = d3.geoPath(projection);
-        
-        const feature = geojson.features.find(f => f.properties?.id === race.id);
-        console.log("Found feature:", feature);
-        if (feature) {
-          const bounds = path.bounds(feature);
-          const [[x0, y0], [x1, y1]] = bounds;
-          const featureWidth = x1 - x0;
-          const featureHeight = y1 - y0;
-          
-          const k = 0.9 / Math.max(featureWidth / svgWidth, featureHeight / svgHeight);
-          const translate = [svgWidth / 2 - k * (x0 + x1) / 2, svgHeight / 2 - k * (y0 + y1) / 2];
-          
-          console.log("Zoom parameters:", { k, translate, bounds });
-          
-          svg.transition()
-            .duration(750)
-            .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(k));
-        }
-      });
+      await this.renderHouseMap(container);
     } else {
-      // For senate and governor, find the state feature and zoom to it
-      console.log("Zooming to state:", race.state);
-      d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us => {
-        const width = 960;
-        const height = 610;
-        const features = topojson.feature(us, us.objects.states).features;
-        const projection = d3.geoAlbersUsa().fitSize([width, height], { type: "FeatureCollection", features });
-        const path = d3.geoPath(projection);
-        
-        const feature = features.find(f => {
-          const state = FIPS_TO_STATE[String(f.id).padStart(2, "0")];
-          return state === race.state;
-        });
-        
-        console.log("Found state feature:", feature);
-        
-        if (feature) {
-          const bounds = path.bounds(feature);
-          const [[x0, y0], [x1, y1]] = bounds;
-          const featureWidth = x1 - x0;
-          const featureHeight = y1 - y0;
-          
-          const k = 0.9 / Math.max(featureWidth / svgWidth, featureHeight / svgHeight);
-          const translate = [svgWidth / 2 - k * (x0 + x1) / 2, svgHeight / 2 - k * (y0 + y1) / 2];
-          
-          console.log("Zoom parameters:", { k, translate, bounds });
-          
-          svg.transition()
-            .duration(750)
-            .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(k));
-        }
+      await this.renderStateMap(container);
+    }
+  }
+
+  async renderStateMap(container) {
+    if (!this.stateFeatures) {
+      const us = await d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json");
+      this.stateFeatures = topojson.feature(us, us.objects.states).features;
+    }
+
+    const width = 1160;
+    const height = 720;
+    const projection = d3.geoAlbersUsa().fitExtent([[24, 24], [width - 24, height - 24]], {
+      type: "FeatureCollection",
+      features: this.stateFeatures
+    });
+    this.path = d3.geoPath(projection);
+    const raceByState = new Map(this.modeRaces().map((race) => [race.state, race]));
+
+    this.createSvg(container, width, height);
+    this.viewport.selectAll("path")
+      .data(this.stateFeatures)
+      .join("path")
+      .attr("class", (feature) => {
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        return raceByState.has(state) ? "election-map-shape" : "election-map-shape election-map-muted";
+      })
+      .attr("d", this.path)
+      .attr("fill", (feature) => {
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        const race = raceByState.get(state);
+        return race ? raceColor(race) : "#9aa6b8";
+      })
+      .attr("stroke", "#ffffff")
+      .attr("stroke-width", 0.55)
+      .attr("tabindex", (feature) => raceByState.has(FIPS_TO_STATE[String(feature.id).padStart(2, "0")]) ? 0 : -1)
+      .on("click keydown", (event, feature) => {
+        if (event.type === "keydown" && event.key !== "Enter") return;
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        const race = raceByState.get(state);
+        if (race) this.selectRace(race, feature);
+      })
+      .on("mousemove", (event, feature) => {
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        this.showTooltip(event, tooltipMarkup(raceByState.get(state), STATE_NAMES[state] || state));
+      })
+      .on("mouseleave blur", () => this.hideTooltip());
+
+    this.addZoomControls();
+  }
+
+  async renderHouseMap(container) {
+    if (!this.geo) {
+      this.geo = await d3.json("data/house-districts-119.geojson");
+    }
+
+    const width = 1160;
+    const height = 720;
+    const projection = d3.geoAlbersUsa().fitExtent([[18, 18], [width - 18, height - 18]], this.geo);
+    this.path = d3.geoPath(projection);
+    const raceById = new Map(this.modeRaces().map((race) => [race.id, race]));
+
+    this.createSvg(container, width, height);
+    this.viewport.selectAll("path")
+      .data(this.geo.features || [])
+      .join("path")
+      .attr("class", (feature) => raceById.has(feature.properties?.id) ? "election-map-shape" : "election-map-shape election-map-muted")
+      .attr("d", this.path)
+      .attr("fill", (feature) => {
+        const race = raceById.get(feature.properties?.id);
+        return race ? raceColor(race) : "#9aa6b8";
+      })
+      .attr("stroke", "#ffffff")
+      .attr("stroke-width", 0.22)
+      .attr("tabindex", (feature) => raceById.has(feature.properties?.id) ? 0 : -1)
+      .on("click keydown", (event, feature) => {
+        if (event.type === "keydown" && event.key !== "Enter") return;
+        const race = raceById.get(feature.properties?.id);
+        if (race) this.selectRace(race, feature);
+      })
+      .on("mousemove", (event, feature) => {
+        const race = raceById.get(feature.properties?.id);
+        this.showTooltip(event, tooltipMarkup(race, feature.properties?.id || "District"));
+      })
+      .on("mouseleave blur", () => this.hideTooltip());
+
+    this.addZoomControls();
+  }
+
+  createSvg(container, width, height) {
+    container.innerHTML = "";
+    this.svg = d3.select(container)
+      .append("svg")
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("role", "img")
+      .attr("aria-label", `${MODE_LABELS[this.selectedMode]} election map`);
+
+    this.viewport = this.svg.append("g").attr("class", "election-map-viewport");
+    this.zoom = d3.zoom()
+      .scaleExtent([1, 14])
+      .on("zoom", (event) => {
+        this.viewport.attr("transform", event.transform);
       });
-    }
+    this.svg.call(this.zoom);
   }
 
-  renderNoRaceData() {
-    const focusedPanel = document.getElementById("focused-race-panel");
-    const focusedContent = document.getElementById("focused-race-content");
-    
-    if (!focusedPanel || !focusedContent) return;
-
-    focusedPanel.hidden = false;
-    focusedPanel.style.display = "block";
-    focusedContent.innerHTML = `
-      <p style="color: #c6d2ff;">No results available for this race yet.</p>
+  addZoomControls() {
+    const container = document.getElementById("election-map");
+    if (!container) return;
+    const controls = document.createElement("div");
+    controls.className = "election-map-controls";
+    controls.innerHTML = `
+      <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
+      <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
+      <button type="button" data-zoom="reset" aria-label="Reset map">Reset</button>
     `;
+    container.appendChild(controls);
+    controls.addEventListener("click", (event) => {
+      const action = event.target?.dataset?.zoom;
+      if (!action || !this.svg || !this.zoom) return;
+      if (action === "in") this.svg.transition().duration(220).call(this.zoom.scaleBy, 1.35);
+      if (action === "out") this.svg.transition().duration(220).call(this.zoom.scaleBy, 0.75);
+      if (action === "reset") this.svg.transition().duration(300).call(this.zoom.transform, d3.zoomIdentity);
+    });
   }
 
-  renderFocusedRace() {
-    const focusedPanel = document.getElementById("focused-race-panel");
-    const focusedContent = document.getElementById("focused-race-content");
-    
-    if (!focusedPanel || !focusedContent || !this.focusedRace) return;
+  selectRace(race, feature) {
+    this.currentRace = race;
+    this.renderFocusedRace(race);
+    if (feature && this.path && this.zoom && this.svg) this.zoomToFeature(feature);
+  }
 
-    focusedPanel.hidden = false;
-    focusedPanel.style.display = "block";
+  zoomToFeature(feature) {
+    const [[x0, y0], [x1, y1]] = this.path.bounds(feature);
+    const viewBox = this.svg.node().viewBox.baseVal;
+    const dx = Math.max(1, x1 - x0);
+    const dy = Math.max(1, y1 - y0);
+    const scale = Math.min(10, Math.max(1.6, 0.72 / Math.max(dx / viewBox.width, dy / viewBox.height)));
+    const tx = viewBox.width / 2 - scale * (x0 + x1) / 2;
+    const ty = viewBox.height / 2 - scale * (y0 + y1) / 2;
+    this.svg.transition().duration(500).call(this.zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+  }
 
-    const race = this.focusedRace;
-    const candidates = race.candidates || [];
+  renderFocusedRace(race) {
+    const panel = document.getElementById("focused-race-panel");
+    const title = document.getElementById("focused-race-title");
+    const content = document.getElementById("focused-race-content");
+    const rating = document.getElementById("focused-race-rating");
+    if (!panel || !title || !content) return;
 
-    const candidateRows = candidates.map(cand => {
-      const party = cand.party || "";
-      const partyClass = party === "D" ? "party-dem" : party === "R" ? "party-rep" : party === "I" ? "party-ind" : "party-other";
-      const winnerClass = cand.isWinner ? "is-winner" : "";
-      
-      return `
-        <article class="result-full-candidate ${partyClass} ${winnerClass}" data-candidate-name="${cand.name}" data-candidate-percent="${cand.percent || 0}" style="--candidate-color: ${this.partyColor(party)};">
-          <div class="result-full-header">
-            <div class="result-full-info">
-              <strong class="result-full-name">${cand.name}</strong>
-              ${cand.isIncumbent ? '<span class="result-full-incumbent">Incumbent</span>' : ''}
-              <span class="result-full-party">${party}</span>
-            </div>
-            <div class="result-full-numbers">
-              <span class="result-full-percent">${cand.percent !== undefined ? cand.percent.toFixed(1) + "%" : "N/A"}</span>
-              <span class="result-full-votes">${cand.votes !== undefined ? cand.votes.toLocaleString() + " votes" : "No votes"}</span>
-            </div>
-          </div>
-          ${cand.isWinner ? '<div class="result-full-winner-badge">Winner</div>' : ''}
-        </article>
-      `;
-    }).join("");
+    const leaderParty = raceWinnerParty(race);
+    panel.hidden = false;
+    panel.style.setProperty("--focus-color", partyColor(leaderParty));
+    panel.classList.toggle("party-dem", leaderParty === "D");
+    panel.classList.toggle("party-rep", leaderParty === "R");
+    title.textContent = race.title;
+    if (rating) rating.textContent = race.rating || "Tracked";
 
-    focusedContent.innerHTML = `
-      <div style="margin-bottom: 24px;">
-        <h3 style="margin: 0 0 8px; font-size: 1.5rem;">${race.electionName || race.name}</h3>
-        <div style="color: #c6d2ff; font-size: 0.9rem;">
-          ${race.reportingPercent !== undefined ? race.reportingPercent + "% reporting" : "No votes reported"}
-        </div>
+    const rows = topCandidates(race, 4).map((candidate, index) => `
+      <tr class="${index === 0 ? "leading" : ""}">
+        <td>
+          <span class="selected-party-rail" style="background:${partyColor(candidate.party)}"></span>
+          <strong>${candidate.name}${candidate.incumbent ? "*" : ""}</strong>
+          <small>${candidate.party === "D" ? "Democratic" : candidate.party === "R" ? "Republican" : "Other"}</small>
+        </td>
+        <td>${formatPercent(candidate.percent)}</td>
+        <td>${formatVotes(candidate.votes)}</td>
+      </tr>
+    `).join("");
+
+    const margin = Number.isFinite(race.margin) ? `${race.margin >= 0 ? "D" : "R"}+${Math.abs(race.margin).toFixed(1)}` : "No margin";
+    const probability = Number.isFinite(race.winnerProbability) ? formatPercent(race.winnerProbability * 100) : "--";
+    content.innerHTML = `
+      <div class="selected-race-meta">
+        <span>${probability} favored</span>
+        <span>${margin}</span>
       </div>
-      <div class="result-full-candidates">
-        ${candidateRows}
+      <table class="selected-race-table">
+        <thead><tr><th>Candidate</th><th>Percent</th><th>Votes</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="selected-race-foot">
+        <span>${race.reportingPercent == null ? "Forecast estimate" : `${formatPercent(race.reportingPercent)} reporting`}</span>
+        <span>${race.subtitle || ""}</span>
       </div>
     `;
-
-    // Render county map for the focused race
-    if (race.type === "house" && race.district) {
-      renderDistrictCountyMap(race);
-    } else if (race.state) {
-      renderCountyMap(race);
-    }
-  }
-
-  partyColor(party) {
-    const p = String(party || "").toUpperCase();
-    if (p === "D") return "#2d7cff";
-    if (p === "R") return "#f3536a";
-    if (p === "I") return "#5fc529";
-    if (p === "L") return "#ffd700";
-    if (p === "G") return "#00a86b";
-    return "#566274";
   }
 
   clearFocus() {
-    this.selectedRaceId = null;
-    this.focusedRace = null;
-
-    const focusedPanel = document.getElementById("focused-race-panel");
-    if (focusedPanel) {
-      focusedPanel.hidden = true;
-      focusedPanel.style.display = "none";
+    this.currentRace = null;
+    this.hideFocusPanel();
+    if (this.svg && this.zoom) {
+      this.svg.transition().duration(300).call(this.zoom.transform, d3.zoomIdentity);
     }
+  }
 
-    // Re-render the main map when focus is cleared
-    this.renderMap();
+  hideFocusPanel() {
+    const panel = document.getElementById("focused-race-panel");
+    if (panel) panel.hidden = true;
+  }
+
+  showTooltip(event, html) {
+    let tooltip = document.querySelector(".election-map-tooltip");
+    if (!tooltip) {
+      tooltip = document.createElement("div");
+      tooltip.className = "election-map-tooltip";
+      document.body.appendChild(tooltip);
+    }
+    tooltip.innerHTML = html;
+    const x = Math.min(window.innerWidth - 340, event.clientX + 16);
+    const y = Math.min(window.innerHeight - 220, event.clientY + 16);
+    tooltip.style.left = `${Math.max(12, x)}px`;
+    tooltip.style.top = `${Math.max(12, y)}px`;
+  }
+
+  hideTooltip() {
+    document.querySelector(".election-map-tooltip")?.remove();
   }
 }
 
-// Initialize the page when D3, topojson, and DOM are ready
-function initWhenReady() {
-  console.log("Checking if D3, topojson, and DOM are ready...");
-  console.log("D3 available:", !!window.d3);
-  console.log("Topojson available:", !!window.topojson);
-  console.log("DOM ready:", document.readyState === "complete" || document.readyState === "interactive");
-  console.log("Map container exists:", !!document.getElementById("election-map"));
-  
-  if (window.d3 && window.topojson && (document.readyState === "complete" || document.readyState === "interactive")) {
-    console.log("D3, topojson, and DOM ready, initializing page");
-    new ElectionNightPage();
-  } else {
-    console.log("Waiting for D3, topojson, and DOM to be ready...");
-    setTimeout(initWhenReady, 100);
+function initElectionNight() {
+  if (!window.d3 || !window.topojson) {
+    setTimeout(initElectionNight, 60);
+    return;
   }
+  new ElectionNightPage();
 }
 
-// Start initialization
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initWhenReady);
+  document.addEventListener("DOMContentLoaded", initElectionNight);
 } else {
-  initWhenReady();
+  initElectionNight();
 }
