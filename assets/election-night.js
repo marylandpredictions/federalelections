@@ -465,7 +465,7 @@ async function renderHouseDistrictMap(raceData) {
       })
       .on("mouseover", (event, feature) => {
         const race = raceById.get(feature.properties?.id);
-        let tooltipHtml = `<div style="font-weight: bold; margin-bottom: 4px;">${race.electionName || feature.properties?.id}</div>`;
+        let tooltipHtml = `<div style="font-weight: bold; margin-bottom: 4px;">${race?.electionName || feature.properties?.id}</div>`;
         
         if (race && race.candidates && race.candidates.length > 0) {
           tooltipHtml += `<div style="font-size: 11px; margin-top: 6px;">`;
