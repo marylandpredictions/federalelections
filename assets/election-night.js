@@ -501,7 +501,7 @@ async function renderHouseDistrictMap(raceData) {
           .style("font-size", "12px")
           .style("pointer-events", "none")
           .style("z-index", "1000")
-          .style("max-width": "250px")
+          .style("max-width", "250px")
           .style("line-height", "1.4")
           .html(tooltipHtml);
         
