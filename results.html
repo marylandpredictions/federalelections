@@ -47,7 +47,7 @@
       <div>
         <p class="kicker">Federal Elections Analysis</p>
         <h1 id="page-title">2026 Election Night.</h1>
-        <p class="lede">Forecast-backed race board for House, Senate, and gubernatorial contests.</p>
+        <p class="lede">Live-style race board for House, Senate, and gubernatorial contests.</p>
       </div>
       <div class="hero-actions election-mode-toggle" role="tablist" aria-label="Election results mode">
         <button class="button-link" type="button" data-mode="house">House</button>
@@ -79,6 +79,27 @@
       </article>
     </section>
 
+    <section class="election-chamber-board" aria-labelledby="chamber-board-title">
+      <div class="election-chamber-copy">
+        <p class="kicker">Chamber Board</p>
+        <h2 id="chamber-board-title">Call tracker</h2>
+        <p id="chamber-board-subtitle">Waiting for live result calls.</p>
+      </div>
+      <div class="election-chamber-meter" aria-label="Called seats by party">
+        <div class="election-chamber-labels">
+          <strong id="chamber-dem-count">0 D</strong>
+          <span id="chamber-majority-label">Majority</span>
+          <strong id="chamber-rep-count">0 R</strong>
+        </div>
+        <div class="election-chamber-bar">
+          <span id="chamber-bar-dem" class="election-chamber-segment chamber-dem"></span>
+          <span id="chamber-bar-uncalled" class="election-chamber-segment chamber-uncalled"></span>
+          <span id="chamber-bar-rep" class="election-chamber-segment chamber-rep"></span>
+          <i id="chamber-majority-line" class="election-chamber-majority-line" aria-hidden="true"></i>
+        </div>
+      </div>
+    </section>
+
     <section class="map-panel election-map-panel" aria-labelledby="map-title">
       <div class="section-head">
         <div>
@@ -98,10 +119,6 @@
           <h3 id="focused-race-title">Select a race.</h3>
           <div id="focused-race-content"></div>
         </aside>
-        <div class="election-map-hint">
-          <strong>Click a state or district</strong>
-          <span>to zoom and view race details.</span>
-        </div>
       </div>
     </section>
   </main>
