@@ -62,8 +62,8 @@ async function renderStatewideMap(mode, raceData) {
     const features = topojson.feature(us, us.objects.states).features;
     console.log("Features extracted:", features.length);
     
-    const width = 960;
-    const height = 610;
+    const width = 1200;
+    const height = 700;
     const projection = d3.geoAlbersUsa().fitSize([width, height], { type: "FeatureCollection", features });
     const path = d3.geoPath(projection);
     
@@ -73,7 +73,6 @@ async function renderStatewideMap(mode, raceData) {
       .attr("width", "100%")
       .attr("height", "100%")
       .attr("viewBox", `0 0 ${width} ${height}`)
-      .attr("preserveAspectRatio", "xMidYMid meet")
       .attr("role", "img")
       .attr("aria-label", `United States map of ${mode} results`);
     
@@ -85,6 +84,11 @@ async function renderStatewideMap(mode, raceData) {
       });
     
     svg.call(zoom);
+    
+    // Set initial zoom level to be closer
+    svg.transition()
+      .duration(750)
+      .call(zoom.scaleTo, 1.5);
     
     // Store zoom behavior for later use
     svg.node().__zoomBehavior = zoom;
@@ -179,7 +183,7 @@ async function renderStatewideMap(mode, raceData) {
     zoomReset.on("click", () => {
       svg.transition().call(zoom.transform, d3.zoomIdentity);
       // Reset to initial zoom level
-      svg.transition().delay(100).call(zoom.scaleTo, 1.2);
+      svg.transition().delay(100).call(zoom.scaleTo, 1.5);
     });
     
     console.log("SVG created, adding paths...");
@@ -308,8 +312,8 @@ async function renderHouseDistrictMap(raceData) {
     const geo = await d3.json("data/house-districts-119.geojson");
     console.log("House district geojson loaded, features:", geo.features?.length);
     
-    const width = 980;
-    const height = 610;
+    const width = 1200;
+    const height = 700;
     const projection = d3.geoAlbersUsa().fitSize([width, height], geo);
 
     container.innerHTML = "";
@@ -318,7 +322,6 @@ async function renderHouseDistrictMap(raceData) {
       .attr("width", "100%")
       .attr("height", "100%")
       .attr("viewBox", `0 0 ${width} ${height}`)
-      .attr("preserveAspectRatio", "xMidYMid meet")
       .attr("role", "img")
       .attr("aria-label", "Interactive 119th Congressional District map");
     
@@ -330,6 +333,11 @@ async function renderHouseDistrictMap(raceData) {
       });
     
     svg.call(zoom);
+    
+    // Set initial zoom level to be closer
+    svg.transition()
+      .duration(750)
+      .call(zoom.scaleTo, 1.5);
     
     // Store zoom behavior for later use
     svg.node().__zoomBehavior = zoom;
@@ -424,7 +432,7 @@ async function renderHouseDistrictMap(raceData) {
     zoomReset.on("click", () => {
       svg.transition().call(zoom.transform, d3.zoomIdentity);
       // Reset to initial zoom level
-      svg.transition().delay(100).call(zoom.scaleTo, 1.2);
+      svg.transition().delay(100).call(zoom.scaleTo, 1.5);
     });
     
     console.log("SVG created for district map, adding paths...");
@@ -1258,8 +1266,8 @@ class ElectionNightPage {
       // For house districts, find the district feature and zoom to it
       console.log("Zooming to house district:", race.id);
       d3.json("data/house-districts-119.geojson").then(geojson => {
-        const width = 980;
-        const height = 610;
+        const width = 1200;
+        const height = 700;
         const projection = d3.geoAlbersUsa().fitSize([width, height], geojson);
         const path = d3.geoPath(projection);
         
@@ -1285,8 +1293,8 @@ class ElectionNightPage {
       // For senate and governor, find the state feature and zoom to it
       console.log("Zooming to state:", race.state);
       d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us => {
-        const width = 960;
-        const height = 610;
+        const width = 1200;
+        const height = 700;
         const features = topojson.feature(us, us.objects.states).features;
         const projection = d3.geoAlbersUsa().fitSize([width, height], { type: "FeatureCollection", features });
         const path = d3.geoPath(projection);
