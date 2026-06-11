@@ -86,11 +86,6 @@ async function renderStatewideMap(mode, raceData) {
     
     svg.call(zoom);
     
-    // Set initial zoom level to be closer
-    svg.transition()
-      .duration(750)
-      .call(zoom.scaleTo, 1.2);
-    
     // Store zoom behavior for later use
     svg.node().__zoomBehavior = zoom;
     
@@ -235,28 +230,48 @@ async function renderStatewideMap(mode, raceData) {
       .on("mouseover", (event, feature) => {
         const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
         const race = raceByState.get(state);
-        let tooltipText = STATE_NAMES[state];
+        let tooltipHtml = `<div style="font-weight: bold; margin-bottom: 4px;">${STATE_NAMES[state]}</div>`;
+        
         if (darkenNoRaces && !race) {
-          tooltipText += ": No election";
+          tooltipHtml += `<div style="color: #aaa;">No election</div>`;
         } else if (race) {
-          tooltipText += ": " + (race.electionName || state);
+          tooltipHtml += `<div style="margin-bottom: 4px;">${race.electionName || state}</div>`;
+          
+          if (race.candidates && race.candidates.length > 0) {
+            tooltipHtml += `<div style="font-size: 11px; margin-top: 6px;">`;
+            race.candidates.forEach(c => {
+              const partyColor = c.party === "D" ? "#2d7cff" : c.party === "R" ? "#f3536a" : "#5fc529";
+              const incumbent = c.isIncumbent ? " (i)" : "";
+              const winner = c.isWinner ? " ✓" : "";
+              tooltipHtml += `<div style="margin: 2px 0;">
+                <span style="color: ${partyColor}; font-weight: bold;">${c.party}</span> 
+                ${c.name}${incumbent}${winner}: ${c.percent?.toFixed(1) || 0}%
+              </div>`;
+            });
+            tooltipHtml += `</div>`;
+            
+            if (race.reportingPercent) {
+              tooltipHtml += `<div style="font-size: 10px; color: #aaa; margin-top: 4px;">${race.reportingPercent}% reporting</div>`;
+            }
+          }
         }
         
         // Show custom tooltip
         const tooltip = d3.select("body").append("div")
           .attr("class", "map-tooltip")
           .style("position", "absolute")
-          .style("background", "rgba(0, 0, 0, 0.8)")
+          .style("background", "rgba(0, 0, 0, 0.9)")
           .style("color", "#fff")
-          .style("padding", "8px 12px")
-          .style("border-radius", "4px")
+          .style("padding", "10px 14px")
+          .style("border-radius", "6px")
           .style("font-size", "12px")
           .style("pointer-events", "none")
           .style("z-index", "1000")
-          .text(tooltipText);
+          .style("max-width", "250px")
+          .style("line-height", "1.4")
+          .html(tooltipHtml);
         
         // Position tooltip
-        const [x, y] = d3.pointer(event, d3.select("#election-map svg").node());
         tooltip
           .style("left", (event.pageX + 10) + "px")
           .style("top", (event.pageY + 10) + "px");
@@ -318,11 +333,6 @@ async function renderHouseDistrictMap(raceData) {
       });
     
     svg.call(zoom);
-    
-    // Set initial zoom level to be closer
-    svg.transition()
-      .duration(750)
-      .call(zoom.scaleTo, 1.2);
     
     // Store zoom behavior for later use
     svg.node().__zoomBehavior = zoom;
@@ -464,20 +474,42 @@ async function renderHouseDistrictMap(raceData) {
       })
       .on("mouseover", (event, feature) => {
         const race = raceById.get(feature.properties?.id);
-        let tooltipText = race ? (race.electionName || feature.properties?.id) : `${feature.properties?.stateName || "District"} not modeled`;
+        let tooltipHtml = `<div style="font-weight: bold; margin-bottom: 4px;">${race.electionName || feature.properties?.id}</div>`;
+        
+        if (race && race.candidates && race.candidates.length > 0) {
+          tooltipHtml += `<div style="font-size: 11px; margin-top: 6px;">`;
+          race.candidates.forEach(c => {
+            const partyColor = c.party === "D" ? "#2d7cff" : c.party === "R" ? "#f3536a" : "#5fc529";
+            const incumbent = c.isIncumbent ? " (i)" : "";
+            const winner = c.isWinner ? " ✓" : "";
+            tooltipHtml += `<div style="margin: 2px 0;">
+              <span style="color: ${partyColor}; font-weight: bold;">${c.party}</span> 
+              ${c.name}${incumbent}${winner}: ${c.percent?.toFixed(1) || 0}%
+            </div>`;
+          });
+          tooltipHtml += `</div>`;
+          
+          if (race.reportingPercent) {
+            tooltipHtml += `<div style="font-size: 10px; color: #aaa; margin-top: 4px;">${race.reportingPercent}% reporting</div>`;
+          }
+        } else {
+          tooltipHtml += `<div style="color: #aaa;">${feature.properties?.stateName || "District"} not modeled</div>`;
+        }
         
         // Show custom tooltip
         const tooltip = d3.select("body").append("div")
           .attr("class", "map-tooltip")
           .style("position", "absolute")
-          .style("background", "rgba(0, 0, 0, 0.8)")
+          .style("background", "rgba(0, 0, 0, 0.9)")
           .style("color", "#fff")
-          .style("padding", "8px 12px")
-          .style("border-radius", "4px")
+          .style("padding", "10px 14px")
+          .style("border-radius", "6px")
           .style("font-size", "12px")
           .style("pointer-events", "none")
           .style("z-index", "1000")
-          .text(tooltipText);
+          .style("max-width": "250px")
+          .style("line-height", "1.4")
+          .html(tooltipHtml);
         
         // Position tooltip
         tooltip
