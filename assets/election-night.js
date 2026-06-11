@@ -243,10 +243,7 @@ async function renderStatewideMap(mode, raceData) {
               const partyColor = c.party === "D" ? "#2d7cff" : c.party === "R" ? "#f3536a" : "#5fc529";
               const incumbent = c.isIncumbent ? " (i)" : "";
               const winner = c.isWinner ? " ✓" : "";
-              tooltipHtml += `<div style="margin: 2px 0;">
-                <span style="color: ${partyColor}; font-weight: bold;">${c.party}</span> 
-                ${c.name}${incumbent}${winner}: ${c.percent?.toFixed(1) || 0}%
-              </div>`;
+              tooltipHtml += `<div style="margin: 2px 0;"><span style="color: ${partyColor}; font-weight: bold;">${c.party}</span> ${c.name}${incumbent}${winner}: ${c.percent?.toFixed(1) || 0}%</div>`;
             });
             tooltipHtml += `</div>`;
             
@@ -482,10 +479,7 @@ async function renderHouseDistrictMap(raceData) {
             const partyColor = c.party === "D" ? "#2d7cff" : c.party === "R" ? "#f3536a" : "#5fc529";
             const incumbent = c.isIncumbent ? " (i)" : "";
             const winner = c.isWinner ? " ✓" : "";
-            tooltipHtml += `<div style="margin: 2px 0;">
-              <span style="color: ${partyColor}; font-weight: bold;">${c.party}</span> 
-              ${c.name}${incumbent}${winner}: ${c.percent?.toFixed(1) || 0}%
-            </div>`;
+            tooltipHtml += `<div style="margin: 2px 0;"><span style="color: ${partyColor}; font-weight: bold;">${c.party}</span> ${c.name}${incumbent}${winner}: ${c.percent?.toFixed(1) || 0}%</div>`;
           });
           tooltipHtml += `</div>`;
           
