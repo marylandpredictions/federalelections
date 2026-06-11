@@ -46,6 +46,10 @@ function formatVotes(value) {
   return Number.isFinite(value) && value > 0 ? value.toLocaleString() : "0";
 }
 
+function hasVotes(race) {
+  return (race?.candidates || []).some((candidate) => Number.isFinite(candidate.votes) && candidate.votes > 0);
+}
+
 function cleanStatus(status) {
   return String(status || "").toLowerCase();
 }
@@ -64,7 +68,7 @@ function raceWinnerParty(race) {
   if (!race) return "U";
   if (race.winnerParty) return race.winnerParty;
   if (Number.isFinite(race.margin)) return race.margin >= 0 ? "D" : "R";
-  const leader = race.candidates?.slice().sort((a, b) => (b.percent || 0) - (a.percent || 0))[0];
+  const leader = race.candidates?.slice().sort((a, b) => (b.modelChance || b.percent || 0) - (a.modelChance || a.percent || 0))[0];
   return leader?.party || "U";
 }
 
@@ -79,16 +83,17 @@ function raceColor(race) {
 function topCandidates(race, limit = 3) {
   return (race?.candidates || [])
     .slice()
-    .sort((a, b) => (b.percent || 0) - (a.percent || 0))
+    .sort((a, b) => (b.votes || b.modelChance || b.percent || 0) - (a.votes || a.modelChance || a.percent || 0))
     .slice(0, limit);
 }
 
-function buildCandidate(party, name, status, percent, votes = 0, extra = {}) {
+function buildCandidate(party, name, status, modelChance, votes = 0, percent = null, extra = {}) {
   return {
     name: candidateName(name, party, status),
     party,
     status,
-    percent: Number.isFinite(percent) ? percent : 0,
+    modelChance: Number.isFinite(modelChance) ? modelChance : null,
+    percent: Number.isFinite(percent) ? percent : null,
     votes: Number.isFinite(votes) ? votes : 0,
     ...extra
   };
@@ -111,8 +116,8 @@ function normalizeHouseRace(district) {
     demProbability: district.demProbability,
     repProbability: district.repProbability,
     candidates: [
-      buildCandidate("D", district.demCandidate, district.demStatus, demPercent, 0, { incumbent: district.demProfile?.incumbent }),
-      buildCandidate("R", district.repCandidate, district.repStatus, repPercent, 0, { incumbent: district.repProfile?.incumbent })
+      buildCandidate("D", district.demCandidate, district.demStatus, demPercent, 0, null, { incumbent: district.demProfile?.incumbent }),
+      buildCandidate("R", district.repCandidate, district.repStatus, repPercent, 0, null, { incumbent: district.repProfile?.incumbent })
     ],
     reportingPercent: null
   };
@@ -157,8 +162,8 @@ function normalizeGovernorRace(race) {
     demProbability: race.demProbability,
     repProbability: race.repProbability,
     candidates: [
-      buildCandidate("D", race.demCandidate || race.dem, race.demStatus, demPercent, 0, { incumbent: race.incumbentParty === "D" }),
-      buildCandidate("R", race.repCandidate || race.rep, race.repStatus, repPercent, 0, { incumbent: race.incumbentParty === "R" })
+      buildCandidate("D", race.demCandidate || race.dem, race.demStatus, demPercent, 0, null, { incumbent: race.incumbentParty === "D" }),
+      buildCandidate("R", race.repCandidate || race.rep, race.repStatus, repPercent, 0, null, { incumbent: race.incumbentParty === "R" })
     ],
     reportingPercent: null
   };
@@ -171,16 +176,17 @@ function tooltipMarkup(race, title) {
 
   const rows = topCandidates(race, 2).map((candidate, index) => {
     const color = partyColor(candidate.party);
+    const value = hasVotes(race) ? formatPercent(candidate.percent || 0) : formatPercent(candidate.modelChance);
     return `
       <tr class="${index === 0 ? "leading" : ""}">
         <td><span class="tooltip-party-bar" style="background:${color}"></span>${candidate.name}${candidate.incumbent ? "*" : ""}</td>
-        <td>${formatPercent(candidate.percent)}</td>
-        <td>${formatVotes(candidate.votes)}</td>
+        <td>${value}</td>
+        <td>${hasVotes(race) ? formatVotes(candidate.votes) : "Model"}</td>
       </tr>
     `;
   }).join("");
 
-  const updated = race.reportingPercent == null ? "Forecast view" : `${formatPercent(race.reportingPercent, 0)} est. vote in`;
+  const updated = race.reportingPercent == null ? "Forecast candidate view" : `${formatPercent(race.reportingPercent, 0)} est. vote in`;
   return `
     <div class="election-map-tooltip-title">${race.title || title}</div>
     <table class="election-map-tooltip-table">
@@ -403,6 +409,7 @@ class ElectionNightPage {
       .scaleExtent([1, 14])
       .on("zoom", (event) => {
         this.viewport.attr("transform", event.transform);
+        if (this.currentRace && event.transform.k < 1.18) this.hideFocusPanel();
       });
     this.svg.call(this.zoom);
   }
@@ -423,7 +430,7 @@ class ElectionNightPage {
       if (!action || !this.svg || !this.zoom) return;
       if (action === "in") this.svg.transition().duration(220).call(this.zoom.scaleBy, 1.35);
       if (action === "out") this.svg.transition().duration(220).call(this.zoom.scaleBy, 0.75);
-      if (action === "reset") this.svg.transition().duration(300).call(this.zoom.transform, d3.zoomIdentity);
+      if (action === "reset") this.clearFocus();
     });
   }
 
@@ -466,8 +473,8 @@ class ElectionNightPage {
           <strong>${candidate.name}${candidate.incumbent ? "*" : ""}</strong>
           <small>${candidate.party === "D" ? "Democratic" : candidate.party === "R" ? "Republican" : "Other"}</small>
         </td>
-        <td>${formatPercent(candidate.percent)}</td>
-        <td>${formatVotes(candidate.votes)}</td>
+        <td>${hasVotes(race) ? formatPercent(candidate.percent || 0) : formatPercent(candidate.modelChance)}</td>
+        <td>${hasVotes(race) ? formatVotes(candidate.votes) : "Forecast"}</td>
       </tr>
     `).join("");
 
@@ -479,7 +486,7 @@ class ElectionNightPage {
         <span>${margin}</span>
       </div>
       <table class="selected-race-table">
-        <thead><tr><th>Candidate</th><th>Percent</th><th>Votes</th></tr></thead>
+        <thead><tr><th>Candidate</th><th>${hasVotes(race) ? "Percent" : "Model chance"}</th><th>${hasVotes(race) ? "Votes" : "Source"}</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
       <div class="selected-race-foot">
@@ -510,8 +517,8 @@ class ElectionNightPage {
       document.body.appendChild(tooltip);
     }
     tooltip.innerHTML = html;
-    const x = Math.min(window.innerWidth - 340, event.clientX + 16);
-    const y = Math.min(window.innerHeight - 220, event.clientY + 16);
+    const x = Math.min(window.innerWidth - 340, event.clientX + 8);
+    const y = Math.min(window.innerHeight - 220, event.clientY + 8);
     tooltip.style.left = `${Math.max(12, x)}px`;
     tooltip.style.top = `${Math.max(12, y)}px`;
   }

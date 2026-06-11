@@ -15,6 +15,7 @@ const defaultBase = "C:/Users/zydlo/Downloads/districts119";
 const shpPath = resolve(process.argv[2] || `${defaultBase} (1).shp`);
 const dbfPath = resolve(process.argv[3] || `${defaultBase} (2).dbf`);
 const outputPath = resolve(process.argv[4] || "data/house-districts-119.geojson");
+const mergeInputPath = process.argv[5] ? resolve(process.argv[5]) : null;
 
 function readDbf(path) {
   const buffer = readFileSync(path);
@@ -120,9 +121,22 @@ function rewindForGeoJson(ring) {
 
 function modelDistrictId(record) {
   const state = FIPS_TO_STATE[String(record.STATEFP).padStart(2, "0")];
-  const districtNumber = Number(record.DISTRICT);
+  const rawDistrict = record.DISTRICT ?? record.CD119FP ?? record.CD118FP ?? record.CD120FP;
+  const districtNumber = Number(rawDistrict);
   if (!state || !Number.isFinite(districtNumber)) return null;
   return `${state}-${districtNumber === 0 ? "AL" : String(districtNumber).padStart(2, "0")}`;
+}
+
+function modelDistrictNumber(record) {
+  const rawDistrict = record.DISTRICT ?? record.CD119FP ?? record.CD118FP ?? record.CD120FP;
+  const districtNumber = Number(rawDistrict);
+  return Number.isFinite(districtNumber) ? districtNumber : null;
+}
+
+function modelCongressNumber(record) {
+  const rawCongress = record.STARTCONG ?? record.CDSESSN;
+  const congress = Number(rawCongress);
+  return Number.isFinite(congress) ? congress : null;
 }
 
 const records = readDbf(dbfPath);
@@ -133,21 +147,46 @@ if (records.length !== geometries.length) {
 
 const features = records.map((record, index) => {
   if (!record || !geometries[index]) return null;
+  const state = FIPS_TO_STATE[String(record.STATEFP).padStart(2, "0")] || null;
+  const district = modelDistrictNumber(record);
+  const congress = modelCongressNumber(record);
   return {
     type: "Feature",
     properties: {
       id: modelDistrictId(record),
-      state: FIPS_TO_STATE[String(record.STATEFP).padStart(2, "0")] || null,
-      stateName: record.STATENAME,
-      district: Number(record.DISTRICT),
-      congress: Number(record.STARTCONG),
-      sourceId: record.ID,
-      sourceNote: record.NOTE,
-      lastChange: record.LASTCHANGE
+      state,
+      stateName: record.STATENAME || (state ? `${state}` : null),
+      district,
+      congress,
+      sourceId: record.ID || record.GEOID || null,
+      sourceNote: record.NOTE || `TIGER/Line ${record.NAMELSAD || "congressional district"}`,
+      lastChange: record.LASTCHANGE || null,
+      stateFp: record.STATEFP || null,
+      cd119Fp: record.CD119FP || null,
+      geoid: record.GEOID || null,
+      geoidFq: record.GEOIDFQ || null,
+      namelsad: record.NAMELSAD || null,
+      aland: record.ALAND ?? null,
+      awater: record.AWATER ?? null
     },
     geometry: geometries[index]
   };
 }).filter(Boolean);
+
+let outputFeatures = features;
+let mergeNote = null;
+if (mergeInputPath) {
+  const existing = JSON.parse(readFileSync(mergeInputPath, "utf8"));
+  const replacementStates = new Set(features.map((feature) => feature.properties.state).filter(Boolean));
+  outputFeatures = [
+    ...(existing.features || []).filter((feature) => !replacementStates.has(feature.properties?.state)),
+    ...features
+  ].sort((a, b) => String(a.properties?.id || "").localeCompare(String(b.properties?.id || "")));
+  mergeNote = {
+    mergedInto: basename(mergeInputPath),
+    replacedStates: [...replacementStates]
+  };
+}
 
 const collection = {
   type: "FeatureCollection",
@@ -158,11 +197,12 @@ const collection = {
   },
   generatedFrom: {
     shp: basename(shpPath),
-    dbf: basename(dbfPath)
+    dbf: basename(dbfPath),
+    merge: mergeNote
   },
-  features
+  features: outputFeatures
 };
 
 mkdirSync(dirname(outputPath), { recursive: true });
 writeFileSync(outputPath, `${JSON.stringify(collection)}\n`);
-console.log(`Wrote ${features.length} district shapes to ${outputPath}`);
+console.log(`Wrote ${outputFeatures.length} district shapes to ${outputPath}`);
