@@ -62,8 +62,8 @@ async function renderStatewideMap(mode, raceData) {
     const features = topojson.feature(us, us.objects.states).features;
     console.log("Features extracted:", features.length);
     
-    const width = 1200;
-    const height = 700;
+    const width = 800;
+    const height = 500;
     const projection = d3.geoAlbersUsa().fitSize([width, height], { type: "FeatureCollection", features });
     const path = d3.geoPath(projection);
     
@@ -305,8 +305,8 @@ async function renderHouseDistrictMap(raceData) {
     const geo = await d3.json("data/house-districts-119.geojson");
     console.log("House district geojson loaded, features:", geo.features?.length);
     
-    const width = 1200;
-    const height = 700;
+    const width = 800;
+    const height = 500;
     const projection = d3.geoAlbersUsa().fitSize([width, height], geo);
 
     container.innerHTML = "";
@@ -1252,8 +1252,8 @@ class ElectionNightPage {
       // For house districts, find the district feature and zoom to it
       console.log("Zooming to house district:", race.id);
       d3.json("data/house-districts-119.geojson").then(geojson => {
-        const width = 1200;
-        const height = 700;
+        const width = 800;
+        const height = 500;
         const projection = d3.geoAlbersUsa().fitSize([width, height], geojson);
         const path = d3.geoPath(projection);
         
@@ -1279,8 +1279,8 @@ class ElectionNightPage {
       // For senate and governor, find the state feature and zoom to it
       console.log("Zooming to state:", race.state);
       d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us => {
-        const width = 1200;
-        const height = 700;
+        const width = 800;
+        const height = 500;
         const features = topojson.feature(us, us.objects.states).features;
         const projection = d3.geoAlbersUsa().fitSize([width, height], { type: "FeatureCollection", features });
         const path = d3.geoPath(projection);
