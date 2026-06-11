@@ -1025,12 +1025,18 @@ class ElectionNightPage {
         this.switchMode(mode);
       });
     });
+
+    document.querySelectorAll("[data-clear-focus], #clear-focus-button").forEach(button => {
+      button.addEventListener("click", () => this.clearFocus());
+    });
   }
 
   async loadInitialData() {
     await this.loadRaceData();
     await this.renderSummary();
+    await this.renderRaceList();
     await this.renderMap();
+    this.updateModeButtons();
   }
 
   async loadRaceData() {
@@ -1088,10 +1094,7 @@ class ElectionNightPage {
     this.focusedRace = null;
     this.raceData = [];
 
-    // Update mode buttons
-    document.querySelectorAll(".button-link[data-mode]").forEach(button => {
-      button.classList.toggle("active", button.dataset.mode === mode);
-    });
+    this.updateModeButtons();
 
     // Update summary label
     const summaryLabel = document.getElementById("summary-label");
@@ -1107,6 +1110,14 @@ class ElectionNightPage {
     await this.renderSummary();
     await this.renderRaceList();
     await this.renderMap();
+  }
+
+  updateModeButtons() {
+    document.querySelectorAll(".button-link[data-mode]").forEach(button => {
+      const active = button.dataset.mode === this.selectedMode;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-selected", active ? "true" : "false");
+    });
   }
 
   async renderSummary() {
@@ -1151,6 +1162,10 @@ class ElectionNightPage {
     document.getElementById("reporting-status").textContent = calledRaces > 0 ? `${calledRaces} races called` : "No races called yet";
     document.getElementById("dem-seats").textContent = demSeats;
     document.getElementById("rep-seats").textContent = repSeats;
+    const demSummaryLabel = document.getElementById("dem-summary-label");
+    const repSummaryLabel = document.getElementById("rep-summary-label");
+    if (demSummaryLabel) demSummaryLabel.textContent = this.selectedMode === "governor" ? "Democratic races" : "Democratic seats";
+    if (repSummaryLabel) repSummaryLabel.textContent = this.selectedMode === "governor" ? "Republican races" : "Republican seats";
     document.getElementById("reporting-percent").textContent = avgReporting > 0 ? `${avgReporting.toFixed(1)}%` : "--%";
     document.getElementById("last-updated").textContent = new Date().toLocaleTimeString();
   }
@@ -1182,21 +1197,13 @@ class ElectionNightPage {
       const topCandidate = winner || leader;
 
       return `
-        <div class="race-item" data-race-id="${race.id}" style="
-          padding: 12px;
-          margin-bottom: 8px;
-          border: 1px solid #d6d9e2;
-          border-radius: 8px;
-          background: rgba(7, 20, 59, 0.6);
-          cursor: pointer;
-          transition: all 0.2s ease;
-        ">
-          <div style="font-weight: 700; margin-bottom: 4px;">${race.electionName || race.name}</div>
-          <div style="font-size: 0.85rem; color: #c6d2ff;">
+        <button class="race-item ${this.selectedRaceId === race.id ? "active" : ""}" type="button" data-race-id="${race.id}">
+          <strong>${race.electionName || race.name}</strong>
+          <span>
             ${topCandidate ? `${topCandidate.name}: ${topCandidate.percent?.toFixed(1) || 0}%` : "No votes"}
-            ${race.reportingPercent ? ` • ${race.reportingPercent}% reporting` : ""}
-          </div>
-        </div>
+            ${race.reportingPercent ? ` - ${race.reportingPercent}% reporting` : ""}
+          </span>
+        </button>
       `;
     }).join("");
 
@@ -1223,6 +1230,9 @@ class ElectionNightPage {
     }
 
     console.log("Race found:", race);
+    this.focusedRace = race;
+    this.renderFocusedRace();
+    this.renderRaceList();
     // Zoom into the selected race on the map
     this.zoomToRace(race);
   }
@@ -1317,6 +1327,7 @@ class ElectionNightPage {
     
     if (!focusedPanel || !focusedContent) return;
 
+    focusedPanel.hidden = false;
     focusedPanel.style.display = "block";
     focusedContent.innerHTML = `
       <p style="color: #c6d2ff;">No results available for this race yet.</p>
@@ -1329,6 +1340,7 @@ class ElectionNightPage {
     
     if (!focusedPanel || !focusedContent || !this.focusedRace) return;
 
+    focusedPanel.hidden = false;
     focusedPanel.style.display = "block";
 
     const race = this.focusedRace;
@@ -1393,6 +1405,7 @@ class ElectionNightPage {
 
     const focusedPanel = document.getElementById("focused-race-panel");
     if (focusedPanel) {
+      focusedPanel.hidden = true;
       focusedPanel.style.display = "none";
     }
 

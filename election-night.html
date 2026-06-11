@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>2026 Election Night | Federal Elections Analysis</title>
-  <meta name="description" content="Live 2026 election results for House, Senate, and gubernatorial races from Federal Elections Analysis.">
+  <title>2026 Election Night Results | Federal Elections Analysis</title>
+  <meta name="description" content="Public 2026 election night dashboard for House, Senate, and gubernatorial results from Federal Elections Analysis.">
   <meta property="og:image" content="https://media.discordapp.net/attachments/1382924914482348064/1509778504353447998/FEA_40.png?ex=6a1a6a4d&is=6a1918cd&hm=6b77c0e3215672cbf44ea62d2fc2c9e4d907031812e13de98aeedc34dd23b5e1&=&format=webp&quality=lossless&width=2452&height=1380">
   <link rel="icon" href="assets/img/FEA_Icon.webp" type="image/webp">
   <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
@@ -21,6 +21,7 @@
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="/">Home</a>
       <a href="/videos">Videos</a>
+      <a class="active" href="/results">Results</a>
       <a href="/articles">Articles</a>
       <details class="nav-dropdown">
         <summary>Forecasts</summary>
@@ -31,7 +32,6 @@
           <a href="/president">2028 Pres</a>
         </div>
       </details>
-      <a href="/election-night" class="active">2026 Election Night</a>
     </nav>
     <div class="site-nav-right">
       <a href="https://gofund.me/50724cf21" target="_blank" rel="noopener" class="donate-button">$ Donate</a>
@@ -42,57 +42,78 @@
     </div>
   </header>
 
-  <main>
-    <section class="text-panel compact-page-head" aria-labelledby="page-title">
-      <p class="kicker">2026 Election Night</p>
-      <h1 id="page-title">Live election results.</h1>
-      <p class="lede">Real-time results for House, Senate, and gubernatorial races.</p>
-      <div class="hero-actions">
-        <button class="button-link" data-mode="house">House</button>
-        <button class="button-link" data-mode="senate">Senate</button>
-        <button class="button-link" data-mode="governor">Governors</button>
+  <main class="election-night-page">
+    <section class="text-panel compact-page-head election-night-hero" aria-labelledby="page-title">
+      <div>
+        <p class="kicker">2026 Election Night</p>
+        <h1 id="page-title">Live election results.</h1>
+        <p class="lede">A public dashboard for House, Senate, and gubernatorial races.</p>
+      </div>
+      <div class="hero-actions election-mode-toggle" role="tablist" aria-label="Election results mode">
+        <button class="button-link" type="button" data-mode="house">House</button>
+        <button class="button-link" type="button" data-mode="senate">Senate</button>
+        <button class="button-link" type="button" data-mode="governor">Governors</button>
       </div>
     </section>
 
-    <section class="text-panel" aria-label="Results summary">
-      <p class="kicker" id="summary-label">House Results</p>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 16px 0;">
-        <div>
-          <div id="total-races" style="font-size: 2.5rem; font-weight: 900; line-height: 1;">--</div>
-          <p id="called-races" style="color: #c6d2ff; margin: 4px 0 0;">-- called</p>
+    <section class="election-dashboard-grid">
+      <aside class="text-panel election-summary-panel" aria-label="Results summary">
+        <p class="kicker" id="summary-label">House Results</p>
+        <div class="election-summary-grid">
+          <article>
+            <strong id="total-races">--</strong>
+            <span id="called-races">-- called</span>
+          </article>
+          <article>
+            <strong id="dem-seats" class="party-dem-text">--</strong>
+            <span id="dem-summary-label">Democratic seats</span>
+          </article>
+          <article>
+            <strong id="rep-seats" class="party-rep-text">--</strong>
+            <span id="rep-summary-label">Republican seats</span>
+          </article>
+          <article>
+            <strong id="reporting-percent">--%</strong>
+            <span>Reporting</span>
+          </article>
         </div>
-        <div>
-          <div id="dem-seats" style="font-size: 2.5rem; font-weight: 900; line-height: 1; color: #2d7cff;">--</div>
-          <p style="color: #c6d2ff; margin: 4px 0 0;">Democratic seats</p>
+        <p id="reporting-status" class="meta">No votes reported</p>
+        <p class="meta">Last updated: <span id="last-updated">--</span></p>
+      </aside>
+
+      <aside class="text-panel election-race-list-panel" aria-labelledby="race-list-title">
+        <div class="section-head compact">
+          <div>
+            <p class="kicker">Race list</p>
+            <h2 id="race-list-title">Tracked races.</h2>
+          </div>
+          <button class="button-link compact-button" type="button" id="clear-focus-button">National view</button>
         </div>
-        <div>
-          <div id="rep-seats" style="font-size: 2.5rem; font-weight: 900; line-height: 1; color: #f3536a;">--</div>
-          <p style="color: #c6d2ff; margin: 4px 0 0;">Republican seats</p>
-        </div>
-        <div>
-          <div id="reporting-percent" style="font-size: 2.5rem; font-weight: 900; line-height: 1;">--%</div>
-          <p style="color: #c6d2ff; margin: 4px 0 0;">Reporting</p>
-        </div>
-      </div>
-      <p id="reporting-status" style="color: #c6d2ff; margin-top: 16px;">No votes reported</p>
-      <p style="color: #c6d2ff; font-size: 0.85rem; margin-top: 8px;">Last updated: <span id="last-updated">--</span></p>
+        <div id="race-list" class="election-race-list"></div>
+      </aside>
     </section>
 
-    <section class="map-panel" aria-labelledby="map-title" style="width: 98%; margin: 0 auto;">
+    <section class="map-panel election-map-panel" aria-labelledby="map-title">
       <div class="section-head">
         <div>
           <p class="kicker">Map</p>
           <h2 id="map-title">The 2026 results map.</h2>
         </div>
-        <p id="map-subtitle">Click a state or district to zoom in. Click the reset button to zoom out.</p>
+        <p id="map-subtitle">Click a state or district to focus it. Use National view to reset.</p>
       </div>
-      <div class="map-wrap" style="display: flex; justify-content: center;">
-        <div>
-          <div id="election-map" style="min-height: 800px; width: 100%;"></div>
-        </div>
-      </div>
+      <div id="election-map" class="election-map-canvas" aria-live="polite"></div>
     </section>
 
+    <section id="focused-race-panel" class="text-panel election-focus-panel" aria-labelledby="focused-race-title" hidden>
+      <div class="section-head compact">
+        <div>
+          <p class="kicker">Focused race</p>
+          <h2 id="focused-race-title">Race details.</h2>
+        </div>
+        <button class="button-link compact-button" type="button" data-clear-focus>Back to national view</button>
+      </div>
+      <div id="focused-race-content"></div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -105,6 +126,7 @@
         <strong>Site</strong>
         <a href="/">Home</a>
         <a href="/videos">Videos</a>
+        <a class="active" href="/results">Results</a>
         <a href="/articles">Articles</a>
       </section>
       <section class="footer-link-group" aria-label="Forecast links">
@@ -117,7 +139,6 @@
       </section>
       <section class="footer-link-group" aria-label="Other links">
         <strong>Other</strong>
-        <a href="/election-night" class="active">2026 Election Night</a>
         <a href="/about">About</a>
         <a href="/contact">Contact</a>
         <a href="/terms">Terms</a>

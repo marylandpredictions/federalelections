@@ -677,7 +677,7 @@ async function handleAdmin(request, response, url) {
 async function serveStatic(request, response) {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
   let requestedPath = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
-  const hiddenResultPaths = new Set(["/results", "/results.html", "/result", "/result.html"]);
+  const hiddenResultPaths = new Set(["/result", "/result.html"]);
   if (hiddenResultPaths.has(url.pathname)) {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" });
     response.end("Results pages are currently hidden.");
