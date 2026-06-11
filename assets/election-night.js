@@ -62,16 +62,14 @@ async function renderStatewideMap(mode, raceData) {
     const features = topojson.feature(us, us.objects.states).features;
     console.log("Features extracted:", features.length);
     
-    const width = 800;
-    const height = 500;
+    const width = 960;
+    const height = 610;
     const projection = d3.geoAlbersUsa().fitSize([width, height], { type: "FeatureCollection", features });
     const path = d3.geoPath(projection);
     
     container.innerHTML = "";
     const svg = d3.select(container)
       .append("svg")
-      .attr("width", "100%")
-      .attr("height", "100%")
       .attr("viewBox", `0 0 ${width} ${height}`)
       .attr("role", "img")
       .attr("aria-label", `United States map of ${mode} results`);
@@ -305,15 +303,13 @@ async function renderHouseDistrictMap(raceData) {
     const geo = await d3.json("data/house-districts-119.geojson");
     console.log("House district geojson loaded, features:", geo.features?.length);
     
-    const width = 800;
-    const height = 500;
+    const width = 960;
+    const height = 610;
     const projection = d3.geoAlbersUsa().fitSize([width, height], geo);
 
     container.innerHTML = "";
     const svg = d3.select(container)
       .append("svg")
-      .attr("width", "100%")
-      .attr("height", "100%")
       .attr("viewBox", `0 0 ${width} ${height}`)
       .attr("role", "img")
       .attr("aria-label", "Interactive 119th Congressional District map");
@@ -1252,8 +1248,8 @@ class ElectionNightPage {
       // For house districts, find the district feature and zoom to it
       console.log("Zooming to house district:", race.id);
       d3.json("data/house-districts-119.geojson").then(geojson => {
-        const width = 800;
-        const height = 500;
+        const width = 960;
+        const height = 610;
         const projection = d3.geoAlbersUsa().fitSize([width, height], geojson);
         const path = d3.geoPath(projection);
         
@@ -1279,8 +1275,8 @@ class ElectionNightPage {
       // For senate and governor, find the state feature and zoom to it
       console.log("Zooming to state:", race.state);
       d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us => {
-        const width = 800;
-        const height = 500;
+        const width = 960;
+        const height = 610;
         const features = topojson.feature(us, us.objects.states).features;
         const projection = d3.geoAlbersUsa().fitSize([width, height], { type: "FeatureCollection", features });
         const path = d3.geoPath(projection);
