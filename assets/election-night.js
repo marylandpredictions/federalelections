@@ -86,8 +86,13 @@ async function renderStatewideMap(mode, raceData) {
     
     svg.call(zoom);
     
-    // Store zoom instance for later use
-    svg.node().__zoom = zoom;
+    // Set initial zoom level to be closer
+    svg.transition()
+      .duration(750)
+      .call(zoom.scaleTo, 1.5);
+    
+    // Store zoom behavior for later use
+    svg.node().__zoomBehavior = zoom;
     
     // Add zoom controls
     const zoomControls = svg.append("g")
@@ -212,11 +217,18 @@ async function renderStatewideMap(mode, raceData) {
       .attr("stroke", "#000")
       .attr("stroke-width", 0.3)
       .attr("tabindex", (feature) => raceByState.has(FIPS_TO_STATE[String(feature.id).padStart(2, "0")]) ? 0 : -1)
+      .style("cursor", (feature) => raceByState.has(FIPS_TO_STATE[String(feature.id).padStart(2, "0")]) ? "pointer" : "default")
       .on("click keydown", (event, feature) => {
+        console.log("Click event on feature:", feature);
         if (event.type === "keydown" && event.key !== "Enter") return;
         const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        console.log("State:", state);
         const race = raceByState.get(state);
-        if (race) currentPage.selectRace(race.id);
+        console.log("Race:", race);
+        if (race) {
+          console.log("Calling selectRace with race id:", race.id);
+          currentPage.selectRace(race.id);
+        }
       })
       .append("title")
       .text((feature) => {
@@ -275,8 +287,13 @@ async function renderHouseDistrictMap(raceData) {
     
     svg.call(zoom);
     
-    // Store zoom instance for later use
-    svg.node().__zoom = zoom;
+    // Set initial zoom level to be closer
+    svg.transition()
+      .duration(750)
+      .call(zoom.scaleTo, 1.5);
+    
+    // Store zoom behavior for later use
+    svg.node().__zoomBehavior = zoom;
     
     // Add zoom controls
     const zoomControls = svg.append("g")
@@ -400,10 +417,16 @@ async function renderHouseDistrictMap(raceData) {
         const race = raceById.get(feature.properties?.id);
         return race ? `${race.electionName || feature.properties?.id}` : `${feature.properties?.stateName || "District"} not modeled`;
       })
+      .style("cursor", (feature) => raceById.has(feature.properties?.id) ? "pointer" : "default")
       .on("click keydown", (event, feature) => {
+        console.log("Click event on district feature:", feature);
         if (event.type === "keydown" && event.key !== "Enter") return;
         const race = raceById.get(feature.properties?.id);
-        if (race) currentPage.selectRace(race.id);
+        console.log("District race:", race);
+        if (race) {
+          console.log("Calling selectRace with race id:", race.id);
+          currentPage.selectRace(race.id);
+        }
       })
       .append("title")
       .text((feature) => {
@@ -1110,6 +1133,7 @@ class ElectionNightPage {
   }
 
   async selectRace(raceId) {
+    console.log("selectRace called with raceId:", raceId);
     this.selectedRaceId = raceId;
 
     // Find race in loaded data
@@ -1119,28 +1143,40 @@ class ElectionNightPage {
       return;
     }
 
+    console.log("Race found:", race);
     // Zoom into the selected race on the map
     this.zoomToRace(race);
   }
 
   zoomToRace(race) {
+    console.log("zoomToRace called with race:", race);
     const svg = d3.select("#election-map svg");
-    if (!svg) return;
+    if (!svg) {
+      console.error("SVG not found");
+      return;
+    }
 
-    const zoom = svg.node().__zoom;
-    if (!zoom) return;
+    const zoom = svg.node().__zoomBehavior;
+    if (!zoom) {
+      console.error("Zoom behavior not found");
+      return;
+    }
 
     // Get actual SVG dimensions
     const svgNode = svg.node();
     const svgWidth = svgNode.viewBox.baseVal.width;
     const svgHeight = svgNode.viewBox.baseVal.height;
 
+    console.log("SVG dimensions:", svgWidth, svgHeight);
+
     const path = d3.geoPath();
 
     if (this.selectedMode === "house") {
       // For house districts, find the district feature and zoom to it
+      console.log("Zooming to house district:", race.id);
       d3.json("data/house-districts-119.geojson").then(geojson => {
         const feature = geojson.features.find(f => f.properties?.id === race.id);
+        console.log("Found feature:", feature);
         if (feature) {
           const bounds = path.bounds(feature);
           const [[x0, y0], [x1, y1]] = bounds;
@@ -1150,6 +1186,8 @@ class ElectionNightPage {
           const k = 0.9 / Math.max(width / svgWidth, height / svgHeight);
           const translate = [svgWidth / 2 - k * (x0 + x1) / 2, svgHeight / 2 - k * (y0 + y1) / 2];
           
+          console.log("Zoom parameters:", { k, translate, bounds });
+          
           svg.transition()
             .duration(750)
             .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(k));
@@ -1157,12 +1195,15 @@ class ElectionNightPage {
       });
     } else {
       // For senate and governor, find the state feature and zoom to it
+      console.log("Zooming to state:", race.state);
       d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us => {
         const features = topojson.feature(us, us.objects.states).features;
         const feature = features.find(f => {
           const state = FIPS_TO_STATE[String(f.id).padStart(2, "0")];
           return state === race.state;
         });
+        
+        console.log("Found state feature:", feature);
         
         if (feature) {
           const bounds = path.bounds(feature);
@@ -1172,6 +1213,8 @@ class ElectionNightPage {
           
           const k = 0.9 / Math.max(width / svgWidth, height / svgHeight);
           const translate = [svgWidth / 2 - k * (x0 + x1) / 2, svgHeight / 2 - k * (y0 + y1) / 2];
+          
+          console.log("Zoom parameters:", { k, translate, bounds });
           
           svg.transition()
             .duration(750)
