@@ -70,6 +70,8 @@ async function renderStatewideMap(mode, raceData) {
     container.innerHTML = "";
     const svg = d3.select(container)
       .append("svg")
+      .attr("width", "100%")
+      .attr("height", "100%")
       .attr("viewBox", `0 0 ${width} ${height}`)
       .attr("role", "img")
       .attr("aria-label", `United States map of ${mode} results`);
@@ -310,6 +312,8 @@ async function renderHouseDistrictMap(raceData) {
     container.innerHTML = "";
     const svg = d3.select(container)
       .append("svg")
+      .attr("width", "100%")
+      .attr("height", "100%")
       .attr("viewBox", `0 0 ${width} ${height}`)
       .attr("role", "img")
       .attr("aria-label", "Interactive 119th Congressional District map");
