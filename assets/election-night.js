@@ -85,11 +85,6 @@ async function renderStatewideMap(mode, raceData) {
     
     svg.call(zoom);
     
-    // Set initial zoom level to be closer
-    svg.transition()
-      .duration(750)
-      .call(zoom.scaleTo, 1.5);
-    
     // Store zoom behavior for later use
     svg.node().__zoomBehavior = zoom;
     
@@ -182,8 +177,6 @@ async function renderStatewideMap(mode, raceData) {
     
     zoomReset.on("click", () => {
       svg.transition().call(zoom.transform, d3.zoomIdentity);
-      // Reset to initial zoom level
-      svg.transition().delay(100).call(zoom.scaleTo, 1.5);
     });
     
     console.log("SVG created, adding paths...");
@@ -334,11 +327,6 @@ async function renderHouseDistrictMap(raceData) {
     
     svg.call(zoom);
     
-    // Set initial zoom level to be closer
-    svg.transition()
-      .duration(750)
-      .call(zoom.scaleTo, 1.5);
-    
     // Store zoom behavior for later use
     svg.node().__zoomBehavior = zoom;
     
@@ -431,8 +419,6 @@ async function renderHouseDistrictMap(raceData) {
     
     zoomReset.on("click", () => {
       svg.transition().call(zoom.transform, d3.zoomIdentity);
-      // Reset to initial zoom level
-      svg.transition().delay(100).call(zoom.scaleTo, 1.5);
     });
     
     console.log("SVG created for district map, adding paths...");
