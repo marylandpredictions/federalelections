@@ -728,7 +728,7 @@ class ElectionNightPage {
         const state = FIPS_TO_STATE[featureStateFipsForElectionNight(feature)];
         return raceByState.has(state) ? "state-result-shape election-map-shape" : "state-result-shape election-map-shape election-map-muted";
       })
-      .attr("d", this.path)
+      .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("fill", (feature) => {
         const state = FIPS_TO_STATE[featureStateFipsForElectionNight(feature)];
         const race = raceByState.get(state);
@@ -773,7 +773,7 @@ class ElectionNightPage {
       .data(this.stateFeatures || [])
       .join("path")
       .attr("class", "state-border")
-      .attr("d", this.path)
+      .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("fill", "#1c2b43")
       .attr("stroke", "rgba(226, 232, 255, .42)")
       .attr("stroke-width", 0.45)
@@ -786,7 +786,7 @@ class ElectionNightPage {
         const race = raceByDistrict.get(feature.properties?.id);
         return race ? "house-district-shape election-map-shape" : "house-district-shape election-map-shape election-map-muted";
       })
-      .attr("d", this.path)
+      .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("fill-rule", "evenodd")
       .attr("fill", (feature) => raceColor(raceByDistrict.get(feature.properties?.id)))
       .attr("stroke", "#e2e8ff")
@@ -907,7 +907,7 @@ class ElectionNightPage {
           : FIPS_TO_STATE[featureStateFipsForElectionNight(feature)] === String(race.state || "").toUpperCase();
         return `map-context-shape ${isSelected ? "is-selected-context" : "is-dimmed-context"}`;
       })
-      .attr("d", this.path)
+      .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("fill", "#1a2840")
       .attr("stroke", "rgba(226, 232, 255, .45)")
       .attr("stroke-width", 0.38)
@@ -922,7 +922,7 @@ class ElectionNightPage {
           ? "county-result-shape election-map-shape"
           : "county-result-shape election-map-shape election-map-muted";
       })
-      .attr("d", this.path)
+      .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("fill-rule", "evenodd")
       .attr("fill", (feature) => {
         const county = countyForFeature(feature, lookup);
