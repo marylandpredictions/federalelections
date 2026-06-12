@@ -35,8 +35,7 @@ const MODE_LABELS = {
 
 const CHAMBER_CONFIG = {
   house: { total: 435, majority: 218, unit: "seats" },
-  senate: { total: 100, majority: 51, unit: "seats" },
-  governor: { total: 36, majority: 19, unit: "races" }
+  senate: { total: 100, majority: 51, unit: "seats" }
 };
 
 function partyColor(party) {
@@ -162,6 +161,12 @@ function houseGeometryId(race) {
   return `${state}-${String(district).padStart(2, "0")}`;
 }
 
+function raceIdFromHouseGeometryId(id) {
+  const [state, district] = String(id || "").split("-");
+  if (!state || !district) return "";
+  return `house-${state}-${district === "AL" ? "AL" : String(Number(district))}`;
+}
+
 function normalizeElectionRace(race, fallbackCandidates) {
   const candidates = (race.candidates || []).map(normalizeCandidate);
   const normalized = {
@@ -259,6 +264,8 @@ class ElectionNightPage {
     this.dataByMode = { house: [], senate: [], governor: [] };
     this.geo = null;
     this.stateFeatures = null;
+    this.nameLookups = { house: new Map(), senate: new Map(), governor: new Map() };
+    this.houseExpandedFromGeometry = false;
     this.currentRace = null;
     this.svg = null;
     this.viewport = null;
@@ -283,6 +290,7 @@ class ElectionNightPage {
     document.querySelectorAll("[data-clear-focus]").forEach((button) => {
       button.addEventListener("click", () => this.clearFocus());
     });
+    this.bindFocusPanelDrag();
   }
 
   async loadData() {
@@ -294,10 +302,43 @@ class ElectionNightPage {
     ]);
 
     const lookups = buildNameLookups(house, senate, governor);
+    this.nameLookups = lookups;
     const races = (results?.races || []).map((race) => normalizeElectionRace(race, fallbackCandidatesForRace(race, lookups)));
     this.dataByMode.house = races.filter((race) => race.type === "house");
     this.dataByMode.senate = races.filter((race) => race.type === "senate");
     this.dataByMode.governor = races.filter((race) => race.type === "governor");
+  }
+
+  ensureAllHouseRacesFromGeometry() {
+    if (this.houseExpandedFromGeometry || !this.geo?.features?.length) return;
+    const existing = new Map(this.dataByMode.house.map((race) => [houseGeometryId(race), race]));
+    for (const feature of this.geo.features) {
+      const geometryId = feature.properties?.id;
+      if (!geometryId || existing.has(geometryId)) continue;
+      const [state, district] = geometryId.split("-");
+      const fallback = this.nameLookups.house.get(geometryId) || [
+        buildFallbackCandidate("D", null, null),
+        buildFallbackCandidate("R", null, null)
+      ];
+      existing.set(geometryId, {
+        id: raceIdFromHouseGeometryId(geometryId),
+        type: "house",
+        state,
+        district: district === "AL" ? "AL" : Number(district),
+        title: `${STATE_NAMES[state] || state} US House ${district === "AL" ? "At-Large" : Number(district)}`,
+        subtitle: "",
+        status: "",
+        reportingPercent: null,
+        candidates: fallback
+      });
+    }
+    this.dataByMode.house = [...existing.values()].sort((a, b) => {
+      if (a.state !== b.state) return String(a.state).localeCompare(String(b.state));
+      const ad = a.district === "AL" ? 0 : Number(a.district) || 0;
+      const bd = b.district === "AL" ? 0 : Number(b.district) || 0;
+      return ad - bd;
+    });
+    this.houseExpandedFromGeometry = true;
   }
 
   async safeJson(url) {
@@ -336,27 +377,29 @@ class ElectionNightPage {
 
   renderSummary() {
     const races = this.modeRaces();
-    const total = races.length;
     const called = races.filter(isActuallyCalled);
     const reporting = races.filter(hasActiveResults).length;
     const dem = called.filter((race) => raceWinnerParty(race) === "D").length;
     const rep = called.filter((race) => raceWinnerParty(race) === "R").length;
 
     document.getElementById("summary-label").textContent = `${MODE_LABELS[this.selectedMode]} board`;
-    document.getElementById("total-races").textContent = total ? String(total) : "--";
-    document.getElementById("called-races").textContent = "tracked contests";
+    document.getElementById("total-races").textContent = "Live";
+    document.getElementById("called-races").textContent = "election night map";
     document.getElementById("dem-seats").textContent = String(dem);
     document.getElementById("rep-seats").textContent = String(rep);
     document.getElementById("dem-summary-label").textContent = this.selectedMode === "governor" ? "Dem wins" : "Dem called";
     document.getElementById("rep-summary-label").textContent = this.selectedMode === "governor" ? "GOP wins" : "GOP called";
     document.getElementById("dem-share-label").textContent = "actual calls";
     document.getElementById("rep-share-label").textContent = "actual calls";
-    document.getElementById("reporting-percent").textContent = String(reporting);
-    document.getElementById("last-updated").textContent = "races with results";
+    document.getElementById("reporting-percent").textContent = reporting ? String(reporting) : "--";
+    document.getElementById("last-updated").textContent = reporting ? "active result feeds" : "awaiting result feeds";
     this.renderChamberBar(dem, rep, called.length);
   }
 
   renderChamberBar(dem, rep, called) {
+    const board = document.querySelector(".election-chamber-board");
+    if (board) board.hidden = this.selectedMode === "governor";
+    if (this.selectedMode === "governor") return;
     const config = CHAMBER_CONFIG[this.selectedMode] || CHAMBER_CONFIG.house;
     const uncalled = Math.max(0, config.total - dem - rep);
     const demPct = (dem / config.total) * 100;
@@ -374,7 +417,7 @@ class ElectionNightPage {
     const majorityLine = document.getElementById("chamber-majority-line");
 
     if (title) title.textContent = `${MODE_LABELS[this.selectedMode]} call tracker`;
-    if (subtitle) subtitle.textContent = `${called} called from live result data. Forecasts are not used for this count.`;
+    if (subtitle) subtitle.textContent = called ? `${called} called from live result data.` : "Waiting for live calls.";
     if (demLabel) demLabel.textContent = `${dem} D`;
     if (repLabel) repLabel.textContent = `${rep} R`;
     if (majorityLabel) majorityLabel.textContent = `${config.majority} for majority`;
@@ -402,8 +445,8 @@ class ElectionNightPage {
 
   async renderStateMap(container) {
     if (!this.stateFeatures) {
-      const us = await d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json");
-      this.stateFeatures = topojson.feature(us, us.objects.states).features;
+      const us = await d3.json("data/result-us-states.geojson");
+      this.stateFeatures = us.features || [];
     }
 
     const width = 1160;
@@ -416,12 +459,12 @@ class ElectionNightPage {
     const raceByState = new Map(this.modeRaces().map((race) => [race.state, race]));
 
     this.createSvg(container, width, height);
-    this.viewport.selectAll("path")
+    this.viewport.selectAll(".state-result-shape")
       .data(this.stateFeatures)
       .join("path")
       .attr("class", (feature) => {
         const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
-        return raceByState.has(state) ? "election-map-shape" : "election-map-shape election-map-muted";
+        return raceByState.has(state) ? "state-result-shape election-map-shape" : "state-result-shape election-map-shape election-map-muted";
       })
       .attr("d", this.path)
       .attr("fill", (feature) => {
@@ -451,18 +494,37 @@ class ElectionNightPage {
     if (!this.geo) {
       this.geo = await d3.json("data/house-districts-119.geojson");
     }
+    if (!this.stateFeatures) {
+      const us = await d3.json("data/result-us-states.geojson");
+      this.stateFeatures = us.features || [];
+    }
+    this.ensureAllHouseRacesFromGeometry();
+    this.renderSummary();
 
     const width = 1160;
     const height = 720;
-    const projection = d3.geoAlbersUsa().fitExtent([[18, 18], [width - 18, height - 18]], this.geo);
+    const projection = d3.geoAlbersUsa().fitExtent([[20, 20], [width - 20, height - 20]], {
+      type: "FeatureCollection",
+      features: this.stateFeatures
+    });
     this.path = d3.geoPath(projection);
     const raceById = new Map(this.modeRaces().map((race) => [houseGeometryId(race), race]));
 
     this.createSvg(container, width, height);
-    this.viewport.selectAll("path")
+    this.viewport.selectAll(".state-base")
+      .data(this.stateFeatures || [])
+      .join("path")
+      .attr("class", "state-base")
+      .attr("d", this.path)
+      .attr("fill", "#182945")
+      .attr("stroke", "rgba(226,232,255,.32)")
+      .attr("stroke-width", 0.45)
+      .attr("pointer-events", "none");
+
+    this.viewport.selectAll(".house-result-district")
       .data(this.geo.features || [])
       .join("path")
-      .attr("class", (feature) => raceById.has(feature.properties?.id) ? "election-map-shape" : "election-map-shape election-map-muted")
+      .attr("class", (feature) => raceById.has(feature.properties?.id) ? "house-result-district election-map-shape" : "house-result-district election-map-shape election-map-muted")
       .attr("d", this.path)
       .attr("fill", (feature) => {
         const race = raceById.get(feature.properties?.id);
@@ -498,7 +560,6 @@ class ElectionNightPage {
       .scaleExtent([1, 14])
       .on("zoom", (event) => {
         this.viewport.attr("transform", event.transform);
-        if (this.currentRace && event.transform.k < 1.18) this.hideFocusPanel();
       });
     this.svg.call(this.zoom);
   }
@@ -550,6 +611,7 @@ class ElectionNightPage {
     const live = hasActiveResults(race);
     const leaderParty = raceWinnerParty(race);
     panel.hidden = false;
+    panel.classList.remove("is-dragging");
     panel.style.setProperty("--focus-color", partyColor(leaderParty));
     panel.classList.toggle("party-dem", leaderParty === "D");
     panel.classList.toggle("party-rep", leaderParty === "R");
@@ -594,7 +656,10 @@ class ElectionNightPage {
 
   hideFocusPanel() {
     const panel = document.getElementById("focused-race-panel");
-    if (panel) panel.hidden = true;
+    if (panel) {
+      panel.hidden = true;
+      this.resetFocusPanelPosition(panel);
+    }
   }
 
   showTooltip(event, html) {
@@ -605,14 +670,69 @@ class ElectionNightPage {
       document.body.appendChild(tooltip);
     }
     tooltip.innerHTML = html;
-    const x = Math.min(window.innerWidth - 340, event.clientX + 8);
-    const y = Math.min(window.innerHeight - 220, event.clientY + 8);
+    tooltip.style.left = "0px";
+    tooltip.style.top = "0px";
+    const rect = tooltip.getBoundingClientRect();
+    let x = event.clientX + 14;
+    let y = event.clientY + 14;
+    if (x + rect.width > window.innerWidth - 12) x = event.clientX - rect.width - 14;
+    if (y + rect.height > window.innerHeight - 12) y = event.clientY - rect.height - 14;
     tooltip.style.left = `${Math.max(12, x)}px`;
     tooltip.style.top = `${Math.max(12, y)}px`;
   }
 
   hideTooltip() {
     document.querySelector(".election-map-tooltip")?.remove();
+  }
+
+  resetFocusPanelPosition(panel = document.getElementById("focused-race-panel")) {
+    if (!panel) return;
+    panel.style.left = "";
+    panel.style.top = "";
+    panel.style.right = "";
+    panel.style.bottom = "";
+  }
+
+  bindFocusPanelDrag() {
+    const panel = document.getElementById("focused-race-panel");
+    const handle = panel?.querySelector(".focused-card-head");
+    const shell = document.querySelector(".election-map-shell");
+    if (!panel || !handle || !shell) return;
+    let drag = null;
+    handle.addEventListener("pointerdown", (event) => {
+      if (event.target.closest("button")) return;
+      const shellRect = shell.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
+      panel.style.left = `${panelRect.left - shellRect.left}px`;
+      panel.style.top = `${panelRect.top - shellRect.top}px`;
+      panel.style.right = "auto";
+      panel.style.bottom = "auto";
+      drag = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        left: panelRect.left - shellRect.left,
+        top: panelRect.top - shellRect.top
+      };
+      panel.classList.add("is-dragging");
+      handle.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    });
+    handle.addEventListener("pointermove", (event) => {
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      const shellRect = shell.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
+      const nextLeft = Math.max(8, Math.min(shellRect.width - panelRect.width - 8, drag.left + event.clientX - drag.startX));
+      const nextTop = Math.max(8, Math.min(shellRect.height - panelRect.height - 8, drag.top + event.clientY - drag.startY));
+      panel.style.left = `${nextLeft}px`;
+      panel.style.top = `${nextTop}px`;
+    });
+    handle.addEventListener("pointerup", (event) => {
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      panel.classList.remove("is-dragging");
+      drag = null;
+      handle.releasePointerCapture(event.pointerId);
+    });
   }
 }
 

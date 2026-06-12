@@ -2208,7 +2208,7 @@ async function renderHouseShapeMap() {
   const districtById = new Map(houseForecast.districts.map((district) => [district.id, district]));
   const width = 980;
   const height = 610;
-  const projection = d3.geoAlbersUsa().fitSize([width, height], geo);
+  const projection = d3.geoAlbersUsa().fitSize([width, height], statesGeo?.features ? statesGeo : geo);
 
   container.innerHTML = "";
   const svg = d3.select(container)
@@ -2237,7 +2237,7 @@ async function renderHouseShapeMap() {
       .attr("pointer-events", "none");
   }
 
-  layer.selectAll("path")
+  layer.selectAll(".district-shape")
     .data(geo.features || [])
     .join("path")
     .attr("class", (feature) => {
