@@ -965,15 +965,17 @@ button {
 
 .map-context-shape {
   vector-effect: non-scaling-stroke;
-  transition: opacity .16s var(--ease-out), fill .16s var(--ease-out);
+  transition: opacity .16s var(--ease-out), fill .16s var(--ease-out), filter .16s var(--ease-out);
 }
 
 .map-context-shape.is-dimmed-context {
-  opacity: .38;
+  opacity: .18;
+  filter: saturate(.6) brightness(.72);
 }
 
 .map-context-shape.is-selected-context {
-  opacity: .62;
+  opacity: .3;
+  filter: saturate(.8) brightness(.9);
 }
 
 .election-map-shape:hover,

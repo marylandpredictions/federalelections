@@ -1077,7 +1077,11 @@ class ElectionNightPage {
     if (String(race?.type || "").toLowerCase() === "house") {
       const features = await this.loadDistrictCountyFeatures(race);
       if (!features.length) return false;
-      this.renderCountyDetailMap(detail || race, features, { districtMode: true, preserveMapTransform: options.preserveMapTransform });
+      this.renderCountyDetailMap(detail || race, features, {
+        districtMode: true,
+        preserveMapTransform: options.preserveMapTransform,
+        selectedRaceId: race.id
+      });
       return true;
     }
 
@@ -1107,17 +1111,23 @@ class ElectionNightPage {
       type: "FeatureCollection",
       features
     };
-    const projection = d3.geoAlbersUsa().fitExtent([[34, 34], [width - 34, height - 34]], selectedCollection);
+    const baseCollection = options.districtMode && this.geo?.features?.length
+      ? this.geo
+      : selectedCollection;
+    const projection = d3.geoAlbersUsa().fitExtent([[34, 34], [width - 34, height - 34]], baseCollection);
     this.path = d3.geoPath(projection);
     const lookup = countyLookupForElectionNight(race);
 
     this.createSvg(container, width, height);
     this.detailMapActive = true;
-    const contextFeatures = options.districtMode ? [] : (this.stateFeatures || []);
+    const raceByDistrict = options.districtMode
+      ? new Map(this.modeRaces().map((item) => [houseGeometryId(item), item]))
+      : new Map();
+    const contextFeatures = options.districtMode ? (this.geo?.features || []) : (this.stateFeatures || []);
     const contextRaceForFeature = (feature) => {
+      if (options.districtMode) return raceByDistrict.get(feature.properties?.id) || null;
       const state = FIPS_TO_STATE[featureStateFipsForElectionNight(feature)];
       if (!state) return null;
-      if (this.selectedMode === "house") return null;
       return this.modeRaces().find((item) => item.state === state) || null;
     };
     this.viewport.append("g")
@@ -1126,14 +1136,20 @@ class ElectionNightPage {
       .data(contextFeatures)
       .join("path")
       .attr("class", (feature) => {
-        const isSelected = FIPS_TO_STATE[featureStateFipsForElectionNight(feature)] === String(race.state || "").toUpperCase();
+        const isSelected = options.districtMode
+          ? feature.properties?.id === houseGeometryId(race)
+          : FIPS_TO_STATE[featureStateFipsForElectionNight(feature)] === String(race.state || "").toUpperCase();
         return `map-context-shape ${isSelected ? "is-selected-context" : "is-dimmed-context"}`;
       })
       .attr("d", (feature) => projectedFeaturePath(feature, projection))
-      .attr("fill", "#1a2840")
+      .attr("fill", (feature) => {
+        if (!options.districtMode) return "#1a2840";
+        const nextRace = contextRaceForFeature(feature);
+        return raceColor(nextRace);
+      })
       .attr("stroke", "rgba(226, 232, 255, .45)")
       .attr("stroke-width", 0.38)
-      .attr("pointer-events", this.selectedMode === "house" ? "none" : "auto")
+      .attr("pointer-events", "auto")
       .on("click keydown", (event, feature) => {
         if (event.type === "keydown" && event.key !== "Enter") return;
         const nextRace = contextRaceForFeature(feature);
@@ -1141,7 +1157,10 @@ class ElectionNightPage {
       })
       .on("mousemove", (event, feature) => {
         const nextRace = contextRaceForFeature(feature);
-        if (nextRace) this.showTooltip(event, tooltipMarkup(nextRace, STATE_NAMES[nextRace.state] || nextRace.state));
+        if (nextRace) {
+          const label = options.districtMode ? nextRace.title : (STATE_NAMES[nextRace.state] || nextRace.state);
+          this.showTooltip(event, tooltipMarkup(nextRace, label));
+        }
       })
       .on("mouseleave blur", () => this.hideTooltip());
 
