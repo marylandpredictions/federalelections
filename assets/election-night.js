@@ -383,7 +383,7 @@ class ElectionNightPage {
     const rep = called.filter((race) => raceWinnerParty(race) === "R").length;
 
     document.getElementById("summary-label").textContent = `${MODE_LABELS[this.selectedMode]} board`;
-    document.getElementById("total-races").textContent = "Live";
+    document.getElementById("total-races").textContent = "Map";
     document.getElementById("called-races").textContent = "election night map";
     document.getElementById("dem-seats").textContent = String(dem);
     document.getElementById("rep-seats").textContent = String(rep);
@@ -392,7 +392,7 @@ class ElectionNightPage {
     document.getElementById("dem-share-label").textContent = "actual calls";
     document.getElementById("rep-share-label").textContent = "actual calls";
     document.getElementById("reporting-percent").textContent = reporting ? String(reporting) : "--";
-    document.getElementById("last-updated").textContent = reporting ? "active result feeds" : "awaiting result feeds";
+    document.getElementById("last-updated").textContent = reporting ? "active result feeds" : "results pending";
     this.renderChamberBar(dem, rep, called.length);
   }
 
@@ -417,7 +417,7 @@ class ElectionNightPage {
     const majorityLine = document.getElementById("chamber-majority-line");
 
     if (title) title.textContent = `${MODE_LABELS[this.selectedMode]} call tracker`;
-    if (subtitle) subtitle.textContent = called ? `${called} called from live result data.` : "Waiting for live calls.";
+    if (subtitle) subtitle.textContent = called ? `${called} called from result data.` : "Calls will appear here.";
     if (demLabel) demLabel.textContent = `${dem} D`;
     if (repLabel) repLabel.textContent = `${rep} R`;
     if (majorityLabel) majorityLabel.textContent = `${config.majority} for majority`;
@@ -445,8 +445,8 @@ class ElectionNightPage {
 
   async renderStateMap(container) {
     if (!this.stateFeatures) {
-      const us = await d3.json("data/result-us-states.geojson");
-      this.stateFeatures = us.features || [];
+      const us = await d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json");
+      this.stateFeatures = topojson.feature(us, us.objects.states).features;
     }
 
     const width = 1160;
@@ -495,8 +495,8 @@ class ElectionNightPage {
       this.geo = await d3.json("data/house-districts-119.geojson");
     }
     if (!this.stateFeatures) {
-      const us = await d3.json("data/result-us-states.geojson");
-      this.stateFeatures = us.features || [];
+      const us = await d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json");
+      this.stateFeatures = topojson.feature(us, us.objects.states).features;
     }
     this.ensureAllHouseRacesFromGeometry();
     this.renderSummary();
