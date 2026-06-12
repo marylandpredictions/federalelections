@@ -760,6 +760,10 @@ button {
   color: var(--rep);
 }
 
+.election-night-page > .election-dashboard-grid-wide {
+  display: none !important;
+}
+
 .election-chamber-board {
   display: grid;
   grid-template-columns: minmax(320px, 1fr);
@@ -830,6 +834,22 @@ button {
 .election-chamber-labels strong {
   color: #fff;
   font: 950 clamp(2rem, 3.6vw, 3.35rem)/.9 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.election-chamber-labels strong small,
+.election-chamber-labels span small {
+  display: block;
+  margin-top: 5px;
+  color: #cfd6ff;
+  font: 950 .72rem/1.05 "Telegraf", "Segoe UI", Arial, sans-serif;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.election-chamber-labels span b {
+  display: block;
+  color: #fff;
+  font: 950 .78rem/1.05 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .election-chamber-labels strong:first-child {
@@ -1200,6 +1220,27 @@ button {
   padding: 12px 16px;
   color: #cfd6ff;
   font-weight: 850;
+}
+
+.selected-race-switch {
+  display: grid;
+  gap: 5px;
+  padding: 12px 16px 0;
+  color: #cfd6ff;
+  font-size: .72rem;
+  font-weight: 950;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.selected-race-switch select {
+  width: 100%;
+  min-height: 34px;
+  border: 1px solid rgba(198, 210, 255, .72);
+  border-radius: 7px;
+  background: #000e38;
+  color: #fff;
+  font: 850 .84rem/1.15 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
 .selected-race-table {
