@@ -946,6 +946,7 @@ button {
 .election-map-canvas svg {
   position: relative;
   z-index: 1;
+  outline: none;
 }
 
 .election-map-loading {
@@ -979,6 +980,11 @@ button {
 .election-map-shape:focus {
   filter: brightness(1.18) saturate(1.08);
   stroke-width: 1.4;
+  outline: none;
+}
+
+.election-map-canvas path:focus,
+.election-map-canvas [tabindex]:focus {
   outline: none;
 }
 
@@ -1211,6 +1217,63 @@ button {
   padding: 12px 16px;
   color: #cfd6ff;
   font-weight: 850;
+}
+
+.selected-race-insights {
+  display: grid;
+  gap: 8px;
+  padding: 12px 16px 0;
+}
+
+.race-path-card,
+.race-watch-card {
+  border: 1px solid rgba(198, 210, 255, .45);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--focus-color, var(--dem)) 18%, transparent), rgba(4, 12, 35, .86));
+  color: #fff;
+  font-weight: 850;
+}
+
+.race-path-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.race-path-card strong {
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.race-path-card span,
+.race-watch-card {
+  color: #cfd6ff;
+  font-size: .84rem;
+  line-height: 1.25;
+}
+
+.race-delta-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 5px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(198, 210, 255, .12);
+  color: #cfd6ff;
+  font-size: .68rem;
+  font-weight: 950;
+}
+
+.race-delta-badge.is-up {
+  color: #48d38a;
+}
+
+.race-delta-badge.is-down {
+  color: #ff7886;
 }
 
 .selected-race-table {

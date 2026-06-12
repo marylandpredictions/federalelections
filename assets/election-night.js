@@ -70,6 +70,13 @@ function formatVotes(value) {
   return Number.isFinite(value) && value > 0 ? value.toLocaleString() : "0";
 }
 
+function compactVotes(value) {
+  const number = Number(value) || 0;
+  if (number >= 1000000) return `${(number / 1000000).toFixed(1)}m`;
+  if (number >= 1000) return `${(number / 1000).toFixed(0)}k`;
+  return formatVotes(number);
+}
+
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => ({
     "&": "&amp;",
@@ -108,12 +115,53 @@ function totalVotes(race) {
   return (race?.candidates || []).reduce((sum, candidate) => sum + (Number(candidate.votes) || 0), 0);
 }
 
+function raceSnapshotKey(race) {
+  return `fea-election-night-snapshot:${race?.id || race?.title || "race"}`;
+}
+
+function candidatePreviousPercent(race, candidate) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(raceSnapshotKey(race)) || "{}");
+    return Number(saved?.[candidate.name]);
+  } catch {
+    return NaN;
+  }
+}
+
+function saveRaceSnapshot(race) {
+  if (!race || !hasActiveResults(race)) return;
+  const next = {};
+  for (const candidate of race.candidates || []) next[candidate.name] = safePercent(candidate, totalVotes(race));
+  try {
+    localStorage.setItem(raceSnapshotKey(race), JSON.stringify(next));
+  } catch {
+    // Ignore private-browsing storage failures.
+  }
+}
+
+function ensureRaceSnapshot(race) {
+  if (!race || !hasActiveResults(race)) return;
+  try {
+    if (!localStorage.getItem(raceSnapshotKey(race))) saveRaceSnapshot(race);
+  } catch {
+    // Ignore private-browsing storage failures.
+  }
+}
+
 function topCandidates(race, limit = 3) {
   const total = totalVotes(race);
+  const live = hasActiveResults(race);
   return (race?.candidates || [])
     .map((candidate) => ({ ...candidate, percent: safePercent(candidate, total) }))
-    .sort((a, b) => (b.votes || b.percent || 0) - (a.votes || a.percent || 0))
+    .sort((a, b) => candidateSortValue(b, live) - candidateSortValue(a, live))
     .slice(0, limit);
+}
+
+function candidateSortValue(candidate, live) {
+  if (live) return (Number(candidate.votes) || 0) * 1000 + (Number(candidate.percent) || 0);
+  const party = normalizedPartyCode(candidate);
+  const partyOrder = party === "D" ? 500 : party === "R" ? 490 : party === "I" ? 470 : 430;
+  return partyOrder + (candidate.incumbent ? 100 : 0);
 }
 
 function countyTopCandidatesForElectionNight(county, limit = 3) {
@@ -208,7 +256,7 @@ function raceLeader(race) {
 
 function raceWinnerParty(race) {
   const winner = (race?.candidates || []).find((candidate) => candidate.isWinner && hasActiveResults(race));
-  return (winner || raceLeader(race))?.party || "U";
+  return normalizedPartyCode(winner || raceLeader(race) || {});
 }
 
 function raceColor(race) {
@@ -219,15 +267,15 @@ function raceColor(race) {
   if (!leader) return "#5f6b80";
   const margin = Math.max(0, (leader.percent || 0) - (runnerUp?.percent || 0));
   const strength = Math.max(0.44, Math.min(1, 0.46 + margin / 32));
-  return d3.interpolateRgb("#cfd6e5", partyColor(leader.party))(strength);
+  return d3.interpolateRgb("#cfd6e5", partyColor(normalizedPartyCode(leader)))(strength);
 }
 
 function partyPopularVote(races) {
-  const totals = { D: 0, R: 0 };
+  const totals = { D: 0, R: 0, I: 0 };
   for (const race of races || []) {
     for (const candidate of race.candidates || []) {
       const party = normalizedPartyCode(candidate);
-      if (party === "D" || party === "R") totals[party] += Number(candidate.votes || 0);
+      if (party === "D" || party === "R" || party === "I") totals[party] += Number(candidate.votes || 0);
     }
   }
   const total = totals.D + totals.R;
@@ -258,7 +306,7 @@ function candidateName(name, party, status) {
 }
 
 function normalizeCandidate(candidate) {
-  const party = String(candidate.party || candidate.partyCode || "U").toUpperCase();
+  const party = normalizedPartyCode(candidate);
   return {
     name: candidate.name || candidate.candidateName || partyLabel(party),
     party,
@@ -270,6 +318,13 @@ function normalizeCandidate(candidate) {
 }
 
 function normalizedPartyCode(candidate) {
+  const partyText = String(candidate.partyCode || candidate.party || "").trim().toLowerCase();
+  const nameText = String(candidate.name || "").trim().toLowerCase();
+  if (partyText.includes("independent") || partyText === "ind" || partyText === "i" || nameText.includes("dan osborn")) return "I";
+  if (partyText.includes("democrat") || partyText === "dem" || partyText === "d") return "D";
+  if (partyText.includes("republican") || partyText === "gop" || partyText === "rep" || partyText === "r") return "R";
+  if (partyText.includes("libertarian") || partyText === "l") return "L";
+  if (partyText.includes("green") || partyText === "g") return "G";
   return String(candidate.partyCode || candidate.party || "U").charAt(0).toUpperCase();
 }
 
@@ -282,6 +337,58 @@ function buildFallbackCandidate(party, name, status) {
     isWinner: false,
     incumbent: false
   };
+}
+
+function candidateColor(candidate) {
+  return candidate?.color || partyColor(normalizedPartyCode(candidate));
+}
+
+function candidateByName(race, name) {
+  const target = String(name || "").trim().toLowerCase();
+  return (race?.candidates || []).find((candidate) => String(candidate.name || "").trim().toLowerCase() === target) || null;
+}
+
+function percentDeltaBadge(race, candidate) {
+  if (!hasActiveResults(race)) return "";
+  const previous = candidatePreviousPercent(race, candidate);
+  const current = safePercent(candidate, totalVotes(race));
+  if (!Number.isFinite(previous)) return "";
+  const delta = current - previous;
+  if (Math.abs(delta) < 0.1) return "";
+  const sign = delta > 0 ? "+" : "";
+  return `<small class="race-delta-badge ${delta > 0 ? "is-up" : "is-down"}">${sign}${delta.toFixed(1)} since last viewed</small>`;
+}
+
+function racePathTracker(race) {
+  const candidates = topCandidates(race, 3);
+  if (!candidates.length) return "";
+  const winners = String(race.electionScope || race.title || "").toLowerCase().includes("open primary") ? 2 : 1;
+  const cutoff = candidates[winners - 1];
+  const next = candidates[winners];
+  const margin = cutoff && next ? Math.max(0, (cutoff.percent || 0) - (next.percent || 0)) : null;
+  const label = winners > 1 ? "Path to advance" : "Path to win";
+  const status = margin == null
+    ? "Awaiting enough candidates"
+    : margin < 2 ? "Very close" : margin < 6 ? "Competitive" : "Clearer path";
+  return `
+    <div class="race-path-card">
+      <strong>${label}</strong>
+      <span>${status}${margin == null ? "" : `, ${margin.toFixed(1)} pts over cutoff`}</span>
+    </div>
+  `;
+}
+
+function lateVoteWatch(race) {
+  const state = String(race?.state || "").toUpperCase();
+  const labels = {
+    CA: "Late-vote watch: mail ballots and large coastal counties can keep moving totals.",
+    NV: "Late-vote watch: mail and Clark County batches can shift totals after election night.",
+    AZ: "Late-vote watch: Maricopa and late-arriving ballots often report in large batches.",
+    WA: "Late-vote watch: vote-by-mail totals can continue changing for days.",
+    OR: "Late-vote watch: vote-by-mail totals can continue changing after polls close.",
+    CO: "Late-vote watch: mail-heavy counties may update in batches."
+  };
+  return labels[state] ? `<div class="race-watch-card">${labels[state]}</div>` : "";
 }
 
 function houseGeometryId(race) {
@@ -372,7 +479,7 @@ function tooltipMarkup(race, title) {
 
   const live = hasActiveResults(race);
   const rows = topCandidates(race, 3).map((candidate, index) => {
-    const color = partyColor(candidate.party);
+    const color = candidateColor(candidate);
     const value = live ? formatPercent(candidate.percent || 0) : "Awaiting";
     return `
       <tr class="${index === 0 && live ? "leading" : ""}">
@@ -406,7 +513,7 @@ function houseStateTooltipMarkup(races, title) {
     const leader = raceLeader(race) || topCandidates(race, 1)[0];
     return `
       <tr>
-        <td><span class="tooltip-party-bar" style="background:${partyColor(leader?.party)}"></span>${race.title}</td>
+        <td><span class="tooltip-party-bar" style="background:${partyColor(normalizedPartyCode(leader || {}))}"></span>${race.title}</td>
         <td>${hasActiveResults(race) ? formatPercent(leader?.percent || 0) : "Awaiting"}</td>
         <td>${isActuallyCalled(race) ? "Called" : ""}</td>
       </tr>
@@ -513,6 +620,13 @@ class ElectionNightPage {
       button.addEventListener("click", () => this.clearFocus());
     });
     this.bindFocusPanelDrag();
+
+    window.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden" && this.currentRace) saveRaceSnapshot(this.currentRace);
+    });
+    window.addEventListener("pagehide", () => {
+      if (this.currentRace) saveRaceSnapshot(this.currentRace);
+    });
   }
 
   async loadData() {
@@ -559,8 +673,10 @@ class ElectionNightPage {
     const baseTotal = 18000 + (stringToNumber(race.id || race.title) % 90000);
     const weights = candidates.map((candidate, index) => {
       const party = normalizedPartyCode(candidate);
-      const partyBase = party === "D" ? 48 : party === "R" ? 46 : 8;
-      return Math.max(2, partyBase - index * 8 + (stringToNumber(`${race.id}-${candidate.name}`) % 9));
+      const existingShare = Number(candidate.percent);
+      if (Number.isFinite(existingShare) && existingShare > 0) return existingShare;
+      const partyBase = party === "D" ? 43 : party === "R" ? 43 : party === "I" ? 24 : 12;
+      return Math.max(2, partyBase - index * 7 + (stringToNumber(`${race.id}-${candidate.name}`) % 13));
     });
     const totalWeight = weights.reduce((sum, value) => sum + value, 0);
     const votesIn = Math.round(baseTotal * (reportingPercent / 100));
@@ -579,6 +695,38 @@ class ElectionNightPage {
       race.status = "called";
       race.candidates = race.candidates.map((candidate, index) => ({ ...candidate, isWinner: index === 0 }));
     }
+    if (Array.isArray(race.counties)) this.seedSimulatedCounties(race, reportingPercent);
+  }
+
+  seedSimulatedCounties(race, reportingPercent = 18) {
+    const raceCandidates = race.candidates || [];
+    race.counties = (race.counties || []).map((county) => {
+      const countyTotal = Math.max(0, Math.round((900 + (stringToNumber(`${race.id}-${county.name}`) % 22000)) * (reportingPercent / 100)));
+      const weights = raceCandidates.map((candidate, index) => {
+        const base = Number(candidate.percent) > 0 ? Number(candidate.percent) : Math.max(3, 42 - index * 8);
+        const swing = ((stringToNumber(`${county.name}-${candidate.name}`) % 1400) - 700) / 100;
+        return Math.max(0.5, base + swing);
+      });
+      const totalWeight = weights.reduce((sum, value) => sum + value, 0) || 1;
+      const candidates = raceCandidates.map((candidate, index) => {
+        const votes = Math.round(countyTotal * (weights[index] / totalWeight));
+        return {
+          name: candidate.name,
+          party: candidate.party,
+          partyCode: normalizedPartyCode(candidate),
+          color: candidate.color || "",
+          votes,
+          percent: countyTotal ? (votes / countyTotal) * 100 : 0,
+          winner: false
+        };
+      });
+      return {
+        ...county,
+        percentReporting: reportingPercent,
+        estimatedVoteReporting: reportingPercent,
+        candidates
+      };
+    });
   }
 
   startFastSimulation() {
@@ -589,7 +737,7 @@ class ElectionNightPage {
         this.seedSimulatedRace(race, nextReporting);
       }
       this.renderSummary();
-      if (this.currentRace) await this.selectRace(this.currentRace, null);
+      if (this.currentRace) await this.selectRace(this.currentRace, null, { preserveMapTransform: true });
       else await this.renderMap();
     }, 2400);
   }
@@ -839,16 +987,6 @@ class ElectionNightPage {
 
     this.createSvg(container, width, height);
 
-    this.viewport.selectAll(".state-border")
-      .data(this.stateFeatures || [])
-      .join("path")
-      .attr("class", "state-border")
-      .attr("d", (feature) => projectedFeaturePath(feature, projection))
-      .attr("fill", "none")
-      .attr("stroke", "rgba(226, 232, 255, .28)")
-      .attr("stroke-width", 0.38)
-      .attr("pointer-events", "none");
-
     this.viewport.selectAll(".house-district-shape")
       .data(this.geo.features || [])
       .join("path")
@@ -859,8 +997,9 @@ class ElectionNightPage {
       .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("fill-rule", "evenodd")
       .attr("fill", (feature) => raceColor(raceByDistrict.get(feature.properties?.id)))
-      .attr("stroke", "#e2e8ff")
-      .attr("stroke-width", 0.35)
+      .attr("stroke", "rgba(226, 232, 255, .22)")
+      .attr("stroke-width", 0.16)
+      .attr("vector-effect", "non-scaling-stroke")
       .attr("tabindex", (feature) => {
         return raceByDistrict.has(feature.properties?.id) ? 0 : -1;
       })
@@ -916,22 +1055,29 @@ class ElectionNightPage {
     });
   }
 
-  async selectRace(race, feature) {
+  async selectRace(race, feature, options = {}) {
     this.currentRace = race;
+    const previousTransform = options.preserveMapTransform ? this.currentTransform() : null;
     this.renderFocusedRace(race);
-    const renderedDetail = await this.renderSelectedRaceMap(race);
+    const renderedDetail = await this.renderSelectedRaceMap(race, options);
+    if (renderedDetail && previousTransform) this.applyTransform(previousTransform, 0);
     if (renderedDetail) return;
     if (feature && this.path && this.zoom && this.svg) this.zoomToFeature(feature);
   }
 
-  async renderSelectedRaceMap(race) {
+  async renderSelectedRaceMap(race, options = {}) {
     const detail = await this.findLiveDetailForRace(race);
+    if (detail && this.isLabPage) {
+      const phase = this.query.get("phase") || (this.query.has("mock") ? "reporting" : "pre_election");
+      const targetReporting = phase === "called" ? 96 : Math.max(18, Number(race.reportingPercent || detail.reportingPercent || 0) || 18);
+      if (phase !== "pre_election" && phase !== "polls_closed_no_votes") this.seedSimulatedRace(detail, targetReporting);
+    }
     if (this.currentRace?.id !== race.id) return false;
 
     if (String(race?.type || "").toLowerCase() === "house") {
       const features = await this.loadDistrictCountyFeatures(race);
       if (!features.length) return false;
-      this.renderCountyDetailMap(detail || race, features, { districtMode: true });
+      this.renderCountyDetailMap(detail || race, features, { districtMode: true, preserveMapTransform: options.preserveMapTransform });
       return true;
     }
 
@@ -948,7 +1094,7 @@ class ElectionNightPage {
     const features = allFeatures.filter((feature) => featureStateFipsForElectionNight(feature) === stateFips);
     if (!features.length) return false;
 
-    this.renderCountyDetailMap(counties.length ? detail : race, features);
+    this.renderCountyDetailMap(counties.length ? detail : race, features, { preserveMapTransform: options.preserveMapTransform });
     return true;
   }
 
@@ -1014,7 +1160,7 @@ class ElectionNightPage {
         const county = countyForFeature(feature, lookup);
         const leader = countyTopCandidatesForElectionNight(county, 1)[0];
         if (!leader) return "#334054";
-        return d3.interpolateRgb("#cfd6e5", partyColor(normalizedPartyCode(leader)))(0.78);
+        return d3.interpolateRgb("#cfd6e5", candidateColor(leader))(0.78);
       })
       .attr("stroke", options.districtMode ? "rgba(226, 232, 255, .42)" : "rgba(226, 232, 255, .58)")
       .attr("stroke-width", options.districtMode ? 0.22 : 0.36)
@@ -1024,6 +1170,7 @@ class ElectionNightPage {
       .on("mouseleave blur", () => this.hideTooltip());
 
     this.addZoomControls();
+    if (!options.preserveMapTransform) this.zoomToFeature(selectedCollection);
   }
 
   zoomToFeature(feature) {
@@ -1035,6 +1182,18 @@ class ElectionNightPage {
     const tx = viewBox.width / 2 - scale * (x0 + x1) / 2;
     const ty = viewBox.height / 2 - scale * (y0 + y1) / 2;
     this.svg.transition().duration(500).call(this.zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+  }
+
+  currentTransform() {
+    if (!this.svg?.node()) return null;
+    return d3.zoomTransform(this.svg.node());
+  }
+
+  applyTransform(transform, duration = 250) {
+    if (!this.svg || !this.zoom || !transform) return;
+    const target = d3.zoomIdentity.translate(transform.x, transform.y).scale(transform.k);
+    if (duration > 0) this.svg.transition().duration(duration).call(this.zoom.transform, target);
+    else this.svg.call(this.zoom.transform, target);
   }
 
   renderFocusedRace(race) {
@@ -1070,15 +1229,20 @@ class ElectionNightPage {
     const rows = topCandidates(race, 5).map((candidate, index) => `
       <tr class="${index === 0 && live ? "leading" : ""}">
         <td>
-          <span class="selected-party-rail" style="background:${partyColor(candidate.party)}"></span>
+          <span class="selected-party-rail" style="background:${candidateColor(candidate)}"></span>
           <strong>${candidate.name}${candidate.incumbent ? "*" : ""}</strong>
           <small>${partyLabel(candidate.party)}</small>
+          ${percentDeltaBadge(race, candidate)}
         </td>
         <td>${live ? formatPercent(candidate.percent || 0) : "--"}</td>
         <td>${live ? formatVotes(candidate.votes) : "Awaiting"}</td>
       </tr>
     `).join("");
     content.innerHTML = `
+      <div class="selected-race-insights">
+        ${racePathTracker(race)}
+        ${lateVoteWatch(race)}
+      </div>
       <div class="selected-race-meta">
         <span>${live ? `${formatPercent(race.reportingPercent || 0)} reporting` : "No results yet"}</span>
         <span>${isActuallyCalled(race) ? "Race called" : "Uncalled"}</span>
@@ -1092,6 +1256,7 @@ class ElectionNightPage {
         <span>${STATE_NAMES[race.state] || race.state}</span>
       </div>
     `;
+    ensureRaceSnapshot(race);
   }
 
   isStatewideRace(race) {
