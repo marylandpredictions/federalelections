@@ -56,63 +56,31 @@
       </div>
     </section>
 
-    <section class="election-dashboard-grid election-dashboard-grid-wide">
-      <article class="election-night-stat">
-        <span id="summary-label">House results</span>
-        <strong id="total-races">--</strong>
-        <small id="called-races">election night map</small>
-      </article>
-      <article class="election-night-stat election-night-stat-dem">
-        <span id="dem-summary-label">Democratic seats</span>
-        <strong id="dem-seats">--</strong>
-        <small id="dem-share-label">projected</small>
-      </article>
-      <article class="election-night-stat election-night-stat-rep">
-        <span id="rep-summary-label">Republican seats</span>
-        <strong id="rep-seats">--</strong>
-        <small id="rep-share-label">projected</small>
-      </article>
-      <article class="election-night-stat">
-        <span>Result status</span>
-        <strong id="reporting-percent">--</strong>
-        <small id="last-updated">loading</small>
-      </article>
-    </section>
-
-    <section class="election-chamber-board" aria-labelledby="chamber-board-title">
-      <div class="election-chamber-copy">
-        <p class="kicker">Chamber Board</p>
-        <h2 id="chamber-board-title">Call tracker</h2>
-        <p id="chamber-board-subtitle">Calls will appear here.</p>
-      </div>
-      <div class="election-chamber-meter" aria-label="Called seats by party">
-        <div class="election-chamber-labels">
-          <strong id="chamber-dem-count">0 D</strong>
-          <span id="chamber-majority-label">Majority</span>
-          <strong id="chamber-rep-count">0 R</strong>
+    <section class="map-panel election-map-panel" aria-label="Election night results map">
+      <section class="election-chamber-board" aria-label="Election night call tracker">
+        <div class="election-chamber-copy">
+          <p id="chamber-board-subtitle">Calls will appear here.</p>
         </div>
-        <div class="election-chamber-bar">
-          <span id="chamber-bar-dem" class="election-chamber-segment chamber-dem"></span>
-          <span id="chamber-bar-uncalled" class="election-chamber-segment chamber-uncalled"></span>
-          <span id="chamber-bar-rep" class="election-chamber-segment chamber-rep"></span>
-          <i id="chamber-majority-line" class="election-chamber-majority-line" aria-hidden="true"></i>
+        <div class="election-chamber-meter" aria-label="Called seats by party">
+          <div class="election-chamber-labels">
+            <strong id="chamber-dem-count">0 D</strong>
+            <span id="chamber-majority-label">Majority</span>
+            <strong id="chamber-rep-count">0 R</strong>
+          </div>
+          <div class="election-chamber-bar">
+            <span id="chamber-bar-dem" class="election-chamber-segment chamber-dem"></span>
+            <span id="chamber-bar-uncalled" class="election-chamber-segment chamber-uncalled"></span>
+            <span id="chamber-bar-rep" class="election-chamber-segment chamber-rep"></span>
+            <i id="chamber-majority-line" class="election-chamber-majority-line" aria-hidden="true"></i>
+          </div>
         </div>
-      </div>
-    </section>
-
-    <section class="map-panel election-map-panel" aria-labelledby="map-title">
-      <div class="section-head">
-        <div>
-          <p class="kicker">Map</p>
-          <h2 id="map-title">Election Night 2026.</h2>
-        </div>
-      </div>
+      </section>
       <div class="election-map-shell">
         <div id="election-map" class="election-map-canvas" aria-live="polite"></div>
         <aside id="focused-race-panel" class="election-focus-panel election-focus-overlay" aria-labelledby="focused-race-title" hidden>
           <div class="focused-card-head">
-            <span class="focused-pill">Key race</span>
-            <span class="focused-pill focused-pill-light" id="focused-race-rating">Tracked</span>
+            <span class="focused-pill" id="focused-race-kind" hidden></span>
+            <span class="focused-pill focused-pill-light" id="focused-race-rating"></span>
             <button class="focused-close" type="button" data-clear-focus aria-label="Close selected race">×</button>
           </div>
           <h3 id="focused-race-title">Select a race.</h3>

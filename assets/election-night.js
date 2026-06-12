@@ -80,6 +80,12 @@ function escapeHtml(value) {
   })[character]);
 }
 
+function stringToNumber(value) {
+  let hash = 0;
+  for (const character of String(value || "")) hash = ((hash << 5) - hash) + character.charCodeAt(0);
+  return Math.abs(hash);
+}
+
 function safePercent(candidate, raceTotal) {
   if (Number.isFinite(candidate.percent) && candidate.percent > 0) return candidate.percent;
   if (raceTotal > 0 && Number.isFinite(candidate.votes)) return (candidate.votes / raceTotal) * 100;
@@ -466,6 +472,8 @@ function countyDescriptionForFeature(feature, descriptions) {
 class ElectionNightPage {
   constructor() {
     this.selectedMode = localStorage.getItem("electionNightMode") || "house";
+    this.query = new URLSearchParams(window.location.search);
+    this.isLabPage = window.location.pathname.includes("fea-results-lab-26") || this.query.has("mock") || this.query.has("simulation");
     this.dataByMode = { house: [], senate: [], governor: [] };
     this.geo = null;
     this.stateFeatures = null;
@@ -484,6 +492,7 @@ class ElectionNightPage {
     this.viewport = null;
     this.zoom = null;
     this.path = null;
+    this.simulationTimer = null;
     this.init();
   }
 
@@ -524,6 +533,65 @@ class ElectionNightPage {
     this.dataByMode.senate = races.filter((race) => race.type === "senate");
     this.dataByMode.governor = races.filter((race) => race.type === "governor");
     this.countyDescriptions = new Map((countyDescriptions?.rows || []).map((row) => [String(row.fips).padStart(5, "0"), row.description]));
+    this.applyLabMode();
+  }
+
+  applyLabMode() {
+    if (!this.isLabPage) return;
+    const phase = this.query.get("phase") || (this.query.has("mock") ? "reporting" : "pre_election");
+    const allRaces = [...this.dataByMode.house, ...this.dataByMode.senate, ...this.dataByMode.governor];
+    if (phase === "pre_election" || phase === "polls_closed_no_votes") {
+      for (const race of allRaces) {
+        race.reportingPercent = 0;
+        race.status = phase === "polls_closed_no_votes" ? "polls_closed" : "";
+        race.candidates = (race.candidates || []).map((candidate) => ({ ...candidate, votes: 0, percent: 0, isWinner: false }));
+      }
+      return;
+    }
+    const called = phase === "called";
+    for (const race of allRaces) this.seedSimulatedRace(race, called ? 96 : 18);
+    if (called) return;
+    if (this.query.has("simulation") && this.query.get("speed") === "fast") this.startFastSimulation();
+  }
+
+  seedSimulatedRace(race, reportingPercent = 18) {
+    const candidates = race.candidates?.length ? race.candidates : [buildFallbackCandidate("D"), buildFallbackCandidate("R")];
+    const baseTotal = 18000 + (stringToNumber(race.id || race.title) % 90000);
+    const weights = candidates.map((candidate, index) => {
+      const party = normalizedPartyCode(candidate);
+      const partyBase = party === "D" ? 48 : party === "R" ? 46 : 8;
+      return Math.max(2, partyBase - index * 8 + (stringToNumber(`${race.id}-${candidate.name}`) % 9));
+    });
+    const totalWeight = weights.reduce((sum, value) => sum + value, 0);
+    const votesIn = Math.round(baseTotal * (reportingPercent / 100));
+    race.reportingPercent = reportingPercent;
+    race.candidates = candidates.map((candidate, index) => {
+      const votes = Math.round(votesIn * (weights[index] / totalWeight));
+      return {
+        ...candidate,
+        votes,
+        percent: votesIn ? (votes / votesIn) * 100 : 0,
+        isWinner: false
+      };
+    });
+    race.candidates.sort((a, b) => (b.votes || 0) - (a.votes || 0));
+    if (reportingPercent >= 90) {
+      race.status = "called";
+      race.candidates = race.candidates.map((candidate, index) => ({ ...candidate, isWinner: index === 0 }));
+    }
+  }
+
+  startFastSimulation() {
+    window.clearInterval(this.simulationTimer);
+    this.simulationTimer = window.setInterval(async () => {
+      for (const race of this.modeRaces()) {
+        const nextReporting = Math.min(99, Number(race.reportingPercent || 0) + 6 + (stringToNumber(race.id || "") % 5));
+        this.seedSimulatedRace(race, nextReporting);
+      }
+      this.renderSummary();
+      if (this.currentRace) await this.selectRace(this.currentRace, null);
+      else await this.renderMap();
+    }, 2400);
   }
 
   ensureAllHouseRacesFromGeometry() {
@@ -1010,15 +1078,7 @@ class ElectionNightPage {
         <td>${live ? formatVotes(candidate.votes) : "Awaiting"}</td>
       </tr>
     `).join("");
-    const raceOptions = this.modeRaces().map((item) => `
-      <option value="${escapeHtml(item.id)}"${item.id === race.id ? " selected" : ""}>${escapeHtml(item.title)}</option>
-    `).join("");
-
     content.innerHTML = `
-      <label class="selected-race-switch">
-        <span>Switch race</span>
-        <select id="focused-race-switch">${raceOptions}</select>
-      </label>
       <div class="selected-race-meta">
         <span>${live ? `${formatPercent(race.reportingPercent || 0)} reporting` : "No results yet"}</span>
         <span>${isActuallyCalled(race) ? "Race called" : "Uncalled"}</span>
@@ -1032,13 +1092,6 @@ class ElectionNightPage {
         <span>${STATE_NAMES[race.state] || race.state}</span>
       </div>
     `;
-    const switcher = document.getElementById("focused-race-switch");
-    if (switcher) {
-      switcher.addEventListener("change", () => {
-        const nextRace = this.modeRaces().find((item) => item.id === switcher.value);
-        if (nextRace) this.selectRace(nextRace, null);
-      });
-    }
   }
 
   isStatewideRace(race) {
@@ -1117,6 +1170,10 @@ class ElectionNightPage {
   }
 
   showTooltip(event, html) {
+    if (!String(html || "").trim()) {
+      this.hideTooltip();
+      return;
+    }
     const shell = document.querySelector(".election-map-shell");
     let tooltip = document.querySelector(".election-map-tooltip");
     if (!tooltip) {
@@ -1132,12 +1189,15 @@ class ElectionNightPage {
     const rect = tooltip.getBoundingClientRect();
     if (shell) {
       const shellRect = shell.getBoundingClientRect();
-      let x = event.clientX - shellRect.left + 14;
-      let y = event.clientY - shellRect.top + 14;
-      if (x + rect.width > shellRect.width - 10) x = event.clientX - shellRect.left - rect.width - 14;
-      if (y + rect.height > shellRect.height - 10) y = event.clientY - shellRect.top - rect.height - 14;
-      tooltip.style.left = `${Math.max(10, x)}px`;
-      tooltip.style.top = `${Math.max(10, y)}px`;
+      const pointerX = event.clientX - shellRect.left;
+      const pointerY = event.clientY - shellRect.top;
+      const maxX = Math.max(10, shellRect.width - rect.width - 10);
+      const maxY = Math.max(10, shellRect.height - rect.height - 10);
+      let x = pointerX + 14;
+      let y = pointerY + 14;
+      if (x > maxX) x = pointerX - rect.width - 14;
+      tooltip.style.left = `${Math.max(10, Math.min(maxX, x))}px`;
+      tooltip.style.top = `${Math.max(10, Math.min(maxY, y))}px`;
       return;
     }
     let x = event.clientX + 14;

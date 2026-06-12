@@ -477,7 +477,9 @@
     if (selectedMode === "mock") {
       testUrl += "?mock=true";
     } else if (selectedMode === "simulation") {
-      testUrl += "?simulation=true";
+      testUrl += `?simulation=true&phase=${encodeURIComponent(selectedState)}&speed=fast`;
+    } else {
+      testUrl += "?preview=true";
     }
     openElectionNightTest.href = testUrl;
     
