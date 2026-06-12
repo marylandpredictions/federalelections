@@ -509,20 +509,55 @@ class ElectionNightPage {
     });
     this.path = d3.geoPath(projection);
     const raceById = new Map(this.modeRaces().map((race) => [houseGeometryId(race), race]));
+    const atLargeRacesByState = new Map(
+      [...raceById.entries()]
+        .filter(([id]) => id.endsWith("-AL"))
+        .map(([id, race]) => [id.slice(0, 2), race])
+    );
+    const districtFeatures = (this.geo.features || []).filter((feature) => {
+      const id = String(feature.properties?.id || "");
+      return id && !id.endsWith("-AL");
+    });
 
     this.createSvg(container, width, height);
     this.viewport.selectAll(".state-base")
       .data(this.stateFeatures || [])
       .join("path")
-      .attr("class", "state-base")
+      .attr("class", (feature) => {
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        return atLargeRacesByState.has(state) ? "state-base election-map-shape" : "state-base";
+      })
       .attr("d", this.path)
-      .attr("fill", "#182945")
+      .attr("fill", (feature) => {
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        const atLargeRace = atLargeRacesByState.get(state);
+        return atLargeRace ? raceColor(atLargeRace) : "#182945";
+      })
       .attr("stroke", "rgba(226,232,255,.32)")
       .attr("stroke-width", 0.45)
-      .attr("pointer-events", "none");
+      .attr("pointer-events", (feature) => {
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        return atLargeRacesByState.has(state) ? "auto" : "none";
+      })
+      .attr("tabindex", (feature) => {
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        return atLargeRacesByState.has(state) ? 0 : -1;
+      })
+      .on("click keydown", (event, feature) => {
+        if (event.type === "keydown" && event.key !== "Enter") return;
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        const atLargeRace = atLargeRacesByState.get(state);
+        if (atLargeRace) this.selectRace(atLargeRace, feature);
+      })
+      .on("mousemove", (event, feature) => {
+        const state = FIPS_TO_STATE[String(feature.id).padStart(2, "0")];
+        const atLargeRace = atLargeRacesByState.get(state);
+        if (atLargeRace) this.showTooltip(event, tooltipMarkup(atLargeRace, `${state}-AL`));
+      })
+      .on("mouseleave blur", () => this.hideTooltip());
 
     this.viewport.selectAll(".house-result-district")
-      .data(this.geo.features || [])
+      .data(districtFeatures)
       .join("path")
       .attr("class", (feature) => raceById.has(feature.properties?.id) ? "house-result-district election-map-shape" : "house-result-district election-map-shape election-map-muted")
       .attr("d", this.path)
@@ -612,6 +647,13 @@ class ElectionNightPage {
     const leaderParty = raceWinnerParty(race);
     panel.hidden = false;
     panel.classList.remove("is-dragging");
+    if (!panel.querySelector(".focus-resize-handle")) {
+      const resizeHandle = document.createElement("span");
+      resizeHandle.className = "focus-resize-handle";
+      resizeHandle.setAttribute("aria-hidden", "true");
+      panel.appendChild(resizeHandle);
+      this.bindFocusPanelResize();
+    }
     panel.style.setProperty("--focus-color", partyColor(leaderParty));
     panel.classList.toggle("party-dem", leaderParty === "D");
     panel.classList.toggle("party-rep", leaderParty === "R");
@@ -663,20 +705,33 @@ class ElectionNightPage {
   }
 
   showTooltip(event, html) {
+    const shell = document.querySelector(".election-map-shell");
     let tooltip = document.querySelector(".election-map-tooltip");
     if (!tooltip) {
       tooltip = document.createElement("div");
       tooltip.className = "election-map-tooltip";
-      document.body.appendChild(tooltip);
+      (shell || document.body).appendChild(tooltip);
+    } else if (shell && tooltip.parentElement !== shell) {
+      shell.appendChild(tooltip);
     }
     tooltip.innerHTML = html;
     tooltip.style.left = "0px";
     tooltip.style.top = "0px";
     const rect = tooltip.getBoundingClientRect();
+    if (shell) {
+      const shellRect = shell.getBoundingClientRect();
+      let x = event.clientX - shellRect.left + 14;
+      let y = event.clientY - shellRect.top + 18;
+      if (x + rect.width > shellRect.width - 10) x = event.clientX - shellRect.left - rect.width - 14;
+      if (y + rect.height > shellRect.height - 10) y = Math.max(10, shellRect.height - rect.height - 10);
+      tooltip.style.left = `${Math.max(10, x)}px`;
+      tooltip.style.top = `${Math.max(10, y)}px`;
+      return;
+    }
     let x = event.clientX + 14;
-    let y = event.clientY + 14;
+    let y = event.clientY + 18;
     if (x + rect.width > window.innerWidth - 12) x = event.clientX - rect.width - 14;
-    if (y + rect.height > window.innerHeight - 12) y = event.clientY - rect.height - 14;
+    if (y + rect.height > window.innerHeight - 12) y = Math.max(12, window.innerHeight - rect.height - 12);
     tooltip.style.left = `${Math.max(12, x)}px`;
     tooltip.style.top = `${Math.max(12, y)}px`;
   }
@@ -691,6 +746,9 @@ class ElectionNightPage {
     panel.style.top = "";
     panel.style.right = "";
     panel.style.bottom = "";
+    panel.style.width = "";
+    panel.style.height = "";
+    panel.style.maxHeight = "";
   }
 
   bindFocusPanelDrag() {
@@ -731,6 +789,49 @@ class ElectionNightPage {
       if (!drag || drag.pointerId !== event.pointerId) return;
       panel.classList.remove("is-dragging");
       drag = null;
+      handle.releasePointerCapture(event.pointerId);
+    });
+  }
+
+  bindFocusPanelResize() {
+    const panel = document.getElementById("focused-race-panel");
+    const handle = panel?.querySelector(".focus-resize-handle");
+    const shell = document.querySelector(".election-map-shell");
+    if (!panel || !handle || !shell || handle.dataset.bound === "true") return;
+    handle.dataset.bound = "true";
+    let resize = null;
+    handle.addEventListener("pointerdown", (event) => {
+      const shellRect = shell.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
+      panel.style.left = `${panelRect.left - shellRect.left}px`;
+      panel.style.top = `${panelRect.top - shellRect.top}px`;
+      panel.style.right = "auto";
+      panel.style.bottom = "auto";
+      resize = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        width: panelRect.width,
+        height: panelRect.height
+      };
+      handle.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    });
+    handle.addEventListener("pointermove", (event) => {
+      if (!resize || resize.pointerId !== event.pointerId) return;
+      const shellRect = shell.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
+      const maxWidth = Math.max(280, shellRect.width - (panelRect.left - shellRect.left) - 8);
+      const maxHeight = Math.max(220, shellRect.height - (panelRect.top - shellRect.top) - 8);
+      const width = Math.max(320, Math.min(maxWidth, resize.width + event.clientX - resize.startX));
+      const height = Math.max(220, Math.min(maxHeight, resize.height + event.clientY - resize.startY));
+      panel.style.width = `${width}px`;
+      panel.style.height = `${height}px`;
+      panel.style.maxHeight = "none";
+    });
+    handle.addEventListener("pointerup", (event) => {
+      if (!resize || resize.pointerId !== event.pointerId) return;
+      resize = null;
       handle.releasePointerCapture(event.pointerId);
     });
   }
