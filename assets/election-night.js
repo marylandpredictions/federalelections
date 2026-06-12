@@ -39,6 +39,9 @@ const CHAMBER_CONFIG = {
 };
 
 const NON_COUNTY_REPORTING_STATES = new Set(["ME", "VT", "MA", "CT", "RI", "NH"]);
+const SENATE_NOT_UP_BY_PARTY = { D: 34, R: 33 };
+const GOVERNOR_NOT_UP_BY_PARTY = { D: 8, R: 6 };
+const KEY_RACE_IDS = new Set();
 
 function partyColor(party) {
   return PARTY_COLORS[String(party || "U").toUpperCase()] || PARTY_COLORS.U;
@@ -262,6 +265,13 @@ function houseGeometryId(race) {
   return `${state}-${String(district).padStart(2, "0")}`;
 }
 
+function normalizedHouseDistrict(value) {
+  const raw = String(value ?? "").trim().toUpperCase();
+  if (!raw || raw === "AL" || raw.includes("AT-LARGE")) return "AL";
+  const match = raw.match(/(?:^|[-\s])0*(\d{1,2})$/) || raw.match(/0*(\d{1,2})/);
+  return match ? String(Number(match[1])) : raw;
+}
+
 function raceIdFromHouseGeometryId(id) {
   const [state, district] = String(id || "").split("-");
   if (!state || !district) return "";
@@ -270,12 +280,14 @@ function raceIdFromHouseGeometryId(id) {
 
 function normalizeElectionRace(race, fallbackCandidates) {
   const candidates = (race.candidates || []).map(normalizeCandidate);
-  const normalized = {
-    id: race.id,
-    type: race.type,
-    state: race.state,
-    district: race.district,
-    title: race.electionName || race.title || `${STATE_NAMES[race.state] || race.state} ${MODE_LABELS[race.type] || "Race"}`,
+    const normalized = {
+      id: race.id,
+      liveResultId: race.liveResultId || race.resultId || race.nbcId || race.civicId || "",
+      type: race.type,
+      state: race.state,
+      district: race.district,
+      date: race.date || race.electionDate || "",
+      title: race.electionName || race.title || `${STATE_NAMES[race.state] || race.state} ${MODE_LABELS[race.type] || "Race"}`,
     subtitle: race.subtitle || "",
     status: race.status || "",
     reportingPercent: Number.isFinite(Number(race.reportingPercent)) ? Number(race.reportingPercent) : null,
@@ -385,13 +397,16 @@ function houseStateTooltipMarkup(races, title) {
   `;
 }
 
-function countyTooltipMarkup(county, feature) {
+function countyTooltipMarkup(county, feature, descriptions) {
   const props = feature?.properties || {};
   const countyName = county?.name || props.countyName || props.NAME || "County";
+  const description = countyDescriptionForFeature(feature, descriptions);
   if (!county) {
     return `
       <div class="election-map-tooltip-title">${escapeHtml(countyName)}</div>
-      <div class="election-map-tooltip-muted">County-level results unavailable</div>
+      ${description ? `<div class="election-map-tooltip-muted">${escapeHtml(description)}</div>` : ""}
+      <div class="election-map-tooltip-muted">Awaiting county returns</div>
+      <div class="election-map-tooltip-foot"><span>0% estimated in</span></div>
     `;
   }
 
@@ -408,6 +423,7 @@ function countyTooltipMarkup(county, feature) {
   const reporting = Number(county.estimatedVoteReporting ?? county.percentReporting);
   return `
     <div class="election-map-tooltip-title">${escapeHtml(countyName)}</div>
+    ${description ? `<div class="election-map-tooltip-muted">${escapeHtml(description)}</div>` : ""}
     <table class="election-map-tooltip-table">
       <thead><tr><th>Candidate</th><th>Votes</th><th>Pct</th></tr></thead>
       <tbody>${rows}</tbody>
@@ -416,6 +432,14 @@ function countyTooltipMarkup(county, feature) {
       <span>${Number.isFinite(reporting) ? `${formatPercent(reporting)} estimated in` : "Estimate pending"}</span>
     </div>
   `;
+}
+
+function countyDescriptionForFeature(feature, descriptions) {
+  const fips = featureCountyFipsForElectionNight(feature);
+  const props = feature?.properties || {};
+  return descriptions?.get(fips)
+    || descriptions?.get(`${String(props.STATEFP || props.STATE || "").padStart(2, "0")}${String(props.COUNTYFP || props.COUNTY || "").padStart(3, "0")}`)
+    || "";
 }
 
 class ElectionNightPage {
@@ -431,6 +455,7 @@ class ElectionNightPage {
     this.liveRaceIndex = [];
     this.liveRaceDetails = new Map();
     this.countyFeatures = null;
+    this.countyDescriptions = new Map();
     this.houseExpandedFromGeometry = false;
     this.detailMapActive = false;
     this.currentRace = null;
@@ -461,12 +486,13 @@ class ElectionNightPage {
   }
 
   async loadData() {
-    const [results, liveResults, house, senate, governor] = await Promise.all([
+    const [results, liveResults, house, senate, governor, countyDescriptions] = await Promise.all([
       this.safeJson("data/election-night-races.json"),
       this.safeJson("data/live-results.json"),
       this.safeJson("data/house-forecast.json"),
       this.safeJson("data/forecast.json"),
-      this.safeJson("data/governor-forecast.json")
+      this.safeJson("data/governor-forecast.json"),
+      this.safeJson("data/result-county-descriptions.json")
     ]);
 
     const lookups = buildNameLookups(house, senate, governor);
@@ -476,6 +502,7 @@ class ElectionNightPage {
     this.dataByMode.house = races.filter((race) => race.type === "house");
     this.dataByMode.senate = races.filter((race) => race.type === "senate");
     this.dataByMode.governor = races.filter((race) => race.type === "governor");
+    this.countyDescriptions = new Map((countyDescriptions?.rows || []).map((row) => [String(row.fips).padStart(5, "0"), row.description]));
   }
 
   ensureAllHouseRacesFromGeometry() {
@@ -586,38 +613,46 @@ class ElectionNightPage {
     const dem = called.filter((race) => raceWinnerParty(race) === "D").length;
     const rep = called.filter((race) => raceWinnerParty(race) === "R").length;
 
-    document.getElementById("summary-label").textContent = `${MODE_LABELS[this.selectedMode]} board`;
-    document.getElementById("total-races").textContent = "Map";
-    document.getElementById("called-races").textContent = "election night map";
-    document.getElementById("dem-seats").textContent = String(dem);
-    document.getElementById("rep-seats").textContent = String(rep);
-    document.getElementById("dem-summary-label").textContent = this.selectedMode === "governor" ? "Dem wins" : "Dem called";
-    document.getElementById("rep-summary-label").textContent = this.selectedMode === "governor" ? "GOP wins" : "GOP called";
-    document.getElementById("dem-share-label").textContent = "actual calls";
-    document.getElementById("rep-share-label").textContent = "actual calls";
-    document.getElementById("reporting-percent").textContent = reporting ? String(reporting) : "--";
-    document.getElementById("last-updated").textContent = reporting ? "active result feeds" : "results pending";
+    const setText = (id, text) => {
+      const node = document.getElementById(id);
+      if (node) node.textContent = text;
+    };
+    setText("summary-label", `${MODE_LABELS[this.selectedMode]} board`);
+    setText("total-races", "Map");
+    setText("called-races", "election night map");
+    setText("dem-seats", String(dem));
+    setText("rep-seats", String(rep));
+    setText("dem-summary-label", this.selectedMode === "governor" ? "Dem wins" : "Dem called");
+    setText("rep-summary-label", this.selectedMode === "governor" ? "GOP wins" : "GOP called");
+    setText("dem-share-label", "actual calls");
+    setText("rep-share-label", "actual calls");
+    setText("reporting-percent", reporting ? String(reporting) : "--");
+    setText("last-updated", reporting ? "active result feeds" : "results pending");
     this.renderChamberBar(dem, rep, called.length);
   }
 
   renderChamberBar(dem, rep, called) {
     const board = document.querySelector(".election-chamber-board");
-    if (board) board.hidden = this.selectedMode === "governor";
+    if (board) board.hidden = false;
+    if (board) board.classList.toggle("is-governor-board", this.selectedMode === "governor");
     if (this.selectedMode === "governor") {
-      const title = document.getElementById("chamber-board-title");
       const subtitle = document.getElementById("chamber-board-subtitle");
       const demLabel = document.getElementById("chamber-dem-count");
       const repLabel = document.getElementById("chamber-rep-count");
       const majorityLabel = document.getElementById("chamber-majority-label");
+      const demNote = document.getElementById("chamber-dem-note");
+      const repNote = document.getElementById("chamber-rep-note");
       const demBar = document.getElementById("chamber-bar-dem");
       const repBar = document.getElementById("chamber-bar-rep");
       const uncalledBar = document.getElementById("chamber-bar-uncalled");
       const majorityLine = document.getElementById("chamber-majority-line");
-      if (title) title.textContent = "";
-      if (subtitle) subtitle.textContent = "";
-      if (demLabel) demLabel.textContent = "";
-      if (repLabel) repLabel.textContent = "";
-      if (majorityLabel) majorityLabel.textContent = "";
+      const up = this.modeRaces().length;
+      if (subtitle) subtitle.textContent = `${up} states up for election. Not up: ${GOVERNOR_NOT_UP_BY_PARTY.D} D / ${GOVERNOR_NOT_UP_BY_PARTY.R} R.`;
+      if (demLabel) demLabel.textContent = `${dem} D`;
+      if (repLabel) repLabel.textContent = `${rep} R`;
+      if (majorityLabel) majorityLabel.textContent = "Governor calls";
+      if (demNote) demNote.textContent = `${GOVERNOR_NOT_UP_BY_PARTY.D} D not up`;
+      if (repNote) repNote.textContent = `${GOVERNOR_NOT_UP_BY_PARTY.R} R not up`;
       if (majorityLine) majorityLine.style.left = "0%";
       if (demBar) demBar.style.width = "0%";
       if (uncalledBar) uncalledBar.style.width = "0%";
@@ -630,21 +665,26 @@ class ElectionNightPage {
     const repPct = (rep / config.total) * 100;
     const majorityPct = (config.majority / config.total) * 100;
 
-    const title = document.getElementById("chamber-board-title");
     const subtitle = document.getElementById("chamber-board-subtitle");
     const demLabel = document.getElementById("chamber-dem-count");
     const repLabel = document.getElementById("chamber-rep-count");
     const majorityLabel = document.getElementById("chamber-majority-label");
+    const demNote = document.getElementById("chamber-dem-note");
+    const repNote = document.getElementById("chamber-rep-note");
     const demBar = document.getElementById("chamber-bar-dem");
     const repBar = document.getElementById("chamber-bar-rep");
     const uncalledBar = document.getElementById("chamber-bar-uncalled");
     const majorityLine = document.getElementById("chamber-majority-line");
 
-    if (title) title.textContent = `${MODE_LABELS[this.selectedMode]} call tracker`;
-    if (subtitle) subtitle.textContent = called ? `${called} called from result data.` : "Calls will appear here.";
+    const up = this.modeRaces().length;
+    if (subtitle) subtitle.textContent = this.selectedMode === "house"
+      ? `${up} districts up for election. All House districts are up.`
+      : `${up} states up for election. Not up: ${SENATE_NOT_UP_BY_PARTY.D} D / ${SENATE_NOT_UP_BY_PARTY.R} R.`;
     if (demLabel) demLabel.textContent = `${dem} D`;
     if (repLabel) repLabel.textContent = `${rep} R`;
-    if (majorityLabel) majorityLabel.textContent = `${config.majority} for majority`;
+    if (majorityLabel) majorityLabel.textContent = `PV · ${config.majority} for majority`;
+    if (demNote) demNote.textContent = this.selectedMode === "senate" ? `${SENATE_NOT_UP_BY_PARTY.D} D not up` : "All districts up";
+    if (repNote) repNote.textContent = this.selectedMode === "senate" ? `${SENATE_NOT_UP_BY_PARTY.R} R not up` : "All districts up";
     if (demBar) demBar.style.width = `${demPct}%`;
     if (uncalledBar) uncalledBar.style.width = `${(uncalled / config.total) * 100}%`;
     if (repBar) repBar.style.width = `${repPct}%`;
@@ -688,7 +728,7 @@ class ElectionNightPage {
         const state = FIPS_TO_STATE[featureStateFipsForElectionNight(feature)];
         return raceByState.has(state) ? "state-result-shape election-map-shape" : "state-result-shape election-map-shape election-map-muted";
       })
-      .attr("d", (feature) => projectedFeaturePath(feature, projection))
+      .attr("d", this.path)
       .attr("fill", (feature) => {
         const state = FIPS_TO_STATE[featureStateFipsForElectionNight(feature)];
         const race = raceByState.get(state);
@@ -733,7 +773,7 @@ class ElectionNightPage {
       .data(this.stateFeatures || [])
       .join("path")
       .attr("class", "state-border")
-      .attr("d", (feature) => projectedFeaturePath(feature, projection))
+      .attr("d", this.path)
       .attr("fill", "#1c2b43")
       .attr("stroke", "rgba(226, 232, 255, .42)")
       .attr("stroke-width", 0.45)
@@ -746,7 +786,7 @@ class ElectionNightPage {
         const race = raceByDistrict.get(feature.properties?.id);
         return race ? "house-district-shape election-map-shape" : "house-district-shape election-map-shape election-map-muted";
       })
-      .attr("d", (feature) => projectedFeaturePath(feature, projection))
+      .attr("d", this.path)
       .attr("fill-rule", "evenodd")
       .attr("fill", (feature) => raceColor(raceByDistrict.get(feature.properties?.id)))
       .attr("stroke", "#e2e8ff")
@@ -825,19 +865,19 @@ class ElectionNightPage {
     }
 
     const state = String(detail?.state || race?.state || "").toUpperCase();
-    if (!detail || !this.isStatewideRace(detail) || NON_COUNTY_REPORTING_STATES.has(state)) return false;
-    const counties = (detail.counties || []).filter((county) => {
+    const statewideSource = detail || race;
+    if (!this.isStatewideRace(statewideSource) || NON_COUNTY_REPORTING_STATES.has(state)) return false;
+    const counties = (detail?.counties || []).filter((county) => {
       const type = String(county.type || "County").toLowerCase();
       return type === "county" && county.candidates?.length;
     });
-    if (!counties.length) return false;
 
     const stateFips = stateFipsForElectionNight(state);
     const allFeatures = await this.loadCountyFeatures();
     const features = allFeatures.filter((feature) => featureStateFipsForElectionNight(feature) === stateFips);
     if (!features.length) return false;
 
-    this.renderCountyDetailMap(detail, features);
+    this.renderCountyDetailMap(counties.length ? detail : race, features);
     return true;
   }
 
@@ -846,33 +886,54 @@ class ElectionNightPage {
     if (!container) return;
     const width = 1160;
     const height = 720;
-    const projection = d3.geoAlbersUsa().fitExtent([[28, 28], [width - 28, height - 28]], {
+    const selectedCollection = {
       type: "FeatureCollection",
       features
-    });
+    };
+    const projection = d3.geoAlbersUsa().fitExtent([[34, 34], [width - 34, height - 34]], selectedCollection);
     this.path = d3.geoPath(projection);
     const lookup = countyLookupForElectionNight(race);
 
     this.createSvg(container, width, height);
     this.detailMapActive = true;
+    this.viewport.append("g")
+      .attr("class", "election-map-context-layer")
+      .selectAll(".map-context-shape")
+      .data(options.districtMode ? (this.geo?.features || []) : (this.stateFeatures || []))
+      .join("path")
+      .attr("class", (feature) => {
+        const isSelected = options.districtMode
+          ? feature.properties?.id === houseGeometryId(race)
+          : FIPS_TO_STATE[featureStateFipsForElectionNight(feature)] === String(race.state || "").toUpperCase();
+        return `map-context-shape ${isSelected ? "is-selected-context" : "is-dimmed-context"}`;
+      })
+      .attr("d", this.path)
+      .attr("fill", "#1a2840")
+      .attr("stroke", "rgba(226, 232, 255, .45)")
+      .attr("stroke-width", 0.38)
+      .attr("pointer-events", "none");
+
     this.viewport.selectAll(".county-result-shape")
       .data(features)
       .join("path")
-      .attr("class", (feature) => countyForFeature(feature, lookup)
-        ? "county-result-shape election-map-shape"
-        : "county-result-shape election-map-shape election-map-muted")
-      .attr("d", (feature) => projectedFeaturePath(feature, projection))
+      .attr("class", (feature) => {
+        const hasCountyResult = countyForFeature(feature, lookup);
+        return options.districtMode || hasCountyResult
+          ? "county-result-shape election-map-shape"
+          : "county-result-shape election-map-shape election-map-muted";
+      })
+      .attr("d", this.path)
       .attr("fill-rule", "evenodd")
       .attr("fill", (feature) => {
         const county = countyForFeature(feature, lookup);
         const leader = countyTopCandidatesForElectionNight(county, 1)[0];
         if (!leader) return "#334054";
-        return d3.interpolateRgb("#cfd6e5", partyColor(normalizedPartyCode(leader)))(0.72);
+        return d3.interpolateRgb("#cfd6e5", partyColor(normalizedPartyCode(leader)))(0.78);
       })
       .attr("stroke", options.districtMode ? "rgba(226, 232, 255, .42)" : "rgba(226, 232, 255, .58)")
       .attr("stroke-width", options.districtMode ? 0.22 : 0.36)
       .on("mousemove", (event, feature) => {
-        this.showTooltip(event, countyTooltipMarkup(countyForFeature(feature, lookup), feature));
+        this.showTooltip(event, countyTooltipMarkup(countyForFeature(feature, lookup), feature, this.countyDescriptions));
       })
       .on("mouseleave blur", () => this.hideTooltip());
 
@@ -895,6 +956,7 @@ class ElectionNightPage {
     const title = document.getElementById("focused-race-title");
     const content = document.getElementById("focused-race-content");
     const rating = document.getElementById("focused-race-rating");
+    const kind = document.getElementById("focused-race-kind");
     if (!panel || !title || !content) return;
 
     const live = hasActiveResults(race);
@@ -912,6 +974,7 @@ class ElectionNightPage {
     panel.classList.toggle("party-dem", leaderParty === "D");
     panel.classList.toggle("party-rep", leaderParty === "R");
     title.textContent = race.title;
+    if (kind) kind.textContent = KEY_RACE_IDS.has(String(race.id)) || race.keyRace ? "Key race" : "Tracked race";
     if (rating) rating.textContent = isActuallyCalled(race) ? "Called" : live ? "Reporting" : "Awaiting results";
 
     const rows = topCandidates(race, 5).map((candidate, index) => `
@@ -960,13 +1023,22 @@ class ElectionNightPage {
   }
 
   findLiveRaceIndexMatch(race) {
+    const directId = String(race.liveResultId || race.resultId || "").trim();
+    if (directId) {
+      const direct = this.liveRaceIndex.find((item) => String(item.id) === directId);
+      if (direct) return direct;
+    }
     const modeType = String(race.type || "").toLowerCase();
     const candidates = this.liveRaceIndex.filter((item) => {
       if (item.state !== race.state) return false;
+      const raceDate = String(race.date || race.electionDate || "").slice(0, 10);
+      const itemDate = String(item.date || item.electionDate || "").slice(0, 10);
+      if (raceDate && itemDate && raceDate !== itemDate) return false;
+      if (!raceDate && itemDate) return false;
       const itemType = String(item.type || item.electionType || item.electionName || "").toLowerCase();
       if (modeType === "house") {
-        const itemDistrict = item.district === "AL" ? "AL" : Number(item.district);
-        const raceDistrict = race.district === "AL" ? "AL" : Number(race.district);
+        const itemDistrict = normalizedHouseDistrict(item.district);
+        const raceDistrict = normalizedHouseDistrict(race.district);
         return itemDistrict === raceDistrict && (itemType.includes("house") || item.officeType === "house");
       }
       if (item.district != null || item.municipality) return false;
@@ -976,12 +1048,15 @@ class ElectionNightPage {
     });
     if (!candidates.length) return null;
     const raceNames = new Set((race.candidates || []).map((candidate) => String(candidate.name || "").toLowerCase()));
-    return candidates
+    const ranked = candidates
       .map((item) => ({
         item,
         score: (item.candidates || []).reduce((score, candidate) => score + (raceNames.has(String(candidate.name || "").toLowerCase()) ? 1 : 0), 0)
       }))
-      .sort((a, b) => b.score - a.score)[0].item;
+      .sort((a, b) => b.score - a.score);
+    const best = ranked[0];
+    if (!best || best.score < 2) return null;
+    return best.item;
   }
 
   async clearFocus() {

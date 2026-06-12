@@ -686,6 +686,8 @@ async function serveStatic(request, response) {
 
   if (requestedPath === adminPath) {
     requestedPath = "/admin.html";
+  } else if (requestedPath === "/fea-results-lab-26") {
+    requestedPath = "/election-night.html";
   } else if (requestedPath === "/admin.html") {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     response.end("Not found");

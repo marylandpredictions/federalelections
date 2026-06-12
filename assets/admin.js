@@ -471,8 +471,9 @@
     state.testMode = selectedMode;
     state.simulationState = selectedState;
     
-    // Update the test page link
-    let testUrl = "/election-night";
+    // Keep the public results URL out of testing. This unlisted route serves the
+    // same page so staff can try calls/maps without sharing the lab address.
+    let testUrl = "/fea-results-lab-26";
     if (selectedMode === "mock") {
       testUrl += "?mock=true";
     } else if (selectedMode === "simulation") {
@@ -480,7 +481,7 @@
     }
     openElectionNightTest.href = testUrl;
     
-    setStatus(testModeStatus, `Test mode set to ${selectedMode}${selectedMode === "simulation" ? ` (${selectedState})` : ""}. Click "Open test page" to view.`);
+    setStatus(testModeStatus, `Lab link ready for ${selectedMode}${selectedMode === "simulation" ? ` (${selectedState})` : ""}. Open the lab page to test the election-night board.`);
   });
 
   if (state.secret) {

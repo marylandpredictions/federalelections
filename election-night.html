@@ -56,7 +56,7 @@
       </div>
     </section>
 
-    <section class="election-dashboard-grid election-dashboard-grid-wide">
+    <section class="election-dashboard-grid election-dashboard-grid-wide" hidden>
       <article class="election-night-stat">
         <span id="summary-label">House results</span>
         <strong id="total-races">--</strong>
@@ -79,10 +79,10 @@
       </article>
     </section>
 
-    <section class="election-chamber-board" aria-labelledby="chamber-board-title">
+    <section class="election-chamber-board" aria-label="Election night call tracker">
       <div class="election-chamber-copy">
-        <p class="kicker">Chamber Board</p>
-        <h2 id="chamber-board-title">Call tracker</h2>
+        <p class="kicker" hidden>Chamber Board</p>
+        <h2 id="chamber-board-title" hidden>Call tracker</h2>
         <p id="chamber-board-subtitle">Calls will appear here.</p>
       </div>
       <div class="election-chamber-meter" aria-label="Called seats by party">
@@ -100,8 +100,8 @@
       </div>
     </section>
 
-    <section class="map-panel election-map-panel" aria-labelledby="map-title">
-      <div class="section-head">
+    <section class="map-panel election-map-panel" aria-label="Election night results map">
+      <div class="section-head" hidden>
         <div>
           <p class="kicker">Map</p>
           <h2 id="map-title">Election Night 2026.</h2>
@@ -111,7 +111,7 @@
         <div id="election-map" class="election-map-canvas" aria-live="polite"></div>
         <aside id="focused-race-panel" class="election-focus-panel election-focus-overlay" aria-labelledby="focused-race-title" hidden>
           <div class="focused-card-head">
-            <span class="focused-pill">Key race</span>
+            <span class="focused-pill" id="focused-race-kind">Tracked race</span>
             <span class="focused-pill focused-pill-light" id="focused-race-rating">Tracked</span>
             <button class="focused-close" type="button" data-clear-focus aria-label="Close selected race">×</button>
           </div>
