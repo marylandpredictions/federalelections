@@ -969,6 +969,27 @@ button {
   outline: none;
 }
 
+.map-background-layer {
+  pointer-events: none;
+}
+
+.map-background-road {
+  fill: none;
+  stroke: rgba(198, 210, 255, .13);
+  stroke-width: .55;
+  vector-effect: non-scaling-stroke;
+}
+
+.map-background-city {
+  fill: rgba(226, 232, 255, .36);
+  font: 900 10px/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  paint-order: stroke;
+  pointer-events: none;
+  stroke: rgba(0, 14, 56, .74);
+  stroke-width: 2.2px;
+  text-anchor: middle;
+}
+
 .election-map-loading {
   min-height: 100%;
   display: grid;
@@ -1091,7 +1112,7 @@ button {
 .election-map-tooltip {
   position: absolute;
   z-index: 9999;
-  width: min(390px, calc(100vw - 24px));
+  width: min(430px, calc(100vw - 24px));
   padding: 0;
   border: 1px solid rgba(198, 210, 255, .78);
   border-radius: 8px;
@@ -1137,12 +1158,15 @@ button {
   border-bottom: 1px solid rgba(198, 210, 255, .28);
   color: #fff;
   font-weight: 900;
+  vertical-align: top;
 }
 
 .election-map-tooltip-table td:first-child {
   position: relative;
   padding-left: 20px;
-  white-space: nowrap;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .election-map-tooltip-table td:first-child small {
@@ -1348,6 +1372,7 @@ button {
 .selected-race-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .selected-race-table th {
@@ -1371,6 +1396,13 @@ button {
   border-top: 1px solid rgba(198, 210, 255, .3);
   color: #fff;
   font-weight: 900;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+
+.selected-race-table th:first-child,
+.selected-race-table td:first-child {
+  width: 48%;
 }
 
 .selected-race-table .leading {

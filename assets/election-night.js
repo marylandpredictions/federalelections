@@ -47,6 +47,37 @@ const KEY_RACE_IDS = new Set([
   "house-CA-22", "house-CA-40", "house-CA-48", "house-IA-3", "house-MI-7", "house-NJ-7", "house-NY-17", "house-WI-3"
 ]);
 
+const MAP_CITY_LABELS = [
+  { name: "Los Angeles", state: "CA", lon: -118.2437, lat: 34.0522 },
+  { name: "San Diego", state: "CA", lon: -117.1611, lat: 32.7157 },
+  { name: "San Francisco", state: "CA", lon: -122.4194, lat: 37.7749 },
+  { name: "Sacramento", state: "CA", lon: -121.4944, lat: 38.5816 },
+  { name: "Fresno", state: "CA", lon: -119.7871, lat: 36.7378 },
+  { name: "Reno", state: "NV", lon: -119.8138, lat: 39.5296 },
+  { name: "Las Vegas", state: "NV", lon: -115.1398, lat: 36.1699 },
+  { name: "Phoenix", state: "AZ", lon: -112.0740, lat: 33.4484 },
+  { name: "Salt Lake City", state: "UT", lon: -111.8910, lat: 40.7608 },
+  { name: "Dallas", state: "TX", lon: -96.7970, lat: 32.7767 },
+  { name: "Houston", state: "TX", lon: -95.3698, lat: 29.7604 },
+  { name: "Austin", state: "TX", lon: -97.7431, lat: 30.2672 },
+  { name: "San Antonio", state: "TX", lon: -98.4936, lat: 29.4241 },
+  { name: "Des Moines", state: "IA", lon: -93.6091, lat: 41.5868 },
+  { name: "Billings", state: "MT", lon: -108.5007, lat: 45.7833 },
+  { name: "Missoula", state: "MT", lon: -113.9966, lat: 46.8721 },
+  { name: "Sioux Falls", state: "SD", lon: -96.7311, lat: 43.5460 },
+  { name: "Bismarck", state: "ND", lon: -100.7837, lat: 46.8083 },
+  { name: "Newark", state: "NJ", lon: -74.1724, lat: 40.7357 },
+  { name: "Trenton", state: "NJ", lon: -74.7429, lat: 40.2171 },
+  { name: "Portland", state: "ME", lon: -70.2553, lat: 43.6591 },
+  { name: "Columbia", state: "SC", lon: -81.0348, lat: 34.0007 },
+  { name: "Charleston", state: "SC", lon: -79.9311, lat: 32.7765 },
+  { name: "Atlanta", state: "GA", lon: -84.3880, lat: 33.7490 },
+  { name: "Chicago", state: "IL", lon: -87.6298, lat: 41.8781 },
+  { name: "New York", state: "NY", lon: -74.0060, lat: 40.7128 },
+  { name: "Philadelphia", state: "PA", lon: -75.1652, lat: 39.9526 },
+  { name: "Washington", state: "DC", lon: -77.0369, lat: 38.9072 }
+];
+
 function partyColor(party) {
   return PARTY_COLORS[String(party || "U").toUpperCase()] || PARTY_COLORS.U;
 }
@@ -453,22 +484,15 @@ function raceIdFromHouseGeometryId(id) {
 }
 
 function normalizeElectionRace(race, fallbackCandidates) {
-  const forecastShareByParty = new Map((fallbackCandidates || []).map((candidate) => [normalizedPartyCode(candidate), Number(candidate.percent) || 0]));
-  const candidates = (race.candidates || []).map((candidate) => {
-    const normalized = normalizeCandidate(candidate);
-    if (!Number(normalized.percent) && forecastShareByParty.has(normalizedPartyCode(normalized))) {
-      normalized.percent = forecastShareByParty.get(normalizedPartyCode(normalized));
-    }
-    return normalized;
-  });
-    const normalized = {
-      id: race.id,
-      liveResultId: race.liveResultId || race.resultId || race.nbcId || race.civicId || "",
-      type: race.type,
-      state: race.state,
-      district: race.district,
-      date: race.date || race.electionDate || "",
-      title: race.electionName || race.title || `${STATE_NAMES[race.state] || race.state} ${MODE_LABELS[race.type] || "Race"}`,
+  const candidates = (race.candidates || []).map((candidate) => normalizeCandidate(candidate));
+  const normalized = {
+    id: race.id,
+    liveResultId: race.liveResultId || race.resultId || race.nbcId || race.civicId || "",
+    type: race.type,
+    state: race.state,
+    district: race.district,
+    date: race.date || race.electionDate || "",
+    title: race.electionName || race.title || `${STATE_NAMES[race.state] || race.state} ${MODE_LABELS[race.type] || "Race"}`,
     subtitle: race.subtitle || "",
     status: race.status || "",
     reportingPercent: Number.isFinite(Number(race.reportingPercent)) ? Number(race.reportingPercent) : null,
@@ -476,7 +500,12 @@ function normalizeElectionRace(race, fallbackCandidates) {
   };
 
   if (!hasActiveResults(normalized) && fallbackCandidates?.length) {
-    normalized.candidates = fallbackCandidates;
+    normalized.candidates = fallbackCandidates.map((candidate) => ({
+      ...candidate,
+      votes: 0,
+      percent: 0,
+      isWinner: false
+    }));
     normalized.status = "";
     normalized.reportingPercent = null;
   }
@@ -662,6 +691,7 @@ class ElectionNightPage {
     this.stateFeatures = null;
     this.houseFeatures = null;
     this.resultStateFeatures = null;
+    this.highwayFeatures = null;
     this.districtCountyFeatures = new Map();
     this.nameLookups = { house: new Map(), senate: new Map(), governor: new Map() };
     this.liveRaceIndex = [];
@@ -856,7 +886,7 @@ class ElectionNightPage {
         subtitle: "",
         status: "",
         reportingPercent: null,
-        candidates: fallback
+        candidates: fallback.map((candidate) => ({ ...candidate, votes: 0, percent: 0, isWinner: false }))
       });
     }
     this.dataByMode.house = [...existing.values()].sort((a, b) => {
@@ -901,6 +931,14 @@ class ElectionNightPage {
       this.houseFeatures = districts?.features || [];
     }
     return this.houseFeatures;
+  }
+
+  async loadHighwayFeatures() {
+    if (!this.highwayFeatures) {
+      const highways = await this.safeJson("data/result-major-highways.geojson");
+      this.highwayFeatures = highways?.features || [];
+    }
+    return this.highwayFeatures;
   }
 
   async loadDistrictCountyFeatures(race) {
@@ -1019,13 +1057,13 @@ class ElectionNightPage {
       repSafeBar.style.width = isSenate ? `${(repSafe / config.total) * 100}%` : "0%";
     }
     if (subtitle) subtitle.textContent = this.selectedMode === "house"
-      ? `${up} districts up for election. All House districts are up.`
+      ? "All House seats are on the ballot."
       : `${up} states up for election. Not up: ${demSafe} D / ${repSafe} R.`;
     if (demLabel) demLabel.innerHTML = `${dem + demSafe} D<small>${formatPercent(popularVote.dem)} PV</small>`;
     if (repLabel) repLabel.innerHTML = `${rep + repSafe} R<small>${formatPercent(popularVote.rep)} PV</small>`;
     if (majorityLabel) majorityLabel.innerHTML = `<b>${config.majority} for majority</b><small>${popularVote.leader === "EVEN" ? "PV even" : `${popularVote.leader}+${popularVote.margin.toFixed(1)} PV`}</small>`;
-    if (demNote) demNote.textContent = this.selectedMode === "senate" ? `${demSafe} D not up` : "All districts up";
-    if (repNote) repNote.textContent = this.selectedMode === "senate" ? `${repSafe} R not up` : "All districts up";
+    if (demNote) demNote.textContent = this.selectedMode === "senate" ? `${demSafe} D not up` : "";
+    if (repNote) repNote.textContent = this.selectedMode === "senate" ? `${repSafe} R not up` : "";
     if (demBar) demBar.style.width = `${demPct}%`;
     if (uncalledBar) uncalledBar.style.width = `${(activeUncalled / config.total) * 100}%`;
     if (repBar) repBar.style.width = `${repPct}%`;
@@ -1050,7 +1088,11 @@ class ElectionNightPage {
 
   async renderStateMap(container) {
     this.detailMapActive = false;
-    this.stateFeatures = await this.loadResultStateFeatures();
+    const [stateFeatures, highwayFeatures] = await Promise.all([
+      this.loadResultStateFeatures(),
+      this.loadHighwayFeatures()
+    ]);
+    this.stateFeatures = stateFeatures;
 
     const width = 1160;
     const height = 720;
@@ -1062,6 +1104,7 @@ class ElectionNightPage {
     const raceByState = new Map(this.modeRaces().map((race) => [race.state, race]));
 
     this.createSvg(container, width, height);
+    this.drawMapContext(projection, { highways: highwayFeatures });
     this.viewport.selectAll(".state-result-shape")
       .data(this.stateFeatures)
       .join("path")
@@ -1096,8 +1139,13 @@ class ElectionNightPage {
 
   async renderHouseMap(container) {
     this.detailMapActive = false;
-    this.stateFeatures = await this.loadResultStateFeatures();
-    this.geo = { type: "FeatureCollection", features: await this.loadHouseFeatures() };
+    const [stateFeatures, houseFeatures, highwayFeatures] = await Promise.all([
+      this.loadResultStateFeatures(),
+      this.loadHouseFeatures(),
+      this.loadHighwayFeatures()
+    ]);
+    this.stateFeatures = stateFeatures;
+    this.geo = { type: "FeatureCollection", features: houseFeatures };
     this.ensureAllHouseRacesFromGeometry();
 
     const width = 1160;
@@ -1107,6 +1155,7 @@ class ElectionNightPage {
     const raceByDistrict = new Map(this.modeRaces().map((race) => [houseGeometryId(race), race]));
 
     this.createSvg(container, width, height);
+    this.drawMapContext(projection, { highways: highwayFeatures });
 
     this.viewport.selectAll(".house-district-shape")
       .data(this.geo.features || [])
@@ -1149,9 +1198,11 @@ class ElectionNightPage {
 
     this.viewport = this.svg.append("g").attr("class", "election-map-viewport");
     this.zoom = d3.zoom()
-      .scaleExtent([1, 14])
+      .scaleExtent([0.85, 90])
       .on("zoom", (event) => {
         this.viewport.attr("transform", event.transform);
+        const labelScale = Math.max(0.38, Math.min(1, 1 / Math.sqrt(event.transform.k)));
+        this.viewport.selectAll(".map-background-city").style("font-size", `${10 * labelScale}px`);
       });
     this.svg.call(this.zoom);
   }
@@ -1255,6 +1306,7 @@ class ElectionNightPage {
 
     this.createSvg(container, width, height);
     this.detailMapActive = true;
+    this.drawMapContext(projection, { highways: this.highwayFeatures || [], state: selectedState, detail: true });
     const raceByDistrict = options.districtMode
       ? new Map(this.modeRaces().map((item) => [houseGeometryId(item), item]))
       : new Map();
@@ -1324,7 +1376,39 @@ class ElectionNightPage {
       .on("mouseleave blur", () => this.hideTooltip());
 
     this.addZoomControls();
-    if (!options.preserveMapTransform) this.zoomToFeature(selectedCollection, { maxScale: options.districtMode ? 80 : 30, fill: options.districtMode ? 1.85 : 1.25, duration: 0 });
+    if (!options.preserveMapTransform) this.zoomToFeature(selectedCollection, { maxScale: options.districtMode ? 90 : 50, fill: options.districtMode ? 2.6 : 1.7, duration: 0 });
+  }
+
+  drawMapContext(projection, options = {}) {
+    if (!this.viewport || !projection) return;
+    const highways = Array.isArray(options.highways) ? options.highways : [];
+    const layer = this.viewport.append("g").attr("class", "map-background-layer");
+    const pathForProjection = d3.geoPath(projection);
+    if (highways.length) {
+      layer.append("g")
+        .attr("class", "map-background-roads")
+        .selectAll(".map-background-road")
+        .data(highways)
+        .join("path")
+        .attr("class", "map-background-road")
+        .attr("d", (feature) => pathForProjection(feature));
+    }
+
+    layer.append("g")
+      .attr("class", "map-background-cities")
+      .selectAll(".map-background-city")
+      .data(MAP_CITY_LABELS.map((city) => ({ ...city, point: projection([city.lon, city.lat]) })).filter((city) => {
+        if (!city.point) return false;
+        const [x, y] = city.point;
+        const inFrame = x > -90 && x < 1250 && y > -90 && y < 810;
+        if (!inFrame) return false;
+        return !options.state || city.state === options.state || !options.detail;
+      }))
+      .join("text")
+      .attr("class", "map-background-city")
+      .attr("x", (city) => city.point[0])
+      .attr("y", (city) => city.point[1])
+      .text((city) => city.name);
   }
 
   zoomToFeature(feature, options = {}) {
