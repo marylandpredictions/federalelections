@@ -1505,7 +1505,11 @@ class ElectionNightPage {
     const scale = Math.min(maxScale, Math.max(1.6, fill / Math.max(dx / viewBox.width, dy / viewBox.height)));
     const tx = viewBox.width / 2 - scale * (x0 + x1) / 2;
     const ty = viewBox.height / 2 - scale * (y0 + y1) / 2;
-    const target = d3.zoomIdentity.translate(tx, ty).scale(scale);
+    const target = this.transformWithPanelClearance(
+      d3.zoomIdentity.translate(tx, ty).scale(scale),
+      { x0, y0, x1, y1 },
+      { pad: 42 }
+    );
     const duration = Number.isFinite(options.duration) ? options.duration : 500;
     if (duration > 0) this.svg.transition().duration(duration).call(this.zoom.transform, target);
     else this.svg.call(this.zoom.transform, target);
@@ -1538,7 +1542,80 @@ class ElectionNightPage {
     const scale = Math.min(maxScale, Math.max(1, Math.min((viewBox.width - pad * 2) / dx, (viewBox.height - pad * 2) / dy)));
     const tx = (viewBox.width - scale * (x0 + x1)) / 2;
     const ty = (viewBox.height - scale * (y0 + y1)) / 2;
-    this.svg.call(this.zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+    const target = this.transformWithPanelClearance(
+      d3.zoomIdentity.translate(tx, ty).scale(scale),
+      { x0, y0, x1, y1 },
+      { pad }
+    );
+    this.svg.call(this.zoom.transform, target);
+  }
+
+  transformWithPanelClearance(transform, bounds, options = {}) {
+    const panel = document.getElementById("focused-race-panel");
+    const svgNode = this.svg?.node();
+    if (!panel || panel.hidden || !svgNode) return transform;
+    const panelRect = panel.getBoundingClientRect();
+    const svgRect = svgNode.getBoundingClientRect();
+    if (!panelRect.width || !panelRect.height || !svgRect.width || !svgRect.height) return transform;
+
+    const viewBox = svgNode.viewBox.baseVal;
+    const scaleX = viewBox.width / svgRect.width;
+    const scaleY = viewBox.height / svgRect.height;
+    const panelBox = {
+      left: (panelRect.left - svgRect.left) * scaleX,
+      right: (panelRect.right - svgRect.left) * scaleX,
+      top: (panelRect.top - svgRect.top) * scaleY,
+      bottom: (panelRect.bottom - svgRect.top) * scaleY
+    };
+    const raceBox = {
+      left: bounds.x0 * transform.k + transform.x,
+      right: bounds.x1 * transform.k + transform.x,
+      top: bounds.y0 * transform.k + transform.y,
+      bottom: bounds.y1 * transform.k + transform.y
+    };
+    const overlapX = Math.min(raceBox.right, panelBox.right) - Math.max(raceBox.left, panelBox.left);
+    const overlapY = Math.min(raceBox.bottom, panelBox.bottom) - Math.max(raceBox.top, panelBox.top);
+    const meaningfulOverlap = overlapX > 18 && overlapY > 18;
+    if (!meaningfulOverlap) return transform;
+
+    const clearance = 28;
+    const pad = Number.isFinite(options.pad) ? options.pad : 42;
+    const panelCenterX = (panelBox.left + panelBox.right) / 2;
+    const raceCenterX = (raceBox.left + raceBox.right) / 2;
+    const panelCenterY = (panelBox.top + panelBox.bottom) / 2;
+    const raceCenterY = (raceBox.top + raceBox.bottom) / 2;
+    let dx = 0;
+    let dy = 0;
+
+    if (overlapX >= overlapY * .75 || panelRect.width > panelRect.height) {
+      dx = panelCenterX >= raceCenterX
+        ? panelBox.left - raceBox.right - clearance
+        : panelBox.right - raceBox.left + clearance;
+    } else {
+      dy = panelCenterY >= raceCenterY
+        ? panelBox.top - raceBox.bottom - clearance
+        : panelBox.bottom - raceBox.top + clearance;
+    }
+
+    const candidate = {
+      left: raceBox.left + dx,
+      right: raceBox.right + dx,
+      top: raceBox.top + dy,
+      bottom: raceBox.bottom + dy
+    };
+    const availableWidth = viewBox.width - pad * 2;
+    const availableHeight = viewBox.height - pad * 2;
+    if ((candidate.right - candidate.left) <= availableWidth) {
+      if (candidate.left < pad) dx += pad - candidate.left;
+      if (candidate.right > viewBox.width - pad) dx -= candidate.right - (viewBox.width - pad);
+    }
+    if ((candidate.bottom - candidate.top) <= availableHeight) {
+      if (candidate.top < pad) dy += pad - candidate.top;
+      if (candidate.bottom > viewBox.height - pad) dy -= candidate.bottom - (viewBox.height - pad);
+    }
+
+    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) return transform;
+    return d3.zoomIdentity.translate(transform.x + dx, transform.y + dy).scale(transform.k);
   }
 
   currentTransform() {
