@@ -18,6 +18,16 @@ const STATE_NAMES = {
   VT: "Vermont", VA: "Virginia", WA: "Washington", WV: "West Virginia", WI: "Wisconsin", WY: "Wyoming"
 };
 
+const STATE_CENTER_LONS = {
+  AL: -86.8, AK: -152.4, AZ: -111.7, AR: -92.4, CA: -119.7, CO: -105.5, CT: -72.7, DE: -75.5,
+  FL: -82.4, GA: -83.4, HI: -157.5, IA: -93.5, ID: -114.6, IL: -89.2, IN: -86.3, KS: -98.5,
+  KY: -85.3, LA: -91.9, MA: -71.8, MD: -76.7, ME: -69.0, MI: -85.5, MN: -94.6, MO: -92.5,
+  MS: -89.7, MT: -110.4, NC: -79.0, ND: -100.5, NE: -99.8, NH: -71.6, NJ: -74.5, NM: -106.1,
+  NV: -116.6, NY: -75.4, OH: -82.8, OK: -97.5, OR: -120.6, PA: -77.7, RI: -71.6, SC: -80.9,
+  SD: -100.2, TN: -86.4, TX: -99.3, UT: -111.7, VA: -78.7, VT: -72.7, WA: -120.8, WI: -89.6,
+  WV: -80.6, WY: -107.6
+};
+
 const PARTY_COLORS = {
   D: "#1687e8",
   R: "#df2e38",
@@ -496,6 +506,19 @@ function lateVoteWatch(race) {
   return labels[state] ? `<div class="race-watch-card">${labels[state]}</div>` : "";
 }
 
+function awaitingResultsNote(race) {
+  if (hasActiveResults(race)) return "";
+  const notes = [];
+  const statusText = String(race?.status || race?.statusLabel || "").toLowerCase();
+  notes.push(statusText.includes("closed")
+    ? "Polls have closed. Results will appear here once reporting begins."
+    : "County results will appear here once reporting begins.");
+  if (isCompetitiveRace(race)) notes.push("This race is marked as competitive by FEA.");
+  const lateWatch = lateVoteWatch(race).replace(/^<div class="race-watch-card">|<\/div>$/g, "");
+  if (lateWatch) notes.push(lateWatch);
+  return `<div class="race-awaiting-card">${notes.map((note) => `<span>${escapeHtml(note)}</span>`).join("")}</div>`;
+}
+
 function isCompetitiveRace(race) {
   if (!race) return false;
   if (KEY_RACE_IDS.has(race.id)) return true;
@@ -722,6 +745,54 @@ function countyTooltipMarkup(county, feature, descriptions, race) {
   `;
 }
 
+function countyTooltipRowsClean(candidates, race) {
+  return candidates.slice(0, 3).map((candidate) => {
+    const raceCandidate = candidateByName(race, candidate.name) || candidate;
+    const color = candidateColor(raceCandidate);
+    const callMark = raceCandidate?.isWinner ? `<span class="tooltip-call-mark">${race?.winners && race.winners > 1 ? "&rarr;" : "&#10003;"}</span>` : "";
+    const votes = Number.isFinite(candidate.votes) && candidate.votes > 0 ? formatVotes(candidate.votes) : "--";
+    const percent = Number.isFinite(candidate.percent) && candidate.percent > 0 ? formatPercent(candidate.percent || 0) : "--";
+    return `
+      <tr>
+        <td><span class="tooltip-party-bar" style="background:${color}"></span>${escapeHtml(candidate.name || "Candidate")} ${callMark}<small>(${normalizedPartyCode(raceCandidate)})</small></td>
+        <td>${votes}</td>
+        <td>${percent}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function countyTooltipMarkupClean(county, feature, descriptions, race) {
+  const props = feature?.properties || {};
+  const countyName = county?.name || props.countyName || props.NAME || "County";
+  const description = countyDescriptionForFeature(feature, descriptions);
+  const countyCandidates = countyTopCandidatesForElectionNight(county, 3);
+  const reporting = Number(county?.estimatedVoteReporting ?? county?.percentReporting);
+  const hasCountyVotes = countyCandidates.some((candidate) => Number(candidate.votes) > 0 || Number(candidate.percent) > 0);
+  if (!county || !hasCountyVotes) {
+    return `
+      <div class="election-map-tooltip-title">${escapeHtml(countyName)}</div>
+      ${description ? `<div class="election-map-tooltip-muted">${escapeHtml(description)}</div>` : ""}
+      <div class="county-tooltip-empty">
+        <span>Estimated vote: Awaiting results</span>
+        <span>Reporting: ${Number.isFinite(reporting) ? formatPercent(reporting) : "0%"}</span>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="election-map-tooltip-title">${escapeHtml(countyName)}</div>
+    ${description ? `<div class="election-map-tooltip-muted">${escapeHtml(description)}</div>` : ""}
+    <table class="election-map-tooltip-table">
+      <thead><tr><th>Candidate</th><th>Votes</th><th>Pct</th></tr></thead>
+      <tbody>${countyTooltipRowsClean(countyCandidates, race)}</tbody>
+    </table>
+    <div class="election-map-tooltip-foot">
+      <span>${Number.isFinite(reporting) ? `${formatPercent(reporting)} estimated in` : "Estimate pending"}</span>
+    </div>
+  `;
+}
+
 function countyDescriptionForFeature(feature, descriptions) {
   const fips = featureCountyFipsForElectionNight(feature);
   const props = feature?.properties || {};
@@ -755,6 +826,7 @@ class ElectionNightPage {
     this.zoom = null;
     this.path = null;
     this.simulationTimer = null;
+    this.resizeTimer = null;
     this.init();
   }
 
@@ -782,6 +854,16 @@ class ElectionNightPage {
     });
     window.addEventListener("pagehide", () => {
       if (this.currentRace) saveRaceSnapshot(this.currentRace);
+    });
+    window.addEventListener("resize", () => {
+      if (!this.currentRace) return;
+      window.clearTimeout(this.resizeTimer);
+      this.resizeTimer = window.setTimeout(() => {
+        this.positionFocusPanelForRace(this.currentRace);
+        if (this.detailMapActive) {
+          this.focusRenderedSelection(".county-result-shape", { maxScale: 80, pad: 34 });
+        }
+      }, 120);
     });
   }
 
@@ -1403,7 +1485,7 @@ class ElectionNightPage {
         const isSelected = options.districtMode
           ? feature.properties?.id === houseGeometryId(race)
           : FIPS_TO_STATE[featureStateFipsForElectionNight(feature)] === String(race.state || "").toUpperCase();
-        return `map-context-shape ${isSelected ? "is-selected-context" : "is-dimmed-context"}`;
+        return `map-context-shape ${isSelected ? "is-selected-context is-focused-geography" : "is-dimmed-context"}`;
       })
       .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("fill", (feature) => {
@@ -1434,7 +1516,7 @@ class ElectionNightPage {
       .attr("class", (feature) => {
         const hasCountyResult = countyForFeature(feature, lookup);
         return options.districtMode || hasCountyResult
-          ? "county-result-shape election-map-shape"
+          ? "county-result-shape election-map-shape is-focused-geography"
           : "county-result-shape election-map-shape election-map-muted";
       })
       .attr("d", (feature) => projectedFeaturePath(feature, projection))
@@ -1448,15 +1530,15 @@ class ElectionNightPage {
       .attr("stroke", options.districtMode ? "rgba(226, 232, 255, .42)" : "rgba(226, 232, 255, .58)")
       .attr("stroke-width", options.districtMode ? 0.22 : 0.36)
       .on("mousemove", (event, feature) => {
-        this.showTooltip(event, countyTooltipMarkup(countyForFeature(feature, lookup), feature, this.countyDescriptions, race));
+        this.showTooltip(event, countyTooltipMarkupClean(countyForFeature(feature, lookup), feature, this.countyDescriptions, race));
       })
       .on("mouseleave blur", () => this.hideTooltip());
 
     this.addZoomControls();
     if (!options.preserveMapTransform) {
       window.requestAnimationFrame(() => this.focusRenderedSelection(".county-result-shape", {
-        maxScale: options.districtMode ? 90 : 58,
-        pad: options.districtMode ? 36 : 48
+        maxScale: options.districtMode ? 120 : 58,
+        pad: options.districtMode ? 30 : 48
       }));
     }
   }
@@ -1642,6 +1724,7 @@ class ElectionNightPage {
     const leaderParty = raceWinnerParty(race);
     panel.hidden = false;
     panel.classList.remove("is-dragging");
+    panel.classList.toggle("is-called", isActuallyCalled(race));
     if (!panel.querySelector(".focus-resize-handle")) {
       const resizeHandle = document.createElement("span");
       resizeHandle.className = "focus-resize-handle";
@@ -1673,6 +1756,7 @@ class ElectionNightPage {
       </tr>
     `).join("");
     content.innerHTML = `
+      ${awaitingResultsNote(race)}
       <div class="selected-race-insights">
         ${racePathTracker(race)}
         ${lateVoteWatch(race)}
@@ -1691,6 +1775,38 @@ class ElectionNightPage {
       </div>
     `;
     ensureRaceSnapshot(race);
+    this.setFocusedUiState(true);
+    this.positionFocusPanelForRace(race);
+  }
+
+  setFocusedUiState(active) {
+    document.querySelector(".election-chamber-board")?.classList.toggle("is-focused-compact", Boolean(active));
+    document.querySelector(".election-night-page")?.classList.toggle("has-focused-race", Boolean(active));
+  }
+
+  positionFocusPanelForRace(race) {
+    const panel = document.getElementById("focused-race-panel");
+    const shell = document.querySelector(".election-map-shell");
+    if (!panel || panel.hidden || !shell) return;
+
+    panel.style.top = "auto";
+    panel.style.bottom = "18px";
+    const state = String(race?.state || "").toUpperCase();
+    const lon = STATE_CENTER_LONS[state] ?? -96;
+    if (lon > -86.5) {
+      panel.style.left = "18px";
+      panel.style.right = "auto";
+    } else {
+      panel.style.left = "auto";
+      panel.style.right = "18px";
+    }
+
+    const shellRect = shell.getBoundingClientRect();
+    const panelRect = panel.getBoundingClientRect();
+    if (!shellRect.width || !panelRect.width) return;
+    if (panelRect.width > shellRect.width * 0.48) {
+      panel.style.width = `${Math.max(300, Math.floor(shellRect.width * 0.44))}px`;
+    }
   }
 
   isStatewideRace(race) {
@@ -1766,6 +1882,7 @@ class ElectionNightPage {
       panel.hidden = true;
       this.resetFocusPanelPosition(panel);
     }
+    this.setFocusedUiState(false);
   }
 
   showTooltip(event, html) {
