@@ -1115,6 +1115,11 @@ button {
   cursor: default;
 }
 
+.county-result-shape.is-comparison-incompatible,
+.county-result-shape.is-baseline-missing {
+  opacity: .46;
+}
+
 .election-map-controls {
   position: absolute;
   top: 8px;
@@ -1140,6 +1145,33 @@ button {
   color: #081233;
   font: 900 .64rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
   outline: none;
+}
+
+.election-comparison-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #cfd6ff;
+  font: 950 .62rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.election-comparison-control select {
+  width: 156px;
+  min-height: 18px;
+  padding: 0 20px 0 8px;
+  border: 1px solid rgba(255, 255, 255, .42);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .94);
+  color: #081233;
+  font: 900 .64rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  outline: none;
+}
+
+.election-comparison-control select:focus {
+  border-color: #c6d2ff;
+  box-shadow: 0 0 0 2px rgba(198, 210, 255, .22);
 }
 
 .election-map-search:focus {
@@ -1219,6 +1251,12 @@ button {
   padding: 12px 16px 14px;
   color: #cfd6ff;
   font-weight: 800;
+}
+
+.election-map-tooltip-muted.comparison-note {
+  border-top: 1px solid rgba(198, 210, 255, .35);
+  background: rgba(198, 210, 255, .06);
+  color: #fff;
 }
 
 .election-map-tooltip-table {

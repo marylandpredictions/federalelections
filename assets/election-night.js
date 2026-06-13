@@ -397,6 +397,14 @@ function raceColor(race) {
   return d3.interpolateRgb("#cfd6e5", partyColor(normalizedPartyCode(leader)))(strength);
 }
 
+function marginColor(margin) {
+  const value = Number(margin);
+  if (!Number.isFinite(value)) return "#5f6b80";
+  const party = value >= 0 ? "D" : "R";
+  const strength = Math.max(0.4, Math.min(1, 0.42 + Math.abs(value) / 28));
+  return d3.interpolateRgb("#dbe2f0", partyColor(party))(strength);
+}
+
 function partyPopularVote(races) {
   const totals = { D: 0, R: 0, I: 0 };
   for (const race of races || []) {
@@ -845,7 +853,7 @@ function countyTooltipRowsClean(candidates, race) {
   }).join("");
 }
 
-function countyTooltipMarkupClean(county, feature, descriptions, race) {
+function countyTooltipMarkupClean(county, feature, descriptions, race, comparisonNote = "") {
   const props = feature?.properties || {};
   const countyName = county?.name || props.countyName || props.NAME || "County";
   const description = countyDescriptionForFeature(feature, descriptions);
@@ -854,6 +862,7 @@ function countyTooltipMarkupClean(county, feature, descriptions, race) {
   const rows = countyTooltipRowsClean(countyCandidates.length ? countyCandidates : fallbackCandidates, race);
   const reporting = Number(county?.estimatedVoteReporting ?? county?.percentReporting);
   const hasCountyVotes = countyCandidates.some((candidate) => Number(candidate.votes) > 0 || Number(candidate.percent) > 0);
+  const comparisonMarkup = comparisonNote ? `<div class="election-map-tooltip-muted comparison-note">${escapeHtml(comparisonNote)}</div>` : "";
   if (!county || !hasCountyVotes) {
     return `
       <div class="election-map-tooltip-title">${escapeHtml(countyName)}</div>
@@ -865,6 +874,7 @@ function countyTooltipMarkupClean(county, feature, descriptions, race) {
       <div class="election-map-tooltip-foot">
         <span>${Number.isFinite(reporting) ? `${formatPercent(reporting)} estimated in` : "0% estimated in"}</span>
       </div>
+      ${comparisonMarkup}
     `;
   }
 
@@ -878,6 +888,7 @@ function countyTooltipMarkupClean(county, feature, descriptions, race) {
     <div class="election-map-tooltip-foot">
       <span>${Number.isFinite(reporting) ? `${formatPercent(reporting)} estimated in` : "Estimate pending"}</span>
     </div>
+    ${comparisonMarkup}
   `;
 }
 
@@ -904,6 +915,9 @@ class ElectionNightPage {
     this.nameLookups = { house: new Map(), senate: new Map(), governor: new Map() };
     this.liveRaceIndex = [];
     this.liveRaceDetails = new Map();
+    this.comparisonManifest = { sources: [] };
+    this.comparisonMode = localStorage.getItem("electionNightComparison") || "live";
+    this.comparisonData = new Map();
     this.countyFeatures = null;
     this.countyDescriptions = new Map();
     this.houseExpandedFromGeometry = false;
@@ -966,13 +980,14 @@ class ElectionNightPage {
   }
 
   async loadData() {
-    const [results, liveResults, house, senate, governor, countyDescriptions] = await Promise.all([
+    const [results, liveResults, house, senate, governor, countyDescriptions, comparisonManifest] = await Promise.all([
       this.safeJson("data/election-night-races.json"),
       this.safeJson("data/live-results.json"),
       this.safeJson("data/house-forecast.json"),
       this.safeJson("data/forecast.json"),
       this.safeJson("data/governor-forecast.json"),
-      this.safeJson("data/result-county-descriptions.json")
+      this.safeJson("data/result-county-descriptions.json"),
+      this.safeJson("data/result-comparison-baselines.json")
     ]);
 
     const lookups = buildNameLookups(house, senate, governor);
@@ -984,6 +999,8 @@ class ElectionNightPage {
     this.dataByMode.senate = races.filter((race) => race.type === "senate");
     this.dataByMode.governor = races.filter((race) => race.type === "governor");
     this.countyDescriptions = new Map((countyDescriptions?.rows || []).map((row) => [String(row.fips).padStart(5, "0"), row.description]));
+    this.comparisonManifest = comparisonManifest || { sources: [] };
+    if (!this.comparisonSource(this.comparisonMode)) this.comparisonMode = "live";
     this.applyLabMode();
   }
 
@@ -1138,6 +1155,101 @@ class ElectionNightPage {
       console.error(`Could not load ${url}`, error);
       return null;
     }
+  }
+
+  comparisonSource(id = this.comparisonMode) {
+    return (this.comparisonManifest?.sources || []).find((source) => source.id === id) || null;
+  }
+
+  isComparisonActive() {
+    return this.comparisonMode && this.comparisonMode !== "live";
+  }
+
+  async loadComparisonDataset(kind, source = this.comparisonSource()) {
+    if (!source || source.id === "live" || source.id === "fea-forecast") return null;
+    const file = source[`${kind}File`];
+    if (!file) return null;
+    const key = `${source.id}:${kind}`;
+    if (!this.comparisonData.has(key)) this.comparisonData.set(key, await this.safeJson(file));
+    return this.comparisonData.get(key);
+  }
+
+  comparisonDatasetRows(dataset, key) {
+    if (!dataset) return null;
+    if (Array.isArray(dataset)) return dataset;
+    if (Array.isArray(dataset[key])) return dataset[key];
+    if (Array.isArray(dataset.rows)) return dataset.rows;
+    return null;
+  }
+
+  forecastMarginForRace(race) {
+    const forecastRace = this.findForecastRace(race);
+    if (!forecastRace) return NaN;
+    return Number(forecastRace.margin ?? forecastRace.projectedMargin ?? forecastRace.ratingMargin ?? forecastRace.baselineMargin);
+  }
+
+  baselineRaceMargin(race) {
+    if (!race) return NaN;
+    const source = this.comparisonSource();
+    if (!source || source.id === "live") return NaN;
+    if (source.id === "fea-forecast") return this.forecastMarginForRace(race);
+    const stateRows = this.comparisonDatasetRows(this.comparisonData.get(`${source.id}:state`), "states") || [];
+    const districtRows = this.comparisonDatasetRows(this.comparisonData.get(`${source.id}:district`), "districts") || [];
+    const state = String(race.state || "").toUpperCase();
+    if (race.type === "house") {
+      const districtId = houseGeometryId(race);
+      const district = districtRows.find((row) => String(row.id || row.districtId || "").toUpperCase() === districtId);
+      if (district) return Number(district.margin ?? district.demMargin ?? district.democraticMargin);
+    }
+    const stateRow = stateRows.find((row) => String(row.state || row.statePostal || "").toUpperCase() === state);
+    return Number(stateRow?.margin ?? stateRow?.demMargin ?? stateRow?.democraticMargin);
+  }
+
+  baselineCountyRow(feature) {
+    const source = this.comparisonSource();
+    if (!source || source.id === "live" || source.id === "fea-forecast") return null;
+    const countyRows = this.comparisonDatasetRows(this.comparisonData.get(`${source.id}:county`), "counties") || [];
+    const fips = featureCountyFipsForElectionNight(feature);
+    return countyRows.find((row) => String(row.fips || row.countyFips || "").padStart(5, "0") === fips) || null;
+  }
+
+  comparisonTooltipNote(race, feature) {
+    const source = this.comparisonSource();
+    if (!source || source.id === "live") return "";
+    if (source.id === "fea-forecast") {
+      const margin = this.forecastMarginForRace(race);
+      const marginText = Number.isFinite(margin) ? `${margin > 0 ? "D" : "R"} +${Math.abs(margin).toFixed(1)}` : "unavailable";
+      return `FEA forecast projection is race-level only (${marginText}). County comparison is unavailable.`;
+    }
+    const row = feature ? this.baselineCountyRow(feature) : null;
+    if (!row) return `${source.label} county baseline is not loaded for this geography yet.`;
+    const margin = Number(row.margin ?? row.demMargin ?? row.democraticMargin);
+    return Number.isFinite(margin)
+      ? `${source.label}: ${margin > 0 ? "D" : "R"} +${Math.abs(margin).toFixed(1)}.`
+      : `${source.label} baseline loaded.`;
+  }
+
+  comparisonColorForRace(race) {
+    if (!this.isComparisonActive()) return raceColor(race);
+    const source = this.comparisonSource();
+    if (!source) return "#5f6b80";
+    const margin = this.baselineRaceMargin(race);
+    return Number.isFinite(margin) ? marginColor(margin) : "#3c4658";
+  }
+
+  comparisonColorForCounty(feature, race, lookup) {
+    if (!this.isComparisonActive()) {
+      const county = countyForFeature(feature, lookup);
+      const leader = countyTopCandidatesForElectionNight(county, 1)[0];
+      if (!leader) return "#334054";
+      return d3.interpolateRgb("#06142e", candidateColor(leader))(0.9);
+    }
+    const source = this.comparisonSource();
+    if (!source || source.id === "live") return "#334054";
+    if (source.id === "fea-forecast" || source.countyCompatible === false) return "#202b3f";
+    const row = this.baselineCountyRow(feature);
+    const margin = Number(row?.margin ?? row?.demMargin ?? row?.democraticMargin);
+    return Number.isFinite(margin) ? marginColor(margin) : "#202b3f";
   }
 
   async loadResultStateFeatures() {
@@ -1335,11 +1447,22 @@ class ElectionNightPage {
     }
 
     container.innerHTML = `<div class="election-map-loading">Loading ${MODE_LABELS[this.selectedMode]} map...</div>`;
+    await this.prepareComparisonData();
     if (this.selectedMode === "house") {
       await this.renderHouseMap(container);
     } else {
       await this.renderStateMap(container);
     }
+  }
+
+  async prepareComparisonData() {
+    const source = this.comparisonSource();
+    if (!source || source.id === "live" || source.id === "fea-forecast") return;
+    await Promise.all([
+      this.loadComparisonDataset("state", source),
+      this.loadComparisonDataset("district", source),
+      this.loadComparisonDataset("county", source)
+    ]);
   }
 
   async renderStateMap(container) {
@@ -1373,7 +1496,7 @@ class ElectionNightPage {
       .attr("fill", (feature) => {
         const state = FIPS_TO_STATE[featureStateFipsForElectionNight(feature)];
         const race = raceByState.get(state);
-        return race ? raceColor(race) : "#334054";
+        return race ? this.comparisonColorForRace(race) : "#334054";
       })
       .attr("stroke", "#e2e8ff")
       .attr("stroke-width", 0.55)
@@ -1422,7 +1545,7 @@ class ElectionNightPage {
       })
       .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("fill-rule", "evenodd")
-      .attr("fill", (feature) => raceColor(raceByDistrict.get(feature.properties?.id)))
+      .attr("fill", (feature) => this.comparisonColorForRace(raceByDistrict.get(feature.properties?.id)))
       .attr("stroke", "rgba(226, 232, 255, .22)")
       .attr("stroke-width", 0.16)
       .attr("vector-effect", "non-scaling-stroke")
@@ -1468,7 +1591,14 @@ class ElectionNightPage {
     if (!container) return;
     const controls = document.createElement("div");
     controls.className = "election-map-controls";
+    const comparisonOptions = (this.comparisonManifest?.sources || [{ id: "live", label: "Live results" }])
+      .map((source) => `<option value="${escapeHtml(source.id)}" ${source.id === this.comparisonMode ? "selected" : ""}>${escapeHtml(source.label || source.id)}</option>`)
+      .join("");
     controls.innerHTML = `
+      <label class="election-comparison-control">
+        <span>Compare</span>
+        <select data-comparison-baseline aria-label="Comparison baseline">${comparisonOptions}</select>
+      </label>
       ${this.selectedMode === "house" ? `<input class="election-map-search" type="search" placeholder="Search district" aria-label="Search House district">` : ""}
       <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
       <button type="button" data-zoom="out" aria-label="Zoom out">-</button>
@@ -1482,6 +1612,15 @@ class ElectionNightPage {
       if (action === "out") this.svg.transition().duration(220).call(this.zoom.scaleBy, 0.75);
       if (action === "reset") this.clearFocus();
     });
+    const comparisonSelect = controls.querySelector("[data-comparison-baseline]");
+    if (comparisonSelect) {
+      comparisonSelect.addEventListener("change", async () => {
+        this.comparisonMode = comparisonSelect.value || "live";
+        localStorage.setItem("electionNightComparison", this.comparisonMode);
+        if (this.currentRace) await this.selectRace(this.currentRace, null);
+        else await this.renderMap();
+      });
+    }
     const search = controls.querySelector(".election-map-search");
     if (search) {
       search.addEventListener("keydown", (event) => {
@@ -1634,22 +1773,29 @@ class ElectionNightPage {
       .join("path")
       .attr("class", (feature) => {
         const hasCountyResult = countyForFeature(feature, lookup);
-        return options.districtMode || hasCountyResult
-          ? "county-result-shape election-map-shape"
-          : "county-result-shape election-map-shape election-map-muted";
+        const source = this.comparisonSource();
+        const baselineMissing = this.isComparisonActive() && source?.id !== "fea-forecast" && source?.countyCompatible !== false && !this.baselineCountyRow(feature);
+        const incompatible = this.isComparisonActive() && (source?.id === "fea-forecast" || source?.countyCompatible === false);
+        return [
+          "county-result-shape election-map-shape",
+          (!options.districtMode && !hasCountyResult && !this.isComparisonActive()) ? "election-map-muted" : "",
+          baselineMissing ? "is-baseline-missing" : "",
+          incompatible ? "is-comparison-incompatible" : ""
+        ].filter(Boolean).join(" ");
       })
       .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("fill-rule", "evenodd")
-      .attr("fill", (feature) => {
-        const county = countyForFeature(feature, lookup);
-        const leader = countyTopCandidatesForElectionNight(county, 1)[0];
-        if (!leader) return "#334054";
-        return d3.interpolateRgb("#06142e", candidateColor(leader))(0.9);
-      })
+      .attr("fill", (feature) => this.comparisonColorForCounty(feature, race, lookup))
       .attr("stroke", options.districtMode ? "rgba(226, 232, 255, .42)" : "rgba(226, 232, 255, .58)")
       .attr("stroke-width", options.districtMode ? 0.22 : 0.36)
       .on("mousemove", (event, feature) => {
-        this.showTooltip(event, countyTooltipMarkupClean(countyForFeature(feature, lookup), feature, this.countyDescriptions, race));
+        this.showTooltip(event, countyTooltipMarkupClean(
+          countyForFeature(feature, lookup),
+          feature,
+          this.countyDescriptions,
+          race,
+          this.comparisonTooltipNote(race, feature)
+        ));
       })
       .on("mouseleave blur", () => this.hideTooltip());
 

@@ -1,0 +1,62 @@
+{
+  "sources": [
+    {
+      "id": "live",
+      "label": "Live results",
+      "description": "Current reported results."
+    },
+    {
+      "id": "pres-2024",
+      "label": "2024 presidential margin",
+      "description": "County and statewide presidential margin baseline. Add normalized county/state files before enabling real colors.",
+      "countyCompatible": true,
+      "status": "pending-data",
+      "countyFile": "data/baselines/pres-2024-counties.json",
+      "stateFile": "data/baselines/pres-2024-states.json",
+      "sourceNotes": [
+        "Use certified county returns or MEDSL-style county presidential returns.",
+        "Normalize by county FIPS with demVotes, repVotes, totalVotes, demShare, repShare, margin."
+      ],
+      "sourceUrls": [
+        "https://electionlab.mit.edu/data",
+        "https://github.com/MEDSL"
+      ]
+    },
+    {
+      "id": "pres-2020",
+      "label": "2020 presidential margin",
+      "description": "County and statewide presidential margin baseline. Add normalized county/state files before enabling real colors.",
+      "countyCompatible": true,
+      "status": "pending-data",
+      "countyFile": "data/baselines/pres-2020-counties.json",
+      "stateFile": "data/baselines/pres-2020-states.json",
+      "sourceNotes": [
+        "Use certified county returns or MEDSL-style county presidential returns.",
+        "Normalize by county FIPS with demVotes, repVotes, totalVotes, demShare, repShare, margin."
+      ],
+      "sourceUrls": [
+        "https://electionlab.mit.edu/data",
+        "https://github.com/MEDSL"
+      ]
+    },
+    {
+      "id": "house-2022",
+      "label": "2022 House margin",
+      "description": "District-level House result baseline. County compatibility depends on split-county reporting data.",
+      "countyCompatible": false,
+      "status": "pending-data",
+      "districtFile": "data/baselines/house-2022-districts.json",
+      "sourceNotes": [
+        "Use official state returns or a normalized historical House returns file.",
+        "County pieces should stay dim unless split-county vote data is loaded."
+      ]
+    },
+    {
+      "id": "fea-forecast",
+      "label": "FEA forecast projection",
+      "description": "Race-level FEA forecast projection. Incompatible with county-level comparison because FEA does not project counties.",
+      "countyCompatible": false,
+      "status": "available"
+    }
+  ]
+}
