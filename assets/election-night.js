@@ -42,9 +42,14 @@ const NON_COUNTY_REPORTING_STATES = new Set(["ME", "VT", "MA", "CT", "RI", "NH"]
 const SENATE_NOT_UP_BY_PARTY = { D: 34, R: 33 };
 const GOVERNOR_NOT_UP_BY_PARTY = { D: 8, R: 6 };
 const KEY_RACE_IDS = new Set([
-  "senate-AK", "senate-GA", "senate-ME", "senate-MI", "senate-OH", "senate-TX",
-  "governor-AK", "governor-AZ", "governor-GA", "governor-IA", "governor-NV", "governor-OH", "governor-WI",
-  "house-CA-22", "house-CA-40", "house-CA-48", "house-IA-3", "house-MI-7", "house-NJ-7", "house-NY-17", "house-WI-3"
+  "senate-AK", "senate-GA", "senate-ME", "senate-MI", "senate-NC", "senate-OH", "senate-TX",
+  "governor-AK", "governor-AZ", "governor-GA", "governor-IA", "governor-KS", "governor-NV", "governor-OH",
+  "house-AZ-1", "house-AZ-6", "house-CA-13", "house-CA-22", "house-CA-45", "house-CA-48",
+  "house-CO-8", "house-FL-14", "house-FL-22", "house-FL-25", "house-IA-1", "house-IA-3",
+  "house-MI-7", "house-MI-8", "house-MI-10", "house-NC-1", "house-NE-2", "house-NJ-7",
+  "house-NM-2", "house-NV-3", "house-NY-3", "house-NY-4", "house-NY-17", "house-NY-19",
+  "house-OH-1", "house-OH-9", "house-PA-7", "house-PA-8", "house-PA-10", "house-TX-28",
+  "house-TX-34", "house-VA-1", "house-VA-2", "house-WA-3", "house-WI-3"
 ]);
 
 const MAP_CITY_LABELS = [
@@ -75,7 +80,50 @@ const MAP_CITY_LABELS = [
   { name: "Chicago", state: "IL", lon: -87.6298, lat: 41.8781 },
   { name: "New York", state: "NY", lon: -74.0060, lat: 40.7128 },
   { name: "Philadelphia", state: "PA", lon: -75.1652, lat: 39.9526 },
-  { name: "Washington", state: "DC", lon: -77.0369, lat: 38.9072 }
+  { name: "Washington", state: "DC", lon: -77.0369, lat: 38.9072 },
+  { name: "Seattle", state: "WA", lon: -122.3321, lat: 47.6062 },
+  { name: "Portland", state: "OR", lon: -122.6765, lat: 45.5152 },
+  { name: "Boise", state: "ID", lon: -116.2023, lat: 43.6150 },
+  { name: "Spokane", state: "WA", lon: -117.4260, lat: 47.6588 },
+  { name: "Denver", state: "CO", lon: -104.9903, lat: 39.7392 },
+  { name: "Albuquerque", state: "NM", lon: -106.6504, lat: 35.0844 },
+  { name: "Tucson", state: "AZ", lon: -110.9747, lat: 32.2226 },
+  { name: "Oklahoma City", state: "OK", lon: -97.5164, lat: 35.4676 },
+  { name: "Tulsa", state: "OK", lon: -95.9928, lat: 36.1540 },
+  { name: "Kansas City", state: "MO", lon: -94.5786, lat: 39.0997 },
+  { name: "Omaha", state: "NE", lon: -95.9345, lat: 41.2565 },
+  { name: "St. Louis", state: "MO", lon: -90.1994, lat: 38.6270 },
+  { name: "Minneapolis", state: "MN", lon: -93.2650, lat: 44.9778 },
+  { name: "Milwaukee", state: "WI", lon: -87.9065, lat: 43.0389 },
+  { name: "Detroit", state: "MI", lon: -83.0458, lat: 42.3314 },
+  { name: "Cleveland", state: "OH", lon: -81.6944, lat: 41.4993 },
+  { name: "Columbus", state: "OH", lon: -82.9988, lat: 39.9612 },
+  { name: "Cincinnati", state: "OH", lon: -84.5120, lat: 39.1031 },
+  { name: "Indianapolis", state: "IN", lon: -86.1581, lat: 39.7684 },
+  { name: "Louisville", state: "KY", lon: -85.7585, lat: 38.2527 },
+  { name: "Nashville", state: "TN", lon: -86.7816, lat: 36.1627 },
+  { name: "Memphis", state: "TN", lon: -90.0490, lat: 35.1495 },
+  { name: "New Orleans", state: "LA", lon: -90.0715, lat: 29.9511 },
+  { name: "Jackson", state: "MS", lon: -90.1848, lat: 32.2988 },
+  { name: "Birmingham", state: "AL", lon: -86.8025, lat: 33.5186 },
+  { name: "Charlotte", state: "NC", lon: -80.8431, lat: 35.2271 },
+  { name: "Raleigh", state: "NC", lon: -78.6382, lat: 35.7796 },
+  { name: "Richmond", state: "VA", lon: -77.4360, lat: 37.5407 },
+  { name: "Norfolk", state: "VA", lon: -76.2859, lat: 36.8508 },
+  { name: "Baltimore", state: "MD", lon: -76.6122, lat: 39.2904 },
+  { name: "Boston", state: "MA", lon: -71.0589, lat: 42.3601 },
+  { name: "Providence", state: "RI", lon: -71.4128, lat: 41.8240 },
+  { name: "Hartford", state: "CT", lon: -72.6851, lat: 41.7658 },
+  { name: "Manchester", state: "NH", lon: -71.4548, lat: 42.9956 },
+  { name: "Burlington", state: "VT", lon: -73.2121, lat: 44.4759 },
+  { name: "Miami", state: "FL", lon: -80.1918, lat: 25.7617 },
+  { name: "Tampa", state: "FL", lon: -82.4572, lat: 27.9506 },
+  { name: "Orlando", state: "FL", lon: -81.3792, lat: 28.5383 },
+  { name: "Jacksonville", state: "FL", lon: -81.6557, lat: 30.3322 },
+  { name: "Fargo", state: "ND", lon: -96.7898, lat: 46.8772 },
+  { name: "Rapid City", state: "SD", lon: -103.2310, lat: 44.0805 },
+  { name: "Cheyenne", state: "WY", lon: -104.8202, lat: 41.1400 },
+  { name: "Little Rock", state: "AR", lon: -92.2896, lat: 34.7465 }
 ];
 
 function partyColor(party) {
@@ -716,6 +764,7 @@ class ElectionNightPage {
     await this.loadData();
     this.renderSummary();
     await this.renderMap();
+    this.preloadLikelyDetailAssets();
   }
 
   bindEvents() {
@@ -966,6 +1015,30 @@ class ElectionNightPage {
     this.renderSummary();
     this.hideFocusPanel();
     await this.renderMap();
+    this.preloadLikelyDetailAssets();
+  }
+
+  preloadLikelyDetailAssets() {
+    const run = () => this.preloadDetailAssets().catch((error) => console.warn("Detail preload failed", error));
+    if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 1800 });
+    else window.setTimeout(run, 350);
+  }
+
+  async preloadDetailAssets() {
+    this.loadHighwayFeatures();
+    const races = this.modeRaces();
+    if (this.selectedMode === "house") {
+      await this.loadHouseFeatures();
+      const priority = [
+        ...races.filter((race) => KEY_RACE_IDS.has(String(race.id))),
+        ...races.filter((race) => !KEY_RACE_IDS.has(String(race.id))).slice(0, 20)
+      ];
+      for (const race of priority.slice(0, 64)) this.loadDistrictCountyFeatures(race);
+      return;
+    }
+    if (this.selectedMode === "senate" || this.selectedMode === "governor") {
+      this.loadCountyFeatures();
+    }
   }
 
   updateModeButtons() {
@@ -1007,12 +1080,12 @@ class ElectionNightPage {
       if (demSafeBar) demSafeBar.hidden = true;
       if (repSafeBar) repSafeBar.hidden = true;
       const up = this.modeRaces().length;
-      if (subtitle) subtitle.textContent = `${up} states up for election. Not up: ${GOVERNOR_NOT_UP_BY_PARTY.D} D / ${GOVERNOR_NOT_UP_BY_PARTY.R} R.`;
-      if (demLabel) demLabel.innerHTML = `${dem} D<small>${formatPercent(popularVote.dem)} PV</small>`;
-      if (repLabel) repLabel.innerHTML = `${rep} R<small>${formatPercent(popularVote.rep)} PV</small>`;
+      if (subtitle) subtitle.textContent = `${up} governor races up for election.`;
+      if (demLabel) demLabel.innerHTML = `${dem} D<small>${formatPercent(popularVote.dem)} PV</small><em>${GOVERNOR_NOT_UP_BY_PARTY.D} D not up</em>`;
+      if (repLabel) repLabel.innerHTML = `${rep} R<small>${formatPercent(popularVote.rep)} PV</small><em>${GOVERNOR_NOT_UP_BY_PARTY.R} R not up</em>`;
       if (majorityLabel) majorityLabel.textContent = "Governor calls";
-      if (demNote) demNote.textContent = `${GOVERNOR_NOT_UP_BY_PARTY.D} D not up`;
-      if (repNote) repNote.textContent = `${GOVERNOR_NOT_UP_BY_PARTY.R} R not up`;
+      if (demNote) demNote.textContent = "";
+      if (repNote) repNote.textContent = "";
       if (majorityLine) majorityLine.style.left = "0%";
       if (demBar) demBar.style.width = "0%";
       if (uncalledBar) uncalledBar.style.width = "0%";
@@ -1361,7 +1434,7 @@ class ElectionNightPage {
       .attr("class", (feature) => {
         const hasCountyResult = countyForFeature(feature, lookup);
         return options.districtMode || hasCountyResult
-          ? `county-result-shape election-map-shape ${isCompetitiveRace(race) ? "is-competitive-race" : ""}`
+          ? "county-result-shape election-map-shape"
           : "county-result-shape election-map-shape election-map-muted";
       })
       .attr("d", (feature) => projectedFeaturePath(feature, projection))
@@ -1380,7 +1453,12 @@ class ElectionNightPage {
       .on("mouseleave blur", () => this.hideTooltip());
 
     this.addZoomControls();
-    if (!options.preserveMapTransform) this.zoomToFeature(selectedCollection, { maxScale: options.districtMode ? 90 : 50, fill: options.districtMode ? 2.6 : 1.7, duration: 0 });
+    if (!options.preserveMapTransform) {
+      window.requestAnimationFrame(() => this.focusRenderedSelection(".county-result-shape", {
+        maxScale: options.districtMode ? 90 : 58,
+        pad: options.districtMode ? 36 : 48
+      }));
+    }
   }
 
   drawMapContext(projection, options = {}) {
@@ -1431,6 +1509,36 @@ class ElectionNightPage {
     const duration = Number.isFinite(options.duration) ? options.duration : 500;
     if (duration > 0) this.svg.transition().duration(duration).call(this.zoom.transform, target);
     else this.svg.call(this.zoom.transform, target);
+  }
+
+  focusRenderedSelection(selector, options = {}) {
+    if (!this.svg?.node() || !this.viewport?.node() || !this.zoom) return;
+    const nodes = this.viewport.selectAll(selector).nodes()
+      .filter((node) => node?.getBBox && node.getAttribute("d"));
+    if (!nodes.length) return;
+    const boxes = [];
+    for (const node of nodes) {
+      try {
+        const box = node.getBBox();
+        if (box.width > 0 && box.height > 0) boxes.push(box);
+      } catch {
+        // Some browsers can throw while SVG geometry is still settling.
+      }
+    }
+    if (!boxes.length) return;
+    const x0 = Math.min(...boxes.map((box) => box.x));
+    const y0 = Math.min(...boxes.map((box) => box.y));
+    const x1 = Math.max(...boxes.map((box) => box.x + box.width));
+    const y1 = Math.max(...boxes.map((box) => box.y + box.height));
+    const viewBox = this.svg.node().viewBox.baseVal;
+    const pad = Number.isFinite(options.pad) ? options.pad : 48;
+    const maxScale = Number.isFinite(options.maxScale) ? options.maxScale : 60;
+    const dx = Math.max(1, x1 - x0);
+    const dy = Math.max(1, y1 - y0);
+    const scale = Math.min(maxScale, Math.max(1, Math.min((viewBox.width - pad * 2) / dx, (viewBox.height - pad * 2) / dy)));
+    const tx = (viewBox.width - scale * (x0 + x1)) / 2;
+    const ty = (viewBox.height - scale * (y0 + y1)) / 2;
+    this.svg.call(this.zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
   }
 
   currentTransform() {
