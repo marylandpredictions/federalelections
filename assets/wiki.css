@@ -59,6 +59,13 @@
   --ease-out: cubic-bezier(.2, .8, .2, 1);
 }
 
+/* Keep election-night results URLs public while hiding visible site entry points. */
+a[href="/results"],
+a[href="/results.html"],
+a[href="results.html"] {
+  display: none !important;
+}
+
 .gradient-republican {
   background: linear-gradient(135deg, #e03137 0%, #ff6b6b 100%);
   -webkit-background-clip: text;
