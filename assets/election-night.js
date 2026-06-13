@@ -450,6 +450,7 @@ function lateVoteWatch(race) {
 
 function isCompetitiveRace(race) {
   if (!race) return false;
+  if (KEY_RACE_IDS.has(race.id)) return true;
   const rating = String(race.rating || race.raceRating || race.forecastRating || race.statusLabel || "").toLowerCase();
   if (/(toss|tilt|lean|competitive)/.test(rating)) return true;
   const candidates = topCandidates(race, 2);
@@ -1057,7 +1058,7 @@ class ElectionNightPage {
       repSafeBar.style.width = isSenate ? `${(repSafe / config.total) * 100}%` : "0%";
     }
     if (subtitle) subtitle.textContent = this.selectedMode === "house"
-      ? "All House seats are on the ballot."
+      ? ""
       : `${up} states up for election. Not up: ${demSafe} D / ${repSafe} R.`;
     if (demLabel) demLabel.innerHTML = `${dem + demSafe} D<small>${formatPercent(popularVote.dem)} PV</small>`;
     if (repLabel) repLabel.innerHTML = `${rep + repSafe} R<small>${formatPercent(popularVote.rep)} PV</small>`;
@@ -1104,7 +1105,7 @@ class ElectionNightPage {
     const raceByState = new Map(this.modeRaces().map((race) => [race.state, race]));
 
     this.createSvg(container, width, height);
-    this.drawMapContext(projection, { highways: highwayFeatures });
+    this.drawMapContext(projection, { highways: highwayFeatures, raceStates: new Set(this.modeRaces().map((race) => race.state)) });
     this.viewport.selectAll(".state-result-shape")
       .data(this.stateFeatures)
       .join("path")
@@ -1155,7 +1156,7 @@ class ElectionNightPage {
     const raceByDistrict = new Map(this.modeRaces().map((race) => [houseGeometryId(race), race]));
 
     this.createSvg(container, width, height);
-    this.drawMapContext(projection, { highways: highwayFeatures });
+    this.drawMapContext(projection, { highways: highwayFeatures, raceStates: new Set(this.modeRaces().map((race) => race.state)) });
 
     this.viewport.selectAll(".house-district-shape")
       .data(this.geo.features || [])
@@ -1296,9 +1297,7 @@ class ElectionNightPage {
     const stateDistrictFeatures = options.districtMode && this.geo?.features?.length
       ? this.geo.features.filter((feature) => String(feature.properties?.id || "").startsWith(`${selectedState}-`))
       : [];
-    const baseCollection = options.districtMode && stateDistrictFeatures.length
-      ? { type: "FeatureCollection", features: stateDistrictFeatures }
-      : selectedCollection;
+    const baseCollection = selectedCollection;
     const projection = d3.geoAlbersUsa().fitExtent([[34, 34], [width - 34, height - 34]], baseCollection);
     this.path = d3.geoPath(projection);
     if (this.isLabPage) this.seedFeatureCounties(race, features, Number(race.reportingPercent || 18) || 18);
@@ -1306,7 +1305,12 @@ class ElectionNightPage {
 
     this.createSvg(container, width, height);
     this.detailMapActive = true;
-    this.drawMapContext(projection, { highways: this.highwayFeatures || [], state: selectedState, detail: true });
+    this.drawMapContext(projection, {
+      highways: this.highwayFeatures || [],
+      state: selectedState,
+      detail: true,
+      raceStates: new Set(this.modeRaces().map((item) => item.state))
+    });
     const raceByDistrict = options.districtMode
       ? new Map(this.modeRaces().map((item) => [houseGeometryId(item), item]))
       : new Map();
@@ -1394,11 +1398,13 @@ class ElectionNightPage {
         .attr("d", (feature) => pathForProjection(feature));
     }
 
+    const raceStates = options.raceStates instanceof Set ? options.raceStates : new Set();
     layer.append("g")
       .attr("class", "map-background-cities")
       .selectAll(".map-background-city")
       .data(MAP_CITY_LABELS.map((city) => ({ ...city, point: projection([city.lon, city.lat]) })).filter((city) => {
         if (!city.point) return false;
+        if (raceStates.has(city.state)) return false;
         const [x, y] = city.point;
         const inFrame = x > -90 && x < 1250 && y > -90 && y < 810;
         if (!inFrame) return false;
