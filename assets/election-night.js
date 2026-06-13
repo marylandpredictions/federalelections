@@ -506,17 +506,50 @@ function lateVoteWatch(race) {
   return labels[state] ? `<div class="race-watch-card">${labels[state]}</div>` : "";
 }
 
-function awaitingResultsNote(race) {
-  if (hasActiveResults(race)) return "";
+function plainLateVoteWatch(race) {
+  const notes = [];
+  const html = lateVoteWatch(race);
+  const match = html.match(/<div class="race-watch-card">([\s\S]*)<\/div>/);
+  if (match?.[1]) notes.push(match[1]);
+  return notes;
+}
+
+function normalizeRaceNoteText(note) {
+  return String(note || "")
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/\s+([.,;:!?])/g, "$1")
+    .trim();
+}
+
+function raceNotes(race) {
   const notes = [];
   const statusText = String(race?.status || race?.statusLabel || "").toLowerCase();
-  notes.push(statusText.includes("closed")
-    ? "Polls have closed. Results will appear here once reporting begins."
-    : "County results will appear here once reporting begins.");
+  if (!hasActiveResults(race)) {
+    notes.push(statusText.includes("closed")
+      ? "Polls have closed. Results will appear here once reporting begins."
+      : "County results will appear here once reporting begins.");
+  }
   if (isCompetitiveRace(race)) notes.push("This race is marked as competitive by FEA.");
-  const lateWatch = lateVoteWatch(race).replace(/^<div class="race-watch-card">|<\/div>$/g, "");
-  if (lateWatch) notes.push(lateWatch);
-  return `<div class="race-awaiting-card">${notes.map((note) => `<span>${escapeHtml(note)}</span>`).join("")}</div>`;
+  notes.push(...plainLateVoteWatch(race));
+  if (Array.isArray(race?.context?.notes)) notes.push(...race.context.notes);
+  if (Array.isArray(race?.notes)) notes.push(...race.notes);
+  const seen = new Set();
+  return notes
+    .map(normalizeRaceNoteText)
+    .filter(Boolean)
+    .filter((note) => {
+      const key = note.toLowerCase().replace(/[^\w]+/g, " ");
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
+function awaitingResultsNote(race) {
+  const notes = raceNotes(race);
+  if (!notes.length) return "";
+  return `<div class="race-note-stack">${notes.map((note) => `<div class="race-note-box">${escapeHtml(note)}</div>`).join("")}</div>`;
 }
 
 function isCompetitiveRace(race) {
@@ -821,6 +854,8 @@ class ElectionNightPage {
     this.houseExpandedFromGeometry = false;
     this.detailMapActive = false;
     this.currentRace = null;
+    this.focusedPanelTab = "results";
+    this.forecastSources = { house: null, senate: null, governor: null };
     this.svg = null;
     this.viewport = null;
     this.zoom = null;
@@ -879,6 +914,7 @@ class ElectionNightPage {
 
     const lookups = buildNameLookups(house, senate, governor);
     this.nameLookups = lookups;
+    this.forecastSources = { house, senate, governor };
     this.liveRaceIndex = (liveResults?.groups || []).flatMap((group) => group.races || []);
     const races = (results?.races || []).map((race) => normalizeElectionRace(race, fallbackCandidatesForRace(race, lookups)));
     this.dataByMode.house = races.filter((race) => race.type === "house");
@@ -1384,7 +1420,9 @@ class ElectionNightPage {
   }
 
   async selectRace(race, feature, options = {}) {
+    const sameRace = this.currentRace?.id === race.id;
     this.currentRace = race;
+    if (!sameRace) this.focusedPanelTab = "results";
     const previousTransform = options.preserveMapTransform ? this.currentTransform() : null;
     this.renderFocusedRace(race);
     const renderedDetail = await this.renderSelectedRaceMap(race, options);
@@ -1712,6 +1750,145 @@ class ElectionNightPage {
     else this.svg.call(this.zoom.transform, target);
   }
 
+  findForecastRace(race) {
+    if (!race) return null;
+    const forecastId = String(race.forecastRaceId || "").trim();
+    if (race.type === "house") {
+      const districts = this.forecastSources.house?.districts || [];
+      const districtId = houseGeometryId(race);
+      return districts.find((item) => item.id === forecastId || item.id === districtId)
+        || districts.find((item) => item.state === race.state && normalizedHouseDistrict(item.district) === normalizedHouseDistrict(race.district))
+        || null;
+    }
+    if (race.type === "senate") {
+      const races = this.forecastSources.senate?.races || [];
+      return races.find((item) => item.id === forecastId || item.state === race.state) || null;
+    }
+    if (race.type === "governor") {
+      const races = this.forecastSources.governor?.races || [];
+      return races.find((item) => item.id === forecastId || item.state === race.state) || null;
+    }
+    return null;
+  }
+
+  forecastGeneratedAt(race) {
+    const source = race?.type === "house"
+      ? this.forecastSources.house
+      : race?.type === "senate"
+        ? this.forecastSources.senate
+        : this.forecastSources.governor;
+    return source?.runDate || source?.modelDate || source?.generatedAt || "Latest available forecast";
+  }
+
+  formatForecastMargin(value) {
+    const margin = Number(value);
+    if (!Number.isFinite(margin)) return null;
+    if (Math.abs(margin) < 0.05) return "Even";
+    return `${margin > 0 ? "D" : "R"} +${Math.abs(margin).toFixed(1)}`;
+  }
+
+  formatForecastProbability(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return null;
+    return formatPercent(number <= 1 ? number * 100 : number);
+  }
+
+  renderProjectionContext(forecastRace, race) {
+    if (!forecastRace) {
+      return `<div class="race-context-empty">No FEA forecast projection is available for this race.</div>`;
+    }
+    const margin = this.formatForecastMargin(forecastRace.margin ?? forecastRace.projectedMargin);
+    const demProb = this.formatForecastProbability(forecastRace.demProbability);
+    const repProb = this.formatForecastProbability(forecastRace.repProbability);
+    const demShare = margin && Number.isFinite(Number(forecastRace.margin)) ? Math.max(0, Math.min(100, 50 + Number(forecastRace.margin) / 2)) : null;
+    const repShare = demShare == null ? null : 100 - demShare;
+    const rows = [
+      ["FEA rating", forecastRace.modelRating || forecastRace.rating || forecastRace.baselineRating || forecastRace.sourceRating],
+      ["Projected margin", margin],
+      ["Projected vote share", demShare == null ? null : `D ${demShare.toFixed(1)} / R ${repShare.toFixed(1)}`],
+      ["Win probability", demProb || repProb ? `Democrat ${demProb || "--"} / Republican ${repProb || "--"}` : null],
+      ["Last updated", this.forecastGeneratedAt(race)]
+    ].filter(([, value]) => value);
+    if (!rows.length) {
+      return `<div class="race-context-empty">This race is tracked by the forecast, but projection details are not available.</div>`;
+    }
+    return `<dl class="race-context-list">${rows.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(value))}</dd></div>`).join("")}</dl>`;
+  }
+
+  latestPollObject(forecastRace) {
+    const polls = (forecastRace?.polls || []).filter((poll) => poll && typeof poll === "object");
+    return polls.sort((a, b) => String(b.endDate || "").localeCompare(String(a.endDate || "")))[0] || null;
+  }
+
+  renderPollingContext(forecastRace, race) {
+    if (!forecastRace) return `<div class="race-context-empty">No reliable public polling is available for this race.</div>`;
+    const inputs = forecastRace.sourceInputs || {};
+    const latest = this.latestPollObject(forecastRace);
+    const pollCount = Number(inputs.pollCount ?? forecastRace.polls?.length ?? 0);
+    const pollMargin = this.formatForecastMargin(forecastRace.pollMargin ?? inputs.pollMargin);
+    if (!latest && !pollCount && !pollMargin) {
+      return `<div class="race-context-empty">This race is tracked by the forecast, but no public polling is currently included.</div>`;
+    }
+    const latestText = latest
+      ? `${normalizeRaceNoteText(latest.pollster || latest.source || "Latest poll")}${latest.result ? `, ${normalizeRaceNoteText(latest.result)}` : ""}${latest.spread ? ` (${normalizeRaceNoteText(latest.spread)})` : ""}`
+      : null;
+    const rows = [
+      ["Polling average", pollMargin],
+      ["Polling count", pollCount ? `${pollCount} poll${pollCount === 1 ? "" : "s"} tracked` : null],
+      ["Latest poll", latestText],
+      ["Trend", forecastRace.pollSignal || inputs.pollReducedWeight ? (inputs.pollReducedWeight ? "Primary or indirect polling is included at reduced weight." : forecastRace.pollSignal) : null],
+      ["Last updated", this.forecastGeneratedAt(race)]
+    ].filter(([, value]) => value);
+    return `<dl class="race-context-list">${rows.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(value))}</dd></div>`).join("")}</dl>`;
+  }
+
+  renderFundraisingContext(forecastRace, race) {
+    const context = race?.context?.fundraising || {};
+    const demFinance = forecastRace?.fecDemCandidate;
+    const repFinance = forecastRace?.fecRepCandidate;
+    const money = (value) => {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return value || null;
+      return n >= 1000000 ? `$${(n / 1000000).toFixed(1)}M` : `$${Math.round(n).toLocaleString()}`;
+    };
+    const rows = [
+      ["Democrat raised", money(context.demRaised ?? demFinance?.receipts)],
+      ["Republican raised", money(context.repRaised ?? repFinance?.receipts)],
+      ["Democrat cash on hand", money(context.demCashOnHand ?? demFinance?.cash)],
+      ["Republican cash on hand", money(context.repCashOnHand ?? repFinance?.cash)],
+      ["Fundraising edge", context.edge]
+    ].filter(([, value]) => value);
+    if (!rows.length) return `<div class="race-context-empty">Fundraising data is not available in the current test dataset.</div>`;
+    return `<dl class="race-context-list">${rows.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(value))}</dd></div>`).join("")}</dl>`;
+  }
+
+  renderRaceContext(race) {
+    const forecastRace = this.findForecastRace(race);
+    const contextNotes = raceNotes(race).slice(0, 4);
+    return `
+      <div class="race-context-grid">
+        <section class="race-context-section">
+          <h4>Forecast Projection</h4>
+          ${this.renderProjectionContext(forecastRace, race)}
+        </section>
+        <section class="race-context-section">
+          <h4>Polling Overview</h4>
+          ${this.renderPollingContext(forecastRace, race)}
+        </section>
+        <section class="race-context-section">
+          <h4>Fundraising Overview</h4>
+          ${this.renderFundraisingContext(forecastRace, race)}
+        </section>
+        <section class="race-context-section">
+          <h4>Key Race Notes</h4>
+          ${contextNotes.length
+            ? `<div class="race-context-notes">${contextNotes.map((note) => `<span>${escapeHtml(note)}</span>`).join("")}</div>`
+            : `<div class="race-context-empty">No additional context notes are available for this race.</div>`}
+        </section>
+      </div>
+    `;
+  }
+
   renderFocusedRace(race) {
     const panel = document.getElementById("focused-race-panel");
     const title = document.getElementById("focused-race-title");
@@ -1755,25 +1932,38 @@ class ElectionNightPage {
         <td>${live ? formatVotes(candidate.votes) : "Awaiting"}</td>
       </tr>
     `).join("");
+    const pathTracker = racePathTracker(race);
     content.innerHTML = `
-      ${awaitingResultsNote(race)}
-      <div class="selected-race-insights">
-        ${racePathTracker(race)}
-        ${lateVoteWatch(race)}
+      <div class="selected-race-tabs" role="tablist" aria-label="Race detail view">
+        <button type="button" class="${this.focusedPanelTab === "results" ? "active" : ""}" data-focus-tab="results" role="tab" aria-selected="${this.focusedPanelTab === "results"}">Results</button>
+        <button type="button" class="${this.focusedPanelTab === "context" ? "active" : ""}" data-focus-tab="context" role="tab" aria-selected="${this.focusedPanelTab === "context"}">Race Context</button>
       </div>
-      <div class="selected-race-meta">
-        <span>${live ? `${formatPercent(race.reportingPercent || 0)} reporting` : "No results yet"}</span>
-        <span>${isActuallyCalled(race) ? "Race called" : "Uncalled"}</span>
+      <div class="selected-race-tab-panel" data-focus-tab-panel="results" ${this.focusedPanelTab === "results" ? "" : "hidden"}>
+        ${awaitingResultsNote(race)}
+        ${pathTracker ? `<div class="selected-race-insights">${pathTracker}</div>` : ""}
+        <div class="selected-race-meta">
+          <span>${live ? `${formatPercent(race.reportingPercent || 0)} reporting` : "No results yet"}</span>
+          <span>${isActuallyCalled(race) ? "Race called" : "Uncalled"}</span>
+        </div>
+        <table class="selected-race-table">
+          <thead><tr><th>Candidate</th><th>Percent</th><th>Votes</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div class="selected-race-foot">
+          <span>${MODE_LABELS[race.type] || "Race"}</span>
+          <span>${STATE_NAMES[race.state] || race.state}</span>
+        </div>
       </div>
-      <table class="selected-race-table">
-        <thead><tr><th>Candidate</th><th>Percent</th><th>Votes</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-      <div class="selected-race-foot">
-        <span>${MODE_LABELS[race.type] || "Race"}</span>
-        <span>${STATE_NAMES[race.state] || race.state}</span>
+      <div class="selected-race-tab-panel" data-focus-tab-panel="context" ${this.focusedPanelTab === "context" ? "" : "hidden"}>
+        ${this.renderRaceContext(race)}
       </div>
     `;
+    content.querySelectorAll("[data-focus-tab]").forEach((button) => {
+      button.addEventListener("click", () => {
+        this.focusedPanelTab = button.dataset.focusTab === "context" ? "context" : "results";
+        this.renderFocusedRace(race);
+      });
+    });
     ensureRaceSnapshot(race);
     this.setFocusedUiState(true);
     this.positionFocusPanelForRace(race);

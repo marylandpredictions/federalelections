@@ -1277,10 +1277,16 @@ button {
 
 .county-tooltip-empty {
   display: grid;
-  gap: 7px;
-  padding: 12px 16px 14px;
+  gap: 9px;
+  padding: 13px 16px 15px;
   color: #dbe3ff;
   font-weight: 900;
+  line-height: 1.25;
+}
+
+.county-tooltip-empty span {
+  display: block;
+  overflow-wrap: anywhere;
 }
 
 .election-focus-overlay {
@@ -1373,10 +1379,16 @@ button {
   font: 950 clamp(1.5rem, 3vw, 2.15rem)/1.05 "Telegraf", "Segoe UI", Arial, sans-serif;
 }
 
+.race-note-stack {
+  display: grid;
+  gap: 8px;
+  padding: 12px 16px 0;
+}
+
+.race-note-box,
 .race-awaiting-card {
   display: grid;
   gap: 6px;
-  margin: 12px 16px 0;
   padding: 10px 12px;
   border: 1px solid rgba(198, 210, 255, .38);
   border-radius: 8px;
@@ -1385,6 +1397,109 @@ button {
   font-size: .84rem;
   font-weight: 850;
   line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.selected-race-tabs {
+  display: inline-flex;
+  gap: 6px;
+  margin: 12px 16px 0;
+  padding: 4px;
+  border: 1px solid rgba(198, 210, 255, .42);
+  border-radius: 999px;
+  background: rgba(4, 12, 35, .6);
+}
+
+.selected-race-tabs button {
+  min-height: 28px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: #cfd6ff;
+  font: 950 .75rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.selected-race-tabs button:hover,
+.selected-race-tabs button:focus {
+  border-color: rgba(198, 210, 255, .55);
+  color: #fff;
+  outline: none;
+}
+
+.selected-race-tabs button.active {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--focus-color, var(--dem)) 34%, #000e38), rgba(198, 210, 255, .12));
+  border-color: rgba(255, 255, 255, .62);
+  color: #fff;
+  box-shadow: 0 0 16px color-mix(in srgb, var(--focus-color, var(--dem)) 22%, transparent);
+}
+
+.selected-race-tab-panel[hidden] {
+  display: none !important;
+}
+
+.race-context-grid {
+  display: grid;
+  gap: 10px;
+  padding: 12px 16px 16px;
+}
+
+.race-context-section {
+  padding: 11px 12px;
+  border: 1px solid rgba(198, 210, 255, .34);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(198, 210, 255, .08), rgba(4, 12, 35, .72));
+}
+
+.race-context-section h4 {
+  margin: 0 0 8px;
+  color: #fff;
+  font: 950 .8rem/1.1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.race-context-list {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+}
+
+.race-context-list div {
+  display: grid;
+  grid-template-columns: minmax(120px, .75fr) minmax(0, 1.25fr);
+  gap: 8px;
+  align-items: start;
+}
+
+.race-context-list dt {
+  color: #aebcff;
+  font: 850 .76rem/1.2 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.race-context-list dd {
+  margin: 0;
+  color: #fff;
+  font: 900 .82rem/1.25 "Telegraf", "Segoe UI", Arial, sans-serif;
+  overflow-wrap: anywhere;
+}
+
+.race-context-empty,
+.race-context-notes {
+  color: #dbe3ff;
+  font: 850 .82rem/1.28 "Telegraf", "Segoe UI", Arial, sans-serif;
+}
+
+.race-context-notes {
+  display: grid;
+  gap: 7px;
+}
+
+.race-context-notes span {
+  padding-left: 9px;
+  border-left: 3px solid color-mix(in srgb, var(--focus-color, var(--dem)) 64%, #c6d2ff);
 }
 
 .selected-race-meta,
@@ -7968,6 +8083,11 @@ button.race-board-row {
   .selected-race-foot {
     padding: 10px;
     font-size: .78rem;
+  }
+
+  .race-context-list div {
+    grid-template-columns: 1fr;
+    gap: 3px;
   }
 
   .election-focus-overlay h3 {
