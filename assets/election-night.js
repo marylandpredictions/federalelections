@@ -169,6 +169,19 @@ function formatVotes(value) {
   return Number.isFinite(value) && value > 0 ? value.toLocaleString() : "0";
 }
 
+function formatEasternTime(value = Date.now()) {
+  const date = value ? new Date(value) : new Date();
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short"
+  }).format(date);
+}
+
 function compactVotes(value) {
   const number = Number(value) || 0;
   if (number >= 1000000) return `${(number / 1000000).toFixed(1)}m`;
@@ -522,14 +535,33 @@ function normalizeRaceNoteText(note) {
     .trim();
 }
 
+function contextValueText(value) {
+  if (value == null || value === false) return "";
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") return normalizeRaceNoteText(value);
+  if (Array.isArray(value)) return value.map(contextValueText).filter(Boolean).join("; ");
+  if (typeof value === "object") {
+    const parts = [
+      value.label,
+      value.text,
+      value.summary,
+      value.note,
+      value.direction && value.margin ? `${value.direction} by ${value.margin}` : "",
+      value.source
+    ].map(contextValueText).filter(Boolean);
+    if (parts.length) return parts.join(" - ");
+    return Object.entries(value)
+      .filter(([, next]) => typeof next !== "object")
+      .map(([key, next]) => `${key}: ${contextValueText(next)}`)
+      .filter(Boolean)
+      .join("; ");
+  }
+  return "";
+}
+
 function raceNotes(race) {
   const notes = [];
   const statusText = String(race?.status || race?.statusLabel || "").toLowerCase();
-  if (!hasActiveResults(race)) {
-    notes.push(statusText.includes("closed")
-      ? "Polls have closed. Results will appear here once reporting begins."
-      : "County results will appear here once reporting begins.");
-  }
+  if (!hasActiveResults(race) && statusText.includes("closed")) notes.push("Polls have closed. Results will appear here once reporting begins.");
   if (isCompetitiveRace(race)) notes.push("This race is marked as competitive by FEA.");
   notes.push(...plainLateVoteWatch(race));
   if (Array.isArray(race?.context?.notes)) notes.push(...race.context.notes);
@@ -800,15 +832,20 @@ function countyTooltipMarkupClean(county, feature, descriptions, race) {
   const countyName = county?.name || props.countyName || props.NAME || "County";
   const description = countyDescriptionForFeature(feature, descriptions);
   const countyCandidates = countyTopCandidatesForElectionNight(county, 3);
+  const fallbackCandidates = topCandidates(race, 3);
+  const rows = countyTooltipRowsClean(countyCandidates.length ? countyCandidates : fallbackCandidates, race);
   const reporting = Number(county?.estimatedVoteReporting ?? county?.percentReporting);
   const hasCountyVotes = countyCandidates.some((candidate) => Number(candidate.votes) > 0 || Number(candidate.percent) > 0);
   if (!county || !hasCountyVotes) {
     return `
       <div class="election-map-tooltip-title">${escapeHtml(countyName)}</div>
       ${description ? `<div class="election-map-tooltip-muted">${escapeHtml(description)}</div>` : ""}
-      <div class="county-tooltip-empty">
-        <span>Estimated vote: Awaiting results</span>
-        <span>Reporting: ${Number.isFinite(reporting) ? formatPercent(reporting) : "0%"}</span>
+      <table class="election-map-tooltip-table">
+        <thead><tr><th>Candidate</th><th>Votes</th><th>Pct</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="election-map-tooltip-foot">
+        <span>${Number.isFinite(reporting) ? `${formatPercent(reporting)} estimated in` : "0% estimated in"}</span>
       </div>
     `;
   }
@@ -818,7 +855,7 @@ function countyTooltipMarkupClean(county, feature, descriptions, race) {
     ${description ? `<div class="election-map-tooltip-muted">${escapeHtml(description)}</div>` : ""}
     <table class="election-map-tooltip-table">
       <thead><tr><th>Candidate</th><th>Votes</th><th>Pct</th></tr></thead>
-      <tbody>${countyTooltipRowsClean(countyCandidates, race)}</tbody>
+      <tbody>${rows}</tbody>
     </table>
     <div class="election-map-tooltip-foot">
       <span>${Number.isFinite(reporting) ? `${formatPercent(reporting)} estimated in` : "Estimate pending"}</span>
@@ -900,6 +937,14 @@ class ElectionNightPage {
         }
       }, 120);
     });
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && this.currentRace) this.clearFocus();
+    });
+    window.setInterval(() => {
+      document.querySelectorAll("[data-last-checked-clock]").forEach((node) => {
+        node.textContent = `Last checked ${formatEasternTime(Date.now())}`;
+      });
+    }, 30000);
   }
 
   async loadData() {
@@ -1259,7 +1304,8 @@ class ElectionNightPage {
     if (demBar) demBar.style.width = `${demPct}%`;
     if (uncalledBar) uncalledBar.style.width = `${(activeUncalled / config.total) * 100}%`;
     if (repBar) repBar.style.width = `${repPct}%`;
-    if (majorityLine) majorityLine.style.left = `${majorityPct}%`;
+    if (majorityLine) majorityLine.style.left = `${isSenate ? 50 : majorityPct}%`;
+    if (chamberBar) chamberBar.style.setProperty("--senate-majority-line", `${majorityPct}%`);
   }
 
   async renderMap() {
@@ -1405,6 +1451,7 @@ class ElectionNightPage {
     const controls = document.createElement("div");
     controls.className = "election-map-controls";
     controls.innerHTML = `
+      ${this.selectedMode === "house" ? `<input class="election-map-search" type="search" placeholder="Search district" aria-label="Search House district">` : ""}
       <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
       <button type="button" data-zoom="out" aria-label="Zoom out">-</button>
       <button type="button" data-zoom="reset" aria-label="Reset map">Reset</button>
@@ -1417,6 +1464,22 @@ class ElectionNightPage {
       if (action === "out") this.svg.transition().duration(220).call(this.zoom.scaleBy, 0.75);
       if (action === "reset") this.clearFocus();
     });
+    const search = controls.querySelector(".election-map-search");
+    if (search) {
+      search.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter") return;
+        const term = String(search.value || "").trim().toLowerCase();
+        if (!term) return;
+        const race = this.modeRaces().find((item) => {
+          const id = houseGeometryId(item).toLowerCase();
+          const title = String(item.title || item.electionName || "").toLowerCase();
+          const state = String(item.state || "").toLowerCase();
+          const district = String(item.district || "").toLowerCase();
+          return id.includes(term) || title.includes(term) || `${state}-${district}`.includes(term);
+        });
+        if (race) this.selectRace(race, null);
+      });
+    }
   }
 
   async selectRace(race, feature, options = {}) {
@@ -1554,7 +1617,7 @@ class ElectionNightPage {
       .attr("class", (feature) => {
         const hasCountyResult = countyForFeature(feature, lookup);
         return options.districtMode || hasCountyResult
-          ? "county-result-shape election-map-shape is-focused-geography"
+          ? "county-result-shape election-map-shape"
           : "county-result-shape election-map-shape election-map-muted";
       })
       .attr("d", (feature) => projectedFeaturePath(feature, projection))
@@ -1571,6 +1634,13 @@ class ElectionNightPage {
         this.showTooltip(event, countyTooltipMarkupClean(countyForFeature(feature, lookup), feature, this.countyDescriptions, race));
       })
       .on("mouseleave blur", () => this.hideTooltip());
+
+    this.viewport.append("path")
+      .datum(selectedCollection)
+      .attr("class", "selected-race-outline is-focused-geography")
+      .attr("d", this.path)
+      .attr("fill", "none")
+      .attr("pointer-events", "none");
 
     this.addZoomControls();
     if (!options.preserveMapTransform) {
@@ -1695,26 +1765,47 @@ class ElectionNightPage {
     };
     const overlapX = Math.min(raceBox.right, panelBox.right) - Math.max(raceBox.left, panelBox.left);
     const overlapY = Math.min(raceBox.bottom, panelBox.bottom) - Math.max(raceBox.top, panelBox.top);
-    const meaningfulOverlap = overlapX > 18 && overlapY > 18;
-    if (!meaningfulOverlap) return transform;
-
-    const clearance = 28;
+    const meaningfulOverlap = overlapX > 12 && overlapY > 12;
+    const clearance = 34;
     const pad = Number.isFinite(options.pad) ? options.pad : 42;
-    const panelCenterX = (panelBox.left + panelBox.right) / 2;
-    const raceCenterX = (raceBox.left + raceBox.right) / 2;
-    const panelCenterY = (panelBox.top + panelBox.bottom) / 2;
-    const raceCenterY = (raceBox.top + raceBox.bottom) / 2;
     let dx = 0;
     let dy = 0;
 
-    if (overlapX >= overlapY * .75 || panelRect.width > panelRect.height) {
-      dx = panelCenterX >= raceCenterX
-        ? panelBox.left - raceBox.right - clearance
-        : panelBox.right - raceBox.left + clearance;
-    } else {
-      dy = panelCenterY >= raceCenterY
-        ? panelBox.top - raceBox.bottom - clearance
-        : panelBox.bottom - raceBox.top + clearance;
+    const panelOnRight = (panelBox.left + panelBox.right) / 2 >= viewBox.width / 2;
+    const panelOnBottom = (panelBox.top + panelBox.bottom) / 2 >= viewBox.height / 2;
+    const protectedRight = panelOnRight ? panelBox.left - clearance : viewBox.width - pad;
+    const protectedLeft = panelOnRight ? pad : panelBox.right + clearance;
+    const protectedBottom = panelOnBottom ? panelBox.top - clearance : viewBox.height - pad;
+    const protectedTop = panelOnBottom ? pad : panelBox.bottom + clearance;
+
+    const raceWidth = raceBox.right - raceBox.left;
+    const raceHeight = raceBox.bottom - raceBox.top;
+    const horizontalClearanceNeeded = meaningfulOverlap || raceBox.right > protectedRight || raceBox.left < protectedLeft;
+    const verticalClearanceNeeded = meaningfulOverlap && (raceBox.bottom > protectedBottom || raceBox.top < protectedTop);
+
+    if (raceWidth < Math.max(120, protectedRight - protectedLeft) && horizontalClearanceNeeded) {
+      if (panelOnRight && raceBox.right > protectedRight) dx = protectedRight - raceBox.right;
+      if (!panelOnRight && raceBox.left < protectedLeft) dx = protectedLeft - raceBox.left;
+    }
+    if (raceHeight < Math.max(120, protectedBottom - protectedTop) && verticalClearanceNeeded) {
+      if (panelOnBottom && raceBox.bottom > protectedBottom) dy = protectedBottom - raceBox.bottom;
+      if (!panelOnBottom && raceBox.top < protectedTop) dy = protectedTop - raceBox.top;
+    }
+
+    if (!dx && !dy && meaningfulOverlap) {
+      const panelCenterX = (panelBox.left + panelBox.right) / 2;
+      const raceCenterX = (raceBox.left + raceBox.right) / 2;
+      const panelCenterY = (panelBox.top + panelBox.bottom) / 2;
+      const raceCenterY = (raceBox.top + raceBox.bottom) / 2;
+      if (overlapX >= overlapY * .75 || panelRect.width > panelRect.height) {
+        dx = panelCenterX >= raceCenterX
+          ? panelBox.left - raceBox.right - clearance
+          : panelBox.right - raceBox.left + clearance;
+      } else {
+        dy = panelCenterY >= raceCenterY
+          ? panelBox.top - raceBox.bottom - clearance
+          : panelBox.bottom - raceBox.top + clearance;
+      }
     }
 
     const candidate = {
@@ -1836,7 +1927,7 @@ class ElectionNightPage {
       ["Polling average", pollMargin],
       ["Polling count", pollCount ? `${pollCount} poll${pollCount === 1 ? "" : "s"} tracked` : null],
       ["Latest poll", latestText],
-      ["Trend", forecastRace.pollSignal || inputs.pollReducedWeight ? (inputs.pollReducedWeight ? "Primary or indirect polling is included at reduced weight." : forecastRace.pollSignal) : null],
+      ["Trend", inputs.pollReducedWeight ? "Primary or indirect polling is included at reduced weight." : contextValueText(forecastRace.pollSignal)],
       ["Last updated", this.forecastGeneratedAt(race)]
     ].filter(([, value]) => value);
     return `<dl class="race-context-list">${rows.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(value))}</dd></div>`).join("")}</dl>`;
@@ -1920,7 +2011,9 @@ class ElectionNightPage {
     }
     if (rating) rating.textContent = isActuallyCalled(race) ? "Called" : live ? "Reporting" : "Awaiting results";
 
-    const rows = topCandidates(race, 5).map((candidate, index) => `
+    const allCandidates = topCandidates(race, 99);
+    const visibleCandidates = allCandidates.slice(0, 5);
+    const rows = visibleCandidates.map((candidate, index) => `
       <tr class="${index === 0 && live ? "leading" : ""}">
         <td>
           <span class="selected-party-rail" style="background:${candidateColor(candidate)}"></span>
@@ -1933,21 +2026,28 @@ class ElectionNightPage {
       </tr>
     `).join("");
     const pathTracker = racePathTracker(race);
+    const lastUpdated = formatEasternTime(race.updatedAt || race.lastUpdated || race.lastCheckedAt || Date.now());
+    const lastChecked = formatEasternTime(Date.now());
+    const feedProblem = race.feedError || race.resultFeedError || race.feedStatus === "error" || race.resultFeedStatus === "error";
+    const otherCount = Math.max(0, allCandidates.length - visibleCandidates.length);
     content.innerHTML = `
       <div class="selected-race-tabs" role="tablist" aria-label="Race detail view">
         <button type="button" class="${this.focusedPanelTab === "results" ? "active" : ""}" data-focus-tab="results" role="tab" aria-selected="${this.focusedPanelTab === "results"}">Results</button>
         <button type="button" class="${this.focusedPanelTab === "context" ? "active" : ""}" data-focus-tab="context" role="tab" aria-selected="${this.focusedPanelTab === "context"}">Race Context</button>
       </div>
       <div class="selected-race-tab-panel" data-focus-tab-panel="results" ${this.focusedPanelTab === "results" ? "" : "hidden"}>
+        ${feedProblem ? `<div class="race-feed-alert"><strong>Results feed temporarily unavailable.</strong><span>Retrying...</span></div>` : ""}
         ${awaitingResultsNote(race)}
         ${pathTracker ? `<div class="selected-race-insights">${pathTracker}</div>` : ""}
         <div class="selected-race-meta">
           <span>${live ? `${formatPercent(race.reportingPercent || 0)} reporting` : "No results yet"}</span>
           <span>${isActuallyCalled(race) ? "Race called" : "Uncalled"}</span>
+          <span>Last updated ${escapeHtml(lastUpdated)}</span>
+          <span data-last-checked-clock>Last checked ${escapeHtml(lastChecked)}</span>
         </div>
         <table class="selected-race-table">
           <thead><tr><th>Candidate</th><th>Percent</th><th>Votes</th></tr></thead>
-          <tbody>${rows}</tbody>
+          <tbody>${rows}${otherCount ? `<tr class="selected-race-other"><td colspan="3">Other candidates (${otherCount}) will appear here as results report.</td></tr>` : ""}</tbody>
         </table>
         <div class="selected-race-foot">
           <span>${MODE_LABELS[race.type] || "Race"}</span>

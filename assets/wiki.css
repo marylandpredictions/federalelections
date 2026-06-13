@@ -987,6 +987,17 @@ button {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .7);
 }
 
+.election-chamber-bar.is-senate-cycle::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: var(--senate-majority-line, 51%);
+  border-left: 2px dashed rgba(255, 255, 255, .78);
+  transform: translateX(-1px);
+  pointer-events: none;
+}
+
 .election-chamber-majority-line {
   position: absolute;
   top: -4px;
@@ -1084,10 +1095,16 @@ button {
 }
 
 .election-map-shape.is-focused-geography,
-.map-context-shape.is-focused-geography {
+.map-context-shape.is-focused-geography,
+.selected-race-outline.is-focused-geography {
   stroke: rgba(255, 255, 255, .96) !important;
   stroke-width: 1.25 !important;
   filter: drop-shadow(0 0 8px rgba(198, 210, 255, .28));
+}
+
+.selected-race-outline.is-focused-geography {
+  stroke-width: 1.45 !important;
+  vector-effect: non-scaling-stroke;
 }
 
 .county-result-shape.is-focused-geography {
@@ -1117,6 +1134,23 @@ button {
   background: rgba(4, 12, 35, .82);
   box-shadow: 0 16px 34px rgba(0, 0, 0, .28);
   backdrop-filter: blur(10px);
+}
+
+.election-map-search {
+  width: 120px;
+  min-height: 18px;
+  padding: 0 8px;
+  border: 1px solid rgba(255, 255, 255, .42);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .94);
+  color: #081233;
+  font: 900 .64rem/1 "Telegraf", "Segoe UI", Arial, sans-serif;
+  outline: none;
+}
+
+.election-map-search:focus {
+  border-color: #c6d2ff;
+  box-shadow: 0 0 0 2px rgba(198, 210, 255, .22);
 }
 
 .election-map-controls button,
@@ -1315,6 +1349,19 @@ button {
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--focus-color, var(--dem)) 12%, transparent), rgba(239, 46, 66, .07)),
     #000e38;
+  animation: calledFocusPulse 1.7s ease-out 1;
+}
+
+@keyframes calledFocusPulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--focus-color, var(--dem)) 52%, transparent), 0 28px 60px rgba(0, 0, 0, .26);
+  }
+  45% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--focus-color, var(--dem)) 18%, transparent), 0 34px 72px rgba(0, 0, 0, .34);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent, 0 28px 60px rgba(0, 0, 0, .26);
+  }
 }
 
 .focus-resize-handle {
@@ -1386,7 +1433,8 @@ button {
 }
 
 .race-note-box,
-.race-awaiting-card {
+.race-awaiting-card,
+.race-feed-alert {
   display: grid;
   gap: 6px;
   padding: 10px 12px;
@@ -1398,6 +1446,20 @@ button {
   font-weight: 850;
   line-height: 1.25;
   overflow-wrap: anywhere;
+}
+
+.race-feed-alert {
+  margin: 12px 16px 0;
+  border-color: rgba(255, 120, 134, .62);
+  background: linear-gradient(135deg, rgba(239, 46, 66, .16), rgba(4, 12, 35, .86));
+}
+
+.race-feed-alert strong {
+  color: #fff;
+}
+
+.race-feed-alert span {
+  color: #ffb8c0;
 }
 
 .selected-race-tabs {
@@ -1607,6 +1669,13 @@ button {
 
 .selected-race-table .leading {
   background: color-mix(in srgb, var(--focus-color, var(--dem)) 28%, transparent);
+}
+
+.selected-race-other td {
+  color: #cfd6ff;
+  text-align: center !important;
+  font-size: .82rem;
+  background: rgba(198, 210, 255, .06);
 }
 
 .selected-party-rail {
