@@ -61,6 +61,16 @@ function partyLabel(party) {
   return "Other";
 }
 
+function partyGroupLabel(party) {
+  const value = String(party || "U").toUpperCase();
+  if (value === "D") return "Democrats";
+  if (value === "R") return "Republicans";
+  if (value === "I") return "Independents";
+  if (value === "L") return "Libertarians";
+  if (value === "G") return "Greens";
+  return "Others";
+}
+
 function formatPercent(value, digits = 1) {
   if (!Number.isFinite(value)) return "--";
   return `${value.toFixed(digits)}%`;
@@ -172,6 +182,21 @@ function countyTopCandidatesForElectionNight(county, limit = 3) {
       percent: Number.isFinite(Number(candidate.percent)) ? Number(candidate.percent) : 0
     }))
     .sort((a, b) => (b.votes || b.percent || 0) - (a.votes || a.percent || 0))
+    .slice(0, limit);
+}
+
+function countyPartyRows(county, limit = 3) {
+  const groups = new Map();
+  for (const candidate of county?.candidates || []) {
+    const party = normalizedPartyCode(candidate);
+    const current = groups.get(party) || { party, votes: 0 };
+    current.votes += Number(candidate.votes) || 0;
+    groups.set(party, current);
+  }
+  const total = [...groups.values()].reduce((sum, row) => sum + row.votes, 0);
+  return [...groups.values()]
+    .map((row) => ({ ...row, percent: total ? (row.votes / total) * 100 : 0 }))
+    .sort((a, b) => b.votes - a.votes)
     .slice(0, limit);
 }
 
@@ -328,12 +353,12 @@ function normalizedPartyCode(candidate) {
   return String(candidate.partyCode || candidate.party || "U").charAt(0).toUpperCase();
 }
 
-function buildFallbackCandidate(party, name, status) {
+function buildFallbackCandidate(party, name, status, percent = 0) {
   return {
     name: candidateName(name, party, status),
     party,
     votes: 0,
-    percent: 0,
+    percent,
     isWinner: false,
     incumbent: false
   };
@@ -413,7 +438,14 @@ function raceIdFromHouseGeometryId(id) {
 }
 
 function normalizeElectionRace(race, fallbackCandidates) {
-  const candidates = (race.candidates || []).map(normalizeCandidate);
+  const forecastShareByParty = new Map((fallbackCandidates || []).map((candidate) => [normalizedPartyCode(candidate), Number(candidate.percent) || 0]));
+  const candidates = (race.candidates || []).map((candidate) => {
+    const normalized = normalizeCandidate(candidate);
+    if (!Number(normalized.percent) && forecastShareByParty.has(normalizedPartyCode(normalized))) {
+      normalized.percent = forecastShareByParty.get(normalizedPartyCode(normalized));
+    }
+    return normalized;
+  });
     const normalized = {
       id: race.id,
       liveResultId: race.liveResultId || race.resultId || race.nbcId || race.civicId || "",
@@ -437,28 +469,45 @@ function normalizeElectionRace(race, fallbackCandidates) {
   return normalized;
 }
 
+function forecastCandidateShares(item) {
+  const margin = Number(item?.margin);
+  if (Number.isFinite(margin)) {
+    const dem = Math.max(2, Math.min(98, 50 + margin / 2));
+    return { dem, rep: 100 - dem };
+  }
+  const demProbability = Number(item?.demProbability);
+  if (Number.isFinite(demProbability) && demProbability > 0) {
+    const dem = Math.max(35, Math.min(65, 50 + (demProbability - 0.5) * 26));
+    return { dem, rep: 100 - dem };
+  }
+  return { dem: 50, rep: 50 };
+}
+
 function buildNameLookups(house, senate, governor) {
   const lookups = { house: new Map(), senate: new Map(), governor: new Map() };
 
   for (const district of house?.districts || []) {
     const id = district.id || `${district.state}-${String(district.district).padStart(2, "0")}`;
+    const { dem: demShare, rep: repShare } = forecastCandidateShares(district);
     lookups.house.set(id, [
-      buildFallbackCandidate("D", district.demCandidate, district.demStatus),
-      buildFallbackCandidate("R", district.repCandidate, district.repStatus)
+      buildFallbackCandidate("D", district.demCandidate, district.demStatus, demShare),
+      buildFallbackCandidate("R", district.repCandidate, district.repStatus, repShare)
     ]);
   }
 
   for (const race of senate?.races || []) {
+    const { dem: demShare, rep: repShare } = forecastCandidateShares(race);
     lookups.senate.set(race.state, [
-      buildFallbackCandidate("D", race.dem, race.demStatus),
-      buildFallbackCandidate("R", race.rep, race.repStatus)
+      buildFallbackCandidate("D", race.dem, race.demStatus, demShare),
+      buildFallbackCandidate("R", race.rep, race.repStatus, repShare)
     ]);
   }
 
   for (const race of governor?.races || []) {
+    const { dem: demShare, rep: repShare } = forecastCandidateShares(race);
     lookups.governor.set(race.state, [
-      buildFallbackCandidate("D", race.demCandidate || race.dem, race.demStatus),
-      buildFallbackCandidate("R", race.repCandidate || race.rep, race.repStatus)
+      buildFallbackCandidate("D", race.demCandidate || race.dem, race.demStatus, demShare),
+      buildFallbackCandidate("R", race.repCandidate || race.rep, race.repStatus, repShare)
     ]);
   }
 
@@ -545,7 +594,7 @@ function countyTooltipMarkup(county, feature, descriptions) {
   }
 
   const rows = countyTopCandidatesForElectionNight(county, 3).map((candidate) => {
-    const color = partyColor(normalizedPartyCode(candidate));
+    const color = candidateColor(candidate);
     return `
       <tr>
         <td><span class="tooltip-party-bar" style="background:${color}"></span>${escapeHtml(candidate.name || "Candidate")}</td>
@@ -554,13 +603,21 @@ function countyTooltipMarkup(county, feature, descriptions) {
       </tr>
     `;
   }).join("");
+  const partyRows = countyPartyRows(county, 3).map((row) => `
+    <tr>
+      <td><span class="tooltip-party-bar" style="background:${partyColor(row.party)}"></span>${partyGroupLabel(row.party)} (${row.party})</td>
+      <td>${formatVotes(row.votes)}</td>
+      <td>${formatPercent(row.percent || 0)}</td>
+    </tr>
+  `).join("");
+  const usePartySummary = (county.candidates || []).length > 6;
   const reporting = Number(county.estimatedVoteReporting ?? county.percentReporting);
   return `
     <div class="election-map-tooltip-title">${escapeHtml(countyName)}</div>
     ${description ? `<div class="election-map-tooltip-muted">${escapeHtml(description)}</div>` : ""}
     <table class="election-map-tooltip-table">
-      <thead><tr><th>Candidate</th><th>Votes</th><th>Pct</th></tr></thead>
-      <tbody>${rows}</tbody>
+      <thead><tr><th>${usePartySummary ? "Group" : "Candidate"}</th><th>Votes</th><th>Pct</th></tr></thead>
+      <tbody>${usePartySummary ? partyRows : rows}</tbody>
     </table>
     <div class="election-map-tooltip-foot">
       <span>${Number.isFinite(reporting) ? `${formatPercent(reporting)} estimated in` : "Estimate pending"}</span>
@@ -727,6 +784,24 @@ class ElectionNightPage {
         candidates
       };
     });
+  }
+
+  seedFeatureCounties(race, features, reportingPercent = 18) {
+    if (!this.isLabPage || !race || race.counties?.length || !features?.length) return;
+    race.counties = features.map((feature) => {
+      const props = feature.properties || {};
+      const name = props.countyName || props.NAME || props.NAMELSAD || props.GEOID || "County";
+      const fips = featureCountyFipsForElectionNight(feature);
+      return {
+        name,
+        fips,
+        type: "County",
+        percentReporting: reportingPercent,
+        estimatedVoteReporting: reportingPercent,
+        candidates: []
+      };
+    });
+    this.seedSimulatedCounties(race, reportingPercent);
   }
 
   startFastSimulation() {
@@ -1066,16 +1141,13 @@ class ElectionNightPage {
   }
 
   async renderSelectedRaceMap(race, options = {}) {
-    const detail = await this.findLiveDetailForRace(race);
-    if (detail && this.isLabPage) {
-      const phase = this.query.get("phase") || (this.query.has("mock") ? "reporting" : "pre_election");
-      const targetReporting = phase === "called" ? 96 : Math.max(18, Number(race.reportingPercent || detail.reportingPercent || 0) || 18);
-      if (phase !== "pre_election" && phase !== "polls_closed_no_votes") this.seedSimulatedRace(detail, targetReporting);
-    }
-    if (this.currentRace?.id !== race.id) return false;
-
     if (String(race?.type || "").toLowerCase() === "house") {
-      const features = await this.loadDistrictCountyFeatures(race);
+      const [detail, features] = await Promise.all([
+        this.findLiveDetailForRace(race),
+        this.loadDistrictCountyFeatures(race)
+      ]);
+      if (detail && this.isLabPage) this.seedLabDetail(detail, race);
+      if (this.currentRace?.id !== race.id) return false;
       if (!features.length) return false;
       this.renderCountyDetailMap(detail || race, features, {
         districtMode: true,
@@ -1084,6 +1156,13 @@ class ElectionNightPage {
       });
       return true;
     }
+
+    const [detail, allFeatures] = await Promise.all([
+      this.findLiveDetailForRace(race),
+      this.loadCountyFeatures()
+    ]);
+    if (detail && this.isLabPage) this.seedLabDetail(detail, race);
+    if (this.currentRace?.id !== race.id) return false;
 
     const state = String(detail?.state || race?.state || "").toUpperCase();
     const statewideSource = detail || race;
@@ -1094,12 +1173,17 @@ class ElectionNightPage {
     });
 
     const stateFips = stateFipsForElectionNight(state);
-    const allFeatures = await this.loadCountyFeatures();
     const features = allFeatures.filter((feature) => featureStateFipsForElectionNight(feature) === stateFips);
     if (!features.length) return false;
 
     this.renderCountyDetailMap(counties.length ? detail : race, features, { preserveMapTransform: options.preserveMapTransform });
     return true;
+  }
+
+  seedLabDetail(detail, race) {
+    const phase = this.query.get("phase") || (this.query.has("mock") ? "reporting" : "pre_election");
+    const targetReporting = phase === "called" ? 96 : Math.max(18, Number(race.reportingPercent || detail.reportingPercent || 0) || 18);
+    if (phase !== "pre_election" && phase !== "polls_closed_no_votes") this.seedSimulatedRace(detail, targetReporting);
   }
 
   renderCountyDetailMap(race, features, options = {}) {
@@ -1111,11 +1195,16 @@ class ElectionNightPage {
       type: "FeatureCollection",
       features
     };
-    const baseCollection = options.districtMode && this.geo?.features?.length
-      ? this.geo
+    const selectedState = String(race.state || "").toUpperCase();
+    const stateDistrictFeatures = options.districtMode && this.geo?.features?.length
+      ? this.geo.features.filter((feature) => String(feature.properties?.id || "").startsWith(`${selectedState}-`))
+      : [];
+    const baseCollection = options.districtMode && stateDistrictFeatures.length
+      ? { type: "FeatureCollection", features: stateDistrictFeatures }
       : selectedCollection;
     const projection = d3.geoAlbersUsa().fitExtent([[34, 34], [width - 34, height - 34]], baseCollection);
     this.path = d3.geoPath(projection);
+    if (this.isLabPage) this.seedFeatureCounties(race, features, Number(race.reportingPercent || 18) || 18);
     const lookup = countyLookupForElectionNight(race);
 
     this.createSvg(container, width, height);
@@ -1123,7 +1212,7 @@ class ElectionNightPage {
     const raceByDistrict = options.districtMode
       ? new Map(this.modeRaces().map((item) => [houseGeometryId(item), item]))
       : new Map();
-    const contextFeatures = options.districtMode ? (this.geo?.features || []) : (this.stateFeatures || []);
+    const contextFeatures = options.districtMode ? stateDistrictFeatures : (this.stateFeatures || []);
     const contextRaceForFeature = (feature) => {
       if (options.districtMode) return raceByDistrict.get(feature.properties?.id) || null;
       const state = FIPS_TO_STATE[featureStateFipsForElectionNight(feature)];
@@ -1179,7 +1268,7 @@ class ElectionNightPage {
         const county = countyForFeature(feature, lookup);
         const leader = countyTopCandidatesForElectionNight(county, 1)[0];
         if (!leader) return "#334054";
-        return d3.interpolateRgb("#cfd6e5", candidateColor(leader))(0.78);
+        return d3.interpolateRgb("#06142e", candidateColor(leader))(0.9);
       })
       .attr("stroke", options.districtMode ? "rgba(226, 232, 255, .42)" : "rgba(226, 232, 255, .58)")
       .attr("stroke-width", options.districtMode ? 0.22 : 0.36)
@@ -1189,15 +1278,17 @@ class ElectionNightPage {
       .on("mouseleave blur", () => this.hideTooltip());
 
     this.addZoomControls();
-    if (!options.preserveMapTransform) this.zoomToFeature(selectedCollection);
+    if (!options.preserveMapTransform) this.zoomToFeature(selectedCollection, { maxScale: options.districtMode ? 34 : 18, fill: .9 });
   }
 
-  zoomToFeature(feature) {
+  zoomToFeature(feature, options = {}) {
     const [[x0, y0], [x1, y1]] = this.path.bounds(feature);
     const viewBox = this.svg.node().viewBox.baseVal;
     const dx = Math.max(1, x1 - x0);
     const dy = Math.max(1, y1 - y0);
-    const scale = Math.min(10, Math.max(1.6, 0.72 / Math.max(dx / viewBox.width, dy / viewBox.height)));
+    const fill = Number.isFinite(options.fill) ? options.fill : .72;
+    const maxScale = Number.isFinite(options.maxScale) ? options.maxScale : 10;
+    const scale = Math.min(maxScale, Math.max(1.6, fill / Math.max(dx / viewBox.width, dy / viewBox.height)));
     const tx = viewBox.width / 2 - scale * (x0 + x1) / 2;
     const ty = viewBox.height / 2 - scale * (y0 + y1) / 2;
     this.svg.transition().duration(500).call(this.zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
