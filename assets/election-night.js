@@ -397,6 +397,52 @@ function raceColor(race) {
   return d3.interpolateRgb("#cfd6e5", partyColor(normalizedPartyCode(leader)))(strength);
 }
 
+function liveDemMarginFromCandidates(candidates = []) {
+  const totals = { D: 0, R: 0 };
+  for (const candidate of candidates || []) {
+    const party = normalizedPartyCode(candidate);
+    if (party !== "D" && party !== "R") continue;
+    totals[party] += Number(candidate.votes) || 0;
+  }
+  const twoParty = totals.D + totals.R;
+  if (twoParty > 0) return ((totals.D - totals.R) / twoParty) * 100;
+
+  const ranked = [...(candidates || [])]
+    .map((candidate) => ({ ...candidate, votes: Number(candidate.votes) || 0, percent: Number(candidate.percent) || 0 }))
+    .sort((a, b) => (b.votes || b.percent || 0) - (a.votes || a.percent || 0));
+  const leader = ranked[0];
+  const runnerUp = ranked[1];
+  if (!leader) return NaN;
+  const leaderParty = normalizedPartyCode(leader);
+  if (leaderParty !== "D" && leaderParty !== "R") return NaN;
+  const margin = Math.max(0, Number(leader.percent) - Number(runnerUp?.percent || 0));
+  return leaderParty === "D" ? margin : -margin;
+}
+
+function raceLiveDemMargin(race) {
+  if (!race || !hasActiveResults(race)) return NaN;
+  const margin = liveDemMarginFromCandidates(race.candidates || []);
+  if (Number.isFinite(margin)) return margin;
+  const top = topCandidates(race, 2);
+  if (!top.length) return NaN;
+  const leaderParty = normalizedPartyCode(top[0]);
+  if (leaderParty !== "D" && leaderParty !== "R") return NaN;
+  const leaderPct = Number(top[0].percent) || 0;
+  const runnerPct = Number(top[1]?.percent) || 0;
+  return leaderParty === "D" ? leaderPct - runnerPct : runnerPct - leaderPct;
+}
+
+function countyLiveDemMargin(county) {
+  if (!county) return NaN;
+  const margin = liveDemMarginFromCandidates(county.candidates || []);
+  if (Number.isFinite(margin)) return margin;
+  const top = countyTopCandidatesForElectionNight(county, 2);
+  const leaderParty = normalizedPartyCode(top[0] || {});
+  if (leaderParty !== "D" && leaderParty !== "R") return NaN;
+  const marginPct = Math.max(0, Number(top[0]?.percent || 0) - Number(top[1]?.percent || 0));
+  return leaderParty === "D" ? marginPct : -marginPct;
+}
+
 function marginColor(margin) {
   const value = Number(margin);
   if (!Number.isFinite(value)) return "#5f6b80";
@@ -1001,6 +1047,7 @@ class ElectionNightPage {
     this.countyDescriptions = new Map((countyDescriptions?.rows || []).map((row) => [String(row.fips).padStart(5, "0"), row.description]));
     this.comparisonManifest = comparisonManifest || { sources: [] };
     if (!this.comparisonSource(this.comparisonMode)) this.comparisonMode = "live";
+    this.normalizeComparisonModeForCurrentMap();
     this.applyLabMode();
   }
 
@@ -1161,6 +1208,27 @@ class ElectionNightPage {
     return (this.comparisonManifest?.sources || []).find((source) => source.id === id) || null;
   }
 
+  comparisonSourcesForCurrentMap() {
+    const mode = String(this.selectedMode || "").toLowerCase();
+    return (this.comparisonManifest?.sources || [])
+      .filter((source) => {
+        const appliesTo = Array.isArray(source.appliesTo) ? source.appliesTo.map((item) => String(item).toLowerCase()) : [];
+        return !appliesTo.length || appliesTo.includes(mode) || source.id === "live";
+      });
+  }
+
+  normalizeComparisonModeForCurrentMap() {
+    const sources = this.comparisonSourcesForCurrentMap();
+    if (!sources.some((source) => source.id === this.comparisonMode)) {
+      this.comparisonMode = "live";
+      try {
+        localStorage.setItem("electionNightComparison", this.comparisonMode);
+      } catch {
+        // Ignore private-browsing storage failures.
+      }
+    }
+  }
+
   isComparisonActive() {
     return this.comparisonMode && this.comparisonMode !== "live";
   }
@@ -1205,6 +1273,13 @@ class ElectionNightPage {
     return Number(stateRow?.margin ?? stateRow?.demMargin ?? stateRow?.democraticMargin);
   }
 
+  comparisonRaceShift(race) {
+    const liveMargin = raceLiveDemMargin(race);
+    const baselineMargin = this.baselineRaceMargin(race);
+    if (!Number.isFinite(liveMargin) || !Number.isFinite(baselineMargin)) return NaN;
+    return liveMargin - baselineMargin;
+  }
+
   baselineCountyRow(feature) {
     const source = this.comparisonSource();
     if (!source || source.id === "live" || source.id === "fea-forecast") return null;
@@ -1224,8 +1299,14 @@ class ElectionNightPage {
     const row = feature ? this.baselineCountyRow(feature) : null;
     if (!row) return `${source.label} county baseline is not loaded for this geography yet.`;
     const margin = Number(row.margin ?? row.demMargin ?? row.democraticMargin);
+    const county = countyForFeature(feature, countyLookupForElectionNight(race));
+    const liveMargin = countyLiveDemMargin(county);
+    const shift = Number.isFinite(liveMargin) && Number.isFinite(margin) ? liveMargin - margin : NaN;
+    if (Number.isFinite(shift)) {
+      return `Results minus ${source.label}: ${shift > 0 ? "D" : "R"} shift +${Math.abs(shift).toFixed(1)}.`;
+    }
     return Number.isFinite(margin)
-      ? `${source.label}: ${margin > 0 ? "D" : "R"} +${Math.abs(margin).toFixed(1)}.`
+      ? `${source.label}: ${margin > 0 ? "D" : "R"} +${Math.abs(margin).toFixed(1)}; awaiting live margin for shift.`
       : `${source.label} baseline loaded.`;
   }
 
@@ -1233,8 +1314,8 @@ class ElectionNightPage {
     if (!this.isComparisonActive()) return raceColor(race);
     const source = this.comparisonSource();
     if (!source) return "#5f6b80";
-    const margin = this.baselineRaceMargin(race);
-    return Number.isFinite(margin) ? marginColor(margin) : "#3c4658";
+    const shift = this.comparisonRaceShift(race);
+    return Number.isFinite(shift) ? marginColor(shift) : "#3c4658";
   }
 
   comparisonColorForCounty(feature, race, lookup) {
@@ -1248,8 +1329,11 @@ class ElectionNightPage {
     if (!source || source.id === "live") return "#334054";
     if (source.id === "fea-forecast" || source.countyCompatible === false) return "#202b3f";
     const row = this.baselineCountyRow(feature);
-    const margin = Number(row?.margin ?? row?.demMargin ?? row?.democraticMargin);
-    return Number.isFinite(margin) ? marginColor(margin) : "#202b3f";
+    const county = countyForFeature(feature, lookup);
+    const liveMargin = countyLiveDemMargin(county);
+    const baselineMargin = Number(row?.margin ?? row?.demMargin ?? row?.democraticMargin);
+    const shift = Number.isFinite(liveMargin) && Number.isFinite(baselineMargin) ? liveMargin - baselineMargin : NaN;
+    return Number.isFinite(shift) ? marginColor(shift) : "#202b3f";
   }
 
   async loadResultStateFeatures() {
@@ -1304,6 +1388,7 @@ class ElectionNightPage {
     localStorage.setItem("electionNightMode", mode);
     this.currentRace = null;
     this.detailMapActive = false;
+    this.normalizeComparisonModeForCurrentMap();
     this.updateModeButtons();
     this.renderSummary();
     this.hideFocusPanel();
@@ -1591,12 +1676,13 @@ class ElectionNightPage {
     if (!container) return;
     const controls = document.createElement("div");
     controls.className = "election-map-controls";
-    const comparisonOptions = (this.comparisonManifest?.sources || [{ id: "live", label: "Live results" }])
+    this.normalizeComparisonModeForCurrentMap();
+    const comparisonOptions = (this.comparisonSourcesForCurrentMap().length ? this.comparisonSourcesForCurrentMap() : [{ id: "live", label: "Live results" }])
       .map((source) => `<option value="${escapeHtml(source.id)}" ${source.id === this.comparisonMode ? "selected" : ""}>${escapeHtml(source.label || source.id)}</option>`)
       .join("");
     controls.innerHTML = `
       <label class="election-comparison-control">
-        <span>Compare</span>
+        <span>Shift vs</span>
         <select data-comparison-baseline aria-label="Comparison baseline">${comparisonOptions}</select>
       </label>
       ${this.selectedMode === "house" ? `<input class="election-map-search" type="search" placeholder="Search district" aria-label="Search House district">` : ""}

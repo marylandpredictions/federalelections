@@ -3,12 +3,14 @@
     {
       "id": "live",
       "label": "Live results",
-      "description": "Current reported results."
+      "description": "Current reported results.",
+      "appliesTo": ["house", "senate", "governor"]
     },
     {
       "id": "pres-2024",
       "label": "2024 presidential margin",
-      "description": "County and statewide presidential margin baseline. Add normalized county/state files before enabling real colors.",
+      "description": "Results minus the 2024 presidential Democratic margin. County files are compatible with statewide race detail maps.",
+      "appliesTo": ["house", "senate", "governor"],
       "countyCompatible": true,
       "status": "pending-data",
       "countyFile": "data/baselines/pres-2024-counties.json",
@@ -25,7 +27,8 @@
     {
       "id": "pres-2020",
       "label": "2020 presidential margin",
-      "description": "County and statewide presidential margin baseline. Add normalized county/state files before enabling real colors.",
+      "description": "Results minus the 2020 presidential Democratic margin. County files are compatible with statewide race detail maps.",
+      "appliesTo": ["house", "senate", "governor"],
       "countyCompatible": true,
       "status": "pending-data",
       "countyFile": "data/baselines/pres-2020-counties.json",
@@ -40,21 +43,49 @@
       ]
     },
     {
-      "id": "house-2022",
-      "label": "2022 House margin",
-      "description": "District-level House result baseline. County compatibility depends on split-county reporting data.",
+      "id": "house-2024",
+      "label": "2024 House margin",
+      "description": "Results minus the 2024 House district Democratic margin. House baselines are district-level only unless split-county returns are added later.",
+      "appliesTo": ["house"],
       "countyCompatible": false,
       "status": "pending-data",
-      "districtFile": "data/baselines/house-2022-districts.json",
+      "districtFile": "data/baselines/house-2024-districts.json",
       "sourceNotes": [
-        "Use official state returns or a normalized historical House returns file.",
-        "County pieces should stay dim unless split-county vote data is loaded."
+        "Use official state returns or MIT/MEDSL-style district House returns.",
+        "County pieces stay dim because this baseline is district-level, not split-county."
+      ]
+    },
+    {
+      "id": "senate-last",
+      "label": "Last Senate margin",
+      "description": "Results minus the most recent comparable Senate general-election margin in that state. Special-election and new-incumbent notes belong in the normalized source file.",
+      "appliesTo": ["senate"],
+      "countyCompatible": false,
+      "status": "pending-data",
+      "stateFile": "data/baselines/senate-last-states.json",
+      "sourceNotes": [
+        "Use the most recent comparable Senate race in each state, not a generic national baseline.",
+        "Mark special elections, appointed incumbents, or non-comparable races in the source file notes."
+      ]
+    },
+    {
+      "id": "governor-last",
+      "label": "Last governor margin",
+      "description": "Results minus the most recent comparable governor general-election margin in that state.",
+      "appliesTo": ["governor"],
+      "countyCompatible": false,
+      "status": "pending-data",
+      "stateFile": "data/baselines/governor-last-states.json",
+      "sourceNotes": [
+        "Use the previous gubernatorial general election in each state.",
+        "Mark open-seat, special, recall, or other non-comparable race conditions in the source file notes."
       ]
     },
     {
       "id": "fea-forecast",
       "label": "FEA forecast projection",
       "description": "Race-level FEA forecast projection. Incompatible with county-level comparison because FEA does not project counties.",
+      "appliesTo": ["house", "senate", "governor"],
       "countyCompatible": false,
       "status": "available"
     }

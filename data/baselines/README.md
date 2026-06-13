@@ -1,7 +1,7 @@
 # Result Comparison Baselines
 
 Election-night comparison modes are listed in `data/result-comparison-baselines.json`.
-The map code can read state, district, and county baselines when these files are added.
+The map code reads these as `current result margin - selected baseline margin`, so positive values show a Democratic shift from the comparison point and negative values show a Republican shift.
 
 Use certified returns or a maintained historical election dataset. Good starting points:
 
@@ -9,6 +9,12 @@ Use certified returns or a maintained historical election dataset. Good starting
 - MEDSL GitHub datasets: https://github.com/MEDSL
 
 ## County Presidential Baselines
+
+Generate these with:
+
+```powershell
+npm run build:comparison-baselines -- --pres=data/baselines/source/countypres_2000-2024.csv
+```
 
 Expected file names:
 
@@ -70,7 +76,13 @@ Expected shape:
 
 Expected file name:
 
-- `house-2022-districts.json`
+- `house-2024-districts.json`
+
+Generate it with:
+
+```powershell
+npm run build:comparison-baselines -- --house=data/baselines/source/1976-2024-house.csv
+```
 
 Expected shape:
 
@@ -93,6 +105,39 @@ Expected shape:
   ]
 }
 ```
+
+House comparison is only shown on the House map because the baseline is district-level.
+
+## Senate and Governor Baselines
+
+Expected file names:
+
+- `senate-last-states.json`
+- `governor-last-states.json`
+
+Expected shape:
+
+```json
+{
+  "source": "Official certified returns",
+  "updatedAt": "2026-06-13",
+  "states": [
+    {
+      "state": "OH",
+      "baselineRace": "2024 Senate",
+      "notes": "Most recent comparable Senate general election.",
+      "demVotes": 0,
+      "repVotes": 0,
+      "totalVotes": 0,
+      "demShare": 0,
+      "repShare": 0,
+      "margin": 0
+    }
+  ]
+}
+```
+
+Senate and governor baselines are state-level only. They are unique comparison modes because previous Senate and governor elections can be non-comparable after special elections, appointed incumbents, or open-seat changes.
 
 ## FEA Forecast Comparison
 
