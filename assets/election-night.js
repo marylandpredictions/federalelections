@@ -558,6 +558,24 @@ function contextValueText(value) {
   return "";
 }
 
+function pollSignalText(signal) {
+  if (!signal) return "";
+  if (typeof signal !== "object") return contextValueText(signal);
+  const margin = Number(signal.margin);
+  const pollCount = Number(signal.pollCount);
+  const pollsters = Number(signal.pollsters);
+  const leadText = Number.isFinite(margin)
+    ? Math.abs(margin) < 0.05
+      ? "Even polling signal"
+      : `${margin > 0 ? "D" : "R"} +${Math.abs(margin).toFixed(1)} polling signal`
+    : "";
+  const sourceParts = [];
+  if (Number.isFinite(pollCount) && pollCount > 0) sourceParts.push(`${pollCount} poll${pollCount === 1 ? "" : "s"}`);
+  if (Number.isFinite(pollsters) && pollsters > 0) sourceParts.push(`${pollsters} pollster${pollsters === 1 ? "" : "s"}`);
+  if (leadText && sourceParts.length) return `${leadText} from ${sourceParts.join(" / ")}`;
+  return leadText || sourceParts.join(" / ") || contextValueText(signal);
+}
+
 function raceNotes(race) {
   const notes = [];
   const statusText = String(race?.status || race?.statusLabel || "").toLowerCase();
@@ -942,7 +960,7 @@ class ElectionNightPage {
     });
     window.setInterval(() => {
       document.querySelectorAll("[data-last-checked-clock]").forEach((node) => {
-        node.textContent = `Last checked ${formatEasternTime(Date.now())}`;
+        node.textContent = formatEasternTime(Date.now());
       });
     }, 30000);
   }
@@ -1635,13 +1653,6 @@ class ElectionNightPage {
       })
       .on("mouseleave blur", () => this.hideTooltip());
 
-    this.viewport.append("path")
-      .datum(selectedCollection)
-      .attr("class", "selected-race-outline is-focused-geography")
-      .attr("d", this.path)
-      .attr("fill", "none")
-      .attr("pointer-events", "none");
-
     this.addZoomControls();
     if (!options.preserveMapTransform) {
       window.requestAnimationFrame(() => this.focusRenderedSelection(".county-result-shape", {
@@ -1927,7 +1938,7 @@ class ElectionNightPage {
       ["Polling average", pollMargin],
       ["Polling count", pollCount ? `${pollCount} poll${pollCount === 1 ? "" : "s"} tracked` : null],
       ["Latest poll", latestText],
-      ["Trend", inputs.pollReducedWeight ? "Primary or indirect polling is included at reduced weight." : contextValueText(forecastRace.pollSignal)],
+      ["Trend", inputs.pollReducedWeight ? "Primary or indirect polling is included at reduced weight." : pollSignalText(forecastRace.pollSignal)],
       ["Last updated", this.forecastGeneratedAt(race)]
     ].filter(([, value]) => value);
     return `<dl class="race-context-list">${rows.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(value))}</dd></div>`).join("")}</dl>`;
@@ -2040,10 +2051,10 @@ class ElectionNightPage {
         ${awaitingResultsNote(race)}
         ${pathTracker ? `<div class="selected-race-insights">${pathTracker}</div>` : ""}
         <div class="selected-race-meta">
-          <span>${live ? `${formatPercent(race.reportingPercent || 0)} reporting` : "No results yet"}</span>
-          <span>${isActuallyCalled(race) ? "Race called" : "Uncalled"}</span>
-          <span>Last updated ${escapeHtml(lastUpdated)}</span>
-          <span data-last-checked-clock>Last checked ${escapeHtml(lastChecked)}</span>
+          <span class="race-meta-chip is-status">${live ? `${formatPercent(race.reportingPercent || 0)} reporting` : "No results yet"}</span>
+          <span class="race-meta-chip">${isActuallyCalled(race) ? "Race called" : "Uncalled"}</span>
+          <span class="race-meta-time"><small>Updated</small><b>${escapeHtml(lastUpdated)}</b></span>
+          <span class="race-meta-time"><small>Checked</small><b data-last-checked-clock>${escapeHtml(lastChecked)}</b></span>
         </div>
         <table class="selected-race-table">
           <thead><tr><th>Candidate</th><th>Percent</th><th>Votes</th></tr></thead>

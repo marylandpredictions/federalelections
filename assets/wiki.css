@@ -1095,16 +1095,10 @@ button {
 }
 
 .election-map-shape.is-focused-geography,
-.map-context-shape.is-focused-geography,
-.selected-race-outline.is-focused-geography {
+.map-context-shape.is-focused-geography {
   stroke: rgba(255, 255, 255, .96) !important;
   stroke-width: 1.25 !important;
   filter: drop-shadow(0 0 8px rgba(198, 210, 255, .28));
-}
-
-.selected-race-outline.is-focused-geography {
-  stroke-width: 1.45 !important;
-  vector-effect: non-scaling-stroke;
 }
 
 .county-result-shape.is-focused-geography {
@@ -1564,7 +1558,15 @@ button {
   border-left: 3px solid color-mix(in srgb, var(--focus-color, var(--dem)) 64%, #c6d2ff);
 }
 
-.selected-race-meta,
+.selected-race-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 12px 16px;
+}
+
 .selected-race-foot {
   display: flex;
   justify-content: space-between;
@@ -1572,6 +1574,48 @@ button {
   padding: 12px 16px;
   color: #cfd6ff;
   font-weight: 850;
+}
+
+.selected-race-meta .race-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 9px;
+  border: 1px solid rgba(198, 210, 255, .36);
+  border-radius: 999px;
+  background: rgba(198, 210, 255, .08);
+  color: #fff;
+  font-size: .76rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.selected-race-meta .race-meta-chip.is-status {
+  background: color-mix(in srgb, var(--focus-color, var(--dem)) 20%, rgba(198, 210, 255, .08));
+}
+
+.race-meta-time {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  color: #cfd6ff;
+  font-size: .75rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.race-meta-time small {
+  color: #8fa2df;
+  font-size: .64rem;
+  font-weight: 950;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.race-meta-time b {
+  color: #fff;
+  font-size: .76rem;
 }
 
 .selected-race-insights {
