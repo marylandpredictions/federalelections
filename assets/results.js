@@ -36,7 +36,9 @@ function percentLabel(value) {
 function estimatedInLabel(value) {
   if (value === null || value === undefined || value === "") return "Estimate pending";
   const number = Number(value);
-  return Number.isFinite(number) ? `${number.toFixed(1)}%` : "Estimate pending";
+  if (!Number.isFinite(number)) return "Estimate pending";
+  if (number >= 95) return ">95%";
+  return `${number.toFixed(1)}%`;
 }
 
 function dateLabel(value) {

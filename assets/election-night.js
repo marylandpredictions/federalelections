@@ -165,6 +165,12 @@ function formatPercent(value, digits = 1) {
   return `${value.toFixed(digits)}%`;
 }
 
+function formatReportingPercent(value, digits = 1) {
+  if (!Number.isFinite(value)) return "--";
+  if (value >= 95) return ">95%";
+  return formatPercent(value, digits);
+}
+
 function formatVotes(value) {
   return Number.isFinite(value) && value > 0 ? value.toLocaleString() : "0";
 }
@@ -812,7 +818,7 @@ function tooltipMarkup(race, title, comparisonNote = "") {
   }).join("");
 
   const status = live
-    ? `${formatPercent(race.reportingPercent || 0, 0)} reporting`
+    ? `${formatReportingPercent(race.reportingPercent || 0, 0)} reporting`
     : "No results yet";
   return `
     <div class="election-map-tooltip-title">${race.title || title}</div>
@@ -897,7 +903,7 @@ function countyTooltipMarkup(county, feature, descriptions, race) {
       <tbody>${rows}</tbody>
     </table>
     <div class="election-map-tooltip-foot">
-      <span>${Number.isFinite(reporting) ? `${formatPercent(reporting)} estimated in` : "Estimate pending"}</span>
+      <span>${Number.isFinite(reporting) ? `${formatReportingPercent(reporting)} estimated in` : "Estimate pending"}</span>
     </div>
   `;
 }
@@ -938,7 +944,7 @@ function countyTooltipMarkupClean(county, feature, descriptions, race, compariso
         <tbody>${rows}</tbody>
       </table>
       <div class="election-map-tooltip-foot">
-        <span>${Number.isFinite(reporting) ? `${formatPercent(reporting)} estimated in` : "0% estimated in"}</span>
+        <span>${Number.isFinite(reporting) ? `${formatReportingPercent(reporting)} estimated in` : "0% estimated in"}</span>
       </div>
       ${comparisonMarkup}
     `;
@@ -952,7 +958,7 @@ function countyTooltipMarkupClean(county, feature, descriptions, race, compariso
       <tbody>${rows}</tbody>
     </table>
     <div class="election-map-tooltip-foot">
-      <span>${Number.isFinite(reporting) ? `${formatPercent(reporting)} estimated in` : "Estimate pending"}</span>
+      <span>${Number.isFinite(reporting) ? `${formatReportingPercent(reporting)} estimated in` : "Estimate pending"}</span>
     </div>
     ${comparisonMarkup}
   `;
@@ -2359,7 +2365,7 @@ class ElectionNightPage {
         ${awaitingResultsNote(race)}
         ${pathTracker ? `<div class="selected-race-insights">${pathTracker}</div>` : ""}
         <div class="selected-race-meta">
-          <span class="race-meta-chip is-status">${live ? `${formatPercent(race.reportingPercent || 0)} reporting` : "No results yet"}</span>
+          <span class="race-meta-chip is-status">${live ? `${formatReportingPercent(race.reportingPercent || 0)} reporting` : "No results yet"}</span>
           <span class="race-meta-chip">${isActuallyCalled(race) ? "Race called" : "Uncalled"}</span>
           <span class="race-meta-time"><small>Updated</small><b>${escapeHtml(lastUpdated)}</b></span>
           <span class="race-meta-time"><small>Checked</small><b data-last-checked-clock>${escapeHtml(lastChecked)}</b></span>
