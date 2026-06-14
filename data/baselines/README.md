@@ -8,12 +8,21 @@ Use certified returns or a maintained historical election dataset. Good starting
 - MIT Election Data and Science Lab: https://electionlab.mit.edu/data
 - MEDSL GitHub datasets: https://github.com/MEDSL
 
+Official current MIT/MEDSL Dataverse files:
+
+- County Presidential Election Returns 2000-2024: https://doi.org/10.7910/DVN/VOQCHQ
+  - file: `countypres_2000-2024.tab`
+- U.S. House 1976-2024: https://doi.org/10.7910/DVN/IG0UN2
+  - file: `1976-2024-house.tab`
+
+Harvard Dataverse currently requires a guestbook response before downloading these two public files. If an automated fetch receives `You may not download this file without the required Guestbook response`, download the two `.tab` files in a browser, place them in `data/baselines/source`, then run the build command below.
+
 ## County Presidential Baselines
 
 Generate these with:
 
 ```powershell
-npm run build:comparison-baselines -- --pres=data/baselines/source/countypres_2000-2024.csv
+npm run build:comparison-baselines -- --pres=data/baselines/source/countypres_2000-2024.tab
 ```
 
 Expected file names:
@@ -81,7 +90,7 @@ Expected file name:
 Generate it with:
 
 ```powershell
-npm run build:comparison-baselines -- --house=data/baselines/source/1976-2024-house.csv
+npm run build:comparison-baselines -- --house=data/baselines/source/1976-2024-house.tab
 ```
 
 Expected shape:

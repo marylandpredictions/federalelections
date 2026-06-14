@@ -34,7 +34,7 @@ function firstExisting(paths) {
   return paths.find((file) => fs.existsSync(file)) || "";
 }
 
-function parseCsv(text) {
+function parseDelimited(text, delimiter = ",") {
   const rows = [];
   let row = [];
   let field = "";
@@ -53,7 +53,7 @@ function parseCsv(text) {
       }
     } else if (char === "\"") {
       quoted = true;
-    } else if (char === ",") {
+    } else if (char === delimiter) {
       row.push(field);
       field = "";
     } else if (char === "\n") {
@@ -73,6 +73,11 @@ function parseCsv(text) {
   return rows
     .filter((values) => values.some((value) => String(value || "").trim()))
     .map((values) => Object.fromEntries(headers.map((header, index) => [header, values[index] ?? ""])));
+}
+
+function parseCsv(text, file = "") {
+  const delimiter = String(file).toLowerCase().endsWith(".tab") || text.slice(0, 500).includes("\t") ? "\t" : ",";
+  return parseDelimited(text, delimiter);
 }
 
 function column(row, names) {
@@ -146,10 +151,10 @@ function writeJson(relative, payload) {
 
 function buildPresidentialBaselines(file) {
   if (!file) {
-    console.warn("No county presidential CSV found. Put countypres_2000-2024.csv in data/baselines/source or pass --pres=path.");
+    console.warn("No county presidential returns file found. Put countypres_2000-2024.tab in data/baselines/source or pass --pres=path.");
     return;
   }
-  const rows = parseCsv(fs.readFileSync(file, "utf8"));
+  const rows = parseCsv(fs.readFileSync(file, "utf8"), file);
   const byCounty = new Map();
   for (const row of rows) {
     const year = yearOf(row);
@@ -214,10 +219,10 @@ function buildPresidentialBaselines(file) {
 
 function buildHouseBaseline(file) {
   if (!file) {
-    console.warn("No House CSV found. Put 1976-2024-house.csv in data/baselines/source or pass --house=path.");
+    console.warn("No House returns file found. Put 1976-2024-house.tab in data/baselines/source or pass --house=path.");
     return;
   }
-  const rows = parseCsv(fs.readFileSync(file, "utf8"));
+  const rows = parseCsv(fs.readFileSync(file, "utf8"), file);
   const districtMap = new Map();
   for (const row of rows) {
     if (yearOf(row) !== 2024) continue;
@@ -249,12 +254,14 @@ function buildHouseBaseline(file) {
 }
 
 const presPath = readArg("pres") || firstExisting([
+  path.join(SOURCE_DIR, "countypres_2000-2024.tab"),
   path.join(SOURCE_DIR, "countypres_2000-2024.csv"),
   path.join(SOURCE_DIR, "countypres_2000-2020.csv"),
   path.join(SOURCE_DIR, "countypres.csv")
 ]);
 
 const housePath = readArg("house") || firstExisting([
+  path.join(SOURCE_DIR, "1976-2024-house.tab"),
   path.join(SOURCE_DIR, "1976-2024-house.csv"),
   path.join(SOURCE_DIR, "1976-2022-house.csv"),
   path.join(SOURCE_DIR, "house.csv")

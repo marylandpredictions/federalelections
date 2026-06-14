@@ -231,21 +231,31 @@ function raceSnapshotKey(race) {
   return `fea-election-night-snapshot:${race?.id || race?.title || "race"}`;
 }
 
-function candidatePreviousPercent(race, candidate) {
+function currentRaceSnapshot(race) {
+  const next = {};
+  const total = totalVotes(race);
+  for (const candidate of race?.candidates || []) next[candidate.name] = safePercent(candidate, total);
+  return next;
+}
+
+function storedRaceSnapshot(race) {
   try {
     const saved = JSON.parse(localStorage.getItem(raceSnapshotKey(race)) || "{}");
-    return Number(saved?.[candidate.name]);
+    return saved && typeof saved === "object" ? saved : {};
   } catch {
-    return NaN;
+    return {};
   }
+}
+
+function candidatePreviousPercent(race, candidate) {
+  const saved = race?.__viewBaseline || storedRaceSnapshot(race);
+  return Number(saved?.[candidate.name]);
 }
 
 function saveRaceSnapshot(race) {
   if (!race || !hasActiveResults(race)) return;
-  const next = {};
-  for (const candidate of race.candidates || []) next[candidate.name] = safePercent(candidate, totalVotes(race));
   try {
-    localStorage.setItem(raceSnapshotKey(race), JSON.stringify(next));
+    localStorage.setItem(raceSnapshotKey(race), JSON.stringify(currentRaceSnapshot(race)));
   } catch {
     // Ignore private-browsing storage failures.
   }
@@ -253,11 +263,20 @@ function saveRaceSnapshot(race) {
 
 function ensureRaceSnapshot(race) {
   if (!race || !hasActiveResults(race)) return;
-  try {
-    if (!localStorage.getItem(raceSnapshotKey(race))) saveRaceSnapshot(race);
-  } catch {
-    // Ignore private-browsing storage failures.
+  if (race.__viewBaseline) return;
+  const stored = storedRaceSnapshot(race);
+  if (Object.keys(stored).length) {
+    race.__viewBaseline = stored;
+    return;
   }
+  race.__viewBaseline = currentRaceSnapshot(race);
+  saveRaceSnapshot(race);
+}
+
+function refreshRaceSnapshotBaseline(race) {
+  if (!race || !hasActiveResults(race)) return;
+  const stored = storedRaceSnapshot(race);
+  race.__viewBaseline = Object.keys(stored).length ? stored : currentRaceSnapshot(race);
 }
 
 function topCandidates(race, limit = 3) {
@@ -537,7 +556,7 @@ function percentDeltaBadge(race, candidate) {
   const delta = current - previous;
   if (Math.abs(delta) < 0.1) return "";
   const sign = delta > 0 ? "+" : "";
-  return `<small class="race-delta-badge ${delta > 0 ? "is-up" : "is-down"}">${sign}${delta.toFixed(1)} since last viewed</small>`;
+  return `<small class="race-delta-badge ${delta > 0 ? "is-up" : "is-down"}" title="Change since last viewed">${sign}${delta.toFixed(1)}</small>`;
 }
 
 function racePathTracker(race) {
@@ -774,9 +793,9 @@ function fallbackCandidatesForRace(race, lookups) {
   return null;
 }
 
-function tooltipMarkup(race, title) {
+function tooltipMarkup(race, title, comparisonNote = "") {
   if (!race) {
-    return `<div class="election-map-tooltip-title">${title}</div><div class="election-map-tooltip-muted">No results configured</div>`;
+    return `<div class="election-map-tooltip-title">${title}</div>`;
   }
 
   const live = hasActiveResults(race);
@@ -804,6 +823,7 @@ function tooltipMarkup(race, title) {
       <span>${status}</span>
       <span>${isActuallyCalled(race) ? "Called" : "Uncalled"}</span>
     </div>
+    ${comparisonNote ? `<div class="election-map-tooltip-muted">${escapeHtml(comparisonNote)}</div>` : ""}
   `;
 }
 
@@ -1001,6 +1021,10 @@ class ElectionNightPage {
 
     window.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden" && this.currentRace) saveRaceSnapshot(this.currentRace);
+      if (document.visibilityState === "visible" && this.currentRace) {
+        refreshRaceSnapshotBaseline(this.currentRace);
+        this.renderFocusedRace(this.currentRace);
+      }
     });
     window.addEventListener("pagehide", () => {
       if (this.currentRace) saveRaceSnapshot(this.currentRace);
@@ -1072,12 +1096,28 @@ class ElectionNightPage {
   seedSimulatedRace(race, reportingPercent = 18) {
     const candidates = race.candidates?.length ? race.candidates : [buildFallbackCandidate("D"), buildFallbackCandidate("R")];
     const baseTotal = 18000 + (stringToNumber(race.id || race.title) % 90000);
+    const forecastShares = forecastCandidateShares(this.findForecastRace(race) || {});
+    const partyCounts = candidates.reduce((counts, candidate) => {
+      const party = normalizedPartyCode(candidate);
+      counts[party] = (counts[party] || 0) + 1;
+      return counts;
+    }, {});
     const weights = candidates.map((candidate, index) => {
       const party = normalizedPartyCode(candidate);
       const existingShare = Number(candidate.percent);
       if (Number.isFinite(existingShare) && existingShare > 0) return existingShare;
-      const partyBase = party === "D" ? 43 : party === "R" ? 43 : party === "I" ? 24 : 12;
-      return Math.max(2, partyBase - index * 7 + (stringToNumber(`${race.id}-${candidate.name}`) % 13));
+      const partyPool = party === "D"
+        ? forecastShares.dem
+        : party === "R"
+          ? forecastShares.rep
+          : party === "I"
+            ? Math.max(5, Math.min(18, 100 - forecastShares.dem - forecastShares.rep + 8))
+            : 8;
+      const samePartyIndex = candidates.slice(0, index + 1).filter((item) => normalizedPartyCode(item) === party).length - 1;
+      const divisor = Math.max(1, partyCounts[party] || 1);
+      const candidateSkew = 1 + (((stringToNumber(`${race.id}-${candidate.name}`) % 900) - 450) / 3500);
+      const rankSkew = Math.max(0.36, 1 - samePartyIndex * 0.18);
+      return Math.max(1.5, (partyPool / divisor) * candidateSkew * rankSkew);
     });
     const totalWeight = weights.reduce((sum, value) => sum + value, 0);
     const votesIn = Math.round(baseTotal * (reportingPercent / 100));
@@ -1290,11 +1330,18 @@ class ElectionNightPage {
 
   comparisonTooltipNote(race, feature) {
     const source = this.comparisonSource();
-    if (!source || source.id === "live") return "";
+    if (!race || !source || source.id === "live") return "";
     if (source.id === "fea-forecast") {
       const margin = this.forecastMarginForRace(race);
       const marginText = Number.isFinite(margin) ? `${margin > 0 ? "D" : "R"} +${Math.abs(margin).toFixed(1)}` : "unavailable";
       return `FEA forecast projection is race-level only (${marginText}). County comparison is unavailable.`;
+    }
+    if (!feature) {
+      const shift = this.comparisonRaceShift(race);
+      const baseline = this.baselineRaceMargin(race);
+      if (Number.isFinite(shift)) return `Shift vs ${source.label}: ${shift >= 0 ? "+" : "-"}${Math.abs(shift).toFixed(1)} D margin.`;
+      if (Number.isFinite(baseline)) return `${source.label}: ${baseline > 0 ? "D" : "R"} +${Math.abs(baseline).toFixed(1)}; shift pending.`;
+      return `${source.label} baseline is not loaded for this race yet.`;
     }
     const row = feature ? this.baselineCountyRow(feature) : null;
     if (!row) return `${source.label} county baseline is not loaded for this geography yet.`;
@@ -1303,7 +1350,7 @@ class ElectionNightPage {
     const liveMargin = countyLiveDemMargin(county);
     const shift = Number.isFinite(liveMargin) && Number.isFinite(margin) ? liveMargin - margin : NaN;
     if (Number.isFinite(shift)) {
-      return `Results minus ${source.label}: ${shift > 0 ? "D" : "R"} shift +${Math.abs(shift).toFixed(1)}.`;
+      return `Shift vs ${source.label}: ${shift >= 0 ? "+" : "-"}${Math.abs(shift).toFixed(1)} D margin.`;
     }
     return Number.isFinite(margin)
       ? `${source.label}: ${margin > 0 ? "D" : "R"} +${Math.abs(margin).toFixed(1)}; awaiting live margin for shift.`
@@ -1594,7 +1641,8 @@ class ElectionNightPage {
       })
       .on("mousemove", (event, feature) => {
         const state = FIPS_TO_STATE[featureStateFipsForElectionNight(feature)];
-        this.showTooltip(event, tooltipMarkup(raceByState.get(state), STATE_NAMES[state] || state));
+        const race = raceByState.get(state);
+        this.showTooltip(event, tooltipMarkup(race, STATE_NAMES[state] || state, this.comparisonTooltipNote(race)));
       })
       .on("mouseleave blur", () => this.hideTooltip());
 
@@ -1645,7 +1693,7 @@ class ElectionNightPage {
       .on("mousemove", (event, feature) => {
         const race = raceByDistrict.get(feature.properties?.id);
         const title = feature.properties?.id || "House district";
-        this.showTooltip(event, tooltipMarkup(race, title));
+        this.showTooltip(event, tooltipMarkup(race, title, this.comparisonTooltipNote(race)));
       })
       .on("mouseleave blur", () => this.hideTooltip());
 
@@ -1813,7 +1861,9 @@ class ElectionNightPage {
     const raceByDistrict = options.districtMode
       ? new Map(this.modeRaces().map((item) => [houseGeometryId(item), item]))
       : new Map();
-    const contextFeatures = options.districtMode ? stateDistrictFeatures : (this.stateFeatures || []);
+    const statewideContextFeatures = (this.resultStateFeatures || this.stateFeatures || [])
+      .filter((feature) => featureStateFipsForElectionNight(feature));
+    const contextFeatures = options.districtMode ? stateDistrictFeatures : statewideContextFeatures;
     const contextRaceForFeature = (feature) => {
       if (options.districtMode) return raceByDistrict.get(feature.properties?.id) || null;
       const state = FIPS_TO_STATE[featureStateFipsForElectionNight(feature)];
@@ -1849,7 +1899,7 @@ class ElectionNightPage {
         const nextRace = contextRaceForFeature(feature);
         if (nextRace) {
           const label = options.districtMode ? nextRace.title : (STATE_NAMES[nextRace.state] || nextRace.state);
-          this.showTooltip(event, tooltipMarkup(nextRace, label));
+          this.showTooltip(event, tooltipMarkup(nextRace, label, this.comparisonTooltipNote(nextRace)));
         }
       })
       .on("mouseleave blur", () => this.hideTooltip());
@@ -2233,6 +2283,7 @@ class ElectionNightPage {
 
     const live = hasActiveResults(race);
     const leaderParty = raceWinnerParty(race);
+    ensureRaceSnapshot(race);
     panel.hidden = false;
     panel.classList.remove("is-dragging");
     panel.classList.toggle("is-called", isActuallyCalled(race));
@@ -2307,7 +2358,6 @@ class ElectionNightPage {
         this.renderFocusedRace(race);
       });
     });
-    ensureRaceSnapshot(race);
     this.setFocusedUiState(true);
     this.positionFocusPanelForRace(race);
   }
