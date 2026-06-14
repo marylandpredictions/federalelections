@@ -76,7 +76,8 @@ function parseDelimited(text, delimiter = ",") {
 }
 
 function parseCsv(text, file = "") {
-  const delimiter = String(file).toLowerCase().endsWith(".tab") || text.slice(0, 500).includes("\t") ? "\t" : ",";
+  const firstLine = text.split(/\r?\n/, 1)[0] || "";
+  const delimiter = (firstLine.match(/\t/g) || []).length > (firstLine.match(/,/g) || []).length ? "\t" : ",";
   return parseDelimited(text, delimiter);
 }
 
