@@ -1591,7 +1591,11 @@ class ElectionNightPage {
       : `${up} states up for election. Not up: ${demSafe} D / ${repSafe} R.`;
     if (demLabel) demLabel.innerHTML = `${dem + demSafe} D<small>${formatPercent(popularVote.dem)} PV</small>`;
     if (repLabel) repLabel.innerHTML = `${rep + repSafe} R<small>${formatPercent(popularVote.rep)} PV</small>`;
-    if (majorityLabel) majorityLabel.innerHTML = `<b>${config.majority} for majority</b><small>${popularVote.leader === "EVEN" ? "PV even" : `${popularVote.leader}+${popularVote.margin.toFixed(1)} PV`}</small>`;
+    if (majorityLabel) {
+      const majorityText = isSenate ? "50 for majority" : `${config.majority} for majority`;
+      const pvText = popularVote.leader === "EVEN" ? "PV even" : `${popularVote.leader}+${popularVote.margin.toFixed(1)} PV`;
+      majorityLabel.innerHTML = `<b>${majorityText}</b><small>${isSenate ? `D need 51 - ${pvText}` : pvText}</small>`;
+    }
     if (demNote) demNote.textContent = this.selectedMode === "senate" ? `${demSafe} D not up` : "";
     if (repNote) repNote.textContent = this.selectedMode === "senate" ? `${repSafe} R not up` : "";
     if (demBar) demBar.style.width = `${demPct}%`;
