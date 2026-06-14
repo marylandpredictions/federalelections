@@ -14,6 +14,8 @@ Official current MIT/MEDSL Dataverse files:
   - file: `countypres_2000-2024.tab`
 - U.S. House 1976-2024: https://doi.org/10.7910/DVN/IG0UN2
   - file: `1976-2024-house.tab`
+- U.S. Senate statewide 1976-2024: https://doi.org/10.7910/DVN/PEJ5QU
+  - file: `1976-2024-senate-state.tab`
 
 Harvard Dataverse currently requires a guestbook response before downloading these two public files. If an automated fetch receives `You may not download this file without the required Guestbook response`, download the two `.tab` files in a browser, place them in `data/baselines/source`, then run the build command below.
 
@@ -147,6 +149,10 @@ Expected shape:
 ```
 
 Senate and governor baselines are state-level only. They are unique comparison modes because previous Senate and governor elections can be non-comparable after special elections, appointed incumbents, or open-seat changes.
+
+`senate-last-states.json` is generated from `1976-2024-senate-state.tab`. For current 2026 coverage, the builder prefers the comparable same-seat-cycle baseline instead of blindly using the latest Senate race in the state. This avoids unfair comparisons such as using Angus King's 2024 Maine margin for Susan Collins's 2026 race; Maine uses Collins's 2020 race instead. Special-election states can override the default cycle year in `scripts/build-result-comparison-baselines.mjs`. If the cycle baseline is unavailable, the builder falls back to the latest usable Senate election. Major independent/non-Republican candidates such as Bernie Sanders and Dan Osborn are counted on the non-Republican side when needed and noted in the output.
+
+`governor-last-states.json` is generated from `data/governor-forecast.json` for now because that model already stores the previous governor margin used by each race. This keeps the election-night comparison mode wired while still documenting that it should be replaced by a complete certified governor returns source when one is added.
 
 ## FEA Forecast Comparison
 

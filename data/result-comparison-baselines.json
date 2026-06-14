@@ -12,7 +12,7 @@
       "description": "Results minus the 2024 presidential Democratic margin. County files are compatible with statewide race detail maps.",
       "appliesTo": ["house", "senate", "governor"],
       "countyCompatible": true,
-      "status": "pending-data",
+      "status": "available",
       "countyFile": "data/baselines/pres-2024-counties.json",
       "stateFile": "data/baselines/pres-2024-states.json",
       "sourceNotes": [
@@ -30,7 +30,7 @@
       "description": "Results minus the 2020 presidential Democratic margin. County files are compatible with statewide race detail maps.",
       "appliesTo": ["house", "senate", "governor"],
       "countyCompatible": true,
-      "status": "pending-data",
+      "status": "available",
       "countyFile": "data/baselines/pres-2020-counties.json",
       "stateFile": "data/baselines/pres-2020-states.json",
       "sourceNotes": [
@@ -48,7 +48,7 @@
       "description": "Results minus the 2024 House district Democratic margin. House baselines are district-level only unless split-county returns are added later.",
       "appliesTo": ["house"],
       "countyCompatible": false,
-      "status": "pending-data",
+      "status": "available",
       "districtFile": "data/baselines/house-2024-districts.json",
       "sourceNotes": [
         "Use official state returns or MIT/MEDSL-style district House returns.",
@@ -58,14 +58,17 @@
     {
       "id": "senate-last",
       "label": "Last Senate margin",
-      "description": "Results minus the most recent comparable Senate general-election margin in that state. Special-election and new-incumbent notes belong in the normalized source file.",
+      "description": "Results minus the most comparable recent Senate general-election margin for the seat cycle where available, instead of blindly using the latest Senate race in the state.",
       "appliesTo": ["senate"],
       "countyCompatible": false,
-      "status": "pending-data",
+      "status": "available",
       "stateFile": "data/baselines/senate-last-states.json",
       "sourceNotes": [
-        "Use the most recent comparable Senate race in each state, not a generic national baseline.",
-        "Mark special elections, appointed incumbents, or non-comparable races in the source file notes."
+        "For current 2026 coverage, use the same-seat-cycle baseline where available, such as Collins 2020 instead of King 2024 in Maine.",
+        "If the same-cycle baseline is unavailable, fall back to the latest usable Senate statewide baseline and note that fallback in the generated source file."
+      ],
+      "sourceUrls": [
+        "https://doi.org/10.7910/DVN/PEJ5QU"
       ]
     },
     {
@@ -74,11 +77,11 @@
       "description": "Results minus the most recent comparable governor general-election margin in that state.",
       "appliesTo": ["governor"],
       "countyCompatible": false,
-      "status": "pending-data",
+      "status": "available",
       "stateFile": "data/baselines/governor-last-states.json",
       "sourceNotes": [
-        "Use the previous gubernatorial general election in each state.",
-        "Mark open-seat, special, recall, or other non-comparable race conditions in the source file notes."
+        "Uses previous gubernatorial general-election margins from the FEA governor forecast input file.",
+        "This is state-level only. Replace with certified governor returns when a complete statewide governor returns source is added."
       ]
     },
     {

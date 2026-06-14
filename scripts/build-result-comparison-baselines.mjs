@@ -24,6 +24,19 @@ const STATE_NAMES = {
 
 const STATE_BY_NAME = Object.fromEntries(Object.entries(STATE_NAMES).map(([abbr, name]) => [name.toUpperCase(), abbr]));
 
+// Current election-night Senate coverage is for the 2026 cycle.  A simple
+// "latest Senate race in the state" can be misleading for states with two
+// distinctive senators, especially ME-2026: Angus King's 2024 result is not a
+// fair baseline for Susan Collins's 2026 race.  Prefer the same seat cycle
+// where it exists, then fall back to the latest usable statewide Senate race.
+const SENATE_BASELINE_YEAR_BY_STATE = {
+  OH: 2024,
+  NE: 2024,
+  OK: 2022,
+  FL: 2024
+};
+const DEFAULT_2026_SENATE_BASELINE_YEAR = 2020;
+
 function readArg(name) {
   const prefix = `--${name}=`;
   const arg = process.argv.find((item) => item.startsWith(prefix));
@@ -254,6 +267,151 @@ function buildHouseBaseline(file) {
   });
 }
 
+function buildSenateBaseline(file) {
+  if (!file) {
+    console.warn("No Senate statewide returns file found. Put 1976-2024-senate-state.tab in data/baselines/source or pass --senate=path.");
+    return;
+  }
+  const rows = parseCsv(fs.readFileSync(file, "utf8"), file);
+  const raceMap = new Map();
+  for (const row of rows) {
+    const stage = String(column(row, ["stage"])).trim().toLowerCase();
+    const mode = String(column(row, ["mode"])).trim().toLowerCase();
+    const office = String(column(row, ["office"])).trim().toLowerCase();
+    if (stage && stage !== "gen") continue;
+    if (mode && mode !== "total") continue;
+    if (office && !office.includes("senate")) continue;
+    const year = yearOf(row);
+    const state = stateAbbr(row);
+    const party = partyOf(row);
+    if (!year || !state) continue;
+    const special = /^true$/i.test(String(column(row, ["special"])).trim());
+    const key = `${state}:${year}:${special ? "special" : "regular"}`;
+    if (!raceMap.has(key)) {
+      raceMap.set(key, {
+        state,
+        year,
+        special,
+        baselineRace: `${year} Senate${special ? " special" : ""}`,
+        notes: special ? "Most recent Senate general election in this state was coded as a special election." : "Most recent Senate general election in this state.",
+        demVotes: 0,
+        repVotes: 0,
+        totalVotes: 0,
+        topOtherName: "",
+        topOtherVotes: 0
+      });
+    }
+    const entry = raceMap.get(key);
+    const votes = number(column(row, ["candidatevotes", "candidate_votes", "votes"]));
+    if (party === "D") entry.demVotes += votes;
+    if (party === "R") entry.repVotes += votes;
+    if (!party && votes > entry.topOtherVotes) {
+      entry.topOtherVotes = votes;
+      entry.topOtherName = String(column(row, ["candidate"])).trim();
+    }
+    entry.totalVotes = Math.max(entry.totalVotes, number(column(row, ["totalvotes", "total_votes", "total"])));
+  }
+
+  for (const entry of raceMap.values()) {
+    const otherName = String(entry.topOtherName || "").toUpperCase();
+    const samePartyAlaskaRace = entry.state === "AK" && /MURKOWSKI|TSHIBAKA/.test(otherName);
+    const majorOther = entry.repVotes > 0
+      && entry.topOtherVotes > entry.demVotes
+      && !samePartyAlaskaRace
+      && (entry.demVotes === 0 || ["ME", "VT"].includes(entry.state));
+    if (majorOther) {
+      entry.demVotes += entry.topOtherVotes;
+      entry.notes = `${entry.notes} ${entry.topOtherName || "A major independent/other candidate"} is counted on the non-Republican side for this comparison baseline.`;
+    }
+    delete entry.topOtherName;
+    delete entry.topOtherVotes;
+  }
+
+  const latestByState = new Map();
+  const byState = new Map();
+  for (const entry of raceMap.values()) {
+    if (!entry.demVotes || !entry.repVotes) continue;
+    if (!byState.has(entry.state)) byState.set(entry.state, []);
+    byState.get(entry.state).push(entry);
+  }
+
+  function chooseEntry(entries, state) {
+    const targetYear = SENATE_BASELINE_YEAR_BY_STATE[state] || DEFAULT_2026_SENATE_BASELINE_YEAR;
+    const targetEntries = entries.filter((entry) => entry.year === targetYear);
+    const pool = targetEntries.length ? targetEntries : entries;
+    return [...pool].sort((a, b) => {
+      if (a.year !== b.year) return b.year - a.year;
+      if (a.special !== b.special) return Number(a.special) - Number(b.special);
+      return b.totalVotes - a.totalVotes;
+    })[0];
+  }
+
+  for (const [state, entries] of byState.entries()) {
+    const entry = chooseEntry(entries, state);
+    if (entry) {
+      const targetYear = SENATE_BASELINE_YEAR_BY_STATE[state] || DEFAULT_2026_SENATE_BASELINE_YEAR;
+      if (entry.year === targetYear) {
+        entry.notes = `${entry.notes} Used as the comparable same-seat-cycle baseline for current 2026 Senate coverage.`;
+      } else {
+        entry.notes = `${entry.notes} Same-seat-cycle ${targetYear} baseline was unavailable, so this is the latest usable Senate statewide baseline.`;
+      }
+      latestByState.set(state, entry);
+    }
+  }
+
+  const states = [...latestByState.values()]
+    .map(finalizeVotes)
+    .sort((a, b) => a.state.localeCompare(b.state));
+  if (!states.length) {
+    console.warn(`No Senate statewide rows found in ${path.relative(ROOT, file)}.`);
+    return;
+  }
+  writeJson("data/baselines/senate-last-states.json", {
+    source: "MIT Election Data and Science Lab Senate statewide returns / official certified returns",
+    sourceFile: path.relative(ROOT, file).replaceAll("\\", "/"),
+    updatedAt: TODAY,
+    states
+  });
+}
+
+function governorShareFromMargin(margin) {
+  return {
+    demVotes: Math.round((50 + margin / 2) * 10),
+    repVotes: Math.round((50 - margin / 2) * 10),
+    totalVotes: 1000
+  };
+}
+
+function buildGovernorBaselineFromForecast(file) {
+  if (!file || !fs.existsSync(file)) {
+    console.warn("No governor forecast file found for governor-last baseline.");
+    return;
+  }
+  const payload = JSON.parse(fs.readFileSync(file, "utf8"));
+  const states = (payload.races || [])
+    .filter((race) => race.state && Number.isFinite(Number(race.lastMargin)))
+    .map((race) => {
+      const margin = Number(race.lastMargin);
+      return finalizeVotes({
+        state: race.state,
+        baselineRace: race.lastGovernorRace || "Previous governor election",
+        notes: "Previous gubernatorial general-election margin from the FEA governor model input file. Replace with certified statewide governor returns when a complete source file is added.",
+        ...governorShareFromMargin(margin)
+      });
+    })
+    .sort((a, b) => a.state.localeCompare(b.state));
+  if (!states.length) {
+    console.warn(`No governor last-margin rows found in ${path.relative(ROOT, file)}.`);
+    return;
+  }
+  writeJson("data/baselines/governor-last-states.json", {
+    source: "FEA governor forecast last-margin inputs",
+    sourceFile: path.relative(ROOT, file).replaceAll("\\", "/"),
+    updatedAt: TODAY,
+    states
+  });
+}
+
 const presPath = readArg("pres") || firstExisting([
   path.join(SOURCE_DIR, "countypres_2000-2024.tab"),
   path.join(SOURCE_DIR, "countypres_2000-2024.csv"),
@@ -268,5 +426,18 @@ const housePath = readArg("house") || firstExisting([
   path.join(SOURCE_DIR, "house.csv")
 ]);
 
+const senatePath = readArg("senate") || firstExisting([
+  path.join(SOURCE_DIR, "1976-2024-senate-state.tab"),
+  path.join(SOURCE_DIR, "1976-2024-senate-state.csv"),
+  path.join(SOURCE_DIR, "1976-2020-senate.csv"),
+  path.join(SOURCE_DIR, "senate.csv")
+]);
+
+const governorPath = readArg("governor") || firstExisting([
+  path.join(ROOT, "data", "governor-forecast.json")
+]);
+
 buildPresidentialBaselines(presPath);
 buildHouseBaseline(housePath);
+buildSenateBaseline(senatePath);
+buildGovernorBaselineFromForecast(governorPath);
