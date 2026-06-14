@@ -978,6 +978,7 @@ class ElectionNightPage {
     this.resultStateFeatures = null;
     this.highwayFeatures = null;
     this.districtCountyFeatures = new Map();
+    this.districtCountyFeaturePromises = new Map();
     this.nameLookups = { house: new Map(), senate: new Map(), governor: new Map() };
     this.liveRaceIndex = [];
     this.liveRaceDetails = new Map();
@@ -996,6 +997,7 @@ class ElectionNightPage {
     this.zoom = null;
     this.path = null;
     this.simulationTimer = null;
+    this.simulationTickRunning = false;
     this.resizeTimer = null;
     this.init();
   }
@@ -1191,13 +1193,19 @@ class ElectionNightPage {
   startFastSimulation() {
     window.clearInterval(this.simulationTimer);
     this.simulationTimer = window.setInterval(async () => {
-      for (const race of this.modeRaces()) {
-        const nextReporting = Math.min(99, Number(race.reportingPercent || 0) + 6 + (stringToNumber(race.id || "") % 5));
-        this.seedSimulatedRace(race, nextReporting);
+      if (this.simulationTickRunning) return;
+      this.simulationTickRunning = true;
+      try {
+        for (const race of this.modeRaces()) {
+          const nextReporting = Math.min(99, Number(race.reportingPercent || 0) + 6 + (stringToNumber(race.id || "") % 5));
+          this.seedSimulatedRace(race, nextReporting);
+        }
+        this.renderSummary();
+        if (this.currentRace) await this.selectRace(this.currentRace, null, { preserveMapTransform: true });
+        else await this.renderMap();
+      } finally {
+        this.simulationTickRunning = false;
       }
-      this.renderSummary();
-      if (this.currentRace) await this.selectRace(this.currentRace, null, { preserveMapTransform: true });
-      else await this.renderMap();
     }, 2400);
   }
 
@@ -1418,11 +1426,24 @@ class ElectionNightPage {
   async loadDistrictCountyFeatures(race) {
     const id = houseGeometryId(race);
     if (!id) return [];
-    if (!this.districtCountyFeatures.has(id)) {
-      const detail = await this.safeJson(`data/maps/congress/119/${id}.json`);
-      this.districtCountyFeatures.set(id, detail?.features || []);
+    if (this.districtCountyFeatures.has(id)) return this.districtCountyFeatures.get(id) || [];
+    if (!this.districtCountyFeaturePromises.has(id)) {
+      const request = this.safeJson(`data/maps/congress/119/${id}.json`)
+        .then((detail) => {
+          const features = detail?.features || [];
+          this.districtCountyFeatures.set(id, features);
+          this.districtCountyFeaturePromises.delete(id);
+          return features;
+        })
+        .catch((error) => {
+          console.warn(`Could not load district county map ${id}`, error);
+          this.districtCountyFeatures.set(id, []);
+          this.districtCountyFeaturePromises.delete(id);
+          return [];
+        });
+      this.districtCountyFeaturePromises.set(id, request);
     }
-    return this.districtCountyFeatures.get(id) || [];
+    return this.districtCountyFeaturePromises.get(id);
   }
 
   modeRaces() {
@@ -1454,11 +1475,15 @@ class ElectionNightPage {
     const races = this.modeRaces();
     if (this.selectedMode === "house") {
       await this.loadHouseFeatures();
+      if (this.isLabPage) return;
       const priority = [
         ...races.filter((race) => KEY_RACE_IDS.has(String(race.id))),
         ...races.filter((race) => !KEY_RACE_IDS.has(String(race.id))).slice(0, 20)
       ];
-      for (const race of priority.slice(0, 64)) this.loadDistrictCountyFeatures(race);
+      for (const race of priority.slice(0, 16)) {
+        if (this.currentRace) break;
+        await this.loadDistrictCountyFeatures(race);
+      }
       return;
     }
     if (this.selectedMode === "senate" || this.selectedMode === "governor") {
