@@ -490,7 +490,11 @@ async function handleAdmin(request, response, url) {
     ]);
     const latestRaces = raceListFromLiveResults(liveResults);
     const latestRaceIds = new Set(latestRaces.map((race) => String(race.id)));
-    const allRaces = [...latestRaces, ...(await raceListFromDetailFiles(latestRaceIds))];
+    // Broadcast admin should stay focused on the current live slate. Historical
+    // detail files remain available to the public pages, but are intentionally
+    // not offered as call targets here so old election-night options do not
+    // clutter the producer workflow.
+    const allRaces = latestRaces;
     sendJson(response, 200, {
       ok: true,
       races: latestRaces,

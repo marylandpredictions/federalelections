@@ -152,16 +152,17 @@ async function cachedFetchJson(cache, url) {
 }
 
 const POLL_CLOSE_UTC_BY_STATE = {
-  CA: "2026-06-03T03:00:00Z",
-  IA: "2026-06-03T01:00:00Z",
-  ME: "2026-06-10T00:00:00Z",
-  MT: "2026-06-03T02:00:00Z",
-  ND: "2026-06-10T01:00:00Z",
-  NV: "2026-06-10T02:00:00Z",
-  NJ: "2026-06-03T00:00:00Z",
-  NM: "2026-06-03T01:00:00Z",
-  SC: "2026-06-09T23:00:00Z",
-  SD: "2026-06-03T01:00:00Z"
+  AL: "2026-06-17T00:00:00Z",
+  GA: "2026-06-16T23:00:00Z",
+  DC: "2026-06-17T00:00:00Z",
+  OK: "2026-06-17T00:00:00Z"
+};
+
+const POLL_OPEN_UTC_BY_STATE = {
+  AL: "2026-06-16T12:00:00Z",
+  GA: "2026-06-16T11:00:00Z",
+  DC: "2026-06-16T11:00:00Z",
+  OK: "2026-06-16T12:00:00Z"
 };
 
 const TYPE_PRIORITY = {
@@ -251,7 +252,8 @@ function callForCandidate(raceId, candidateName) {
 
 function isRealCandidate(candidate) {
   const name = String(candidate?.name || "").trim();
-  return Boolean(name) && !/^write-?in$/i.test(name);
+  if (!name || candidate?.placeholder) return false;
+  return !/(^|\b)(write-?in|placeholder|candidate pending|candidate list pending)(\b|$)/i.test(name);
 }
 
 function pollsAreClosed(race) {
@@ -263,7 +265,8 @@ function pollsAreClosed(race) {
 }
 
 function pollsAreOpen(race) {
-  const iso = isoDate(race.pollsOpen || race.polls_open);
+  const iso = isoDate(race.pollsOpen || race.polls_open)
+    || POLL_OPEN_UTC_BY_STATE[String(race.province || race.state || "").toUpperCase()];
   if (!iso) return pollsAreClosed(race);
   const date = new Date(iso);
   return Number.isFinite(date.getTime()) && Date.now() >= date.getTime();

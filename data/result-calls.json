@@ -1,31 +1,29 @@
 {
-  "description": "Manual Federal Elections Analysis race calls. The live results API never makes calls for us. Edit this file, push it, and the site will show the call on the main results board and race detail page.",
+  "description": "Manual Federal Elections Analysis race calls. The live results API never makes calls for us. Edit this file, push it, and the site will show the call on the results board, race detail views, and OBS overlay.",
   "_howToUse": {
     "fileToEdit": "data/result-calls.json",
-    "candidateNameRule": "Candidate names must match the candidate name in the race JSON exactly. Use raceIdGuide below to find the race, then copy the candidate name from that race page if needed.",
+    "candidateNameRule": "Candidate names must match the candidate name in data/live-results.json exactly. Use raceIdGuide below to find the race, then copy the candidate name exactly.",
     "singleWinnerExample": {
       "races": {
-        "79944": {
+        "ga-sen-r-runoff-2026": {
           "calls": [
             {
-              "candidate": "Rob Sand",
-              "status": "projected"
+              "candidate": "Mike Collins",
+              "status": "projected",
+              "calledAt": "2026-06-16T21:15:00-04:00"
             }
           ]
         }
       }
     },
-    "topTwoOrMultiWinnerExample": {
+    "runoffOrPrimaryExample": {
       "races": {
-        "79777": {
+        "al-sen-r-runoff-2026": {
           "calls": [
             {
-              "candidate": "Xavier Becerra",
-              "status": "advances"
-            },
-            {
-              "candidate": "Steve Hilton",
-              "status": "advances"
+              "candidate": "Barry Moore",
+              "status": "winner",
+              "calledAt": "2026-06-16T21:30:00-05:00"
             }
           ]
         }
@@ -37,450 +35,20 @@
       "advances": "Use for top-two/open-primary candidates who are projected to advance. Label shown: Advances.",
       "advanced": "Use when a top-two/open-primary advance is final. Label shown: Advanced to general election."
     },
-    "optionalLabel": "You can add a custom label field to any call if you need exact wording, for example { \"candidate\": \"Name\", \"status\": \"projected\", \"label\": \"Projected winner\" }.",
-    "optionalCalledAt": "You can add calledAt in ISO format, for example \"2026-06-02T20:45:00-05:00\". The OBS overlay uses this to decide which call is newest.",
+    "optionalLabel": "You can add a custom label field to any call if exact wording is needed.",
+    "optionalCalledAt": "Add calledAt in ISO format. The OBS overlay uses this to decide which call is newest.",
     "obsOverlay": "For livestreams, add call-overlay.html as an OBS Browser Source. Suggested size: 1920x300, transparent background enabled. It checks this file automatically.",
-    "important": "Do not put example calls inside the real races object unless you want them live on the site."
+    "important": "The races object is intentionally empty before calls are made. Do not add a candidate unless FEA is calling that race."
   },
   "raceIdGuide": {
-    "79777": "California Governor Open Primary",
-    "79778": "California Insurance Commissioner Open Primary",
-    "79779": "California Lieutenant Governor Open Primary",
-    "79881": "California Superintendent of Public Instruction Open Primary",
-    "79884": "California US House District 11 Open Primary",
-    "79893": "California US House District 1 Open Primary",
-    "79896": "California US House District 22 Open Primary",
-    "79907": "California US House District 32 Open Primary",
-    "79909": "California US House District 34 Open Primary",
-    "79916": "California US House District 40 Open Primary",
-    "79924": "California US House District 48 Open Primary",
-    "79932": "California US House District 7 Open Primary",
-    "79938": "Los Angeles Mayor Open Primary",
-    "79944": "Iowa Governor Democratic Primary",
-    "79945": "Iowa Governor Republican Primary",
-    "80210": "Iowa US Senate Democratic Primary",
-    "80211": "Iowa US Senate Republican Primary",
-    "80452": "Montana US House 1 Democratic Primary",
-    "80458": "Montana US Senate Democratic Primary",
-    "80460": "Montana US Senate Republican Primary",
-    "80461": "South Dakota Governor Republican Primary",
-    "80512": "South Dakota US Senate Republican Primary",
-    "80690": "New Mexico Governor Democratic Primary",
-    "80691": "New Mexico Governor Republican Primary",
-    "81014": "New Mexico US Senate Democratic Primary",
-    "81015": "New Mexico US Senate Republican Primary",
-    "81046": "New Jersey US House 7 Democratic Primary",
-    "81048": "New Jersey US House 8 Democratic Primary",
-    "81055": "New Jersey US House 12 Democratic Primary",
-    "81057": "New Jersey US Senate Democratic Primary",
-    "81058": "New Jersey US Senate Republican Primary",
-    "nd-house-at-large-r-2026": "North Dakota US House At-Large Republican Primary",
-    "nd-house-at-large-d-2026": "North Dakota US House At-Large Democratic Primary"
+    "al-sen-r-runoff-2026": "Alabama Senate Republican Runoff",
+    "ga-gov-r-runoff-2026": "Georgia Governor Republican Runoff",
+    "ga-sen-r-runoff-2026": "Georgia Senate Republican Runoff",
+    "ga-house-11-r-runoff-2026": "Georgia US House 11 Republican Runoff",
+    "dc-mayor-d-2026": "District of Columbia Mayor Democratic Primary",
+    "dc-delegate-d-2026": "District of Columbia Delegate Democratic Primary",
+    "ok-gov-r-2026": "Oklahoma Governor Republican Primary",
+    "ok-house-1-r-2026": "Oklahoma US House 1 Republican Primary"
   },
-  "races": {
-    "79777": {
-      "calls": [
-        {
-          "candidate": "Xavier Becerra",
-          "status": "advances"
-        },
-        {
-          "candidate": "Steve Hilton",
-          "status": "advances"
-        }
-      ]
-    },
-    "79778": {
-      "calls": [
-        {
-          "candidate": "Jane Kim",
-          "status": "advances"
-        },
-        {
-          "candidate": "Ben Allen",
-          "status": "advances"
-        }
-      ]
-    },
-    "79779": {
-      "calls": [
-        {
-          "candidate": "Fiona Ma",
-          "status": "advances"
-        }
-      ]
-    },
-    "79881": {
-      "calls": [
-        {
-          "candidate": "Sonja Shaw",
-          "status": "advances"
-        },
-        {
-          "candidate": "Richard Barrera",
-          "status": "advances"
-        }
-      ]
-    },
-    "79884": {
-      "calls": [
-        {
-          "candidate": "Scott Wiener",
-          "status": "advances"
-        },
-        {
-          "candidate": "Connie Chan",
-          "status": "advances"
-        }
-      ]
-    },
-    "79893": {
-      "calls": [
-        {
-          "candidate": "James Gallagher",
-          "status": "advances"
-        },
-        {
-          "candidate": "Mike McGuire",
-          "status": "advances"
-        }
-      ]
-    },
-    "79896": {
-      "calls": [
-        {
-          "candidate": "David Valadao",
-          "status": "advances"
-        }
-      ]
-    },
-    "79907": {
-      "calls": [
-        {
-          "candidate": "Brad Sherman",
-          "status": "advances"
-        },
-        {
-          "candidate": "Larry Thompson",
-          "status": "advances"
-        }
-      ]
-    },
-    "79909": {
-      "calls": [
-        {
-          "candidate": "Jimmy Gomez",
-          "status": "advances"
-        },
-        {
-          "candidate": "Angela Gonzales-Torres",
-          "status": "advances"
-        }
-      ]
-    },
-    "79916": {
-      "calls": [
-        {
-          "candidate": "Ken Calvert",
-          "status": "advances"
-        },
-        {
-          "candidate": "Young Kim",
-          "status": "advances"
-        }
-      ]
-    },
-    "79924": {
-      "calls": [
-        {
-          "candidate": "Jim Desmond",
-          "status": "advances"
-        },
-        {
-          "candidate": "Marni von Wilpert",
-          "status": "advances"
-        }
-      ]
-    },
-    "79932": {
-      "calls": [
-        {
-          "candidate": "Doris Matsui",
-          "status": "advances"
-        },
-        {
-          "candidate": "Mai Vang",
-          "status": "advances"
-        }
-      ]
-    },
-    "79938": {
-      "calls": [
-        {
-          "candidate": "Karen Bass",
-          "status": "advances"
-        },
-        {
-          "candidate": "Nithya Raman",
-          "status": "advances"
-        }
-      ]
-    },
-    "79945": {
-      "calls": [
-        {
-          "candidate": "Zach Lahn",
-          "status": "projected"
-        }
-      ]
-    },
-    "80210": {
-      "calls": [
-        {
-          "candidate": "Josh Turek",
-          "status": "projected"
-        }
-      ]
-    },
-    "80211": {
-      "calls": [
-        {
-          "candidate": "Ashley Hinson",
-          "status": "projected"
-        }
-      ]
-    },
-    "80452": {
-      "calls": [
-        {
-          "candidate": "Sam Forstag",
-          "status": "projected"
-        }
-      ]
-    },
-    "80458": {
-      "calls": [
-        {
-          "candidate": "Alani Bankhead",
-          "status": "projected"
-        }
-      ]
-    },
-    "80460": {
-      "calls": [
-        {
-          "candidate": "Kurt Alme",
-          "status": "projected"
-        }
-      ]
-    },
-    "80461": {
-      "calls": [
-        {
-          "candidate": "Toby Doeden",
-          "status": "advances"
-        },
-        {
-          "candidate": "Larry Rhoden",
-          "status": "advances"
-        }
-      ]
-    },
-    "80512": {
-      "calls": [
-        {
-          "candidate": "Mike Rounds",
-          "status": "projected"
-        }
-      ]
-    },
-    "80690": {
-      "calls": [
-        {
-          "candidate": "Deb Haaland",
-          "status": "projected"
-        }
-      ]
-    },
-    "80691": {
-      "calls": [
-        {
-          "candidate": "Greggory Hull",
-          "status": "projected"
-        }
-      ]
-    },
-    "81014": {
-      "calls": [
-        {
-          "candidate": "Ben Lujan",
-          "status": "projected"
-        }
-      ]
-    },
-    "81046": {
-      "calls": [
-        {
-          "candidate": "Rebecca Bennett",
-          "status": "projected"
-        }
-      ]
-    },
-    "81048": {
-      "calls": [
-        {
-          "candidate": "Rob Menendez",
-          "status": "projected"
-        }
-      ]
-    },
-    "81055": {
-      "calls": [
-        {
-          "candidate": "Adam Hamawy",
-          "status": "projected"
-        }
-      ]
-    },
-    "81058": {
-      "calls": [
-        {
-          "candidate": "Justin Murphy",
-          "status": "projected"
-        }
-      ]
-    },
-    "sc-sen-r-2026": {
-      "calls": [
-        {
-          "candidate": "Lindsey Graham",
-          "status": "projected",
-          "calledAt": "2026-06-10T00:12:56.078Z"
-        }
-      ]
-    },
-    "me-sen-r-2026": {
-      "calls": [
-        {
-          "candidate": "Susan Collins",
-          "status": "projected",
-          "calledAt": "2026-06-10T00:15:21.084Z"
-        }
-      ]
-    },
-    "sc-house-6-r-2026": {
-      "calls": [
-        {
-          "candidate": "John Peterson",
-          "status": "projected",
-          "calledAt": "2026-06-10T00:16:12.822Z"
-        }
-      ]
-    },
-    "sc-sen-d-2026": {
-      "calls": [
-        {
-          "candidate": "Annie Andrews",
-          "status": "projected",
-          "calledAt": "2026-06-10T00:25:12.790Z"
-        }
-      ]
-    },
-    "sc-gov-r-2026": {
-      "calls": [
-        {
-          "candidate": "Pamela Evette",
-          "status": "advances",
-          "calledAt": "2026-06-10T01:23:44.745Z"
-        },
-        {
-          "candidate": "Alan Wilson",
-          "status": "advances",
-          "calledAt": "2026-06-10T01:23:44.745Z"
-        }
-      ]
-    },
-    "sc-gov-d-2026": {
-      "calls": [
-        {
-          "candidate": "Jermaine Johnson",
-          "status": "projected",
-          "calledAt": "2026-06-10T00:44:00.311Z"
-        }
-      ]
-    },
-    "nd-house-at-large-r-2026": {
-      "calls": [
-        {
-          "candidate": "Julie Fedorchak",
-          "status": "projected",
-          "calledAt": "2026-06-10T01:22:16.780Z"
-        }
-      ]
-    },
-    "me-sen-d-2026": {
-      "calls": [
-        {
-          "candidate": "Graham Platner",
-          "status": "projected",
-          "calledAt": "2026-06-10T01:25:06.328Z"
-        }
-      ]
-    },
-    "sc-house-1-d-2026": {
-      "calls": [
-        {
-          "candidate": "Nancy Lacore",
-          "status": "advances",
-          "calledAt": "2026-06-10T01:25:58.218Z"
-        },
-        {
-          "candidate": "Mac Deford",
-          "status": "advances",
-          "calledAt": "2026-06-10T01:25:58.218Z"
-        }
-      ]
-    },
-    "sc-house-2-d-2026": {
-      "calls": [
-        {
-          "candidate": "David Robinson II",
-          "status": "advances",
-          "calledAt": "2026-06-10T01:27:36.370Z"
-        },
-        {
-          "candidate": "Zyon Khalifa",
-          "status": "advances",
-          "calledAt": "2026-06-10T01:27:36.370Z"
-        }
-      ]
-    },
-    "sc-house-1-r-2026": {
-      "calls": [
-        {
-          "candidate": "Jenny Costa Honeycutt",
-          "status": "advances",
-          "calledAt": "2026-06-10T01:53:30.742Z"
-        }
-      ]
-    },
-    "sc-house-3-d-2026": {
-      "calls": [
-        {
-          "candidate": "Eunice Lehmacher",
-          "status": "projected",
-          "calledAt": "2026-06-10T01:54:52.987Z"
-        }
-      ]
-    },
-    "nv-gov-r-2026": {
-      "calls": [
-        {
-          "candidate": "Joseph Lombardo",
-          "status": "projected",
-          "calledAt": "2026-06-10T02:06:04.508Z"
-        }
-      ]
-    }
-  }
+  "races": {}
 }

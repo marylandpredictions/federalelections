@@ -53,21 +53,17 @@ function dateLabel(value) {
 }
 
 const POLL_CLOSE_UTC_BY_STATE = {
-  CA: "2026-06-03T03:00:00Z",
-  IA: "2026-06-03T01:00:00Z",
-  MT: "2026-06-03T02:00:00Z",
-  NJ: "2026-06-03T00:00:00Z",
-  NM: "2026-06-03T01:00:00Z",
-  SD: "2026-06-03T01:00:00Z"
+  AL: "2026-06-17T00:00:00Z",
+  GA: "2026-06-16T23:00:00Z",
+  DC: "2026-06-17T00:00:00Z",
+  OK: "2026-06-17T00:00:00Z"
 };
 
 const POLL_OPEN_UTC_BY_STATE = {
-  CA: "2026-06-02T14:00:00Z",
-  IA: "2026-06-02T12:00:00Z",
-  MT: "2026-06-02T13:00:00Z",
-  NJ: "2026-06-02T10:00:00Z",
-  NM: "2026-06-02T13:00:00Z",
-  SD: "2026-06-02T12:00:00Z"
+  AL: "2026-06-16T12:00:00Z",
+  GA: "2026-06-16T11:00:00Z",
+  DC: "2026-06-16T11:00:00Z",
+  OK: "2026-06-16T12:00:00Z"
 };
 
 function validElectionIso(value) {
@@ -521,7 +517,8 @@ function displayCallLabel(call, race) {
 
 function isRealCandidate(candidate) {
   const name = String(candidate?.name || "").trim();
-  return Boolean(name) && !/^write-?in$/i.test(name);
+  if (!name || candidate?.placeholder) return false;
+  return !/(^|\b)(write-?in|placeholder|candidate pending|candidate list pending)(\b|$)/i.test(name);
 }
 
 function pollsAreClosed(race) {
