@@ -521,7 +521,14 @@ async function handleAdmin(request, response, url) {
       .map((line) => line.trim())
       .filter(Boolean)
       .slice(0, 30)
-      .map((text) => ({ tag: "FEA", text }));
+      .map((line) => {
+        const match = line.match(/^([A-Za-z0-9][A-Za-z0-9 _-]{1,18}):\s+(.+)$/);
+        if (!match) return { tag: "FEA", text: line };
+        return {
+          tag: match[1].trim().toUpperCase(),
+          text: match[2].trim()
+        };
+      });
     const overlay = {
       updatedAt: new Date().toISOString(),
       producerNote: String(payload.producerNote || "").trim().slice(0, 500),

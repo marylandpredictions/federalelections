@@ -258,7 +258,15 @@
 
   function renderOverlayForm() {
     const overlay = state.overlay || {};
-    $("tickerText").value = (overlay.tickerItems || []).map((item) => item.text || "").filter(Boolean).join("\n");
+    $("tickerText").value = (overlay.tickerItems || [])
+      .map((item) => {
+        const text = String(item?.text || "").trim();
+        if (!text) return "";
+        const tag = String(item?.tag || "").trim();
+        return tag && tag !== "FEA" ? `${tag}: ${text}` : text;
+      })
+      .filter(Boolean)
+      .join("\n");
     $("producerNote").value = overlay.producerNote || "";
   }
 

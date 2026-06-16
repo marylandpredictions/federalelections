@@ -563,8 +563,9 @@
 
   function tickerItems(calls, races, overlayConfig = {}) {
     const items = [];
+    const calledRaceIds = new Set(calls.map((call) => String(call.raceId)));
     calls.slice(0, 8).forEach((call) => {
-      items.push({ tag: "Race call", text: call.text });
+      items.push({ tag: "CALLED", text: call.text });
     });
     const customItems = (overlayConfig.tickerItems || [])
       .filter((item) => item?.text)
@@ -581,17 +582,32 @@
         return electionDateMidnight.getTime() === today.getTime();
       })
       .slice()
-      .sort((a, b) => Number(b.estimatedVoteReporting || b.percentReporting || 0) - Number(a.estimatedVoteReporting || a.percentReporting || 0))
-      .slice(0, 12)
+      .sort((a, b) => {
+        const aCalled = calledRaceIds.has(String(a.id)) ? 1 : 0;
+        const bCalled = calledRaceIds.has(String(b.id)) ? 1 : 0;
+        if (aCalled !== bCalled) return aCalled - bCalled;
+        return Number(b.estimatedVoteReporting || b.percentReporting || 0) - Number(a.estimatedVoteReporting || a.percentReporting || 0);
+      })
+      .slice(0, 16)
       .forEach((race) => {
         const candidates = [...(race.candidates || [])].sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0));
         const leader = candidates[0];
-        if (leader && (Number(leader.votes || 0) || Number(race.estimatedVoteReporting || race.percentReporting || 0))) {
-          items.push({
-            tag: race.state || "Update",
-            text: `${race.electionName}: ${leader.name}`
-          });
+        const isCalled = calledRaceIds.has(String(race.id));
+        const reporting = Number(race.estimatedVoteReporting || race.percentReporting || 0);
+        if (isCalled) {
+          return;
         }
+        if (leader && (Number(leader.votes || 0) || reporting)) {
+          items.push({
+            tag: "UNCALLED",
+            text: `${race.electionName}: ${leader.name} leads${reporting ? `, ${estimatedInLabel(reporting)}% estimated in` : ""}`
+          });
+          return;
+        }
+        items.push({
+          tag: "UNCALLED",
+          text: `${race.electionName}: awaiting first results`
+        });
       });
     if (!items.length) {
       items.push({ tag: "FEA Live", text: "Race calls and result updates will appear here during election coverage." });
