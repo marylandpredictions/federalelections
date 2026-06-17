@@ -1,7 +1,7 @@
 {
   "model": "2026 gubernatorial forecast",
   "modelDate": "2026-06-17",
-  "generatedAt": "2026-06-17T22:01:30.025Z",
+  "generatedAt": "2026-06-17T22:26:17.730Z",
   "runDate": "Jun 17, 2026",
   "settings": {
     "simulations": 100000,
@@ -24,7 +24,7 @@
     "gubernatorialNationalShift": 0.97,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-06-17T22:01:18.364Z",
+      "checkedAt": "2026-06-17T22:26:12.126Z",
       "governorFinance": {
         "ok": true,
         "states": 0,
@@ -38,109 +38,127 @@
       "pollfinityAverages": {
         "ok": true,
         "status": 200,
-        "ms": 175,
+        "ms": 600,
         "url": "https://pollfinity.com/averages.json"
+      },
+      "ddhqGenericBallot": {
+        "ok": true,
+        "status": 200,
+        "ms": 1053,
+        "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults"
       },
       "twoSeventyGovernorPollsAK": {
         "ok": true,
         "status": 200,
-        "ms": 413,
+        "ms": 1838,
         "url": "https://www.270towin.com/2026-governor-polls/alaska"
       },
       "twoSeventyGovernorPollsAZ": {
         "ok": true,
         "status": 200,
-        "ms": 68,
+        "ms": 86,
         "url": "https://www.270towin.com/2026-governor-polls/arizona"
       },
       "twoSeventyGovernorPollsFL": {
         "ok": true,
         "status": 200,
-        "ms": 40,
+        "ms": 546,
         "url": "https://www.270towin.com/2026-governor-polls/florida"
       },
       "twoSeventyGovernorPollsGA": {
         "ok": true,
         "status": 200,
-        "ms": 80,
+        "ms": 93,
         "url": "https://www.270towin.com/2026-governor-polls/georgia"
       },
       "twoSeventyGovernorPollsIA": {
         "ok": true,
         "status": 200,
-        "ms": 76,
+        "ms": 49,
         "url": "https://www.270towin.com/2026-governor-polls/iowa"
       },
-      "ddhqGenericBallot": {
+      "governorFinanceSourceAK": {
         "ok": true,
         "status": 200,
-        "ms": 2218,
-        "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults"
+        "ms": 2810,
+        "url": "https://aws.state.ak.us/ApocReports/"
       },
       "twoSeventyGovernorPollsKS": {
         "ok": true,
         "status": 200,
-        "ms": 2261,
+        "ms": 544,
         "url": "https://www.270towin.com/2026-governor-polls/kansas"
       },
       "twoSeventyGovernorPollsME": {
         "ok": true,
         "status": 200,
-        "ms": 68,
+        "ms": 61,
         "url": "https://www.270towin.com/2026-governor-polls/maine"
+      },
+      "governorFinanceSourceAZ": {
+        "ok": true,
+        "status": 200,
+        "ms": 485,
+        "url": "https://seethemoney.az.gov/"
       },
       "twoSeventyGovernorPollsMI": {
         "ok": true,
         "status": 200,
-        "ms": 112,
+        "ms": 54,
         "url": "https://www.270towin.com/2026-governor-polls/michigan"
       },
       "twoSeventyGovernorPollsMN": {
         "ok": true,
         "status": 200,
-        "ms": 352,
+        "ms": 46,
         "url": "https://www.270towin.com/2026-governor-polls/minnesota"
       },
       "twoSeventyGovernorPollsNV": {
         "ok": true,
         "status": 200,
-        "ms": 152,
+        "ms": 44,
         "url": "https://www.270towin.com/2026-governor-polls/nevada"
       },
       "twoSeventyGovernorPollsNH": {
         "ok": true,
         "status": 200,
-        "ms": 173,
+        "ms": 43,
         "url": "https://www.270towin.com/2026-governor-polls/new-hampshire"
       },
       "twoSeventyGovernorPollsNM": {
         "ok": true,
         "status": 200,
-        "ms": 1584,
+        "ms": 43,
         "url": "https://www.270towin.com/2026-governor-polls/new-mexico"
+      },
+      "governorFinanceSourceGA": {
+        "ok": true,
+        "status": 200,
+        "ms": 261,
+        "url": "https://media.ethics.ga.gov/search/campaign/Campaign_ByName.aspx"
       },
       "twoSeventyGovernorPollsOH": {
         "ok": true,
         "status": 200,
-        "ms": 43,
+        "ms": 65,
         "url": "https://www.270towin.com/2026-governor-polls/ohio"
       },
       "twoSeventyGovernorPollsOR": {
         "ok": true,
         "status": 200,
-        "ms": 50,
+        "ms": 60,
         "url": "https://www.270towin.com/2026-governor-polls/oregon"
       },
       "twoSeventyGovernorPollsSC": {
         "ok": true,
         "status": 200,
-        "ms": 258,
+        "ms": 56,
         "url": "https://www.270towin.com/2026-governor-polls/south-carolina"
       },
       "twoSeventyGovernorPollsWI": {
         "ok": true,
         "status": 200,
-        "ms": 210,
+        "ms": 53,
         "url": "https://www.270towin.com/2026-governor-polls/wisconsin"
       },
       "twoSeventyGovernorPolls": {
@@ -268,47 +286,29 @@
           }
         }
       },
-      "governorFinanceSourceAK": {
-        "ok": true,
-        "status": 200,
-        "ms": 7906,
-        "url": "https://aws.state.ak.us/ApocReports/"
-      },
-      "governorFinanceSourceAZ": {
-        "ok": true,
-        "status": 200,
-        "ms": 626,
-        "url": "https://seethemoney.az.gov/"
-      },
-      "governorFinanceSourceGA": {
-        "ok": true,
-        "status": 200,
-        "ms": 986,
-        "url": "https://media.ethics.ga.gov/search/campaign/Campaign_ByName.aspx"
-      },
       "governorFinanceSourceIA": {
         "ok": true,
         "status": 200,
-        "ms": 386,
+        "ms": 336,
         "url": "https://webapp.iecdb.iowa.gov/PublicView/"
       },
       "governorFinanceSourceMI": {
         "ok": false,
         "status": "fetch-error",
-        "ms": 273,
+        "ms": 193,
         "url": "https://cfrsearch.nictusa.com/",
         "error": "fetch failed"
       },
       "governorFinanceSourceNV": {
         "ok": true,
         "status": 200,
-        "ms": 138,
+        "ms": 319,
         "url": "https://www.nvsos.gov/SOSCandidateServices/AnonymousAccess/CEFDSearchUU/Search.aspx"
       },
       "governorFinanceSourceWI": {
         "ok": true,
         "status": 200,
-        "ms": 598,
+        "ms": 492,
         "url": "https://cfis.wi.gov/"
       },
       "governorOnlineFinance": {
@@ -521,24 +521,25 @@
   "modelWarnings": [],
   "projectedDemRaceWins": 18,
   "projectedRepRaceWins": 18,
-  "averageDemGovernors": 24.1,
-  "averageRepGovernors": 25.9,
+  "averageDemGovernors": 24.08,
+  "averageRepGovernors": 25.92,
   "medianDemGovernors": 24,
   "medianRepGovernors": 26,
   "distribution": {
-    "18": 13,
-    "19": 145,
-    "20": 885,
-    "21": 3705,
-    "22": 10462,
-    "23": 19523,
-    "24": 24766,
-    "25": 21968,
-    "26": 12617,
-    "27": 4740,
-    "28": 1047,
-    "29": 120,
-    "30": 9
+    "17": 1,
+    "18": 17,
+    "19": 154,
+    "20": 948,
+    "21": 3879,
+    "22": 10444,
+    "23": 19566,
+    "24": 25086,
+    "25": 21961,
+    "26": 12290,
+    "27": 4514,
+    "28": 1018,
+    "29": 114,
+    "30": 8
   },
   "stateHistory": {
     "AL": [
@@ -628,8 +629,8 @@
     "IA": [
       {
         "date": "2026-06-17",
-        "dem": 0.46051,
-        "rep": 0.53949
+        "dem": 0.46509,
+        "rep": 0.53491
       }
     ],
     "KS": [
@@ -698,8 +699,8 @@
     "NM": [
       {
         "date": "2026-06-17",
-        "dem": 0.83092,
-        "rep": 0.16908
+        "dem": 0.81659,
+        "rep": 0.18341
       }
     ],
     "NY": [
@@ -920,13 +921,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00177,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00197,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -1056,13 +1052,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.61449,
       "competitive": true,
-      "tippingPower": 0.09059,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.09094,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -1209,13 +1200,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.64359,
       "competitive": true,
-      "tippingPower": 0.08223,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.08032,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -1355,13 +1341,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00091,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00105,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -1510,13 +1491,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.99538,
       "competitive": false,
-      "tippingPower": 0.00421,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00392,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -1650,13 +1626,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.98875,
       "competitive": false,
-      "tippingPower": 0.00886,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00862,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -1786,13 +1757,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.99559,
       "competitive": false,
-      "tippingPower": 0.00437,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00474,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -1932,13 +1898,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.97625,
       "competitive": false,
-      "tippingPower": 0.01488,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.01387,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -2096,13 +2057,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.62416,
       "competitive": true,
-      "tippingPower": 0.07621,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.07462,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -2232,13 +2188,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00125,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00119,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -2373,13 +2324,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00126,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00125,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -2519,13 +2465,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.99379,
       "competitive": false,
-      "tippingPower": 0.00564,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00595,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -2561,7 +2502,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Iowa Governor",
-      "margin": -1.06,
+      "margin": -0.93,
       "fundamentalsMargin": -7.79,
       "ratingMargin": 0,
       "candidateAndLocal": 2.1,
@@ -2642,49 +2583,32 @@
         "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
-        "pollMargin": -0.15,
-        "pollCount": 1,
-        "pollSources": [
-          "270toWin primary polling signal"
-        ],
-        "pollSourceUrls": [
-          "https://www.270towin.com/2026-governor-polls/iowa"
-        ],
-        "pollMatchups": [
-          "Republican Primary"
-        ],
-        "pollReducedWeight": true,
-        "pollWeightScale": 0.5,
+        "pollMargin": 0,
+        "pollCount": 0,
+        "pollSources": [],
+        "pollSourceUrls": [],
+        "pollMatchups": [],
+        "pollReducedWeight": false,
+        "pollWeightScale": 1,
         "primaryPollSignal": 0,
-        "primaryPollCount": 1,
-        "primaryPollSources": [
-          "270toWin primary polling signal"
-        ],
-        "primaryPollSourceUrls": [
-          "https://www.270towin.com/2026-governor-polls/iowa"
-        ],
-        "primaryPollMatchups": [
-          "Republican Primary"
-        ]
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Toss-up",
-      "demProbability": 0.46051,
-      "repProbability": 0.53949,
+      "demProbability": 0.46509,
+      "repProbability": 0.53491,
       "winnerParty": "R",
-      "winnerProbability": 0.53949,
+      "winnerProbability": 0.53491,
       "competitive": true,
-      "tippingPower": 0.08048,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.07954,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
-          "dem": 0.46051,
-          "rep": 0.53949
+          "dem": 0.46509,
+          "rep": 0.53491
         }
       ],
       "movement": {
@@ -2814,13 +2738,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.95958,
       "competitive": false,
-      "tippingPower": 0.01935,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.02019,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -2955,13 +2874,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.96912,
       "competitive": false,
-      "tippingPower": 0.01833,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.01731,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -3096,13 +3010,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00081,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00106,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -3232,13 +3141,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00095,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00076,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -3383,13 +3287,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.78483,
       "competitive": false,
-      "tippingPower": 0.06712,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.06784,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -3524,13 +3423,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.84695,
       "competitive": false,
-      "tippingPower": 0.06202,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.06081,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -3670,13 +3564,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99808,
       "competitive": false,
-      "tippingPower": 0.00224,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00226,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -3824,13 +3713,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.59448,
       "competitive": true,
-      "tippingPower": 0.0835,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.08383,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -3977,13 +3861,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.91032,
       "competitive": false,
-      "tippingPower": 0.0466,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.04564,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -4019,7 +3898,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "New Mexico Governor",
-      "margin": 7.81,
+      "margin": 7.36,
       "fundamentalsMargin": 1.71,
       "ratingMargin": 10.5,
       "candidateAndLocal": 0.6,
@@ -4111,36 +3990,25 @@
         "pollMatchups": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
-        "primaryPollSignal": 0.55,
-        "primaryPollCount": 3,
-        "primaryPollSources": [
-          "270toWin primary polling signal"
-        ],
-        "primaryPollSourceUrls": [
-          "https://www.270towin.com/2026-governor-polls/new-mexico"
-        ],
-        "primaryPollMatchups": [
-          "Democratic Primary"
-        ]
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Lean D",
-      "demProbability": 0.83092,
-      "repProbability": 0.16908,
+      "demProbability": 0.81659,
+      "repProbability": 0.18341,
       "winnerParty": "D",
-      "winnerProbability": 0.83092,
+      "winnerProbability": 0.81659,
       "competitive": false,
-      "tippingPower": 0.066,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.06895,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
-          "dem": 0.83092,
-          "rep": 0.16908
+          "dem": 0.81659,
+          "rep": 0.18341
         }
       ],
       "movement": {
@@ -4270,13 +4138,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.99459,
       "competitive": false,
-      "tippingPower": 0.00536,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.0055,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -4431,13 +4294,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.55315,
       "competitive": true,
-      "tippingPower": 0.07813,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.07787,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -4572,13 +4430,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99611,
       "competitive": false,
-      "tippingPower": 0.00366,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00325,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -4727,13 +4580,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.90974,
       "competitive": false,
-      "tippingPower": 0.04538,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.04692,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -4884,13 +4732,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.98962,
       "competitive": false,
-      "tippingPower": 0.00953,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00946,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -5020,13 +4863,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.99664,
       "competitive": false,
-      "tippingPower": 0.00353,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00389,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -5160,17 +4998,11 @@
         "pollMatchups": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
-        "primaryPollSignal": -0.11,
-        "primaryPollCount": 24,
-        "primaryPollSources": [
-          "270toWin primary polling signal"
-        ],
-        "primaryPollSourceUrls": [
-          "https://www.270towin.com/2026-governor-polls/south-carolina"
-        ],
-        "primaryPollMatchups": [
-          "Republican Primary"
-        ]
+        "primaryPollSignal": 0,
+        "primaryPollCount": 0,
+        "primaryPollSources": [],
+        "primaryPollSourceUrls": [],
+        "primaryPollMatchups": []
       },
       "modelRating": "Safe R",
       "demProbability": 0.01728,
@@ -5178,13 +5010,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.98272,
       "competitive": false,
-      "tippingPower": 0.01068,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.01095,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -5324,13 +5151,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00105,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00124,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -5476,13 +5298,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00185,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00207,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -5635,13 +5452,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.97604,
       "competitive": false,
-      "tippingPower": 0.01856,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.01841,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -5781,13 +5593,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99466,
       "competitive": false,
-      "tippingPower": 0.00568,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00521,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -5933,13 +5740,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.61436,
       "competitive": true,
-      "tippingPower": 0.07511,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.07646,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
@@ -6074,13 +5876,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.0019,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00214,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-17",
