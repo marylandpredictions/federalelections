@@ -572,7 +572,9 @@ async function fetchTwoSeventyGovernorPolls(status) {
       sourceUrl: parsed.sourceUrl,
       matchup: parsed.matchup,
       demCandidate: parsed.demCandidate,
-      repCandidate: parsed.repCandidate
+      repCandidate: parsed.repCandidate,
+      reducedWeight: Boolean(parsed.reducedWeight),
+      weightScale: Number(parsed.weightScale || 1)
     };
     sourceStatus.parsed += 1;
     sourceStatus.states[race.state] = {
@@ -793,7 +795,7 @@ const GOVERNOR_RACES = [
   { state: "CO", incumbentParty: "D", incumbent: "Jared Polis", status: "Term-limited", pvi: 6, lastMargin: 19.3, rating: "Safe D", demCandidate: "Phil Weiser", repCandidate: "Republican", candidateEdge: 1 },
   { state: "CT", incumbentParty: "D", incumbent: "Ned Lamont", status: "Incumbent running", pvi: 8, lastMargin: 12, rating: "Safe D", demCandidate: "Ned Lamont", repCandidate: "Ryan Fazio", candidateEdge: .6 },
   { state: "FL", incumbentParty: "R", incumbent: "Ron DeSantis", status: "Term-limited", pvi: -5, lastMargin: -19.4, rating: "Likely R", demCandidate: "Democrat", repCandidate: "Republican", candidateEdge: -.2 },
-  { state: "GA", incumbentParty: "R", incumbent: "Brian Kemp", status: "Term-limited", pvi: -1, lastMargin: -7.5, rating: "Toss-up", demCandidate: "Keisha Lance Bottoms", repCandidate: "Burt Jones / Rick Jackson", candidateEdge: .5 },
+  { state: "GA", incumbentParty: "R", incumbent: "Brian Kemp", status: "Term-limited", pvi: -1, lastMargin: -7.5, rating: "Toss-up", demCandidate: "Keisha Lance Bottoms", repCandidate: "Rick Jackson", candidateEdge: .65 },
   { state: "HI", incumbentParty: "D", incumbent: "Josh Green", status: "Incumbent running", pvi: 13, lastMargin: 26.4, rating: "Safe D", demCandidate: "Josh Green", repCandidate: "Gary Cordery", candidateEdge: 1 },
   { state: "ID", incumbentParty: "R", incumbent: "Brad Little", status: "Incumbent renominated", pvi: -18, lastMargin: -20.6, rating: "Safe R", demCandidate: "Terri Pickens", repCandidate: "Brad Little", candidateEdge: -1 },
   { state: "IL", incumbentParty: "D", incumbent: "JB Pritzker", status: "Incumbent renominated", pvi: 6, lastMargin: 12.5, rating: "Safe D", demCandidate: "JB Pritzker", repCandidate: "Darren Bailey", candidateEdge: 1.1 },
@@ -810,7 +812,7 @@ const GOVERNOR_RACES = [
   { state: "NM", incumbentParty: "D", incumbent: "Michelle Lujan Grisham", status: "Term-limited", pvi: 4, lastMargin: 6.4, rating: "Likely D", demCandidate: "Deb Haaland", repCandidate: "Republican", candidateEdge: .6 },
   { state: "NY", incumbentParty: "D", incumbent: "Kathy Hochul", status: "Incumbent running", pvi: 8, lastMargin: 6.4, rating: "Safe D", demCandidate: "Kathy Hochul", repCandidate: "Republican", candidateEdge: .3 },
   { state: "OH", incumbentParty: "R", incumbent: "Mike DeWine", status: "Term-limited", pvi: -5, lastMargin: -25.4, rating: "Toss-up", demCandidate: "Amy Acton", repCandidate: "Vivek Ramaswamy", candidateEdge: -.4 },
-  { state: "OK", incumbentParty: "R", incumbent: "Kevin Stitt", status: "Term-limited", pvi: -17, lastMargin: -13.7, rating: "Safe R", demCandidate: "Democrat", repCandidate: "Republican", candidateEdge: -.4 },
+  { state: "OK", incumbentParty: "R", incumbent: "Kevin Stitt", status: "Term-limited", pvi: -17, lastMargin: -13.7, rating: "Safe R", demCandidate: "Democrat", repCandidate: "Gentner Drummond / Mike Mazzei runoff", candidateEdge: -.45 },
   { state: "OR", incumbentParty: "D", incumbent: "Tina Kotek", status: "Incumbent running", pvi: 8, lastMargin: 3.4, rating: "Likely D", demCandidate: "Tina Kotek", repCandidate: "Christine Drazan", candidateEdge: .2 },
   { state: "PA", incumbentParty: "D", incumbent: "Josh Shapiro", status: "Incumbent running", pvi: -1, lastMargin: 14.8, rating: "Safe D", demCandidate: "Josh Shapiro", repCandidate: "Stacy Garrity", candidateEdge: 2.2 },
   { state: "RI", incumbentParty: "D", incumbent: "Dan McKee", status: "Incumbent running", pvi: 8, lastMargin: 19.3, rating: "Safe D", demCandidate: "Dan McKee", repCandidate: "Republican", candidateEdge: .5 },
@@ -832,7 +834,7 @@ const GOVERNOR_CANDIDATE_STATUS = {
   CO: { dem: "Phil Weiser", rep: "Republican", demStatus: "front-runner", repStatus: "unresolved", primary: "unresolved", primaryDate: "2026-06-30", primarySummary: "Weiser is tracked as the leading Democratic option in Colorado's open-seat race; the Republican side remains unresolved." },
   CT: { dem: "Ned Lamont", rep: "Ryan Fazio", demStatus: "presumptive", repStatus: "unresolved", primary: "unresolved", primaryDate: "2026-08-11", primarySummary: "Lamont is the Democratic incumbent and treated as presumptive while the Republican side remains unsettled." },
   FL: { dem: "Democrat", rep: "Republican", demStatus: "unresolved", repStatus: "unresolved", primary: "unresolved", primaryDate: "2026-08-18", primarySummary: "Florida is an open seat with both major-party primaries unresolved." },
-  GA: { dem: "Keisha Lance Bottoms", rep: "Burt Jones / Rick Jackson", demStatus: "nominee", repStatus: "runoff", primary: "runoff", primaryDate: "2026-06-16", primarySummary: "Bottoms won the Democratic primary on May 19, 2026. Jones and Jackson advanced to a Republican runoff on June 16, 2026." },
+  GA: { dem: "Keisha Lance Bottoms", rep: "Rick Jackson", demStatus: "nominee", repStatus: "nominee", primary: "resolved", primaryDate: "2026-06-16", primarySummary: "Bottoms won the Democratic primary on May 19, 2026. Jackson won the June 16 Republican runoff." },
   HI: { dem: "Josh Green", rep: "Gary Cordery", demStatus: "presumptive", repStatus: "unresolved", primary: "unresolved", primaryDate: "2026-08-08", primarySummary: "Green is the Democratic incumbent and treated as presumptive." },
   ID: { dem: "Terri Pickens", rep: "Brad Little", demStatus: "nominee", repStatus: "nominee", primary: "resolved", primaryDate: "2026-05-19", primarySummary: "Little and Pickens are treated as nominated after Idaho's May primary." },
   IL: { dem: "JB Pritzker", rep: "Darren Bailey", demStatus: "nominee", repStatus: "nominee", primary: "resolved", primaryDate: "2026-03-17", primarySummary: "Pritzker and Bailey are treated as nominated after Illinois' March primary." },
@@ -849,7 +851,7 @@ const GOVERNOR_CANDIDATE_STATUS = {
   NM: { dem: "Deb Haaland", rep: "Republican", demStatus: "front-runner", repStatus: "unresolved", primary: "unresolved", primaryDate: "2026-06-02", primarySummary: "Haaland is tracked as the leading Democratic option in New Mexico's open-seat race; the Republican primary remains unresolved." },
   NY: { dem: "Kathy Hochul", rep: "Republican", demStatus: "presumptive", repStatus: "unresolved", primary: "unresolved", primaryDate: "2026-06-23", primarySummary: "Hochul is the Democratic incumbent and treated as presumptive." },
   OH: { dem: "Amy Acton", rep: "Vivek Ramaswamy", demStatus: "nominee", repStatus: "nominee", primary: "resolved", primaryDate: "2026-05-05", primarySummary: "Acton won the Democratic primary and Ramaswamy won the Republican primary on May 5, 2026." },
-  OK: { dem: "Democrat", rep: "Republican", demStatus: "unresolved", repStatus: "unresolved", primary: "unresolved", primaryDate: "2026-06-16", primarySummary: "Oklahoma is an open seat and both primaries remain unresolved." },
+  OK: { dem: "Democrat", rep: "Gentner Drummond / Mike Mazzei runoff", demStatus: "unresolved", repStatus: "runoff", primary: "runoff", primaryDate: "2026-08-25", primarySummary: "Oklahoma's June 16 Republican primary advanced Drummond and Mazzei to an August 25 runoff; the Democratic side remains unresolved in the manual ledger." },
   OR: { dem: "Tina Kotek", rep: "Christine Drazan", demStatus: "nominee", repStatus: "nominee", primary: "resolved", primaryDate: "2026-05-19", primarySummary: "Kotek won the Democratic primary and Drazan won the Republican primary on May 19, 2026." },
   PA: { dem: "Josh Shapiro", rep: "Stacy Garrity", demStatus: "nominee", repStatus: "nominee", primary: "resolved", primaryDate: "2026-05-19", primarySummary: "Shapiro won the Democratic primary and Garrity won the Republican primary on May 19, 2026." },
   RI: { dem: "Dan McKee", rep: "Republican", demStatus: "presumptive", repStatus: "unresolved", primary: "unresolved", primaryDate: "2026-09-09", primarySummary: "McKee is the Democratic incumbent and treated as presumptive." },
@@ -884,6 +886,9 @@ const GOVERNOR_CANDIDATE_DEMOGRAPHIC_PROFILES = {
   "amy acton": { profile: "Former Ohio health director, public health background", scores: { white_college: .08, white_noncollege: -.03, black: .09, latino: .05, asian_other: .04, youth: .05, senior: .01 }, strengths: ["White college", "Black", "Latino"], weaknesses: ["White non-college"] },
   "vivek ramaswamy": { profile: "Entrepreneur, Trump-aligned Republican", scores: { white_college: -.07, white_noncollege: .19, black: -.11, latino: -.04, asian_other: .02, youth: -.03, senior: .04 }, strengths: ["White non-college"], weaknesses: ["White college", "Black", "Latino"] },
   "keisha lance bottoms": { profile: "Former Atlanta mayor, Black woman, progressive Democrat", scores: { white_college: .05, white_noncollege: -.06, black: .15, latino: .04, asian_other: .03, youth: .04, senior: -.02 }, strengths: ["Black"], weaknesses: ["White non-college"] },
+  "rick jackson": { profile: "Georgia Republican nominee after runoff, rural-conservative profile", scores: { white_college: -.05, white_noncollege: .14, black: -.08, latino: -.03, asian_other: -.03, youth: -.05, senior: .07 }, strengths: ["White non-college", "65+"], weaknesses: ["Black", "White college"] },
+  "gentner drummond": { profile: "Oklahoma attorney general, statewide Republican profile", scores: { white_college: -.03, white_noncollege: .14, black: -.08, latino: -.03, asian_other: -.02, youth: -.05, senior: .08 }, strengths: ["White non-college", "65+"], weaknesses: ["Black"] },
+  "mike mazzei": { profile: "Oklahoma Republican runoff candidate, conservative business profile", scores: { white_college: -.04, white_noncollege: .13, black: -.08, latino: -.03, asian_other: -.02, youth: -.05, senior: .08 }, strengths: ["White non-college", "65+"], weaknesses: ["Black"] },
   "lynne walz": { profile: "Former Nebraska state senator, educator", scores: { white_college: .07, white_noncollege: -.04, black: .07, latino: .05, asian_other: .04, youth: .04, senior: 0 }, strengths: [], weaknesses: [] },
   "jim pillen": { profile: "Nebraska incumbent governor, rancher", scores: { white_college: -.01, white_noncollege: .14, black: -.07, latino: -.03, asian_other: -.02, youth: -.04, senior: .09 }, strengths: ["White non-college", "Senior"], weaknesses: [] },
   "tina kotek": { profile: "Oregon incumbent governor, progressive Democrat", scores: { white_college: .14, white_noncollege: -.04, black: .09, latino: .06, asian_other: .06, youth: .03, senior: .05 }, strengths: ["White college", "Asian/other", "Latino"], weaknesses: ["White non-college"] },

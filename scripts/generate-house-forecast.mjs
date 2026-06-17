@@ -47,8 +47,8 @@ const RATING_TO_ERROR = {
 };
 
 const MODEL_WEIGHTS = {
-  genericBallot: .65,
-  genericBallotCap: 5.4,
+  genericBallot: .7,
+  genericBallotCap: 5.8,
   ratingBaseline: 1,
   districtPolls: .18,
   finance: .22,
@@ -57,10 +57,10 @@ const MODEL_WEIGHTS = {
   candidateQuality: .36,
   incumbencyOpenPenalty: .45,
   seatPartyIncumbency: .45,
-  districtFundamentals: .16,
-  historicalMidterm: 1.0,
-  stateCorrelationSd: 1.45,
-  nationalEnvironmentSd: 3.35
+  districtFundamentals: .2,
+  historicalMidterm: 3.0,
+  stateCorrelationSd: 1.35,
+  nationalEnvironmentSd: 3.05
 };
 
 const CHALLENGER_STRENGTH_DISCOUNTS = {
@@ -76,7 +76,8 @@ const MANUAL_HOUSE_CHALLENGER_STRENGTH = {
 };
 
 const HOUSE_CANDIDATE_STATUS_OVERRIDES = {
-  "CO-04": { D: "presumptive", R: "presumptive" }
+  "CO-04": { D: "presumptive", R: "presumptive" },
+  "GA-11": { R: "nominee" }
 };
 
 const MANUAL_HOUSE_CANDIDATE_OVERRIDES = {
@@ -86,6 +87,7 @@ const MANUAL_HOUSE_CANDIDATE_OVERRIDES = {
   "IA-04": { D: "Dave Dawson", R: "Chris McGowan" },
   "MT-01": { D: "Sam Forstag", R: "Aaron Flint" },
   "MT-02": { D: "Brian Miller", R: "Troy Downing" },
+  "GA-11": { R: "John Cowan" },
   "NJ-01": { D: "Donald Norcross", R: "Damon Galdo" },
   "NJ-02": { D: "Zack Mullock", R: "Jeff Van Drew" },
   "NJ-03": { D: "Herb Conaway", R: "Michael McGuire" },
