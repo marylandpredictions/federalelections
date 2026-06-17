@@ -2,9 +2,11 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { forecastSanityWarnings } from "./forecast-sanity.mjs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
+const GOVERNOR_HISTORY_URL = new URL("../data/governor-history.json", import.meta.url);
 const GOVERNOR_FINANCE_URL = new URL("../data/governor-finance.json", import.meta.url);
 const GOVERNOR_FINANCE_SOURCES_URL = new URL("../data/governor-finance-sources.json", import.meta.url);
 const previousForecast = readPreviousForecast();
+const governorHistoryArchive = readGovernorHistoryArchive();
 const MODEL_TIME_ZONE = "America/New_York";
 
 async function fetchText(url, label, status, options = {}) {
@@ -177,6 +179,94 @@ function candidateLastNames(name) {
     .split(/\s+\/\s+|\s+or\s+|,/i)
     .map(candidateLastName)
     .filter(Boolean);
+}
+
+const MANUAL_GOVERNOR_POLLS = {
+  IA: {
+    source: "NYT Iowa governor polling table / FEA manual aggregation",
+    sourceUrl: "https://www.nytimes.com/interactive/polls/iowa-governor-election-polls-2026.html",
+    matchup: "Rob Sand vs Zach Lahn, with reduced-weight Sand vs Randy Feenstra context",
+    weightScale: 0.72,
+    entries: [
+      {
+        pollster: "Global Strategy Group",
+        sponsor: "Rob Sand",
+        sponsorType: "Democratic sponsor",
+        startDate: "2026-04-23",
+        endDate: "2026-04-28",
+        sampleType: "Likely voters",
+        sampleSize: null,
+        demCandidate: "Rob Sand",
+        repCandidate: "Zach Lahn",
+        demPct: 50,
+        repPct: 41,
+        margin: 9,
+        weight: 0.62,
+        directMatchup: true,
+        notes: "Current-candidate matchup; partisan-client poll; sample size was not listed in the provided NYT screenshot."
+      },
+      {
+        pollster: "Echelon Insights",
+        sponsor: "NetChoice",
+        startDate: "2026-04-03",
+        endDate: "2026-04-09",
+        sampleType: "Likely voters",
+        sampleSize: 377,
+        demCandidate: "Rob Sand",
+        repCandidate: "Randy Feenstra",
+        demPct: 51,
+        repPct: 39,
+        undecidedPct: 10,
+        margin: 12,
+        weight: 0.18,
+        directMatchup: false,
+        notes: "Reduced-weight context because Feenstra is not the current modeled Republican candidate and NYT marked the pollster outside select-pollster criteria."
+      },
+      {
+        pollster: "GBAO",
+        sponsor: "ModSquad",
+        sponsorType: "Democratic sponsor",
+        startDate: "2026-03-10",
+        endDate: "2026-03-16",
+        sampleType: "Likely voters",
+        sampleSize: 1200,
+        demCandidate: "Rob Sand",
+        repCandidate: "Randy Feenstra",
+        demPct: 50,
+        repPct: 42,
+        margin: 8,
+        weight: 0.2,
+        directMatchup: false,
+        notes: "Reduced-weight context because Feenstra is not the current modeled Republican candidate; partisan-client poll."
+      }
+    ]
+  }
+};
+
+function readManualGovernorPolls(status) {
+  const governorPolls = {};
+  for (const [state, record] of Object.entries(MANUAL_GOVERNOR_POLLS)) {
+    const entries = Array.isArray(record.entries) ? record.entries : [];
+    const totalWeight = entries.reduce((sum, entry) => sum + Math.max(0, Number(entry.weight || 0)), 0);
+    if (!totalWeight) continue;
+    const margin = entries.reduce((sum, entry) => sum + Number(entry.margin || 0) * Math.max(0, Number(entry.weight || 0)), 0) / totalWeight;
+    governorPolls[state] = {
+      margin: Number(margin.toFixed(2)),
+      polls: entries.length,
+      source: record.source,
+      sourceUrl: record.sourceUrl,
+      matchup: record.matchup,
+      reducedWeight: false,
+      weightScale: Number(record.weightScale || 1),
+      pollEntries: entries
+    };
+  }
+  status.manualGovernorPolls = {
+    ok: true,
+    states: Object.keys(governorPolls).length,
+    note: "Manual polling is used only where automated sources lack a current modeled matchup."
+  };
+  return { governorPolls };
 }
 
 function specificCandidateName(name) {
@@ -593,8 +683,12 @@ function mergeGovernorPolling(status, ...sources) {
   }
   const merged = {};
   for (const [state, rows] of Object.entries(governorPolls)) {
-    const totalWeight = rows.reduce((sum, row) => sum + Math.max(1, Number(row.polls || 1)), 0);
-    const margin = rows.reduce((sum, row) => sum + Number(row.margin) * Math.max(1, Number(row.polls || 1)), 0) / totalWeight;
+    const weightedRows = rows.map((row) => ({
+      row,
+      weight: Math.max(1, Number(row.polls || 1)) * clamp(Number(row.weightScale || 1), 0.05, 1)
+    }));
+    const totalWeight = weightedRows.reduce((sum, item) => sum + item.weight, 0);
+    const margin = weightedRows.reduce((sum, item) => sum + Number(item.row.margin) * item.weight, 0) / totalWeight;
     merged[state] = {
       margin: Number(margin.toFixed(2)),
       polls: rows.reduce((sum, row) => sum + Number(row.polls || 0), 0),
@@ -602,7 +696,8 @@ function mergeGovernorPolling(status, ...sources) {
       sourceUrls: rows.map((row) => row.sourceUrl).filter(Boolean),
       matchups: rows.map((row) => row.matchup).filter(Boolean),
       reducedWeight: rows.every((row) => row.reducedWeight),
-      weightScale: rows.every((row) => row.reducedWeight) ? Math.min(...rows.map((row) => Number(row.weightScale || 1))) : 1
+      weightScale: totalWeight / rows.reduce((sum, row) => sum + Math.max(1, Number(row.polls || 1)), 0),
+      pollEntries: rows.flatMap((row) => Array.isArray(row.pollEntries) ? row.pollEntries : [])
     };
   }
   status.governorPollingMerged = { states: Object.keys(merged).length };
@@ -618,8 +713,9 @@ async function fetchAllSources() {
     fetchPollfinityAverages(status),
     fetchTwoSeventyGovernorPolls(status)
   ]);
+  const manualGovernorPolls = readManualGovernorPolls(status);
   const governorFinance = mergeGovernorFinance(manualGovernorFinance, onlineGovernorFinance, status);
-  const governorPolling = mergeGovernorPolling(status, pollfinity, twoSeventyGovernor);
+  const governorPolling = mergeGovernorPolling(status, manualGovernorPolls, pollfinity, twoSeventyGovernor);
   return { governorFinance, fec: governorFinance, ddhqGeneric, pollfinity, twoSeventyGovernor, governorPolling, status };
 }
 
@@ -636,6 +732,7 @@ const SETTINGS = {
     "Current Senate model generic ballot signal as a broad midterm environment input",
     "Pollfinity governor polling averages where available",
     "270toWin state-level 2026 governor polling pages where available",
+    "NYT polling-table manual aggregation for Iowa governor while automated sources lack the current nominee matchup",
     "State-level gubernatorial campaign finance file plus configured online state portals for competitive races"
   ]
 };
@@ -907,6 +1004,26 @@ function readPreviousForecast() {
   } catch {
     return null;
   }
+}
+
+function readGovernorHistoryArchive() {
+  try {
+    return JSON.parse(readFileSync(GOVERNOR_HISTORY_URL, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function mergeHistoryPoints(...histories) {
+  const byDate = new Map();
+  for (const history of histories) {
+    if (!Array.isArray(history)) continue;
+    for (const point of history) {
+      if (!point?.date) continue;
+      byDate.set(point.date, point);
+    }
+  }
+  return [...byDate.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)));
 }
 
 function readSenateSignals() {
@@ -1206,6 +1323,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
       pollSources: governorPoll?.sources || [],
       pollSourceUrls: governorPoll?.sourceUrls || [],
       pollMatchups: governorPoll?.matchups || [],
+      pollEntries: governorPoll?.pollEntries || [],
       pollReducedWeight: Boolean(governorPoll?.reducedWeight),
       pollWeightScale: governorPoll?.weightScale || 1,
       primaryPollSignal,
@@ -1266,9 +1384,13 @@ function applyDeepStateGovernorFloor(race, margin, governorPoll) {
 function appendHistory(forecast) {
   const key = forecast.modelDate;
   const point = { date: key, demGovernors: forecast.medianDemGovernors, repGovernors: forecast.medianRepGovernors };
-  const history = Array.isArray(previousForecast?.governorCountHistory) ? previousForecast.governorCountHistory.filter((item) => item.date !== key) : [];
-  history.push(point);
-  return history.slice(-365);
+  return mergeHistoryPoints(
+    governorHistoryArchive?.governorCountHistory,
+    previousForecast?.governorCountHistory,
+    [point]
+  )
+    .filter((item) => item.date <= key)
+    .slice(-365);
 }
 
 function governorMovementDrivers(race) {
@@ -1293,13 +1415,14 @@ function governorMovementDrivers(race) {
 function buildRaceHistory(race, key) {
   const current = { date: key, dem: race.demProbability, rep: race.repProbability };
   const previousRace = previousForecast?.races?.find((item) => item.state === race.state);
-  const stored = Array.isArray(previousRace?.history)
-    ? previousRace.history
-    : Array.isArray(previousForecast?.stateHistory?.[race.state])
-      ? previousForecast.stateHistory[race.state]
-      : [];
-  const withoutToday = stored.filter((point) => point.date !== current.date && point.date <= key);
-  return [...withoutToday, current].sort((a, b) => a.date.localeCompare(b.date)).slice(-180);
+  return mergeHistoryPoints(
+    governorHistoryArchive?.stateHistory?.[race.state],
+    previousForecast?.stateHistory?.[race.state],
+    previousRace?.history,
+    [current]
+  )
+    .filter((point) => point.date <= key)
+    .slice(-180);
 }
 
 function probabilityMovement(history) {
@@ -1405,6 +1528,12 @@ async function buildForecast() {
 async function writeForecast() {
   const forecast = await buildForecast();
   writeFileSync(FORECAST_URL, JSON.stringify(forecast, null, 2), "utf8");
+  writeFileSync(GOVERNOR_HISTORY_URL, JSON.stringify({
+    updatedAt: forecast.generatedAt,
+    modelDate: forecast.modelDate,
+    stateHistory: forecast.stateHistory,
+    governorCountHistory: forecast.governorCountHistory
+  }, null, 2), "utf8");
   console.log(`Wrote gubernatorial forecast for ${forecast.races.length} races`);
   console.log(`Data sources status:`, Object.keys(forecast.sourceSummary.dataSources || {}).join(", "));
 }

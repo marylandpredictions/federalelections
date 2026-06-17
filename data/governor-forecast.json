@@ -1,7 +1,7 @@
 {
   "model": "2026 gubernatorial forecast",
   "modelDate": "2026-06-17",
-  "generatedAt": "2026-06-17T22:26:17.730Z",
+  "generatedAt": "2026-06-17T23:05:51.544Z",
   "runDate": "Jun 17, 2026",
   "settings": {
     "simulations": 100000,
@@ -16,6 +16,7 @@
       "Current Senate model generic ballot signal as a broad midterm environment input",
       "Pollfinity governor polling averages where available",
       "270toWin state-level 2026 governor polling pages where available",
+      "NYT polling-table manual aggregation for Iowa governor while automated sources lack the current nominee matchup",
       "State-level gubernatorial campaign finance file plus configured online state portals for competitive races"
     ]
   },
@@ -24,7 +25,7 @@
     "gubernatorialNationalShift": 0.97,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-06-17T22:26:12.126Z",
+      "checkedAt": "2026-06-17T23:05:31.930Z",
       "governorFinance": {
         "ok": true,
         "states": 0,
@@ -35,130 +36,112 @@
         "states": 7,
         "scope": "Competitive 2026 gubernatorial races first. Add safe-state portals only when they materially affect the model or become machine-readable."
       },
-      "pollfinityAverages": {
-        "ok": true,
-        "status": 200,
-        "ms": 600,
-        "url": "https://pollfinity.com/averages.json"
-      },
-      "ddhqGenericBallot": {
-        "ok": true,
-        "status": 200,
-        "ms": 1053,
-        "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults"
-      },
       "twoSeventyGovernorPollsAK": {
         "ok": true,
         "status": 200,
-        "ms": 1838,
+        "ms": 678,
         "url": "https://www.270towin.com/2026-governor-polls/alaska"
+      },
+      "pollfinityAverages": {
+        "ok": true,
+        "status": 200,
+        "ms": 738,
+        "url": "https://pollfinity.com/averages.json"
       },
       "twoSeventyGovernorPollsAZ": {
         "ok": true,
         "status": 200,
-        "ms": 86,
+        "ms": 212,
         "url": "https://www.270towin.com/2026-governor-polls/arizona"
       },
       "twoSeventyGovernorPollsFL": {
         "ok": true,
         "status": 200,
-        "ms": 546,
+        "ms": 99,
         "url": "https://www.270towin.com/2026-governor-polls/florida"
       },
       "twoSeventyGovernorPollsGA": {
         "ok": true,
         "status": 200,
-        "ms": 93,
+        "ms": 123,
         "url": "https://www.270towin.com/2026-governor-polls/georgia"
       },
       "twoSeventyGovernorPollsIA": {
         "ok": true,
         "status": 200,
-        "ms": 49,
+        "ms": 1804,
         "url": "https://www.270towin.com/2026-governor-polls/iowa"
-      },
-      "governorFinanceSourceAK": {
-        "ok": true,
-        "status": 200,
-        "ms": 2810,
-        "url": "https://aws.state.ak.us/ApocReports/"
       },
       "twoSeventyGovernorPollsKS": {
         "ok": true,
         "status": 200,
-        "ms": 544,
+        "ms": 894,
         "url": "https://www.270towin.com/2026-governor-polls/kansas"
+      },
+      "ddhqGenericBallot": {
+        "ok": true,
+        "status": 200,
+        "ms": 3948,
+        "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults"
       },
       "twoSeventyGovernorPollsME": {
         "ok": true,
         "status": 200,
-        "ms": 61,
+        "ms": 132,
         "url": "https://www.270towin.com/2026-governor-polls/maine"
-      },
-      "governorFinanceSourceAZ": {
-        "ok": true,
-        "status": 200,
-        "ms": 485,
-        "url": "https://seethemoney.az.gov/"
       },
       "twoSeventyGovernorPollsMI": {
         "ok": true,
         "status": 200,
-        "ms": 54,
+        "ms": 171,
         "url": "https://www.270towin.com/2026-governor-polls/michigan"
       },
       "twoSeventyGovernorPollsMN": {
         "ok": true,
         "status": 200,
-        "ms": 46,
+        "ms": 143,
         "url": "https://www.270towin.com/2026-governor-polls/minnesota"
       },
       "twoSeventyGovernorPollsNV": {
         "ok": true,
         "status": 200,
-        "ms": 44,
+        "ms": 97,
         "url": "https://www.270towin.com/2026-governor-polls/nevada"
       },
       "twoSeventyGovernorPollsNH": {
         "ok": true,
         "status": 200,
-        "ms": 43,
+        "ms": 1523,
         "url": "https://www.270towin.com/2026-governor-polls/new-hampshire"
       },
       "twoSeventyGovernorPollsNM": {
         "ok": true,
         "status": 200,
-        "ms": 43,
+        "ms": 445,
         "url": "https://www.270towin.com/2026-governor-polls/new-mexico"
-      },
-      "governorFinanceSourceGA": {
-        "ok": true,
-        "status": 200,
-        "ms": 261,
-        "url": "https://media.ethics.ga.gov/search/campaign/Campaign_ByName.aspx"
       },
       "twoSeventyGovernorPollsOH": {
         "ok": true,
         "status": 200,
-        "ms": 65,
+        "ms": 274,
         "url": "https://www.270towin.com/2026-governor-polls/ohio"
       },
       "twoSeventyGovernorPollsOR": {
         "ok": true,
         "status": 200,
-        "ms": 60,
+        "ms": 268,
         "url": "https://www.270towin.com/2026-governor-polls/oregon"
       },
       "twoSeventyGovernorPollsSC": {
         "ok": true,
         "status": 200,
-        "ms": 56,
+        "ms": 304,
         "url": "https://www.270towin.com/2026-governor-polls/south-carolina"
       },
       "twoSeventyGovernorPollsWI": {
         "ok": true,
         "status": 200,
-        "ms": 53,
+        "ms": 201,
         "url": "https://www.270towin.com/2026-governor-polls/wisconsin"
       },
       "twoSeventyGovernorPolls": {
@@ -286,29 +269,47 @@
           }
         }
       },
+      "governorFinanceSourceAK": {
+        "ok": true,
+        "status": 200,
+        "ms": 8261,
+        "url": "https://aws.state.ak.us/ApocReports/"
+      },
+      "governorFinanceSourceAZ": {
+        "ok": true,
+        "status": 200,
+        "ms": 797,
+        "url": "https://seethemoney.az.gov/"
+      },
+      "governorFinanceSourceGA": {
+        "ok": true,
+        "status": 200,
+        "ms": 420,
+        "url": "https://media.ethics.ga.gov/search/campaign/Campaign_ByName.aspx"
+      },
       "governorFinanceSourceIA": {
         "ok": true,
         "status": 200,
-        "ms": 336,
+        "ms": 743,
         "url": "https://webapp.iecdb.iowa.gov/PublicView/"
       },
       "governorFinanceSourceMI": {
         "ok": false,
         "status": "fetch-error",
-        "ms": 193,
+        "ms": 496,
         "url": "https://cfrsearch.nictusa.com/",
         "error": "fetch failed"
       },
       "governorFinanceSourceNV": {
         "ok": true,
         "status": 200,
-        "ms": 319,
+        "ms": 1003,
         "url": "https://www.nvsos.gov/SOSCandidateServices/AnonymousAccess/CEFDSearchUU/Search.aspx"
       },
       "governorFinanceSourceWI": {
         "ok": true,
         "status": 200,
-        "ms": 492,
+        "ms": 7044,
         "url": "https://cfis.wi.gov/"
       },
       "governorOnlineFinance": {
@@ -361,6 +362,11 @@
           }
         }
       },
+      "manualGovernorPolls": {
+        "ok": true,
+        "states": 1,
+        "note": "Manual polling is used only where automated sources lack a current modeled matchup."
+      },
       "governorFinanceMerged": {
         "ok": true,
         "states": 0,
@@ -371,7 +377,7 @@
         }
       },
       "governorPollingMerged": {
-        "states": 8
+        "states": 9
       }
     },
     "nationalFinance": {
@@ -394,6 +400,74 @@
     },
     "governorPolling": {
       "governorPolls": {
+        "IA": {
+          "margin": 9.34,
+          "polls": 3,
+          "sources": [
+            "NYT Iowa governor polling table / FEA manual aggregation"
+          ],
+          "sourceUrls": [
+            "https://www.nytimes.com/interactive/polls/iowa-governor-election-polls-2026.html"
+          ],
+          "matchups": [
+            "Rob Sand vs Zach Lahn, with reduced-weight Sand vs Randy Feenstra context"
+          ],
+          "reducedWeight": false,
+          "weightScale": 0.7200000000000001,
+          "pollEntries": [
+            {
+              "pollster": "Global Strategy Group",
+              "sponsor": "Rob Sand",
+              "sponsorType": "Democratic sponsor",
+              "startDate": "2026-04-23",
+              "endDate": "2026-04-28",
+              "sampleType": "Likely voters",
+              "sampleSize": null,
+              "demCandidate": "Rob Sand",
+              "repCandidate": "Zach Lahn",
+              "demPct": 50,
+              "repPct": 41,
+              "margin": 9,
+              "weight": 0.62,
+              "directMatchup": true,
+              "notes": "Current-candidate matchup; partisan-client poll; sample size was not listed in the provided NYT screenshot."
+            },
+            {
+              "pollster": "Echelon Insights",
+              "sponsor": "NetChoice",
+              "startDate": "2026-04-03",
+              "endDate": "2026-04-09",
+              "sampleType": "Likely voters",
+              "sampleSize": 377,
+              "demCandidate": "Rob Sand",
+              "repCandidate": "Randy Feenstra",
+              "demPct": 51,
+              "repPct": 39,
+              "undecidedPct": 10,
+              "margin": 12,
+              "weight": 0.18,
+              "directMatchup": false,
+              "notes": "Reduced-weight context because Feenstra is not the current modeled Republican candidate and NYT marked the pollster outside select-pollster criteria."
+            },
+            {
+              "pollster": "GBAO",
+              "sponsor": "ModSquad",
+              "sponsorType": "Democratic sponsor",
+              "startDate": "2026-03-10",
+              "endDate": "2026-03-16",
+              "sampleType": "Likely voters",
+              "sampleSize": 1200,
+              "demCandidate": "Rob Sand",
+              "repCandidate": "Randy Feenstra",
+              "demPct": 50,
+              "repPct": 42,
+              "margin": 8,
+              "weight": 0.2,
+              "directMatchup": false,
+              "notes": "Reduced-weight context because Feenstra is not the current modeled Republican candidate; partisan-client poll."
+            }
+          ]
+        },
         "AZ": {
           "margin": 7,
           "polls": 3,
@@ -407,7 +481,8 @@
             "Hobbs vs. Schweikert"
           ],
           "reducedWeight": false,
-          "weightScale": 1
+          "weightScale": 1,
+          "pollEntries": []
         },
         "GA": {
           "margin": 6,
@@ -422,7 +497,8 @@
             "Bottoms vs. Jackson"
           ],
           "reducedWeight": false,
-          "weightScale": 1
+          "weightScale": 1,
+          "pollEntries": []
         },
         "MI": {
           "margin": 5.33,
@@ -437,7 +513,8 @@
             "Benson vs. Duggan vs. Cox"
           ],
           "reducedWeight": false,
-          "weightScale": 1
+          "weightScale": 1,
+          "pollEntries": []
         },
         "NV": {
           "margin": -1.33,
@@ -452,7 +529,8 @@
             "Ford vs. Lombardo"
           ],
           "reducedWeight": false,
-          "weightScale": 1
+          "weightScale": 1,
+          "pollEntries": []
         },
         "NH": {
           "margin": -7.5,
@@ -467,7 +545,8 @@
             "Warmington vs. Ayotte"
           ],
           "reducedWeight": false,
-          "weightScale": 1
+          "weightScale": 1,
+          "pollEntries": []
         },
         "OH": {
           "margin": -1.22,
@@ -482,7 +561,8 @@
             "Acton vs. Ramaswamy"
           ],
           "reducedWeight": false,
-          "weightScale": 1
+          "weightScale": 1,
+          "pollEntries": []
         },
         "OR": {
           "margin": 5,
@@ -497,7 +577,8 @@
             "Kotek vs. Drazan"
           ],
           "reducedWeight": false,
-          "weightScale": 1
+          "weightScale": 1,
+          "pollEntries": []
         },
         "WI": {
           "margin": 3,
@@ -512,37 +593,117 @@
             "Rodriguez vs. Tiffany"
           ],
           "reducedWeight": false,
-          "weightScale": 1
+          "weightScale": 1,
+          "pollEntries": []
         }
       }
     },
     "financeNote": "Gubernatorial finance is state-regulated. The model checks configured official state portals for competitive races and uses normalized state-level finance records when machine-readable totals are available. Federal FEC data is not treated as a governor finance source."
   },
   "modelWarnings": [],
-  "projectedDemRaceWins": 18,
-  "projectedRepRaceWins": 18,
-  "averageDemGovernors": 24.08,
-  "averageRepGovernors": 25.92,
+  "projectedDemRaceWins": 19,
+  "projectedRepRaceWins": 17,
+  "averageDemGovernors": 24.18,
+  "averageRepGovernors": 25.82,
   "medianDemGovernors": 24,
   "medianRepGovernors": 26,
   "distribution": {
-    "17": 1,
-    "18": 17,
-    "19": 154,
-    "20": 948,
-    "21": 3879,
-    "22": 10444,
-    "23": 19566,
-    "24": 25086,
-    "25": 21961,
-    "26": 12290,
-    "27": 4514,
-    "28": 1018,
-    "29": 114,
-    "30": 8
+    "18": 20,
+    "19": 132,
+    "20": 840,
+    "21": 3490,
+    "22": 9709,
+    "23": 18576,
+    "24": 24719,
+    "25": 22607,
+    "26": 13575,
+    "27": 5072,
+    "28": 1101,
+    "29": 154,
+    "30": 5
   },
   "stateHistory": {
     "AL": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
       {
         "date": "2026-06-17",
         "dem": 0.00206,
@@ -551,12 +712,172 @@
     ],
     "AK": [
       {
+        "date": "2026-06-01",
+        "dem": 0.38783,
+        "rep": 0.61217
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.38783,
+        "rep": 0.61217
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.38762,
+        "rep": 0.61238
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.38758,
+        "rep": 0.61242
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.38749,
+        "rep": 0.61251
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.38749,
+        "rep": 0.61251
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.38741,
+        "rep": 0.61259
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.38741,
+        "rep": 0.61259
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.38741,
+        "rep": 0.61259
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.38732,
+        "rep": 0.61268
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.38724,
+        "rep": 0.61276
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.38635,
+        "rep": 0.61365
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.38614,
+        "rep": 0.61386
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.38606,
+        "rep": 0.61394
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.38597,
+        "rep": 0.61403
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.3861,
+        "rep": 0.6139
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.38551,
         "rep": 0.61449
       }
     ],
     "AZ": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.64685,
+        "rep": 0.35315
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.64685,
+        "rep": 0.35315
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.64659,
+        "rep": 0.35341
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.64651,
+        "rep": 0.35349
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.6464,
+        "rep": 0.3536
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.6464,
+        "rep": 0.3536
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.64628,
+        "rep": 0.35372
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.64628,
+        "rep": 0.35372
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.64628,
+        "rep": 0.35372
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.64613,
+        "rep": 0.35387
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.64606,
+        "rep": 0.35394
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.64476,
+        "rep": 0.35524
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.6445,
+        "rep": 0.3555
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.64435,
+        "rep": 0.35565
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.64423,
+        "rep": 0.35577
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.64438,
+        "rep": 0.35562
+      },
       {
         "date": "2026-06-17",
         "dem": 0.64359,
@@ -565,12 +886,172 @@
     ],
     "AR": [
       {
+        "date": "2026-06-01",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.001,
         "rep": 0.999
       }
     ],
     "CA": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.99538,
+        "rep": 0.00462
+      },
       {
         "date": "2026-06-17",
         "dem": 0.99538,
@@ -579,12 +1060,172 @@
     ],
     "CO": [
       {
+        "date": "2026-06-01",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.98875,
+        "rep": 0.01125
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.98875,
         "rep": 0.01125
       }
     ],
     "CT": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.99559,
+        "rep": 0.00441
+      },
       {
         "date": "2026-06-17",
         "dem": 0.99559,
@@ -593,12 +1234,172 @@
     ],
     "FL": [
       {
+        "date": "2026-06-01",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.02375,
+        "rep": 0.97625
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.02375,
         "rep": 0.97625
       }
     ],
     "GA": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.6242,
+        "rep": 0.3758
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.6242,
+        "rep": 0.3758
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.62391,
+        "rep": 0.37609
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.62384,
+        "rep": 0.37616
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.62373,
+        "rep": 0.37627
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.62373,
+        "rep": 0.37627
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.62363,
+        "rep": 0.37637
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.62363,
+        "rep": 0.37637
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.62363,
+        "rep": 0.37637
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.62349,
+        "rep": 0.37651
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.62338,
+        "rep": 0.37662
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.62206,
+        "rep": 0.37794
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.62181,
+        "rep": 0.37819
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.62163,
+        "rep": 0.37837
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.62156,
+        "rep": 0.37844
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.6217,
+        "rep": 0.3783
+      },
       {
         "date": "2026-06-17",
         "dem": 0.62416,
@@ -607,12 +1408,172 @@
     ],
     "HI": [
       {
+        "date": "2026-06-01",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.999,
         "rep": 0.001
       }
     ],
     "ID": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.001,
+        "rep": 0.999
+      },
       {
         "date": "2026-06-17",
         "dem": 0.001,
@@ -621,6 +1582,86 @@
     ],
     "IL": [
       {
+        "date": "2026-06-01",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.99379,
+        "rep": 0.00621
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.99379,
         "rep": 0.00621
@@ -628,12 +1669,172 @@
     ],
     "IA": [
       {
+        "date": "2026-06-01",
+        "dem": 0.59876,
+        "rep": 0.40124
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.59876,
+        "rep": 0.40124
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.46733,
+        "rep": 0.53267
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.4667,
+        "rep": 0.5333
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.45745,
+        "rep": 0.54255
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.45745,
+        "rep": 0.54255
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.45738,
+        "rep": 0.54262
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.46196,
+        "rep": 0.53804
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.46196,
+        "rep": 0.53804
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.46189,
+        "rep": 0.53811
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.46185,
+        "rep": 0.53815
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.46114,
+        "rep": 0.53886
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.46099,
+        "rep": 0.53901
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.46092,
+        "rep": 0.53908
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.46088,
+        "rep": 0.53912
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.46095,
+        "rep": 0.53905
+      },
+      {
         "date": "2026-06-17",
-        "dem": 0.46509,
-        "rep": 0.53491
+        "dem": 0.56463,
+        "rep": 0.43537
       }
     ],
     "KS": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.04042,
+        "rep": 0.95958
+      },
       {
         "date": "2026-06-17",
         "dem": 0.04042,
@@ -642,12 +1843,172 @@
     ],
     "ME": [
       {
+        "date": "2026-06-01",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.96912,
+        "rep": 0.03088
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.96912,
         "rep": 0.03088
       }
     ],
     "MD": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.999,
+        "rep": 0.001
+      },
       {
         "date": "2026-06-17",
         "dem": 0.999,
@@ -656,12 +2017,172 @@
     ],
     "MA": [
       {
+        "date": "2026-06-01",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.999,
         "rep": 0.001
       }
     ],
     "MI": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.78782,
+        "rep": 0.21218
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.78782,
+        "rep": 0.21218
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.78757,
+        "rep": 0.21243
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.7875,
+        "rep": 0.2125
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.78741,
+        "rep": 0.21259
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.78741,
+        "rep": 0.21259
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.78731,
+        "rep": 0.21269
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.78731,
+        "rep": 0.21269
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.78731,
+        "rep": 0.21269
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.78718,
+        "rep": 0.21282
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.78709,
+        "rep": 0.21291
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.78593,
+        "rep": 0.21407
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.78567,
+        "rep": 0.21433
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.78551,
+        "rep": 0.21449
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.78545,
+        "rep": 0.21455
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.78557,
+        "rep": 0.21443
+      },
       {
         "date": "2026-06-17",
         "dem": 0.78483,
@@ -670,12 +2191,172 @@
     ],
     "MN": [
       {
+        "date": "2026-06-01",
+        "dem": 0.84917,
+        "rep": 0.15083
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.84917,
+        "rep": 0.15083
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.84897,
+        "rep": 0.15103
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.84891,
+        "rep": 0.15109
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.84885,
+        "rep": 0.15115
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.84885,
+        "rep": 0.15115
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.84877,
+        "rep": 0.15123
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.84877,
+        "rep": 0.15123
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.84877,
+        "rep": 0.15123
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.84868,
+        "rep": 0.15132
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.84862,
+        "rep": 0.15138
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.84776,
+        "rep": 0.15224
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.84756,
+        "rep": 0.15244
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.84747,
+        "rep": 0.15253
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.84738,
+        "rep": 0.15262
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.8475,
+        "rep": 0.1525
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.84695,
         "rep": 0.15305
       }
     ],
     "NE": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.00192,
+        "rep": 0.99808
+      },
       {
         "date": "2026-06-17",
         "dem": 0.00192,
@@ -684,12 +2365,172 @@
     ],
     "NV": [
       {
+        "date": "2026-06-01",
+        "dem": 0.40893,
+        "rep": 0.59107
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.40893,
+        "rep": 0.59107
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.40865,
+        "rep": 0.59135
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.40857,
+        "rep": 0.59143
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.40845,
+        "rep": 0.59155
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.40845,
+        "rep": 0.59155
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.40833,
+        "rep": 0.59167
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.40833,
+        "rep": 0.59167
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.40833,
+        "rep": 0.59167
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.40817,
+        "rep": 0.59183
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.40809,
+        "rep": 0.59191
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.40675,
+        "rep": 0.59325
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.40647,
+        "rep": 0.59353
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.40631,
+        "rep": 0.59369
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.40619,
+        "rep": 0.59381
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.40635,
+        "rep": 0.59365
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.40552,
         "rep": 0.59448
       }
     ],
     "NH": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.0916,
+        "rep": 0.9084
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.0916,
+        "rep": 0.9084
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.09144,
+        "rep": 0.90856
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.0914,
+        "rep": 0.9086
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.09133,
+        "rep": 0.90867
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.09133,
+        "rep": 0.90867
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.09126,
+        "rep": 0.90874
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.09126,
+        "rep": 0.90874
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.09126,
+        "rep": 0.90874
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.09117,
+        "rep": 0.90883
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.09113,
+        "rep": 0.90887
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.09037,
+        "rep": 0.90963
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.09021,
+        "rep": 0.90979
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.09012,
+        "rep": 0.90988
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.09006,
+        "rep": 0.90994
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.09015,
+        "rep": 0.90985
+      },
       {
         "date": "2026-06-17",
         "dem": 0.08968,
@@ -698,12 +2539,172 @@
     ],
     "NM": [
       {
+        "date": "2026-06-01",
+        "dem": 0.81909,
+        "rep": 0.18091
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.81909,
+        "rep": 0.18091
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.81886,
+        "rep": 0.18114
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.8188,
+        "rep": 0.1812
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.83295,
+        "rep": 0.16705
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.83295,
+        "rep": 0.16705
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.83286,
+        "rep": 0.16714
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.83286,
+        "rep": 0.16714
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.83286,
+        "rep": 0.16714
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.83277,
+        "rep": 0.16723
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.8327,
+        "rep": 0.1673
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.83178,
+        "rep": 0.16822
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.83157,
+        "rep": 0.16843
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.83147,
+        "rep": 0.16853
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.83138,
+        "rep": 0.16862
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.8315,
+        "rep": 0.1685
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.81659,
         "rep": 0.18341
       }
     ],
     "NY": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.99459,
+        "rep": 0.00541
+      },
       {
         "date": "2026-06-17",
         "dem": 0.99459,
@@ -712,12 +2713,172 @@
     ],
     "OH": [
       {
+        "date": "2026-06-01",
+        "dem": 0.43529,
+        "rep": 0.56471
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.43526,
+        "rep": 0.56474
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.43507,
+        "rep": 0.56493
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.44912,
+        "rep": 0.55088
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.44904,
+        "rep": 0.55096
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.44904,
+        "rep": 0.55096
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.44897,
+        "rep": 0.55103
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.44893,
+        "rep": 0.55107
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.44893,
+        "rep": 0.55107
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.44886,
+        "rep": 0.55114
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.44878,
+        "rep": 0.55122
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.44778,
+        "rep": 0.55222
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.44756,
+        "rep": 0.55244
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.44745,
+        "rep": 0.55255
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.44737,
+        "rep": 0.55263
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.44748,
+        "rep": 0.55252
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.44685,
         "rep": 0.55315
       }
     ],
     "OK": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.00389,
+        "rep": 0.99611
+      },
       {
         "date": "2026-06-17",
         "dem": 0.00389,
@@ -726,12 +2887,172 @@
     ],
     "OR": [
       {
+        "date": "2026-06-01",
+        "dem": 0.9111,
+        "rep": 0.0889
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.9111,
+        "rep": 0.0889
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.91099,
+        "rep": 0.08901
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.91096,
+        "rep": 0.08904
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.9109,
+        "rep": 0.0891
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.9109,
+        "rep": 0.0891
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.91085,
+        "rep": 0.08915
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.91085,
+        "rep": 0.08915
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.91085,
+        "rep": 0.08915
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.91081,
+        "rep": 0.08919
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.91076,
+        "rep": 0.08924
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.91023,
+        "rep": 0.08977
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.91012,
+        "rep": 0.08988
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.91006,
+        "rep": 0.08994
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.91001,
+        "rep": 0.08999
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.91008,
+        "rep": 0.08992
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.90974,
         "rep": 0.09026
       }
     ],
     "PA": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.98995,
+        "rep": 0.01005
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.98995,
+        "rep": 0.01005
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.98992,
+        "rep": 0.01008
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.98991,
+        "rep": 0.01009
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.9899,
+        "rep": 0.0101
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.9899,
+        "rep": 0.0101
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.98989,
+        "rep": 0.01011
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.98989,
+        "rep": 0.01011
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.98989,
+        "rep": 0.01011
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.98988,
+        "rep": 0.01012
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.98987,
+        "rep": 0.01013
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.98974,
+        "rep": 0.01026
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.98971,
+        "rep": 0.01029
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.9897,
+        "rep": 0.0103
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.98969,
+        "rep": 0.01031
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.98971,
+        "rep": 0.01029
+      },
       {
         "date": "2026-06-17",
         "dem": 0.98962,
@@ -740,12 +3061,172 @@
     ],
     "RI": [
       {
+        "date": "2026-06-01",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.99664,
+        "rep": 0.00336
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.99664,
         "rep": 0.00336
       }
     ],
     "SC": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.01728,
+        "rep": 0.98272
+      },
       {
         "date": "2026-06-17",
         "dem": 0.01728,
@@ -754,12 +3235,172 @@
     ],
     "SD": [
       {
+        "date": "2026-06-01",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.001,
+        "rep": 0.999
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.001,
         "rep": 0.999
       }
     ],
     "TN": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
       {
         "date": "2026-06-17",
         "dem": 0.00206,
@@ -768,12 +3409,172 @@
     ],
     "TX": [
       {
+        "date": "2026-06-01",
+        "dem": 0.02451,
+        "rep": 0.97549
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.02451,
+        "rep": 0.97549
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.02446,
+        "rep": 0.97554
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.02445,
+        "rep": 0.97555
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.02443,
+        "rep": 0.97557
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.02443,
+        "rep": 0.97557
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.02441,
+        "rep": 0.97559
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.02441,
+        "rep": 0.97559
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.02441,
+        "rep": 0.97559
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.02438,
+        "rep": 0.97562
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.02437,
+        "rep": 0.97563
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.02415,
+        "rep": 0.97585
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.02411,
+        "rep": 0.97589
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.02408,
+        "rep": 0.97592
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.02407,
+        "rep": 0.97593
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.02409,
+        "rep": 0.97591
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.02396,
         "rep": 0.97604
       }
     ],
     "VT": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.00545,
+        "rep": 0.99455
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.00545,
+        "rep": 0.99455
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.00544,
+        "rep": 0.99456
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.00544,
+        "rep": 0.99456
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.00544,
+        "rep": 0.99456
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.00544,
+        "rep": 0.99456
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.00543,
+        "rep": 0.99457
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.00543,
+        "rep": 0.99457
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.00543,
+        "rep": 0.99457
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.00543,
+        "rep": 0.99457
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.00542,
+        "rep": 0.99458
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.00538,
+        "rep": 0.99462
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.00537,
+        "rep": 0.99463
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.00536,
+        "rep": 0.99464
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.00536,
+        "rep": 0.99464
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.00537,
+        "rep": 0.99463
+      },
       {
         "date": "2026-06-17",
         "dem": 0.00534,
@@ -782,12 +3583,172 @@
     ],
     "WI": [
       {
+        "date": "2026-06-01",
+        "dem": 0.61691,
+        "rep": 0.38309
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.61691,
+        "rep": 0.38309
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.61669,
+        "rep": 0.38331
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.61666,
+        "rep": 0.38334
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.61655,
+        "rep": 0.38345
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.61655,
+        "rep": 0.38345
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.61648,
+        "rep": 0.38352
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.61644,
+        "rep": 0.38356
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.61644,
+        "rep": 0.38356
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.61637,
+        "rep": 0.38363
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.6163,
+        "rep": 0.3837
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.61529,
+        "rep": 0.38471
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.61508,
+        "rep": 0.38492
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.61497,
+        "rep": 0.38503
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.6149,
+        "rep": 0.3851
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.61501,
+        "rep": 0.38499
+      },
+      {
         "date": "2026-06-17",
         "dem": 0.61436,
         "rep": 0.38564
       }
     ],
     "WY": [
+      {
+        "date": "2026-06-01",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-02",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-03",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-04",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-05",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-06",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-07",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-08",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-09",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-10",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-11",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-12",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-13",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-14",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-15",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
+      {
+        "date": "2026-06-16",
+        "dem": 0.00206,
+        "rep": 0.99794
+      },
       {
         "date": "2026-06-17",
         "dem": 0.00206,
@@ -907,6 +3868,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -921,9 +3883,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00197,
+      "tippingPower": 0.00214,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
         {
           "date": "2026-06-17",
           "dem": 0.00206,
@@ -933,8 +3975,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -1038,6 +4080,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -1052,9 +4095,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.61449,
       "competitive": true,
-      "tippingPower": 0.09094,
+      "tippingPower": 0.08898,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.38783,
+          "rep": 0.61217
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.38783,
+          "rep": 0.61217
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.38762,
+          "rep": 0.61238
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.38758,
+          "rep": 0.61242
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.38749,
+          "rep": 0.61251
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.38749,
+          "rep": 0.61251
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.38741,
+          "rep": 0.61259
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.38741,
+          "rep": 0.61259
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.38741,
+          "rep": 0.61259
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.38732,
+          "rep": 0.61268
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.38724,
+          "rep": 0.61276
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.38635,
+          "rep": 0.61365
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.38614,
+          "rep": 0.61386
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.38606,
+          "rep": 0.61394
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.38597,
+          "rep": 0.61403
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.3861,
+          "rep": 0.6139
+        },
         {
           "date": "2026-06-17",
           "dem": 0.38551,
@@ -1062,10 +4185,10 @@
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -0.1,
+        "sinceWeek": -0.2,
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -1186,6 +4309,7 @@
         "pollMatchups": [
           "Hobbs vs. Schweikert"
         ],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -1200,9 +4324,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.64359,
       "competitive": true,
-      "tippingPower": 0.08032,
+      "tippingPower": 0.08116,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.64685,
+          "rep": 0.35315
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.64685,
+          "rep": 0.35315
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.64659,
+          "rep": 0.35341
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.64651,
+          "rep": 0.35349
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.6464,
+          "rep": 0.3536
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.6464,
+          "rep": 0.3536
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.64628,
+          "rep": 0.35372
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.64628,
+          "rep": 0.35372
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.64628,
+          "rep": 0.35372
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.64613,
+          "rep": 0.35387
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.64606,
+          "rep": 0.35394
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.64476,
+          "rep": 0.35524
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.6445,
+          "rep": 0.3555
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.64435,
+          "rep": 0.35565
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.64423,
+          "rep": 0.35577
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.64438,
+          "rep": 0.35562
+        },
         {
           "date": "2026-06-17",
           "dem": 0.64359,
@@ -1210,10 +4414,10 @@
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -0.1,
+        "sinceWeek": -0.3,
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -1327,6 +4531,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -1341,9 +4546,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00105,
+      "tippingPower": 0.00111,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.001,
+          "rep": 0.999
+        },
         {
           "date": "2026-06-17",
           "dem": 0.001,
@@ -1353,8 +4638,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -1477,6 +4762,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -1491,9 +4777,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.99538,
       "competitive": false,
-      "tippingPower": 0.00392,
+      "tippingPower": 0.00415,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.99538,
+          "rep": 0.00462
+        },
         {
           "date": "2026-06-17",
           "dem": 0.99538,
@@ -1503,8 +4869,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -1612,6 +4978,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -1626,9 +4993,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.98875,
       "competitive": false,
-      "tippingPower": 0.00862,
+      "tippingPower": 0.00873,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.98875,
+          "rep": 0.01125
+        },
         {
           "date": "2026-06-17",
           "dem": 0.98875,
@@ -1638,8 +5085,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -1743,6 +5190,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -1757,9 +5205,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.99559,
       "competitive": false,
-      "tippingPower": 0.00474,
+      "tippingPower": 0.00466,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.99559,
+          "rep": 0.00441
+        },
         {
           "date": "2026-06-17",
           "dem": 0.99559,
@@ -1769,8 +5297,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -1884,6 +5412,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -1898,9 +5427,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.97625,
       "competitive": false,
-      "tippingPower": 0.01387,
+      "tippingPower": 0.01442,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.02375,
+          "rep": 0.97625
+        },
         {
           "date": "2026-06-17",
           "dem": 0.02375,
@@ -1910,8 +5519,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -2043,6 +5652,7 @@
         "pollMatchups": [
           "Bottoms vs. Jackson"
         ],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -2057,9 +5667,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.62416,
       "competitive": true,
-      "tippingPower": 0.07462,
+      "tippingPower": 0.07619,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.6242,
+          "rep": 0.3758
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.6242,
+          "rep": 0.3758
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.62391,
+          "rep": 0.37609
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.62384,
+          "rep": 0.37616
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.62373,
+          "rep": 0.37627
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.62373,
+          "rep": 0.37627
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.62363,
+          "rep": 0.37637
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.62363,
+          "rep": 0.37637
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.62363,
+          "rep": 0.37637
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.62349,
+          "rep": 0.37651
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.62338,
+          "rep": 0.37662
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.62206,
+          "rep": 0.37794
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.62181,
+          "rep": 0.37819
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.62163,
+          "rep": 0.37837
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.62156,
+          "rep": 0.37844
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.6217,
+          "rep": 0.3783
+        },
         {
           "date": "2026-06-17",
           "dem": 0.62416,
@@ -2067,10 +5757,10 @@
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 0.2,
+        "sinceWeek": 0.1,
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -2174,6 +5864,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -2188,9 +5879,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00119,
+      "tippingPower": 0.00111,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.999,
+          "rep": 0.001
+        },
         {
           "date": "2026-06-17",
           "dem": 0.999,
@@ -2200,8 +5971,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -2310,6 +6081,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -2324,9 +6096,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00125,
+      "tippingPower": 0.00097,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.001,
+          "rep": 0.999
+        },
         {
           "date": "2026-06-17",
           "dem": 0.001,
@@ -2336,8 +6188,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -2451,6 +6303,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -2465,9 +6318,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.99379,
       "competitive": false,
-      "tippingPower": 0.00595,
+      "tippingPower": 0.00648,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.99379,
+          "rep": 0.00621
+        },
         {
           "date": "2026-06-17",
           "dem": 0.99379,
@@ -2477,8 +6410,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -2502,7 +6435,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Iowa Governor",
-      "margin": -0.93,
+      "margin": 1.73,
       "fundamentalsMargin": -7.79,
       "ratingMargin": 0,
       "candidateAndLocal": 2.1,
@@ -2583,39 +6516,189 @@
         "finance": null,
         "nationalFinance": 0,
         "candidateHistory": 0,
-        "pollMargin": 0,
-        "pollCount": 0,
-        "pollSources": [],
-        "pollSourceUrls": [],
-        "pollMatchups": [],
+        "pollMargin": 2.463666278359085,
+        "pollCount": 3,
+        "pollSources": [
+          "NYT Iowa governor polling table / FEA manual aggregation"
+        ],
+        "pollSourceUrls": [
+          "https://www.nytimes.com/interactive/polls/iowa-governor-election-polls-2026.html"
+        ],
+        "pollMatchups": [
+          "Rob Sand vs Zach Lahn, with reduced-weight Sand vs Randy Feenstra context"
+        ],
+        "pollEntries": [
+          {
+            "pollster": "Global Strategy Group",
+            "sponsor": "Rob Sand",
+            "sponsorType": "Democratic sponsor",
+            "startDate": "2026-04-23",
+            "endDate": "2026-04-28",
+            "sampleType": "Likely voters",
+            "sampleSize": null,
+            "demCandidate": "Rob Sand",
+            "repCandidate": "Zach Lahn",
+            "demPct": 50,
+            "repPct": 41,
+            "margin": 9,
+            "weight": 0.62,
+            "directMatchup": true,
+            "notes": "Current-candidate matchup; partisan-client poll; sample size was not listed in the provided NYT screenshot."
+          },
+          {
+            "pollster": "Echelon Insights",
+            "sponsor": "NetChoice",
+            "startDate": "2026-04-03",
+            "endDate": "2026-04-09",
+            "sampleType": "Likely voters",
+            "sampleSize": 377,
+            "demCandidate": "Rob Sand",
+            "repCandidate": "Randy Feenstra",
+            "demPct": 51,
+            "repPct": 39,
+            "undecidedPct": 10,
+            "margin": 12,
+            "weight": 0.18,
+            "directMatchup": false,
+            "notes": "Reduced-weight context because Feenstra is not the current modeled Republican candidate and NYT marked the pollster outside select-pollster criteria."
+          },
+          {
+            "pollster": "GBAO",
+            "sponsor": "ModSquad",
+            "sponsorType": "Democratic sponsor",
+            "startDate": "2026-03-10",
+            "endDate": "2026-03-16",
+            "sampleType": "Likely voters",
+            "sampleSize": 1200,
+            "demCandidate": "Rob Sand",
+            "repCandidate": "Randy Feenstra",
+            "demPct": 50,
+            "repPct": 42,
+            "margin": 8,
+            "weight": 0.2,
+            "directMatchup": false,
+            "notes": "Reduced-weight context because Feenstra is not the current modeled Republican candidate; partisan-client poll."
+          }
+        ],
         "pollReducedWeight": false,
-        "pollWeightScale": 1,
+        "pollWeightScale": 0.7200000000000001,
         "primaryPollSignal": 0,
         "primaryPollCount": 0,
         "primaryPollSources": [],
         "primaryPollSourceUrls": [],
         "primaryPollMatchups": []
       },
-      "modelRating": "Toss-up",
-      "demProbability": 0.46509,
-      "repProbability": 0.53491,
-      "winnerParty": "R",
-      "winnerProbability": 0.53491,
+      "modelRating": "Tilt D",
+      "demProbability": 0.56463,
+      "repProbability": 0.43537,
+      "winnerParty": "D",
+      "winnerProbability": 0.56463,
       "competitive": true,
-      "tippingPower": 0.07954,
-      "movementDrivers": [],
+      "tippingPower": 0.07887,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 2.66,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Polling",
+          "change": 2.46,
+          "detail": "Weighted governor polling margin changed."
+        }
+      ],
       "history": [
         {
+          "date": "2026-06-01",
+          "dem": 0.59876,
+          "rep": 0.40124
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.59876,
+          "rep": 0.40124
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.46733,
+          "rep": 0.53267
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.4667,
+          "rep": 0.5333
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.45745,
+          "rep": 0.54255
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.45745,
+          "rep": 0.54255
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.45738,
+          "rep": 0.54262
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.46196,
+          "rep": 0.53804
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.46196,
+          "rep": 0.53804
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.46189,
+          "rep": 0.53811
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.46185,
+          "rep": 0.53815
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.46114,
+          "rep": 0.53886
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.46099,
+          "rep": 0.53901
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.46092,
+          "rep": 0.53908
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.46088,
+          "rep": 0.53912
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.46095,
+          "rep": 0.53905
+        },
+        {
           "date": "2026-06-17",
-          "dem": 0.46509,
-          "rep": 0.53491
+          "dem": 0.56463,
+          "rep": 0.43537
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": 10.4,
+        "sinceWeek": 10.3,
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -2724,6 +6807,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -2738,9 +6822,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.95958,
       "competitive": false,
-      "tippingPower": 0.02019,
+      "tippingPower": 0.01926,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.04042,
+          "rep": 0.95958
+        },
         {
           "date": "2026-06-17",
           "dem": 0.04042,
@@ -2750,8 +6914,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -2860,6 +7024,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -2874,9 +7039,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.96912,
       "competitive": false,
-      "tippingPower": 0.01731,
+      "tippingPower": 0.01757,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.96912,
+          "rep": 0.03088
+        },
         {
           "date": "2026-06-17",
           "dem": 0.96912,
@@ -2886,8 +7131,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -2996,6 +7241,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -3010,9 +7256,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00106,
+      "tippingPower": 0.00102,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.999,
+          "rep": 0.001
+        },
         {
           "date": "2026-06-17",
           "dem": 0.999,
@@ -3022,8 +7348,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -3127,6 +7453,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -3141,9 +7468,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00076,
+      "tippingPower": 0.00078,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.999,
+          "rep": 0.001
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.999,
+          "rep": 0.001
+        },
         {
           "date": "2026-06-17",
           "dem": 0.999,
@@ -3153,8 +7560,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -3273,6 +7680,7 @@
         "pollMatchups": [
           "Benson vs. Duggan vs. Cox"
         ],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -3287,9 +7695,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.78483,
       "competitive": false,
-      "tippingPower": 0.06784,
+      "tippingPower": 0.06944,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.78782,
+          "rep": 0.21218
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.78782,
+          "rep": 0.21218
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.78757,
+          "rep": 0.21243
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.7875,
+          "rep": 0.2125
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.78741,
+          "rep": 0.21259
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.78741,
+          "rep": 0.21259
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.78731,
+          "rep": 0.21269
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.78731,
+          "rep": 0.21269
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.78731,
+          "rep": 0.21269
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.78718,
+          "rep": 0.21282
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.78709,
+          "rep": 0.21291
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.78593,
+          "rep": 0.21407
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.78567,
+          "rep": 0.21433
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.78551,
+          "rep": 0.21449
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.78545,
+          "rep": 0.21455
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.78557,
+          "rep": 0.21443
+        },
         {
           "date": "2026-06-17",
           "dem": 0.78483,
@@ -3297,10 +7785,10 @@
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -0.1,
+        "sinceWeek": -0.2,
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -3409,6 +7897,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -3423,9 +7912,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.84695,
       "competitive": false,
-      "tippingPower": 0.06081,
+      "tippingPower": 0.06063,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.84917,
+          "rep": 0.15083
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.84917,
+          "rep": 0.15083
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.84897,
+          "rep": 0.15103
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.84891,
+          "rep": 0.15109
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.84885,
+          "rep": 0.15115
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.84885,
+          "rep": 0.15115
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.84877,
+          "rep": 0.15123
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.84877,
+          "rep": 0.15123
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.84877,
+          "rep": 0.15123
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.84868,
+          "rep": 0.15132
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.84862,
+          "rep": 0.15138
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.84776,
+          "rep": 0.15224
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.84756,
+          "rep": 0.15244
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.84747,
+          "rep": 0.15253
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.84738,
+          "rep": 0.15262
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.8475,
+          "rep": 0.1525
+        },
         {
           "date": "2026-06-17",
           "dem": 0.84695,
@@ -3433,10 +8002,10 @@
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -0.1,
+        "sinceWeek": -0.2,
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -3550,6 +8119,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -3564,9 +8134,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.99808,
       "competitive": false,
-      "tippingPower": 0.00226,
+      "tippingPower": 0.00206,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.00192,
+          "rep": 0.99808
+        },
         {
           "date": "2026-06-17",
           "dem": 0.00192,
@@ -3576,8 +8226,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -3699,6 +8349,7 @@
         "pollMatchups": [
           "Ford vs. Lombardo"
         ],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -3713,9 +8364,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.59448,
       "competitive": true,
-      "tippingPower": 0.08383,
+      "tippingPower": 0.08232,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.40893,
+          "rep": 0.59107
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.40893,
+          "rep": 0.59107
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.40865,
+          "rep": 0.59135
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.40857,
+          "rep": 0.59143
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.40845,
+          "rep": 0.59155
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.40845,
+          "rep": 0.59155
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.40833,
+          "rep": 0.59167
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.40833,
+          "rep": 0.59167
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.40833,
+          "rep": 0.59167
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.40817,
+          "rep": 0.59183
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.40809,
+          "rep": 0.59191
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.40675,
+          "rep": 0.59325
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.40647,
+          "rep": 0.59353
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.40631,
+          "rep": 0.59369
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.40619,
+          "rep": 0.59381
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.40635,
+          "rep": 0.59365
+        },
         {
           "date": "2026-06-17",
           "dem": 0.40552,
@@ -3723,10 +8454,10 @@
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -0.1,
+        "sinceWeek": -0.3,
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -3847,6 +8578,7 @@
         "pollMatchups": [
           "Warmington vs. Ayotte"
         ],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -3861,9 +8593,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.91032,
       "competitive": false,
-      "tippingPower": 0.04564,
+      "tippingPower": 0.04709,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.0916,
+          "rep": 0.9084
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.0916,
+          "rep": 0.9084
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.09144,
+          "rep": 0.90856
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.0914,
+          "rep": 0.9086
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.09133,
+          "rep": 0.90867
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.09133,
+          "rep": 0.90867
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.09126,
+          "rep": 0.90874
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.09126,
+          "rep": 0.90874
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.09126,
+          "rep": 0.90874
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.09117,
+          "rep": 0.90883
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.09113,
+          "rep": 0.90887
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.09037,
+          "rep": 0.90963
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.09021,
+          "rep": 0.90979
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.09012,
+          "rep": 0.90988
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.09006,
+          "rep": 0.90994
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.09015,
+          "rep": 0.90985
+        },
         {
           "date": "2026-06-17",
           "dem": 0.08968,
@@ -3872,9 +8684,9 @@
       ],
       "movement": {
         "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceWeek": -0.1,
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -3988,6 +8800,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -4002,9 +8815,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.81659,
       "competitive": false,
-      "tippingPower": 0.06895,
+      "tippingPower": 0.06936,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.81909,
+          "rep": 0.18091
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.81909,
+          "rep": 0.18091
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.81886,
+          "rep": 0.18114
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.8188,
+          "rep": 0.1812
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.83295,
+          "rep": 0.16705
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.83295,
+          "rep": 0.16705
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.83286,
+          "rep": 0.16714
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.83286,
+          "rep": 0.16714
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.83286,
+          "rep": 0.16714
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.83277,
+          "rep": 0.16723
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.8327,
+          "rep": 0.1673
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.83178,
+          "rep": 0.16822
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.83157,
+          "rep": 0.16843
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.83147,
+          "rep": 0.16853
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.83138,
+          "rep": 0.16862
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.8315,
+          "rep": 0.1685
+        },
         {
           "date": "2026-06-17",
           "dem": 0.81659,
@@ -4012,10 +8905,10 @@
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -1.5,
+        "sinceWeek": -1.6,
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -4124,6 +9017,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -4138,9 +9032,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.99459,
       "competitive": false,
-      "tippingPower": 0.0055,
+      "tippingPower": 0.00547,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.99459,
+          "rep": 0.00541
+        },
         {
           "date": "2026-06-17",
           "dem": 0.99459,
@@ -4150,8 +9124,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -4280,6 +9254,7 @@
         "pollMatchups": [
           "Acton vs. Ramaswamy"
         ],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -4294,9 +9269,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.55315,
       "competitive": true,
-      "tippingPower": 0.07787,
+      "tippingPower": 0.0772,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.43529,
+          "rep": 0.56471
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.43526,
+          "rep": 0.56474
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.43507,
+          "rep": 0.56493
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.44912,
+          "rep": 0.55088
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.44904,
+          "rep": 0.55096
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.44904,
+          "rep": 0.55096
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.44897,
+          "rep": 0.55103
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.44893,
+          "rep": 0.55107
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.44893,
+          "rep": 0.55107
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.44886,
+          "rep": 0.55114
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.44878,
+          "rep": 0.55122
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.44778,
+          "rep": 0.55222
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.44756,
+          "rep": 0.55244
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.44745,
+          "rep": 0.55255
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.44737,
+          "rep": 0.55263
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.44748,
+          "rep": 0.55252
+        },
         {
           "date": "2026-06-17",
           "dem": 0.44685,
@@ -4304,10 +9359,10 @@
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -0.1,
+        "sinceWeek": -0.2,
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -4416,6 +9471,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -4430,9 +9486,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.99611,
       "competitive": false,
-      "tippingPower": 0.00325,
+      "tippingPower": 0.00364,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.00389,
+          "rep": 0.99611
+        },
         {
           "date": "2026-06-17",
           "dem": 0.00389,
@@ -4442,8 +9578,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -4566,6 +9702,7 @@
         "pollMatchups": [
           "Kotek vs. Drazan"
         ],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -4580,9 +9717,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.90974,
       "competitive": false,
-      "tippingPower": 0.04692,
+      "tippingPower": 0.04723,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.9111,
+          "rep": 0.0889
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.9111,
+          "rep": 0.0889
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.91099,
+          "rep": 0.08901
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.91096,
+          "rep": 0.08904
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.9109,
+          "rep": 0.0891
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.9109,
+          "rep": 0.0891
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.91085,
+          "rep": 0.08915
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.91085,
+          "rep": 0.08915
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.91085,
+          "rep": 0.08915
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.91081,
+          "rep": 0.08919
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.91076,
+          "rep": 0.08924
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.91023,
+          "rep": 0.08977
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.91012,
+          "rep": 0.08988
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.91006,
+          "rep": 0.08994
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.91001,
+          "rep": 0.08999
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.91008,
+          "rep": 0.08992
+        },
         {
           "date": "2026-06-17",
           "dem": 0.90974,
@@ -4591,9 +9808,9 @@
       ],
       "movement": {
         "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceWeek": -0.1,
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -4718,6 +9935,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -4732,9 +9950,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.98962,
       "competitive": false,
-      "tippingPower": 0.00946,
+      "tippingPower": 0.00936,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.98995,
+          "rep": 0.01005
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.98995,
+          "rep": 0.01005
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.98992,
+          "rep": 0.01008
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.98991,
+          "rep": 0.01009
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.9899,
+          "rep": 0.0101
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.9899,
+          "rep": 0.0101
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.98989,
+          "rep": 0.01011
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.98989,
+          "rep": 0.01011
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.98989,
+          "rep": 0.01011
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.98988,
+          "rep": 0.01012
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.98987,
+          "rep": 0.01013
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.98974,
+          "rep": 0.01026
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.98971,
+          "rep": 0.01029
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.9897,
+          "rep": 0.0103
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.98969,
+          "rep": 0.01031
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.98971,
+          "rep": 0.01029
+        },
         {
           "date": "2026-06-17",
           "dem": 0.98962,
@@ -4744,8 +10042,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -4849,6 +10147,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -4863,9 +10162,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.99664,
       "competitive": false,
-      "tippingPower": 0.00389,
+      "tippingPower": 0.00333,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.99664,
+          "rep": 0.00336
+        },
         {
           "date": "2026-06-17",
           "dem": 0.99664,
@@ -4875,8 +10254,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -4996,6 +10375,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -5010,9 +10390,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.98272,
       "competitive": false,
-      "tippingPower": 0.01095,
+      "tippingPower": 0.01093,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.01728,
+          "rep": 0.98272
+        },
         {
           "date": "2026-06-17",
           "dem": 0.01728,
@@ -5022,8 +10482,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -5137,6 +10597,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -5151,9 +10612,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00124,
+      "tippingPower": 0.00114,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.001,
+          "rep": 0.999
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.001,
+          "rep": 0.999
+        },
         {
           "date": "2026-06-17",
           "dem": 0.001,
@@ -5163,8 +10704,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -5284,6 +10825,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -5298,9 +10840,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00207,
+      "tippingPower": 0.00186,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
         {
           "date": "2026-06-17",
           "dem": 0.00206,
@@ -5310,8 +10932,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -5438,6 +11060,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -5452,9 +11075,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.97604,
       "competitive": false,
-      "tippingPower": 0.01841,
+      "tippingPower": 0.01887,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.02451,
+          "rep": 0.97549
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.02451,
+          "rep": 0.97549
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.02446,
+          "rep": 0.97554
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.02445,
+          "rep": 0.97555
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.02443,
+          "rep": 0.97557
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.02443,
+          "rep": 0.97557
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.02441,
+          "rep": 0.97559
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.02441,
+          "rep": 0.97559
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.02441,
+          "rep": 0.97559
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.02438,
+          "rep": 0.97562
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.02437,
+          "rep": 0.97563
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.02415,
+          "rep": 0.97585
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.02411,
+          "rep": 0.97589
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.02408,
+          "rep": 0.97592
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.02407,
+          "rep": 0.97593
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.02409,
+          "rep": 0.97591
+        },
         {
           "date": "2026-06-17",
           "dem": 0.02396,
@@ -5464,8 +11167,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -5579,6 +11282,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -5593,9 +11297,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.99466,
       "competitive": false,
-      "tippingPower": 0.00521,
+      "tippingPower": 0.00552,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.00545,
+          "rep": 0.99455
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.00545,
+          "rep": 0.99455
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.00544,
+          "rep": 0.99456
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.00544,
+          "rep": 0.99456
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.00544,
+          "rep": 0.99456
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.00544,
+          "rep": 0.99456
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.00543,
+          "rep": 0.99457
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.00543,
+          "rep": 0.99457
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.00543,
+          "rep": 0.99457
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.00543,
+          "rep": 0.99457
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.00542,
+          "rep": 0.99458
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.00538,
+          "rep": 0.99462
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.00537,
+          "rep": 0.99463
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.00536,
+          "rep": 0.99464
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.00536,
+          "rep": 0.99464
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.00537,
+          "rep": 0.99463
+        },
         {
           "date": "2026-06-17",
           "dem": 0.00534,
@@ -5605,8 +11389,8 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -5726,6 +11510,7 @@
         "pollMatchups": [
           "Rodriguez vs. Tiffany"
         ],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -5740,9 +11525,89 @@
       "winnerParty": "D",
       "winnerProbability": 0.61436,
       "competitive": true,
-      "tippingPower": 0.07646,
+      "tippingPower": 0.07497,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.61691,
+          "rep": 0.38309
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.61691,
+          "rep": 0.38309
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.61669,
+          "rep": 0.38331
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.61666,
+          "rep": 0.38334
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.61655,
+          "rep": 0.38345
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.61655,
+          "rep": 0.38345
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.61648,
+          "rep": 0.38352
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.61644,
+          "rep": 0.38356
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.61644,
+          "rep": 0.38356
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.61637,
+          "rep": 0.38363
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.6163,
+          "rep": 0.3837
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.61529,
+          "rep": 0.38471
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.61508,
+          "rep": 0.38492
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.61497,
+          "rep": 0.38503
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.6149,
+          "rep": 0.3851
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.61501,
+          "rep": 0.38499
+        },
         {
           "date": "2026-06-17",
           "dem": 0.61436,
@@ -5750,10 +11615,10 @@
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "sinceLastRun": -0.1,
+        "sinceWeek": -0.2,
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     },
     {
@@ -5862,6 +11727,7 @@
         "pollSources": [],
         "pollSourceUrls": [],
         "pollMatchups": [],
+        "pollEntries": [],
         "pollReducedWeight": false,
         "pollWeightScale": 1,
         "primaryPollSignal": 0,
@@ -5876,9 +11742,89 @@
       "winnerParty": "R",
       "winnerProbability": 0.99794,
       "competitive": false,
-      "tippingPower": 0.00214,
+      "tippingPower": 0.00198,
       "movementDrivers": [],
       "history": [
+        {
+          "date": "2026-06-01",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-02",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-03",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-04",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-05",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-06",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-07",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-08",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-09",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-10",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-11",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-12",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-13",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-14",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-15",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
+        {
+          "date": "2026-06-16",
+          "dem": 0.00206,
+          "rep": 0.99794
+        },
         {
           "date": "2026-06-17",
           "dem": 0.00206,
@@ -5888,12 +11834,112 @@
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-06-16",
+        "weekDate": "2026-06-10"
       }
     }
   ],
   "governorCountHistory": [
+    {
+      "date": "2026-05-28",
+      "demGovernors": 25,
+      "repGovernors": 25
+    },
+    {
+      "date": "2026-05-29",
+      "demGovernors": 25,
+      "repGovernors": 25
+    },
+    {
+      "date": "2026-05-30",
+      "demGovernors": 25,
+      "repGovernors": 25
+    },
+    {
+      "date": "2026-05-31",
+      "demGovernors": 25,
+      "repGovernors": 25
+    },
+    {
+      "date": "2026-06-01",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-02",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-03",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-04",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-05",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-06",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-07",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-08",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-09",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-10",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-11",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-12",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-13",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-14",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-15",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-06-16",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
     {
       "date": "2026-06-17",
       "demGovernors": 24,
