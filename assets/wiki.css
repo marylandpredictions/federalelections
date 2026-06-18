@@ -9375,8 +9375,8 @@ select {
 
 /* Institute color discipline: neutral surfaces first, party color as data/accent. */
 :root {
-  --institute-accent-blue: #3f6ff4;
-  --institute-accent-red: #f04e59;
+  --institute-accent-blue: #176fff;
+  --institute-accent-red: #ff2f46;
   --institute-cream: #f7f4ea;
   --institute-cream-2: #ece8dc;
   --institute-ink-soft: color-mix(in srgb, var(--ink) 88%, var(--muted));
@@ -9389,7 +9389,7 @@ select {
     var(--institute-surface);
   --box-gradient-hover:
     linear-gradient(180deg, color-mix(in srgb, white 12%, transparent), transparent 44%),
-    linear-gradient(90deg, color-mix(in srgb, var(--institute-accent-blue) 8%, transparent), transparent 50%, color-mix(in srgb, var(--institute-accent-red) 7%, transparent)),
+    linear-gradient(90deg, color-mix(in srgb, var(--institute-accent-blue) 14%, transparent), transparent 50%, color-mix(in srgb, var(--institute-accent-red) 12%, transparent)),
     var(--institute-surface-strong);
   --institute-panel-gradient:
     linear-gradient(180deg, color-mix(in srgb, white 10%, transparent), transparent 46%),
@@ -9397,20 +9397,20 @@ select {
 }
 
 :root[data-theme="dark"] {
-  --institute-accent-blue: #6ea8ff;
-  --institute-accent-red: #ff7278;
+  --institute-accent-blue: #4a96ff;
+  --institute-accent-red: #ff5964;
   --institute-cream: #172033;
   --institute-cream-2: #202940;
   --party-gradient:
-    linear-gradient(105deg, var(--institute-accent-blue) 0%, #f5f7ff 52%, var(--institute-accent-red) 100%);
+    linear-gradient(105deg, var(--institute-accent-blue) 0%, #eef3ff 48%, var(--institute-accent-red) 100%);
   --party-gradient-strong:
-    linear-gradient(105deg, #5f95ff 0%, #c3ceff 44%, #ff6f79 100%);
+    linear-gradient(105deg, #347cff 0%, #c6d0ff 42%, #ff4b59 100%);
   --box-gradient:
     linear-gradient(180deg, color-mix(in srgb, white 5%, transparent), transparent 48%),
     var(--institute-surface);
   --box-gradient-hover:
     linear-gradient(180deg, color-mix(in srgb, white 8%, transparent), transparent 48%),
-    linear-gradient(90deg, color-mix(in srgb, var(--institute-accent-blue) 10%, transparent), transparent 52%, color-mix(in srgb, var(--institute-accent-red) 9%, transparent)),
+    linear-gradient(90deg, color-mix(in srgb, var(--institute-accent-blue) 17%, transparent), transparent 52%, color-mix(in srgb, var(--institute-accent-red) 14%, transparent)),
     var(--institute-surface-strong);
   --institute-panel-gradient:
     linear-gradient(180deg, color-mix(in srgb, white 6%, transparent), transparent 48%),
@@ -9419,9 +9419,10 @@ select {
 
 body {
   background:
-    radial-gradient(circle at 12% 2%, color-mix(in srgb, var(--institute-accent-blue) 14%, transparent), transparent 30rem),
-    radial-gradient(circle at 92% 0%, color-mix(in srgb, var(--institute-accent-red) 10%, transparent), transparent 28rem),
-    linear-gradient(135deg, color-mix(in srgb, var(--bg) 96%, var(--institute-cream)) 0%, var(--bg) 58%, color-mix(in srgb, var(--bg) 93%, var(--institute-accent-red)) 100%) fixed;
+    radial-gradient(circle at 10% 0%, color-mix(in srgb, var(--institute-accent-blue) 24%, transparent), transparent 32rem),
+    radial-gradient(circle at 90% 4%, color-mix(in srgb, var(--institute-accent-red) 18%, transparent), transparent 30rem),
+    radial-gradient(circle at 52% 88%, color-mix(in srgb, #7b5cff 12%, transparent), transparent 34rem),
+    linear-gradient(135deg, color-mix(in srgb, var(--bg) 92%, var(--institute-accent-blue)) 0%, var(--bg) 54%, color-mix(in srgb, var(--bg) 88%, var(--institute-accent-red)) 100%) fixed;
 }
 
 .site-header {
@@ -9499,9 +9500,9 @@ body {
 .text-panel::before,
 .detail-panel::before {
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--institute-accent-blue) 8%, transparent), transparent 28%),
-    linear-gradient(270deg, color-mix(in srgb, var(--institute-accent-red) 7%, transparent), transparent 28%);
-  opacity: .42;
+    linear-gradient(90deg, color-mix(in srgb, var(--institute-accent-blue) 16%, transparent), transparent 30%),
+    linear-gradient(270deg, color-mix(in srgb, var(--institute-accent-red) 14%, transparent), transparent 30%);
+  opacity: .62;
 }
 
 .forecast-overview-card::after,
@@ -9515,8 +9516,8 @@ body {
   inset: 0 auto auto 0;
   width: 100%;
   height: 4px;
-  background: linear-gradient(90deg, var(--institute-accent-blue), color-mix(in srgb, var(--institute-accent-blue) 18%, var(--institute-accent-red)), var(--institute-accent-red));
-  opacity: .72;
+  background: linear-gradient(90deg, var(--institute-accent-blue), color-mix(in srgb, var(--institute-accent-blue) 24%, var(--institute-accent-red)), var(--institute-accent-red));
+  opacity: .9;
   pointer-events: none;
 }
 
@@ -9573,8 +9574,9 @@ body {
 .county-row,
 .article-embed {
   background:
-    linear-gradient(180deg, color-mix(in srgb, white 6%, transparent), transparent),
-    color-mix(in srgb, var(--institute-surface-strong) 74%, transparent);
+    linear-gradient(180deg, color-mix(in srgb, white 8%, transparent), transparent),
+    linear-gradient(90deg, color-mix(in srgb, var(--institute-accent-blue) 7%, transparent), transparent 58%, color-mix(in srgb, var(--institute-accent-red) 6%, transparent)),
+    color-mix(in srgb, var(--institute-surface-strong) 82%, transparent);
 }
 
 .race-board-row:hover,
@@ -9583,8 +9585,8 @@ body {
 .path-chip:focus,
 .home-run-panel div:hover {
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--institute-accent-blue) 9%, transparent), transparent 56%, color-mix(in srgb, var(--institute-accent-red) 7%, transparent)),
-    color-mix(in srgb, var(--institute-surface-strong) 90%, transparent);
+    linear-gradient(90deg, color-mix(in srgb, var(--institute-accent-blue) 18%, transparent), transparent 54%, color-mix(in srgb, var(--institute-accent-red) 14%, transparent)),
+    color-mix(in srgb, var(--institute-surface-strong) 96%, transparent);
 }
 
 .chart-label,
@@ -9614,7 +9616,9 @@ body {
 .result-map-frame,
 .election-map-canvas {
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--institute-surface-strong) 78%, transparent), color-mix(in srgb, var(--institute-surface) 92%, transparent));
+    radial-gradient(circle at 18% 10%, color-mix(in srgb, var(--institute-accent-blue) 12%, transparent), transparent 42%),
+    radial-gradient(circle at 88% 90%, color-mix(in srgb, var(--institute-accent-red) 10%, transparent), transparent 42%),
+    linear-gradient(180deg, color-mix(in srgb, var(--institute-surface-strong) 88%, transparent), color-mix(in srgb, var(--institute-surface) 96%, transparent));
 }
 
 .forecast-map-probbar,
