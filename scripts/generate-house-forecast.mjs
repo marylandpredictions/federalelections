@@ -438,12 +438,20 @@ const DISTRICT_REDISTRICTING_OVERRIDES = {
 
 function modelDateKey() {
   if (/^\d{4}-\d{2}-\d{2}$/.test(process.env.MODEL_DATE || "")) return process.env.MODEL_DATE;
-  const now = new Date();
-  const central = new Date(now.toLocaleString("en-US", { timeZone: SETTINGS.updateZone }));
-  if (central.getHours() < 6 || (central.getHours() === 6 && central.getMinutes() < 20)) {
-    central.setDate(central.getDate() - 1);
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
+    timeZone: SETTINGS.updateZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).formatToParts(new Date()).filter((part) => part.type !== "literal").map((part) => [part.type, part.value]));
+  const zonedDate = new Date(Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day), Number(parts.hour), Number(parts.minute)));
+  if (zonedDate.getUTCHours() < 6 || (zonedDate.getUTCHours() === 6 && zonedDate.getUTCMinutes() < 20)) {
+    zonedDate.setUTCDate(zonedDate.getUTCDate() - 1);
   }
-  return central.toISOString().slice(0, 10);
+  return zonedDate.toISOString().slice(0, 10);
 }
 
 const MODEL_DATE_KEY = modelDateKey();
@@ -872,7 +880,14 @@ function houseMarginGuardrail(district, rawMargin, ratingMargin, contextMargin, 
   if (/^Safe/.test(sourceRating || "") && Math.abs(margin) < 12) {
     margin = ratingSide * 12;
   }
-    return margin;
+  if (isAtLargeDistrict(district) && /^Safe/.test(sourceRating || "") && Math.abs(district.fundamentalMargin || 0) >= 25 && ratingSide) {
+    margin = ratingSide * Math.max(Math.abs(margin), 19.5);
+  }
+  return margin;
+}
+
+function isAtLargeDistrict(district) {
+  return district?.district === "AL" || /-AL$/.test(district?.id || "");
 }
 
 function applyRedistrictingOverride(district) {

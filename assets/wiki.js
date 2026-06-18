@@ -139,6 +139,11 @@ function oneDecimal(value) {
   return `${(value * 100).toFixed(1)}%`;
 }
 
+function houseProbability(value) {
+  if (Number.isFinite(value) && value > .99) return ">99%";
+  return oneDecimal(value);
+}
+
 function candidateDisplayName(race, party) {
   const name = party === "D" ? race.dem : race.rep;
   const status = party === "D" ? race.demStatus : race.repStatus;
@@ -750,10 +755,10 @@ function updateHomeHouseSummary() {
   const favoredProbability = Math.max(houseForecast.demControlProbability, houseForecast.repControlProbability);
   const houseSeatLine = `${houseForecast.medianSeats} D / ${435 - houseForecast.medianSeats} R projected seats`;
   setText("home-house-status", "Live");
-  setText("home-house-favored", `${favoredSide} ${pct(favoredProbability)}`);
+  setText("home-house-favored", `${favoredSide} ${houseProbability(favoredProbability)}`);
   setText("home-house-seats", houseSeatLine);
-  setText("home-house-dem", oneDecimal(houseForecast.demControlProbability));
-  setText("home-house-rep", oneDecimal(houseForecast.repControlProbability));
+  setText("home-house-dem", houseProbability(houseForecast.demControlProbability));
+  setText("home-house-rep", houseProbability(houseForecast.repControlProbability));
   setText("home-house-run", houseForecast.runDate || houseForecast.modelDate || "--");
   setText("home-house-median", `${houseForecast.medianSeats} D / ${435 - houseForecast.medianSeats} R`);
   setText("home-house-note", `${houseForecast.districts?.filter((district) => district.competitive).length ?? "--"} competitive districts`);
@@ -875,7 +880,7 @@ function renderHomeRadar() {
       className: houseLeaderClass(district),
       href: "house.html",
       id: district.id,
-      probability: `${district.winnerParty === "D" ? "D" : "R"} ${oneDecimal(district.winnerProbability)}`,
+      probability: `${district.winnerParty === "D" ? "D" : "R"} ${houseProbability(district.winnerProbability)}`,
       probabilityParty: district.winnerParty,
       margin: signedPointMargin(district.margin),
       marginParty: district.margin
@@ -2082,11 +2087,11 @@ function houseDistrictMarkup(district) {
       <div class="state-code">${escapeHtml(district.id)}</div>
       <span class="rating-pill ${houseDistrictBucket(district)}">${escapeHtml(colorLabel)}</span>
     </div>
-    <h3>${winner} ${oneDecimal(district.winnerProbability)}</h3>
+    <h3>${winner} ${houseProbability(district.winnerProbability)}</h3>
     <div class="candidate-table" aria-label="${district.id} district forecast">
       <div class="candidate-table-head"><span>Candidate</span><span>Chance</span></div>
-      <div class="candidate-row dem-row"><span>${escapeHtml(district.demCandidate || "Democrat")} <i class="party-badge dem-badge">D</i></span><strong>${oneDecimal(district.demProbability)}</strong></div>
-      <div class="candidate-row rep-row"><span>${escapeHtml(district.repCandidate || "Republican")} <i class="party-badge rep-badge">R</i></span><strong>${oneDecimal(district.repProbability)}</strong></div>
+      <div class="candidate-row dem-row"><span>${escapeHtml(district.demCandidate || "Democrat")} <i class="party-badge dem-badge">D</i></span><strong>${houseProbability(district.demProbability)}</strong></div>
+      <div class="candidate-row rep-row"><span>${escapeHtml(district.repCandidate || "Republican")} <i class="party-badge rep-badge">R</i></span><strong>${houseProbability(district.repProbability)}</strong></div>
       <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(district.margin)}</strong></div>
     </div>
     <div class="badge-row">
@@ -2315,7 +2320,7 @@ function renderHouseDistrictList() {
       <strong>${escapeHtml(district.id)}</strong>
       <span>${escapeHtml(district.label || (district.open ? "Open seat" : ""))}</span>
       <b class="rating-pill ${houseDistrictBucket(district)}">${escapeHtml(houseDistrictColorLabel(district))}</b>
-      <em>${district.winnerParty === "D" ? "D" : "R"} ${oneDecimal(district.winnerProbability)}</em>
+      <em>${district.winnerParty === "D" ? "D" : "R"} ${houseProbability(district.winnerProbability)}</em>
       <i>${signedPointMargin(district.margin)}</i>
     </button>
   `).join("");
@@ -2344,13 +2349,13 @@ function renderHouseSummary() {
   panel?.classList.toggle("control-dem", favoredIsDem);
   panel?.classList.toggle("control-rep", !favoredIsDem);
   const odds = document.getElementById("house-odds-phrase");
-  if (odds) odds.innerHTML = `<span>${favoredSide} favored</span><strong>${pct(favoredProbability)}</strong>`;
+  if (odds) odds.innerHTML = `<span>${favoredSide} favored</span><strong>${houseProbability(favoredProbability)}</strong>`;
   const houseDemSeats = Number(houseForecast.medianSeats || 0);
   const houseRepSeats = Math.max(0, 435 - houseDemSeats);
   setText("house-seat-count-headline", `${houseDemSeats} D / ${houseRepSeats} R projected seats`);
   setText("house-control-headline", `${favoredSide} ${controlProbabilityPhrase(favoredProbability)}`);
-  setText("house-dem-control", oneDecimal(houseForecast.demControlProbability));
-  setText("house-rep-control", oneDecimal(houseForecast.repControlProbability));
+  setText("house-dem-control", houseProbability(houseForecast.demControlProbability));
+  setText("house-rep-control", houseProbability(houseForecast.repControlProbability));
   setText("house-median-seats", `${houseDemSeats} D / ${houseRepSeats} R`);
   setText("house-run-date", houseForecast.runDate || houseForecast.modelDate || "--");
   const houseSeatbarLabel = document.getElementById("house-map-seatbar-label");
@@ -2430,7 +2435,7 @@ function renderHouseDecisiveDistricts() {
   const max = Math.max(...ranked.map((district) => district.leverage || 0), .01);
   container.innerHTML = ranked.map((district) => {
     const width = clamp(((district.leverage || 0) / max) * 100, 8, 100);
-    return `<button class="leverage-row ${houseLeaderClass(district)}" type="button" data-district="${escapeHtml(district.id)}" data-tip="${escapeHtml(houseDistrictLabel(district))}<br>${oneDecimal(district.winnerProbability)} ${district.winnerParty === "D" ? "Democrat" : "Republican"}<br>${escapeHtml(district.rating)}"><strong>${escapeHtml(district.id)}</strong><i style="width:${width}%"></i><span>${oneDecimal(district.leverage || 0)}</span></button>`;
+    return `<button class="leverage-row ${houseLeaderClass(district)}" type="button" data-district="${escapeHtml(district.id)}" data-tip="${escapeHtml(houseDistrictLabel(district))}<br>${houseProbability(district.winnerProbability)} ${district.winnerParty === "D" ? "Democrat" : "Republican"}<br>${escapeHtml(district.rating)}"><strong>${escapeHtml(district.id)}</strong><i style="width:${width}%"></i><span>${oneDecimal(district.leverage || 0)}</span></button>`;
   }).join("");
   container.querySelectorAll(".leverage-row").forEach((node) => {
     const district = houseForecast.districts.find((item) => item.id === node.dataset.district);
@@ -3207,7 +3212,7 @@ function renderEmbed(target, embed) {
     const max = Math.max(...ranked.map((district) => district.leverage || 0), .01);
     target.innerHTML = ranked.slice(0, embed.limit || 10).map((district) => {
       const width = clamp(((district.leverage || 0) / max) * 100, 8, 100);
-      return `<button class="leverage-row ${houseLeaderClass(district)}" type="button" data-tip="${escapeHtml(houseDistrictLabel(district))}<br>${oneDecimal(district.winnerProbability)} ${district.winnerParty === "D" ? "Democrat" : "Republican"}<br>${escapeHtml(district.rating)}"><strong>${escapeHtml(district.id)}</strong><i style="width:${width}%"></i><span>${oneDecimal(district.leverage || 0)}</span></button>`;
+      return `<button class="leverage-row ${houseLeaderClass(district)}" type="button" data-tip="${escapeHtml(houseDistrictLabel(district))}<br>${houseProbability(district.winnerProbability)} ${district.winnerParty === "D" ? "Democrat" : "Republican"}<br>${escapeHtml(district.rating)}"><strong>${escapeHtml(district.id)}</strong><i style="width:${width}%"></i><span>${oneDecimal(district.leverage || 0)}</span></button>`;
     }).join("");
     bindPanelTooltipFor(target, ".leverage-row", (node) => node.dataset.tip);
     return;
