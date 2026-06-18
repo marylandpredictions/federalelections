@@ -8904,3 +8904,736 @@ button.race-board-row {
   height: 72%;
   object-fit: contain;
 }
+
+/* Institute refresh: visual-only polish inspired by clean polling/research layouts. */
+:root {
+  --institute-surface: color-mix(in srgb, var(--paper) 88%, white);
+  --institute-surface-strong: color-mix(in srgb, var(--paper-2) 82%, white);
+  --institute-border: color-mix(in srgb, var(--line) 76%, transparent);
+  --institute-muted-surface: color-mix(in srgb, var(--paper) 58%, transparent);
+  --institute-panel-gradient:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 9%, transparent), transparent 48%, color-mix(in srgb, var(--rep) 8%, transparent)),
+    linear-gradient(180deg, color-mix(in srgb, white 14%, transparent), transparent),
+    var(--institute-surface);
+  --institute-card-radius: 18px;
+  --institute-pill-radius: 999px;
+}
+
+:root[data-theme="dark"] {
+  --institute-surface: color-mix(in srgb, var(--paper) 84%, #0b0f1d);
+  --institute-surface-strong: color-mix(in srgb, var(--paper-2) 86%, #0b0f1d);
+  --institute-border: color-mix(in srgb, var(--line) 72%, transparent);
+  --institute-muted-surface: color-mix(in srgb, var(--paper) 54%, transparent);
+  --institute-panel-gradient:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 18%, transparent), transparent 50%, color-mix(in srgb, var(--rep) 15%, transparent)),
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, #ffffff 10%, transparent), transparent 34%),
+    var(--institute-surface);
+}
+
+body {
+  background:
+    radial-gradient(circle at 10% 0%, color-mix(in srgb, var(--dem) 24%, transparent), transparent 28rem),
+    radial-gradient(circle at 88% 8%, color-mix(in srgb, var(--rep) 18%, transparent), transparent 26rem),
+    linear-gradient(135deg, color-mix(in srgb, var(--bg) 94%, #ffffff) 0%, var(--bg) 52%, color-mix(in srgb, var(--bg) 86%, #250817) 100%) fixed;
+}
+
+main {
+  width: min(1440px, calc(100% - clamp(28px, 6vw, 96px)));
+}
+
+.site-header {
+  padding: 10px clamp(18px, 3.8vw, 58px);
+  border-bottom-color: color-mix(in srgb, var(--line) 58%, transparent);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--chrome) 96%, transparent), color-mix(in srgb, var(--paper) 18%, transparent)),
+    color-mix(in srgb, var(--chrome) 94%, transparent);
+  box-shadow: 0 12px 40px color-mix(in srgb, #000 22%, transparent);
+}
+
+.brand {
+  padding: 4px 8px 4px 4px;
+  border-radius: var(--institute-pill-radius);
+}
+
+.brand strong {
+  letter-spacing: .01em;
+}
+
+.site-nav {
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid color-mix(in srgb, var(--line) 42%, transparent);
+  border-radius: var(--institute-pill-radius);
+  background: color-mix(in srgb, var(--institute-surface) 62%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 16%, transparent);
+}
+
+.site-nav a,
+.site-nav summary {
+  min-height: 34px;
+  padding: 7px 13px;
+  border-radius: var(--institute-pill-radius);
+  text-decoration: none;
+  color: color-mix(in srgb, var(--ink) 74%, var(--muted));
+}
+
+.site-nav a:hover,
+.site-nav summary:hover,
+.site-nav a.active,
+.site-nav summary.active {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 18%, transparent), color-mix(in srgb, var(--rep) 12%, transparent)),
+    color-mix(in srgb, var(--institute-surface-strong) 82%, transparent);
+  box-shadow: 0 8px 22px color-mix(in srgb, #000 18%, transparent);
+  text-decoration: none;
+}
+
+.nav-dropdown-menu {
+  padding: 9px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--chrome) 94%, var(--institute-surface));
+  box-shadow: 0 18px 50px color-mix(in srgb, #000 34%, transparent);
+}
+
+.donate-button,
+.button-link,
+.result-map-tabs span,
+.result-map-tabs a,
+.result-map-tabs button,
+.election-map-controls button,
+.forecast-family-card,
+.forecast-overview-card,
+.path-chip,
+.path-stat-grid div {
+  border-radius: var(--institute-pill-radius);
+}
+
+.button-link,
+.donate-button {
+  padding-inline: 15px;
+  box-shadow: 0 10px 24px color-mix(in srgb, #000 16%, transparent);
+}
+
+.hero-main,
+.odds-panel,
+.map-panel,
+.chart-panel,
+.source-panel,
+.text-panel,
+.detail-panel,
+.home-run-panel,
+.result-map-frame,
+.result-full-candidate-table,
+.movement-panel,
+.accordion-list details,
+.contact-form,
+.article-card {
+  border-color: var(--institute-border);
+  border-radius: var(--institute-card-radius);
+  background: var(--institute-panel-gradient);
+  box-shadow:
+    0 18px 50px color-mix(in srgb, #000 18%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 12%, transparent);
+}
+
+.hero-main {
+  min-height: 460px;
+  padding: clamp(28px, 5vw, 64px);
+}
+
+.home-hero-shell .home-hero,
+.hero-main {
+  border-radius: 26px;
+}
+
+.home-hero-shell .hero-main::before,
+.hero-main::before,
+.image-panel::before,
+.hero-main.president-hero::before {
+  opacity: .74;
+  filter: saturate(.9) contrast(1.05);
+}
+
+.home-hero-shell .hero-main::after,
+.hero-main::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, transparent 0 58%, color-mix(in srgb, var(--paper) 72%, transparent) 100%),
+    radial-gradient(circle at 18% 24%, color-mix(in srgb, white 12%, transparent), transparent 22rem);
+  pointer-events: none;
+}
+
+.hero-main > * {
+  z-index: 1;
+}
+
+h1,
+.article-page h1 {
+  max-width: 980px;
+  font-size: clamp(2.6rem, 6.2vw, 6.6rem);
+  line-height: .88;
+}
+
+h2 {
+  letter-spacing: -.01em;
+}
+
+.kicker,
+.panel-label,
+.source-tag,
+.race-kicker,
+.chart-label,
+.forecast-overview-card span,
+.forecast-family-card span,
+.home-run-panel dt {
+  letter-spacing: .115em;
+}
+
+.lede {
+  max-width: 760px;
+  font-size: clamp(1.02rem, 1.45vw, 1.28rem);
+}
+
+.home-section-head,
+.section-head {
+  align-items: end;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  padding-bottom: 8px;
+}
+
+.home-section-head h2,
+.section-head h2,
+.text-panel > h2,
+.article-page h1 {
+  background: var(--party-gradient-strong);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.model-strip,
+.forecast-overviews,
+.forecast-family,
+.signal-board,
+.team-action-grid,
+.dashboard-grid,
+.article-list,
+.home-news-grid {
+  gap: clamp(12px, 1.8vw, 22px);
+}
+
+.forecast-overview-card,
+.forecast-family-card {
+  border-radius: 20px;
+  padding: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.forecast-overview-card::before,
+.forecast-family-card::before,
+.chart-panel::before,
+.text-panel::before,
+.detail-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, white 16%, transparent), transparent 34%),
+    radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--dem) 12%, transparent), transparent 16rem);
+  opacity: .55;
+}
+
+.forecast-overview-card > *,
+.forecast-family-card > *,
+.chart-panel > *,
+.text-panel > *,
+.detail-panel > * {
+  position: relative;
+}
+
+.forecast-overview-card strong,
+.forecast-family-card strong {
+  font-size: clamp(1.35rem, 2vw, 1.85rem);
+}
+
+.forecast-overview-card b {
+  font-size: clamp(2rem, 4vw, 3.35rem);
+}
+
+.home-run-panel {
+  padding: 18px;
+}
+
+.home-run-panel div,
+.path-chip,
+.path-stat-grid div,
+.race-board-row,
+.poll-row,
+.leverage-row,
+.president-state-row,
+.result-full-candidate,
+.county-row,
+.article-embed {
+  border-color: color-mix(in srgb, var(--line) 66%, transparent);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 8%, transparent), transparent 48%, color-mix(in srgb, var(--rep) 6%, transparent)),
+    color-mix(in srgb, var(--institute-surface-strong) 72%, transparent);
+}
+
+.race-board-row {
+  padding: 14px 12px;
+  border-left: 4px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+.race-board-row.leads-dem,
+.path-chip.leads-dem {
+  border-left-color: var(--dem);
+}
+
+.race-board-row.leads-rep,
+.path-chip.leads-rep {
+  border-left-color: var(--rep);
+}
+
+.race-board-row.leads-ind,
+.path-chip.leads-ind {
+  border-left-color: var(--ind);
+}
+
+.race-board-row:hover,
+.race-board-row:focus,
+.path-chip:hover,
+.path-chip:focus,
+.home-run-panel div:hover,
+.forecast-overview-card:hover,
+.forecast-family-card:hover,
+.article-card:hover,
+.article-card:focus-within,
+.chart-panel:hover,
+.text-panel:hover,
+.detail-panel:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 48px color-mix(in srgb, #000 26%, transparent);
+}
+
+.chart-panel,
+.text-panel,
+.detail-panel,
+.map-panel,
+.source-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-panel {
+  padding: clamp(18px, 2vw, 28px);
+}
+
+.chart-panel svg,
+.history-chart,
+.map-wrap,
+.district-map,
+.state-map,
+.house-shape-map {
+  border-radius: 18px;
+}
+
+.forecast-map-probbar,
+.seat-bar,
+.control-bar-fill,
+.result-reporting-bar,
+.result-history-chart-wrap {
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.battleground-list,
+.home-radar-list,
+.article-list {
+  gap: 8px;
+}
+
+.article-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.article-card {
+  padding: clamp(18px, 2.2vw, 28px);
+}
+
+.article-card-image,
+.article-teaser-image,
+.article-hero-image {
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 1px var(--institute-border);
+}
+
+.site-footer {
+  width: min(1440px, calc(100% - clamp(28px, 6vw, 96px)));
+  border-radius: 24px 24px 0 0;
+  border: 1px solid var(--institute-border);
+  border-bottom: 0;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dem) 18%, transparent), transparent 50%, color-mix(in srgb, var(--rep) 12%, transparent)),
+    color-mix(in srgb, var(--chrome) 92%, transparent);
+}
+
+.site-footer a {
+  border-radius: 10px;
+  padding: 4px 7px;
+}
+
+.site-footer a:hover,
+.site-footer a:focus {
+  background: color-mix(in srgb, var(--institute-surface) 28%, transparent);
+}
+
+.election-night-shell,
+.result-full-page,
+.results-page,
+.article-page {
+  background: transparent;
+}
+
+.election-focus-overlay,
+.election-map-tooltip,
+.panel-hover-tooltip,
+.result-map-tooltip,
+.county-hover-card {
+  border-radius: 14px;
+  border-color: var(--institute-border);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--paper) 94%, transparent), color-mix(in srgb, var(--paper-2) 88%, transparent));
+  box-shadow: 0 22px 60px color-mix(in srgb, #000 32%, transparent);
+}
+
+.election-map-canvas,
+.result-map-frame {
+  background:
+    radial-gradient(circle at 22% 18%, color-mix(in srgb, var(--dem) 12%, transparent), transparent 18rem),
+    color-mix(in srgb, var(--paper) 84%, #071127);
+}
+
+.election-map-controls {
+  border-radius: var(--institute-pill-radius);
+  background: color-mix(in srgb, var(--chrome) 72%, transparent);
+  box-shadow: 0 10px 26px color-mix(in srgb, #000 24%, transparent);
+}
+
+.election-map-controls button,
+.result-map-tabs button,
+.result-map-tabs a,
+.result-map-tabs span {
+  border-radius: var(--institute-pill-radius);
+}
+
+input,
+textarea,
+select {
+  border-radius: 14px;
+  border-color: var(--institute-border);
+  background: color-mix(in srgb, var(--institute-surface) 74%, transparent);
+}
+
+@media (max-width: 900px) {
+  main,
+  .site-footer {
+    width: min(100% - 22px, 1440px);
+  }
+
+  .site-header {
+    border-radius: 0 0 20px 20px;
+  }
+
+  .site-nav {
+    width: 100%;
+    justify-self: stretch;
+    overflow-x: auto;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+  }
+
+  .article-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-main {
+    min-height: 360px;
+    border-radius: 20px;
+  }
+
+  .home-hero-shell .home-hero {
+    min-height: 360px;
+  }
+
+  .forecast-overview-card,
+  .forecast-family-card,
+  .chart-panel,
+  .text-panel,
+  .detail-panel {
+    border-radius: 16px;
+  }
+
+  .article-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Institute color discipline: neutral surfaces first, party color as data/accent. */
+:root {
+  --institute-accent-blue: #3f6ff4;
+  --institute-accent-red: #f04e59;
+  --institute-cream: #f7f4ea;
+  --institute-cream-2: #ece8dc;
+  --institute-ink-soft: color-mix(in srgb, var(--ink) 88%, var(--muted));
+  --party-gradient:
+    linear-gradient(105deg, var(--institute-accent-blue) 0%, color-mix(in srgb, var(--ink) 88%, white) 48%, var(--institute-accent-red) 100%);
+  --party-gradient-strong:
+    linear-gradient(105deg, var(--institute-accent-blue) 0%, #9faefa 45%, var(--institute-accent-red) 100%);
+  --box-gradient:
+    linear-gradient(180deg, color-mix(in srgb, white 8%, transparent), transparent 44%),
+    var(--institute-surface);
+  --box-gradient-hover:
+    linear-gradient(180deg, color-mix(in srgb, white 12%, transparent), transparent 44%),
+    linear-gradient(90deg, color-mix(in srgb, var(--institute-accent-blue) 8%, transparent), transparent 50%, color-mix(in srgb, var(--institute-accent-red) 7%, transparent)),
+    var(--institute-surface-strong);
+  --institute-panel-gradient:
+    linear-gradient(180deg, color-mix(in srgb, white 10%, transparent), transparent 46%),
+    var(--institute-surface);
+}
+
+:root[data-theme="dark"] {
+  --institute-accent-blue: #6ea8ff;
+  --institute-accent-red: #ff7278;
+  --institute-cream: #172033;
+  --institute-cream-2: #202940;
+  --party-gradient:
+    linear-gradient(105deg, var(--institute-accent-blue) 0%, #f5f7ff 52%, var(--institute-accent-red) 100%);
+  --party-gradient-strong:
+    linear-gradient(105deg, #5f95ff 0%, #c3ceff 44%, #ff6f79 100%);
+  --box-gradient:
+    linear-gradient(180deg, color-mix(in srgb, white 5%, transparent), transparent 48%),
+    var(--institute-surface);
+  --box-gradient-hover:
+    linear-gradient(180deg, color-mix(in srgb, white 8%, transparent), transparent 48%),
+    linear-gradient(90deg, color-mix(in srgb, var(--institute-accent-blue) 10%, transparent), transparent 52%, color-mix(in srgb, var(--institute-accent-red) 9%, transparent)),
+    var(--institute-surface-strong);
+  --institute-panel-gradient:
+    linear-gradient(180deg, color-mix(in srgb, white 6%, transparent), transparent 48%),
+    var(--institute-surface);
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 2%, color-mix(in srgb, var(--institute-accent-blue) 14%, transparent), transparent 30rem),
+    radial-gradient(circle at 92% 0%, color-mix(in srgb, var(--institute-accent-red) 10%, transparent), transparent 28rem),
+    linear-gradient(135deg, color-mix(in srgb, var(--bg) 96%, var(--institute-cream)) 0%, var(--bg) 58%, color-mix(in srgb, var(--bg) 93%, var(--institute-accent-red)) 100%) fixed;
+}
+
+.site-header {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, white 5%, transparent), transparent),
+    color-mix(in srgb, var(--chrome) 96%, var(--institute-cream));
+}
+
+.site-nav {
+  background: color-mix(in srgb, var(--institute-surface) 74%, transparent);
+}
+
+.site-nav a:hover,
+.site-nav summary:hover,
+.site-nav a.active,
+.site-nav summary.active {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, white 12%, transparent), transparent),
+    color-mix(in srgb, var(--institute-surface-strong) 88%, transparent);
+  box-shadow:
+    inset 0 -2px 0 color-mix(in srgb, var(--institute-accent-blue) 56%, var(--institute-accent-red)),
+    0 8px 22px color-mix(in srgb, #000 14%, transparent);
+}
+
+.button-link {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, white 12%, transparent), transparent),
+    color-mix(in srgb, var(--institute-surface) 86%, transparent);
+  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--institute-accent-blue) 50%, var(--institute-accent-red)), 0 10px 24px color-mix(in srgb, #000 12%, transparent);
+}
+
+.button-link:hover,
+.button-link:focus {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, white 16%, transparent), transparent),
+    color-mix(in srgb, var(--institute-surface-strong) 94%, transparent);
+}
+
+.donate-button {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, white 16%, transparent), transparent),
+    #2f7d62;
+  box-shadow: 0 10px 24px color-mix(in srgb, #2f7d62 26%, transparent);
+}
+
+.donate-button:hover,
+.donate-button:focus {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, white 18%, transparent), transparent),
+    #398c6e;
+}
+
+.hero-main,
+.odds-panel,
+.map-panel,
+.chart-panel,
+.source-panel,
+.text-panel,
+.detail-panel,
+.home-run-panel,
+.result-map-frame,
+.result-full-candidate-table,
+.movement-panel,
+.accordion-list details,
+.contact-form,
+.article-card,
+.forecast-overview-card,
+.forecast-family-card {
+  background: var(--institute-panel-gradient);
+}
+
+.forecast-overview-card::before,
+.forecast-family-card::before,
+.chart-panel::before,
+.text-panel::before,
+.detail-panel::before {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--institute-accent-blue) 8%, transparent), transparent 28%),
+    linear-gradient(270deg, color-mix(in srgb, var(--institute-accent-red) 7%, transparent), transparent 28%);
+  opacity: .42;
+}
+
+.forecast-overview-card::after,
+.forecast-family-card::after,
+.article-card::after,
+.chart-panel::after,
+.text-panel::after,
+.detail-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--institute-accent-blue), color-mix(in srgb, var(--institute-accent-blue) 18%, var(--institute-accent-red)), var(--institute-accent-red));
+  opacity: .72;
+  pointer-events: none;
+}
+
+.article-card,
+.chart-panel,
+.text-panel,
+.detail-panel {
+  position: relative;
+}
+
+.forecast-overview-card b,
+.forecast-family-card strong,
+.article-card h2,
+.article-teaser h2 {
+  color: var(--ink);
+}
+
+.forecast-overview-card.control-dem b,
+.forecast-overview-card .party-dem,
+.dem-text,
+.home-radar-list .is-dem,
+.leader-dem {
+  color: var(--institute-accent-blue) !important;
+}
+
+.forecast-overview-card.control-rep b,
+.forecast-overview-card .party-rep,
+.rep-text,
+.home-radar-list .is-rep,
+.leader-rep {
+  color: var(--institute-accent-red) !important;
+}
+
+.gradient-democrat {
+  background: linear-gradient(135deg, var(--institute-accent-blue), color-mix(in srgb, var(--institute-accent-blue) 42%, var(--ink)));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.gradient-republican {
+  background: linear-gradient(135deg, var(--institute-accent-red), color-mix(in srgb, var(--institute-accent-red) 38%, var(--ink)));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.home-run-panel div,
+.path-chip,
+.path-stat-grid div,
+.race-board-row,
+.poll-row,
+.leverage-row,
+.president-state-row,
+.result-full-candidate,
+.county-row,
+.article-embed {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, white 6%, transparent), transparent),
+    color-mix(in srgb, var(--institute-surface-strong) 74%, transparent);
+}
+
+.race-board-row:hover,
+.race-board-row:focus,
+.path-chip:hover,
+.path-chip:focus,
+.home-run-panel div:hover {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--institute-accent-blue) 9%, transparent), transparent 56%, color-mix(in srgb, var(--institute-accent-red) 7%, transparent)),
+    color-mix(in srgb, var(--institute-surface-strong) 90%, transparent);
+}
+
+.chart-label,
+.kicker,
+.panel-label,
+.source-tag,
+.race-kicker {
+  color: color-mix(in srgb, var(--institute-accent-red) 72%, var(--muted));
+}
+
+.meta,
+.lede,
+.forecast-overview-card small,
+.forecast-family-card small,
+.race-board-row span,
+.path-chip span,
+.path-stat-grid span {
+  color: var(--institute-ink-soft);
+}
+
+.chart-panel svg,
+.history-chart,
+.map-wrap,
+.district-map,
+.state-map,
+.house-shape-map,
+.result-map-frame,
+.election-map-canvas {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--institute-surface-strong) 78%, transparent), color-mix(in srgb, var(--institute-surface) 92%, transparent));
+}
+
+.forecast-map-probbar,
+.seat-bar,
+.result-reporting-track,
+.result-history-chart-wrap {
+  background: color-mix(in srgb, var(--institute-cream-2) 46%, var(--paper));
+  border: 1px solid color-mix(in srgb, var(--line) 62%, transparent);
+}
