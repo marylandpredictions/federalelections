@@ -141,6 +141,7 @@ function oneDecimal(value) {
 
 function houseProbability(value) {
   if (Number.isFinite(value) && value > .99) return ">99%";
+  if (Number.isFinite(value) && value < .01) return "<1%";
   return oneDecimal(value);
 }
 
