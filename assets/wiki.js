@@ -1476,6 +1476,11 @@ function renderRaceSelector() {
 }
 
 function renderLineChart(chart, points, options) {
+  points = (Array.isArray(points) ? points : []).filter((point) => point && Number.isFinite(Number(point.dem)));
+  if (!points.length) {
+    chart.innerHTML = `<div class="history-empty">${escapeHtml(options?.singleNote || "Forecast history will appear after the next saved run.")}</div>`;
+    return;
+  }
   const width = 760;
   const height = 310;
   const plot = { left: 54, right: 110, top: 20, bottom: 48 };
@@ -1706,6 +1711,16 @@ function renderLineChart(chart, points, options) {
     ${annotationKey}
   `;
   const svg = chart.querySelector("svg");
+  if (svg) {
+    svg.querySelectorAll(".history-line").forEach((path) => {
+      try {
+        const length = Math.max(1, Math.ceil(path.getTotalLength()));
+        path.style.setProperty("--line-length", String(length));
+      } catch (error) {
+        path.style.setProperty("--line-length", "700");
+      }
+    });
+  }
   chart.querySelectorAll("[data-history-zoom]").forEach((button) => {
     button.addEventListener("click", () => {
       chart.dataset.historyZoom = button.dataset.historyZoom || "recent";
