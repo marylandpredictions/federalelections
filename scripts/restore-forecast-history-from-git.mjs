@@ -7,8 +7,8 @@ const DATA_FILES = [
   "data/governor-forecast.json",
   ...listPresidentForecastFiles()
 ];
-const DEFAULT_SOURCE_COMMIT = "433bb4a";
-const sourceCommit = process.argv[2] || DEFAULT_SOURCE_COMMIT;
+const explicitSourceCommit = process.argv[2];
+const HISTORY_SCAN_LIMIT = 80;
 
 function listPresidentForecastFiles() {
   const files = execSync("git ls-files data/president-forecast-*-*.json", { encoding: "utf8" })
@@ -65,9 +65,22 @@ function historyScore(file, data) {
 }
 
 function bestHistorySource(file) {
-  const data = readGitBlob(sourceCommit, file);
-  const score = historyScore(file, data);
-  return data ? { commit: sourceCommit, data, score } : null;
+  const commits = explicitSourceCommit
+    ? [explicitSourceCommit]
+    : execSync(`git log --format=%H -- ${file}`, { encoding: "utf8" })
+      .trim()
+      .split(/\r?\n/)
+      .filter(Boolean)
+      .slice(0, HISTORY_SCAN_LIMIT);
+  let best = null;
+  for (const commit of commits) {
+    const data = readGitBlob(commit, file);
+    const score = historyScore(file, data);
+    if (data && (!best || score > best.score)) {
+      best = { commit, data, score };
+    }
+  }
+  return best;
 }
 
 function mergeHistory(oldHistory = [], currentHistory = [], dateKey = "date") {
