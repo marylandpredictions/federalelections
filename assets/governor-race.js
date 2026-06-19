@@ -101,14 +101,14 @@
       pollMatchups.length ? `<li>Matched matchup: ${escapeHtml(pollMatchups.join(" / "))}</li>` : ""
     ].filter(Boolean).join("") : `<li>No usable governor polling average is available for this race yet.</li>`;
     const snapshotCards = [
-      ["Rating", race.rating, "Manual race-rating input before model adjustment"],
+      ["Model classification", race.modelRating || race.rating, "Generated from the current probability and projected margin"],
       ["Fundamentals", signedPointMargin(race.fundamentalsMargin), "PVI, prior gubernatorial result, and incumbency"],
       ["Candidate/local", signedPointMargin(race.candidateAndLocal), "Manual candidate-quality and local context adjustment"],
       ["Finance", signedPointMargin(race.sourceInputs?.financeSignal || 0), "State-level campaign finance input"],
       ["Polling", signedPointMargin(race.sourceInputs?.pollMargin || 0), "Matched governor polling input"],
       ["Demographic pull", signedPointMargin(race.demographicPull?.adjustment || 0), "Candidate profile interaction with state electorate"],
       ["Model margin", signedPointMargin(race.margin), "Final projected vote margin"],
-      ["Model rating", race.modelRating || race.rating, "Probability-derived rating"]
+      ["Structural baseline", signedPointMargin(race.structuralMargin ?? race.ratingMargin), "PVI, prior gubernatorial result, and incumbency before other model adjustments"]
     ].map(([label, value, detail]) => `
       <article class="input-snapshot-card">
         <span>${escapeHtml(label)}</span>
@@ -131,7 +131,7 @@
         <li>PVI: ${escapeHtml(String(race.pvi))}</li>
         <li>Last gubernatorial margin: ${signedPointMargin(race.lastMargin)}</li>
         <li>Incumbency/status: ${escapeHtml(race.status || "--")}</li>
-        <li>Rating margin anchor: ${signedPointMargin(race.ratingMargin)}</li>
+        <li>Structural baseline: ${signedPointMargin(race.structuralMargin ?? race.ratingMargin)}</li>
       </ul></details>
     `;
   }
@@ -170,7 +170,7 @@
     setText("governor-race-dem", pct(race.demProbability));
     setText("governor-race-rep", pct(race.repProbability));
     setText("governor-race-tipping", oneDecimal(race.tippingPower));
-    setText("governor-race-rating", `${race.rating} input / ${race.modelRating || race.rating} model`);
+    setText("governor-race-rating", race.modelRating || race.rating);
     setText("governor-race-margin", signedPointMargin(race.margin));
     setText("governor-race-seat", race.status || "--");
     setText("governor-race-incumbent", race.incumbent || "--");

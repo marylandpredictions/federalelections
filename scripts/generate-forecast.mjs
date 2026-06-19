@@ -45,16 +45,6 @@ const REGION_BY_STATE = {
   DE: "Northeast", MA: "Northeast", ME: "Northeast", NH: "Northeast", NJ: "Northeast", RI: "Northeast"
 };
 
-const RATING_TO_MARGIN = {
-  "Safe D": 18, "Likely D": 9.5, "Lean D": 6.5, "Tilt D": 4, "Toss-up": 0,
-  "Tilt R": -4, "Lean R": -6.5, "Likely R": -9.5, "Safe R": -18
-};
-
-const RATING_TO_ERROR = {
-  "Safe D": 4.85, "Likely D": 5.4, "Lean D": 5.8, "Tilt D": 6.1, "Toss-up": 8.2,
-  "Tilt R": 6.1, "Lean R": 5.8, "Likely R": 5.4, "Safe R": 4.85
-};
-
 const RATING_BUCKET = {
   "Safe D": "safe-d", "Likely D": "likely-d", "Lean D": "lean-d", "Tilt D": "tilt-d", "Toss-up": "tossup",
   "Tilt R": "tilt-r", "Lean R": "lean-r", "Likely R": "likely-r", "Safe R": "safe-r"
@@ -458,9 +448,9 @@ const races = [
   { state: "MI", seat: "Open seat", incumbent: "Gary Peters", hold: "D", caucusTarget: "D", rating: "Tilt D", pvi: 1, pastSenate: 2, money: .4, candidate: .3, approval: .2, primary: "unresolved", primaryDate: "2026-08-04", nomination: .65, independent: "none", polls: [[-160, 48], [-100, 50], [-52, 52], [-18, 54]], note: "Democrats probably need to hold Michigan before the pickup path matters." },
   { state: "MN", seat: "Open seat", incumbent: "Tina Smith", hold: "D", caucusTarget: "D", rating: "Likely D", pvi: 4, pastSenate: 7, money: .6, candidate: .2, approval: .2, primary: "unresolved", primaryDate: "2026-08-11", nomination: .45, independent: "none", polls: [], note: "Competitive mainly under a poor Democratic national climate." },
   { state: "MS", seat: "Cindy Hyde-Smith", incumbent: "Cindy Hyde-Smith", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -11, pastSenate: -18, money: -1, candidate: -1, approval: -.7, primary: "resolved", primaryDate: "2026-03-10", nomination: .1, independent: "none", polls: [], note: "A high Republican floor unless candidate quality breaks badly." },
-  { state: "MT", seat: "Open seat", incumbent: "Steve Daines", hold: "R", caucusTarget: "D", rating: "Lean R", pvi: -11, pastSenate: -10, money: .3, candidate: .8, approval: -.2, primary: "unresolved", primaryDate: "2026-06-02", nomination: .35, independent: "Seth Bodnar independent path, caucus assumption uncertain", polls: [[-120, 33], [-75, 36], [-34, 39]], note: "Bodnar is modeled as the main non-Republican path while the Democratic primary remains unsettled; caucus uncertainty keeps the seat discounted." },
+  { state: "MT", seat: "Open seat", incumbent: "Steve Daines", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -11, pastSenate: -10, money: .3, candidate: .8, approval: -.2, primary: "unresolved", primaryDate: "2026-06-02", nomination: .35, independent: "Seth Bodnar independent path, caucus assumption uncertain", polls: [[-120, 33], [-75, 36], [-34, 39]], note: "Bodnar is modeled as the main non-Republican path while the Democratic primary remains unsettled; caucus uncertainty keeps the seat discounted." },
   { state: "NC", seat: "Open seat", incumbent: "Thom Tillis", hold: "R", caucusTarget: "D", rating: "Likely D", pvi: -2, pastSenate: -1, money: 1.2, candidate: 1.4, approval: .3, primary: "resolved", primaryDate: "2026-03-03", nomination: .2, independent: "none", polls: [[-150, 50], [-92, 53], [-45, 56], [-9, 59]], note: "A core Democratic pickup in most plausible majority paths." },
-  { state: "NE", seat: "Special election", incumbent: "Pete Ricketts", hold: "R", caucusTarget: "D", rating: "Lean R", pvi: -13, pastSenate: -7, money: .4, candidate: 1.25, approval: -.1, primary: "resolved", primaryDate: "2026-05-12", nomination: .15, independent: "Democratic nominee has said they will withdraw for Dan Osborn", polls: [[-140, 35], [-90, 38], [-40, 42], [-10, 44]], note: "Modeled as a purple independent who counts as Democrat for control if elected." },
+  { state: "NE", seat: "Special election", incumbent: "Pete Ricketts", hold: "R", caucusTarget: "D", rating: "Likely R", pvi: -13, pastSenate: -7, money: .4, candidate: 1.25, approval: -.1, primary: "resolved", primaryDate: "2026-05-12", nomination: .15, independent: "Democratic nominee has said they will withdraw for Dan Osborn", polls: [[-140, 35], [-90, 38], [-40, 42], [-10, 44]], note: "Modeled as a purple independent who counts as Democrat for control if elected." },
   { state: "NH", seat: "Open seat", incumbent: "Jeanne Shaheen", hold: "D", caucusTarget: "D", rating: "Likely D", pvi: 3, pastSenate: 5, money: .4, candidate: .4, approval: .2, primary: "unresolved", primaryDate: "2026-09-08", nomination: .55, independent: "none", polls: [[-90, 50], [-40, 52], [-12, 54]], note: "A necessary Democratic hold in almost every route to a majority." },
   { state: "NJ", seat: "Cory Booker", incumbent: "Cory Booker", hold: "D", caucusTarget: "D", rating: "Safe D", pvi: 12, pastSenate: 13, money: 1, candidate: 1, approval: .5, primary: "unresolved", primaryDate: "2026-06-02", nomination: .1, independent: "none", polls: [], note: "Not part of a normal majority path." },
   { state: "NM", seat: "Ben Ray Lujan", incumbent: "Ben Ray Lujan", hold: "D", caucusTarget: "D", rating: "Safe D", pvi: 10, pastSenate: 12, money: 1, candidate: 1, approval: .4, primary: "unresolved", primaryDate: "2026-06-02", nomination: .1, independent: "none", polls: [], note: "Safe Democratic hold." },
@@ -622,7 +612,7 @@ function forecastSummary(race) {
   if (race.state === "LA") {
     return `Both parties have runoffs; the Republican incumbent was eliminated before the second round.`;
   }
-  if (race.rating === "Toss-up") {
+  if (race.modelRating === "Toss-up") {
     return `${demLabel} and ${repLabel} start close to even; the current probability margin is ${margin}.`;
   }
   if (race.seat === "Open seat") {
@@ -871,14 +861,14 @@ function raceTypeUncertainty(race, pollSignal, quality) {
   let extra = 0;
   const reasons = [];
   const thinPolling = !pollSignal || pollSignal.pollCount < 3;
-  const leanOrLikely = /^Lean|^Likely/.test(race.rating);
+  const structurallyCompetitive = Math.abs(race.pvi || 0) < 8 || Math.abs(race.pastSenate || 0) < 8;
   if (thinPolling) {
     extra += .55;
     reasons.push("thin polling");
   }
-  if (leanOrLikely && thinPolling) {
+  if (structurallyCompetitive && thinPolling) {
     extra += .55;
-    reasons.push("lean/likely race with sparse polls");
+    reasons.push("competitive fundamentals with sparse polls");
   }
   if (race.independent && race.independent !== "none") {
     extra += .85;
@@ -937,7 +927,7 @@ function senateDemographicProfileKey(race, party) {
   if (party === "D" && ["statewide", "majorOffice", "sameSeat"].includes(race.challengerStrength)) return "statewideDemocrat";
   if (party === "R" && race.hold === "R" && race.seat !== "Open seat") return "incumbentRepublican";
   if (party === "R" && ["statewide", "majorOffice", "sameSeat"].includes(race.challengerStrength)) return "statewideRepublican";
-  if (party === "R" && race.seat === "Open seat" && race.rating && /Toss|Tilt|Lean/.test(race.rating)) return "weakRepublican";
+  if (party === "R" && race.seat === "Open seat" && Math.abs(race.pvi || 0) < 8) return "weakRepublican";
   return party === "D" ? "standardDemocrat" : "standardRepublican";
 }
 
@@ -1087,7 +1077,6 @@ function extraCandidateDemographicPulls(race) {
 }
 
 function baselineMargin(race) {
-  const rating = RATING_TO_MARGIN[race.rating] || 0;
   const fundamentals = race.pvi * .24 + race.pastSenate * .20;
   const signals = race.money * .9 + race.candidate * 1.05 + race.approval * .75;
   const pollSignal = pollWeightMetrics(race);
@@ -1097,23 +1086,38 @@ function baselineMargin(race) {
   const incumbentPenalty = incumbencyAdjustment(race);
   const nationalPolling = clamp((race.nationalPolling || 0) * clamp(elasticity, .76, 1.18), -1.25, 1.25);
   const demographicPull = demographicPullAdjustment(race).adjustment;
-  const rawMargin = (rating * .45 + fundamentals * fundamentalsBlend + signals + incumbentPenalty + caucusDiscount(race)) +
+  const rawMargin = (fundamentals * fundamentalsBlend + signals + incumbentPenalty + caucusDiscount(race)) +
     pollBlend + nationalPolling + demographicPull + candidateHistoryAdjustment(race) + primaryScenarioAdjustment(race) + rcvBaselineAdjustment(race);
-  return senateMarginGuardrail(race, rawMargin, pollSignal, rating, fundamentals);
+  return senateMarginGuardrail(race, rawMargin, pollSignal, fundamentals);
 }
 
-function senateMarginGuardrail(race, rawMargin, pollSignal, ratingMargin, fundamentals) {
-  const anchor = ratingMargin * .55 + fundamentals * .45;
+function senateMarginGuardrail(race, rawMargin, pollSignal, fundamentals) {
+  const anchor = fundamentals;
   const anchorWeight = pollSignal ? .08 : .16;
   let margin = rawMargin * (1 - anchorWeight) + anchor * anchorWeight;
-  const ratingSide = Math.sign(ratingMargin);
-  if (ratingSide && Math.sign(margin) !== ratingSide && Math.abs(ratingMargin) >= 9.5 && (!pollSignal || Math.sign(pollSignal.margin) !== Math.sign(margin))) {
-    margin = ratingSide * Math.max(6.5, Math.abs(margin) * .45);
-  }
-  if (/^Safe/.test(race.rating) && Math.abs(margin) < 11 && (!pollSignal || Math.sign(pollSignal.margin) === ratingSide)) {
-    margin = ratingSide * 11;
+  const partisanAnchor = race.pvi * .24 + race.pastSenate * .20;
+  const partisanSide = Math.sign(partisanAnchor);
+  if (partisanSide && Math.sign(margin) !== partisanSide && Math.abs(partisanAnchor) >= 8 && (!pollSignal || Math.sign(pollSignal.margin) !== Math.sign(margin))) {
+    margin = partisanSide * Math.max(3.5, Math.abs(margin) * .55);
   }
   return Number(margin.toFixed(3));
+}
+
+function senateRaceError(race, fundamentals, pollSignal, uncertainty) {
+  const structuralCertainty = Math.min(2, Math.abs(fundamentals) * .12);
+  const pollingCertainty = pollSignal ? Math.min(.75, pollSignal.weight * .1) : 0;
+  return clamp(8.2 - structuralCertainty - pollingCertainty + primaryRisk(race) + uncertainty.extraError, 4.8, 12);
+}
+
+function ratingFromProbability(probability, margin) {
+  const side = probability >= .5 ? "D" : "R";
+  const certainty = Math.max(probability, 1 - probability);
+  const absoluteMargin = Math.abs(margin);
+  if (certainty >= .97 || absoluteMargin >= 15) return `Safe ${side}`;
+  if (certainty >= .84 || absoluteMargin >= 8) return `Likely ${side}`;
+  if (certainty >= .68 || absoluteMargin >= 4) return `Lean ${side}`;
+  if (certainty >= .56 || absoluteMargin >= 1.5) return `Tilt ${side}`;
+  return "Toss-up";
 }
 
 function runModel(sourceData) {
@@ -1138,13 +1142,17 @@ function runModel(sourceData) {
     const margin = baselineMargin(withComposition);
     const quality = inputQuality(withComposition, pollSignal);
     const uncertainty = raceTypeUncertainty(withComposition, pollSignal, quality);
-    const error = (RATING_TO_ERROR[race.rating] || 8) + primaryRisk(race) + uncertainty.extraError;
+    const fundamentals = withComposition.pvi * .24 + withComposition.pastSenate * .20;
+    const error = senateRaceError(withComposition, fundamentals, pollSignal, uncertainty);
+    const demProbability = logistic(margin, error);
     const demographicPull = demographicPullAdjustment(withComposition);
     return {
       ...withComposition,
+      rating: ratingFromProbability(demProbability, margin),
+      modelRating: ratingFromProbability(demProbability, margin),
       margin,
       error,
-      demProbability: logistic(margin, error),
+      demProbability,
       pollMargin: pollSignal?.margin ?? null,
       pollSignal,
       inputQuality: quality,
@@ -2332,9 +2340,7 @@ function calibrationMissExplanation(race, historical, predicted, absoluteMarginE
 function buildArchivedBacktestReport() {
   const races = ARCHIVED_SENATE_BACKTESTS.flatMap((cycle) => cycle.races.map((race) => {
     const favoriteWon = race.favorite === "D" ? race.actualMargin > 0 : race.actualMargin < 0;
-    const predictedMargin = race.favorite === "D"
-      ? RATING_TO_MARGIN[race.rating] || 0
-      : -(Math.abs(RATING_TO_MARGIN[race.rating] || 0));
+    const predictedMargin = (race.favorite === "D" ? 1 : -1) * Math.max(0, (race.probability - .5) * 28);
     const marginMiss = Math.abs(predictedMargin - race.actualMargin);
     return {
       ...race,
@@ -2394,8 +2400,8 @@ function archivedBacktestExplanation(race, favoriteWon, marginMiss) {
   if (!favoriteWon) notes.push("favorite lost");
   if (race.tags.includes("Independent factor")) notes.push("independent candidate environment");
   if (race.tags.includes("Open seat")) notes.push("open-seat candidate uncertainty");
-  if (marginMiss > 6) notes.push("rating-implied margin missed by more than six points");
-  if (/Toss-up|Lean/.test(race.rating)) notes.push("competitive rating bucket");
+  if (marginMiss > 6) notes.push("probability-implied margin missed by more than six points");
+  if (race.probability < .8) notes.push("competitive probability range");
   return notes.length ? notes : ["within expected directional range"];
 }
 
@@ -2451,7 +2457,7 @@ async function writeForecast() {
       model: "senate",
       id: (race) => race.state,
       name: (race) => race.displayName,
-      baseline: (race) => RATING_TO_MARGIN[race.rating],
+      baseline: (race) => race.pvi * .24 + race.pastSenate * .20,
       partisanship: (race) => race.pvi,
       candidateAdjustment: (race) => race.candidate
     }),

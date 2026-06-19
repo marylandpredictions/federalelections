@@ -6,8 +6,8 @@ export function forecastSanityWarnings(items, options = {}) {
     name = (item) => item.displayName || item.name || id(item),
     margin = (item) => item.margin ?? item.demMargin,
     demProbability = (item) => item.demProbability,
-    rating = (item) => item.rating || item.modelRating || item.baselineRating,
-    baseline = (item) => item.ratingMargin ?? item.baselineMargin ?? item.sourceInputs?.ratingBaseline ?? item.sourceInputs?.contextualBaseline,
+    rating = (item) => item.modelRating || item.rating || item.baselineRating,
+    baseline = (item) => item.structuralMargin ?? item.baselineMargin ?? item.sourceInputs?.districtBaseline ?? item.sourceInputs?.contextualBaseline,
     pollMargin = (item) => item.pollMargin ?? item.sourceInputs?.pollMargin,
     pollCount = (item) => item.pollCount ?? item.sourceInputs?.pollCount,
     candidateAdjustment = (item) => item.candidateAndLocal ?? item.candidateQualityAdjustment ?? item.sourceInputs?.candidateQualityAdjustment,
@@ -40,8 +40,6 @@ export function forecastSanityWarnings(items, options = {}) {
     const absMargin = Math.abs(raceMargin);
     const favoriteSide = raceMargin >= 0 ? "D" : "R";
     const probabilitySide = demProb >= .5 ? "D" : "R";
-    const raceRating = String(rating(item) || "");
-    const ratingSide = / D$/.test(raceRating) ? "D" : / R$/.test(raceRating) ? "R" : null;
     const base = Number(baseline(item));
     const poll = Number(pollMargin(item));
     const polls = Number(pollCount(item));
@@ -57,17 +55,8 @@ export function forecastSanityWarnings(items, options = {}) {
     if (winnerProb <= .75 && absMargin >= 12) {
       add(item, "large-margin-low-confidence", "Large projected margin is paired with a relatively low win probability.");
     }
-    if (ratingSide && ratingSide !== favoriteSide && absMargin >= 1) {
-      add(item, "rating-margin-side-mismatch", "Public/manual rating direction and projected margin direction disagree.", "warn");
-    }
-    if (/^Safe/.test(raceRating) && absMargin < 10) {
-      add(item, "safe-rating-too-competitive", "Safe-rated race has a projected margin below 10 points.");
-    }
-    if (/^Likely/.test(raceRating) && absMargin < 5) {
-      add(item, "likely-rating-too-competitive", "Likely-rated race has a projected margin below 5 points.");
-    }
     if (Number.isFinite(base) && Math.abs(raceMargin - base) < .08 && Math.abs(base) > 2) {
-      add(item, "margin-copied-from-baseline", "Projected margin is nearly identical to the rating or baseline margin.");
+      add(item, "margin-copied-from-baseline", "Projected margin is nearly identical to the structural baseline.");
     }
     if (Number.isFinite(poll) && Number.isFinite(polls) && polls > 0 && Math.abs(poll - raceMargin) > 11 && absMargin < 18) {
       add(item, "poll-model-divergence", "Race polling and projected margin diverge by more than 11 points.");

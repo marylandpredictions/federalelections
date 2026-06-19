@@ -596,7 +596,7 @@ async function fetchTwoSeventyGovernorPolls(status) {
   const governorPolls = {};
   const governorPrimarySignals = {};
   const sourceStatus = { checked: 0, parsed: 0, primarySignals: 0, noPolls: 0, failed: 0, states: {} };
-  const racesToCheck = GOVERNOR_RACES.filter((race) => race.rating !== "Safe D" && race.rating !== "Safe R");
+  const racesToCheck = GOVERNOR_RACES.filter((race) => Math.abs(race.pvi || 0) < 12 || Math.abs(race.lastMargin || 0) < 12);
   for (const baseRace of racesToCheck) {
     const candidateInfo = GOVERNOR_CANDIDATE_STATUS[baseRace.state] || {};
     const race = {
@@ -739,16 +739,6 @@ const SETTINGS = {
 
 const STATE_NAMES = {
   AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California", CO: "Colorado", CT: "Connecticut", FL: "Florida", GA: "Georgia", HI: "Hawaii", ID: "Idaho", IL: "Illinois", IA: "Iowa", KS: "Kansas", ME: "Maine", MD: "Maryland", MA: "Massachusetts", MI: "Michigan", MN: "Minnesota", NE: "Nebraska", NV: "Nevada", NH: "New Hampshire", NM: "New Mexico", NY: "New York", OH: "Ohio", OK: "Oklahoma", OR: "Oregon", PA: "Pennsylvania", RI: "Rhode Island", SC: "South Carolina", SD: "South Dakota", TN: "Tennessee", TX: "Texas", VT: "Vermont", WI: "Wisconsin", WY: "Wyoming"
-};
-
-const RATING_TO_MARGIN = {
-  "Safe D": 18, "Likely D": 10.5, "Lean D": 5, "Tilt D": 2.1, "Toss-up": 0,
-  "Tilt R": -2.1, "Lean R": -5, "Likely R": -10.5, "Safe R": -18
-};
-
-const RATING_TO_ERROR = {
-  "Safe D": 6.4, "Likely D": 7.3, "Lean D": 8.2, "Tilt D": 9.2, "Toss-up": 9.8,
-  "Tilt R": 9.2, "Lean R": 8.2, "Likely R": 7.3, "Safe R": 6.4
 };
 
 const MODEL_WEIGHTS = {
@@ -1239,8 +1229,12 @@ function ratingFromProbability(probability, margin) {
   return "Toss-up";
 }
 
-function governorRaceError(race) {
-  return clamp((RATING_TO_ERROR[race.rating] ?? 8.8) + (race.status.includes("Term-limited") || race.status.includes("retiring") ? .85 : 0), 5.6, 12);
+function governorRaceError(race, fundamentals, hasPolls) {
+  const structuralCertainty = Math.min(2.25, Math.abs(fundamentals) * .13);
+  const incumbentStability = race.status.includes("Incumbent") ? .45 : 0;
+  const pollingCertainty = hasPolls ? .45 : 0;
+  const openSeatUncertainty = race.status.includes("Term-limited") || race.status.includes("retiring") ? .85 : 0;
+  return clamp(9.4 - structuralCertainty - incumbentStability - pollingCertainty + openSeatUncertainty, 5.6, 12);
 }
 
 function statusEffect(race) {
@@ -1262,7 +1256,6 @@ function buildRace(baseRace, nationalShift, sourceData) {
     caucusTarget: "none"
   };
   const electorateComposition = stateElectorateComposition(race);
-  const ratingMargin = RATING_TO_MARGIN[race.rating] ?? 0;
   const fundamentals = (race.pvi * .34) + (race.lastMargin * .18) + statusEffect(race);
   const candidateAndLocal = race.candidateEdge || 0;
   const demographicPull = demographicPullAdjustment({ ...race, electorateComposition });
@@ -1297,11 +1290,12 @@ function buildRace(baseRace, nationalShift, sourceData) {
   const directGovernorPoll = governorPoll?.reducedWeight ? null : governorPoll;
   const primaryPollSignal = 0;
   
-  const rawMargin = (ratingMargin * .52) + (fundamentals * .38) + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin + primaryPollSignal;
-  const margin = governorMarginGuardrail(race, rawMargin, ratingMargin, fundamentals, directGovernorPoll);
-  const error = governorRaceError(race);
+  const rawMargin = fundamentals + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin + primaryPollSignal;
+  const margin = governorMarginGuardrail(race, rawMargin, fundamentals, directGovernorPoll);
+  const error = governorRaceError(race, fundamentals, Boolean(governorPoll?.polls));
   const demProbability = clamp(normalCdf(margin, 0, error), 0.001, 0.999);
   const winnerParty = demProbability >= .5 ? "D" : "R";
+  const modelRating = ratingFromProbability(demProbability, margin);
   return {
     ...race,
     displayName: `${STATE_NAMES[race.state]} Governor`,
@@ -1309,7 +1303,8 @@ function buildRace(baseRace, nationalShift, sourceData) {
     repCandidate: race.rep,
     margin: Number(margin.toFixed(2)),
     fundamentalsMargin: Number(fundamentals.toFixed(2)),
-    ratingMargin: Number(ratingMargin.toFixed(2)),
+    rating: modelRating,
+    structuralMargin: Number(fundamentals.toFixed(2)),
     candidateAndLocal: Number(candidateAndLocal.toFixed(2)),
     electorateComposition,
     demographicPull,
@@ -1332,7 +1327,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
       primaryPollSourceUrls: [],
       primaryPollMatchups: []
     },
-    modelRating: ratingFromProbability(demProbability, margin),
+    modelRating,
     demProbability: Number(demProbability.toFixed(5)),
     repProbability: Number((1 - demProbability).toFixed(5)),
     winnerParty,
@@ -1351,16 +1346,13 @@ function governorStateElasticity(race) {
   return clamp(elasticity, .5, 1.02);
 }
 
-function governorMarginGuardrail(race, rawMargin, ratingMargin, fundamentals, governorPoll) {
-  const anchor = ratingMargin * .46 + fundamentals * .54;
+function governorMarginGuardrail(race, rawMargin, fundamentals, governorPoll) {
+  const anchor = fundamentals;
   const anchorWeight = governorPoll?.polls ? .08 : .18;
   let margin = rawMargin * (1 - anchorWeight) + anchor * anchorWeight;
-  const ratingSide = Math.sign(ratingMargin);
-  if (ratingSide && Math.sign(margin) !== ratingSide && Math.abs(ratingMargin) >= 9.5 && !governorPoll?.polls) {
-    margin = ratingSide * Math.max(6.5, Math.abs(margin) * .45);
-  }
-  if (/^Safe/.test(race.rating) && Math.abs(margin) < 11 && !governorPoll?.polls) {
-    margin = ratingSide * 11;
+  const structuralSide = Math.sign(fundamentals);
+  if (structuralSide && Math.sign(margin) !== structuralSide && Math.abs(fundamentals) >= 9 && !governorPoll?.polls) {
+    margin = structuralSide * Math.max(4.5, Math.abs(margin) * .55);
   }
   margin = applyDeepStateGovernorFloor(race, margin, governorPoll);
   return Number(margin.toFixed(3));
@@ -1368,16 +1360,16 @@ function governorMarginGuardrail(race, rawMargin, ratingMargin, fundamentals, go
 
 function applyDeepStateGovernorFloor(race, margin, governorPoll) {
   if (governorPoll?.polls) return margin;
-  const ratingSide = Math.sign(RATING_TO_MARGIN[race.rating] || 0);
-  if (!ratingSide) return margin;
+  const structuralSide = Math.sign((race.pvi * .34) + (race.lastMargin * .18) + statusEffect(race));
+  if (!structuralSide) return margin;
   const pviSide = Math.sign(race.pvi || 0);
   const lastSide = Math.sign(race.lastMargin || 0);
-  const sameSidePvi = pviSide === ratingSide ? Math.abs(race.pvi) : 0;
-  const sameSideLast = lastSide === ratingSide ? Math.abs(race.lastMargin) : 0;
+  const sameSidePvi = pviSide === structuralSide ? Math.abs(race.pvi) : 0;
+  const sameSideLast = lastSide === structuralSide ? Math.abs(race.lastMargin) : 0;
   if (sameSidePvi < 8 && sameSideLast < 12) return margin;
   const floor = 12.6 + Math.min(5.6, sameSidePvi * .4) + Math.min(2.6, sameSideLast * .08);
-  if (ratingSide > 0 && margin < floor) return floor;
-  if (ratingSide < 0 && margin > -floor) return -floor;
+  if (structuralSide > 0 && margin < floor) return floor;
+  if (structuralSide < 0 && margin > -floor) return -floor;
   return margin;
 }
 

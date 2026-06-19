@@ -20,7 +20,13 @@ const MAP_COLOR_MODES = {
 const CHART_ANNOTATIONS = [
   { date: "2026-05-17", label: "Model reworked", marker: "*" },
   { date: "2026-05-20", label: "Model reworked", marker: "*" },
-  { date: "2026-06-01", label: "Model reworked", marker: "*" }
+  { date: "2026-06-01", label: "Model reworked", marker: "*" },
+  { date: "2026-06-19", label: "Model updated", marker: "*" }
+];
+
+const HOUSE_CHART_ANNOTATIONS = [
+  ...CHART_ANNOTATIONS,
+  { date: "2026-06-17", label: "Model updated", marker: "*" }
 ];
 
 const MONTANA_CHART_ANNOTATIONS = [
@@ -1601,7 +1607,7 @@ function renderLineChart(chart, points, options) {
   const demLabelY = closeEndLabels ? latest.demY - 12 : latest.demY <= latest.repY ? latest.demY - 4 : latest.demY + 14;
   const repLabelY = closeEndLabels ? latest.repY + 22 : latest.repY <= latest.demY ? latest.repY - 4 : latest.repY + 14;
   const extraLabelY = latestExtraY === null ? null : latestExtraY - 6;
-  const visibleAnnotations = !useFullRunway && hasZoomControls ? [] : (options.annotations || CHART_ANNOTATIONS);
+  const visibleAnnotations = options.annotations || CHART_ANNOTATIONS;
   const annotations = visibleAnnotations.map((annotation) => {
     const index = points.findIndex((point) => point.date === annotation.date);
     if (index === -1) return null;
@@ -1616,7 +1622,7 @@ function renderLineChart(chart, points, options) {
   }).filter(Boolean).join("");
   const annotationKey = visibleAnnotations.some((annotation) => (
     annotation.marker && points.some((point) => point.date === annotation.date)
-  )) ? `<div class="history-annotation-key"><span>*</span> Model reworked</div>` : "";
+  )) ? `<div class="history-annotation-key"><span>*</span> Model update or rework</div>` : "";
   const electionX = hasUsableDates && electionDate && electionDate > latestChartDate && useFullRunway ? width - plot.right : null;
   const currentX = hasUsableDates ? latest.x : null;
   const eventMarkers = hasUsableDates ? rawEventMarkers.map((marker) => {
@@ -1871,9 +1877,9 @@ function renderRaceInputCards(race) {
       detail: "Projected vote margin, not probability margin"
     },
     {
-      label: "Rating",
-      value: race.rating,
-      detail: `${primaryInputText(race)}`
+      label: "Model classification",
+      value: race.modelRating || race.rating,
+      detail: `Generated from the current projected margin and probability`
     },
     {
       label: "Money",
@@ -1904,8 +1910,8 @@ function renderRaceInputCards(race) {
     sourceCount ? `<li>${sourceCount} public polling source${sourceCount === 1 ? "" : "s"} contributed race-level rows.</li>` : ""
   ].filter(Boolean).join("");
   const fundamentalRows = [
-    `<li>Rating input: ${escapeHtml(race.rating)}</li>`,
-    `<li>Baseline margin: ${signedPointMargin(race.margin)}</li>`,
+    `<li>Structural baseline: ${signedPointMargin((race.pvi || 0) * .24 + (race.pastSenate || 0) * .20)}</li>`,
+    `<li>Projected margin: ${signedPointMargin(race.margin)}</li>`,
     `<li>Primary risk: ${Number(race.primaryRisk || 0).toFixed(1)} pts</li>`,
     `<li>Incumbency adjustment: ${signedPointMargin(race.incumbencyAdjustment || 0)}</li>`,
     `<li>Candidate-history adjustment: ${signedPointMargin(race.candidateHistoryAdjustment || 0)}</li>`
@@ -2116,7 +2122,7 @@ function houseDistrictMarkup(district) {
       ${statusText ? `<span>${escapeHtml(statusText)}</span>` : ""}
     </div>
     <div class="house-signal-grid" aria-label="House district model signals">
-      <div><span>Rating</span><strong>${signedPointMargin(inputs.ratingBaseline)}</strong></div>
+      <div><span>Baseline</span><strong>${signedPointMargin(inputs.districtBaseline)}</strong></div>
       <div><span>Context</span><strong>${signedPointMargin(inputs.contextualBaseline)}</strong></div>
       <div><span>Generic</span><strong>${signedPointMargin(inputs.genericBallotShift)}</strong></div>
       <div><span>Profile</span><strong>${signedPointMargin(inputs.candidateQualityAdjustment ?? inputs.demographicPull?.adjustment)}</strong></div>
@@ -2416,6 +2422,7 @@ function renderHouseControlHistory() {
     pointHtml: (point) => `${point.date}<br>D ${pct(point.dem)} / R ${pct(point.rep ?? 1 - point.dem)}`,
     value: (point) => point.dem,
     electionDate: "2026-11-03",
+    annotations: HOUSE_CHART_ANNOTATIONS,
     mobileZoomControls: true
   });
 }
@@ -2440,7 +2447,8 @@ function renderHouseSeatHistory() {
     valueFormat: (value) => Number.isInteger(value) ? String(value) : value.toFixed(1),
     endLabel: (party, value) => `${party === "dem" ? "Democrat" : "Republican"} ${Math.round(value)}`,
     hoverLabel: (party, value) => `${party === "dem" ? "Democrat" : "Republican"} ${Math.round(value)}`,
-    electionDate: "2026-11-03"
+    electionDate: "2026-11-03",
+    annotations: HOUSE_CHART_ANNOTATIONS
   });
 }
 
@@ -2497,6 +2505,7 @@ function renderHouseDistrictHistoryInto(target, district) {
     pointHtml: (point) => `${point.date}<br>D ${pct(point.dem)} / R ${pct(point.rep ?? 1 - point.dem)}`,
     value: (point) => point.dem,
     electionDate: "2026-11-03",
+    annotations: HOUSE_CHART_ANNOTATIONS,
     mobileZoomControls: true
   });
 }
@@ -3184,6 +3193,7 @@ function renderEmbed(target, embed) {
       pointHtml: (point) => `${point.date}<br>D ${pct(point.dem)} / R ${pct(point.rep ?? 1 - point.dem)}`,
       value: (point) => point.dem,
       electionDate: "2026-11-03",
+      annotations: HOUSE_CHART_ANNOTATIONS,
       mobileZoomControls: true
     });
     return;
