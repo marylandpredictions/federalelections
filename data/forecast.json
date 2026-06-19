@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-19T22:12:38.111Z",
+  "generatedAt": "2026-06-19T23:27:46.190Z",
   "modelDate": "2026-06-19",
   "runDate": "Jun 19, 2026",
   "updateTime": "around 7:20 AM Eastern",
@@ -13,7 +13,7 @@
     "updateMinute": 0,
     "updateZone": "America/New_York",
     "dataSources": [
-      "Manual ratings and candidate ledger",
+      "Candidate and structural-fundamentals ledger",
       "Public polling adapter when reachable from GitHub Actions",
       "DDHQ generic-ballot polling average",
       "Pollfinity public averages JSON",
@@ -38,11 +38,11 @@
     }
   },
   "sourceStatus": {
-    "checkedAt": "2026-06-19T22:12:33.454Z",
+    "checkedAt": "2026-06-19T23:27:41.954Z",
     "censusPopulation": {
       "ok": true,
       "status": 200,
-      "ms": 2260,
+      "ms": 1962,
       "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2024/state/totals/NST-EST2024-POPCHG2020-2024.csv",
       "rows": 66,
       "states": 51,
@@ -51,20 +51,20 @@
     "civicApiDocs": {
       "ok": true,
       "status": 200,
-      "ms": 2391,
+      "ms": 2165,
       "url": "https://www.civicapi.org/api-documentation"
     },
     "civicApiEndpoint": {
       "ok": false,
       "status": 404,
-      "ms": 50,
+      "ms": 47,
       "url": "https://www.civicapi.org/api/v1/upcomingraces",
       "error": "{\"message\":\"Route GET:/v1/upcomingraces not found\",\"error\":\"Not Found\",\"statusCode\":404}"
     },
     "ddhqGenericBallot": {
       "ok": true,
       "status": 200,
-      "ms": 2656,
+      "ms": 2242,
       "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
       "polls": 0,
       "margin": null
@@ -72,7 +72,7 @@
     "electoralVoteSenatePolls": {
       "ok": true,
       "status": 200,
-      "ms": 2438,
+      "ms": 2105,
       "url": "https://electoral-vote.com/evp2026/Senate/senate_polls.csv",
       "rows": 35,
       "currentCycleRows": 0
@@ -80,7 +80,7 @@
     "mitSenateReturns": {
       "ok": true,
       "status": 200,
-      "ms": 2581,
+      "ms": 1654,
       "url": "https://raw.githubusercontent.com/MEDSL/constituency-returns/master/1976-2018-senate.csv",
       "rows": 3421,
       "states": 50
@@ -88,7 +88,7 @@
     "openFecCandidateSummary": {
       "ok": true,
       "status": 200,
-      "ms": 3304,
+      "ms": 2819,
       "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
       "rows": 4181,
       "senateStates": 44,
@@ -97,7 +97,7 @@
     "pollfinityAverages": {
       "ok": true,
       "status": 200,
-      "ms": 546,
+      "ms": 1316,
       "url": "https://pollfinity.com/averages.json",
       "genericBallotPolls": 42,
       "genericBallotMargin": 4.3,
@@ -107,13 +107,13 @@
     "raceToTheWhGenericBallot": {
       "ok": true,
       "status": 200,
-      "ms": 2618,
+      "ms": 2298,
       "url": "https://www.racetothewh.com/polls/genericballot"
     },
     "raceToTheWhSenatePolls": {
       "ok": true,
       "status": 200,
-      "ms": 2569,
+      "ms": 2205,
       "url": "https://www.racetothewh.com/senate/26polls",
       "hasStaticRows": false,
       "note": "Reachable, but no stable row-level poll data was present in the fetched HTML."
@@ -121,236 +121,236 @@
     "realClearPollingSenate": {
       "ok": false,
       "status": 403,
-      "ms": 1987,
+      "ms": 1354,
       "url": "https://www.realclearpolling.com/latest-polls/senate",
       "error": "<html lang=\"en\"><head><title>realclearpolling.com</title><style>#cmsg{animation: A 1.5s;}@keyframes A{0%{opacity:0;}99%{opacity:0;}100%{opacity:1;}}</style></head><body style=\"marg"
     },
     "twoSeventyToWinLatestPolls": {
       "ok": true,
       "status": 200,
-      "ms": 2261,
+      "ms": 1850,
       "url": "https://www.270towin.com/polls/latest-2026-senate-election-polls/"
     },
     "twoSeventyToWinPollingIndex": {
       "ok": true,
       "status": 200,
-      "ms": 2263,
+      "ms": 1895,
       "url": "https://www.270towin.com/content/2026-senate-polling"
     },
     "twoSeventyToWinPollsAK": {
       "ok": true,
       "status": 200,
-      "ms": 1996,
+      "ms": 1052,
       "url": "https://www.270towin.com/2026-senate-polls/alaska"
     },
     "twoSeventyToWinPollsAL": {
       "ok": true,
       "status": 200,
-      "ms": 2135,
+      "ms": 908,
       "url": "https://www.270towin.com/2026-senate-polls/alabama"
     },
     "twoSeventyToWinPollsAR": {
       "ok": true,
       "status": 200,
-      "ms": 2271,
+      "ms": 1063,
       "url": "https://www.270towin.com/2026-senate-polls/arkansas"
     },
     "twoSeventyToWinPollsCO": {
       "ok": true,
       "status": 200,
-      "ms": 1990,
+      "ms": 951,
       "url": "https://www.270towin.com/2026-senate-polls/colorado"
     },
     "twoSeventyToWinPollsDE": {
       "ok": true,
       "status": 200,
-      "ms": 2279,
+      "ms": 1056,
       "url": "https://www.270towin.com/2026-senate-polls/delaware"
     },
     "twoSeventyToWinPollsFL": {
       "ok": true,
       "status": 200,
-      "ms": 1991,
+      "ms": 1077,
       "url": "https://www.270towin.com/2026-senate-polls/florida"
     },
     "twoSeventyToWinPollsGA": {
       "ok": true,
       "status": 200,
-      "ms": 1994,
+      "ms": 1111,
       "url": "https://www.270towin.com/2026-senate-polls/georgia"
     },
     "twoSeventyToWinPollsIA": {
       "ok": true,
       "status": 200,
-      "ms": 1991,
+      "ms": 1077,
       "url": "https://www.270towin.com/2026-senate-polls/iowa"
     },
     "twoSeventyToWinPollsID": {
       "ok": true,
       "status": 200,
-      "ms": 1988,
+      "ms": 1105,
       "url": "https://www.270towin.com/2026-senate-polls/idaho"
     },
     "twoSeventyToWinPollsIL": {
       "ok": true,
       "status": 200,
-      "ms": 2638,
+      "ms": 1105,
       "url": "https://www.270towin.com/2026-senate-polls/illinois"
     },
     "twoSeventyToWinPollsKS": {
       "ok": true,
       "status": 200,
-      "ms": 2276,
+      "ms": 1080,
       "url": "https://www.270towin.com/2026-senate-polls/kansas"
     },
     "twoSeventyToWinPollsKY": {
       "ok": true,
       "status": 200,
-      "ms": 1989,
+      "ms": 1042,
       "url": "https://www.270towin.com/2026-senate-polls/kentucky"
     },
     "twoSeventyToWinPollsLA": {
       "ok": true,
       "status": 200,
-      "ms": 1988,
+      "ms": 1044,
       "url": "https://www.270towin.com/2026-senate-polls/louisiana"
     },
     "twoSeventyToWinPollsMA": {
       "ok": true,
       "status": 200,
-      "ms": 2026,
+      "ms": 944,
       "url": "https://www.270towin.com/2026-senate-polls/massachusetts"
     },
     "twoSeventyToWinPollsME": {
       "ok": true,
       "status": 200,
-      "ms": 1990,
+      "ms": 948,
       "url": "https://www.270towin.com/2026-senate-polls/maine"
     },
     "twoSeventyToWinPollsMI": {
       "ok": true,
       "status": 200,
-      "ms": 2025,
+      "ms": 1002,
       "url": "https://www.270towin.com/2026-senate-polls/michigan"
     },
     "twoSeventyToWinPollsMN": {
       "ok": true,
       "status": 200,
-      "ms": 2267,
+      "ms": 1030,
       "url": "https://www.270towin.com/2026-senate-polls/minnesota"
     },
     "twoSeventyToWinPollsMS": {
       "ok": true,
       "status": 200,
-      "ms": 2104,
+      "ms": 1064,
       "url": "https://www.270towin.com/2026-senate-polls/mississippi"
     },
     "twoSeventyToWinPollsMT": {
       "ok": true,
       "status": 200,
-      "ms": 2267,
+      "ms": 1035,
       "url": "https://www.270towin.com/2026-senate-polls/montana"
     },
     "twoSeventyToWinPollsNC": {
       "ok": true,
       "status": 200,
-      "ms": 2093,
+      "ms": 1031,
       "url": "https://www.270towin.com/2026-senate-polls/north-carolina"
     },
     "twoSeventyToWinPollsNE": {
       "ok": true,
       "status": 200,
-      "ms": 2182,
+      "ms": 1038,
       "url": "https://www.270towin.com/2026-senate-polls/nebraska"
     },
     "twoSeventyToWinPollsNH": {
       "ok": true,
       "status": 200,
-      "ms": 2024,
+      "ms": 1041,
       "url": "https://www.270towin.com/2026-senate-polls/new-hampshire"
     },
     "twoSeventyToWinPollsNJ": {
       "ok": true,
       "status": 200,
-      "ms": 2096,
+      "ms": 1053,
       "url": "https://www.270towin.com/2026-senate-polls/new-jersey"
     },
     "twoSeventyToWinPollsNM": {
       "ok": true,
       "status": 200,
-      "ms": 2179,
+      "ms": 1037,
       "url": "https://www.270towin.com/2026-senate-polls/new-mexico"
     },
     "twoSeventyToWinPollsOH": {
       "ok": true,
       "status": 200,
-      "ms": 2090,
+      "ms": 1025,
       "url": "https://www.270towin.com/2026-senate-polls/ohio"
     },
     "twoSeventyToWinPollsOK": {
       "ok": true,
       "status": 200,
-      "ms": 2021,
+      "ms": 1046,
       "url": "https://www.270towin.com/2026-senate-polls/oklahoma"
     },
     "twoSeventyToWinPollsOR": {
       "ok": true,
       "status": 200,
-      "ms": 2180,
+      "ms": 1068,
       "url": "https://www.270towin.com/2026-senate-polls/oregon"
     },
     "twoSeventyToWinPollsRI": {
       "ok": true,
       "status": 200,
-      "ms": 2101,
+      "ms": 1042,
       "url": "https://www.270towin.com/2026-senate-polls/rhode-island"
     },
     "twoSeventyToWinPollsSC": {
       "ok": true,
       "status": 200,
-      "ms": 2099,
+      "ms": 1022,
       "url": "https://www.270towin.com/2026-senate-polls/south-carolina"
     },
     "twoSeventyToWinPollsSD": {
       "ok": true,
       "status": 200,
-      "ms": 2086,
+      "ms": 1033,
       "url": "https://www.270towin.com/2026-senate-polls/south-dakota"
     },
     "twoSeventyToWinPollsTN": {
       "ok": true,
       "status": 200,
-      "ms": 2227,
+      "ms": 1046,
       "url": "https://www.270towin.com/2026-senate-polls/tennessee"
     },
     "twoSeventyToWinPollsTX": {
       "ok": true,
       "status": 200,
-      "ms": 2179,
+      "ms": 1030,
       "url": "https://www.270towin.com/2026-senate-polls/texas"
     },
     "twoSeventyToWinPollsVA": {
       "ok": true,
       "status": 200,
-      "ms": 2098,
+      "ms": 1023,
       "url": "https://www.270towin.com/2026-senate-polls/virginia"
     },
     "twoSeventyToWinPollsWV": {
       "ok": true,
       "status": 200,
-      "ms": 2256,
+      "ms": 1054,
       "url": "https://www.270towin.com/2026-senate-polls/west-virginia"
     },
     "twoSeventyToWinPollsWY": {
       "ok": true,
       "status": 200,
-      "ms": 2230,
+      "ms": 1065,
       "url": "https://www.270towin.com/2026-senate-polls/wyoming"
     },
     "twoSeventyToWinRacePolls": {
       "ok": true,
       "status": 200,
-      "ms": 2644,
+      "ms": 1117,
       "url": "https://www.270towin.com/2026-senate-polls/{state}",
       "pages": 35,
       "okPages": 35,
@@ -360,14 +360,14 @@
     "usPollingDataGenericBallot": {
       "ok": true,
       "status": 200,
-      "ms": 2775,
+      "ms": 1290,
       "url": "https://uspollingdata.com/polls/generic-ballot/",
       "margin": 7
     },
     "usPollingDataSenatePolling": {
       "ok": true,
       "status": 200,
-      "ms": 2616,
+      "ms": 2105,
       "url": "https://uspollingdata.com/polls/senate-polling/",
       "hasSenateTable": true,
       "note": "Reachable, but not blended because several listed races/candidates do not match this Senate cycle ledger."
@@ -375,7 +375,7 @@
     "votehubGenericBallot": {
       "ok": true,
       "status": 200,
-      "ms": 835,
+      "ms": 1697,
       "url": "https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026",
       "rows": 518,
       "usablePolls": 398,
@@ -1176,21 +1176,21 @@
   },
   "calibration": {
     "sample": 35,
-    "meanBrier": null,
+    "meanBrier": 0.1582971428571428,
     "meanAbsoluteMarginError": 14.842857142857147,
     "note": "Current diagnostic only: compares the live model shape against each state's latest available MIT/MEDSL Senate result. The archived-input backtest is tracked separately below.",
     "buckets": [
       {
         "label": "50-60%",
         "expectedWinRate": 0.55,
-        "actualWinRate": 0,
-        "sample": 1
+        "actualWinRate": 0.444,
+        "sample": 9
       },
       {
         "label": "60-70%",
         "expectedWinRate": 0.65,
-        "actualWinRate": 1,
-        "sample": 5
+        "actualWinRate": 0.778,
+        "sample": 9
       },
       {
         "label": "70-80%",
@@ -1201,8 +1201,8 @@
       {
         "label": "80-90%",
         "expectedWinRate": 0.85,
-        "actualWinRate": 0.75,
-        "sample": 4
+        "actualWinRate": 0.833,
+        "sample": 6
       },
       {
         "label": "90-100%",
@@ -1215,19 +1215,19 @@
       {
         "label": "Toss-up / tilt races",
         "sample": 9,
-        "meanBrier": null,
+        "meanBrier": 0.252,
         "meanAbsoluteMarginError": 17.8
       },
       {
         "label": "Lean races",
         "sample": 10,
-        "meanBrier": null,
+        "meanBrier": 0.175,
         "meanAbsoluteMarginError": 10.9
       },
       {
         "label": "Likely races",
         "sample": 16,
-        "meanBrier": null,
+        "meanBrier": 0.095,
         "meanAbsoluteMarginError": 15.6
       },
       {
@@ -1239,25 +1239,25 @@
       {
         "label": "Open seats",
         "sample": 11,
-        "meanBrier": null,
+        "meanBrier": 0.195,
         "meanAbsoluteMarginError": 13.5
       },
       {
         "label": "Incumbent races",
         "sample": 24,
-        "meanBrier": null,
+        "meanBrier": 0.142,
         "meanAbsoluteMarginError": 15.5
       },
       {
         "label": "Ranked-choice races",
         "sample": 2,
-        "meanBrier": null,
+        "meanBrier": 0.286,
         "meanAbsoluteMarginError": 30.2
       },
       {
         "label": "Independent-factor races",
         "sample": 5,
-        "meanBrier": null,
+        "meanBrier": 0.194,
         "meanAbsoluteMarginError": 22
       }
     ],
@@ -1643,9 +1643,9 @@
       {
         "state": "AK",
         "latestHistoricalYear": 2016,
-        "predicted": null,
+        "predicted": 0.5049,
         "actual": 0,
-        "brier": null,
+        "brier": 0.2549,
         "absoluteMarginError": 32.92,
         "tags": [
           "Toss-up",
@@ -1655,7 +1655,7 @@
           "Primary unresolved"
         ],
         "explanation": {
-          "favorite": "Republican",
+          "favorite": "Democratic",
           "predictedMargin": 0.2,
           "historicalMargin": -32.7,
           "miss": 32.9,
@@ -1697,19 +1697,19 @@
       {
         "state": "ME",
         "latestHistoricalYear": 2018,
-        "predicted": null,
+        "predicted": 0.5628,
         "actual": 0,
-        "brier": null,
+        "brier": 0.3167,
         "absoluteMarginError": 27.56,
         "tags": [
-          "Tilt R",
+          "Tilt D",
           "Incumbent race",
           "Ranked-choice",
           "Independent factor",
           "Primary unresolved"
         ],
         "explanation": {
-          "favorite": "Republican",
+          "favorite": "Democratic",
           "predictedMargin": 2.8,
           "historicalMargin": -24.8,
           "miss": 27.6,
@@ -1723,195 +1723,7 @@
       }
     ]
   },
-  "modelWarnings": [
-    {
-      "model": "senate",
-      "code": "margin-probability-side-mismatch",
-      "severity": "warn",
-      "id": "RI",
-      "name": "Rhode Island Senate",
-      "message": "Projected margin and win probability favor different parties.",
-      "margin": 12.53,
-      "demProbability": 0.001,
-      "rating": "Likely R"
-    },
-    {
-      "model": "senate",
-      "code": "margin-probability-side-mismatch",
-      "severity": "warn",
-      "id": "NC",
-      "name": "North Carolina Senate",
-      "message": "Projected margin and win probability favor different parties.",
-      "margin": 5.56,
-      "demProbability": 0.001,
-      "rating": "Lean R"
-    },
-    {
-      "model": "senate",
-      "code": "margin-probability-side-mismatch",
-      "severity": "warn",
-      "id": "GA",
-      "name": "Georgia Senate",
-      "message": "Projected margin and win probability favor different parties.",
-      "margin": 5.04,
-      "demProbability": 0.001,
-      "rating": "Lean R"
-    },
-    {
-      "model": "senate",
-      "code": "margin-probability-side-mismatch",
-      "severity": "warn",
-      "id": "NH",
-      "name": "New Hampshire Senate",
-      "message": "Projected margin and win probability favor different parties.",
-      "margin": 4.52,
-      "demProbability": 0.001,
-      "rating": "Lean R"
-    },
-    {
-      "model": "senate",
-      "code": "margin-probability-side-mismatch",
-      "severity": "warn",
-      "id": "ME",
-      "name": "Maine Senate",
-      "message": "Projected margin and win probability favor different parties.",
-      "margin": 2.78,
-      "demProbability": 0.001,
-      "rating": "Tilt R"
-    },
-    {
-      "model": "senate",
-      "code": "margin-probability-side-mismatch",
-      "severity": "warn",
-      "id": "OH",
-      "name": "Ohio Senate",
-      "message": "Projected margin and win probability favor different parties.",
-      "margin": 2.66,
-      "demProbability": 0.001,
-      "rating": "Tilt R"
-    },
-    {
-      "model": "senate",
-      "code": "margin-probability-side-mismatch",
-      "severity": "warn",
-      "id": "MI",
-      "name": "Michigan Senate",
-      "message": "Projected margin and win probability favor different parties.",
-      "margin": 2.17,
-      "demProbability": 0.001,
-      "rating": "Tilt R"
-    },
-    {
-      "model": "senate",
-      "code": "margin-probability-side-mismatch",
-      "severity": "warn",
-      "id": "TX",
-      "name": "Texas Senate",
-      "message": "Projected margin and win probability favor different parties.",
-      "margin": 1.44,
-      "demProbability": 0.001,
-      "rating": "Toss-up"
-    },
-    {
-      "model": "senate",
-      "code": "margin-probability-side-mismatch",
-      "severity": "warn",
-      "id": "AK",
-      "name": "Alaska Senate",
-      "message": "Projected margin and win probability favor different parties.",
-      "margin": 0.18,
-      "demProbability": 0.001,
-      "rating": "Toss-up"
-    },
-    {
-      "model": "senate",
-      "code": "high-probability-small-margin",
-      "severity": "review",
-      "id": "MT",
-      "name": "Montana Senate",
-      "message": "Very high win probability is paired with a narrow projected margin.",
-      "margin": -3.42,
-      "demProbability": 0.001,
-      "rating": "Tilt R"
-    },
-    {
-      "model": "senate",
-      "code": "high-probability-small-margin",
-      "severity": "review",
-      "id": "IA",
-      "name": "Iowa Senate",
-      "message": "Very high win probability is paired with a narrow projected margin.",
-      "margin": -2.98,
-      "demProbability": 0.001,
-      "rating": "Tilt R"
-    },
-    {
-      "model": "senate",
-      "code": "high-probability-small-margin",
-      "severity": "review",
-      "id": "ME",
-      "name": "Maine Senate",
-      "message": "Very high win probability is paired with a narrow projected margin.",
-      "margin": 2.78,
-      "demProbability": 0.001,
-      "rating": "Tilt R"
-    },
-    {
-      "model": "senate",
-      "code": "high-probability-small-margin",
-      "severity": "review",
-      "id": "OH",
-      "name": "Ohio Senate",
-      "message": "Very high win probability is paired with a narrow projected margin.",
-      "margin": 2.66,
-      "demProbability": 0.001,
-      "rating": "Tilt R"
-    },
-    {
-      "model": "senate",
-      "code": "high-probability-small-margin",
-      "severity": "review",
-      "id": "MI",
-      "name": "Michigan Senate",
-      "message": "Very high win probability is paired with a narrow projected margin.",
-      "margin": 2.17,
-      "demProbability": 0.001,
-      "rating": "Tilt R"
-    },
-    {
-      "model": "senate",
-      "code": "high-probability-small-margin",
-      "severity": "review",
-      "id": "TX",
-      "name": "Texas Senate",
-      "message": "Very high win probability is paired with a narrow projected margin.",
-      "margin": 1.44,
-      "demProbability": 0.001,
-      "rating": "Toss-up"
-    },
-    {
-      "model": "senate",
-      "code": "high-probability-small-margin",
-      "severity": "review",
-      "id": "NE",
-      "name": "Nebraska Senate",
-      "message": "Very high win probability is paired with a narrow projected margin.",
-      "margin": -1.1,
-      "demProbability": 0.001,
-      "rating": "Toss-up"
-    },
-    {
-      "model": "senate",
-      "code": "high-probability-small-margin",
-      "severity": "review",
-      "id": "AK",
-      "name": "Alaska Senate",
-      "message": "Very high win probability is paired with a narrow projected margin.",
-      "margin": 0.18,
-      "demProbability": 0.001,
-      "rating": "Toss-up"
-    }
-  ],
+  "modelWarnings": [],
   "controlHistory": [
     {
       "date": "2026-05-16",
@@ -2080,8 +1892,8 @@
     },
     {
       "date": "2026-06-19",
-      "dem": 0.01326,
-      "rep": 0.98674
+      "dem": 0.50332,
+      "rep": 0.49668
     }
   ],
   "seatHistory": [
@@ -2247,8 +2059,8 @@
     },
     {
       "date": "2026-06-19",
-      "dem": 43,
-      "rep": 57
+      "dem": 51,
+      "rep": 49
     }
   ],
   "races": [
@@ -2498,9 +2310,9 @@
       "competitive": false,
       "displayName": "Alabama Senate",
       "summary": "Open-seat race with a Republican edge in the current forecast.",
-      "tippingPower": 0.0021001903596217742,
-      "demTippingPower": 0.00558,
-      "repTippingPower": 0.00455,
+      "tippingPower": 0.015190616747234688,
+      "demTippingPower": 0.00977,
+      "repTippingPower": 0.0635,
       "uncertaintyBadges": [
         "thin polling"
       ],
@@ -2932,8 +2744,8 @@
       },
       "modelRating": "Toss-up",
       "margin": 0.184,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 9.40829939561557,
+      "demProbability": 0.508493,
       "pollMargin": 2.3805002354962803,
       "pollSignal": {
         "margin": 2.3805002354962803,
@@ -3049,15 +2861,15 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
-      "winnerParty": "R",
-      "winnerProbability": 0.999,
-      "competitive": false,
+      "repProbability": 0.491507,
+      "winnerParty": "D",
+      "winnerProbability": 0.508493,
+      "competitive": true,
       "displayName": "Alaska Senate",
       "summary": "Mary Peltola and Dan Sullivan start close to even; the current probability margin is D+0.2 pts.",
-      "tippingPower": 0.0014756658072395661,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "tippingPower": 0.11916680502573096,
+      "demTippingPower": 0.03818,
+      "repTippingPower": 0.03631,
       "uncertaintyBadges": [
         "primary unresolved",
         "ranked-choice",
@@ -3199,12 +3011,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.508493
         }
       ],
       "movement": {
-        "sinceLastRun": -51.6,
-        "sinceWeek": -51.1,
+        "sinceLastRun": -0.8,
+        "sinceWeek": -0.3,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -3456,9 +3268,9 @@
       "competitive": false,
       "displayName": "Arkansas Senate",
       "summary": "Tom Cotton is the Republican incumbent; the current forecast gives Republicans a 90% chance.",
-      "tippingPower": 0.0019028005925547495,
-      "demTippingPower": 0.00489,
-      "repTippingPower": 0.00654,
+      "tippingPower": 0.012066053101344554,
+      "demTippingPower": 0.00558,
+      "repTippingPower": 0.0669,
       "uncertaintyBadges": [
         "thin polling"
       ],
@@ -3839,9 +3651,9 @@
       "competitive": false,
       "displayName": "Colorado Senate",
       "summary": "John Hickenlooper is the Democratic incumbent; the current forecast gives Democrats a 78% chance.",
-      "tippingPower": 0.0028120697406715644,
-      "demTippingPower": 0.00721,
-      "repTippingPower": 0.00035,
+      "tippingPower": 0.027272612881751205,
+      "demTippingPower": 0.05819,
+      "repTippingPower": 0.01513,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved",
@@ -4219,9 +4031,9 @@
       "competitive": false,
       "displayName": "Delaware Senate",
       "summary": "Chris Coons is the Democratic incumbent; the current forecast gives Democrats a 86% chance.",
-      "tippingPower": 0.0023654717452370965,
-      "demTippingPower": 0.00729,
-      "repTippingPower": 0.0002,
+      "tippingPower": 0.022839908760420132,
+      "demTippingPower": 0.06246,
+      "repTippingPower": 0.00986,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved",
@@ -4431,7 +4243,7 @@
           "weight": 0.72
         }
       ],
-      "note": "Special election with Republicans at 100% in the current forecast.",
+      "note": "Special election with Republicans at 77% in the current forecast.",
       "nationalPolling": 0.8306299622746642,
       "sourceInputs": {
         "openFec": {
@@ -4579,8 +4391,8 @@
       },
       "modelRating": "Lean R",
       "margin": -6.935,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 8.506969389324095,
+      "demProbability": 0.228411,
       "pollMargin": -11.290806985696225,
       "pollSignal": {
         "margin": -11.290806985696225,
@@ -4685,15 +4497,15 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
+      "repProbability": 0.771589,
       "winnerParty": "R",
-      "winnerProbability": 0.999,
+      "winnerProbability": 0.771589,
       "competitive": false,
       "displayName": "Florida Senate",
-      "summary": "Special election with Republicans at 100% in the current forecast.",
-      "tippingPower": 0.0002305727823811822,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "summary": "Special election with Republicans at 77% in the current forecast.",
+      "tippingPower": 0.015572806840511362,
+      "demTippingPower": 0.01583,
+      "repTippingPower": 0.05836,
       "uncertaintyBadges": [
         "primary unresolved"
       ],
@@ -4833,12 +4645,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.228411
         }
       ],
       "movement": {
-        "sinceLastRun": -0.3,
-        "sinceWeek": -0.4,
+        "sinceLastRun": 22.4,
+        "sinceWeek": 22.4,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -4850,7 +4662,7 @@
       "incumbent": "Jon Ossoff",
       "hold": "D",
       "caucusTarget": "D",
-      "rating": "Lean R",
+      "rating": "Lean D",
       "pvi": 0.34783275480001286,
       "pastSenate": -1.9501118989997706,
       "money": 1.3334000000000001,
@@ -4930,7 +4742,7 @@
           "weight": 0.72
         }
       ],
-      "note": "Jon Ossoff is the Democratic incumbent; the current forecast gives Republicans a 100% chance.",
+      "note": "Jon Ossoff is the Democratic incumbent; the current forecast gives Democrats a 72% chance.",
       "nationalPolling": 0.8306299622746642,
       "sourceInputs": {
         "openFec": {
@@ -5097,10 +4909,10 @@
           "Age shares are a separate turnout overlay and are not added to race/education shares."
         ]
       },
-      "modelRating": "Lean R",
+      "modelRating": "Lean D",
       "margin": 5.036,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 7.478568061553265,
+      "demProbability": 0.723101,
       "pollMargin": 3.640553224895243,
       "pollSignal": {
         "margin": 3.640553224895243,
@@ -5210,19 +5022,25 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
-      "winnerParty": "R",
-      "winnerProbability": 0.999,
-      "competitive": false,
+      "repProbability": 0.276899,
+      "winnerParty": "D",
+      "winnerProbability": 0.723101,
+      "competitive": true,
       "displayName": "Georgia Senate",
-      "summary": "Jon Ossoff is the Democratic incumbent; the current forecast gives Republicans a 100% chance.",
-      "tippingPower": 0.001152863911905911,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "summary": "Jon Ossoff is the Democratic incumbent; the current forecast gives Democrats a 72% chance.",
+      "tippingPower": 0.08367616762679343,
+      "demTippingPower": 0.05503,
+      "repTippingPower": 0.01977,
       "uncertaintyBadges": [
         "stable inputs"
       ],
-      "movementDrivers": [],
+      "movementDrivers": [
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Lean R to Lean D"
+        }
+      ],
       "history": [
         {
           "date": "2026-05-16",
@@ -5358,12 +5176,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.723101
         }
       ],
       "movement": {
-        "sinceLastRun": -91.6,
-        "sinceWeek": -88.3,
+        "sinceLastRun": -19.4,
+        "sinceWeek": -16.1,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -5400,7 +5218,7 @@
           "weight": 0.72
         }
       ],
-      "note": "Jim Risch is the Republican incumbent; the current forecast gives Republicans a 100% chance.",
+      "note": "Jim Risch is the Republican incumbent; the current forecast gives Republicans a 95% chance.",
       "nationalPolling": 0.8306299622746642,
       "sourceInputs": {
         "openFec": {
@@ -5539,8 +5357,8 @@
       },
       "modelRating": "Likely R",
       "margin": -14.01,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 8.089108696675119,
+      "demProbability": 0.051414,
       "pollMargin": -45,
       "pollSignal": {
         "margin": -45,
@@ -5640,15 +5458,15 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
+      "repProbability": 0.948586,
       "winnerParty": "R",
-      "winnerProbability": 0.999,
+      "winnerProbability": 0.948586,
       "competitive": false,
       "displayName": "Idaho Senate",
-      "summary": "Jim Risch is the Republican incumbent; the current forecast gives Republicans a 100% chance.",
-      "tippingPower": 0.0002582415162669241,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "summary": "Jim Risch is the Republican incumbent; the current forecast gives Republicans a 95% chance.",
+      "tippingPower": 0.008952527332100502,
+      "demTippingPower": 0.0036,
+      "repTippingPower": 0.06879,
       "uncertaintyBadges": [
         "thin polling",
         "independent factor"
@@ -5789,12 +5607,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.051414
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 0,
+        "sinceLastRun": 5,
+        "sinceWeek": 5,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -6046,9 +5864,9 @@
       "competitive": false,
       "displayName": "Illinois Senate",
       "summary": "Open-seat race with a Democratic edge in the current forecast.",
-      "tippingPower": 0.002622647552113272,
-      "demTippingPower": 0.00729,
-      "repTippingPower": 0.00023,
+      "tippingPower": 0.02547664942578119,
+      "demTippingPower": 0.06074,
+      "repTippingPower": 0.01231,
       "uncertaintyBadges": [
         "thin polling"
       ],
@@ -6374,8 +6192,8 @@
       },
       "modelRating": "Tilt R",
       "margin": -2.98,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 8.755270500398154,
+      "demProbability": 0.378601,
       "pollMargin": -2.638939238312212,
       "pollSignal": {
         "margin": -2.638939238312212,
@@ -6480,15 +6298,15 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
+      "repProbability": 0.621399,
       "winnerParty": "R",
-      "winnerProbability": 0.999,
-      "competitive": false,
+      "winnerProbability": 0.621399,
+      "competitive": true,
       "displayName": "Iowa Senate",
       "summary": "Open-seat race with a Republican edge in the current forecast.",
-      "tippingPower": 0.0006917183471435466,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "tippingPower": 0.054377658875244386,
+      "demTippingPower": 0.02807,
+      "repTippingPower": 0.04667,
       "uncertaintyBadges": [
         "primary unresolved"
       ],
@@ -6628,12 +6446,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.378601
         }
       ],
       "movement": {
-        "sinceLastRun": -24.7,
-        "sinceWeek": -24.5,
+        "sinceLastRun": 13,
+        "sinceWeek": 13.3,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -6876,9 +6694,9 @@
       "competitive": false,
       "displayName": "Kansas Senate",
       "summary": "Roger Marshall is the Republican incumbent; the current forecast gives Republicans a 75% chance.",
-      "tippingPower": 0.0041098151967348985,
-      "demTippingPower": 0.00567,
-      "repTippingPower": 0.00488,
+      "tippingPower": 0.028659630713155117,
+      "demTippingPower": 0.01783,
+      "repTippingPower": 0.05574,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved",
@@ -7277,9 +7095,9 @@
       "competitive": false,
       "displayName": "Kentucky Senate",
       "summary": "Open-seat race with a Republican edge in the current forecast.",
-      "tippingPower": 0.00205913734617462,
-      "demTippingPower": 0.00536,
-      "repTippingPower": 0.00438,
+      "tippingPower": 0.01548369807328842,
+      "demTippingPower": 0.01083,
+      "repTippingPower": 0.06241,
       "uncertaintyBadges": [
         "thin polling"
       ],
@@ -7677,9 +7495,9 @@
       "competitive": false,
       "displayName": "Louisiana Senate",
       "summary": "Both parties have runoffs; the Republican incumbent was eliminated before the second round.",
-      "tippingPower": 0.0023479629139775715,
-      "demTippingPower": 0.00554,
-      "repTippingPower": 0.00459,
+      "tippingPower": 0.01683440734868618,
+      "demTippingPower": 0.0143,
+      "repTippingPower": 0.05833,
       "uncertaintyBadges": [
         "thin polling",
         "runoff pending",
@@ -7838,7 +7656,7 @@
       "incumbent": "Susan Collins",
       "hold": "R",
       "caucusTarget": "D",
-      "rating": "Tilt R",
+      "rating": "Tilt D",
       "pvi": 5.24697017108918,
       "pastSenate": 1.443134633966416,
       "money": 0.0736,
@@ -8062,7 +7880,7 @@
           "weight": 0.72
         }
       ],
-      "note": "Susan Collins is the Republican incumbent; the current forecast gives Republicans a 100% chance.",
+      "note": "Susan Collins is the Republican incumbent; the current forecast gives Democrats a 60% chance.",
       "nationalPolling": 0.8306299622746642,
       "sourceInputs": {
         "openFec": {
@@ -8228,10 +8046,10 @@
           "Age shares are a separate turnout overlay and are not added to race/education shares."
         ]
       },
-      "modelRating": "Tilt R",
+      "modelRating": "Tilt D",
       "margin": 2.779,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 11.004252027857437,
+      "demProbability": 0.599075,
       "pollMargin": 4.489661038597067,
       "pollSignal": {
         "margin": 4.489661038597067,
@@ -8344,21 +8162,27 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
-      "winnerParty": "R",
-      "winnerProbability": 0.999,
-      "competitive": false,
+      "repProbability": 0.400925,
+      "winnerParty": "D",
+      "winnerProbability": 0.599075,
+      "competitive": true,
       "displayName": "Maine Senate",
-      "summary": "Susan Collins is the Republican incumbent; the current forecast gives Republicans a 100% chance.",
-      "tippingPower": 0.0010145202424772018,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "summary": "Susan Collins is the Republican incumbent; the current forecast gives Democrats a 60% chance.",
+      "tippingPower": 0.07953799360299951,
+      "demTippingPower": 0.04456,
+      "repTippingPower": 0.02921,
       "uncertaintyBadges": [
         "primary unresolved",
         "independent factor",
         "ranked-choice"
       ],
-      "movementDrivers": [],
+      "movementDrivers": [
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Tilt R to Tilt D"
+        }
+      ],
       "history": [
         {
           "date": "2026-05-16",
@@ -8494,12 +8318,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.599075
         }
       ],
       "movement": {
-        "sinceLastRun": -71.3,
-        "sinceWeek": -72.1,
+        "sinceLastRun": -11.5,
+        "sinceWeek": -12.3,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -8750,9 +8574,9 @@
       "competitive": false,
       "displayName": "Massachusetts Senate",
       "summary": "Ed Markey is the Democratic incumbent; the current forecast gives Democrats a 89% chance.",
-      "tippingPower": 0.0020748861085614946,
-      "demTippingPower": 0.00733,
-      "repTippingPower": 0.00009,
+      "tippingPower": 0.020049775469522798,
+      "demTippingPower": 0.065,
+      "repTippingPower": 0.0067,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved",
@@ -8911,7 +8735,7 @@
       "incumbent": "Gary Peters",
       "hold": "D",
       "caucusTarget": "D",
-      "rating": "Tilt R",
+      "rating": "Tilt D",
       "pvi": 1.0560557909166322,
       "pastSenate": 2.9011204617311472,
       "money": 0.6628733530847236,
@@ -9329,7 +9153,7 @@
           "weight": 0.72
         }
       ],
-      "note": "Open-seat race with a Republican edge in the current forecast.",
+      "note": "Open-seat race with a Democratic edge in the current forecast.",
       "nationalPolling": 0.8306299622746642,
       "sourceInputs": {
         "openFec": {
@@ -9495,10 +9319,10 @@
           "Age shares are a separate turnout overlay and are not added to race/education shares."
         ]
       },
-      "modelRating": "Tilt R",
+      "modelRating": "Tilt D",
       "margin": 2.174,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 9.274049611230962,
+      "demProbability": 0.587407,
       "pollMargin": 0.536530050657367,
       "pollSignal": {
         "margin": 0.536530050657367,
@@ -9611,20 +9435,26 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
-      "winnerParty": "R",
-      "winnerProbability": 0.999,
-      "competitive": false,
+      "repProbability": 0.412593,
+      "winnerParty": "D",
+      "winnerProbability": 0.587407,
+      "competitive": true,
       "displayName": "Michigan Senate",
-      "summary": "Open-seat race with a Republican edge in the current forecast.",
-      "tippingPower": 0.001245093024858384,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "summary": "Open-seat race with a Democratic edge in the current forecast.",
+      "tippingPower": 0.09860094555322707,
+      "demTippingPower": 0.04427,
+      "repTippingPower": 0.02991,
       "uncertaintyBadges": [
         "primary unresolved",
         "near toss-up"
       ],
-      "movementDrivers": [],
+      "movementDrivers": [
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Tilt R to Tilt D"
+        }
+      ],
       "history": [
         {
           "date": "2026-05-16",
@@ -9760,12 +9590,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.587407
         }
       ],
       "movement": {
-        "sinceLastRun": -66.2,
-        "sinceWeek": -66.2,
+        "sinceLastRun": -7.6,
+        "sinceWeek": -7.6,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -10009,9 +9839,9 @@
       "competitive": true,
       "displayName": "Minnesota Senate",
       "summary": "Open-seat race with a Democratic edge in the current forecast.",
-      "tippingPower": 0.003942746932292986,
-      "demTippingPower": 0.00663,
-      "repTippingPower": 0.0022,
+      "tippingPower": 0.033403952208928465,
+      "demTippingPower": 0.04166,
+      "repTippingPower": 0.03315,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved",
@@ -10411,9 +10241,9 @@
       "competitive": false,
       "displayName": "Mississippi Senate",
       "summary": "Cindy Hyde-Smith is the Republican incumbent; the current forecast gives Republicans a 80% chance.",
-      "tippingPower": 0.002319716589904724,
-      "demTippingPower": 0.00592,
-      "repTippingPower": 0.00449,
+      "tippingPower": 0.016251386253770556,
+      "demTippingPower": 0.01238,
+      "repTippingPower": 0.06055,
       "uncertaintyBadges": [
         "thin polling"
       ],
@@ -10735,8 +10565,8 @@
       },
       "modelRating": "Tilt R",
       "margin": -3.421,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 9.154151220043468,
+      "demProbability": 0.361542,
       "pollMargin": -3.8377941731556366,
       "pollSignal": {
         "margin": -3.8377941731556366,
@@ -10841,15 +10671,15 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
+      "repProbability": 0.638458,
       "winnerParty": "R",
-      "winnerProbability": 0.999,
-      "competitive": false,
+      "winnerProbability": 0.638458,
+      "competitive": true,
       "displayName": "Montana Senate",
       "summary": "Open-seat race with a Republican edge in the current forecast.",
-      "tippingPower": 0.0006271579680768157,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "tippingPower": 0.04796014781332765,
+      "demTippingPower": 0.0258,
+      "repTippingPower": 0.0476,
       "uncertaintyBadges": [
         "primary unresolved",
         "independent factor"
@@ -10990,12 +10820,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.361542
         }
       ],
       "movement": {
-        "sinceLastRun": -23.6,
-        "sinceWeek": -23.9,
+        "sinceLastRun": 12.5,
+        "sinceWeek": 12.1,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -11007,7 +10837,7 @@
       "incumbent": "Thom Tillis",
       "hold": "R",
       "caucusTarget": "D",
-      "rating": "Lean R",
+      "rating": "Lean D",
       "pvi": -1.65,
       "pastSenate": -1.93921732766903,
       "money": 1.2234,
@@ -11217,7 +11047,7 @@
           "weight": 0.72
         }
       ],
-      "note": "Open-seat race with a Republican edge in the current forecast.",
+      "note": "Open-seat race with a Democratic edge in the current forecast.",
       "nationalPolling": 0.8306299622746642,
       "sourceInputs": {
         "openFec": {
@@ -11394,10 +11224,10 @@
           "Age shares are a separate turnout overlay and are not added to race/education shares."
         ]
       },
-      "modelRating": "Lean R",
+      "modelRating": "Lean D",
       "margin": 5.557,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 7.355938784135942,
+      "demProbability": 0.740814,
       "pollMargin": 8.082067289810213,
       "pollSignal": {
         "margin": 8.082067289810213,
@@ -11500,19 +11330,25 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
-      "winnerParty": "R",
-      "winnerProbability": 0.999,
-      "competitive": false,
+      "repProbability": 0.259186,
+      "winnerParty": "D",
+      "winnerProbability": 0.740814,
+      "competitive": true,
       "displayName": "North Carolina Senate",
-      "summary": "Open-seat race with a Republican edge in the current forecast.",
-      "tippingPower": 0.0010329660650676964,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "summary": "Open-seat race with a Democratic edge in the current forecast.",
+      "tippingPower": 0.07312479326684414,
+      "demTippingPower": 0.05632,
+      "repTippingPower": 0.01818,
       "uncertaintyBadges": [
         "stable inputs"
       ],
-      "movementDrivers": [],
+      "movementDrivers": [
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Lean R to Lean D"
+        }
+      ],
       "history": [
         {
           "date": "2026-05-16",
@@ -11648,12 +11484,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.740814
         }
       ],
       "movement": {
-        "sinceLastRun": -92.7,
-        "sinceWeek": -92.6,
+        "sinceLastRun": -18.7,
+        "sinceWeek": -18.6,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -11849,8 +11685,8 @@
       },
       "modelRating": "Toss-up",
       "margin": -1.104,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 7.894824543650062,
+      "demProbability": 0.453348,
       "pollMargin": -0.7071992628860458,
       "pollSignal": {
         "margin": -0.7071992628860458,
@@ -11960,15 +11796,15 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
+      "repProbability": 0.546652,
       "winnerParty": "R",
-      "winnerProbability": 0.999,
-      "competitive": false,
+      "winnerProbability": 0.546652,
+      "competitive": true,
       "displayName": "Nebraska Senate",
       "summary": "Dan Osborn and Pete Ricketts start close to even; the current probability margin is R+1.1 pts.",
-      "tippingPower": 0.0006640496132578048,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "tippingPower": 0.05329130698882507,
+      "demTippingPower": 0.03328,
+      "repTippingPower": 0.04106,
       "uncertaintyBadges": [
         "independent factor",
         "near toss-up"
@@ -12109,12 +11945,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.453348
         }
       ],
       "movement": {
-        "sinceLastRun": -31.8,
-        "sinceWeek": -31.7,
+        "sinceLastRun": 13.5,
+        "sinceWeek": 13.6,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -12126,7 +11962,7 @@
       "incumbent": "Jeanne Shaheen",
       "hold": "D",
       "caucusTarget": "D",
-      "rating": "Lean R",
+      "rating": "Lean D",
       "pvi": 3.182991044100624,
       "pastSenate": 4.027518467408068,
       "money": 0.35563275825697793,
@@ -12397,7 +12233,7 @@
           "weight": 0.72
         }
       ],
-      "note": "Open-seat race with a Republican edge in the current forecast.",
+      "note": "Open-seat race with a Democratic edge in the current forecast.",
       "nationalPolling": 0.8306299622746642,
       "sourceInputs": {
         "openFec": {
@@ -12563,10 +12399,10 @@
           "Age shares are a separate turnout overlay and are not added to race/education shares."
         ]
       },
-      "modelRating": "Lean R",
+      "modelRating": "Lean D",
       "margin": 4.518,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 9.134851232893926,
+      "demProbability": 0.680679,
       "pollMargin": 7.142383171169796,
       "pollSignal": {
         "margin": 7.142383171169796,
@@ -12665,19 +12501,25 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
-      "winnerParty": "R",
-      "winnerProbability": 0.999,
-      "competitive": false,
+      "repProbability": 0.319321,
+      "winnerParty": "D",
+      "winnerProbability": 0.680679,
+      "competitive": true,
       "displayName": "New Hampshire Senate",
-      "summary": "Open-seat race with a Republican edge in the current forecast.",
-      "tippingPower": 0.0009222911295247288,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "summary": "Open-seat race with a Democratic edge in the current forecast.",
+      "tippingPower": 0.06891569088553497,
+      "demTippingPower": 0.05037,
+      "repTippingPower": 0.02354,
       "uncertaintyBadges": [
         "primary unresolved"
       ],
-      "movementDrivers": [],
+      "movementDrivers": [
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Lean R to Lean D"
+        }
+      ],
       "history": [
         {
           "date": "2026-05-16",
@@ -12813,12 +12655,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.680679
         }
       ],
       "movement": {
-        "sinceLastRun": -86.3,
-        "sinceWeek": -86.3,
+        "sinceLastRun": -18.3,
+        "sinceWeek": -18.3,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -13074,9 +12916,9 @@
       "competitive": false,
       "displayName": "New Jersey Senate",
       "summary": "Cory Booker is the Democratic incumbent; the current forecast gives Democrats a 82% chance.",
-      "tippingPower": 0.0025505641581384303,
-      "demTippingPower": 0.00725,
-      "repTippingPower": 0.00019,
+      "tippingPower": 0.02540965260769092,
+      "demTippingPower": 0.06166,
+      "repTippingPower": 0.01246,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved"
@@ -13453,9 +13295,9 @@
       "competitive": false,
       "displayName": "New Mexico Senate",
       "summary": "Ben Ray Lujan is the Democratic incumbent; the current forecast gives Democrats a 82% chance.",
-      "tippingPower": 0.002617525603969508,
-      "demTippingPower": 0.00724,
-      "repTippingPower": 0.00026,
+      "tippingPower": 0.02540744852919736,
+      "demTippingPower": 0.05976,
+      "repTippingPower": 0.01304,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved",
@@ -13614,7 +13456,7 @@
       "incumbent": "Jon Husted",
       "hold": "R",
       "caucusTarget": "D",
-      "rating": "Tilt R",
+      "rating": "Tilt D",
       "pvi": -6.940390654895518,
       "pastSenate": 0.5691543082610389,
       "money": 0.7144314929574249,
@@ -13786,7 +13628,7 @@
           "weight": 0.72
         }
       ],
-      "note": "Special election with Republicans at 100% in the current forecast.",
+      "note": "Special election with Democrats at 62% in the current forecast.",
       "nationalPolling": 0.8306299622746642,
       "sourceInputs": {
         "openFec": {
@@ -13963,10 +13805,10 @@
           "Age shares are a separate turnout overlay and are not added to race/education shares."
         ]
       },
-      "modelRating": "Tilt R",
+      "modelRating": "Tilt D",
       "margin": 2.664,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 7.274969354758091,
+      "demProbability": 0.621947,
       "pollMargin": 0.3932504589066273,
       "pollSignal": {
         "margin": 0.3932504589066273,
@@ -14068,19 +13910,25 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
-      "winnerParty": "R",
-      "winnerProbability": 0.999,
-      "competitive": false,
+      "repProbability": 0.378053,
+      "winnerParty": "D",
+      "winnerProbability": 0.621947,
+      "competitive": true,
       "displayName": "Ohio Senate",
-      "summary": "Special election with Republicans at 100% in the current forecast.",
-      "tippingPower": 0.0017062385896207484,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "summary": "Special election with Democrats at 62% in the current forecast.",
+      "tippingPower": 0.13339382623891627,
+      "demTippingPower": 0.04759,
+      "repTippingPower": 0.02676,
       "uncertaintyBadges": [
         "stable inputs"
       ],
-      "movementDrivers": [],
+      "movementDrivers": [
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Tilt R to Tilt D"
+        }
+      ],
       "history": [
         {
           "date": "2026-05-16",
@@ -14216,12 +14064,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.621947
         }
       ],
       "movement": {
-        "sinceLastRun": -61.2,
-        "sinceWeek": -61.3,
+        "sinceLastRun": 0.9,
+        "sinceWeek": 0.8,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -14464,9 +14312,9 @@
       "competitive": false,
       "displayName": "Oklahoma Senate",
       "summary": "Special election with Republicans at 92% in the current forecast.",
-      "tippingPower": 0.001895842384811551,
-      "demTippingPower": 0.00373,
-      "repTippingPower": 0.0088,
+      "tippingPower": 0.010966532805358437,
+      "demTippingPower": 0.00551,
+      "repTippingPower": 0.06697,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved",
@@ -14863,9 +14711,9 @@
       "competitive": false,
       "displayName": "Oregon Senate",
       "summary": "Jeff Merkley is the Democratic incumbent; the current forecast gives Democrats a 84% chance.",
-      "tippingPower": 0.002434323419857984,
-      "demTippingPower": 0.00731,
-      "repTippingPower": 0.00012,
+      "tippingPower": 0.023946796602613736,
+      "demTippingPower": 0.0624,
+      "repTippingPower": 0.01069,
       "uncertaintyBadges": [
         "thin polling"
       ],
@@ -15022,7 +14870,7 @@
       "incumbent": "Jack Reed",
       "hold": "D",
       "caucusTarget": "D",
-      "rating": "Likely R",
+      "rating": "Likely D",
       "pvi": 15.119908560033318,
       "pastSenate": 19.021567243017692,
       "money": 1.0263522493675001,
@@ -15047,7 +14895,7 @@
           "weight": 0.72
         }
       ],
-      "note": "Jack Reed is the Democratic incumbent; the current forecast gives Republicans a 100% chance.",
+      "note": "Jack Reed is the Democratic incumbent; the current forecast gives Democrats a 92% chance.",
       "nationalPolling": 0.8306299622746642,
       "sourceInputs": {
         "openFec": {
@@ -15173,10 +15021,10 @@
           "Age shares are a separate turnout overlay and are not added to race/education shares."
         ]
       },
-      "modelRating": "Likely R",
+      "modelRating": "Likely D",
       "margin": 12.533,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 8.490458127259977,
+      "demProbability": 0.919141,
       "pollMargin": 18,
       "pollSignal": {
         "margin": 18,
@@ -15275,20 +15123,26 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
-      "winnerParty": "R",
-      "winnerProbability": 0.999,
+      "repProbability": 0.080859,
+      "winnerParty": "D",
+      "winnerProbability": 0.919141,
       "competitive": false,
       "displayName": "Rhode Island Senate",
-      "summary": "Jack Reed is the Democratic incumbent; the current forecast gives Republicans a 100% chance.",
-      "tippingPower": 0.000415031008286128,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "summary": "Jack Reed is the Democratic incumbent; the current forecast gives Democrats a 92% chance.",
+      "tippingPower": 0.017879136147786426,
+      "demTippingPower": 0.0671,
+      "repTippingPower": 0.00577,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved"
       ],
-      "movementDrivers": [],
+      "movementDrivers": [
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Likely R to Likely D"
+        }
+      ],
       "history": [
         {
           "date": "2026-05-16",
@@ -15424,12 +15278,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.919141
         }
       ],
       "movement": {
-        "sinceLastRun": -99.8,
-        "sinceWeek": -99.8,
+        "sinceLastRun": -8,
+        "sinceWeek": -8,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -15680,9 +15534,9 @@
       "competitive": true,
       "displayName": "South Carolina Senate",
       "summary": "Lindsey Graham is the Republican incumbent; the current forecast gives Republicans a 67% chance.",
-      "tippingPower": 0.004802933882659552,
-      "demTippingPower": 0.0061,
-      "repTippingPower": 0.00317,
+      "tippingPower": 0.038496007279569006,
+      "demTippingPower": 0.02415,
+      "repTippingPower": 0.05015,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved",
@@ -16068,9 +15922,9 @@
       "competitive": false,
       "displayName": "South Dakota Senate",
       "summary": "Mike Rounds is the Republican incumbent; the current forecast gives Republicans a 85% chance.",
-      "tippingPower": 0.002199169834757798,
-      "demTippingPower": 0.00432,
-      "repTippingPower": 0.00667,
+      "tippingPower": 0.014569750288327143,
+      "demTippingPower": 0.01041,
+      "repTippingPower": 0.0624,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved",
@@ -16461,9 +16315,9 @@
       "competitive": false,
       "displayName": "Tennessee Senate",
       "summary": "Bill Hagerty is the Republican incumbent; the current forecast gives Republicans a 80% chance.",
-      "tippingPower": 0.0022548009322832553,
-      "demTippingPower": 0.00556,
-      "repTippingPower": 0.00449,
+      "tippingPower": 0.016555399083898647,
+      "demTippingPower": 0.0135,
+      "repTippingPower": 0.06029,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved",
@@ -16622,7 +16476,7 @@
       "incumbent": "John Cornyn",
       "hold": "R",
       "caucusTarget": "D",
-      "rating": "Toss-up",
+      "rating": "Tilt D",
       "pvi": -4.65,
       "pastSenate": -4.513449252268518,
       "money": 0.9685320253399143,
@@ -16780,7 +16634,7 @@
           "weight": 0.72
         }
       ],
-      "note": "James Talarico and Ken Paxton start close to even; the current probability margin is D+1.4 pts.",
+      "note": "Open-seat race with a Democratic edge in the current forecast.",
       "nationalPolling": 0.8306299622746642,
       "sourceInputs": {
         "openFec": {
@@ -16958,10 +16812,10 @@
           "Age shares are a separate turnout overlay and are not added to race/education shares."
         ]
       },
-      "modelRating": "Toss-up",
+      "modelRating": "Tilt D",
       "margin": 1.436,
-      "error": null,
-      "demProbability": 0.001,
+      "error": 7.224113201857378,
+      "demProbability": 0.568174,
       "pollMargin": 1.195718990418781,
       "pollSignal": {
         "margin": 1.195718990418781,
@@ -17084,19 +16938,25 @@
         ]
       },
       "extraCandidateDemographicPulls": [],
-      "repProbability": 0.999,
-      "winnerParty": "R",
-      "winnerProbability": 0.999,
-      "competitive": false,
+      "repProbability": 0.431826,
+      "winnerParty": "D",
+      "winnerProbability": 0.568174,
+      "competitive": true,
       "displayName": "Texas Senate",
-      "summary": "James Talarico and Ken Paxton start close to even; the current probability margin is D+1.4 pts.",
-      "tippingPower": 0.0015217803637158024,
-      "demTippingPower": 0,
-      "repTippingPower": 0.01459,
+      "summary": "Open-seat race with a Democratic edge in the current forecast.",
+      "tippingPower": 0.12324813538517866,
+      "demTippingPower": 0.04321,
+      "repTippingPower": 0.03219,
       "uncertaintyBadges": [
         "near toss-up"
       ],
-      "movementDrivers": [],
+      "movementDrivers": [
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Toss-up to Tilt D"
+        }
+      ],
       "history": [
         {
           "date": "2026-05-16",
@@ -17232,12 +17092,12 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.001
+          "dem": 0.568174
         }
       ],
       "movement": {
-        "sinceLastRun": -48.4,
-        "sinceWeek": -48.6,
+        "sinceLastRun": 8.3,
+        "sinceWeek": 8.1,
         "previousDate": "2026-06-18",
         "weekDate": "2026-06-12"
       },
@@ -17474,9 +17334,9 @@
       "competitive": false,
       "displayName": "Virginia Senate",
       "summary": "Mark Warner is the Democratic incumbent; the current forecast gives Democrats a 76% chance.",
-      "tippingPower": 0.002919889996597159,
-      "demTippingPower": 0.00723,
-      "repTippingPower": 0.00042,
+      "tippingPower": 0.027481317615032082,
+      "demTippingPower": 0.05543,
+      "repTippingPower": 0.01657,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved",
@@ -17875,9 +17735,9 @@
       "competitive": false,
       "displayName": "West Virginia Senate",
       "summary": "Shelley Moore Capito is the Republican incumbent; the current forecast gives Republicans a 92% chance.",
-      "tippingPower": 0.001738529912627654,
-      "demTippingPower": 0.00456,
-      "repTippingPower": 0.00684,
+      "tippingPower": 0.011003064315446074,
+      "demTippingPower": 0.00445,
+      "repTippingPower": 0.0677,
       "uncertaintyBadges": [
         "thin polling"
       ],
@@ -18259,9 +18119,9 @@
       "competitive": false,
       "displayName": "Wyoming Senate",
       "summary": "Open-seat race with a Republican edge in the current forecast.",
-      "tippingPower": 0.001595643848674131,
-      "demTippingPower": 0.00311,
-      "repTippingPower": 0.00949,
+      "tippingPower": 0.009157222753779873,
+      "demTippingPower": 0.00373,
+      "repTippingPower": 0.06858,
       "uncertaintyBadges": [
         "thin polling",
         "primary unresolved",
@@ -18415,201 +18275,214 @@
       "extraHistory": []
     }
   ],
-  "demControlProbability": 0.01326,
-  "repControlProbability": 0.98674,
-  "medianSeats": 43,
+  "demControlProbability": 0.50332,
+  "repControlProbability": 0.49668,
+  "medianSeats": 51,
   "seatCounts": {
-    "34": 14,
-    "35": 176,
-    "36": 605,
-    "37": 1472,
-    "38": 2988,
-    "39": 5219,
-    "40": 8005,
-    "41": 10907,
-    "42": 12823,
-    "43": 13573,
-    "44": 12254,
-    "45": 10096,
-    "46": 7614,
-    "47": 5407,
-    "48": 3659,
-    "49": 2403,
-    "50": 1459,
-    "51": 736,
-    "52": 374,
-    "53": 153,
-    "54": 49,
-    "55": 14
+    "35": 18,
+    "36": 91,
+    "37": 172,
+    "38": 357,
+    "39": 714,
+    "40": 1117,
+    "41": 1526,
+    "42": 2187,
+    "43": 2897,
+    "44": 3783,
+    "45": 4513,
+    "46": 5304,
+    "47": 6178,
+    "48": 6597,
+    "49": 7069,
+    "50": 7145,
+    "51": 7135,
+    "52": 6946,
+    "53": 6608,
+    "54": 5900,
+    "55": 5295,
+    "56": 4522,
+    "57": 3610,
+    "58": 2951,
+    "59": 2286,
+    "60": 1767,
+    "61": 1251,
+    "62": 835,
+    "63": 533,
+    "64": 369,
+    "65": 177,
+    "66": 86,
+    "67": 42,
+    "68": 11,
+    "69": 8
   },
   "controlPaths": {
     "dem": {
-      "controlSimulations": 1326,
+      "controlSimulations": 50332,
       "commonWins": [
+        {
+          "state": "RI",
+          "displayName": "Rhode Island Senate",
+          "probability": 0.9676,
+          "overallProbability": 0.9191,
+          "rating": "Likely D",
+          "tippingPower": 0.0179
+        },
         {
           "state": "MA",
           "displayName": "Massachusetts Senate",
-          "probability": 0.9962,
+          "probability": 0.9523,
           "overallProbability": 0.8917,
           "rating": "Likely D",
-          "tippingPower": 0.0021
+          "tippingPower": 0.02
         },
         {
           "state": "OR",
           "displayName": "Oregon Senate",
-          "probability": 0.9947,
+          "probability": 0.9313,
           "overallProbability": 0.8427,
           "rating": "Likely D",
-          "tippingPower": 0.0024
-        },
-        {
-          "state": "IL",
-          "displayName": "Illinois Senate",
-          "probability": 0.994,
-          "overallProbability": 0.816,
-          "rating": "Lean D",
-          "tippingPower": 0.0026
+          "tippingPower": 0.0239
         },
         {
           "state": "DE",
           "displayName": "Delaware Senate",
-          "probability": 0.991,
+          "probability": 0.9297,
           "overallProbability": 0.8562,
           "rating": "Likely D",
-          "tippingPower": 0.0024
+          "tippingPower": 0.0228
+        },
+        {
+          "state": "IL",
+          "displayName": "Illinois Senate",
+          "probability": 0.9199,
+          "overallProbability": 0.816,
+          "rating": "Lean D",
+          "tippingPower": 0.0255
         },
         {
           "state": "NJ",
           "displayName": "New Jersey Senate",
-          "probability": 0.9887,
+          "probability": 0.9181,
           "overallProbability": 0.8239,
           "rating": "Likely D",
-          "tippingPower": 0.0026
+          "tippingPower": 0.0254
         },
         {
           "state": "NM",
           "displayName": "New Mexico Senate",
-          "probability": 0.9872,
+          "probability": 0.9084,
           "overallProbability": 0.8156,
           "rating": "Likely D",
-          "tippingPower": 0.0026
-        },
-        {
-          "state": "VA",
-          "displayName": "Virginia Senate",
-          "probability": 0.9842,
-          "overallProbability": 0.7648,
-          "rating": "Lean D",
-          "tippingPower": 0.0029
-        },
-        {
-          "state": "CO",
-          "displayName": "Colorado Senate",
-          "probability": 0.9811,
-          "overallProbability": 0.7814,
-          "rating": "Lean D",
-          "tippingPower": 0.0028
-        },
-        {
-          "state": "MN",
-          "displayName": "Minnesota Senate",
-          "probability": 0.9087,
-          "overallProbability": 0.5621,
-          "rating": "Tilt D",
-          "tippingPower": 0.0039
-        },
-        {
-          "state": "MS",
-          "displayName": "Mississippi Senate",
-          "probability": 0.8477,
-          "overallProbability": 0.1972,
-          "rating": "Lean R",
-          "tippingPower": 0.0023
-        }
-      ]
-    },
-    "rep": {
-      "controlSimulations": 98674,
-      "commonWins": [
-        {
-          "state": "OH",
-          "displayName": "Ohio Senate",
-          "probability": 1,
-          "overallProbability": 0.999,
-          "rating": "Tilt R",
-          "tippingPower": 0.0017
-        },
-        {
-          "state": "AK",
-          "displayName": "Alaska Senate",
-          "probability": 1,
-          "overallProbability": 0.999,
-          "rating": "Toss-up",
-          "tippingPower": 0.0015
-        },
-        {
-          "state": "TX",
-          "displayName": "Texas Senate",
-          "probability": 1,
-          "overallProbability": 0.999,
-          "rating": "Toss-up",
-          "tippingPower": 0.0015
-        },
-        {
-          "state": "GA",
-          "displayName": "Georgia Senate",
-          "probability": 1,
-          "overallProbability": 0.999,
-          "rating": "Lean R",
-          "tippingPower": 0.0012
-        },
-        {
-          "state": "MI",
-          "displayName": "Michigan Senate",
-          "probability": 1,
-          "overallProbability": 0.999,
-          "rating": "Tilt R",
-          "tippingPower": 0.0012
-        },
-        {
-          "state": "ME",
-          "displayName": "Maine Senate",
-          "probability": 1,
-          "overallProbability": 0.999,
-          "rating": "Tilt R",
-          "tippingPower": 0.001
+          "tippingPower": 0.0254
         },
         {
           "state": "NC",
           "displayName": "North Carolina Senate",
-          "probability": 1,
-          "overallProbability": 0.999,
+          "probability": 0.892,
+          "overallProbability": 0.7408,
+          "rating": "Lean D",
+          "tippingPower": 0.0731
+        },
+        {
+          "state": "CO",
+          "displayName": "Colorado Senate",
+          "probability": 0.8849,
+          "overallProbability": 0.7814,
+          "rating": "Lean D",
+          "tippingPower": 0.0273
+        },
+        {
+          "state": "GA",
+          "displayName": "Georgia Senate",
+          "probability": 0.8754,
+          "overallProbability": 0.7231,
+          "rating": "Lean D",
+          "tippingPower": 0.0837
+        }
+      ]
+    },
+    "rep": {
+      "controlSimulations": 49668,
+      "commonWins": [
+        {
+          "state": "ID",
+          "displayName": "Idaho Senate",
+          "probability": 0.9814,
+          "overallProbability": 0.9486,
+          "rating": "Likely R",
+          "tippingPower": 0.009
+        },
+        {
+          "state": "WY",
+          "displayName": "Wyoming Senate",
+          "probability": 0.9802,
+          "overallProbability": 0.9459,
+          "rating": "Likely R",
+          "tippingPower": 0.0092
+        },
+        {
+          "state": "WV",
+          "displayName": "West Virginia Senate",
+          "probability": 0.9772,
+          "overallProbability": 0.9193,
+          "rating": "Likely R",
+          "tippingPower": 0.011
+        },
+        {
+          "state": "AR",
+          "displayName": "Arkansas Senate",
+          "probability": 0.9689,
+          "overallProbability": 0.902,
+          "rating": "Likely R",
+          "tippingPower": 0.0121
+        },
+        {
+          "state": "OK",
+          "displayName": "Oklahoma Senate",
+          "probability": 0.9671,
+          "overallProbability": 0.9207,
+          "rating": "Likely R",
+          "tippingPower": 0.011
+        },
+        {
+          "state": "AL",
+          "displayName": "Alabama Senate",
+          "probability": 0.9375,
+          "overallProbability": 0.8361,
+          "rating": "Likely R",
+          "tippingPower": 0.0152
+        },
+        {
+          "state": "KY",
+          "displayName": "Kentucky Senate",
+          "probability": 0.934,
+          "overallProbability": 0.8278,
+          "rating": "Likely R",
+          "tippingPower": 0.0155
+        },
+        {
+          "state": "SD",
+          "displayName": "South Dakota Senate",
+          "probability": 0.9253,
+          "overallProbability": 0.8497,
+          "rating": "Likely R",
+          "tippingPower": 0.0146
+        },
+        {
+          "state": "MS",
+          "displayName": "Mississippi Senate",
+          "probability": 0.9166,
+          "overallProbability": 0.8028,
           "rating": "Lean R",
-          "tippingPower": 0.001
+          "tippingPower": 0.0163
         },
         {
-          "state": "NH",
-          "displayName": "New Hampshire Senate",
-          "probability": 1,
-          "overallProbability": 0.999,
-          "rating": "Lean R",
-          "tippingPower": 0.0009
-        },
-        {
-          "state": "IA",
-          "displayName": "Iowa Senate",
-          "probability": 1,
-          "overallProbability": 0.999,
-          "rating": "Tilt R",
-          "tippingPower": 0.0007
-        },
-        {
-          "state": "NE",
-          "displayName": "Nebraska Senate",
-          "probability": 1,
-          "overallProbability": 0.999,
-          "rating": "Toss-up",
-          "tippingPower": 0.0007
+          "state": "TN",
+          "displayName": "Tennessee Senate",
+          "probability": 0.9041,
+          "overallProbability": 0.7991,
+          "rating": "Likely R",
+          "tippingPower": 0.0166
         }
       ]
     }

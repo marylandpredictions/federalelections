@@ -1,7 +1,7 @@
 {
   "model": "2026 gubernatorial forecast",
   "modelDate": "2026-06-19",
-  "generatedAt": "2026-06-19T22:12:42.375Z",
+  "generatedAt": "2026-06-19T23:49:56.573Z",
   "runDate": "Jun 19, 2026",
   "settings": {
     "simulations": 100000,
@@ -12,7 +12,7 @@
     "repNotUp": 8,
     "dataSources": [
       "Manual 2026 gubernatorial race ledger with candidates, incumbency, PVI, and last gubernatorial margin",
-      "Cook Political Report, Inside Elections, Sabato's Crystal Ball, WH, VoteHub, and RCP rating references",
+      "Cook Political Report, Inside Elections, Sabato's Crystal Ball, WH, VoteHub, and RCP context references",
       "Current Senate model generic ballot signal as a broad midterm environment input",
       "Pollfinity governor polling averages where available",
       "270toWin state-level 2026 governor polling pages where available",
@@ -25,7 +25,7 @@
     "gubernatorialNationalShift": 0.97,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-06-19T22:12:38.272Z",
+      "checkedAt": "2026-06-19T23:49:51.347Z",
       "governorFinance": {
         "ok": true,
         "states": 0,
@@ -36,58 +36,58 @@
         "states": 7,
         "scope": "Competitive 2026 gubernatorial races first. Add safe-state portals only when they materially affect the model or become machine-readable."
       },
+      "pollfinityAverages": {
+        "ok": true,
+        "status": 200,
+        "ms": 249,
+        "url": "https://pollfinity.com/averages.json"
+      },
       "twoSeventyGovernorPollsAK": {
         "ok": true,
         "status": 200,
-        "ms": 160,
+        "ms": 323,
         "url": "https://www.270towin.com/2026-governor-polls/alaska"
       },
       "twoSeventyGovernorPollsAZ": {
         "ok": true,
         "status": 200,
-        "ms": 82,
+        "ms": 142,
         "url": "https://www.270towin.com/2026-governor-polls/arizona"
       },
       "twoSeventyGovernorPollsCO": {
         "ok": true,
         "status": 200,
-        "ms": 156,
+        "ms": 134,
         "url": "https://www.270towin.com/2026-governor-polls/colorado"
       },
       "twoSeventyGovernorPollsCT": {
         "ok": true,
         "status": 200,
-        "ms": 47,
+        "ms": 50,
         "url": "https://www.270towin.com/2026-governor-polls/connecticut"
-      },
-      "pollfinityAverages": {
-        "ok": true,
-        "status": 200,
-        "ms": 457,
-        "url": "https://pollfinity.com/averages.json"
       },
       "twoSeventyGovernorPollsFL": {
         "ok": true,
         "status": 200,
-        "ms": 37,
+        "ms": 42,
         "url": "https://www.270towin.com/2026-governor-polls/florida"
       },
       "twoSeventyGovernorPollsGA": {
         "ok": true,
         "status": 200,
-        "ms": 37,
+        "ms": 44,
         "url": "https://www.270towin.com/2026-governor-polls/georgia"
       },
       "ddhqGenericBallot": {
         "ok": true,
         "status": 200,
-        "ms": 537,
+        "ms": 807,
         "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults"
       },
       "twoSeventyGovernorPollsIL": {
         "ok": true,
         "status": 200,
-        "ms": 35,
+        "ms": 119,
         "url": "https://www.270towin.com/2026-governor-polls/illinois"
       },
       "twoSeventyGovernorPollsIA": {
@@ -99,91 +99,85 @@
       "twoSeventyGovernorPollsKS": {
         "ok": true,
         "status": 200,
-        "ms": 328,
+        "ms": 388,
         "url": "https://www.270towin.com/2026-governor-polls/kansas"
       },
       "twoSeventyGovernorPollsME": {
         "ok": true,
         "status": 200,
-        "ms": 52,
+        "ms": 36,
         "url": "https://www.270towin.com/2026-governor-polls/maine"
       },
       "twoSeventyGovernorPollsMI": {
         "ok": true,
         "status": 200,
-        "ms": 66,
+        "ms": 40,
         "url": "https://www.270towin.com/2026-governor-polls/michigan"
       },
       "twoSeventyGovernorPollsMN": {
         "ok": true,
         "status": 200,
-        "ms": 43,
+        "ms": 31,
         "url": "https://www.270towin.com/2026-governor-polls/minnesota"
       },
       "twoSeventyGovernorPollsNE": {
         "ok": true,
         "status": 200,
-        "ms": 153,
+        "ms": 169,
         "url": "https://www.270towin.com/2026-governor-polls/nebraska"
       },
       "twoSeventyGovernorPollsNV": {
         "ok": true,
         "status": 200,
-        "ms": 63,
+        "ms": 32,
         "url": "https://www.270towin.com/2026-governor-polls/nevada"
       },
       "twoSeventyGovernorPollsNH": {
         "ok": true,
         "status": 200,
-        "ms": 120,
+        "ms": 34,
         "url": "https://www.270towin.com/2026-governor-polls/new-hampshire"
       },
       "twoSeventyGovernorPollsNM": {
         "ok": true,
         "status": 200,
-        "ms": 39,
+        "ms": 34,
         "url": "https://www.270towin.com/2026-governor-polls/new-mexico"
       },
       "twoSeventyGovernorPollsNY": {
         "ok": true,
         "status": 200,
-        "ms": 36,
+        "ms": 40,
         "url": "https://www.270towin.com/2026-governor-polls/new-york"
       },
       "twoSeventyGovernorPollsOH": {
         "ok": true,
         "status": 200,
-        "ms": 51,
+        "ms": 63,
         "url": "https://www.270towin.com/2026-governor-polls/ohio"
       },
       "twoSeventyGovernorPollsOR": {
         "ok": true,
         "status": 200,
-        "ms": 48,
+        "ms": 33,
         "url": "https://www.270towin.com/2026-governor-polls/oregon"
-      },
-      "governorFinanceSourceAK": {
-        "ok": true,
-        "status": 200,
-        "ms": 1660,
-        "url": "https://aws.state.ak.us/ApocReports/"
       },
       "twoSeventyGovernorPollsPA": {
         "ok": true,
         "status": 200,
-        "ms": 112,
+        "ms": 34,
         "url": "https://www.270towin.com/2026-governor-polls/pennsylvania"
       },
       "twoSeventyGovernorPollsRI": {
         "ok": true,
         "status": 200,
-        "ms": 81,
+        "ms": 47,
         "url": "https://www.270towin.com/2026-governor-polls/rhode-island"
       },
       "twoSeventyGovernorPollsSC": {
         "ok": true,
         "status": 200,
-        "ms": 69,
+        "ms": 37,
         "url": "https://www.270towin.com/2026-governor-polls/south-carolina"
       },
       "twoSeventyGovernorPollsTX": {
@@ -195,7 +189,7 @@
       "twoSeventyGovernorPollsWI": {
         "ok": true,
         "status": 200,
-        "ms": 37,
+        "ms": 44,
         "url": "https://www.270towin.com/2026-governor-polls/wisconsin"
       },
       "twoSeventyGovernorPolls": {
@@ -388,41 +382,47 @@
           }
         }
       },
+      "governorFinanceSourceAK": {
+        "ok": true,
+        "status": 200,
+        "ms": 2348,
+        "url": "https://aws.state.ak.us/ApocReports/"
+      },
       "governorFinanceSourceAZ": {
         "ok": true,
         "status": 200,
-        "ms": 485,
+        "ms": 454,
         "url": "https://seethemoney.az.gov/"
       },
       "governorFinanceSourceGA": {
         "ok": true,
         "status": 200,
-        "ms": 726,
+        "ms": 338,
         "url": "https://media.ethics.ga.gov/search/campaign/Campaign_ByName.aspx"
       },
       "governorFinanceSourceIA": {
         "ok": true,
         "status": 200,
-        "ms": 313,
+        "ms": 267,
         "url": "https://webapp.iecdb.iowa.gov/PublicView/"
       },
       "governorFinanceSourceMI": {
         "ok": false,
         "status": "fetch-error",
-        "ms": 212,
+        "ms": 174,
         "url": "https://cfrsearch.nictusa.com/",
         "error": "fetch failed"
       },
       "governorFinanceSourceNV": {
         "ok": true,
         "status": 200,
-        "ms": 100,
+        "ms": 161,
         "url": "https://www.nvsos.gov/SOSCandidateServices/AnonymousAccess/CEFDSearchUU/Search.aspx"
       },
       "governorFinanceSourceWI": {
         "ok": true,
         "status": 200,
-        "ms": 455,
+        "ms": 483,
         "url": "https://cfis.wi.gov/"
       },
       "governorOnlineFinance": {
@@ -764,12 +764,27 @@
   "modelWarnings": [],
   "projectedDemRaceWins": 18,
   "projectedRepRaceWins": 18,
-  "averageDemGovernors": 6,
-  "averageRepGovernors": 44,
-  "medianDemGovernors": 6,
-  "medianRepGovernors": 44,
+  "averageDemGovernors": 23.67,
+  "averageRepGovernors": 26.33,
+  "medianDemGovernors": 24,
+  "medianRepGovernors": 26,
   "distribution": {
-    "6": 100000
+    "16": 2,
+    "17": 15,
+    "18": 102,
+    "19": 615,
+    "20": 2533,
+    "21": 7138,
+    "22": 14469,
+    "23": 21080,
+    "24": 22617,
+    "25": 17010,
+    "26": 9531,
+    "27": 3708,
+    "28": 961,
+    "29": 194,
+    "30": 22,
+    "31": 3
   },
   "stateHistory": {
     "AL": [
@@ -4288,6 +4303,7 @@
       "caucusTarget": "none",
       "displayName": "Alabama Governor",
       "margin": -20.8,
+      "error": 8.9,
       "fundamentalsMargin": -10.38,
       "structuralMargin": -10.38,
       "candidateAndLocal": 1.2,
@@ -4392,7 +4408,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99028,
       "competitive": false,
-      "tippingPower": 1,
+      "tippingPower": 0.0051,
       "movementDrivers": [],
       "history": [
         {
@@ -4520,6 +4536,7 @@
       "caucusTarget": "none",
       "displayName": "Alaska Governor",
       "margin": -1.43,
+      "error": 9.96,
       "fundamentalsMargin": -2.27,
       "structuralMargin": -2.27,
       "candidateAndLocal": 0.4,
@@ -4614,7 +4631,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.55707,
       "competitive": true,
-      "tippingPower": 0,
+      "tippingPower": 0.06619,
       "movementDrivers": [],
       "history": [
         {
@@ -4742,6 +4759,7 @@
       "caucusTarget": "none",
       "displayName": "Arizona Governor",
       "margin": 4.71,
+      "error": 8.26,
       "fundamentalsMargin": 1.83,
       "structuralMargin": 1.83,
       "candidateAndLocal": -0.4,
@@ -4853,7 +4871,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.71584,
       "competitive": true,
-      "tippingPower": 0,
+      "tippingPower": 0.0683,
       "movementDrivers": [],
       "history": [
         {
@@ -4981,6 +4999,7 @@
       "caucusTarget": "none",
       "displayName": "Arkansas Governor",
       "margin": -20.28,
+      "error": 7.37,
       "fundamentalsMargin": -12.18,
       "structuralMargin": -12.18,
       "candidateAndLocal": -1,
@@ -5085,7 +5104,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99705,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.00208,
       "movementDrivers": [],
       "history": [
         {
@@ -5213,6 +5232,7 @@
       "caucusTarget": "none",
       "displayName": "California Governor",
       "margin": 18.87,
+      "error": 9.39,
       "fundamentalsMargin": 6.59,
       "structuralMargin": 6.59,
       "candidateAndLocal": 0.2,
@@ -5326,7 +5346,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.97774,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.0093,
       "movementDrivers": [],
       "history": [
         {
@@ -5454,6 +5474,7 @@
       "caucusTarget": "none",
       "displayName": "Colorado Governor",
       "margin": 16.54,
+      "error": 9.64,
       "fundamentalsMargin": 4.71,
       "structuralMargin": 4.71,
       "candidateAndLocal": 1,
@@ -5552,7 +5573,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.95698,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.0151,
       "movementDrivers": [],
       "history": [
         {
@@ -5680,6 +5701,7 @@
       "caucusTarget": "none",
       "displayName": "Connecticut Governor",
       "margin": 16.76,
+      "error": 8,
       "fundamentalsMargin": 7.28,
       "structuralMargin": 7.28,
       "candidateAndLocal": 0.6,
@@ -5774,7 +5796,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.98187,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.00835,
       "movementDrivers": [],
       "history": [
         {
@@ -5902,6 +5924,7 @@
       "caucusTarget": "none",
       "displayName": "Florida Governor",
       "margin": -16.15,
+      "error": 9.68,
       "fundamentalsMargin": -4.39,
       "structuralMargin": -4.39,
       "candidateAndLocal": -0.2,
@@ -6006,7 +6029,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.95242,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.01681,
       "movementDrivers": [],
       "history": [
         {
@@ -6134,6 +6157,7 @@
       "caucusTarget": "none",
       "displayName": "Georgia Governor",
       "margin": 2.83,
+      "error": 9.68,
       "fundamentalsMargin": -0.89,
       "structuralMargin": -0.89,
       "candidateAndLocal": 0.65,
@@ -6256,7 +6280,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.61478,
       "competitive": true,
-      "tippingPower": 0,
+      "tippingPower": 0.06542,
       "movementDrivers": [],
       "history": [
         {
@@ -6384,6 +6408,7 @@
       "caucusTarget": "none",
       "displayName": "Hawaii Governor",
       "margin": 19.91,
+      "error": 7.45,
       "fundamentalsMargin": 11.57,
       "structuralMargin": 11.57,
       "candidateAndLocal": 1,
@@ -6478,7 +6503,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99626,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.0026,
       "movementDrivers": [],
       "history": [
         {
@@ -6606,6 +6631,7 @@
       "caucusTarget": "none",
       "displayName": "Idaho Governor",
       "margin": -19.85,
+      "error": 7.36,
       "fundamentalsMargin": -12.23,
       "structuralMargin": -12.23,
       "candidateAndLocal": -1,
@@ -6705,7 +6731,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.9965,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.00262,
       "movementDrivers": [],
       "history": [
         {
@@ -6833,6 +6859,7 @@
       "caucusTarget": "none",
       "displayName": "Illinois Governor",
       "margin": 16,
+      "error": 8.08,
       "fundamentalsMargin": 6.69,
       "structuralMargin": 6.69,
       "candidateAndLocal": 1.1,
@@ -6937,7 +6964,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.97616,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.01096,
       "movementDrivers": [],
       "history": [
         {
@@ -7065,6 +7092,7 @@
       "caucusTarget": "none",
       "displayName": "Iowa Governor",
       "margin": -3,
+      "error": 8.34,
       "fundamentalsMargin": -7.79,
       "structuralMargin": -7.79,
       "candidateAndLocal": 2.1,
@@ -7223,7 +7251,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.64042,
       "competitive": true,
-      "tippingPower": 0,
+      "tippingPower": 0.07611,
       "movementDrivers": [],
       "history": [
         {
@@ -7351,6 +7379,7 @@
       "caucusTarget": "none",
       "displayName": "Kansas Governor",
       "margin": -15.8,
+      "error": 9.84,
       "fundamentalsMargin": -3.12,
       "structuralMargin": -3.12,
       "candidateAndLocal": 0.5,
@@ -7450,7 +7479,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.94576,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.01724,
       "movementDrivers": [],
       "history": [
         {
@@ -7578,6 +7607,7 @@
       "caucusTarget": "none",
       "displayName": "Maine Governor",
       "margin": 15.22,
+      "error": 9.88,
       "fundamentalsMargin": 2.86,
       "structuralMargin": 2.86,
       "candidateAndLocal": 0.4,
@@ -7677,7 +7707,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.93837,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.0199,
       "movementDrivers": [],
       "history": [
         {
@@ -7805,6 +7835,7 @@
       "caucusTarget": "none",
       "displayName": "Maryland Governor",
       "margin": 20.59,
+      "error": 7.28,
       "fundamentalsMargin": 12.88,
       "structuralMargin": 12.88,
       "candidateAndLocal": 1.5,
@@ -7904,7 +7935,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99768,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.00177,
       "movementDrivers": [],
       "history": [
         {
@@ -8032,6 +8063,7 @@
       "caucusTarget": "none",
       "displayName": "Massachusetts Governor",
       "margin": 20.54,
+      "error": 7.34,
       "fundamentalsMargin": 12.42,
       "structuralMargin": 12.42,
       "candidateAndLocal": 1.2,
@@ -8126,7 +8158,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.99744,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.00174,
       "movementDrivers": [],
       "history": [
         {
@@ -8254,6 +8286,7 @@
       "caucusTarget": "none",
       "displayName": "Michigan Governor",
       "margin": 5.23,
+      "error": 9.66,
       "fundamentalsMargin": 1.11,
       "structuralMargin": 1.11,
       "candidateAndLocal": 0.9,
@@ -8363,7 +8396,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.706,
       "competitive": true,
-      "tippingPower": 0,
+      "tippingPower": 0.05855,
       "movementDrivers": [],
       "history": [
         {
@@ -8491,6 +8524,7 @@
       "caucusTarget": "none",
       "displayName": "Minnesota Governor",
       "margin": 5.83,
+      "error": 9.18,
       "fundamentalsMargin": 4.81,
       "structuralMargin": 4.81,
       "candidateAndLocal": 0.4,
@@ -8590,7 +8624,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.73753,
       "competitive": true,
-      "tippingPower": 0,
+      "tippingPower": 0.05898,
       "movementDrivers": [],
       "history": [
         {
@@ -8718,6 +8752,7 @@
       "caucusTarget": "none",
       "displayName": "Nebraska Governor",
       "margin": -18.5,
+      "error": 7.64,
       "fundamentalsMargin": -10.08,
       "structuralMargin": -10.08,
       "candidateAndLocal": -1,
@@ -8822,7 +8857,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99229,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.00467,
       "movementDrivers": [],
       "history": [
         {
@@ -8950,6 +8985,7 @@
       "caucusTarget": "none",
       "displayName": "Nevada Governor",
       "margin": -4.17,
+      "error": 8.11,
       "fundamentalsMargin": -3.01,
       "structuralMargin": -3.01,
       "candidateAndLocal": -1.6,
@@ -9062,7 +9098,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.6966,
       "competitive": true,
-      "tippingPower": 0,
+      "tippingPower": 0.07301,
       "movementDrivers": [],
       "history": [
         {
@@ -9190,6 +9226,7 @@
       "caucusTarget": "none",
       "displayName": "New Hampshire Governor",
       "margin": -6.45,
+      "error": 8.06,
       "fundamentalsMargin": -3.38,
       "structuralMargin": -3.38,
       "candidateAndLocal": -1.6,
@@ -9301,7 +9338,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.788,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.06074,
       "movementDrivers": [],
       "history": [
         {
@@ -9429,6 +9466,7 @@
       "caucusTarget": "none",
       "displayName": "New Mexico Governor",
       "margin": 3.02,
+      "error": 10.03,
       "fundamentalsMargin": 1.71,
       "structuralMargin": 1.71,
       "candidateAndLocal": 0.6,
@@ -9533,7 +9571,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.61828,
       "competitive": true,
-      "tippingPower": 0,
+      "tippingPower": 0.06281,
       "movementDrivers": [],
       "history": [
         {
@@ -9661,6 +9699,7 @@
       "caucusTarget": "none",
       "displayName": "New York Governor",
       "margin": 14.86,
+      "error": 7.68,
       "fundamentalsMargin": 6.27,
       "structuralMargin": 6.27,
       "candidateAndLocal": 0.3,
@@ -9766,7 +9805,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.9734,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.01318,
       "movementDrivers": [],
       "history": [
         {
@@ -9894,6 +9933,7 @@
       "caucusTarget": "none",
       "displayName": "Ohio Governor",
       "margin": -4.75,
+      "error": 9.09,
       "fundamentalsMargin": -5.47,
       "structuralMargin": -5.47,
       "candidateAndLocal": -0.4,
@@ -10013,7 +10053,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.69931,
       "competitive": true,
-      "tippingPower": 0,
+      "tippingPower": 0.06325,
       "movementDrivers": [],
       "history": [
         {
@@ -10141,6 +10181,7 @@
       "caucusTarget": "none",
       "displayName": "Oklahoma Governor",
       "margin": -19.3,
+      "error": 9.28,
       "fundamentalsMargin": -7.45,
       "structuralMargin": -7.45,
       "candidateAndLocal": -0.45,
@@ -10240,7 +10281,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.98118,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.00795,
       "movementDrivers": [],
       "history": [
         {
@@ -10368,6 +10409,7 @@
       "caucusTarget": "none",
       "displayName": "Oregon Governor",
       "margin": 7.84,
+      "error": 7.75,
       "fundamentalsMargin": 5.73,
       "structuralMargin": 5.73,
       "candidateAndLocal": 0.2,
@@ -10481,7 +10523,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.84414,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.04886,
       "movementDrivers": [],
       "history": [
         {
@@ -10609,6 +10651,7 @@
       "caucusTarget": "none",
       "displayName": "Pennsylvania Governor",
       "margin": 15.9,
+      "error": 7.89,
       "fundamentalsMargin": 4.72,
       "structuralMargin": 4.72,
       "candidateAndLocal": 2.2,
@@ -10730,7 +10773,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.97809,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.01066,
       "movementDrivers": [],
       "history": [
         {
@@ -10858,6 +10901,7 @@
       "caucusTarget": "none",
       "displayName": "Rhode Island Governor",
       "margin": 17.34,
+      "error": 7.83,
       "fundamentalsMargin": 8.59,
       "structuralMargin": 8.59,
       "candidateAndLocal": 0.5,
@@ -10952,7 +10996,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.9866,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.00697,
       "movementDrivers": [],
       "history": [
         {
@@ -11080,6 +11124,7 @@
       "caucusTarget": "none",
       "displayName": "South Carolina Governor",
       "margin": -17.22,
+      "error": 9.58,
       "fundamentalsMargin": -5.12,
       "structuralMargin": -5.12,
       "candidateAndLocal": -0.7,
@@ -11190,7 +11235,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.96385,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.01362,
       "movementDrivers": [],
       "history": [
         {
@@ -11318,6 +11363,7 @@
       "caucusTarget": "none",
       "displayName": "South Dakota Governor",
       "margin": -20.12,
+      "error": 7.41,
       "fundamentalsMargin": -11.82,
       "structuralMargin": -11.82,
       "candidateAndLocal": -0.8,
@@ -11422,7 +11468,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99668,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.00218,
       "movementDrivers": [],
       "history": [
         {
@@ -11550,6 +11596,7 @@
       "caucusTarget": "none",
       "displayName": "Tennessee Governor",
       "margin": -20.8,
+      "error": 8.97,
       "fundamentalsMargin": -9.85,
       "structuralMargin": -9.85,
       "candidateAndLocal": -1,
@@ -11660,7 +11707,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.9898,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.00491,
       "movementDrivers": [],
       "history": [
         {
@@ -11788,6 +11835,7 @@
       "caucusTarget": "none",
       "displayName": "Texas Governor",
       "margin": -9.56,
+      "error": 7.67,
       "fundamentalsMargin": -6.4,
       "structuralMargin": -6.4,
       "candidateAndLocal": -1.7,
@@ -11911,7 +11959,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.89371,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.03956,
       "movementDrivers": [],
       "history": [
         {
@@ -12039,6 +12087,7 @@
       "caucusTarget": "none",
       "displayName": "Vermont Governor",
       "margin": -15.2,
+      "error": 8.29,
       "fundamentalsMargin": -5.06,
       "structuralMargin": -5.06,
       "candidateAndLocal": -6.5,
@@ -12143,7 +12192,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.96661,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.01471,
       "movementDrivers": [],
       "history": [
         {
@@ -12271,6 +12320,7 @@
       "caucusTarget": "none",
       "displayName": "Wisconsin Governor",
       "margin": 4.92,
+      "error": 8.96,
       "fundamentalsMargin": 3.01,
       "structuralMargin": 3.01,
       "candidateAndLocal": 0.5,
@@ -12381,7 +12431,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.70868,
       "competitive": true,
-      "tippingPower": 0,
+      "tippingPower": 0.06306,
       "movementDrivers": [],
       "history": [
         {
@@ -12509,6 +12559,7 @@
       "caucusTarget": "none",
       "displayName": "Wyoming Governor",
       "margin": -20.8,
+      "error": 8.08,
       "fundamentalsMargin": -16.7,
       "structuralMargin": -16.7,
       "candidateAndLocal": -0.8,
@@ -12608,7 +12659,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.99498,
       "competitive": false,
-      "tippingPower": 0,
+      "tippingPower": 0.00274,
       "movementDrivers": [],
       "history": [
         {
@@ -12828,8 +12879,8 @@
     },
     {
       "date": "2026-06-19",
-      "demGovernors": 6,
-      "repGovernors": 44
+      "demGovernors": 24,
+      "repGovernors": 26
     }
   ]
 }

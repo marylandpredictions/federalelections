@@ -14,7 +14,7 @@ const SETTINGS = {
   updateMinute: 0,
   updateZone: "America/New_York",
   dataSources: [
-    "Manual ratings and candidate ledger",
+      "Candidate and structural-fundamentals ledger",
     "Public polling adapter when reachable from GitHub Actions",
     "DDHQ generic-ballot polling average",
     "Pollfinity public averages JSON",
@@ -1105,7 +1105,12 @@ function senateMarginGuardrail(race, rawMargin, pollSignal, fundamentals) {
 
 function senateRaceError(race, fundamentals, pollSignal, uncertainty) {
   const structuralCertainty = Math.min(2, Math.abs(fundamentals) * .12);
-  const pollingCertainty = pollSignal ? Math.min(.75, pollSignal.weight * .1) : 0;
+  // pollWeightMetrics exposes totalWeight and blendWeight. Referencing the old
+  // `weight` property turned this into NaN for every race with polling, which
+  // then made the simulation classify every draw as a Republican win.
+  const pollingCertainty = pollSignal
+    ? Math.min(.75, (pollSignal.blendWeight || 0) * 2.35 + Math.log1p(pollSignal.pollCount || 0) * .08)
+    : 0;
   return clamp(8.2 - structuralCertainty - pollingCertainty + primaryRisk(race) + uncertainty.extraError, 4.8, 12);
 }
 
@@ -1143,7 +1148,8 @@ function runModel(sourceData) {
     const quality = inputQuality(withComposition, pollSignal);
     const uncertainty = raceTypeUncertainty(withComposition, pollSignal, quality);
     const fundamentals = withComposition.pvi * .24 + withComposition.pastSenate * .20;
-    const error = senateRaceError(withComposition, fundamentals, pollSignal, uncertainty);
+    const calculatedError = senateRaceError(withComposition, fundamentals, pollSignal, uncertainty);
+    const error = Number.isFinite(calculatedError) ? calculatedError : 8.2;
     const demProbability = logistic(margin, error);
     const demographicPull = demographicPullAdjustment(withComposition);
     return {
@@ -1247,6 +1253,8 @@ function runModel(sourceData) {
     race.repProbability = Number((1 - race.demProbability).toFixed(6));
     race.winnerParty = race.demProbability >= .5 ? "D" : "R";
     race.winnerProbability = Math.max(race.demProbability, 1 - race.demProbability);
+    race.rating = ratingFromProbability(race.demProbability, race.margin);
+    race.modelRating = race.rating;
     race.competitive = race.winnerProbability < .75;
     race.displayName = `${STATE_NAMES[race.state]} Senate`;
     race.summary = forecastSummary(race);

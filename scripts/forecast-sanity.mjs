@@ -36,6 +36,9 @@ export function forecastSanityWarnings(items, options = {}) {
       add(item, "missing-margin-probability", "Race is missing a numeric projected margin or win probability.", "warn");
       continue;
     }
+    if (item.error !== undefined && item.error !== null && !Number.isFinite(Number(item.error))) {
+      add(item, "invalid-race-error", "Race uncertainty is not numeric; generation must not use this race until the error input is repaired.", "warn");
+    }
     const winnerProb = Math.max(demProb, 1 - demProb);
     const absMargin = Math.abs(raceMargin);
     const favoriteSide = raceMargin >= 0 ? "D" : "R";

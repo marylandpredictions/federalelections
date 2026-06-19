@@ -728,7 +728,7 @@ const SETTINGS = {
   repNotUp: 8,
   dataSources: [
     "Manual 2026 gubernatorial race ledger with candidates, incumbency, PVI, and last gubernatorial margin",
-    "Cook Political Report, Inside Elections, Sabato's Crystal Ball, WH, VoteHub, and RCP rating references",
+      "Cook Political Report, Inside Elections, Sabato's Crystal Ball, WH, VoteHub, and RCP context references",
     "Current Senate model generic ballot signal as a broad midterm environment input",
     "Pollfinity governor polling averages where available",
     "270toWin state-level 2026 governor polling pages where available",
@@ -1302,6 +1302,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
     demCandidate: race.dem,
     repCandidate: race.rep,
     margin: Number(margin.toFixed(2)),
+    error: Number(error.toFixed(2)),
     fundamentalsMargin: Number(fundamentals.toFixed(2)),
     rating: modelRating,
     structuralMargin: Number(fundamentals.toFixed(2)),
@@ -1453,7 +1454,15 @@ async function buildForecast() {
     let demGovernors = SETTINGS.demNotUp;
     const sampled = [];
     for (const race of modeledRaces) {
-      const error = governorRaceError(race);
+      // Use the same uncertainty inputs as the displayed race probability.
+      // Calling this without fundamentals produced NaN samples, which then
+      // recorded every simulated contest as a Republican win.
+      const calculatedError = governorRaceError(
+        race,
+        race.fundamentalsMargin ?? race.structuralMargin ?? 0,
+        Boolean(race.sourceInputs?.pollCount)
+      );
+      const error = Number.isFinite(calculatedError) ? calculatedError : 9.4;
       const sampledMargin = sampleNormal(race.margin, error);
       const demWin = sampledMargin > 0;
       if (demWin) demGovernors += 1;
@@ -1499,7 +1508,7 @@ async function buildForecast() {
       model: "governor",
       id: (race) => race.state,
       name: (race) => race.displayName,
-      baseline: (race) => race.ratingMargin,
+      baseline: (race) => race.structuralMargin,
       partisanship: (race) => race.pvi,
       candidateAdjustment: (race) => race.candidateAndLocal
     }),

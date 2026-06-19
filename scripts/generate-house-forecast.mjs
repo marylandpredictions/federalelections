@@ -11,8 +11,8 @@ const SETTINGS = {
   updateTime: "around 7:20 AM Eastern",
   updateZone: "America/New_York",
   dataSources: [
-    "270toWin / Inside Elections public House map data",
-    "Cook Political Report public House ratings when reachable",
+      "270toWin / Inside Elections district and candidate data",
+      "Cook Political Report district context when reachable",
     "270toWin House polling reference page",
     "Race to the WH House and generic-ballot reference pages",
     "RealClearPolling generic-ballot reference pages when reachable",
@@ -34,7 +34,10 @@ const MODEL_WEIGHTS = {
   incumbencyOpenPenalty: .45,
   seatPartyIncumbency: .45,
   districtFundamentals: .2,
-  historicalMidterm: 3.0,
+  // District fundamentals are built from prior federal returns, not a pure
+  // midterm cycle baseline. Keep a modest calibrated cycle adjustment, but do
+  // not let it duplicate the generic-ballot environment.
+  historicalMidterm: 2.2,
   stateCorrelationSd: 1.35,
   nationalEnvironmentSd: 3.05
 };
