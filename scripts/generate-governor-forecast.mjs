@@ -1440,6 +1440,12 @@ function buildRace(baseRace, nationalShift, sourceData) {
       }
     },
     modelConfidence: governorModelConfidence({ ...governorPoll, pollingSummary }, race, sourceData.sourceHealth),
+    sourceHealth: {
+      forecast: sourceData.sourceHealth?.health || "UNKNOWN",
+      degraded: Boolean(sourceData.sourceHealth?.degraded),
+      racePolling: pollingSummary.pollingStatus,
+      unavailableSources: sourceData.sourceHealth?.unavailableSources || []
+    },
     matchupStatus: governorMatchupStatus(race),
     marginDecomposition: governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, guardrail, margin, financeUsed),
     benchmarkComparison: governorBenchmarkComparison(race, margin, demProbability, governorPoll, sourceData.sourceHealth),

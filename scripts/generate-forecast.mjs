@@ -1369,6 +1369,7 @@ function runModel(sourceData) {
       inputQuality: quality,
       modelConfidence: quality,
       matchupStatus,
+      sourceHealth: withComposition.sourceInputs?.sourceHealth || {},
       forecastMode: pollSignal?.usablePollCount ? "POLL_INFORMED" : pollSignal?.legacyFallbackPollCount ? "LIMITED_DATA" : "FUNDAMENTALS_ONLY",
       lastUpdated: new Date().toISOString(),
       marginDecomposition,

@@ -1080,6 +1080,12 @@ function adjustedDistricts(sourceData) {
         }
       },
       modelConfidence: houseModelConfidence(districtPollSignal, nomination, sourceData.sourceHealth, pollingSummary),
+      sourceHealth: {
+        forecast: sourceData.sourceHealth?.health || "UNKNOWN",
+        degraded: Boolean(sourceData.sourceHealth?.degraded),
+        racePolling: pollingSummary.pollingStatus,
+        unavailableSources: sourceData.sourceHealth?.unavailableSources || []
+      },
       matchupStatus: houseMatchupStatus(nomination),
       marginDecomposition: houseMarginDecomposition(district, contextMargin, genericShift, nationalFinanceShift, incumbencyAdjustment, openPenalty, demographicPull.adjustment, financeSignal, candidateQualityAdjustment, nominationAdjustment, districtPollingAdjustment, guardrail, margin),
       benchmarkComparison: houseBenchmarkComparison(district, margin, demProbability, districtPollSignal, sourceData.sourceHealth),
