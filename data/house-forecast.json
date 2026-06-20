@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-20T01:26:07.536Z",
+  "generatedAt": "2026-06-20T02:47:32.906Z",
   "modelDate": "2026-06-19",
   "runDate": "Jun 19, 2026",
   "updateTime": "around 7:20 AM Eastern",
@@ -43,95 +43,112 @@
     "redistrictingShapeWarning": "The visible shape map may lag enacted 2026 redistricting in states with new maps. The model uses the local redistricting override layer even when temporary map geometry has not been replaced."
   },
   "sourceStatus": {
-    "checkedAt": "2026-06-20T01:25:51.171Z",
-    "insideElections270ToWinRatings": {
+    "checkedAt": "2026-06-20T02:47:22.808Z",
+    "raceToTheWhHouseForecast": {
       "ok": true,
       "status": 200,
-      "ms": 1256,
-      "bytes": 486073,
-      "url": "https://www.270towin.com/2026-house-election/table/inside-elections-2026-house-ratings"
-    },
-    "twoSeventyToWinHouseMapData": {
-      "ok": true,
-      "status": 200,
-      "ms": 1276,
-      "bytes": 7253968,
-      "url": "https://www.270towin.com/2026-house-election/inside-elections-2026-house-ratings"
-    },
-    "cookHouseRatings": {
-      "ok": false,
-      "status": 403,
-      "ms": 1432,
-      "bytes": 5660,
-      "url": "https://www.cookpolitical.com/ratings/house-race-ratings"
+      "ms": 367,
+      "bytes": 162149,
+      "url": "https://www.racetothewh.com/house-3"
     },
     "raceToTheWhGenericBallot": {
       "ok": true,
       "status": 200,
-      "ms": 1616,
+      "ms": 367,
       "bytes": 202846,
       "url": "https://www.racetothewh.com/polls/genericballot"
     },
-    "realClearPoliticsGenericBallot": {
+    "cookHouseRatings": {
       "ok": false,
       "status": 403,
-      "ms": 1681,
-      "bytes": 781,
-      "url": "https://www.realclearpolitics.com/epolls/other/2026_generic_congressional_vote-8670.html"
-    },
-    "raceToTheWhHouseForecast": {
-      "ok": true,
-      "status": 200,
-      "ms": 1954,
-      "bytes": 162149,
-      "url": "https://www.racetothewh.com/house-3"
-    },
-    "pollfinityAverages": {
-      "ok": false,
-      "status": 404,
-      "ms": 2119,
-      "bytes": 0,
-      "url": "https://pollfinity.com/api/averages"
+      "ms": 487,
+      "bytes": 5703,
+      "url": "https://www.cookpolitical.com/ratings/house-race-ratings"
     },
     "realClearPollingHousePolls": {
       "ok": false,
       "status": 403,
-      "ms": 2125,
+      "ms": 528,
       "bytes": 1278,
       "url": "https://www.realclearpolling.com/latest-polls/house"
     },
-    "ddhqGenericBallot": {
+    "raceToTheWhAllPolls": {
+      "ok": true,
+      "status": 200,
+      "ms": 648,
+      "bytes": 282018,
+      "url": "https://www.racetothewh.com/allpolls"
+    },
+    "pollfinityAverages": {
       "ok": false,
       "status": 404,
-      "ms": 2202,
-      "bytes": 370,
-      "url": "https://static.dwcdn.net/data/9Jctg.json"
-    },
-    "usPollingDataGenericBallot": {
-      "ok": true,
-      "status": 200,
-      "ms": 2334,
-      "bytes": 107440,
-      "url": "https://uspollingdata.com/polls/generic-ballot/"
-    },
-    "twoSeventyToWinHousePolls": {
-      "ok": true,
-      "status": 200,
-      "ms": 2661,
-      "bytes": 7253795,
-      "url": "https://www.270towin.com/2026-house-election/polls/"
+      "ms": 1208,
+      "bytes": 0,
+      "url": "https://pollfinity.com/api/averages"
     },
     "censusDistrictBoundaries": {
       "ok": true,
       "status": 200,
-      "ms": 2774,
-      "bytes": 1043821,
+      "ms": 1457,
+      "bytes": 1036599,
       "url": "https://www.census.gov/geographies/mapping-files/2025/geo/carto-boundary-file.html"
+    },
+    "ddhqGenericBallot": {
+      "ok": false,
+      "status": 404,
+      "ms": 1495,
+      "bytes": 350,
+      "url": "https://static.dwcdn.net/data/9Jctg.json"
+    },
+    "insideElections270ToWinRatings": {
+      "ok": true,
+      "status": 200,
+      "ms": 1508,
+      "bytes": 486073,
+      "url": "https://www.270towin.com/2026-house-election/table/inside-elections-2026-house-ratings"
+    },
+    "twoSeventyToWinHousePolls": {
+      "ok": true,
+      "status": 200,
+      "ms": 1633,
+      "bytes": 7253758,
+      "url": "https://www.270towin.com/2026-house-election/polls/"
+    },
+    "usPollingDataGenericBallot": {
+      "ok": true,
+      "status": 200,
+      "ms": 1785,
+      "bytes": 107440,
+      "url": "https://uspollingdata.com/polls/generic-ballot/"
+    },
+    "realClearPoliticsGenericBallot": {
+      "ok": false,
+      "status": 403,
+      "ms": 1873,
+      "bytes": 781,
+      "url": "https://www.realclearpolitics.com/epolls/other/2026_generic_congressional_vote-8670.html"
+    },
+    "openFecHouseCandidateSummary": {
+      "ok": true,
+      "status": 200,
+      "ms": 2191,
+      "bytes": 1598267,
+      "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
+      "rows": 4181,
+      "districts": 459,
+      "nationalFinanceSignal": 0.074
+    },
+    "twoSeventyToWinHouseMapData": {
+      "ok": true,
+      "status": 200,
+      "ms": 2283,
+      "bytes": 7253931,
+      "url": "https://www.270towin.com/2026-house-election/inside-elections-2026-house-ratings"
     },
     "votehubGenericBallot": {
       "ok": false,
       "status": 403,
-      "ms": 3684,
+      "ms": 2498,
       "bytes": 5587,
       "url": "https://polls.votehub.us/polls/generic-ballot"
     },
@@ -140,15 +157,12 @@
       "status": "local",
       "ms": 0
     },
-    "openFecHouseCandidateSummary": {
+    "houseDistrictPolls": {
       "ok": true,
-      "status": 200,
-      "ms": 8531,
-      "bytes": 1598267,
-      "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
-      "rows": 4181,
-      "districts": 459,
-      "nationalFinanceSignal": 0.074
+      "status": "parsed",
+      "districts": 0,
+      "polls": 0,
+      "note": "Only structured/current district matchups are blended; generic ballot data remains a separate national signal."
     }
   },
   "sourceSummary": {
@@ -196,6 +210,11 @@
         }
       ]
     },
+    "districtPolling": {
+      "districts": 0,
+      "polls": 0,
+      "note": "Race-level polls are blended only when a current, structured matchup can be matched to the district and both major-party candidates. Generic ballot remains separate."
+    },
     "housePollingReferenceReachable": true,
     "raceToTheWhHouseReachable": true,
     "raceToTheWhGenericReachable": true,
@@ -203,7 +222,7 @@
     "realClearHousePollsReachable": false,
     "censusDistrictBoundaryPageReachable": true,
     "redistricting": {
-      "reviewedAt": "2026-06-20T01:26:07.536Z",
+      "reviewedAt": "2026-06-20T02:47:32.906Z",
       "sourceNote": "State statuses are maintained locally so stale public rating feeds do not silently drive the House model after mid-decade map changes.",
       "states": {
         "AL": {
@@ -637,8 +656,8 @@
     },
     {
       "date": "2026-06-19",
-      "dem": 0.66929,
-      "rep": 0.33071
+      "dem": 0.66934,
+      "rep": 0.33066
     }
   ],
   "seatHistory": [
@@ -803,8 +822,8 @@
       "rep": 210
     }
   ],
-  "demControlProbability": 0.66929,
-  "repControlProbability": 0.33071,
+  "demControlProbability": 0.66934,
+  "repControlProbability": 0.33066,
   "medianSeats": 225,
   "seatCounts": {
     "147": 1,
@@ -825,114 +844,114 @@
     "169": 6,
     "170": 7,
     "171": 10,
-    "172": 5,
-    "173": 23,
+    "172": 4,
+    "173": 24,
     "174": 16,
-    "175": 25,
+    "175": 24,
     "176": 30,
-    "177": 30,
+    "177": 31,
     "178": 37,
     "179": 45,
     "180": 55,
     "181": 61,
-    "182": 86,
-    "183": 76,
-    "184": 112,
-    "185": 112,
-    "186": 130,
+    "182": 85,
+    "183": 75,
+    "184": 113,
+    "185": 113,
+    "186": 129,
     "187": 168,
     "188": 191,
-    "189": 215,
-    "190": 230,
-    "191": 276,
+    "189": 216,
+    "190": 228,
+    "191": 277,
     "192": 335,
     "193": 363,
     "194": 426,
     "195": 439,
-    "196": 559,
-    "197": 542,
+    "196": 560,
+    "197": 540,
     "198": 664,
-    "199": 773,
+    "199": 771,
     "200": 810,
-    "201": 887,
-    "202": 983,
-    "203": 1009,
-    "204": 1109,
-    "205": 1228,
+    "201": 889,
+    "202": 980,
+    "203": 1010,
+    "204": 1114,
+    "205": 1225,
     "206": 1370,
-    "207": 1411,
+    "207": 1412,
     "208": 1508,
-    "209": 1513,
-    "210": 1722,
-    "211": 1687,
-    "212": 1806,
-    "213": 1876,
-    "214": 1941,
-    "215": 1936,
-    "216": 2068,
-    "217": 2120,
-    "218": 2132,
-    "219": 2197,
-    "220": 2122,
+    "209": 1512,
+    "210": 1721,
+    "211": 1689,
+    "212": 1807,
+    "213": 1875,
+    "214": 1942,
+    "215": 1933,
+    "216": 2070,
+    "217": 2116,
+    "218": 2139,
+    "219": 2195,
+    "220": 2123,
     "221": 2169,
-    "222": 2217,
-    "223": 2145,
+    "222": 2218,
+    "223": 2144,
     "224": 2134,
-    "225": 2138,
+    "225": 2137,
     "226": 2097,
     "227": 2108,
-    "228": 2095,
-    "229": 2113,
-    "230": 2027,
-    "231": 1948,
-    "232": 1899,
-    "233": 1801,
-    "234": 1780,
-    "235": 1661,
-    "236": 1651,
+    "228": 2094,
+    "229": 2114,
+    "230": 2029,
+    "231": 1946,
+    "232": 1897,
+    "233": 1802,
+    "234": 1785,
+    "235": 1663,
+    "236": 1646,
     "237": 1504,
     "238": 1513,
     "239": 1433,
     "240": 1381,
     "241": 1300,
-    "242": 1346,
+    "242": 1349,
     "243": 1204,
-    "244": 1161,
-    "245": 1077,
-    "246": 1010,
-    "247": 972,
+    "244": 1159,
+    "245": 1076,
+    "246": 1011,
+    "247": 970,
     "248": 990,
-    "249": 954,
-    "250": 803,
+    "249": 955,
+    "250": 804,
     "251": 783,
-    "252": 738,
+    "252": 737,
     "253": 749,
-    "254": 681,
-    "255": 585,
-    "256": 546,
-    "257": 580,
-    "258": 513,
+    "254": 680,
+    "255": 586,
+    "256": 547,
+    "257": 578,
+    "258": 512,
     "259": 456,
-    "260": 446,
-    "261": 414,
-    "262": 392,
-    "263": 383,
-    "264": 322,
+    "260": 448,
+    "261": 413,
+    "262": 393,
+    "263": 385,
+    "264": 319,
     "265": 342,
-    "266": 289,
-    "267": 276,
+    "266": 290,
+    "267": 275,
     "268": 254,
     "269": 237,
     "270": 217,
     "271": 190,
-    "272": 202,
+    "272": 203,
     "273": 194,
     "274": 154,
-    "275": 169,
+    "275": 168,
     "276": 142,
     "277": 135,
-    "278": 121,
-    "279": 108,
+    "278": 120,
+    "279": 109,
     "280": 84,
     "281": 93,
     "282": 82,
@@ -940,12 +959,12 @@
     "284": 75,
     "285": 63,
     "286": 69,
-    "287": 58,
-    "288": 60,
+    "287": 59,
+    "288": 59,
     "289": 53,
     "290": 45,
-    "291": 39,
-    "292": 44,
+    "291": 40,
+    "292": 43,
     "293": 37,
     "294": 33,
     "295": 38,
@@ -992,7 +1011,7 @@
   },
   "controlPaths": {
     "dem": {
-      "controlSimulations": 66929,
+      "controlSimulations": 66934,
       "tossupWins": 3.9,
       "tiltRWins": 5.1,
       "leanRWins": 5.5,
@@ -1002,7 +1021,7 @@
       "vulnerableRHolds": 0
     },
     "rep": {
-      "controlSimulations": 33071,
+      "controlSimulations": 33066,
       "tossupWins": 2.1,
       "tiltRWins": 0,
       "leanRWins": 0,
@@ -1083,6 +1102,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.91,
           "impliedMargin": 12.81,
@@ -1404,6 +1424,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.12,
           "impliedMargin": -10.24,
@@ -1772,6 +1793,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -2136,6 +2158,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.14,
           "impliedMargin": -9.33,
@@ -2504,6 +2527,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.16,
           "impliedMargin": -8.97,
@@ -2872,6 +2896,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.11,
           "impliedMargin": -10.75,
@@ -3240,6 +3265,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -15.14,
@@ -3608,6 +3634,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.29,
           "impliedMargin": -4.89,
@@ -3976,6 +4003,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.12,
           "impliedMargin": -10.31,
@@ -4344,6 +4372,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.62,
           "impliedMargin": 2.52,
@@ -4706,6 +4735,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.93,
           "impliedMargin": 13.3,
@@ -5068,6 +5098,7 @@
         },
         "candidateQualityAdjustment": -0.08,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -5432,6 +5463,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.18,
           "impliedMargin": -7.94,
@@ -5800,6 +5832,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.28,
           "impliedMargin": -5.1,
@@ -6168,6 +6201,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.5,
           "impliedMargin": 0,
@@ -6530,6 +6564,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.19,
           "impliedMargin": -7.46,
@@ -6898,6 +6933,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -7262,6 +7298,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.13,
           "impliedMargin": -9.77,
@@ -7630,6 +7667,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.1,
           "impliedMargin": -11.3,
@@ -7998,6 +8036,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -8362,6 +8401,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.07,
           "impliedMargin": -13.3,
@@ -8730,6 +8770,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.12,
           "impliedMargin": -10.31,
@@ -9098,6 +9139,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.53,
           "impliedMargin": 0.67,
@@ -9460,6 +9502,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.82,
           "impliedMargin": 8.13,
@@ -9822,6 +9865,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -10186,6 +10230,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.67,
           "impliedMargin": 4.05,
@@ -10548,6 +10593,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.14,
           "impliedMargin": -9.33,
@@ -10916,6 +10962,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.28,
           "impliedMargin": -5,
@@ -11284,6 +11331,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.2,
           "impliedMargin": -7.13,
@@ -11652,6 +11700,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.01,
@@ -12010,6 +12059,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 15.23,
@@ -12366,6 +12416,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.21,
           "impliedMargin": -6.17,
@@ -12728,6 +12779,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -13068,6 +13120,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -13408,6 +13461,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.76,
           "impliedMargin": 5.37,
@@ -13764,6 +13818,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.19,
           "impliedMargin": -6.75,
@@ -14126,6 +14181,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.09,
           "impliedMargin": -10.78,
@@ -14488,6 +14544,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.08,
           "impliedMargin": -11.38,
@@ -14850,6 +14907,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.01,
@@ -15208,6 +15266,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.01,
@@ -15566,6 +15625,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.2,
           "impliedMargin": -6.46,
@@ -15928,6 +15988,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -13.72,
@@ -16290,6 +16351,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -13.72,
@@ -16647,6 +16709,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -16994,6 +17057,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 15.14,
@@ -17345,6 +17409,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.03,
@@ -17698,6 +17763,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.03,
@@ -18051,6 +18117,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.89,
           "impliedMargin": 9.74,
@@ -18402,6 +18469,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.04,
@@ -18755,6 +18823,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -19102,6 +19171,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.04,
@@ -19455,6 +19525,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -19802,6 +19873,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.93,
           "impliedMargin": 13.99,
@@ -20153,6 +20225,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.04,
@@ -20506,6 +20579,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -20853,6 +20927,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.04,
@@ -21194,6 +21269,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -21529,6 +21605,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -21876,6 +21953,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.1,
           "impliedMargin": -10.23,
@@ -22233,6 +22311,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -22580,6 +22659,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.94,
           "impliedMargin": 14.74,
@@ -22931,6 +23011,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -13.72,
@@ -23288,6 +23369,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.11,
           "impliedMargin": -9.74,
@@ -23645,6 +23727,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.88,
           "impliedMargin": 10.8,
@@ -24001,6 +24084,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.82,
           "impliedMargin": 8.53,
@@ -24357,6 +24441,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.1,
           "impliedMargin": -10.23,
@@ -24719,6 +24804,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.07,
           "impliedMargin": -12.05,
@@ -25081,6 +25167,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.08,
           "impliedMargin": -11.38,
@@ -25443,6 +25530,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.17,
           "impliedMargin": -7.39,
@@ -25805,6 +25893,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -13.72,
@@ -26167,6 +26256,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.94,
           "impliedMargin": 12.82,
@@ -26523,6 +26613,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.06,
           "impliedMargin": -12.82,
@@ -26885,6 +26976,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.1,
           "impliedMargin": -10.23,
@@ -27242,6 +27334,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.34,
           "impliedMargin": -3.69,
@@ -27593,6 +27686,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.05,
@@ -27940,6 +28034,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.36,
           "impliedMargin": -3.23,
@@ -28291,6 +28386,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.04,
@@ -28644,6 +28740,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.07,
           "impliedMargin": -13.3,
@@ -29001,6 +29098,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.1,
           "impliedMargin": -11.3,
@@ -29358,6 +29456,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.94,
           "impliedMargin": 16,
@@ -29709,6 +29808,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.11,
           "impliedMargin": -10.75,
@@ -30066,6 +30166,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.06,
           "impliedMargin": -12.82,
@@ -30423,6 +30524,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.06,
           "impliedMargin": -12.82,
@@ -30780,6 +30882,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.94,
           "impliedMargin": 12.82,
@@ -31131,6 +31234,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.04,
@@ -31484,6 +31588,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.03,
@@ -31837,6 +31942,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.05,
@@ -32195,6 +32301,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.06,
           "impliedMargin": -14.15,
@@ -32545,6 +32652,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 13.98,
@@ -32889,6 +32997,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -33247,6 +33356,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -33605,6 +33715,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.02,
@@ -33963,6 +34074,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.02,
@@ -34316,6 +34428,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.03,
@@ -34663,6 +34776,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.05,
@@ -35015,6 +35129,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.24,
           "impliedMargin": -5.93,
@@ -35377,6 +35492,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.78,
           "impliedMargin": 6.51,
@@ -35733,6 +35849,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -36073,6 +36190,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.91,
           "impliedMargin": 12.57,
@@ -36417,6 +36535,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -36775,6 +36894,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.91,
           "impliedMargin": 13.78,
@@ -37119,6 +37239,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -37459,6 +37580,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.71,
           "impliedMargin": 4.6,
@@ -37798,6 +37920,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.91,
           "impliedMargin": 12.57,
@@ -38125,6 +38248,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -38460,6 +38584,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 12.56,
@@ -38811,6 +38936,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.91,
           "impliedMargin": 11.9,
@@ -39150,6 +39276,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -39485,6 +39612,7 @@
         },
         "candidateQualityAdjustment": -0.08,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.04,
@@ -39826,6 +39954,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -40161,6 +40290,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -40508,6 +40638,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -40855,6 +40986,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.09,
           "impliedMargin": -11.9,
@@ -41212,6 +41344,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.08,
           "impliedMargin": -12.56,
@@ -41569,6 +41702,7 @@
         },
         "candidateQualityAdjustment": 0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.88,
           "impliedMargin": 11.44,
@@ -41920,6 +42054,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.41,
           "impliedMargin": -2.1,
@@ -42271,6 +42406,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.07,
           "impliedMargin": -13.3,
@@ -42628,6 +42764,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.91,
           "impliedMargin": 11.9,
@@ -42979,6 +43116,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.19,
           "impliedMargin": -9.04,
@@ -43330,6 +43468,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.88,
           "impliedMargin": 12.5,
@@ -43681,6 +43820,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.15,
           "impliedMargin": -8.92,
@@ -44038,6 +44178,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -44385,6 +44526,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.01,
@@ -44738,6 +44880,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.03,
@@ -45085,6 +45228,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.03,
@@ -45420,6 +45564,7 @@
         },
         "candidateQualityAdjustment": -0.44,
         "nominationAdjustment": -0.1,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.31,
           "impliedMargin": -4.48,
@@ -45765,6 +45910,7 @@
         },
         "candidateQualityAdjustment": 0.08,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.06,
@@ -46106,6 +46252,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.9,
           "impliedMargin": 11.3,
@@ -46445,6 +46592,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 15.14,
@@ -46796,6 +46944,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.91,
           "impliedMargin": 11.9,
@@ -47135,6 +47284,7 @@
         },
         "candidateQualityAdjustment": -0.44,
         "nominationAdjustment": -0.1,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.21,
           "impliedMargin": -7.2,
@@ -47468,6 +47618,7 @@
         },
         "candidateQualityAdjustment": -0.44,
         "nominationAdjustment": -0.1,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.06,
           "impliedMargin": -14.95,
@@ -47813,6 +47964,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.27,
           "impliedMargin": -5.22,
@@ -48170,6 +48322,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -48523,6 +48676,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.91,
           "impliedMargin": 10.78,
@@ -48874,6 +49028,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -49227,6 +49382,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -49585,6 +49741,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.03,
@@ -49937,6 +50094,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.15,
           "impliedMargin": -9.62,
@@ -50299,6 +50457,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.03,
@@ -50657,6 +50816,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.11,
           "impliedMargin": -10.75,
@@ -51019,6 +51179,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.75,
           "impliedMargin": 5.65,
@@ -51375,6 +51536,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.04,
@@ -51733,6 +51895,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.03,
@@ -52091,6 +52254,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.03,
@@ -52444,6 +52608,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.05,
@@ -52797,6 +52962,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.07,
           "impliedMargin": -12.05,
@@ -53154,6 +53320,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.22,
           "impliedMargin": -5.92,
@@ -53511,6 +53678,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -53858,6 +54026,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -54211,6 +54380,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.9,
           "impliedMargin": 12.25,
@@ -54568,6 +54738,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.03,
@@ -54927,6 +55098,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.82,
           "impliedMargin": 8.9,
@@ -55284,6 +55456,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 13.52,
@@ -55641,6 +55814,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -55988,6 +56162,7 @@
         },
         "candidateQualityAdjustment": 0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 14.79,
@@ -56339,6 +56514,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.94,
           "impliedMargin": 12.82,
@@ -56690,6 +56866,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.26,
           "impliedMargin": -5.03,
@@ -57047,6 +57224,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.89,
           "impliedMargin": 11.04,
@@ -57398,6 +57576,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -13.72,
@@ -57755,6 +57934,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.9,
           "impliedMargin": 12.04,
@@ -58106,6 +58286,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.74,
           "impliedMargin": 5.35,
@@ -58457,6 +58638,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.26,
           "impliedMargin": -5.96,
@@ -58796,6 +58978,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.14,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -59131,6 +59314,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.9,
           "impliedMargin": 12.77,
@@ -59482,6 +59666,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -59829,6 +60014,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 12.34,
@@ -60180,6 +60366,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.04,
@@ -60533,6 +60720,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.94,
           "impliedMargin": 13.6,
@@ -60890,6 +61078,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.76,
           "impliedMargin": 6.77,
@@ -61247,6 +61436,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.74,
           "impliedMargin": 5.54,
@@ -61609,6 +61799,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.4,
           "impliedMargin": -2.28,
@@ -61965,6 +62156,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.11,
           "impliedMargin": -10.76,
@@ -62327,6 +62519,7 @@
         },
         "candidateQualityAdjustment": 0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.75,
           "impliedMargin": 6.99,
@@ -62683,6 +62876,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.74,
           "impliedMargin": 6.57,
@@ -63039,6 +63233,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 12.56,
@@ -63395,6 +63590,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.08,
@@ -63735,6 +63931,7 @@
         },
         "candidateQualityAdjustment": 0.17,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.04,
@@ -64081,6 +64278,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.91,
           "impliedMargin": 11.9,
@@ -64437,6 +64635,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 12.56,
@@ -64781,6 +64980,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 15.99,
@@ -65125,6 +65325,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.14,
           "impliedMargin": -9.33,
@@ -65487,6 +65688,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.04,
@@ -65833,6 +66035,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -66173,6 +66376,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -66513,6 +66717,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -66853,6 +67058,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.91,
           "impliedMargin": 11.9,
@@ -67209,6 +67415,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.33,
           "impliedMargin": -4.41,
@@ -67565,6 +67772,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 14.12,
@@ -67921,6 +68129,7 @@
         },
         "candidateQualityAdjustment": 0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.81,
           "impliedMargin": 9.09,
@@ -68277,6 +68486,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 15.14,
@@ -68633,6 +68843,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -68997,6 +69208,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.84,
           "impliedMargin": 9.58,
@@ -69353,6 +69565,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.12,
           "impliedMargin": -10.24,
@@ -69715,6 +69928,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.13,
           "impliedMargin": -9.77,
@@ -70077,6 +70291,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -70417,6 +70632,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -70757,6 +70973,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.56,
           "impliedMargin": 1.21,
@@ -71113,6 +71330,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -71465,6 +71683,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.18,
           "impliedMargin": -7.4,
@@ -71827,6 +72046,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -72179,6 +72399,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.15,
           "impliedMargin": -8.08,
@@ -72541,6 +72762,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.19,
           "impliedMargin": -6.75,
@@ -72903,6 +73125,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.15,
           "impliedMargin": -8.24,
@@ -73265,6 +73488,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.12,
           "impliedMargin": -9.28,
@@ -73627,6 +73851,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.22,
           "impliedMargin": -5.9,
@@ -73989,6 +74214,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.12,
           "impliedMargin": -9.28,
@@ -74351,6 +74577,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.44,
           "impliedMargin": -1.22,
@@ -74707,6 +74934,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -75059,6 +75287,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.14,
           "impliedMargin": -8.46,
@@ -75421,6 +75650,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.21,
           "impliedMargin": -6.27,
@@ -75754,6 +75984,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.1,
           "impliedMargin": -10.23,
@@ -76081,6 +76312,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.79,
           "impliedMargin": 7.61,
@@ -76437,6 +76669,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.09,
           "impliedMargin": -10.78,
@@ -76787,6 +77020,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.03,
@@ -77127,6 +77361,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.03,
@@ -77485,6 +77720,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.13,
           "impliedMargin": -8.85,
@@ -77847,6 +78083,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.13,
           "impliedMargin": -8.85,
@@ -78209,6 +78446,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.37,
           "impliedMargin": -2.71,
@@ -78571,6 +78809,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.14,
           "impliedMargin": -8.58,
@@ -78933,6 +79172,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.64,
           "impliedMargin": 2.95,
@@ -79289,6 +79529,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.21,
           "impliedMargin": -7.07,
@@ -79645,6 +79886,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.94,
           "impliedMargin": 12.82,
@@ -80001,6 +80243,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.1,
           "impliedMargin": -10.23,
@@ -80363,6 +80606,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.87,
           "impliedMargin": 10.81,
@@ -80719,6 +80963,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.14,
           "impliedMargin": -8.46,
@@ -81081,6 +81326,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.25,
           "impliedMargin": -5.67,
@@ -81432,6 +81678,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.04,
@@ -81785,6 +82032,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.03,
@@ -82138,6 +82386,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.03,
@@ -82491,6 +82740,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.08,
           "impliedMargin": -11.38,
@@ -82848,6 +83098,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.11,
           "impliedMargin": -9.74,
@@ -83205,6 +83456,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -83552,6 +83804,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -83893,6 +84146,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -84228,6 +84482,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.85,
           "impliedMargin": 8.94,
@@ -84579,6 +84834,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.89,
           "impliedMargin": 11.45,
@@ -84930,6 +85186,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 15.35,
@@ -85281,6 +85538,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.49,
           "impliedMargin": -0.22,
@@ -85632,6 +85890,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.03,
@@ -85979,6 +86238,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.01,
@@ -86332,6 +86592,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.94,
           "impliedMargin": 12.82,
@@ -86683,6 +86944,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.91,
           "impliedMargin": 10.78,
@@ -87034,6 +87296,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.91,
           "impliedMargin": 11.61,
@@ -87385,6 +87648,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.27,
           "impliedMargin": -5.73,
@@ -87736,6 +88000,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.39,
           "impliedMargin": -2.47,
@@ -88087,6 +88352,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.06,
           "impliedMargin": -12.82,
@@ -88444,6 +88710,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.23,
           "impliedMargin": -6.85,
@@ -88795,6 +89062,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.16,
           "impliedMargin": -7.72,
@@ -89152,6 +89420,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.03,
@@ -89499,6 +89768,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -13.72,
@@ -89856,6 +90126,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -90209,6 +90480,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -13.72,
@@ -90566,6 +90838,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.13,
           "impliedMargin": -8.85,
@@ -90923,6 +91196,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.9,
           "impliedMargin": 11.93,
@@ -91274,6 +91548,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 12.56,
@@ -91625,6 +91900,7 @@
         },
         "candidateQualityAdjustment": 0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.76,
           "impliedMargin": 6.4,
@@ -91981,6 +92257,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.01,
@@ -92339,6 +92616,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.01,
@@ -92697,6 +92975,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.01,
@@ -93055,6 +93334,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.09,
           "impliedMargin": -10.78,
@@ -93417,6 +93697,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.01,
@@ -93775,6 +94056,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 11.38,
@@ -94131,6 +94413,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.08,
           "impliedMargin": -11.38,
@@ -94464,6 +94747,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.04,
@@ -94787,6 +95071,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.03,
@@ -95145,6 +95430,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.08,
           "impliedMargin": -12.56,
@@ -95507,6 +95793,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -15.14,
@@ -95869,6 +96156,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.07,
           "impliedMargin": -13.3,
@@ -96231,6 +96519,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.23,
           "impliedMargin": -6.21,
@@ -96593,6 +96882,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.04,
@@ -96951,6 +97241,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.07,
           "impliedMargin": -13.3,
@@ -97313,6 +97604,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.17,
           "impliedMargin": -8.15,
@@ -97675,6 +97967,7 @@
         },
         "candidateQualityAdjustment": 0.08,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.04,
@@ -98033,6 +98326,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -13.72,
@@ -98401,6 +98695,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -98765,6 +99060,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.1,
           "impliedMargin": -10.23,
@@ -99133,6 +99429,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.07,
           "impliedMargin": -12.05,
@@ -99501,6 +99798,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.12,
           "impliedMargin": -9.28,
@@ -99869,6 +100167,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.07,
           "impliedMargin": -12.05,
@@ -100237,6 +100536,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.93,
           "impliedMargin": 12.05,
@@ -100599,6 +100899,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -100963,6 +101264,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -101327,6 +101629,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -101691,6 +101994,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.06,
           "impliedMargin": -12.82,
@@ -102059,6 +102363,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.21,
           "impliedMargin": -6.17,
@@ -102427,6 +102732,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.07,
           "impliedMargin": -12.05,
@@ -102795,6 +103101,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.13,
           "impliedMargin": -8.85,
@@ -103163,6 +103470,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.47,
           "impliedMargin": -0.56,
@@ -103531,6 +103839,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.09,
@@ -103889,6 +104198,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.19,
           "impliedMargin": -6.75,
@@ -104257,6 +104567,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -104615,6 +104926,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -104979,6 +105291,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -105337,6 +105650,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -105701,6 +106015,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -105980,7 +106295,7 @@
       "congressionalMargin": 0,
       "fundamentalMargin": -14.7,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 73,
+      "kalshiPrice": 76,
       "demCandidate": "Katy Padilla Stout",
       "repCandidate": "Brandon Herrera",
       "fecDemCandidate": {
@@ -106015,11 +106330,11 @@
       "redistrictingNote": "Texas's 2025 map is treated as active for 2026 after the Supreme Court stayed the lower-court injunction.",
       "redistrictingOverride": false,
       "baselineRating": "Safe R",
-      "margin": -9.92,
-      "demProbability": 0.1114,
-      "repProbability": 0.8886,
+      "margin": -9.96,
+      "demProbability": 0.1104,
+      "repProbability": 0.8896,
       "winnerParty": "R",
-      "winnerProbability": 0.8886,
+      "winnerProbability": 0.8896,
       "error": 7.436,
       "competitive": false,
       "sourceInputs": {
@@ -106065,9 +106380,10 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
-          "demProbability": 0.27,
-          "impliedMargin": -4.77,
+          "demProbability": 0.24,
+          "impliedMargin": -5.53,
           "weight": 0.065
         },
         "demographicPull": {
@@ -106329,8 +106645,8 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.1114,
-          "rep": 0.8886
+          "dem": 0.1104,
+          "rep": 0.8896
         }
       ]
     },
@@ -106433,6 +106749,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.23,
           "impliedMargin": -5.68,
@@ -106801,6 +107118,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.11,
           "impliedMargin": -9.74,
@@ -107169,6 +107487,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.07,
           "impliedMargin": -12.05,
@@ -107537,6 +107856,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.12,
           "impliedMargin": -9.28,
@@ -107905,6 +108225,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.86,
           "impliedMargin": 9.33,
@@ -108267,6 +108588,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 13.72,
@@ -108629,6 +108951,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -108993,6 +109316,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.16,
           "impliedMargin": -7.72,
@@ -109361,6 +109685,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -109725,6 +110050,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -110089,6 +110415,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.73,
           "impliedMargin": 5.13,
@@ -110451,6 +110778,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.57,
           "impliedMargin": 1.45,
@@ -110813,6 +111141,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.15,
           "impliedMargin": -8.08,
@@ -111181,6 +111510,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -111545,6 +111875,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -111909,6 +112240,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.08,
           "impliedMargin": -12.56,
@@ -112265,6 +112597,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.12,
           "impliedMargin": -10.24,
@@ -112627,6 +112960,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.1,
           "impliedMargin": -11.3,
@@ -112989,6 +113323,7 @@
         },
         "candidateQualityAdjustment": -0.08,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -113318,6 +113653,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.03,
@@ -113635,6 +113971,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.46,
           "impliedMargin": -0.92,
@@ -113991,6 +114328,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.22,
           "impliedMargin": -7.94,
@@ -114347,6 +114685,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 15.14,
@@ -114691,6 +115030,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -115031,6 +115371,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.26,
           "impliedMargin": -5.62,
@@ -115393,6 +115734,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.14,
           "impliedMargin": -9.33,
@@ -115755,6 +116097,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.89,
           "impliedMargin": 12.98,
@@ -116111,6 +116454,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -116463,6 +116807,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.2,
           "impliedMargin": -7.13,
@@ -116825,6 +117170,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.93,
           "impliedMargin": 15.29,
@@ -117181,6 +117527,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -117533,6 +117880,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.86,
           "impliedMargin": 9.33,
@@ -117889,6 +118237,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 12.56,
@@ -118245,6 +118594,7 @@
         },
         "candidateQualityAdjustment": 0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.76,
           "impliedMargin": 7.39,
@@ -118601,6 +118951,7 @@
         },
         "candidateQualityAdjustment": -0.08,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -118965,6 +119316,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.26,
           "impliedMargin": -5.46,
@@ -119327,6 +119679,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -119679,6 +120032,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -120031,6 +120385,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.77,
           "impliedMargin": 7.12,
@@ -120387,6 +120742,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -120727,6 +121083,7 @@
         },
         "candidateQualityAdjustment": 0.44,
         "nominationAdjustment": 0.1,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -121062,6 +121419,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.07,
           "impliedMargin": -12.05,
@@ -121419,6 +121777,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -13.72,
@@ -121776,6 +122135,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.35,
           "impliedMargin": -3.64,
@@ -122127,6 +122487,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 15.14,
@@ -122478,6 +122839,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.3,
           "impliedMargin": -5.09,
@@ -122829,6 +123191,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.03,
@@ -123176,6 +123539,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.03,
@@ -123529,6 +123893,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.15,
           "impliedMargin": -8.92,
@@ -123886,6 +124251,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.04,
@@ -124239,6 +124605,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.22,
           "impliedMargin": -6.61,
@@ -124572,6 +124939,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.04,
@@ -124866,6 +125234,7 @@
         },
         "candidateQualityAdjustment": -0.44,
         "nominationAdjustment": -0.1,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.13,
           "impliedMargin": -11.53,
@@ -125193,6 +125562,7 @@
         },
         "candidateQualityAdjustment": -0.08,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.02,
@@ -125545,6 +125915,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.73,
           "impliedMargin": 5.46,
@@ -125901,6 +126272,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -13.72,
@@ -126263,6 +126635,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -126621,6 +126994,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.11,
           "impliedMargin": -9.74,
@@ -126983,6 +127357,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -16,
@@ -127339,6 +127714,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.86,
           "impliedMargin": 9.97,
@@ -127690,6 +128066,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.03,
@@ -128043,6 +128420,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.14,
           "impliedMargin": -8.46,
@@ -128400,6 +128778,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.05,
           "impliedMargin": -13.72,
@@ -128757,6 +129136,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.07,
           "impliedMargin": -12.05,
@@ -129114,6 +129494,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -129467,6 +129848,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.32,
           "impliedMargin": -4.12,
@@ -129830,6 +130212,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 12.56,
@@ -130187,6 +130570,7 @@
         },
         "candidateQualityAdjustment": 0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.88,
           "impliedMargin": 11.72,
@@ -130464,7 +130848,7 @@
       "congressionalMargin": -20.8,
       "fundamentalMargin": -20.3,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 84,
+      "kalshiPrice": 85,
       "demCandidate": "Christopher Lee James",
       "repCandidate": "Daniel Keenan",
       "fecDemCandidate": {
@@ -130544,6 +130928,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0,
@@ -130903,6 +131288,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.16,
           "impliedMargin": -10.45,
@@ -131260,6 +131646,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 15.14,
@@ -131617,6 +132004,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.2,
           "impliedMargin": -7.31,
@@ -131980,6 +132368,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.06,
           "impliedMargin": -14.15,
@@ -132348,6 +132737,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -132712,6 +133102,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 13.72,
@@ -133074,6 +133465,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -133438,6 +133830,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.09,
@@ -133796,6 +134189,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.14,
           "impliedMargin": -8.46,
@@ -134164,6 +134558,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.08,
@@ -134528,6 +134923,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 14.56,
@@ -134890,6 +135286,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.9,
           "impliedMargin": 10.23,
@@ -135167,7 +135564,7 @@
       "congressionalMargin": 0,
       "fundamentalMargin": 11.4,
       "rawMarginNote": "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
-      "kalshiPrice": 95,
+      "kalshiPrice": 99,
       "demCandidate": "Josh Harder",
       "repCandidate": "John McBride",
       "fecDemCandidate": {
@@ -135202,11 +135599,11 @@
       "redistrictingNote": "California's Proposition 50 map is treated as the 2026 baseline.",
       "redistrictingOverride": false,
       "baselineRating": "Likely D",
-      "margin": 16.61,
-      "demProbability": 0.9746,
-      "repProbability": 0.0254,
+      "margin": 16.76,
+      "demProbability": 0.9757,
+      "repProbability": 0.0243,
       "winnerParty": "D",
-      "winnerProbability": 0.9746,
+      "winnerProbability": 0.9757,
       "error": 7.831999999999999,
       "competitive": false,
       "sourceInputs": {
@@ -135252,11 +135649,8 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
-        "marketSignal": {
-          "demProbability": 0.95,
-          "impliedMargin": 14.88,
-          "weight": 0.065
-        },
+        "districtPolling": null,
+        "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.09,
           "demProfile": "demIncumbent",
@@ -135510,8 +135904,8 @@
         },
         {
           "date": "2026-06-19",
-          "dem": 0.9746,
-          "rep": 0.0254
+          "dem": 0.9757,
+          "rep": 0.0243
         }
       ]
     },
@@ -135614,6 +136008,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -135972,6 +136367,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -136336,6 +136732,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -136694,6 +137091,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.86,
           "impliedMargin": 10.72,
@@ -137056,6 +137454,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -137420,6 +137819,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 13.72,
@@ -137782,6 +138182,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.94,
           "impliedMargin": 12.82,
@@ -138144,6 +138545,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 13.72,
@@ -138506,6 +138908,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -138864,6 +139267,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -139222,6 +139626,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.08,
           "impliedMargin": -11.38,
@@ -139590,6 +139995,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.83,
           "impliedMargin": 8.67,
@@ -139952,6 +140358,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.15,
           "impliedMargin": -10.05,
@@ -140314,6 +140721,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.1,
           "impliedMargin": -10.23,
@@ -140682,6 +141090,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -141040,6 +141449,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.79,
           "impliedMargin": 7.27,
@@ -141402,6 +141812,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -141766,6 +142177,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.93,
           "impliedMargin": 13.41,
@@ -142128,6 +142540,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.9,
           "impliedMargin": 10.23,
@@ -142490,6 +142903,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -142848,6 +143262,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 13.72,
@@ -143210,6 +143625,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.09,
@@ -143568,6 +143984,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -143926,6 +144343,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.93,
           "impliedMargin": 13.39,
@@ -144288,6 +144706,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -144646,6 +145065,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.1,
@@ -145004,6 +145424,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.93,
           "impliedMargin": 12.05,
@@ -145366,6 +145787,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.93,
           "impliedMargin": 12.05,
@@ -145728,6 +146150,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.94,
           "impliedMargin": 13.71,
@@ -146090,6 +146513,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 12.7,
@@ -146452,6 +146876,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.01,
@@ -146816,6 +147241,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -147180,6 +147606,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.09,
@@ -147538,6 +147965,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -147896,6 +148324,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -148254,6 +148683,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.87,
           "impliedMargin": 10.71,
@@ -148616,6 +149046,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.87,
           "impliedMargin": 8.91,
@@ -148978,6 +149409,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.1,
@@ -149336,6 +149768,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.08,
@@ -149700,6 +150133,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.94,
           "impliedMargin": 13.75,
@@ -150062,6 +150496,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.95,
           "impliedMargin": 13.72,
@@ -150424,6 +150859,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -150782,6 +151218,7 @@
         },
         "candidateQualityAdjustment": 0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.79,
           "impliedMargin": 6.17,
@@ -151139,6 +151576,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.94,
           "impliedMargin": 14.15,
@@ -151490,6 +151928,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.93,
           "impliedMargin": 13.3,
@@ -151841,6 +152280,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.31,
           "impliedMargin": -4.67,
@@ -152192,6 +152632,7 @@
         },
         "candidateQualityAdjustment": -0.16,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.32,
           "impliedMargin": -3.95,
@@ -152549,6 +152990,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.2,
           "impliedMargin": -7.7,
@@ -152900,6 +153342,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.05,
@@ -153247,6 +153690,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -153594,6 +154038,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.27,
           "impliedMargin": -6.28,
@@ -153945,6 +154390,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.94,
           "impliedMargin": 14.15,
@@ -154296,6 +154742,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.08,
@@ -154643,6 +155090,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -154990,6 +155438,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 12.56,
@@ -155341,6 +155790,7 @@
         },
         "candidateQualityAdjustment": 0.34,
         "nominationAdjustment": 0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.92,
           "impliedMargin": 14.52,
@@ -155694,6 +156144,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.26,
           "impliedMargin": -5.96,
@@ -156046,6 +156497,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.05,
@@ -156394,6 +156846,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.23,
           "impliedMargin": -6.85,
@@ -156746,6 +157199,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.36,
           "impliedMargin": -3.23,
@@ -157098,6 +157552,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.19,
           "impliedMargin": -9.04,
@@ -157455,6 +157910,7 @@
         },
         "candidateQualityAdjustment": -0.34,
         "nominationAdjustment": -0.05,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.33,
           "impliedMargin": -4.41,
@@ -157807,6 +158263,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.34,
           "impliedMargin": -3.69,
@@ -158159,6 +158616,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": -0.01,
@@ -158512,6 +158970,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.15,
           "impliedMargin": -10.05,
@@ -158870,6 +159329,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.27,
           "impliedMargin": -5.73,
@@ -159222,6 +159682,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.39,
           "impliedMargin": -2.47,
@@ -159574,6 +160035,7 @@
         },
         "candidateQualityAdjustment": 0,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": null,
         "demographicPull": {
           "adjustment": 0.07,
@@ -159933,6 +160395,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.22,
           "impliedMargin": -7.94,
@@ -160285,6 +160748,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.3,
           "impliedMargin": -5.09,
@@ -160637,6 +161101,7 @@
         },
         "candidateQualityAdjustment": -0.19,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.16,
           "impliedMargin": -10.45,
@@ -160995,6 +161460,7 @@
         },
         "candidateQualityAdjustment": -0.15,
         "nominationAdjustment": 0,
+        "districtPolling": null,
         "marketSignal": {
           "demProbability": 0.49,
           "impliedMargin": -0.22,

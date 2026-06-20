@@ -712,6 +712,118 @@ function firstNumberAfter(text, pattern) {
   return match ? Number(match[1]) : null;
 }
 
+function pollsterKey(value) {
+  return String(value || "unknown")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&[a-z#0-9]+;/gi, " ")
+    .replace(/[^a-z0-9 ]/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase() || "unknown";
+}
+
+function housePollPriority(poll) {
+  const source = String(poll.source || "").toLowerCase();
+  if (source.includes("realclear")) return 5;
+  if (source.includes("270towin")) return 4;
+  if (source.includes("race to the wh")) return 3;
+  return 1;
+}
+
+function dedupeHousePolls(polls = []) {
+  const rows = new Map();
+  for (const poll of polls) {
+    if (!poll || !Number.isFinite(poll.margin)) continue;
+    const key = `${pollsterKey(poll.pollster)}|${poll.endDate || poll.days || "unknown"}`;
+    const existing = rows.get(key);
+    if (!existing || housePollPriority(poll) > housePollPriority(existing)) rows.set(key, poll);
+  }
+  return [...rows.values()];
+}
+
+function housePollSignal(polls = []) {
+  const modelDate = new Date("2026-06-19T12:00:00Z");
+  const weighted = dedupeHousePolls(polls).reduce((total, poll) => {
+    const date = new Date(`${poll.endDate}T12:00:00Z`);
+    if (!poll.endDate || Number.isNaN(date.getTime()) || (modelDate - date) / 86400000 > 180) return total;
+    const age = Math.max(0, (modelDate - date) / 86400000);
+    const recency = Math.pow(.5, age / 70);
+    const population = String(poll.population || "").toLowerCase();
+    const populationWeight = population.includes("likely") || population === "lv" ? 1.08 : population.includes("registered") || population === "rv" ? 1 : .88;
+    const sampleWeight = Number.isFinite(poll.sampleSize) ? clamp(Math.sqrt(poll.sampleSize) / 32, .62, 1.35) : .82;
+    const repeatedPollster = total.pollsters[pollsterKey(poll.pollster)] || 0;
+    const weight = recency * populationWeight * sampleWeight * (.72 + housePollPriority(poll) * .06) / Math.sqrt(1 + repeatedPollster);
+    total.pollsters[pollsterKey(poll.pollster)] = repeatedPollster + weight;
+    total.margin += poll.margin * weight;
+    total.weight += weight;
+    total.count += 1;
+    return total;
+  }, { margin: 0, weight: 0, count: 0, pollsters: {} });
+  if (!weighted.weight) return null;
+  const pollsters = Object.keys(weighted.pollsters).length;
+  return {
+    margin: weighted.margin / weighted.weight,
+    pollCount: weighted.count,
+    pollsters,
+    totalWeight: weighted.weight,
+    blendWeight: clamp(.08 + Math.log1p(weighted.weight) * .055 + pollsters * .018, .08, .28)
+  };
+}
+
+function parseHousePollDate(lines, start) {
+  for (let index = start; index < Math.min(lines.length, start + 18); index += 1) {
+    const match = lines[index].match(/\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\.?\s+\d{1,2}(?:\s*[-–]\s*\d{1,2})?(?:,?\s*2026)?\b/i);
+    if (!match) continue;
+    const normalized = match[0].replace(/\s*[-–]\s*\d{1,2}/, "").replace(/,?\s*2026/i, "") + " 2026";
+    const date = new Date(normalized);
+    if (!Number.isNaN(date.getTime())) return date.toISOString().slice(0, 10);
+  }
+  return null;
+}
+
+function parseHousePollReferences(html, source, districts) {
+  if (!html) return {};
+  const lines = htmlToLines(html);
+  const byDistrict = {};
+  for (let index = 0; index < lines.length; index += 1) {
+    const heading = lines[index];
+    const districtMatch = heading.match(/\b([A-Z]{2})\s*[- ]\s*(AL|\d{1,2})\b/i);
+    if (!districtMatch || !/house|district|congress/i.test(heading)) continue;
+    const id = `${districtMatch[1].toUpperCase()}-${districtMatch[2].toUpperCase() === "AL" ? "AL" : String(Number(districtMatch[2])).padStart(2, "0")}`;
+    const district = districts.find((item) => item.id === id);
+    if (!district) continue;
+    const window = lines.slice(index, index + 22).join(" ");
+    const demLast = String(district.demCandidate || "").split(/\s+/).at(-1).replace(/[^a-z]/gi, "");
+    const repLast = String(district.repCandidate || "").split(/\s+/).at(-1).replace(/[^a-z]/gi, "");
+    const spread = window.match(/([A-Za-z.'-]+)\s*\+\s*(\d+(?:\.\d+)?)/);
+    if (!spread || !demLast || !repLast) continue;
+    const leading = spread[1].toLowerCase();
+    const side = leading.includes(demLast.toLowerCase()) ? "D" : leading.includes(repLast.toLowerCase()) ? "R" : null;
+    if (!side) continue;
+    const endDate = parseHousePollDate(lines, index);
+    if (!endDate) continue;
+    const sampleMatch = window.match(/([\d,]+)\s*(?:LV|RV|adults?|voters?)/i);
+    byDistrict[id] ||= [];
+    byDistrict[id].push({
+      margin: side === "D" ? Number(spread[2]) : -Number(spread[2]),
+      source,
+      pollster: lines[index + 1] || source,
+      endDate,
+      sampleSize: sampleMatch ? Number(sampleMatch[1].replace(/,/g, "")) : null,
+      population: /\bLV\b|likely voters/i.test(window) ? "lv" : /\bRV\b|registered voters/i.test(window) ? "rv" : "a"
+    });
+  }
+  return byDistrict;
+}
+
+function mergeDistrictPollSources(...sources) {
+  const merged = {};
+  for (const source of sources) {
+    for (const [id, polls] of Object.entries(source || {})) merged[id] = [...(merged[id] || []), ...polls];
+  }
+  return Object.fromEntries(Object.entries(merged).map(([id, polls]) => [id, dedupeHousePolls(polls)]));
+}
+
 function toNumber(value) {
   const number = Number(String(value ?? "").replace(/[$,%]/g, "").trim());
   return Number.isFinite(number) ? number : null;
@@ -755,7 +867,7 @@ function parseCsv(text) {
 
 async function fetchHouseSources() {
   const status = { checkedAt: new Date().toISOString() };
-  const [cookHtml, insideHtml, mapHtml, pollingHtml, raceToTheWhHouse, raceToTheWhGeneric, realClearGeneric, latestHousePolls, censusHtml, fec, genericPolling] = await Promise.all([
+  const [cookHtml, insideHtml, mapHtml, pollingHtml, raceToTheWhHouse, raceToTheWhGeneric, realClearGeneric, latestHousePolls, raceToTheWhAllPolls, censusHtml, fec, genericPolling] = await Promise.all([
     fetchText("https://www.cookpolitical.com/ratings/house-race-ratings", "cookHouseRatings", status),
     fetchText("https://www.270towin.com/2026-house-election/table/inside-elections-2026-house-ratings", "insideElections270ToWinRatings", status),
     fetchText("https://www.270towin.com/2026-house-election/inside-elections-2026-house-ratings", "twoSeventyToWinHouseMapData", status),
@@ -764,12 +876,27 @@ async function fetchHouseSources() {
     fetchText("https://www.racetothewh.com/polls/genericballot", "raceToTheWhGenericBallot", status, { timeoutMs: 12000 }),
     fetchText("https://www.realclearpolitics.com/epolls/other/2026_generic_congressional_vote-8670.html", "realClearPoliticsGenericBallot", status, { timeoutMs: 12000 }),
     fetchText("https://www.realclearpolling.com/latest-polls/house", "realClearPollingHousePolls", status, { timeoutMs: 12000 }),
+    fetchText("https://www.racetothewh.com/allpolls", "raceToTheWhAllPolls", status, { timeoutMs: 12000 }),
     fetchText("https://www.census.gov/geographies/mapping-files/2025/geo/carto-boundary-file.html", "censusDistrictBoundaries", status, { timeoutMs: 12000 }),
     fetchHouseFec(status),
     fetchGenericPolling(status)
   ]);
   const mapDistricts = parse270MapDistricts(mapHtml);
   const cookDistricts = parseCookDistricts(cookHtml);
+  const pollingDistricts = mapDistricts.length ? mapDistricts : cookDistricts;
+  const districtPolls = mergeDistrictPollSources(
+    parseHousePollReferences(pollingHtml, "270toWin", pollingDistricts),
+    parseHousePollReferences(latestHousePolls, "RealClearPolling", pollingDistricts),
+    parseHousePollReferences(raceToTheWhHouse, "Race to the WH", pollingDistricts),
+    parseHousePollReferences(raceToTheWhAllPolls, "Race to the WH", pollingDistricts)
+  );
+  status.houseDistrictPolls = {
+    ok: true,
+    status: "parsed",
+    districts: Object.keys(districtPolls).length,
+    polls: Object.values(districtPolls).reduce((sum, polls) => sum + polls.length, 0),
+    note: "Only structured/current district matchups are blended; generic ballot data remains a separate national signal."
+  };
   return {
     status,
     cookDistricts,
@@ -777,6 +904,7 @@ async function fetchHouseSources() {
     insideRatings: parseInsideRatings(insideHtml),
     fec,
     genericPolling,
+    districtPolls,
     housePollingReferenceReachable: Boolean(pollingHtml),
     raceToTheWhHouseReachable: Boolean(raceToTheWhHouse),
     raceToTheWhGenericReachable: Boolean(raceToTheWhGeneric),
@@ -803,7 +931,11 @@ function adjustedDistricts(sourceData) {
     const demographicPull = houseDemographicPull(district, challengerStrength);
     const candidateQualityAdjustment = houseCandidateQualityAdjustment(district, nomination);
     const nominationAdjustment = nomination.marginAdjustment * MODEL_WEIGHTS.nominationCertainty;
-    const preMarketMargin = baselineMargin + genericShift + nationalFinanceShift + MODEL_WEIGHTS.historicalMidterm + incumbencyAdjustment + openPenalty + demographicPull.adjustment + financeSignal * MODEL_WEIGHTS.finance + candidateQualityAdjustment + nominationAdjustment;
+    const districtPollSignal = housePollSignal(sourceData.districtPolls?.[district.id] || []);
+    const districtPollingAdjustment = districtPollSignal
+      ? clamp(districtPollSignal.margin * districtPollSignal.blendWeight, -3.4, 3.4)
+      : 0;
+    const preMarketMargin = baselineMargin + genericShift + nationalFinanceShift + MODEL_WEIGHTS.historicalMidterm + incumbencyAdjustment + openPenalty + demographicPull.adjustment + financeSignal * MODEL_WEIGHTS.finance + candidateQualityAdjustment + nominationAdjustment + districtPollingAdjustment;
     const provisionalError = houseRaceError(district, contextMargin, nomination);
     const marketSignal = houseMarketSignal(district, provisionalError);
     const rawMargin = marketSignal
@@ -837,6 +969,11 @@ function adjustedDistricts(sourceData) {
         nomination,
         candidateQualityAdjustment: Number(candidateQualityAdjustment.toFixed(2)),
         nominationAdjustment: Number(nominationAdjustment.toFixed(2)),
+        districtPolling: districtPollSignal ? {
+          ...districtPollSignal,
+          adjustment: Number(districtPollingAdjustment.toFixed(2)),
+          polls: (sourceData.districtPolls?.[district.id] || []).slice(0, 8).map(({ source, pollster, endDate, margin, sampleSize, population }) => ({ source, pollster, endDate, margin, sampleSize, population }))
+        } : null,
         marketSignal,
         demographicPull,
         challengerStrength,
@@ -1456,6 +1593,11 @@ async function writeHouseForecast() {
       fecDistricts: Object.keys(sourceData.fec).filter((id) => id !== "__national").length,
       nationalFinance: sourceData.fec.__national || null,
       genericPolling: sourceData.genericPolling,
+      districtPolling: {
+        districts: Object.keys(sourceData.districtPolls || {}).length,
+        polls: Object.values(sourceData.districtPolls || {}).reduce((sum, polls) => sum + polls.length, 0),
+        note: "Race-level polls are blended only when a current, structured matchup can be matched to the district and both major-party candidates. Generic ballot remains separate."
+      },
       housePollingReferenceReachable: sourceData.housePollingReferenceReachable,
       raceToTheWhHouseReachable: sourceData.raceToTheWhHouseReachable,
       raceToTheWhGenericReachable: sourceData.raceToTheWhGenericReachable,

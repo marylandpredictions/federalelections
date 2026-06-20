@@ -232,7 +232,9 @@ const STATE_ELASTICITY = {
 };
 
 const CANDIDATE_HISTORY = {
-  AK: 1.6, // Peltola has a demonstrated crossover vote profile in Alaska.
+  // Keep demonstrated crossover appeal distinct from the broader candidate
+  // profile term below. These values previously double-counted the same case.
+  AK: .85,
   GA: .7,
   ME: -1.25, // Collins' historical overperformance is Republican-favorable.
   MI: .25,
@@ -241,7 +243,7 @@ const CANDIDATE_HISTORY = {
   NE: 1.45,
   NH: .35,
   OH: 1.15,
-  TX: .95, // Paxton's nomination adds general-election drag versus a generic Texas Republican.
+  TX: .5, // Paxton's nomination adds drag, but not enough to erase Texas fundamentals by itself.
   VA: .55
 };
 
@@ -250,7 +252,7 @@ const INDEPENDENT_CONTROL_FINANCE = {
 };
 
 const RCV_STATES = {
-  AK: { transferMean: 1.0, transferSd: 1.55, exhaustedSd: .75 },
+  AK: { transferMean: .55, transferSd: 1.55, exhaustedSd: .75 },
   ME: { transferMean: .55, transferSd: .9, exhaustedSd: .45 }
 };
 
@@ -437,7 +439,7 @@ const ARCHIVED_SENATE_BACKTESTS = [
 
 const races = [
   { state: "AL", seat: "Open seat", incumbent: "Tommy Tuberville", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -15, pastSenate: -16, money: -1, candidate: -.9, approval: -.85, primary: "resolved", primaryDate: "2026-06-16", nomination: .1, independent: "none", polls: [], note: "Moore is nominated on the Republican side; Alabama remains a heavily Republican open-seat race." },
-  { state: "AK", seat: "Dan Sullivan", incumbent: "Dan Sullivan", hold: "R", caucusTarget: "D", rating: "Toss-up", pvi: -8, pastSenate: -12, money: .3, candidate: 1.2, approval: .1, primary: "unresolved", primaryDate: "2026-08-18", nomination: .6, independent: "none", challengerStrength: "majorOffice", polls: [[-150, 31], [-105, 36], [-62, 42], [-20, 47]], note: "Alaska uses a nonpartisan top-four primary and ranked-choice general election, so the extra uncertainty is election-format risk rather than a Nebraska-style independent factor." },
+  { state: "AK", seat: "Dan Sullivan", incumbent: "Dan Sullivan", hold: "R", caucusTarget: "D", rating: "Toss-up", pvi: -8, pastSenate: -12, money: .3, candidate: .75, approval: .1, primary: "unresolved", primaryDate: "2026-08-18", nomination: .6, independent: "none", challengerStrength: "majorOffice", polls: [[-150, 31], [-105, 36], [-62, 42], [-20, 47]], note: "Alaska uses a nonpartisan top-four primary and ranked-choice general election, so the extra uncertainty is election-format risk rather than a Nebraska-style independent factor." },
   { state: "AR", seat: "Tom Cotton", incumbent: "Tom Cotton", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -18, pastSenate: -24, money: -1, candidate: -1, approval: -1, primary: "resolved", primaryDate: "2026-03-03", nomination: .05, independent: "none", polls: [], note: "A deeply Republican state with no normal Democratic path." },
   { state: "CO", seat: "John Hickenlooper", incumbent: "John Hickenlooper", hold: "D", caucusTarget: "D", rating: "Safe D", pvi: 8, pastSenate: 12, money: 1, candidate: 1, approval: .5, primary: "unresolved", primaryDate: "2026-06-30", nomination: .15, independent: "none", polls: [], note: "Colorado starts outside the serious battleground set." },
   { state: "DE", seat: "Chris Coons", incumbent: "Chris Coons", hold: "D", caucusTarget: "D", rating: "Safe D", pvi: 14, pastSenate: 16, money: 1, candidate: 1, approval: .6, primary: "unresolved", primaryDate: "2026-09-15", nomination: .12, independent: "none", polls: [], note: "Safe Democratic hold under ordinary conditions." },
@@ -467,7 +469,7 @@ const races = [
   { state: "SC", seat: "Lindsey Graham", incumbent: "Lindsey Graham", hold: "R", caucusTarget: "D", rating: "Likely R", pvi: -8, pastSenate: -10, money: -.4, candidate: -.2, approval: -.4, primary: "unresolved", primaryDate: "2026-06-09", nomination: .5, independent: "none", polls: [], note: "Long-shot Democratic upside, but not a core path." },
   { state: "SD", seat: "Mike Rounds", incumbent: "Mike Rounds", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -16, pastSenate: -20, money: -1, candidate: -1, approval: -.8, primary: "unresolved", primaryDate: "2026-06-02", nomination: .1, independent: "independent longshot, caucus not credited", polls: [], note: "Republican lock in the baseline." },
   { state: "TN", seat: "Bill Hagerty", incumbent: "Bill Hagerty", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -14, pastSenate: -16, money: -1, candidate: -1, approval: -.8, primary: "unresolved", primaryDate: "2026-08-06", nomination: .2, independent: "none", polls: [], note: "Tail risk only." },
-  { state: "TX", seat: "Open seat", incumbent: "John Cornyn", hold: "R", caucusTarget: "D", rating: "Tilt R", pvi: -5, pastSenate: -5, money: .85, candidate: 1.05, approval: -.65, primary: "resolved", primaryDate: "2026-03-03", nomination: .1, independent: "none", polls: [[-150, 38], [-92, 41], [-48, 44], [-13, 46]], note: "Paxton is treated as the Republican nominee; scandals, fundraising drag, and general-election polling make him weaker than a generic Texas Republican." },
+  { state: "TX", seat: "Open seat", incumbent: "John Cornyn", hold: "R", caucusTarget: "D", rating: "Tilt R", pvi: -5, pastSenate: -5, money: .7, candidate: .65, approval: -.65, primary: "resolved", primaryDate: "2026-03-03", nomination: .1, independent: "none", polls: [[-150, 38], [-92, 41], [-48, 44], [-13, 46]], note: "Paxton is treated as the Republican nominee; scandals, fundraising drag, and general-election polling make him weaker than a generic Texas Republican." },
   { state: "VA", seat: "Mark Warner", incumbent: "Mark Warner", hold: "D", caucusTarget: "D", rating: "Likely D", pvi: 6, pastSenate: 9, money: 1, candidate: 1, approval: .5, primary: "unresolved", primaryDate: "2026-08-04", nomination: .2, independent: "none", polls: [], note: "Usually not central unless the environment turns hard red." },
   { state: "WV", seat: "Shelley Moore Capito", incumbent: "Shelley Moore Capito", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -23, pastSenate: -28, money: -1, candidate: -1, approval: -.9, primary: "resolved", primaryDate: "2026-05-12", nomination: .05, independent: "none", polls: [], note: "The least Democratic state on the board." },
   { state: "WY", seat: "Open seat", incumbent: "Cynthia Lummis", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -26, pastSenate: -32, money: -1, candidate: -1, approval: -1, primary: "unresolved", primaryDate: "2026-08-18", nomination: .15, independent: "none", polls: [], note: "Republican floor seat." }
@@ -704,9 +706,59 @@ function calibrateProbability(rawProbability) {
 function sourceQualityForPoll(poll) {
   if (Array.isArray(poll)) return .42;
   const source = String(poll.source || "").toLowerCase();
+  if (source.includes("legacy")) return .26;
   if (source.includes("realclear")) return .92;
   if (source.includes("270towin")) return .84;
+  if (source.includes("electoral-vote")) return .8;
+  if (source.includes("race to the wh")) return .78;
   return .78;
+}
+
+function normalizedPollsterName(value) {
+  return decodeHtml(String(value || ""))
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/[^a-z0-9 ]/gi, "")
+    .trim()
+    .toLowerCase() || "unknown";
+}
+
+function pollSourcePriority(poll) {
+  const source = String(poll?.source || "").toLowerCase();
+  if (source.includes("realclear")) return 5;
+  if (source.includes("270towin")) return 4;
+  if (source.includes("electoral-vote")) return 3;
+  if (source.includes("race to the wh")) return 2;
+  if (source.includes("legacy")) return 0;
+  return 1;
+}
+
+function normalizeRacePolls(polls = []) {
+  const deduped = new Map();
+  for (let index = 0; index < polls.length; index += 1) {
+    const raw = polls[index];
+    const poll = Array.isArray(raw)
+      ? { days: raw[0], margin: raw[1], source: "Legacy model input", pollster: "legacy model input", legacy: true }
+      : { ...raw };
+    if (!Number.isFinite(poll.margin)) continue;
+    const dateKey = poll.endDate || `day-${poll.days ?? "unknown"}`;
+    const key = `${normalizedPollsterName(poll.pollster)}|${dateKey}`;
+    const existing = deduped.get(key);
+    if (!existing || pollSourcePriority(poll) > pollSourcePriority(existing)) deduped.set(key, poll);
+  }
+  return [...deduped.values()];
+}
+
+function selectCurrentRacePolls(legacyPolls, fetchedPolls) {
+  const modelDate = new Date(`${MODEL_DATE_KEY}T12:00:00Z`);
+  const current = normalizeRacePolls(fetchedPolls).filter((poll) => {
+    if (!poll.endDate) return false;
+    const date = new Date(`${poll.endDate}T12:00:00Z`);
+    return !Number.isNaN(date.getTime()) && (modelDate - date) / 86400000 <= 210;
+  });
+  // The built-in arrays are a continuity fallback, never a second polling
+  // average beside live rows. Keeping both used to double-count stale polls.
+  return current.length ? current : normalizeRacePolls(legacyPolls);
 }
 
 function populationWeightForPoll(population) {
@@ -733,7 +785,7 @@ function pollWeightMetrics(race) {
     const age = Math.max(0, -(days || 0));
     const recency = Math.pow(.5, age / 90);
     const providedWeight = Array.isArray(poll) ? 1 : clamp(poll.weight || 1, .35, 1.25);
-    const pollster = Array.isArray(poll) ? `manual-${sum.count}` : String(poll.pollster || poll.source || "unknown");
+    const pollster = normalizedPollsterName(Array.isArray(poll) ? "legacy model input" : poll.pollster || poll.source || "unknown");
     const repeatWeight = 1 / Math.sqrt(1 + (pollsterWeights[pollster] || 0));
     const quality = sourceQualityForPoll(poll) * populationWeightForPoll(poll.population) * sampleWeightForPoll(poll.sampleSize);
     const weight = recency * providedWeight * quality * repeatWeight;
@@ -2091,10 +2143,11 @@ async function fetchPollingReferencePages(status) {
     fetchText("https://electoral-vote.com/evp2026/Senate/senate_polls.csv", "electoralVoteSenatePolls", status, { timeoutMs: 12000 }),
     fetchText("https://uspollingdata.com/polls/senate-polling/", "usPollingDataSenatePolling", status, { timeoutMs: 12000 })
   ]);
+  const electoralVoteByState = parseElectoralVoteSenatePolls(electoralVoteCsv);
   if (electoralVoteCsv && status.electoralVoteSenatePolls) {
     const rows = parseCsv(electoralVoteCsv);
     status.electoralVoteSenatePolls.rows = rows.length;
-    status.electoralVoteSenatePolls.currentCycleRows = rows.filter((row) => !/^Election/i.test(row.Pollster || "")).length;
+    status.electoralVoteSenatePolls.usablePolls = Object.values(electoralVoteByState).reduce((sum, polls) => sum + polls.length, 0);
   }
   if (usPollingDataSenate && status.usPollingDataSenatePolling) {
     status.usPollingDataSenatePolling.hasSenateTable = /Competitive Senate Races/i.test(usPollingDataSenate);
@@ -2119,13 +2172,45 @@ async function fetchPollingReferencePages(status) {
     },
     electoralVote: {
       senatePollCsvReachable: Boolean(electoralVoteCsv),
-      note: "Downloadable Senate polling CSV is tracked. It is only blended when current-cycle non-election poll rows are present."
+      usablePolls: Object.values(electoralVoteByState).reduce((sum, polls) => sum + polls.length, 0),
+      note: "Downloadable Senate polling CSV is normalized and blended only for current-cycle non-election rows that match the race ledger."
     },
     usPollingData: {
       senatePollingReachable: Boolean(usPollingDataSenate),
       note: "Tracked as a public polling reference. Senate table is not blended when race/candidate ledger conflicts are detected."
-    }
+    },
+    electoralVoteByState
   };
+}
+
+function parseElectoralVoteSenatePolls(text) {
+  if (!text) return {};
+  const rows = parseCsv(text);
+  const byState = {};
+  for (const row of rows) {
+    const stateName = String(row.State || row.state || "").trim();
+    const state = Object.entries(STATE_NAMES).find(([, name]) => name.toLowerCase() === stateName.toLowerCase())?.[0];
+    const pollster = String(row.Pollster || row.pollster || "").trim();
+    const dem = toNumber(row.Dem || row.dem);
+    const rep = toNumber(row.GOP || row.Rep || row.rep);
+    const dateText = String(row.Date || row.date || "").trim();
+    const parsedDate = new Date(`${dateText} 2026`);
+    if (!state || /^election/i.test(pollster) || !Number.isFinite(dem) || !Number.isFinite(rep) || Number.isNaN(parsedDate.getTime())) continue;
+    const endDate = parsedDate.toISOString().slice(0, 10);
+    const days = Math.min(0, Math.round((new Date(`${endDate}T12:00:00Z`) - new Date(`${MODEL_DATE_KEY}T12:00:00Z`)) / 86400000));
+    byState[state] ||= [];
+    byState[state].push({
+      days,
+      margin: dem - rep,
+      source: "Electoral-Vote",
+      pollster,
+      endDate,
+      title: `${stateName} Senate`,
+      result: `${dem} / ${rep}`,
+      weight: .8
+    });
+  }
+  return byState;
 }
 
 async function fetchAllSources() {
@@ -2182,7 +2267,12 @@ function applySourceInputs(baseRaces, sourceData) {
     let money = race.money;
     let pastSenate = race.pastSenate;
     let pvi = race.pvi;
-    let polls = race.polls;
+    const fetchedPolls = [
+      ...(sourceData?.realClearPolling?.byState?.[race.state] || []),
+      ...(sourceData?.twoSeventyToWin?.byState?.[race.state] || []),
+      ...(sourceData?.pollingReferences?.electoralVoteByState?.[race.state] || [])
+    ];
+    let polls = selectCurrentRacePolls(race.polls, fetchedPolls);
     let nationalPolling = 0;
 
     if (fec) {
@@ -2235,7 +2325,6 @@ function applySourceInputs(baseRaces, sourceData) {
 
     if (sourceData?.realClearPolling?.byState?.[race.state]?.length) {
       const rcpPolls = sourceData.realClearPolling.byState[race.state];
-      polls = [...polls, ...rcpPolls];
       sourceInputs.realClearPolling = {
         polls: rcpPolls.length,
         recent: rcpPolls.slice(0, 5).map(({ pollster, endDate, margin, title, result, spread }) => ({ pollster, endDate, margin, title, result, spread }))
@@ -2243,12 +2332,25 @@ function applySourceInputs(baseRaces, sourceData) {
     }
     if (sourceData?.twoSeventyToWin?.byState?.[race.state]?.length) {
       const towinPolls = sourceData.twoSeventyToWin.byState[race.state];
-      polls = [...polls, ...towinPolls];
       sourceInputs.twoSeventyToWin = {
         polls: towinPolls.length,
         recent: towinPolls.slice(0, 5).map(({ pollster, endDate, margin, title, result, spread, sampleSize, population }) => ({ pollster, endDate, margin, title, result, spread, sampleSize, population }))
       };
     }
+
+    if (sourceData?.pollingReferences?.electoralVoteByState?.[race.state]?.length) {
+      const electoralVotePolls = sourceData.pollingReferences.electoralVoteByState[race.state];
+      sourceInputs.electoralVote = {
+        polls: electoralVotePolls.length,
+        recent: electoralVotePolls.slice(0, 5).map(({ pollster, endDate, margin, title, result }) => ({ pollster, endDate, margin, title, result }))
+      };
+    }
+    sourceInputs.pollingLedger = {
+      livePolls: normalizeRacePolls(fetchedPolls).length,
+      usedPolls: polls.length,
+      legacyFallback: !normalizeRacePolls(fetchedPolls).length,
+      sources: [...new Set(polls.map((poll) => Array.isArray(poll) ? "Legacy model input" : poll.source || "unknown"))]
+    };
 
     return { ...race, money, pastSenate, pvi, polls, nationalPolling: nationalPolling + nationalFinance, sourceInputs };
   });
