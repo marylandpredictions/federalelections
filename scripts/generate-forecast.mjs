@@ -714,6 +714,21 @@ function sourceQualityForPoll(poll) {
   return .78;
 }
 
+function pollsterReliabilityForPoll(poll) {
+  const pollster = normalizedPollsterName(poll.pollster || poll.source);
+  if (/siena|marist|quinnipiac|yougov|ipsos|emerson|morning consult|university of|college|research center/.test(pollster)) return .94;
+  if (/surveyusa|public policy polling|ssrs|data for progress|echelon|quantus|coefficient/.test(pollster)) return .84;
+  if (/internal|campaign|party|pac|candidate/.test(pollster)) return .56;
+  return .74;
+}
+
+function pollingHalfLifeDays() {
+  const days = Math.max(0, daysUntil("2026-11-03"));
+  // Poll decay becomes materially steeper as Election Day approaches. This
+  // avoids treating a spring poll as a near-equal observation in November.
+  return clamp(28 + days * .18, 32, 85);
+}
+
 function normalizedPollsterName(value) {
   return decodeHtml(String(value || ""))
     .replace(/<[^>]+>/g, " ")
@@ -777,25 +792,28 @@ function sampleWeightForPoll(sampleSize) {
 function pollWeightMetrics(race) {
   if (!race.polls.length) return null;
   const pollsterWeights = {};
+  const halfLife = pollingHalfLifeDays();
   const weighted = race.polls.reduce((sum, poll) => {
     const days = Array.isArray(poll) ? poll[0] : poll.days;
     const rawMargin = Array.isArray(poll) ? poll[1] : poll.margin;
     const margin = Math.abs(rawMargin) > 20 ? (rawMargin - 50) / 2 : rawMargin;
     if (!Number.isFinite(margin)) return sum;
     const age = Math.max(0, -(days || 0));
-    const recency = Math.pow(.5, age / 90);
+    const recency = Math.pow(.5, age / halfLife);
     const providedWeight = Array.isArray(poll) ? 1 : clamp(poll.weight || 1, .35, 1.25);
     const pollster = normalizedPollsterName(Array.isArray(poll) ? "legacy model input" : poll.pollster || poll.source || "unknown");
     const repeatWeight = 1 / Math.sqrt(1 + (pollsterWeights[pollster] || 0));
-    const quality = sourceQualityForPoll(poll) * populationWeightForPoll(poll.population) * sampleWeightForPoll(poll.sampleSize);
+    const partisanPenalty = poll.partisan || poll.internal ? .72 : 1;
+    const quality = sourceQualityForPoll(poll) * pollsterReliabilityForPoll(poll) * populationWeightForPoll(poll.population) * sampleWeightForPoll(poll.sampleSize) * partisanPenalty;
     const weight = recency * providedWeight * quality * repeatWeight;
     pollsterWeights[pollster] = (pollsterWeights[pollster] || 0) + weight;
     return {
       value: sum.value + margin * weight,
+      square: sum.square + margin * margin * weight,
       weight: sum.weight + weight,
       count: sum.count + 1
     };
-  }, { value: 0, weight: 0, count: 0 });
+  }, { value: 0, square: 0, weight: 0, count: 0 });
   if (!weighted.weight) return null;
   const pollsters = Object.keys(pollsterWeights).length;
   const blendWeight = clamp(
@@ -805,12 +823,16 @@ function pollWeightMetrics(race) {
     MODEL_WEIGHTS.racePollsBase,
     MODEL_WEIGHTS.racePollsCap
   );
+  const margin = weighted.value / weighted.weight;
+  const disagreement = Math.sqrt(Math.max(0, weighted.square / weighted.weight - margin * margin));
   return {
-    margin: weighted.value / weighted.weight,
+    margin,
     totalWeight: weighted.weight,
     pollCount: weighted.count,
     pollsters,
-    blendWeight
+    blendWeight,
+    disagreement: Number(disagreement.toFixed(2)),
+    recencyHalfLifeDays: Number(halfLife.toFixed(1))
   };
 }
 
@@ -1188,7 +1210,9 @@ function senateRaceError(race, fundamentals, pollSignal, uncertainty) {
   const pollingCertainty = pollSignal
     ? Math.min(.75, (pollSignal.blendWeight || 0) * 2.35 + Math.log1p(pollSignal.pollCount || 0) * .08)
     : 0;
-  return clamp(8.2 - structuralCertainty - pollingCertainty + primaryRisk(race) + uncertainty.extraError, 4.8, 12);
+  const disagreementPenalty = pollSignal ? Math.min(1.4, (pollSignal.disagreement || 0) * .18) : 0;
+  const calendarUncertainty = clamp(daysUntil("2026-11-03") / 306, 0, 1) * .65;
+  return clamp(8.2 - structuralCertainty - pollingCertainty + disagreementPenalty + calendarUncertainty + primaryRisk(race) + uncertainty.extraError, 4.8, 12);
 }
 
 function ratingFromProbability(probability, margin) {

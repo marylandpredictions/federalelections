@@ -743,11 +743,12 @@ function dedupeHousePolls(polls = []) {
 
 function housePollSignal(polls = []) {
   const modelDate = new Date("2026-06-19T12:00:00Z");
+  const halfLife = clamp(28 + Math.max(0, (new Date("2026-11-03T12:00:00Z") - modelDate) / 86400000) * .18, 32, 85);
   const weighted = dedupeHousePolls(polls).reduce((total, poll) => {
     const date = new Date(`${poll.endDate}T12:00:00Z`);
     if (!poll.endDate || Number.isNaN(date.getTime()) || (modelDate - date) / 86400000 > 180) return total;
     const age = Math.max(0, (modelDate - date) / 86400000);
-    const recency = Math.pow(.5, age / 70);
+    const recency = Math.pow(.5, age / halfLife);
     const population = String(poll.population || "").toLowerCase();
     const populationWeight = population.includes("likely") || population === "lv" ? 1.08 : population.includes("registered") || population === "rv" ? 1 : .88;
     const sampleWeight = Number.isFinite(poll.sampleSize) ? clamp(Math.sqrt(poll.sampleSize) / 32, .62, 1.35) : .82;
@@ -755,18 +756,22 @@ function housePollSignal(polls = []) {
     const weight = recency * populationWeight * sampleWeight * (.72 + housePollPriority(poll) * .06) / Math.sqrt(1 + repeatedPollster);
     total.pollsters[pollsterKey(poll.pollster)] = repeatedPollster + weight;
     total.margin += poll.margin * weight;
+    total.square += poll.margin * poll.margin * weight;
     total.weight += weight;
     total.count += 1;
     return total;
-  }, { margin: 0, weight: 0, count: 0, pollsters: {} });
+  }, { margin: 0, square: 0, weight: 0, count: 0, pollsters: {} });
   if (!weighted.weight) return null;
   const pollsters = Object.keys(weighted.pollsters).length;
+  const margin = weighted.margin / weighted.weight;
   return {
-    margin: weighted.margin / weighted.weight,
+    margin,
     pollCount: weighted.count,
     pollsters,
     totalWeight: weighted.weight,
-    blendWeight: clamp(.08 + Math.log1p(weighted.weight) * .055 + pollsters * .018, .08, .28)
+    blendWeight: clamp(.08 + Math.log1p(weighted.weight) * .055 + pollsters * .018, .08, .28),
+    disagreement: Number(Math.sqrt(Math.max(0, weighted.square / weighted.weight - margin * margin)).toFixed(2)),
+    recencyHalfLifeDays: Number(halfLife.toFixed(1))
   };
 }
 
@@ -942,7 +947,7 @@ function adjustedDistricts(sourceData) {
       ? preMarketMargin * (1 - marketSignal.weight) + marketSignal.impliedMargin * marketSignal.weight
       : preMarketMargin;
     const margin = houseMarginGuardrail(district, rawMargin, contextMargin);
-    const error = houseRaceError(district, contextMargin, nomination);
+    const error = houseRaceError(district, contextMargin, nomination, districtPollSignal);
     const demProbability = logistic(margin, error);
     const { sourceRating: _legacySourceRating, ...districtWithoutLegacyRating } = district;
     return {
@@ -1004,10 +1009,12 @@ function houseMarginGuardrail(district, rawMargin, contextMargin) {
   return margin;
 }
 
-function houseRaceError(district, contextMargin, nomination) {
+function houseRaceError(district, contextMargin, nomination, pollSignal = null) {
   const structuralCertainty = Math.min(2.2, Math.abs(contextMargin) * .12);
   const openSeatUncertainty = district.open ? .65 : 0;
-  return clamp(9.2 - structuralCertainty + openSeatUncertainty + (nomination.errorAdjustment || 0), 5.2, 11.5);
+  const pollingCertainty = pollSignal ? Math.min(.9, .22 + Math.log1p(pollSignal.pollCount || 0) * .18 + (pollSignal.pollsters || 0) * .06) : 0;
+  const disagreementPenalty = pollSignal ? Math.min(1.2, (pollSignal.disagreement || 0) * .16) : 0;
+  return clamp(9.2 - structuralCertainty - pollingCertainty + disagreementPenalty + openSeatUncertainty + (nomination.errorAdjustment || 0), 5.2, 11.5);
 }
 
 function houseMarketSignal(district, error) {
