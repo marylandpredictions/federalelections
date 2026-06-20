@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { forecastSanityWarnings } from "./forecast-sanity.mjs";
+import { markDisabled, markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
 
 const demCandidateId = process.argv[2] || "newsom";
 const repCandidateId = process.argv[3] || "vance";
@@ -7,6 +8,7 @@ const FORECAST_URL = new URL(`../data/president-forecast-${demCandidateId}-${rep
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const previousForecast = readPreviousForecast();
 const MODEL_TIME_ZONE = "America/New_York";
+const sourceStatus = { checkedAt: new Date().toISOString() };
 
 function modelDateKey(date = new Date()) {
   if (/^\d{4}-\d{2}-\d{2}$/.test(process.env.MODEL_DATE || "")) return process.env.MODEL_DATE;
@@ -106,12 +108,16 @@ function readSenateStateSignals() {
 }
 
 // Helper function to fetch text from URL
-async function fetchText(url, cacheKey, status = null, options = {}) {
+async function fetchText(url, cacheKey, status = sourceStatus, options = {}) {
+  const sourceState = status || sourceStatus;
+  const startedAt = Date.now();
   try {
     const response = await fetch(url, options);
-    if (!response.ok) return null;
-    return await response.text();
+    const text = await response.text();
+    const record = recordFetch(sourceState, cacheKey, response, text, url, startedAt, options);
+    return record.ok ? text : null;
   } catch (error) {
+    recordFetchError(sourceState, cacheKey, error, url, startedAt);
     console.error(`Error fetching ${url}:`, error.message);
     return null;
   }
@@ -1801,7 +1807,12 @@ async function main() {
   
   const forecast = buildForecast(demCandidate, repCandidate, fundamentals, pollingData);
   const senateGeneric = readSenateGenericPolling();
+  const sourceHealth = sourceHealthSummary(sourceStatus, {
+    critical: ["pollfinityAverages", "votehubGenericBallot", "realClearPollingPresident"]
+  });
   forecast.sourceSummary = {
+    sourceHealth,
+    sourceStatus,
     genericPolling: senateGeneric ? {
       source: "Senate forecast blend",
       genericBallotMargin: senateGeneric.margin,
@@ -1841,6 +1852,11 @@ async function main() {
       states: Object.keys(fundamentals.senateStateSignals || {}).length
     }
   };
+  forecast.sourceHealth = sourceHealth;
+  forecast.modelWarnings = [
+    ...(forecast.modelWarnings || []),
+    ...sourceHealthWarnings(sourceHealth, "President")
+  ];
   
   forecast.history = appendPresidentHistory(forecast);
   forecast.stateHistory = appendPresidentStateHistory(forecast);

@@ -1,5 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { forecastSanityWarnings } from "./forecast-sanity.mjs";
+import { markNoRows, markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
+import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
@@ -987,6 +989,10 @@ function raceTypeUncertainty(race, pollSignal, quality) {
     extra += .45;
     reasons.push("low input confidence");
   }
+  if (race.sourceInputs?.sourceHealth?.degraded && thinPolling) {
+    extra += .65;
+    reasons.push("race-poll source degraded");
+  }
   return {
     extraError: Number(extra.toFixed(2)),
     reasons
@@ -1231,7 +1237,7 @@ function baselineMargin(race) {
   const demographicPull = demographicPullAdjustment(race).adjustment;
   const rawMargin = (fundamentals * fundamentalsBlend + signals + incumbentPenalty + caucusDiscount(race)) +
     pollBlend + nationalPolling + demographicPull + candidateHistoryAdjustment(race) + primaryScenarioAdjustment(race) + rcvBaselineAdjustment(race);
-  return senateMarginGuardrail(race, rawMargin, pollSignal, fundamentals);
+  return Number(rawMargin.toFixed(3));
 }
 
 function senateMarginGuardrail(race, rawMargin, pollSignal, fundamentals) {
@@ -1243,7 +1249,22 @@ function senateMarginGuardrail(race, rawMargin, pollSignal, fundamentals) {
   if (partisanSide && Math.sign(margin) !== partisanSide && Math.abs(partisanAnchor) >= 8 && (!pollSignal || Math.sign(pollSignal.margin) !== Math.sign(margin))) {
     margin = partisanSide * Math.max(3.5, Math.abs(margin) * .55);
   }
-  return Number(margin.toFixed(3));
+  if (pollSignal?.pollCount) {
+    return { margin: Number(margin.toFixed(3)), adjustment: Number((margin - rawMargin).toFixed(2)), reason: "usable race polling available" };
+  }
+  const prior = Number(race.pastSenate);
+  const candidateEvidence = Math.abs(Number(race.candidate || 0)) + Math.abs(Number(race.money || 0)) + Math.abs(candidateHistoryAdjustment(race));
+  const exception = candidateEvidence >= 2.2 || race.seat === "Open seat" || race.primary === "runoff";
+  if (!Number.isFinite(prior) || exception) {
+    return { margin: Number(margin.toFixed(3)), adjustment: Number((margin - rawMargin).toFixed(2)), reason: exception ? "candidate or seat-change exception" : "no comparable prior result" };
+  }
+  const cap = Math.abs(prior) >= 18 ? 7 : Math.abs(prior) >= 12 ? 9 : 12;
+  const bounded = clamp(margin, prior - cap, prior + cap);
+  return {
+    margin: Number(bounded.toFixed(3)),
+    adjustment: Number((bounded - rawMargin).toFixed(2)),
+    reason: bounded === margin ? "within fundamentals-only shift cap" : `fundamentals-only shift capped at ${cap} points from comparable result`
+  };
 }
 
 function senateRaceError(race, fundamentals, pollSignal, uncertainty) {
@@ -1295,15 +1316,19 @@ function runModel(sourceData) {
     // Public ratings remain provenance for comparison, not a hidden input.
     // The displayed rating is derived from the simulated probability below.
     const expertRatingAdjustment = { margin: structuralAndPollingMargin, adjustment: 0, weight: 0 };
-    const margin = structuralAndPollingMargin;
+    const fundamentals = senateStructuralMargin(withComposition);
+    const guardrail = senateMarginGuardrail(withComposition, structuralAndPollingMargin, pollSignal, fundamentals);
+    const margin = guardrail.margin;
     const quality = inputQuality(withComposition, pollSignal);
     const uncertainty = raceTypeUncertainty(withComposition, pollSignal, quality);
-    const fundamentals = senateStructuralMargin(withComposition);
     const calculatedError = senateRaceError(withComposition, fundamentals, pollSignal, uncertainty);
     const error = Number.isFinite(calculatedError) ? calculatedError : 8.2;
     const demProbability = logistic(margin, error);
     const demographicPull = demographicPullAdjustment(withComposition);
     const historicalComparison = historicalMarginComparison(withComposition, margin, pollSignal);
+    const matchupStatus = senateMatchupStatus(withComposition);
+    const marginDecomposition = senateMarginDecomposition(withComposition, pollSignal, guardrail, margin);
+    const benchmarkComparison = senateBenchmarkComparison({ ...withComposition, historicalComparison }, margin, demProbability, pollSignal);
     return {
       ...withComposition,
       rating: ratingFromProbability(demProbability, margin),
@@ -1316,6 +1341,10 @@ function runModel(sourceData) {
       expertRating,
       expertRatingAdjustment,
       inputQuality: quality,
+      modelConfidence: quality,
+      matchupStatus,
+      marginDecomposition,
+      benchmarkComparison,
       uncertaintyAdjustment: uncertainty,
       primaryEvents: primaryEventsForRace(withCandidates),
       primaryRisk: primaryRisk(race),
@@ -1536,24 +1565,10 @@ async function fetchText(url, label, status, options = {}) {
       signal: controller.signal
     });
     const text = await response.text();
-    status[label] = {
-      ok: response.ok,
-      status: response.status,
-      ms: Date.now() - startedAt,
-      url
-    };
-    if (!response.ok) {
-      status[label].error = text.slice(0, 180);
-    }
-    return response.ok ? text : null;
+    const record = recordFetch(status, label, response, text, url, startedAt, options);
+    return record.ok ? text : null;
   } catch (error) {
-    status[label] = {
-      ok: false,
-      status: "fetch-error",
-      ms: Date.now() - startedAt,
-      url,
-      error: error.message
-    };
+    recordFetchError(status, label, error, url, startedAt);
     return null;
   } finally {
     clearTimeout(timeout);
@@ -1847,7 +1862,8 @@ async function fetchTwoSeventyToWinRacePolls(status) {
 
 async function fetchVoteHub(status) {
   const text = await fetchText("https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026", "votehubGenericBallot", status, {
-    headers: { accept: "application/json" }
+    headers: { accept: "application/json" },
+    expected: "json"
   });
   if (!text) return { genericBallotPolls: 0, usableGenericBallotPolls: 0, genericBallotMargin: null };
   try {
@@ -1924,7 +1940,7 @@ async function fetchVoteHub(status) {
       recent
     };
   } catch (error) {
-    status.votehubGenericBallot.parseError = error.message;
+    markParseFailed(status, "votehubGenericBallot", error);
     return { genericBallotPolls: 0, usableGenericBallotPolls: 0, genericBallotMargin: null };
   }
 }
@@ -1955,7 +1971,8 @@ async function fetchPollfinityAverages(status) {
   const url = "https://pollfinity.com/averages.json";
   const text = await fetchText(url, "pollfinityAverages", status, {
     headers: { accept: "application/json" },
-    timeoutMs: 15000
+    timeoutMs: 15000,
+    expected: "json"
   });
   if (!text) return { genericBallotMargin: null, approvalNet: null };
   try {
@@ -1986,7 +2003,7 @@ async function fetchPollfinityAverages(status) {
     status.pollfinityAverages.approvalNet = result.approvalNet;
     return result;
   } catch (error) {
-    status.pollfinityAverages.parseError = error.message;
+    markParseFailed(status, "pollfinityAverages", error);
     return { genericBallotMargin: null, approvalNet: null };
   }
 }
@@ -2285,49 +2302,83 @@ function parseElectoralVoteSenatePolls(text) {
   return byState;
 }
 
+function senateMatchupStatus(race) {
+  if (race.primary === "runoff" || race.demStatus === "unresolved" || race.repStatus === "unresolved") return "PRIMARY_UNRESOLVED";
+  if (/^Democrat$|^Republican$/i.test(race.dem || "") || /^Democrat$|^Republican$/i.test(race.rep || "")) return "GENERIC_MATCHUP";
+  if (race.demStatus === "nominee" && race.repStatus === "nominee") return "CONFIRMED_MATCHUP";
+  return "LIKELY_MATCHUP";
+}
+
+function senateMarginDecomposition(race, pollSignal, guardrail, finalMargin) {
+  const previousMargin = Number(race.pastSenate || 0);
+  const partisanBaselineEffect = Number((race.pvi * .30 + previousMargin * .26 - previousMargin).toFixed(2));
+  const nationalEnvironmentEffect = Number((race.nationalPolling || 0).toFixed(2));
+  const pollingEffect = pollSignal ? Number((pollSignal.margin * pollSignal.blendWeight).toFixed(2)) : 0;
+  const incumbencyEffect = Number(incumbencyAdjustment(race).toFixed(2));
+  const candidateQualityEffect = Number((race.candidate || 0).toFixed(2));
+  const fundraisingEffect = Number((race.money || 0).toFixed(2));
+  const candidateHistoryEffect = Number(candidateHistoryAdjustment(race).toFixed(2));
+  return {
+    previousMargin,
+    partisanBaselineEffect,
+    nationalEnvironmentEffect,
+    pollingEffect,
+    incumbencyEffect,
+    candidateQualityEffect,
+    fundraisingEffect,
+    candidateHistoryEffect,
+    ratingsAdjustment: 0,
+    guardrailAdjustment: guardrail.adjustment,
+    guardrailReason: guardrail.reason,
+    finalProjectedMargin: Number(finalMargin.toFixed(2))
+  };
+}
+
+function senateBenchmarkComparison(race, margin, demProbability, pollSignal) {
+  const consensusRating = race.rating || null;
+  const warnings = [];
+  if (!pollSignal && Math.abs(margin) < 6) warnings.push("competitive-race-no-usable-polls");
+  if (race.sourceInputs?.sourceHealth?.degraded && Math.abs(margin) < 6) warnings.push("source-failure-affects-competitive-race");
+  if (race.historicalComparison?.needsReview) warnings.push("large-unpolled-shift-from-previous-result");
+  return {
+    model: { projectedMargin: Number(margin.toFixed(2)), demProbability: Number(demProbability.toFixed(5)) },
+    previousResult: race.pastSenate,
+    external: {
+      cook: null,
+      sabato: null,
+      insideElections: race.rating || null,
+      splitTicket: null,
+      raceToWH: null,
+      voteHub: null,
+      economist: null,
+      market: null
+    },
+    consensusRating,
+    usablePolls: pollSignal?.pollCount || 0,
+    sourceHealth: race.sourceInputs?.sourceHealth || null,
+    warnings
+  };
+}
+
 function readDirectPollLedger() {
-  try {
-    const ledger = JSON.parse(readFileSync(DIRECT_POLL_LEDGER_URL, "utf8"));
-    const byState = {};
-    let skipped = 0;
-    for (const poll of Array.isArray(ledger.polls) ? ledger.polls : []) {
-      if (String(poll.office || "").toLowerCase() !== "senate") continue;
-      const state = String(poll.state || "").toUpperCase();
-      const dem = toNumber(poll.dem);
-      const rep = toNumber(poll.rep);
-      const date = new Date(`${poll.endDate || ""}T12:00:00Z`);
-      if (!STATE_NAMES[state] || !Number.isFinite(dem) || !Number.isFinite(rep) || Number.isNaN(date.getTime()) || !poll.pollster || !poll.sourceUrl) {
-        skipped += 1;
-        continue;
-      }
-      const endDate = date.toISOString().slice(0, 10);
-      const days = Math.min(0, Math.round((new Date(`${endDate}T12:00:00Z`) - new Date(`${MODEL_DATE_KEY}T12:00:00Z`)) / 86400000));
-      byState[state] ||= [];
-      byState[state].push({
-        days,
-        margin: dem - rep,
-        source: poll.source || "Direct pollster release",
-        sourceUrl: poll.sourceUrl,
-        pollster: poll.pollster,
-        endDate,
-        sampleSize: toNumber(poll.sampleSize),
-        population: poll.population || "unknown",
-        sponsor: poll.sponsor || null,
-        partisan: Boolean(poll.partisan),
-        internal: Boolean(poll.internal),
-        result: `${dem} / ${rep}`,
-        weight: Number.isFinite(toNumber(poll.weight)) ? toNumber(poll.weight) : 1
-      });
-    }
-    return {
-      byState,
-      polls: Object.values(byState).reduce((sum, rows) => sum + rows.length, 0),
-      skipped,
-      source: ledger.source || "Direct release ledger"
-    };
-  } catch {
-    return { byState: {}, polls: 0, skipped: 0, source: "Direct release ledger unavailable" };
+  const byState = {};
+  let skipped = 0;
+  for (const state of Object.keys(STATE_NAMES)) {
+    const result = directPollLedger({ office: "senate", state });
+    skipped += result.skipped;
+    if (!result.polls.length) continue;
+    byState[state] = result.polls.map((poll) => ({
+      ...poll,
+      days: Math.min(0, Math.round((new Date(`${poll.endDate}T12:00:00Z`) - new Date(`${MODEL_DATE_KEY}T12:00:00Z`)) / 86400000)),
+      result: `${poll.candidates[0]?.pct} / ${poll.candidates[1]?.pct}`
+    }));
   }
+  return {
+    byState,
+    polls: Object.values(byState).reduce((sum, rows) => sum + rows.length, 0),
+    skipped,
+    source: "Federal Elections Analysis direct poll-release ledger"
+  };
 }
 
 async function fetchAllSources() {
@@ -2346,7 +2397,14 @@ async function fetchAllSources() {
     fetchPollingReferencePages(status)
   ]);
   const directPolls = readDirectPollLedger();
-  status.directPollLedger = { ok: true, status: "local", rows: directPolls.polls, skipped: directPolls.skipped, url: "data/direct-poll-ledger.json" };
+  status.directPollLedger = {
+    health: directPolls.polls ? "OK_PARSED" : "OK_NO_ROWS",
+    ok: true,
+    status: directPolls.polls ? "OK_PARSED" : "OK_NO_ROWS",
+    rows: directPolls.polls,
+    skipped: directPolls.skipped,
+    url: "data/direct-poll-ledger.json"
+  };
   const usableGenericSource = (source) => {
     if (!Number.isFinite(source.margin)) return false;
     if (source.polls > 0) return true;
@@ -2366,7 +2424,11 @@ async function fetchAllSources() {
     genericBallotDem: genericWeight ? genericPollingSources.reduce((sum, source) => sum + (Number.isFinite(source.dem) ? source.dem : 0) * source.weight, 0) / genericWeight : null,
     genericBallotRep: genericWeight ? genericPollingSources.reduce((sum, source) => sum + (Number.isFinite(source.rep) ? source.rep : 0) * source.weight, 0) / genericWeight : null
   };
-  return { status: stableSourceStatus(status), votehub, ddhqGeneric, pollfinity, usPollingDataGeneric, genericPolling, realClearPolling, twoSeventyToWin, directPolls, fec, mit, census, civic, pollingReferences };
+  const stableStatus = stableSourceStatus(status);
+  const sourceHealth = sourceHealthSummary(stableStatus, {
+    critical: ["votehubGenericBallot", "pollfinityAverages", "twoSeventyToWinStatePolls"]
+  });
+  return { status: stableStatus, sourceHealth, votehub, ddhqGeneric, pollfinity, usPollingDataGeneric, genericPolling, realClearPolling, twoSeventyToWin, directPolls, fec, mit, census, civic, pollingReferences };
 }
 
 function stableSourceStatus(status) {
@@ -2497,6 +2559,12 @@ function applySourceInputs(baseRaces, sourceData) {
       usedPolls: polls.length,
       legacyFallback: !normalizeRacePolls(fetchedPolls).length,
       sources: [...new Set(polls.map((poll) => Array.isArray(poll) ? "Legacy model input" : poll.source || "unknown"))]
+    };
+    sourceInputs.sourceHealth = {
+      forecast: sourceData?.sourceHealth?.health || "UNKNOWN",
+      degraded: Boolean(sourceData?.sourceHealth?.degraded),
+      racePolling: normalizeRacePolls(fetchedPolls).length ? "OK_PARSED" : "OK_NO_ROWS",
+      unavailableSources: sourceData?.sourceHealth?.unavailableSources || []
     };
 
     return { ...race, money, pastSenate, pvi, polls, nationalPolling: nationalPolling + nationalFinance, sourceInputs };
@@ -2712,6 +2780,7 @@ async function writeForecast() {
     updateTime: "around 7:20 AM Eastern",
     settings: { ...SETTINGS, modelWeights: MODEL_WEIGHTS },
     sourceStatus: sourceData.status,
+    sourceHealth: sourceData.sourceHealth,
     sourceSummary: {
       votehub: sourceData.votehub,
       genericPolling: sourceData.genericPolling,
@@ -2750,6 +2819,7 @@ async function writeForecast() {
     },
     calibration: buildCalibrationReport(sourceData, model),
     modelWarnings: [
+      ...sourceHealthWarnings(sourceData.sourceHealth, "Senate"),
       ...forecastSanityWarnings(model.races, {
         model: "senate",
         id: (race) => race.state,

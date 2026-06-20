@@ -1,5 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { forecastSanityWarnings } from "./forecast-sanity.mjs";
+import { markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
+import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
 
 const OUTPUT_URL = new URL("../data/house-forecast.json", import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
@@ -24,7 +26,7 @@ const SETTINGS = {
 };
 
 const MODEL_WEIGHTS = {
-  genericBallot: .7,
+  genericBallot: .46,
   genericBallotCap: 5.8,
   districtBaseline: 1,
   districtPolls: .18,
@@ -38,7 +40,7 @@ const MODEL_WEIGHTS = {
   // District fundamentals are built from prior federal returns, not a pure
   // midterm cycle baseline. Keep a modest calibrated cycle adjustment, but do
   // not let it duplicate the generic-ballot environment.
-  historicalMidterm: 2.2,
+  historicalMidterm: .8,
   stateCorrelationSd: 1.35,
   nationalEnvironmentSd: 3.05
 };
@@ -450,22 +452,11 @@ async function fetchText(url, label, status, options = {}) {
       }
     });
     const text = await response.text();
-    status[label] = {
-      ok: response.ok,
-      status: response.status,
-      ms: Date.now() - started,
-      bytes: text.length,
-      url
-    };
-    return response.ok ? text : "";
+    const record = recordFetch(status, label, response, text, url, started, options);
+    status[label].bytes = text.length;
+    return record.ok ? text : "";
   } catch (error) {
-    status[label] = {
-      ok: false,
-      status: error.name === "AbortError" ? "timeout" : "error",
-      message: error.message,
-      ms: Date.now() - started,
-      url
-    };
+    recordFetchError(status, label, error, url, started);
     return "";
   } finally {
     clearTimeout(timeout);
@@ -630,15 +621,13 @@ function uniqueDistricts(districts) {
 }
 
 async function fetchGenericPolling(status) {
-  const [votehubHtml, ddhqJson, pollfinityJson, usPollingHtml] = await Promise.all([
-    fetchText("https://polls.votehub.us/polls/generic-ballot", "votehubGenericBallot", status, { timeoutMs: 12000 }),
-    fetchText("https://static.dwcdn.net/data/9Jctg.json", "ddhqGenericBallot", status, { timeoutMs: 12000 }),
-    fetchText("https://pollfinity.com/api/averages", "pollfinityAverages", status, { timeoutMs: 12000 }),
+  const [votehubJson, pollfinityJson, usPollingHtml] = await Promise.all([
+    fetchText("https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026", "votehubGenericBallot", status, { timeoutMs: 12000, expected: "json" }),
+    fetchText("https://pollfinity.com/averages.json", "pollfinityAverages", status, { timeoutMs: 12000, expected: "json" }),
     fetchText("https://uspollingdata.com/polls/generic-ballot/", "usPollingDataGenericBallot", status, { timeoutMs: 12000 })
   ]);
   const sources = [
-    parseVoteHubGeneric(votehubHtml),
-    parseDdhqGeneric(ddhqJson),
+    parseVoteHubGeneric(votehubJson),
     parsePollfinityGeneric(pollfinityJson),
     parseUsPollingDataGeneric(usPollingHtml)
   ].filter(Boolean);
@@ -675,6 +664,23 @@ function readSenateGenericPolling() {
 
 function parseVoteHubGeneric(html) {
   if (!html) return null;
+  try {
+    const data = JSON.parse(html);
+    const polls = Array.isArray(data) ? data : Array.isArray(data.polls) ? data.polls : [];
+    const rows = polls.map((poll) => {
+      const answers = Array.isArray(poll.answers) ? poll.answers : [];
+      const dem = Number(poll.democrat ?? poll.dem ?? answers.find((answer) => /^dem/i.test(answer.choice || ""))?.pct);
+      const rep = Number(poll.republican ?? poll.rep ?? answers.find((answer) => /^rep/i.test(answer.choice || ""))?.pct);
+      return { dem, rep };
+    }).filter((poll) => Number.isFinite(poll.dem) && Number.isFinite(poll.rep));
+    if (rows.length) {
+      const dem = rows.reduce((sum, poll) => sum + poll.dem, 0) / rows.length;
+      const rep = rows.reduce((sum, poll) => sum + poll.rep, 0) / rows.length;
+      return { source: "VoteHub", margin: dem - rep, dem, rep, polls: rows.length, weight: 1 };
+    }
+  } catch {
+    // Legacy HTML parsing below remains for a valid public HTML response.
+  }
   const dem = firstNumberAfter(html, /Democrats?[^0-9]{0,80}([0-9]+(?:\.[0-9]+)?)/i);
   const rep = firstNumberAfter(html, /Republicans?[^0-9]{0,80}([0-9]+(?:\.[0-9]+)?)/i);
   const explicit = firstNumberAfter(html, /Democrats?\s*\+([0-9]+(?:\.[0-9]+)?)/i);
@@ -695,6 +701,18 @@ function parseDdhqGeneric(json) {
 
 function parsePollfinityGeneric(json) {
   if (!json) return null;
+  try {
+    const data = JSON.parse(json);
+    const current = data?.tracks?.generic_ballot?.current;
+    const dem = Number(current?.democrat ?? current?.dem ?? current?.democratic);
+    const rep = Number(current?.republican ?? current?.rep ?? current?.gop);
+    const margin = Number(current?.dem_lead);
+    if (Number.isFinite(margin) || (Number.isFinite(dem) && Number.isFinite(rep))) {
+      return { source: "Pollfinity", margin: Number.isFinite(margin) ? margin : dem - rep, dem, rep, polls: Number(data?.tracks?.generic_ballot?.polls_in_average || 0), weight: .55 };
+    }
+  } catch {
+    // Fall through to the defensive text parser for a future schema change.
+  }
   const dem = firstNumberAfter(json, /Dem(?:ocrat(?:ic|s)?)?["\s:,_-]{0,30}([0-9]+(?:\.[0-9]+)?)/i);
   const rep = firstNumberAfter(json, /Rep(?:ublican(?:s)?)?["\s:,_-]{0,30}([0-9]+(?:\.[0-9]+)?)/i);
   if (!Number.isFinite(dem) || !Number.isFinite(rep)) return null;
@@ -831,39 +849,19 @@ function mergeDistrictPollSources(...sources) {
 }
 
 function readDirectHousePollLedger() {
-  try {
-    const ledger = JSON.parse(readFileSync(DIRECT_POLL_LEDGER_URL, "utf8"));
-    const byDistrict = {};
-    let skipped = 0;
-    for (const poll of Array.isArray(ledger.polls) ? ledger.polls : []) {
-      if (String(poll.office || "").toLowerCase() !== "house") continue;
-      const id = String(poll.district || "").toUpperCase().replace(/^([A-Z]{2})-(\d)$/, "$1-0$2");
-      const dem = toNumber(poll.dem);
-      const rep = toNumber(poll.rep);
-      const date = new Date(`${poll.endDate || ""}T12:00:00Z`);
-      if (!/^([A-Z]{2})-(AL|\d{2})$/.test(id) || !Number.isFinite(dem) || !Number.isFinite(rep) || Number.isNaN(date.getTime()) || !poll.pollster || !poll.sourceUrl) {
-        skipped += 1;
-        continue;
-      }
-      byDistrict[id] ||= [];
-      byDistrict[id].push({
-        margin: dem - rep,
-        source: poll.source || "Direct pollster release",
-        sourceUrl: poll.sourceUrl,
-        pollster: poll.pollster,
-        endDate: date.toISOString().slice(0, 10),
-        sampleSize: toNumber(poll.sampleSize),
-        population: poll.population || "unknown",
-        sponsor: poll.sponsor || null,
-        partisan: Boolean(poll.partisan),
-        internal: Boolean(poll.internal),
-        weight: Number.isFinite(toNumber(poll.weight)) ? toNumber(poll.weight) : 1
-      });
+  const byDistrict = {};
+  let skipped = 0;
+  // Build only for districts already in the model. This keeps the ledger
+  // permissive while avoiding a free-form district id becoming model input.
+  for (const state of Object.keys(STATE_NAMES)) {
+    for (const suffix of ["AL", ...Array.from({ length: 53 }, (_, index) => String(index + 1).padStart(2, "0"))]) {
+      const id = `${state}-${suffix}`;
+      const result = directPollLedger({ office: "house", district: id });
+      skipped += result.skipped;
+      if (result.polls.length) byDistrict[id] = result.polls;
     }
-    return { byDistrict, polls: Object.values(byDistrict).reduce((sum, rows) => sum + rows.length, 0), skipped };
-  } catch {
-    return { byDistrict: {}, polls: 0, skipped: 0 };
   }
+  return { byDistrict, polls: Object.values(byDistrict).reduce((sum, rows) => sum + rows.length, 0), skipped };
 }
 
 function toNumber(value) {
@@ -927,6 +925,14 @@ async function fetchHouseSources() {
   const cookDistricts = parseCookDistricts(cookHtml);
   const pollingDistricts = mapDistricts.length ? mapDistricts : cookDistricts;
   const directPolls = readDirectHousePollLedger();
+  status.directPollLedger = {
+    health: directPolls.polls ? "OK_PARSED" : "OK_NO_ROWS",
+    ok: true,
+    status: directPolls.polls ? "OK_PARSED" : "OK_NO_ROWS",
+    rows: directPolls.polls,
+    skipped: directPolls.skipped,
+    url: "data/direct-poll-ledger.json"
+  };
   const districtPolls = mergeDistrictPollSources(
     parseHousePollReferences(pollingHtml, "270toWin", pollingDistricts),
     parseHousePollReferences(latestHousePolls, "RealClearPolling", pollingDistricts),
@@ -943,8 +949,12 @@ async function fetchHouseSources() {
     skippedDirectPolls: directPolls.skipped,
     note: "Only structured/current district matchups are blended; generic ballot data remains a separate national signal."
   };
+  const sourceHealth = sourceHealthSummary(status, {
+    critical: ["votehubGenericBallot", "pollfinityAverages", "twoSeventyToWinHousePolls"]
+  });
   return {
     status,
+    sourceHealth,
     cookDistricts,
     mapDistricts,
     insideRatings: parseInsideRatings(insideHtml),
@@ -961,7 +971,7 @@ async function fetchHouseSources() {
 }
 
 function adjustedDistricts(sourceData) {
-  const genericShift = clamp(sourceData.genericPolling.margin * .56, -4.7, 4.7);
+  const genericShift = clamp(sourceData.genericPolling.margin * .38, -3.4, 3.4);
   const nationalFinanceShift = (sourceData.fec.__national?.financeSignal || 0) * MODEL_WEIGHTS.nationalFinance;
   const baseDistricts = sourceData.mapDistricts.length >= 400 ? sourceData.mapDistricts : sourceData.cookDistricts;
   return baseDistricts.map((sourceDistrict) => {
@@ -987,7 +997,8 @@ function adjustedDistricts(sourceData) {
     const rawMargin = marketSignal
       ? preMarketMargin * (1 - marketSignal.weight) + marketSignal.impliedMargin * marketSignal.weight
       : preMarketMargin;
-    const margin = houseMarginGuardrail(district, rawMargin, contextMargin);
+    const guardrail = houseMarginGuardrail(district, rawMargin, contextMargin, districtPollSignal);
+    const margin = guardrail.margin;
     const historicalComparison = houseHistoricalComparison(district, margin, contextMargin, districtPollSignal, marketSignal);
     const error = houseRaceError(district, contextMargin, nomination, districtPollSignal);
     const demProbability = logistic(margin, error);
@@ -1025,8 +1036,18 @@ function adjustedDistricts(sourceData) {
         marketSignal,
         demographicPull,
         challengerStrength,
-        finance: sourceData.fec[district.id] || null
+        finance: sourceData.fec[district.id] || null,
+        sourceHealth: {
+          forecast: sourceData.sourceHealth?.health || "UNKNOWN",
+          degraded: Boolean(sourceData.sourceHealth?.degraded),
+          racePolling: districtPollSignal ? "OK_PARSED" : "OK_NO_ROWS",
+          unavailableSources: sourceData.sourceHealth?.unavailableSources || []
+        }
       },
+      modelConfidence: houseModelConfidence(districtPollSignal, nomination, sourceData.sourceHealth),
+      matchupStatus: houseMatchupStatus(nomination),
+      marginDecomposition: houseMarginDecomposition(district, contextMargin, genericShift, nationalFinanceShift, incumbencyAdjustment, openPenalty, demographicPull.adjustment, financeSignal, candidateQualityAdjustment, nominationAdjustment, districtPollingAdjustment, guardrail, margin),
+      benchmarkComparison: houseBenchmarkComparison(district, margin, demProbability, districtPollSignal, sourceData.sourceHealth),
       primaryDate: nomination.primaryDate,
       primaryStatus: nomination.status,
       primarySummary: nomination.summary,
@@ -1039,17 +1060,70 @@ function adjustedDistricts(sourceData) {
   });
 }
 
-function houseMarginGuardrail(district, rawMargin, contextMargin) {
+function houseMarginGuardrail(district, rawMargin, contextMargin, pollSignal = null) {
   const anchor = contextMargin;
   let margin = rawMargin * .86 + anchor * .14;
   const fundamentalSide = Math.sign(contextMargin);
-  if (fundamentalSide && Math.sign(margin) !== fundamentalSide && Math.abs(contextMargin) >= 12) {
+  if (fundamentalSide && Math.sign(margin) !== fundamentalSide && Math.abs(contextMargin) >= 12 && !pollSignal) {
     margin = fundamentalSide * Math.max(6, Math.abs(margin) * .55);
   }
   if (isAtLargeDistrict(district) && Math.abs(district.fundamentalMargin || 0) >= 25 && fundamentalSide) {
     margin = fundamentalSide * Math.max(Math.abs(margin), 15);
   }
-  return margin;
+  const noPollCap = Math.abs(contextMargin) >= 18 ? 7 : Math.abs(contextMargin) >= 12 ? 9 : 12;
+  const capped = pollSignal ? margin : clamp(margin, contextMargin - noPollCap, contextMargin + noPollCap);
+  return {
+    margin: capped,
+    adjustment: Number((capped - rawMargin).toFixed(2)),
+    reason: pollSignal ? "usable district polling available" : `fundamentals-only shift capped at ${noPollCap} points from district baseline`
+  };
+}
+
+function houseMatchupStatus(nomination) {
+  if (nomination?.demStatus === "unresolved" || nomination?.repStatus === "unresolved") return "PRIMARY_UNRESOLVED";
+  if (nomination?.demProfile === "placeholder" || nomination?.repProfile === "placeholder") return "GENERIC_MATCHUP";
+  if (nomination?.demStatus === "nominee" && nomination?.repStatus === "nominee") return "CONFIRMED_MATCHUP";
+  return "LIKELY_MATCHUP";
+}
+
+function houseModelConfidence(pollSignal, nomination, sourceHealth) {
+  let score = 46 + (pollSignal ? Math.min(28, 10 + pollSignal.pollCount * 3 + pollSignal.pollsters * 2) : 0);
+  if (nomination?.status === "resolved") score += 12;
+  if (sourceHealth?.degraded) score -= 12;
+  score = Math.round(clamp(score, 20, 92));
+  return { score, label: score >= 72 ? "High" : score >= 50 ? "Medium" : "Low", reason: pollSignal ? "district polls and structural inputs" : "fundamentals-only or limited race polling" };
+}
+
+function houseMarginDecomposition(district, previousMargin, genericBallotEffect, nationalFinanceEffect, incumbencyEffect, openSeatEffect, demographicEffect, financeEffect, candidateEffect, nominationEffect, pollingEffect, guardrail, finalMargin) {
+  return {
+    previousMargin: Number(previousMargin.toFixed(2)),
+    partisanBaselineEffect: Number((previousMargin - previousMargin).toFixed(2)),
+    nationalEnvironmentEffect: Number(genericBallotEffect.toFixed(2)),
+    pollingEffect: Number(pollingEffect.toFixed(2)),
+    incumbencyEffect: Number(incumbencyEffect.toFixed(2)),
+    candidateQualityEffect: Number((candidateEffect + nominationEffect + demographicEffect).toFixed(2)),
+    fundraisingEffect: Number((financeEffect + nationalFinanceEffect).toFixed(2)),
+    ratingsAdjustment: 0,
+    guardrailAdjustment: guardrail.adjustment,
+    guardrailReason: guardrail.reason,
+    openSeatEffect: Number(openSeatEffect.toFixed(2)),
+    finalProjectedMargin: Number(finalMargin.toFixed(2))
+  };
+}
+
+function houseBenchmarkComparison(district, margin, demProbability, pollSignal, sourceHealth) {
+  const warnings = [];
+  if (!pollSignal && Math.abs(margin) < 6) warnings.push("competitive-race-no-usable-polls");
+  if (sourceHealth?.degraded && Math.abs(margin) < 6) warnings.push("source-failure-affects-competitive-race");
+  if (district.redistricting?.status && !district.redistricting?.effectiveFor2026) warnings.push("redistricting-map-version-watch");
+  return {
+    model: { projectedMargin: Number(margin.toFixed(2)), demProbability: Number(demProbability.toFixed(5)) },
+    previousResult: district.fundamentalMargin ?? null,
+    external: { cook: district.ratingSource?.includes("Cook") ? district.baselineRating : null, sabato: null, insideElections: district.ratingSource?.includes("Inside") ? district.baselineRating : null, splitTicket: null, raceToWH: null, voteHub: null, economist: null, market: null },
+    usablePolls: pollSignal?.pollCount || 0,
+    sourceHealth,
+    warnings
+  };
 }
 
 function houseHistoricalComparison(district, projectedMargin, contextualBaseline, pollSignal, marketSignal) {
@@ -1662,6 +1736,7 @@ async function writeHouseForecast() {
       redistrictingShapeWarning: "The visible shape map may lag enacted 2026 redistricting in states with new maps. The model uses the local redistricting override layer even when temporary map geometry has not been replaced."
     },
     sourceStatus: sourceData.status,
+    sourceHealth: sourceData.sourceHealth,
     sourceSummary: {
       cookDistricts: sourceData.cookDistricts.length,
       mapDistricts: sourceData.mapDistricts.length,
@@ -1684,6 +1759,7 @@ async function writeHouseForecast() {
     },
     ratingSummary: ratingSummary(districts),
     modelWarnings: [
+      ...sourceHealthWarnings(sourceData.sourceHealth, "House"),
       ...forecastSanityWarnings(model.districts, {
         model: "house",
         id: (district) => district.id,

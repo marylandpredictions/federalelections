@@ -1,5 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { forecastSanityWarnings } from "./forecast-sanity.mjs";
+import { markDisabled, markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
+import { directPollLedger } from "./poll-ledger.mjs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const GOVERNOR_HISTORY_URL = new URL("../data/governor-history.json", import.meta.url);
@@ -20,24 +22,10 @@ async function fetchText(url, label, status, options = {}) {
       signal: controller.signal
     });
     const text = await response.text();
-    status[label] = {
-      ok: response.ok,
-      status: response.status,
-      ms: Date.now() - startedAt,
-      url
-    };
-    if (!response.ok) {
-      status[label].error = text.slice(0, 180);
-    }
-    return response.ok ? text : null;
+    const record = recordFetch(status, label, response, text, url, startedAt, options);
+    return record.ok ? text : null;
   } catch (error) {
-    status[label] = {
-      ok: false,
-      status: "fetch-error",
-      ms: Date.now() - startedAt,
-      url,
-      error: error.message
-    };
+    recordFetchError(status, label, error, url, startedAt);
     return null;
   } finally {
     clearTimeout(timeout);
@@ -426,31 +414,22 @@ function mergeGovernorFinance(manualFinance, onlineFinance, status) {
 }
 
 async function fetchDdhqGenericBallot(status) {
-  const url = "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults";
-  const text = await fetchText(url, "ddhqGenericBallot", status, { timeoutMs: 15000 });
-  if (!text) return { genericBallotMargin: null, polls: 0 };
-  if (/Vercel Security Checkpoint/i.test(text)) {
-    status.ddhqGenericBallot.ok = false;
-    status.ddhqGenericBallot.error = "Vercel security checkpoint";
-    return { genericBallotMargin: null, polls: 0 };
-  }
-  const match = text.match(/"margin":\s*([0-9.-]+)/);
-  const margin = match ? Number(match[1]) : null;
-  const pollsMatch = text.match(/"polls":\s*([0-9]+)/);
-  const polls = pollsMatch ? Number(pollsMatch[1]) : 0;
-  return { genericBallotMargin: margin, polls };
+  markDisabled(status, "ddhqGenericBallot", "DDHQ public endpoint is not a stable machine-readable source.");
+  return { genericBallotMargin: null, polls: 0 };
 }
 
 async function fetchPollfinityAverages(status) {
   const url = "https://pollfinity.com/averages.json";
   const text = await fetchText(url, "pollfinityAverages", status, {
     headers: { accept: "application/json" },
-    timeoutMs: 15000
+    timeoutMs: 15000,
+    expected: "json"
   });
   if (!text) return { genericBallotMargin: null, governorPolls: {} };
   try {
     const data = JSON.parse(text);
-    const generic = data.generic_ballot?.national?.margin;
+    const genericCurrent = data.tracks?.generic_ballot?.current;
+    const generic = Number(genericCurrent?.dem_lead ?? data.generic_ballot?.national?.margin);
     const governorPolls = {};
     for (const [key, value] of Object.entries(data)) {
       if (key.startsWith("governor_")) {
@@ -460,8 +439,9 @@ async function fetchPollfinityAverages(status) {
         }
       }
     }
-    return { genericBallotMargin: generic, governorPolls };
-  } catch {
+    return { genericBallotMargin: Number.isFinite(generic) ? generic : null, governorPolls };
+  } catch (error) {
+    markParseFailed(status, "pollfinityAverages", error);
     return { genericBallotMargin: null, governorPolls: {} };
   }
 }
@@ -716,7 +696,44 @@ async function fetchAllSources() {
   const manualGovernorPolls = readManualGovernorPolls(status);
   const governorFinance = mergeGovernorFinance(manualGovernorFinance, onlineGovernorFinance, status);
   const governorPolling = mergeGovernorPolling(status, manualGovernorPolls, pollfinity, twoSeventyGovernor);
-  return { governorFinance, fec: governorFinance, ddhqGeneric, pollfinity, twoSeventyGovernor, governorPolling, status };
+  const directGovernorPolls = mergeDirectGovernorPolls(governorPolling, status);
+  const sourceHealth = sourceHealthSummary(status, {
+    critical: ["pollfinityAverages", "twoSeventyGovernorPolls"]
+  });
+  return { governorFinance, fec: governorFinance, ddhqGeneric, pollfinity, twoSeventyGovernor, governorPolling: directGovernorPolls, status, sourceHealth };
+}
+
+function mergeDirectGovernorPolls(governorPolling, status) {
+  let rows = 0;
+  let skipped = 0;
+  for (const race of GOVERNOR_RACES) {
+    const direct = directPollLedger({ office: "governor", state: race.state }, { dem: race.dem, rep: race.rep });
+    rows += direct.polls.length;
+    skipped += direct.skipped;
+    if (!direct.polls.length) continue;
+    const current = governorPolling.governorPolls[race.state];
+    const currentWeight = current?.polls || 0;
+    const directMargin = direct.polls.reduce((sum, poll) => sum + poll.margin, 0) / direct.polls.length;
+    const combinedPolls = currentWeight + direct.polls.length;
+    governorPolling.governorPolls[race.state] = {
+      ...(current || {}),
+      margin: Number((((current?.margin || 0) * currentWeight + directMargin * direct.polls.length) / combinedPolls).toFixed(2)),
+      polls: combinedPolls,
+      sources: [...new Set([...(current?.sources || []), "Direct poll-release ledger"])],
+      sourceUrls: [...new Set([...(current?.sourceUrls || []), ...direct.polls.map((poll) => poll.sourceUrl)])],
+      pollEntries: [...(current?.pollEntries || []), ...direct.polls],
+      weightScale: current?.weightScale || 1
+    };
+  }
+  status.directPollLedger = {
+    health: rows ? "OK_PARSED" : "OK_NO_ROWS",
+    ok: true,
+    status: rows ? "OK_PARSED" : "OK_NO_ROWS",
+    rows,
+    skipped,
+    url: "data/direct-poll-ledger.json"
+  };
+  return governorPolling;
 }
 
 const SETTINGS = {
@@ -1326,7 +1343,8 @@ function buildRace(baseRace, nationalShift, sourceData) {
   // Retain the source rating as a diagnostic field only. Model ratings must
   // describe the generated forecast, not feed back into its projected margin.
   const expertRatingAdjustment = { margin: rawMargin, adjustment: 0, weight: 0 };
-  const margin = governorMarginGuardrail(race, rawMargin, fundamentals, directGovernorPoll);
+  const guardrail = governorMarginGuardrail(race, rawMargin, fundamentals, directGovernorPoll);
+  const margin = guardrail.margin;
   const error = governorRaceError(race, fundamentals, Boolean(governorPoll?.polls));
   const demProbability = clamp(normalCdf(margin, 0, error), 0.001, 0.999);
   const winnerParty = demProbability >= .5 ? "D" : "R";
@@ -1366,8 +1384,18 @@ function buildRace(baseRace, nationalShift, sourceData) {
       primaryPollSourceUrls: [],
       primaryPollMatchups: [],
       expertRating,
-      expertRatingAdjustment
+      expertRatingAdjustment,
+      sourceHealth: {
+        forecast: sourceData.sourceHealth?.health || "UNKNOWN",
+        degraded: Boolean(sourceData.sourceHealth?.degraded),
+        racePolling: governorPoll?.polls ? "OK_PARSED" : "OK_NO_ROWS",
+        unavailableSources: sourceData.sourceHealth?.unavailableSources || []
+      }
     },
+    modelConfidence: governorModelConfidence(governorPoll, race, sourceData.sourceHealth),
+    matchupStatus: governorMatchupStatus(race),
+    marginDecomposition: governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, guardrail, margin),
+    benchmarkComparison: governorBenchmarkComparison(race, margin, demProbability, governorPoll, sourceData.sourceHealth),
     modelRating,
     demProbability: Number(demProbability.toFixed(5)),
     repProbability: Number((1 - demProbability).toFixed(5)),
@@ -1413,23 +1441,71 @@ function governorMarginGuardrail(race, rawMargin, fundamentals, governorPoll) {
   if (structuralSide && Math.sign(margin) !== structuralSide && Math.abs(fundamentals) >= 9 && !governorPoll?.polls) {
     margin = structuralSide * Math.max(4.5, Math.abs(margin) * .55);
   }
-  margin = applyDeepStateGovernorFloor(race, margin, governorPoll);
-  return Number(margin.toFixed(3));
+  const floor = applyDeepStateGovernorFloor(race, margin, governorPoll);
+  return {
+    margin: Number(floor.margin.toFixed(3)),
+    adjustment: Number((floor.margin - rawMargin).toFixed(2)),
+    reason: floor.reason
+  };
 }
 
 function applyDeepStateGovernorFloor(race, margin, governorPoll) {
-  if (governorPoll?.polls) return margin;
+  if (governorPoll?.polls) return { margin, reason: "usable governor polling available" };
   const pviSide = Math.sign(race.pvi || 0);
   const lastSide = Math.sign(race.lastMargin || 0);
   // A governor result can be highly candidate-specific. Only constrain an
   // implausible reversal when partisan baseline and the last governor result
   // are both very large and point the same way. The old threshold forced KS
   // to R+15.8 despite a D+2.2 last governor result.
-  if (!pviSide || pviSide !== lastSide || Math.abs(race.pvi) < 10 || Math.abs(race.lastMargin) < 15) return margin;
+  if (!pviSide || pviSide !== lastSide || Math.abs(race.pvi) < 10 || Math.abs(race.lastMargin) < 15) return { margin, reason: "within fundamentals-only guardrail" };
   const floor = Math.min(15, 10 + Math.min(Math.abs(race.pvi), Math.abs(race.lastMargin)) * .4);
-  if (pviSide > 0 && margin < floor) return floor;
-  if (pviSide < 0 && margin > -floor) return -floor;
-  return margin;
+  const bounded = pviSide > 0 && margin < floor ? floor : pviSide < 0 && margin > -floor ? -floor : margin;
+  return { margin: bounded, reason: bounded === margin ? "within deep-state floor" : "deep-state fundamentals-only floor" };
+}
+
+function governorMatchupStatus(race) {
+  if (/^Democrat$|^Republican$/i.test(race.dem || "") || /^Democrat$|^Republican$/i.test(race.rep || "")) return "GENERIC_MATCHUP";
+  if (/unresolved|primary/i.test(race.status || "")) return "PRIMARY_UNRESOLVED";
+  if (/presumptive|likely/i.test(race.status || "")) return "LIKELY_MATCHUP";
+  return "CONFIRMED_MATCHUP";
+}
+
+function governorModelConfidence(poll, race, sourceHealth) {
+  let score = 45 + (poll?.polls ? Math.min(30, 10 + poll.polls * 3) : 0);
+  if (/Incumbent/i.test(race.status || "")) score += 6;
+  if (sourceHealth?.degraded) score -= 12;
+  score = Math.round(clamp(score, 20, 92));
+  return { score, label: score >= 72 ? "High" : score >= 50 ? "Medium" : "Low", reason: poll?.polls ? "governor polling and state fundamentals" : "fundamentals-only or limited governor polling" };
+}
+
+function governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, guardrail, finalMargin) {
+  return {
+    previousMargin: Number(race.lastMargin.toFixed(2)),
+    partisanBaselineEffect: Number((fundamentals - race.lastMargin).toFixed(2)),
+    nationalEnvironmentEffect: Number((nationalShift * governorStateElasticity(race)).toFixed(2)),
+    pollingEffect: Number(pollMargin.toFixed(2)),
+    incumbencyEffect: Number(candidateAndLocal.toFixed(2)),
+    candidateQualityEffect: Number(candidateHistory.toFixed(2)),
+    fundraisingEffect: Number(financeSignal.toFixed(2)),
+    ratingsAdjustment: 0,
+    guardrailAdjustment: guardrail.adjustment,
+    guardrailReason: guardrail.reason,
+    finalProjectedMargin: Number(finalMargin.toFixed(2))
+  };
+}
+
+function governorBenchmarkComparison(race, margin, demProbability, poll, sourceHealth) {
+  const warnings = [];
+  if (!poll?.polls && Math.abs(margin) < 6) warnings.push("competitive-race-no-usable-polls");
+  if (sourceHealth?.degraded && Math.abs(margin) < 6) warnings.push("source-failure-affects-competitive-race");
+  return {
+    model: { projectedMargin: Number(margin.toFixed(2)), demProbability: Number(demProbability.toFixed(5)) },
+    previousResult: race.lastMargin,
+    external: { cook: race.rating || null, sabato: null, insideElections: null, splitTicket: null, raceToWH: null, voteHub: null, economist: null, market: null },
+    usablePolls: poll?.polls || 0,
+    sourceHealth,
+    warnings
+  };
 }
 
 function appendHistory(forecast) {
@@ -1561,6 +1637,7 @@ async function buildForecast() {
     generatedAt: new Date().toISOString(),
     runDate: localRunDateLabel(),
     settings: SETTINGS,
+    sourceHealth: sourceData.sourceHealth,
     sourceSummary: {
       genericBallotMargin: senateSignals.genericBallotMargin,
       gubernatorialNationalShift: Number(nationalShift.toFixed(2)),
@@ -1571,6 +1648,7 @@ async function buildForecast() {
       financeNote: "Gubernatorial finance is state-regulated. The model checks configured official state portals for competitive races and uses normalized state-level finance records when machine-readable totals are available. Federal FEC data is not treated as a governor finance source."
     },
     modelWarnings: [
+      ...sourceHealthWarnings(sourceData.sourceHealth, "Governor"),
       ...forecastSanityWarnings(modeledRaces, {
         model: "governor",
         id: (race) => race.state,

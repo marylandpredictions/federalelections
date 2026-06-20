@@ -1,6 +1,6 @@
 {
   "source": "Federal Elections Analysis direct poll-release ledger",
   "updatedAt": null,
-  "instructions": "Add one object per public pollster release. Required: office, pollster, sourceUrl, endDate, dem, rep, plus state for Senate or district (for example IA-01) for House. Optional: sampleSize, population (lv, rv, or adults), sponsor, partisan, internal, source, weight. Rows are deduplicated against public aggregators by pollster and end date; campaign/internal and partisan polls are down-weighted.",
+  "instructions": "Add one object per public pollster release. Required: office, pollster, url (or sourceUrl), endDate, plus state for Senate/Governor or district (for example IA-01) for House. Use candidates with name, party, and pct. The legacy dem/rep fields remain supported. Optional: startDate, sampleSize, population (LV, RV, or adults), sponsor, partisan, internal, source, weight. Candidate matches are classified EXACT, ALIAS, PARTY_GENERIC, LOW_CONFIDENCE, or FAILED; low-confidence rows are excluded until corrected. Rows are deduplicated by pollster, scope, date, sample, and candidate pairing.",
   "polls": []
 }
