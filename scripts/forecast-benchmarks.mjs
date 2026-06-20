@@ -1,11 +1,11 @@
 import { readFileSync } from "node:fs";
 
-const URL = new URL("../data/forecast-benchmarks.json", import.meta.url);
+const BENCHMARK_URL = new URL("../data/forecast-benchmarks.json", import.meta.url);
 let cache;
 
 function inputs() {
   if (cache) return cache;
-  try { cache = JSON.parse(readFileSync(URL, "utf8")); }
+  try { cache = JSON.parse(readFileSync(BENCHMARK_URL, "utf8")); }
   catch { cache = { races: {} }; }
   return cache;
 }

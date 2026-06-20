@@ -1347,10 +1347,12 @@ function buildRace(baseRace, nationalShift, sourceData) {
   
   // Finance integration
   let financeSignal = 0;
+  let financeUsed = false;
   let nationalFinance = 0;
   let raceFec = null;
   const fec = sourceData?.fec?.[race.state];
   if (fec) {
+    financeUsed = true;
     raceFec = financeSideForRace(fec, race);
     const demEfficiency = (raceFec.demCash + raceFec.demIndividual * .45 - raceFec.demDebts * .7) / Math.sqrt(1 + Math.max(raceFec.demDisbursements, 1));
     const repEfficiency = (raceFec.repCash + raceFec.repIndividual * .45 - raceFec.repDebts * .7) / Math.sqrt(1 + Math.max(raceFec.repDisbursements, 1));
@@ -1439,7 +1441,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
     },
     modelConfidence: governorModelConfidence({ ...governorPoll, pollingSummary }, race, sourceData.sourceHealth),
     matchupStatus: governorMatchupStatus(race),
-    marginDecomposition: governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, guardrail, margin),
+    marginDecomposition: governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, guardrail, margin, financeUsed),
     benchmarkComparison: governorBenchmarkComparison(race, margin, demProbability, governorPoll, sourceData.sourceHealth),
     dataQualityWarnings: [...governorBenchmarkComparison(race, margin, demProbability, governorPoll, sourceData.sourceHealth).warnings, pollingStatusWarning(pollingSummary)].filter(Boolean),
     modelRating,
@@ -1533,7 +1535,7 @@ function governorModelConfidence(poll, race, sourceHealth) {
   };
 }
 
-function governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, guardrail, finalMargin) {
+function governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, guardrail, finalMargin, financeUsed) {
   return {
     previousMargin: Number(race.lastMargin.toFixed(2)),
     partisanBaselineEffect: Number((fundamentals - race.lastMargin).toFixed(2)),
@@ -1541,7 +1543,7 @@ function governorMarginDecomposition(race, fundamentals, nationalShift, candidat
     pollingEffect: Number(pollMargin.toFixed(2)),
     incumbencyEffect: Number(candidateAndLocal.toFixed(2)),
     candidateQualityEffect: Number(candidateHistory.toFixed(2)),
-    fundraisingEffect: Number(financeSignal.toFixed(2)),
+    fundraisingEffect: financeUsed ? Number(financeSignal.toFixed(2)) : { value: 0, status: "DISABLED" },
     ratingsAdjustment: 0,
     guardrailAdjustment: guardrail.adjustment,
     guardrailReason: guardrail.reason,
