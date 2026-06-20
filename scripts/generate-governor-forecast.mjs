@@ -1238,9 +1238,17 @@ function governorRaceError(race, fundamentals, hasPolls) {
 }
 
 function statusEffect(race) {
-  if (race.status.includes("Incumbent")) return race.incumbentParty === "D" ? 2.4 : -2.4;
   if (race.status.includes("Term-limited") || race.status.includes("retiring")) return race.incumbentParty === "D" ? -.8 : .8;
+  if (race.status.includes("Incumbent")) return race.incumbentParty === "D" ? 2.4 : -2.4;
   return 0;
+}
+
+function priorGovernorResultWeight(race) {
+  // A retiring or term-limited governor's margin contains useful state
+  // information, but it also contains a large amount of personal incumbency.
+  if (race.status.includes("Term-limited") || race.status.includes("retiring")) return .16;
+  if (race.status.includes("Incumbent")) return .35;
+  return .26;
 }
 
 const EXPERT_RATING_INTERVALS = {
@@ -1274,7 +1282,12 @@ function buildRace(baseRace, nationalShift, sourceData) {
     caucusTarget: "none"
   };
   const electorateComposition = stateElectorateComposition(race);
-  const fundamentals = (race.pvi * .34) + (race.lastMargin * .18) + statusEffect(race);
+  // Governor races are candidate-sensitive, but statewide partisanship and the
+  // prior governor result need to remain the dominant starting point. The old
+  // 0.52 combined weight let small candidate/local terms overwhelm CA, KS,
+  // and other state baselines before any polling existed.
+  const priorResultWeight = priorGovernorResultWeight(race);
+  const fundamentals = (race.pvi * .55) + (race.lastMargin * priorResultWeight) + statusEffect(race);
   const candidateAndLocal = race.candidateEdge || 0;
   const demographicPull = demographicPullAdjustment({ ...race, electorateComposition });
   
@@ -1310,12 +1323,15 @@ function buildRace(baseRace, nationalShift, sourceData) {
   
   const rawMargin = fundamentals + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin + primaryPollSignal;
   const expertRating = race.rating;
-  const expertRatingAdjustment = softGovernorRatingAdjustment(rawMargin, expertRating);
-  const margin = governorMarginGuardrail(race, expertRatingAdjustment.margin, fundamentals, directGovernorPoll);
+  // Retain the source rating as a diagnostic field only. Model ratings must
+  // describe the generated forecast, not feed back into its projected margin.
+  const expertRatingAdjustment = { margin: rawMargin, adjustment: 0, weight: 0 };
+  const margin = governorMarginGuardrail(race, rawMargin, fundamentals, directGovernorPoll);
   const error = governorRaceError(race, fundamentals, Boolean(governorPoll?.polls));
   const demProbability = clamp(normalCdf(margin, 0, error), 0.001, 0.999);
   const winnerParty = demProbability >= .5 ? "D" : "R";
   const modelRating = ratingFromProbability(demProbability, margin);
+  const historicalComparison = governorHistoricalComparison(race, margin, governorPoll);
   return {
     ...race,
     displayName: `${STATE_NAMES[race.state]} Governor`,
@@ -1327,6 +1343,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
     rating: modelRating,
     structuralMargin: Number(fundamentals.toFixed(2)),
     candidateAndLocal: Number(candidateAndLocal.toFixed(2)),
+    historicalComparison,
     electorateComposition,
     demographicPull,
     sourceInputs: {
@@ -1334,6 +1351,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
       finance: raceFec,
       nationalFinance,
       candidateHistory,
+      priorGovernorResultWeight: Number(priorResultWeight.toFixed(2)),
       pollMargin,
       pollCount: governorPoll?.polls || 0,
       pollSources: governorPoll?.sources || [],
@@ -1369,6 +1387,24 @@ function governorStateElasticity(race) {
   return clamp(elasticity, .5, 1.02);
 }
 
+function governorHistoricalComparison(race, projectedMargin, governorPoll) {
+  const shift = projectedMargin - race.lastMargin;
+  const hasMultiPollSignal = Boolean(governorPoll && governorPoll.polls >= 3 && !governorPoll.reducedWeight);
+  const absoluteShift = Math.abs(shift);
+  const level = absoluteShift >= 15 ? "large" : absoluteShift >= 8 ? "notable" : "normal";
+  const expectedRegression = Math.sign(projectedMargin) === Math.sign(race.lastMargin) &&
+    Math.abs(race.lastMargin) >= 20 && Math.abs(projectedMargin) >= 12;
+  return {
+    priorComparableMargin: Number(race.lastMargin.toFixed(2)),
+    projectedMargin: Number(projectedMargin.toFixed(2)),
+    shift: Number(shift.toFixed(2)),
+    level,
+    expectedRegression,
+    needsReview: level === "large" && !hasMultiPollSignal && !expectedRegression,
+    basis: hasMultiPollSignal ? "current multi-poll signal available" : "structural and candidate inputs only"
+  };
+}
+
 function governorMarginGuardrail(race, rawMargin, fundamentals, governorPoll) {
   const anchor = fundamentals;
   const anchorWeight = governorPoll?.polls ? .08 : .18;
@@ -1383,16 +1419,16 @@ function governorMarginGuardrail(race, rawMargin, fundamentals, governorPoll) {
 
 function applyDeepStateGovernorFloor(race, margin, governorPoll) {
   if (governorPoll?.polls) return margin;
-  const structuralSide = Math.sign((race.pvi * .34) + (race.lastMargin * .18) + statusEffect(race));
-  if (!structuralSide) return margin;
   const pviSide = Math.sign(race.pvi || 0);
   const lastSide = Math.sign(race.lastMargin || 0);
-  const sameSidePvi = pviSide === structuralSide ? Math.abs(race.pvi) : 0;
-  const sameSideLast = lastSide === structuralSide ? Math.abs(race.lastMargin) : 0;
-  if (sameSidePvi < 8 && sameSideLast < 12) return margin;
-  const floor = 12.6 + Math.min(5.6, sameSidePvi * .4) + Math.min(2.6, sameSideLast * .08);
-  if (structuralSide > 0 && margin < floor) return floor;
-  if (structuralSide < 0 && margin > -floor) return -floor;
+  // A governor result can be highly candidate-specific. Only constrain an
+  // implausible reversal when partisan baseline and the last governor result
+  // are both very large and point the same way. The old threshold forced KS
+  // to R+15.8 despite a D+2.2 last governor result.
+  if (!pviSide || pviSide !== lastSide || Math.abs(race.pvi) < 10 || Math.abs(race.lastMargin) < 15) return margin;
+  const floor = Math.min(15, 10 + Math.min(Math.abs(race.pvi), Math.abs(race.lastMargin)) * .4);
+  if (pviSide > 0 && margin < floor) return floor;
+  if (pviSide < 0 && margin > -floor) return -floor;
   return margin;
 }
 
@@ -1511,6 +1547,14 @@ async function buildForecast() {
   }
 
   const medianDemGovernors = demCounts[Math.floor(demCounts.length / 2)];
+  const historicalMarginWarnings = modeledRaces
+    .filter((race) => race.historicalComparison?.needsReview)
+    .map((race) => ({
+      severity: "warning",
+      type: "historical-margin-discrepancy",
+      race: race.state,
+      message: `Projected ${race.margin >= 0 ? "D+" : "R+"}${Math.abs(race.margin).toFixed(1)} differs by ${Math.abs(race.historicalComparison.shift).toFixed(1)} points from the prior governor result without a multi-poll signal.`
+    }));
   const forecast = {
     model: "2026 gubernatorial forecast",
     modelDate,
@@ -1526,14 +1570,17 @@ async function buildForecast() {
       governorPolling: sourceData.governorPolling || null,
       financeNote: "Gubernatorial finance is state-regulated. The model checks configured official state portals for competitive races and uses normalized state-level finance records when machine-readable totals are available. Federal FEC data is not treated as a governor finance source."
     },
-    modelWarnings: forecastSanityWarnings(modeledRaces, {
-      model: "governor",
-      id: (race) => race.state,
-      name: (race) => race.displayName,
-      baseline: (race) => race.structuralMargin,
-      partisanship: (race) => race.pvi,
-      candidateAdjustment: (race) => race.candidateAndLocal
-    }),
+    modelWarnings: [
+      ...forecastSanityWarnings(modeledRaces, {
+        model: "governor",
+        id: (race) => race.state,
+        name: (race) => race.displayName,
+        baseline: (race) => race.structuralMargin,
+        partisanship: (race) => race.pvi,
+        candidateAdjustment: (race) => race.candidateAndLocal
+      }),
+      ...historicalMarginWarnings
+    ],
     projectedDemRaceWins: demWinningRaceTotal,
     projectedRepRaceWins: repWinningRaceTotal,
     averageDemGovernors: Number((demCountTotal / SETTINGS.simulations).toFixed(2)),

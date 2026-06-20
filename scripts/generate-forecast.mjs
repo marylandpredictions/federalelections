@@ -2,7 +2,28 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { forecastSanityWarnings } from "./forecast-sanity.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
+const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
+const CERTIFIED_SENATE_BASELINES_URL = new URL("../data/baselines/senate-last-states.json", import.meta.url);
 const previousForecast = readPreviousForecast();
+const certifiedSenateBaselines = readCertifiedSenateBaselines();
+
+// The MEDSL statewide general-election table does not include Georgia's final
+// 2021 runoff, which was the election that decided this 2026 seat. Keep this
+// narrowly scoped correction beside the source provenance instead of carrying
+// a separate untracked baseline in the race configuration.
+const SENATE_BASELINE_OVERRIDES = {
+  GA: { margin: 1.2, year: 2021, baselineRace: "2021 Senate runoff", note: "Certified runoff result replaces the 2020 pre-runoff general-election row." }
+};
+
+function readCertifiedSenateBaselines() {
+  try {
+    const parsed = JSON.parse(readFileSync(CERTIFIED_SENATE_BASELINES_URL, "utf8"));
+    return Object.fromEntries((parsed.states || []).filter((row) => row?.state && Number.isFinite(row.margin)).map((row) => [row.state, row]));
+  } catch (error) {
+    console.warn(`Could not load certified Senate baselines: ${error.message}`);
+    return {};
+  }
+}
 
 const SETTINGS = {
   simulations: 100000,
@@ -1163,6 +1184,29 @@ function senateStructuralMargin(race) {
   return race.pvi * .30 + race.pastSenate * .26;
 }
 
+function historicalMarginComparison(race, projectedMargin, pollSignal) {
+  const shift = projectedMargin - race.pastSenate;
+  const hasMultiPollSignal = Boolean(
+    pollSignal && pollSignal.pollCount >= 3 && pollSignal.pollsters >= 2
+  );
+  const absoluteShift = Math.abs(shift);
+  const level = absoluteShift >= 12 ? "large" : absoluteShift >= 7 ? "notable" : "normal";
+  const expectedRegression = Math.sign(projectedMargin) === Math.sign(race.pastSenate) &&
+    Math.abs(race.pastSenate) >= 20 && Math.abs(projectedMargin) >= 12;
+
+  return {
+    priorComparableMargin: Number(race.pastSenate.toFixed(2)),
+    projectedMargin: Number(projectedMargin.toFixed(2)),
+    shift: Number(shift.toFixed(2)),
+    level,
+    expectedRegression,
+    needsReview: level === "large" && !hasMultiPollSignal && !expectedRegression,
+    basis: hasMultiPollSignal
+      ? "current multi-poll signal available"
+      : "structural and candidate inputs only"
+  };
+}
+
 function softExpertRatingAdjustment(margin, rating, office = "senate") {
   const interval = EXPERT_RATING_INTERVALS[rating];
   if (!interval || !Number.isFinite(margin)) return { margin, adjustment: 0, weight: 0 };
@@ -1248,8 +1292,10 @@ function runModel(sourceData) {
     const withComposition = { ...withCandidates, sourceInputs, electorateComposition };
     const pollSignal = pollWeightMetrics(withComposition);
     const structuralAndPollingMargin = baselineMargin(withComposition);
-    const expertRatingAdjustment = softExpertRatingAdjustment(structuralAndPollingMargin, expertRating);
-    const margin = expertRatingAdjustment.margin;
+    // Public ratings remain provenance for comparison, not a hidden input.
+    // The displayed rating is derived from the simulated probability below.
+    const expertRatingAdjustment = { margin: structuralAndPollingMargin, adjustment: 0, weight: 0 };
+    const margin = structuralAndPollingMargin;
     const quality = inputQuality(withComposition, pollSignal);
     const uncertainty = raceTypeUncertainty(withComposition, pollSignal, quality);
     const fundamentals = senateStructuralMargin(withComposition);
@@ -1257,6 +1303,7 @@ function runModel(sourceData) {
     const error = Number.isFinite(calculatedError) ? calculatedError : 8.2;
     const demProbability = logistic(margin, error);
     const demographicPull = demographicPullAdjustment(withComposition);
+    const historicalComparison = historicalMarginComparison(withComposition, margin, pollSignal);
     return {
       ...withComposition,
       rating: ratingFromProbability(demProbability, margin),
@@ -1279,6 +1326,7 @@ function runModel(sourceData) {
       primaryScenarioAdjustment: primaryScenarioAdjustment(withCandidates),
       rcvAdjustment,
       demographicPull,
+      historicalComparison,
       extraCandidateDemographicPulls: extraCandidateDemographicPulls(withComposition)
     };
   });
@@ -2237,6 +2285,51 @@ function parseElectoralVoteSenatePolls(text) {
   return byState;
 }
 
+function readDirectPollLedger() {
+  try {
+    const ledger = JSON.parse(readFileSync(DIRECT_POLL_LEDGER_URL, "utf8"));
+    const byState = {};
+    let skipped = 0;
+    for (const poll of Array.isArray(ledger.polls) ? ledger.polls : []) {
+      if (String(poll.office || "").toLowerCase() !== "senate") continue;
+      const state = String(poll.state || "").toUpperCase();
+      const dem = toNumber(poll.dem);
+      const rep = toNumber(poll.rep);
+      const date = new Date(`${poll.endDate || ""}T12:00:00Z`);
+      if (!STATE_NAMES[state] || !Number.isFinite(dem) || !Number.isFinite(rep) || Number.isNaN(date.getTime()) || !poll.pollster || !poll.sourceUrl) {
+        skipped += 1;
+        continue;
+      }
+      const endDate = date.toISOString().slice(0, 10);
+      const days = Math.min(0, Math.round((new Date(`${endDate}T12:00:00Z`) - new Date(`${MODEL_DATE_KEY}T12:00:00Z`)) / 86400000));
+      byState[state] ||= [];
+      byState[state].push({
+        days,
+        margin: dem - rep,
+        source: poll.source || "Direct pollster release",
+        sourceUrl: poll.sourceUrl,
+        pollster: poll.pollster,
+        endDate,
+        sampleSize: toNumber(poll.sampleSize),
+        population: poll.population || "unknown",
+        sponsor: poll.sponsor || null,
+        partisan: Boolean(poll.partisan),
+        internal: Boolean(poll.internal),
+        result: `${dem} / ${rep}`,
+        weight: Number.isFinite(toNumber(poll.weight)) ? toNumber(poll.weight) : 1
+      });
+    }
+    return {
+      byState,
+      polls: Object.values(byState).reduce((sum, rows) => sum + rows.length, 0),
+      skipped,
+      source: ledger.source || "Direct release ledger"
+    };
+  } catch {
+    return { byState: {}, polls: 0, skipped: 0, source: "Direct release ledger unavailable" };
+  }
+}
+
 async function fetchAllSources() {
   const status = { checkedAt: new Date().toISOString() };
   const [votehub, ddhqGeneric, pollfinity, usPollingDataGeneric, realClearPolling, twoSeventyToWin, fec, mit, census, civic, pollingReferences] = await Promise.all([
@@ -2252,6 +2345,8 @@ async function fetchAllSources() {
     fetchCivicApi(status),
     fetchPollingReferencePages(status)
   ]);
+  const directPolls = readDirectPollLedger();
+  status.directPollLedger = { ok: true, status: "local", rows: directPolls.polls, skipped: directPolls.skipped, url: "data/direct-poll-ledger.json" };
   const usableGenericSource = (source) => {
     if (!Number.isFinite(source.margin)) return false;
     if (source.polls > 0) return true;
@@ -2271,7 +2366,7 @@ async function fetchAllSources() {
     genericBallotDem: genericWeight ? genericPollingSources.reduce((sum, source) => sum + (Number.isFinite(source.dem) ? source.dem : 0) * source.weight, 0) / genericWeight : null,
     genericBallotRep: genericWeight ? genericPollingSources.reduce((sum, source) => sum + (Number.isFinite(source.rep) ? source.rep : 0) * source.weight, 0) / genericWeight : null
   };
-  return { status: stableSourceStatus(status), votehub, ddhqGeneric, pollfinity, usPollingDataGeneric, genericPolling, realClearPolling, twoSeventyToWin, fec, mit, census, civic, pollingReferences };
+  return { status: stableSourceStatus(status), votehub, ddhqGeneric, pollfinity, usPollingDataGeneric, genericPolling, realClearPolling, twoSeventyToWin, directPolls, fec, mit, census, civic, pollingReferences };
 }
 
 function stableSourceStatus(status) {
@@ -2291,9 +2386,24 @@ function applySourceInputs(baseRaces, sourceData) {
     let money = race.money;
     let pastSenate = race.pastSenate;
     let pvi = race.pvi;
+    const certifiedBaseline = certifiedSenateBaselines[race.state];
+    const baselineOverride = SENATE_BASELINE_OVERRIDES[race.state];
+    if (baselineOverride || certifiedBaseline) {
+      const selectedBaseline = baselineOverride || certifiedBaseline;
+      pastSenate = selectedBaseline.margin;
+      sourceInputs.comparableSenateBaseline = {
+        margin: selectedBaseline.margin,
+        year: selectedBaseline.year,
+        baselineRace: selectedBaseline.baselineRace,
+        source: baselineOverride ? "FEA certified runoff override" : "MIT Election Data and Science Lab statewide returns",
+        note: selectedBaseline.note || selectedBaseline.notes || null,
+        replacedConfiguredMargin: race.pastSenate
+      };
+    }
     const fetchedPolls = [
       ...(sourceData?.realClearPolling?.byState?.[race.state] || []),
       ...(sourceData?.twoSeventyToWin?.byState?.[race.state] || []),
+      ...(sourceData?.directPolls?.byState?.[race.state] || []),
       ...(sourceData?.pollingReferences?.electoralVoteByState?.[race.state] || [])
     ];
     let polls = selectCurrentRacePolls(race.polls, fetchedPolls);
@@ -2310,8 +2420,13 @@ function applySourceInputs(baseRaces, sourceData) {
       sourceInputs.openFec = { ...raceFec, repFinanceLabel: raceFec.repFinanceLabel || "Republican side", demEfficiency, repEfficiency, efficiencySignal, rawReceiptSignal, financeSignal };
     }
     if (mit) {
-      pastSenate = race.pastSenate * .8 + mit.margin * .2;
-      sourceInputs.mitSenate = mit;
+      // MEDSL's public Senate file currently ends in 2018. It is useful for
+      // historical validation, but it must not overwrite a 2026 comparable
+      // baseline - Minnesota's 2018 special-election result was doing exactly
+      // that. A stale result can be shown as provenance, not blended as news.
+      const age = Number(MODEL_DATE_KEY.slice(0, 4)) - mit.year;
+      sourceInputs.mitSenate = { ...mit, ageYears: age, usedInBaseline: age <= 6 };
+      if (age <= 6) pastSenate = race.pastSenate * .8 + mit.margin * .2;
     }
     if (census?.pop2020 && census?.pop2024) {
       const growth = ((census.pop2024 - census.pop2020) / census.pop2020) * 100;
@@ -2359,6 +2474,14 @@ function applySourceInputs(baseRaces, sourceData) {
       sourceInputs.twoSeventyToWin = {
         polls: towinPolls.length,
         recent: towinPolls.slice(0, 5).map(({ pollster, endDate, margin, title, result, spread, sampleSize, population }) => ({ pollster, endDate, margin, title, result, spread, sampleSize, population }))
+      };
+    }
+
+    if (sourceData?.directPolls?.byState?.[race.state]?.length) {
+      const directPolls = sourceData.directPolls.byState[race.state];
+      sourceInputs.directPolls = {
+        polls: directPolls.length,
+        recent: directPolls.slice(0, 8).map(({ source, sourceUrl, pollster, endDate, margin, sampleSize, population, sponsor, partisan }) => ({ source, sourceUrl, pollster, endDate, margin, sampleSize, population, sponsor, partisan }))
       };
     }
 
@@ -2574,6 +2697,14 @@ async function writeForecast() {
   const sourceData = await fetchAllSources();
   const model = runModel(sourceData);
   const generatedAt = new Date().toISOString();
+  const historicalMarginWarnings = model.races
+    .filter((race) => race.historicalComparison?.needsReview)
+    .map((race) => ({
+      severity: "warning",
+      type: "historical-margin-discrepancy",
+      race: race.state,
+      message: `Projected ${race.margin >= 0 ? "D+" : "R+"}${Math.abs(race.margin).toFixed(1)} differs by ${Math.abs(race.historicalComparison.shift).toFixed(1)} points from the comparable Senate baseline without a multi-poll signal.`
+    }));
   const output = {
     generatedAt,
     modelDate: MODEL_DATE_KEY,
@@ -2618,14 +2749,17 @@ async function writeForecast() {
       ]))
     },
     calibration: buildCalibrationReport(sourceData, model),
-    modelWarnings: forecastSanityWarnings(model.races, {
-      model: "senate",
-      id: (race) => race.state,
-      name: (race) => race.displayName,
-      baseline: (race) => race.pvi * .24 + race.pastSenate * .20,
-      partisanship: (race) => race.pvi,
-      candidateAdjustment: (race) => race.candidate
-    }),
+    modelWarnings: [
+      ...forecastSanityWarnings(model.races, {
+        model: "senate",
+        id: (race) => race.state,
+        name: (race) => race.displayName,
+        baseline: (race) => race.pvi * .24 + race.pastSenate * .20,
+        partisanship: (race) => race.pvi,
+        candidateAdjustment: (race) => race.candidate
+      }),
+      ...historicalMarginWarnings
+    ],
     controlHistory: appendControlHistory(model),
     seatHistory: appendSeatHistory(model),
     ...model

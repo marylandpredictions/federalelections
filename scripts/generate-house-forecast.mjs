@@ -3,6 +3,7 @@ import { forecastSanityWarnings } from "./forecast-sanity.mjs";
 
 const OUTPUT_URL = new URL("../data/house-forecast.json", import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
+const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
 const previousForecast = readPreviousForecast();
 
 const SETTINGS = {
@@ -829,6 +830,42 @@ function mergeDistrictPollSources(...sources) {
   return Object.fromEntries(Object.entries(merged).map(([id, polls]) => [id, dedupeHousePolls(polls)]));
 }
 
+function readDirectHousePollLedger() {
+  try {
+    const ledger = JSON.parse(readFileSync(DIRECT_POLL_LEDGER_URL, "utf8"));
+    const byDistrict = {};
+    let skipped = 0;
+    for (const poll of Array.isArray(ledger.polls) ? ledger.polls : []) {
+      if (String(poll.office || "").toLowerCase() !== "house") continue;
+      const id = String(poll.district || "").toUpperCase().replace(/^([A-Z]{2})-(\d)$/, "$1-0$2");
+      const dem = toNumber(poll.dem);
+      const rep = toNumber(poll.rep);
+      const date = new Date(`${poll.endDate || ""}T12:00:00Z`);
+      if (!/^([A-Z]{2})-(AL|\d{2})$/.test(id) || !Number.isFinite(dem) || !Number.isFinite(rep) || Number.isNaN(date.getTime()) || !poll.pollster || !poll.sourceUrl) {
+        skipped += 1;
+        continue;
+      }
+      byDistrict[id] ||= [];
+      byDistrict[id].push({
+        margin: dem - rep,
+        source: poll.source || "Direct pollster release",
+        sourceUrl: poll.sourceUrl,
+        pollster: poll.pollster,
+        endDate: date.toISOString().slice(0, 10),
+        sampleSize: toNumber(poll.sampleSize),
+        population: poll.population || "unknown",
+        sponsor: poll.sponsor || null,
+        partisan: Boolean(poll.partisan),
+        internal: Boolean(poll.internal),
+        weight: Number.isFinite(toNumber(poll.weight)) ? toNumber(poll.weight) : 1
+      });
+    }
+    return { byDistrict, polls: Object.values(byDistrict).reduce((sum, rows) => sum + rows.length, 0), skipped };
+  } catch {
+    return { byDistrict: {}, polls: 0, skipped: 0 };
+  }
+}
+
 function toNumber(value) {
   const number = Number(String(value ?? "").replace(/[$,%]/g, "").trim());
   return Number.isFinite(number) ? number : null;
@@ -889,17 +926,21 @@ async function fetchHouseSources() {
   const mapDistricts = parse270MapDistricts(mapHtml);
   const cookDistricts = parseCookDistricts(cookHtml);
   const pollingDistricts = mapDistricts.length ? mapDistricts : cookDistricts;
+  const directPolls = readDirectHousePollLedger();
   const districtPolls = mergeDistrictPollSources(
     parseHousePollReferences(pollingHtml, "270toWin", pollingDistricts),
     parseHousePollReferences(latestHousePolls, "RealClearPolling", pollingDistricts),
     parseHousePollReferences(raceToTheWhHouse, "Race to the WH", pollingDistricts),
-    parseHousePollReferences(raceToTheWhAllPolls, "Race to the WH", pollingDistricts)
+    parseHousePollReferences(raceToTheWhAllPolls, "Race to the WH", pollingDistricts),
+    directPolls.byDistrict
   );
   status.houseDistrictPolls = {
     ok: true,
     status: "parsed",
     districts: Object.keys(districtPolls).length,
     polls: Object.values(districtPolls).reduce((sum, polls) => sum + polls.length, 0),
+    directPolls: directPolls.polls,
+    skippedDirectPolls: directPolls.skipped,
     note: "Only structured/current district matchups are blended; generic ballot data remains a separate national signal."
   };
   return {
@@ -947,6 +988,7 @@ function adjustedDistricts(sourceData) {
       ? preMarketMargin * (1 - marketSignal.weight) + marketSignal.impliedMargin * marketSignal.weight
       : preMarketMargin;
     const margin = houseMarginGuardrail(district, rawMargin, contextMargin);
+    const historicalComparison = houseHistoricalComparison(district, margin, contextMargin, districtPollSignal, marketSignal);
     const error = houseRaceError(district, contextMargin, nomination, districtPollSignal);
     const demProbability = logistic(margin, error);
     const { sourceRating: _legacySourceRating, ...districtWithoutLegacyRating } = district;
@@ -961,6 +1003,7 @@ function adjustedDistricts(sourceData) {
       winnerProbability: Number(Math.max(demProbability, 1 - demProbability).toFixed(4)),
       error,
       competitive: Math.abs(margin) < 8,
+      historicalComparison,
       sourceInputs: {
         genericBallotShift: Number(genericShift.toFixed(2)),
         nationalFinanceShift: Number(nationalFinanceShift.toFixed(2)),
@@ -1007,6 +1050,24 @@ function houseMarginGuardrail(district, rawMargin, contextMargin) {
     margin = fundamentalSide * Math.max(Math.abs(margin), 15);
   }
   return margin;
+}
+
+function houseHistoricalComparison(district, projectedMargin, contextualBaseline, pollSignal, marketSignal) {
+  const shift = projectedMargin - contextualBaseline;
+  const absoluteShift = Math.abs(shift);
+  const level = absoluteShift >= 10 ? "large" : absoluteShift >= 6 ? "notable" : "normal";
+  const hasExternalRaceSignal = Boolean(pollSignal || marketSignal);
+  const expectedRegression = Math.sign(projectedMargin) === Math.sign(contextualBaseline) &&
+    Math.abs(contextualBaseline) >= 14 && Math.abs(projectedMargin) >= 10;
+  return {
+    priorComparableMargin: Number(contextualBaseline.toFixed(2)),
+    projectedMargin: Number(projectedMargin.toFixed(2)),
+    shift: Number(shift.toFixed(2)),
+    level,
+    expectedRegression,
+    needsReview: level === "large" && !hasExternalRaceSignal && !expectedRegression,
+    basis: hasExternalRaceSignal ? "district poll or market signal available" : "district fundamentals and candidate inputs only"
+  };
 }
 
 function houseRaceError(district, contextMargin, nomination, pollSignal = null) {
@@ -1579,6 +1640,14 @@ async function writeHouseForecast() {
     ...(model.districts.find((item) => item.id === district.id) || district),
     leverage: district.leverage
   }));
+  const historicalMarginWarnings = model.districts
+    .filter((district) => district.historicalComparison?.needsReview)
+    .map((district) => ({
+      severity: "warning",
+      type: "historical-margin-discrepancy",
+      race: district.id,
+      message: `Projected ${district.margin >= 0 ? "D+" : "R+"}${Math.abs(district.margin).toFixed(1)} differs by ${Math.abs(district.historicalComparison.shift).toFixed(1)} points from the district's contextual baseline without a district-level signal.`
+    }));
   const output = {
     generatedAt: new Date().toISOString(),
     modelDate: MODEL_DATE_KEY,
@@ -1614,14 +1683,17 @@ async function writeHouseForecast() {
       redistricting: redistrictingSummary(districts)
     },
     ratingSummary: ratingSummary(districts),
-    modelWarnings: forecastSanityWarnings(model.districts, {
-      model: "house",
-      id: (district) => district.id,
-      name: (district) => district.displayName || district.id,
-      baseline: (district) => district.sourceInputs?.districtBaseline,
-      partisanship: (district) => district.sourceInputs?.presidentialBaseline,
-      candidateAdjustment: (district) => district.sourceInputs?.candidateQualityAdjustment
-    }),
+    modelWarnings: [
+      ...forecastSanityWarnings(model.districts, {
+        model: "house",
+        id: (district) => district.id,
+        name: (district) => district.displayName || district.id,
+        baseline: (district) => district.sourceInputs?.districtBaseline,
+        partisanship: (district) => district.sourceInputs?.presidentialBaseline,
+        candidateAdjustment: (district) => district.sourceInputs?.candidateQualityAdjustment
+      }),
+      ...historicalMarginWarnings
+    ],
     controlHistory: appendControlHistory(model),
     seatHistory: appendSeatHistory(model),
     ...model
