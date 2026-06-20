@@ -4,6 +4,7 @@ import { markNoRows, markParseFailed, recordFetch, recordFetchError, sourceHealt
 import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
+import { benchmarkFor, benchmarkWarnings } from "./forecast-benchmarks.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
@@ -2363,23 +2364,25 @@ function senateMarginDecomposition(race, pollSignal, guardrail, finalMargin) {
 }
 
 function senateBenchmarkComparison(race, margin, demProbability, pollSignal) {
-  const consensusRating = race.rating || null;
+  const manual = benchmarkFor(`${race.state}-SEN-2026`);
+  const consensusRating = manual?.consensusRating || race.rating || null;
   const warnings = [];
   if (!pollSignal && Math.abs(margin) < 6) warnings.push("competitive-race-no-usable-polls");
   if (race.sourceInputs?.sourceHealth?.degraded && Math.abs(margin) < 6) warnings.push("source-failure-affects-competitive-race");
   if (race.historicalComparison?.needsReview) warnings.push("large-unpolled-shift-from-previous-result");
+  warnings.push(...benchmarkWarnings(manual, margin, demProbability));
   return {
     model: { projectedMargin: Number(margin.toFixed(2)), demProbability: Number(demProbability.toFixed(5)) },
     previousResult: race.pastSenate,
     external: {
-      cook: null,
-      sabato: null,
-      insideElections: race.rating || null,
-      splitTicket: null,
-      raceToWH: null,
-      voteHub: null,
-      economist: null,
-      market: null
+      cook: manual?.cook || null,
+      sabato: manual?.sabato || null,
+      insideElections: manual?.insideElections || race.rating || null,
+      splitTicket: manual?.splitTicket || null,
+      raceToWH: manual?.raceToWH || null,
+      voteHub: manual?.voteHub || null,
+      economist: manual?.economist || null,
+      market: manual?.market || null
     },
     consensusRating,
     usablePolls: pollSignal?.pollCount || 0,

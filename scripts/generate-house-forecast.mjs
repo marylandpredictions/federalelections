@@ -4,6 +4,7 @@ import { markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, so
 import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
+import { benchmarkFor, benchmarkWarnings } from "./forecast-benchmarks.mjs";
 
 const OUTPUT_URL = new URL("../data/house-forecast.json", import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
@@ -1155,14 +1156,25 @@ function houseMarginDecomposition(district, previousMargin, genericBallotEffect,
 }
 
 function houseBenchmarkComparison(district, margin, demProbability, pollSignal, sourceHealth) {
+  const manual = benchmarkFor(`${district.id}-2026`);
   const warnings = [];
   if (!pollSignal && Math.abs(margin) < 6) warnings.push("competitive-race-no-usable-polls");
   if (sourceHealth?.degraded && Math.abs(margin) < 6) warnings.push("source-failure-affects-competitive-race");
   if (district.redistricting?.status && !district.redistricting?.effectiveFor2026) warnings.push("redistricting-map-version-watch");
+  warnings.push(...benchmarkWarnings(manual, margin, demProbability));
   return {
     model: { projectedMargin: Number(margin.toFixed(2)), demProbability: Number(demProbability.toFixed(5)) },
     previousResult: district.fundamentalMargin ?? null,
-    external: { cook: district.ratingSource?.includes("Cook") ? district.baselineRating : null, sabato: null, insideElections: district.ratingSource?.includes("Inside") ? district.baselineRating : null, splitTicket: null, raceToWH: null, voteHub: null, economist: null, market: null },
+    external: {
+      cook: manual?.cook || (district.ratingSource?.includes("Cook") ? district.baselineRating : null),
+      sabato: manual?.sabato || null,
+      insideElections: manual?.insideElections || (district.ratingSource?.includes("Inside") ? district.baselineRating : null),
+      splitTicket: manual?.splitTicket || null,
+      raceToWH: manual?.raceToWH || null,
+      voteHub: manual?.voteHub || null,
+      economist: manual?.economist || null,
+      market: manual?.market || null
+    },
     usablePolls: pollSignal?.pollCount || 0,
     sourceHealth,
     warnings

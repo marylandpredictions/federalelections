@@ -4,6 +4,7 @@ import { markDisabled, markParseFailed, recordFetch, recordFetchError, sourceHea
 import { directPollLedger } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
+import { benchmarkFor, benchmarkWarnings } from "./forecast-benchmarks.mjs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const GOVERNOR_HISTORY_URL = new URL("../data/governor-history.json", import.meta.url);
@@ -1549,13 +1550,24 @@ function governorMarginDecomposition(race, fundamentals, nationalShift, candidat
 }
 
 function governorBenchmarkComparison(race, margin, demProbability, poll, sourceHealth) {
+  const manual = benchmarkFor(`${race.state}-GOV-2026`);
   const warnings = [];
   if (!poll?.polls && Math.abs(margin) < 6) warnings.push("competitive-race-no-usable-polls");
   if (sourceHealth?.degraded && Math.abs(margin) < 6) warnings.push("source-failure-affects-competitive-race");
+  warnings.push(...benchmarkWarnings(manual, margin, demProbability));
   return {
     model: { projectedMargin: Number(margin.toFixed(2)), demProbability: Number(demProbability.toFixed(5)) },
     previousResult: race.lastMargin,
-    external: { cook: race.rating || null, sabato: null, insideElections: null, splitTicket: null, raceToWH: null, voteHub: null, economist: null, market: null },
+    external: {
+      cook: manual?.cook || race.rating || null,
+      sabato: manual?.sabato || null,
+      insideElections: manual?.insideElections || null,
+      splitTicket: manual?.splitTicket || null,
+      raceToWH: manual?.raceToWH || null,
+      voteHub: manual?.voteHub || null,
+      economist: manual?.economist || null,
+      market: manual?.market || null
+    },
     usablePolls: poll?.polls || 0,
     sourceHealth,
     warnings

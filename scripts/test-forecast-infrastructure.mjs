@@ -7,6 +7,8 @@ import {
   sourceHealthSummary
 } from "./forecast-source-health.mjs";
 import { candidateMatchConfidence, dedupePollRows } from "./poll-ledger.mjs";
+import { classifyPollingInputs } from "./forecast-polling-status.mjs";
+import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 
 function response(status, ok = status >= 200 && status < 300) {
   return { status, ok };
@@ -40,6 +42,25 @@ const deduped = dedupePollRows([
   { pollster: "Example", endDate: "2026-06-10", sampleSize: 800, candidates: [{ party: "D", name: "A" }, { party: "R", name: "B" }] }
 ]);
 assert.equal(deduped.length, 1);
+
+const legacyOnly = classifyPollingInputs([{ margin: 2, source: "Legacy model input", legacy: true }]);
+assert.equal(legacyOnly.pollingStatus, "LEGACY_FALLBACK_ONLY");
+assert.equal(legacyOnly.pollCount, 0);
+assert.equal(legacyOnly.legacyFallbackPollCount, 1);
+
+const mixed = classifyPollingInputs([
+  { margin: 2, source: "VoteHub" },
+  { margin: 1, source: "Manual direct-poll ledger", manual: true }
+]);
+assert.equal(mixed.pollingStatus, "LIVE_AND_MANUAL_POLLS_AVAILABLE");
+assert.equal(mixed.pollCount, 2);
+
+const priorFifty = process.env.FIFTYPLUSONE_PATH;
+delete process.env.FIFTYPLUSONE_PATH;
+const fiftyStatus = {};
+assert.equal(loadFiftyPlusOnePolls("senate", fiftyStatus).usedPolls, 0);
+assert.equal(fiftyStatus.fiftyPlusOneSenate.health, SOURCE_HEALTH.DISABLED);
+if (priorFifty) process.env.FIFTYPLUSONE_PATH = priorFifty;
 
 const health = sourceHealthSummary(status, { critical: ["forbidden"] });
 assert.equal(health.degraded, true);
