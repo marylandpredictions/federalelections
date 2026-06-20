@@ -803,7 +803,12 @@ function adjustedDistricts(sourceData) {
     const demographicPull = houseDemographicPull(district, challengerStrength);
     const candidateQualityAdjustment = houseCandidateQualityAdjustment(district, nomination);
     const nominationAdjustment = nomination.marginAdjustment * MODEL_WEIGHTS.nominationCertainty;
-    const rawMargin = baselineMargin + genericShift + nationalFinanceShift + MODEL_WEIGHTS.historicalMidterm + incumbencyAdjustment + openPenalty + demographicPull.adjustment + financeSignal * MODEL_WEIGHTS.finance + candidateQualityAdjustment + nominationAdjustment;
+    const preMarketMargin = baselineMargin + genericShift + nationalFinanceShift + MODEL_WEIGHTS.historicalMidterm + incumbencyAdjustment + openPenalty + demographicPull.adjustment + financeSignal * MODEL_WEIGHTS.finance + candidateQualityAdjustment + nominationAdjustment;
+    const provisionalError = houseRaceError(district, contextMargin, nomination);
+    const marketSignal = houseMarketSignal(district, provisionalError);
+    const rawMargin = marketSignal
+      ? preMarketMargin * (1 - marketSignal.weight) + marketSignal.impliedMargin * marketSignal.weight
+      : preMarketMargin;
     const margin = houseMarginGuardrail(district, rawMargin, contextMargin);
     const error = houseRaceError(district, contextMargin, nomination);
     const demProbability = logistic(margin, error);
@@ -832,6 +837,7 @@ function adjustedDistricts(sourceData) {
         nomination,
         candidateQualityAdjustment: Number(candidateQualityAdjustment.toFixed(2)),
         nominationAdjustment: Number(nominationAdjustment.toFixed(2)),
+        marketSignal,
         demographicPull,
         challengerStrength,
         finance: sourceData.fec[district.id] || null
@@ -865,6 +871,26 @@ function houseRaceError(district, contextMargin, nomination) {
   const structuralCertainty = Math.min(2.2, Math.abs(contextMargin) * .12);
   const openSeatUncertainty = district.open ? .65 : 0;
   return clamp(9.2 - structuralCertainty + openSeatUncertainty + (nomination.errorAdjustment || 0), 5.2, 11.5);
+}
+
+function houseMarketSignal(district, error) {
+  const rawPrice = Number(district.kalshiPrice);
+  if (district.open || !district.seatParty || !Number.isFinite(rawPrice)) return null;
+  const price = rawPrice > 1 ? rawPrice / 100 : rawPrice;
+  if (price < .05 || price > .95) return null;
+  // 270toWin's market field is an incumbent-side contract. Convert it to a
+  // Democratic win probability before mapping it onto our margin scale.
+  const demProbability = district.seatParty === "D" ? price : 1 - price;
+  const bounded = clamp(demProbability, .05, .95);
+  const impliedMargin = clamp(Math.log(bounded / (1 - bounded)) * Math.max(error, 5.5) / 1.55, -16, 16);
+  const days = Math.max(0, (new Date("2026-11-03T12:00:00Z") - new Date()) / 86400000);
+  const progress = clamp(1 - days / 306, 0, 1);
+  return {
+    demProbability: Number(demProbability.toFixed(4)),
+    impliedMargin: Number(impliedMargin.toFixed(2)),
+    // Market data is informative, not decisive, this far from Election Day.
+    weight: Number((.035 + .055 * progress).toFixed(3))
+  };
 }
 
 function isAtLargeDistrict(district) {

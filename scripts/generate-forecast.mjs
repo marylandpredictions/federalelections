@@ -61,6 +61,12 @@ const MODEL_WEIGHTS = {
   nationalFinance: .45
 };
 
+const EXPERT_RATING_INTERVALS = {
+  "Safe D": [12, Infinity], "Likely D": [6, 12], "Lean D": [2, 6], "Tilt D": [.5, 2],
+  "Toss-up": [-1, 1],
+  "Tilt R": [-2, -.5], "Lean R": [-6, -2], "Likely R": [-12, -6], "Safe R": [-Infinity, -12]
+};
+
 const CHALLENGER_STRENGTH_DISCOUNTS = {
   sameSeat: .85,
   statewide: .55,
@@ -1083,6 +1089,18 @@ function senateStructuralMargin(race) {
   return race.pvi * .30 + race.pastSenate * .26;
 }
 
+function softExpertRatingAdjustment(margin, rating, office = "senate") {
+  const interval = EXPERT_RATING_INTERVALS[rating];
+  if (!interval || !Number.isFinite(margin)) return { margin, adjustment: 0, weight: 0 };
+  const [lower, upper] = interval;
+  const boundary = margin < lower ? lower : margin > upper ? upper : margin;
+  const days = Math.max(0, daysUntil("2026-11-03"));
+  const progress = clamp(1 - days / 306, 0, 1);
+  const weight = (office === "governor" ? .14 : .10) + (office === "governor" ? .16 : .12) * progress;
+  const adjustment = (boundary - margin) * weight;
+  return { margin: margin + adjustment, adjustment: Number(adjustment.toFixed(3)), weight: Number(weight.toFixed(3)) };
+}
+
 function baselineMargin(race) {
   const fundamentals = senateStructuralMargin(race);
   const signals = race.money * .9 + race.candidate * 1.05 + race.approval * .75;
@@ -1142,16 +1160,20 @@ function runModel(sourceData) {
       : "none";
     const caucusSpoilerAdjustment = caucusDiscount(withCandidates);
     const rcvAdjustment = rcvBaselineAdjustment(withCandidates);
+    const expertRating = withCandidates.rating;
     const sourceInputs = {
       ...(withCandidates.sourceInputs || {}),
       independentTreatment,
       caucusSpoilerAdjustment,
-      rcvAdjustment
+      rcvAdjustment,
+      expertRating
     };
     const electorateComposition = stateElectorateComposition(withCandidates);
     const withComposition = { ...withCandidates, sourceInputs, electorateComposition };
     const pollSignal = pollWeightMetrics(withComposition);
-    const margin = baselineMargin(withComposition);
+    const structuralAndPollingMargin = baselineMargin(withComposition);
+    const expertRatingAdjustment = softExpertRatingAdjustment(structuralAndPollingMargin, expertRating);
+    const margin = expertRatingAdjustment.margin;
     const quality = inputQuality(withComposition, pollSignal);
     const uncertainty = raceTypeUncertainty(withComposition, pollSignal, quality);
     const fundamentals = senateStructuralMargin(withComposition);
@@ -1168,6 +1190,8 @@ function runModel(sourceData) {
       demProbability,
       pollMargin: pollSignal?.margin ?? null,
       pollSignal,
+      expertRating,
+      expertRatingAdjustment,
       inputQuality: quality,
       uncertaintyAdjustment: uncertainty,
       primaryEvents: primaryEventsForRace(withCandidates),

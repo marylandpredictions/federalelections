@@ -1243,6 +1243,24 @@ function statusEffect(race) {
   return 0;
 }
 
+const EXPERT_RATING_INTERVALS = {
+  "Safe D": [12, Infinity], "Likely D": [6, 12], "Lean D": [2, 6], "Tilt D": [.5, 2],
+  "Toss-up": [-1, 1],
+  "Tilt R": [-2, -.5], "Lean R": [-6, -2], "Likely R": [-12, -6], "Safe R": [-Infinity, -12]
+};
+
+function softGovernorRatingAdjustment(margin, rating) {
+  const interval = EXPERT_RATING_INTERVALS[rating];
+  if (!interval || !Number.isFinite(margin)) return { margin, adjustment: 0, weight: 0 };
+  const [lower, upper] = interval;
+  const boundary = margin < lower ? lower : margin > upper ? upper : margin;
+  const days = Math.max(0, (new Date("2026-11-03T12:00:00Z") - new Date()) / 86400000);
+  const progress = clamp(1 - days / 306, 0, 1);
+  const weight = .14 + .16 * progress;
+  const adjustment = (boundary - margin) * weight;
+  return { margin: margin + adjustment, adjustment: Number(adjustment.toFixed(3)), weight: Number(weight.toFixed(3)) };
+}
+
 function buildRace(baseRace, nationalShift, sourceData) {
   const candidateInfo = GOVERNOR_CANDIDATE_STATUS[baseRace.state] || {};
   const race = {
@@ -1291,7 +1309,9 @@ function buildRace(baseRace, nationalShift, sourceData) {
   const primaryPollSignal = 0;
   
   const rawMargin = fundamentals + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin + primaryPollSignal;
-  const margin = governorMarginGuardrail(race, rawMargin, fundamentals, directGovernorPoll);
+  const expertRating = race.rating;
+  const expertRatingAdjustment = softGovernorRatingAdjustment(rawMargin, expertRating);
+  const margin = governorMarginGuardrail(race, expertRatingAdjustment.margin, fundamentals, directGovernorPoll);
   const error = governorRaceError(race, fundamentals, Boolean(governorPoll?.polls));
   const demProbability = clamp(normalCdf(margin, 0, error), 0.001, 0.999);
   const winnerParty = demProbability >= .5 ? "D" : "R";
@@ -1326,7 +1346,9 @@ function buildRace(baseRace, nationalShift, sourceData) {
       primaryPollCount: 0,
       primaryPollSources: [],
       primaryPollSourceUrls: [],
-      primaryPollMatchups: []
+      primaryPollMatchups: [],
+      expertRating,
+      expertRatingAdjustment
     },
     modelRating,
     demProbability: Number(demProbability.toFixed(5)),
