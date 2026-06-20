@@ -1,15 +1,16 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { join, resolve } from "node:path";
 
-const root = new URL("../", import.meta.url);
+const root = fileURLToPath(new URL("../", import.meta.url));
 const failures = [];
 
 function dataJsonFiles() {
   const found = [];
   const walk = (relativeDir) => {
-    for (const entry of readdirSync(new URL(relativeDir, root))) {
+    for (const entry of readdirSync(resolve(root, relativeDir))) {
       const relativePath = join(relativeDir, entry);
-      const stats = statSync(new URL(relativePath.replace(/\\/g, "/"), root));
+      const stats = statSync(resolve(root, relativePath));
       if (stats.isDirectory()) walk(`${relativePath}/`);
       else if (entry.endsWith(".json")) found.push(relativePath);
     }
@@ -19,7 +20,7 @@ function dataJsonFiles() {
 }
 
 for (const file of dataJsonFiles()) {
-  const text = readFileSync(new URL(file.replace(/\\/g, "/"), root), "utf8");
+  const text = readFileSync(resolve(root, file), "utf8");
   if (/^\s*(<<<<<<<|=======|>>>>>>>)/m.test(text)) {
     failures.push(`${file} contains unresolved Git conflict markers`);
     continue;

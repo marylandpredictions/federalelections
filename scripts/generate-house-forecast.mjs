@@ -3,6 +3,7 @@ import { forecastSanityWarnings } from "./forecast-sanity.mjs";
 import { markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
 import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
+import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
 
 const OUTPUT_URL = new URL("../data/house-forecast.json", import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
@@ -922,8 +923,23 @@ async function fetchHouseSources() {
     fetchHouseFec(status),
     fetchGenericPolling(status)
   ]);
-  const mapDistricts = parse270MapDistricts(mapHtml);
+  let mapDistricts = parse270MapDistricts(mapHtml);
   const cookDistricts = parseCookDistricts(cookHtml);
+  const ratingsUnavailable = mapDistricts.length < 400 && cookDistricts.length < 400;
+  const cachedDistricts = Array.isArray(previousForecast?.districts) ? previousForecast.districts : [];
+  const usingCachedDistricts = ratingsUnavailable && cachedDistricts.length >= 400;
+  if (usingCachedDistricts) {
+    // A public ratings page is optional source context, not the district
+    // universe. Preserve the last checked-in universe when it is unavailable.
+    mapDistricts = cachedDistricts.map((district) => ({ ...district, ratingSource: "Cached prior house forecast" }));
+    status.houseDistrictFallback = {
+      health: "STALE",
+      ok: false,
+      status: "STALE",
+      districts: mapDistricts.length,
+      reason: "Ratings/map pages were unavailable; using the prior checked-in district universe."
+    };
+  }
   const pollingDistricts = mapDistricts.length ? mapDistricts : cookDistricts;
   const directPolls = readDirectHousePollLedger();
   const fiftyPlusOne = loadFiftyPlusOnePolls("house", status);
@@ -970,7 +986,8 @@ async function fetchHouseSources() {
     raceToTheWhGenericReachable: Boolean(raceToTheWhGeneric),
     realClearGenericReachable: Boolean(realClearGeneric),
     realClearHousePollsReachable: Boolean(latestHousePolls),
-    censusDistrictBoundaryPageReachable: Boolean(censusHtml)
+    censusDistrictBoundaryPageReachable: Boolean(censusHtml),
+    usingCachedDistricts
   };
 }
 
@@ -991,7 +1008,9 @@ function adjustedDistricts(sourceData) {
     const demographicPull = houseDemographicPull(district, challengerStrength);
     const candidateQualityAdjustment = houseCandidateQualityAdjustment(district, nomination);
     const nominationAdjustment = nomination.marginAdjustment * MODEL_WEIGHTS.nominationCertainty;
-    const districtPollSignal = housePollSignal(sourceData.districtPolls?.[district.id] || []);
+    const districtPollRows = sourceData.districtPolls?.[district.id] || [];
+    const pollingSummary = classifyPollingInputs(districtPollRows, sourceData.status || {});
+    const districtPollSignal = housePollSignal(districtPollRows);
     const districtPollingAdjustment = districtPollSignal
       ? clamp(districtPollSignal.margin * districtPollSignal.blendWeight, -3.4, 3.4)
       : 0;
@@ -1012,8 +1031,17 @@ function adjustedDistricts(sourceData) {
       baselineRating: ratingFromMargin(contextMargin),
       rating: ratingFromMargin(margin),
       margin: Number(margin.toFixed(2)),
-      pollCount: districtPollSignal?.pollCount || 0,
-      usablePollCount: districtPollSignal?.pollCount || 0,
+      pollCount: pollingSummary.usablePollCount,
+      usablePollCount: pollingSummary.usablePollCount,
+      livePollCount: pollingSummary.livePollCount,
+      manualPollCount: pollingSummary.manualPollCount,
+      legacyFallbackPollCount: pollingSummary.legacyFallbackPollCount,
+      totalPollInputsUsed: pollingSummary.totalPollInputsUsed,
+      pollingStatus: pollingSummary.pollingStatus,
+      forecastMode: pollingSummary.usablePollCount ? "POLL_INFORMED" : "FUNDAMENTALS_ONLY",
+      mapVersion: district.mapVersion || "2026 enacted map / 119th Congress geometry",
+      districtDataSource: sourceData.usingCachedDistricts ? "Cached prior forecast district universe" : (district.ratingSource || "Public district source"),
+      lastUpdated: new Date().toISOString(),
       demProbability: Number(demProbability.toFixed(4)),
       repProbability: Number((1 - demProbability).toFixed(4)),
       winnerParty: demProbability >= .5 ? "D" : "R",
@@ -1050,11 +1078,11 @@ function adjustedDistricts(sourceData) {
           unavailableSources: sourceData.sourceHealth?.unavailableSources || []
         }
       },
-      modelConfidence: houseModelConfidence(districtPollSignal, nomination, sourceData.sourceHealth),
+      modelConfidence: houseModelConfidence(districtPollSignal, nomination, sourceData.sourceHealth, pollingSummary),
       matchupStatus: houseMatchupStatus(nomination),
       marginDecomposition: houseMarginDecomposition(district, contextMargin, genericShift, nationalFinanceShift, incumbencyAdjustment, openPenalty, demographicPull.adjustment, financeSignal, candidateQualityAdjustment, nominationAdjustment, districtPollingAdjustment, guardrail, margin),
       benchmarkComparison: houseBenchmarkComparison(district, margin, demProbability, districtPollSignal, sourceData.sourceHealth),
-      dataQualityWarnings: houseBenchmarkComparison(district, margin, demProbability, districtPollSignal, sourceData.sourceHealth).warnings,
+      dataQualityWarnings: [...houseBenchmarkComparison(district, margin, demProbability, districtPollSignal, sourceData.sourceHealth).warnings, pollingStatusWarning(pollingSummary)].filter(Boolean),
       primaryDate: nomination.primaryDate,
       primaryStatus: nomination.status,
       primarySummary: nomination.summary,
@@ -1093,12 +1121,20 @@ function houseMatchupStatus(nomination) {
   return "LIKELY_MATCHUP";
 }
 
-function houseModelConfidence(pollSignal, nomination, sourceHealth) {
-  let score = 46 + (pollSignal ? Math.min(28, 10 + pollSignal.pollCount * 3 + pollSignal.pollsters * 2) : 0);
+function houseModelConfidence(pollSignal, nomination, sourceHealth, pollingSummary = {}) {
+  let score = 46 + (pollingSummary.usablePollCount ? Math.min(28, 10 + pollingSummary.usablePollCount * 3 + (pollSignal?.pollsters || 0) * 2) : 0);
   if (nomination?.status === "resolved") score += 12;
+  if (!pollingSummary.usablePollCount) score -= 8;
   if (sourceHealth?.degraded) score -= 12;
   score = Math.round(clamp(score, 20, 92));
-  return { score, label: score >= 72 ? "High" : score >= 50 ? "Medium" : "Low", reason: pollSignal ? "district polls and structural inputs" : "fundamentals-only or limited race polling" };
+  const label = score >= 72 ? "High" : score >= 50 ? "Medium" : "Low";
+  return {
+    score,
+    label,
+    level: sourceHealth?.degraded ? "DEGRADED" : label.toUpperCase(),
+    reason: pollingSummary.usablePollCount ? "district polls and structural inputs" : "fundamentals-only or limited race polling",
+    reasons: pollingSummary.usablePollCount ? ["usable district polling", "structural district inputs"] : ["no usable live/manual district polling", "structural district inputs"]
+  };
 }
 
 function houseMarginDecomposition(district, previousMargin, genericBallotEffect, nationalFinanceEffect, incumbencyEffect, openSeatEffect, demographicEffect, financeEffect, candidateEffect, nominationEffect, pollingEffect, guardrail, finalMargin) {
@@ -1710,7 +1746,7 @@ function clamp(value, min, max) {
 async function writeHouseForecast() {
   const sourceData = await fetchHouseSources();
   if (sourceData.mapDistricts.length < 400 && sourceData.cookDistricts.length < 400) {
-    throw new Error(`House ratings parse returned ${sourceData.mapDistricts.length} map districts and ${sourceData.cookDistricts.length} Cook districts`);
+    throw new Error(`House district universe unavailable: parsed ${sourceData.mapDistricts.length} map districts and ${sourceData.cookDistricts.length} Cook districts, with no usable cached forecast fallback.`);
   }
   const districts = adjustedDistricts(sourceData);
   validateDistricts(districts, "district adjustment");
@@ -1730,6 +1766,8 @@ async function writeHouseForecast() {
       message: `Projected ${district.margin >= 0 ? "D+" : "R+"}${Math.abs(district.margin).toFixed(1)} differs by ${Math.abs(district.historicalComparison.shift).toFixed(1)} points from the district's contextual baseline without a district-level signal.`
     }));
   const output = {
+    modelVersion: "2026.06.reliability.1",
+    forecastStatus: sourceData.sourceHealth?.degraded || sourceData.usingCachedDistricts ? "DEGRADED" : "NORMAL",
     generatedAt: new Date().toISOString(),
     lastUpdated: new Date().toISOString(),
     modelDate: MODEL_DATE_KEY,
@@ -1745,6 +1783,10 @@ async function writeHouseForecast() {
     },
     sourceStatus: sourceData.status,
     sourceHealth: sourceData.sourceHealth,
+    dataQualityWarnings: [
+      ...(sourceData.usingCachedDistricts ? [{ severity: "warning", type: "house-district-fallback", message: "House forecast degraded: ratings/district map source failed; using fallback baselines." }] : []),
+      ...sourceHealthWarnings(sourceData.sourceHealth, "House")
+    ],
     sourceSummary: {
       cookDistricts: sourceData.cookDistricts.length,
       mapDistricts: sourceData.mapDistricts.length,

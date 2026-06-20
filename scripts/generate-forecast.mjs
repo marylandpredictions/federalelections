@@ -3,6 +3,7 @@ import { forecastSanityWarnings } from "./forecast-sanity.mjs";
 import { markNoRows, markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
 import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
+import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
@@ -840,19 +841,31 @@ function pollWeightMetrics(race) {
   }, { value: 0, square: 0, weight: 0, count: 0 });
   if (!weighted.weight) return null;
   const pollsters = Object.keys(pollsterWeights).length;
-  const blendWeight = clamp(
+  const pollingSummary = race.pollingSummary || classifyPollingInputs(race.polls, race.sourceStatus || {});
+  const normalBlendWeight = clamp(
     MODEL_WEIGHTS.racePollsBase +
       Math.log1p(weighted.weight) * MODEL_WEIGHTS.racePollsPerWeight +
       pollsters * MODEL_WEIGHTS.racePollsPerPollster,
     MODEL_WEIGHTS.racePollsBase,
     MODEL_WEIGHTS.racePollsCap
   );
+  // Legacy arrays are continuity priors only. They deliberately get a very
+  // small blend and never contribute to the public usable-poll count.
+  const blendWeight = pollingSummary.pollingStatus === "LEGACY_FALLBACK_ONLY"
+    ? Math.min(.055, normalBlendWeight)
+    : normalBlendWeight;
   const margin = weighted.value / weighted.weight;
   const disagreement = Math.sqrt(Math.max(0, weighted.square / weighted.weight - margin * margin));
   return {
     margin,
     totalWeight: weighted.weight,
     pollCount: weighted.count,
+    usablePollCount: pollingSummary.usablePollCount,
+    livePollCount: pollingSummary.livePollCount,
+    manualPollCount: pollingSummary.manualPollCount,
+    legacyFallbackPollCount: pollingSummary.legacyFallbackPollCount,
+    totalPollInputsUsed: pollingSummary.totalPollInputsUsed,
+    pollingStatus: pollingSummary.pollingStatus,
     pollsters,
     blendWeight,
     disagreement: Number(disagreement.toFixed(2)),
@@ -919,10 +932,13 @@ function rcvBaselineAdjustment(race) {
 function inputQuality(race, pollSignal) {
   let score = 42;
   const reasons = [];
-  if (pollSignal) {
-    const pollScore = Math.min(24, 8 + pollSignal.pollCount * 2.4 + pollSignal.pollsters * 3);
+  if (pollSignal?.usablePollCount) {
+    const pollScore = Math.min(24, 8 + pollSignal.usablePollCount * 2.4 + pollSignal.pollsters * 3);
     score += pollScore;
-    reasons.push(`${pollSignal.pollCount} weighted poll${pollSignal.pollCount === 1 ? "" : "s"}`);
+    reasons.push(`${pollSignal.usablePollCount} usable live/manual poll${pollSignal.usablePollCount === 1 ? "" : "s"}`);
+  } else if (pollSignal?.legacyFallbackPollCount) {
+    score -= 10;
+    reasons.push("legacy fallback poll inputs only");
   } else {
     reasons.push("no recent public race polling");
   }
@@ -945,6 +961,7 @@ function inputQuality(race, pollSignal) {
   return {
     score: value,
     label: value >= 72 ? "High" : value >= 50 ? "Medium" : "Low",
+    level: race.sourceInputs?.sourceHealth?.degraded ? "DEGRADED" : value >= 72 ? "HIGH" : value >= 50 ? "MEDIUM" : "LOW",
     reasons
   };
 }
@@ -964,7 +981,7 @@ function uncertaintyBadges(race, pollSignal) {
 function raceTypeUncertainty(race, pollSignal, quality) {
   let extra = 0;
   const reasons = [];
-  const thinPolling = !pollSignal || pollSignal.pollCount < 3;
+  const thinPolling = !pollSignal || pollSignal.usablePollCount < 3;
   const structurallyCompetitive = Math.abs(race.pvi || 0) < 8 || Math.abs(race.pastSenate || 0) < 8;
   if (thinPolling) {
     extra += .55;
@@ -1338,17 +1355,24 @@ function runModel(sourceData) {
       error,
       demProbability,
       pollMargin: pollSignal?.margin ?? null,
-      pollCount: pollSignal?.pollCount || 0,
-      usablePollCount: pollSignal?.pollCount || 0,
+      pollCount: pollSignal?.usablePollCount || 0,
+      usablePollCount: pollSignal?.usablePollCount || 0,
+      livePollCount: pollSignal?.livePollCount || 0,
+      manualPollCount: pollSignal?.manualPollCount || 0,
+      legacyFallbackPollCount: pollSignal?.legacyFallbackPollCount || 0,
+      totalPollInputsUsed: pollSignal?.totalPollInputsUsed || 0,
+      pollingStatus: pollSignal?.pollingStatus || "NO_RACE_POLLS",
       pollSignal,
       expertRating,
       expertRatingAdjustment,
       inputQuality: quality,
       modelConfidence: quality,
       matchupStatus,
+      forecastMode: pollSignal?.usablePollCount ? "POLL_INFORMED" : pollSignal?.legacyFallbackPollCount ? "LIMITED_DATA" : "FUNDAMENTALS_ONLY",
+      lastUpdated: new Date().toISOString(),
       marginDecomposition,
       benchmarkComparison,
-      dataQualityWarnings: benchmarkComparison.warnings,
+      dataQualityWarnings: [...benchmarkComparison.warnings, pollingStatusWarning(withComposition.pollingSummary)].filter(Boolean),
       uncertaintyAdjustment: uncertainty,
       primaryEvents: primaryEventsForRace(withCandidates),
       primaryRisk: primaryRisk(race),
@@ -2475,7 +2499,17 @@ function applySourceInputs(baseRaces, sourceData) {
       ...(sourceData?.directPolls?.byState?.[race.state] || []),
       ...(sourceData?.pollingReferences?.electoralVoteByState?.[race.state] || [])
     ];
-    let polls = selectCurrentRacePolls(race.polls, fetchedPolls);
+    const livePolls = selectCurrentRacePolls([], fetchedPolls);
+    const legacyPolls = normalizeRacePolls(race.polls).map((poll) => ({
+      ...poll,
+      legacy: true,
+      source: poll.source || "Legacy model input",
+      weight: Math.min(Number(poll.weight || 1), .28)
+    }));
+    // Fall back only when current polls are absent. This preserves continuity
+    // without presenting stale built-in arrays as current polling.
+    const polls = livePolls.length ? livePolls : legacyPolls;
+    const pollingSummary = classifyPollingInputs(polls, sourceData?.status || {});
     let nationalPolling = 0;
 
     if (fec) {
@@ -2562,19 +2596,19 @@ function applySourceInputs(baseRaces, sourceData) {
       };
     }
     sourceInputs.pollingLedger = {
-      livePolls: normalizeRacePolls(fetchedPolls).length,
+      ...pollingSummary,
       usedPolls: polls.length,
-      legacyFallback: !normalizeRacePolls(fetchedPolls).length,
-      sources: [...new Set(polls.map((poll) => Array.isArray(poll) ? "Legacy model input" : poll.source || "unknown"))]
+      legacyFallback: pollingSummary.legacyFallbackPollCount > 0,
+      sources: [...new Set(polls.map((poll) => poll.source || "unknown"))]
     };
     sourceInputs.sourceHealth = {
       forecast: sourceData?.sourceHealth?.health || "UNKNOWN",
       degraded: Boolean(sourceData?.sourceHealth?.degraded),
-      racePolling: normalizeRacePolls(fetchedPolls).length ? "OK_PARSED" : "OK_NO_ROWS",
+      racePolling: pollingSummary.pollingStatus,
       unavailableSources: sourceData?.sourceHealth?.unavailableSources || []
     };
 
-    return { ...race, money, pastSenate, pvi, polls, nationalPolling: nationalPolling + nationalFinance, sourceInputs };
+    return { ...race, money, pastSenate, pvi, polls, pollingSummary, sourceStatus: sourceData?.status || {}, nationalPolling: nationalPolling + nationalFinance, sourceInputs };
   });
 }
 
@@ -2781,6 +2815,8 @@ async function writeForecast() {
       message: `Projected ${race.margin >= 0 ? "D+" : "R+"}${Math.abs(race.margin).toFixed(1)} differs by ${Math.abs(race.historicalComparison.shift).toFixed(1)} points from the comparable Senate baseline without a multi-poll signal.`
     }));
   const output = {
+    modelVersion: "2026.06.reliability.1",
+    forecastStatus: sourceData.sourceHealth?.degraded ? "DEGRADED" : "NORMAL",
     generatedAt,
     lastUpdated: generatedAt,
     modelDate: MODEL_DATE_KEY,
@@ -2842,6 +2878,7 @@ async function writeForecast() {
     seatHistory: appendSeatHistory(model),
     ...model
   };
+  output.dataQualityWarnings = output.modelWarnings;
 
   mkdirSync(new URL("../data/", import.meta.url), { recursive: true });
   writeFileSync(FORECAST_URL, `${JSON.stringify(output, null, 2)}\n`);
