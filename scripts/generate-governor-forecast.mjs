@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { forecastSanityWarnings } from "./forecast-sanity.mjs";
 import { markDisabled, markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
 import { directPollLedger } from "./poll-ledger.mjs";
+import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const GOVERNOR_HISTORY_URL = new URL("../data/governor-history.json", import.meta.url);
@@ -697,10 +698,32 @@ async function fetchAllSources() {
   const governorFinance = mergeGovernorFinance(manualGovernorFinance, onlineGovernorFinance, status);
   const governorPolling = mergeGovernorPolling(status, manualGovernorPolls, pollfinity, twoSeventyGovernor);
   const directGovernorPolls = mergeDirectGovernorPolls(governorPolling, status);
+  const fiftyPlusOne = loadFiftyPlusOnePolls("governor", status);
+  const allGovernorPolls = mergeFiftyPlusOneGovernorPolls(directGovernorPolls, fiftyPlusOne.polls);
   const sourceHealth = sourceHealthSummary(status, {
     critical: ["pollfinityAverages", "twoSeventyGovernorPolls"]
   });
-  return { governorFinance, fec: governorFinance, ddhqGeneric, pollfinity, twoSeventyGovernor, governorPolling: directGovernorPolls, status, sourceHealth };
+  return { governorFinance, fec: governorFinance, ddhqGeneric, pollfinity, twoSeventyGovernor, governorPolling: allGovernorPolls, status, sourceHealth };
+}
+
+function mergeFiftyPlusOneGovernorPolls(governorPolling, polls) {
+  for (const [state, rows] of Object.entries(Object.groupBy(polls || [], (poll) => poll.state))) {
+    if (!STATE_NAMES[state] || !rows?.length) continue;
+    const current = governorPolling.governorPolls[state];
+    const currentPolls = current?.polls || 0;
+    const fiftyMargin = rows.reduce((sum, poll) => sum + poll.margin, 0) / rows.length;
+    const total = currentPolls + rows.length;
+    governorPolling.governorPolls[state] = {
+      ...(current || {}),
+      margin: Number((((current?.margin || 0) * currentPolls + fiftyMargin * rows.length) / total).toFixed(2)),
+      polls: total,
+      sources: [...new Set([...(current?.sources || []), "FiftyPlusOne"])],
+      sourceUrls: current?.sourceUrls || [],
+      pollEntries: [...(current?.pollEntries || []), ...rows],
+      weightScale: current?.weightScale || 1
+    };
+  }
+  return governorPolling;
 }
 
 function mergeDirectGovernorPolls(governorPolling, status) {
@@ -1356,6 +1379,8 @@ function buildRace(baseRace, nationalShift, sourceData) {
     demCandidate: race.dem,
     repCandidate: race.rep,
     margin: Number(margin.toFixed(2)),
+    pollCount: governorPoll?.polls || 0,
+    usablePollCount: governorPoll?.polls || 0,
     error: Number(error.toFixed(2)),
     fundamentalsMargin: Number(fundamentals.toFixed(2)),
     rating: modelRating,
@@ -1396,6 +1421,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
     matchupStatus: governorMatchupStatus(race),
     marginDecomposition: governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, guardrail, margin),
     benchmarkComparison: governorBenchmarkComparison(race, margin, demProbability, governorPoll, sourceData.sourceHealth),
+    dataQualityWarnings: governorBenchmarkComparison(race, margin, demProbability, governorPoll, sourceData.sourceHealth).warnings,
     modelRating,
     demProbability: Number(demProbability.toFixed(5)),
     repProbability: Number((1 - demProbability).toFixed(5)),
@@ -1635,6 +1661,7 @@ async function buildForecast() {
     model: "2026 gubernatorial forecast",
     modelDate,
     generatedAt: new Date().toISOString(),
+    lastUpdated: new Date().toISOString(),
     runDate: localRunDateLabel(),
     settings: SETTINGS,
     sourceHealth: sourceData.sourceHealth,

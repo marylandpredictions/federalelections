@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { forecastSanityWarnings } from "./forecast-sanity.mjs";
 import { markNoRows, markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
 import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
+import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
@@ -1337,6 +1338,8 @@ function runModel(sourceData) {
       error,
       demProbability,
       pollMargin: pollSignal?.margin ?? null,
+      pollCount: pollSignal?.pollCount || 0,
+      usablePollCount: pollSignal?.pollCount || 0,
       pollSignal,
       expertRating,
       expertRatingAdjustment,
@@ -1345,6 +1348,7 @@ function runModel(sourceData) {
       matchupStatus,
       marginDecomposition,
       benchmarkComparison,
+      dataQualityWarnings: benchmarkComparison.warnings,
       uncertaintyAdjustment: uncertainty,
       primaryEvents: primaryEventsForRace(withCandidates),
       primaryRisk: primaryRisk(race),
@@ -2397,6 +2401,8 @@ async function fetchAllSources() {
     fetchPollingReferencePages(status)
   ]);
   const directPolls = readDirectPollLedger();
+  const fiftyPlusOne = loadFiftyPlusOnePolls("senate", status);
+  const fiftyPlusOneByState = Object.groupBy(fiftyPlusOne.polls, (poll) => poll.state);
   status.directPollLedger = {
     health: directPolls.polls ? "OK_PARSED" : "OK_NO_ROWS",
     ok: true,
@@ -2428,7 +2434,7 @@ async function fetchAllSources() {
   const sourceHealth = sourceHealthSummary(stableStatus, {
     critical: ["votehubGenericBallot", "pollfinityAverages", "twoSeventyToWinStatePolls"]
   });
-  return { status: stableStatus, sourceHealth, votehub, ddhqGeneric, pollfinity, usPollingDataGeneric, genericPolling, realClearPolling, twoSeventyToWin, directPolls, fec, mit, census, civic, pollingReferences };
+  return { status: stableStatus, sourceHealth, votehub, ddhqGeneric, pollfinity, usPollingDataGeneric, genericPolling, realClearPolling, twoSeventyToWin, directPolls, fiftyPlusOneByState, fec, mit, census, civic, pollingReferences };
 }
 
 function stableSourceStatus(status) {
@@ -2465,6 +2471,7 @@ function applySourceInputs(baseRaces, sourceData) {
     const fetchedPolls = [
       ...(sourceData?.realClearPolling?.byState?.[race.state] || []),
       ...(sourceData?.twoSeventyToWin?.byState?.[race.state] || []),
+      ...(sourceData?.fiftyPlusOneByState?.[race.state] || []),
       ...(sourceData?.directPolls?.byState?.[race.state] || []),
       ...(sourceData?.pollingReferences?.electoralVoteByState?.[race.state] || [])
     ];
@@ -2775,6 +2782,7 @@ async function writeForecast() {
     }));
   const output = {
     generatedAt,
+    lastUpdated: generatedAt,
     modelDate: MODEL_DATE_KEY,
     runDate: new Date(`${MODEL_DATE_KEY}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
     updateTime: "around 7:20 AM Eastern",

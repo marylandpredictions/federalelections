@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { forecastSanityWarnings } from "./forecast-sanity.mjs";
 import { markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
 import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
+import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 
 const OUTPUT_URL = new URL("../data/house-forecast.json", import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
@@ -853,7 +854,7 @@ function readDirectHousePollLedger() {
   let skipped = 0;
   // Build only for districts already in the model. This keeps the ledger
   // permissive while avoiding a free-form district id becoming model input.
-  for (const state of Object.keys(STATE_NAMES)) {
+  for (const state of [...new Set([...Object.keys(STATE_COALITION_TRAITS), "DC"])]) {
     for (const suffix of ["AL", ...Array.from({ length: 53 }, (_, index) => String(index + 1).padStart(2, "0"))]) {
       const id = `${state}-${suffix}`;
       const result = directPollLedger({ office: "house", district: id });
@@ -925,6 +926,8 @@ async function fetchHouseSources() {
   const cookDistricts = parseCookDistricts(cookHtml);
   const pollingDistricts = mapDistricts.length ? mapDistricts : cookDistricts;
   const directPolls = readDirectHousePollLedger();
+  const fiftyPlusOne = loadFiftyPlusOnePolls("house", status);
+  const fiftyPlusOneByDistrict = Object.groupBy(fiftyPlusOne.polls.filter((poll) => poll.district), (poll) => poll.district);
   status.directPollLedger = {
     health: directPolls.polls ? "OK_PARSED" : "OK_NO_ROWS",
     ok: true,
@@ -938,7 +941,8 @@ async function fetchHouseSources() {
     parseHousePollReferences(latestHousePolls, "RealClearPolling", pollingDistricts),
     parseHousePollReferences(raceToTheWhHouse, "Race to the WH", pollingDistricts),
     parseHousePollReferences(raceToTheWhAllPolls, "Race to the WH", pollingDistricts),
-    directPolls.byDistrict
+    directPolls.byDistrict,
+    fiftyPlusOneByDistrict
   );
   status.houseDistrictPolls = {
     ok: true,
@@ -1008,6 +1012,8 @@ function adjustedDistricts(sourceData) {
       baselineRating: ratingFromMargin(contextMargin),
       rating: ratingFromMargin(margin),
       margin: Number(margin.toFixed(2)),
+      pollCount: districtPollSignal?.pollCount || 0,
+      usablePollCount: districtPollSignal?.pollCount || 0,
       demProbability: Number(demProbability.toFixed(4)),
       repProbability: Number((1 - demProbability).toFixed(4)),
       winnerParty: demProbability >= .5 ? "D" : "R",
@@ -1048,6 +1054,7 @@ function adjustedDistricts(sourceData) {
       matchupStatus: houseMatchupStatus(nomination),
       marginDecomposition: houseMarginDecomposition(district, contextMargin, genericShift, nationalFinanceShift, incumbencyAdjustment, openPenalty, demographicPull.adjustment, financeSignal, candidateQualityAdjustment, nominationAdjustment, districtPollingAdjustment, guardrail, margin),
       benchmarkComparison: houseBenchmarkComparison(district, margin, demProbability, districtPollSignal, sourceData.sourceHealth),
+      dataQualityWarnings: houseBenchmarkComparison(district, margin, demProbability, districtPollSignal, sourceData.sourceHealth).warnings,
       primaryDate: nomination.primaryDate,
       primaryStatus: nomination.status,
       primarySummary: nomination.summary,
@@ -1724,6 +1731,7 @@ async function writeHouseForecast() {
     }));
   const output = {
     generatedAt: new Date().toISOString(),
+    lastUpdated: new Date().toISOString(),
     modelDate: MODEL_DATE_KEY,
     runDate: new Date(`${MODEL_DATE_KEY}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
     updateTime: SETTINGS.updateTime,
