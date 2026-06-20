@@ -1076,8 +1076,15 @@ function extraCandidateDemographicPulls(race) {
   }).filter(Boolean);
 }
 
+function senateStructuralMargin(race) {
+  // PVI and the latest comparable Senate result are related but distinct
+  // structural signals. These weights retain their long-run information now
+  // that public ratings are no longer an input to the forecast.
+  return race.pvi * .30 + race.pastSenate * .26;
+}
+
 function baselineMargin(race) {
-  const fundamentals = race.pvi * .24 + race.pastSenate * .20;
+  const fundamentals = senateStructuralMargin(race);
   const signals = race.money * .9 + race.candidate * 1.05 + race.approval * .75;
   const pollSignal = pollWeightMetrics(race);
   const elasticity = stateElasticity(race);
@@ -1095,7 +1102,7 @@ function senateMarginGuardrail(race, rawMargin, pollSignal, fundamentals) {
   const anchor = fundamentals;
   const anchorWeight = pollSignal ? .08 : .16;
   let margin = rawMargin * (1 - anchorWeight) + anchor * anchorWeight;
-  const partisanAnchor = race.pvi * .24 + race.pastSenate * .20;
+  const partisanAnchor = senateStructuralMargin(race);
   const partisanSide = Math.sign(partisanAnchor);
   if (partisanSide && Math.sign(margin) !== partisanSide && Math.abs(partisanAnchor) >= 8 && (!pollSignal || Math.sign(pollSignal.margin) !== Math.sign(margin))) {
     margin = partisanSide * Math.max(3.5, Math.abs(margin) * .55);
@@ -1147,7 +1154,7 @@ function runModel(sourceData) {
     const margin = baselineMargin(withComposition);
     const quality = inputQuality(withComposition, pollSignal);
     const uncertainty = raceTypeUncertainty(withComposition, pollSignal, quality);
-    const fundamentals = withComposition.pvi * .24 + withComposition.pastSenate * .20;
+    const fundamentals = senateStructuralMargin(withComposition);
     const calculatedError = senateRaceError(withComposition, fundamentals, pollSignal, uncertainty);
     const error = Number.isFinite(calculatedError) ? calculatedError : 8.2;
     const demProbability = logistic(margin, error);

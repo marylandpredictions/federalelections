@@ -555,9 +555,14 @@ function parse270MapDistricts(html) {
     const id = `${state}-${atLarge ? "AL" : String(number).padStart(2, "0")}`;
     const presidentialMargin = toNumber(district.margin_president);
     const congressionalMargin = toNumber(district.margin_congress);
-    const fundamentalMargin = Number.isFinite(congressionalMargin) && Math.abs(congressionalMargin) > .01
-      ? presidentialMargin * .55 + congressionalMargin * .45
-      : presidentialMargin;
+    const hasPresidentialMargin = Number.isFinite(presidentialMargin) && Math.abs(presidentialMargin) > .01;
+    const hasCongressionalMargin = Number.isFinite(congressionalMargin) && Math.abs(congressionalMargin) > .01;
+    // Several source rows use 0/0 as a missing-value placeholder. Preserve a
+    // genuine close margin when data exists, but do not turn missing rows into
+    // artificial tossups.
+    const fundamentalMargin = hasCongressionalMargin
+      ? (hasPresidentialMargin ? presidentialMargin * .55 : 0) + congressionalMargin * .45
+      : hasPresidentialMargin ? presidentialMargin : null;
     const incumbent = String(district.seat_rep_name || "").trim() || "Open seat";
     const label = district.retired_code ? `${incumbent} / open` : incumbent;
     const demCandidate = (district.candidates || []).find((candidate) => candidate.party === "D")?.full_name || "Democrat";
@@ -1145,9 +1150,13 @@ function nationalFinanceSignal(finance) {
 }
 
 function contextualDistrictMargin(district) {
-  if (Number.isFinite(district.fundamentalMargin)) return clamp(district.fundamentalMargin, -16, 16);
-  if (district.seatParty === "D") return 2;
-  if (district.seatParty === "R") return -2;
+  // Preserve enough structural range for genuinely one-sided districts. The
+  // former +/-16 cap let normal national shifts flatten safe districts.
+  if (Number.isFinite(district.fundamentalMargin)) return clamp(district.fundamentalMargin, -16.5, 16.5);
+  // Missing federal-return rows should not start at a tossup. Use a guarded
+  // incumbent-party anchor until the upstream district return is available.
+  if (district.seatParty === "D") return 12;
+  if (district.seatParty === "R") return -12;
   return 0;
 }
 
