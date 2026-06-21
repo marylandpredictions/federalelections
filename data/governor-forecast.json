@@ -3,8 +3,8 @@
   "modelVersion": "2026.06.reliability.1",
   "forecastStatus": "PARTIAL",
   "modelDate": "2026-06-21",
-  "generatedAt": "2026-06-21T06:40:41.188Z",
-  "lastUpdated": "2026-06-21T06:40:41.188Z",
+  "generatedAt": "2026-06-21T15:21:55.190Z",
+  "lastUpdated": "2026-06-21T15:21:55.190Z",
   "runDate": "Jun 21, 2026",
   "settings": {
     "simulations": 100000,
@@ -94,13 +94,23 @@
       }
     ],
     "sourceHealth": {
-      "checkedAt": "2026-06-21T06:40:23.531Z",
+      "checkedAt": "2026-06-21T15:21:08.502Z",
+      "realClearPollingSenate": {
+        "health": "BLOCKED_403",
+        "ok": false,
+        "status": "BLOCKED_403",
+        "httpStatus": 403,
+        "ms": 537,
+        "url": "https://www.realclearpolling.com/latest-polls/senate",
+        "expected": "text",
+        "error": "<html lang=\"en\"><head><title>realclearpolling.com</title><style>#cmsg{animation: A 1.5s;}@keyframes A{0%{opacity:0;}99%{opacity:0;}100%{opacity:1;}}</style></head><body style=\"marg"
+      },
       "pollfinityAverages": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 428,
+        "ms": 1008,
         "url": "https://pollfinity.com/averages.json",
         "expected": "json",
         "genericBallotPolls": 41,
@@ -108,132 +118,13 @@
         "approvalPolls": 51,
         "approvalNet": -20.3
       },
-      "raceToTheWhSenatePolls": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 723,
-        "url": "https://www.racetothewh.com/senate/26polls",
-        "expected": "text",
-        "hasStaticRows": false,
-        "note": "Reachable, but no stable row-level poll data was present in the fetched HTML."
-      },
-      "twoSeventyToWinPollsCO": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 741,
-        "url": "https://www.270towin.com/2026-senate-polls/colorado",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsFL": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 741,
-        "url": "https://www.270towin.com/2026-senate-polls/florida",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsGA": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 742,
-        "url": "https://www.270towin.com/2026-senate-polls/georgia",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsID": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 779,
-        "url": "https://www.270towin.com/2026-senate-polls/idaho",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsIA": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 779,
-        "url": "https://www.270towin.com/2026-senate-polls/iowa",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsIL": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 780,
-        "url": "https://www.270towin.com/2026-senate-polls/illinois",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsDE": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 791,
-        "url": "https://www.270towin.com/2026-senate-polls/delaware",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsAR": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 795,
-        "url": "https://www.270towin.com/2026-senate-polls/arkansas",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsMA": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 790,
-        "url": "https://www.270towin.com/2026-senate-polls/massachusetts",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsME": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 793,
-        "url": "https://www.270towin.com/2026-senate-polls/maine",
-        "expected": "text"
-      },
       "twoSeventyToWinPollsKY": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 795,
+        "ms": 1931,
         "url": "https://www.270towin.com/2026-senate-polls/kentucky",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsMI": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 828,
-        "url": "https://www.270towin.com/2026-senate-polls/michigan",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsMN": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 831,
-        "url": "https://www.270towin.com/2026-senate-polls/minnesota",
         "expected": "text"
       },
       "twoSeventyToWinPollsLA": {
@@ -241,86 +132,152 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 842,
+        "ms": 1932,
         "url": "https://www.270towin.com/2026-senate-polls/louisiana",
         "expected": "text"
       },
-      "censusPopulation": {
+      "twoSeventyToWinPollsIA": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 837,
-        "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2024/state/totals/NST-EST2024-POPCHG2020-2024.csv",
-        "expected": "text",
-        "rows": 66,
-        "states": 51,
-        "source": "Census Bureau no-key CSV"
+        "ms": 1934,
+        "url": "https://www.270towin.com/2026-senate-polls/iowa",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsAK": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1943,
+        "url": "https://www.270towin.com/2026-senate-polls/alaska",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsAL": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2028,
+        "url": "https://www.270towin.com/2026-senate-polls/alabama",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsIL": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2027,
+        "url": "https://www.270towin.com/2026-senate-polls/illinois",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsID": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2027,
+        "url": "https://www.270towin.com/2026-senate-polls/idaho",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsGA": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2029,
+        "url": "https://www.270towin.com/2026-senate-polls/georgia",
+        "expected": "text"
       },
       "twoSeventyToWinPollsKS": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 850,
+        "ms": 2107,
         "url": "https://www.270towin.com/2026-senate-polls/kansas",
         "expected": "text"
       },
-      "mitSenateReturns": {
+      "twoSeventyToWinPollsVA": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 861,
-        "url": "https://raw.githubusercontent.com/MEDSL/constituency-returns/master/1976-2018-senate.csv",
-        "expected": "text",
-        "rows": 3421,
-        "states": 50
-      },
-      "civicApiDocs": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 904,
-        "url": "https://www.civicapi.org/api-documentation",
+        "ms": 2114,
+        "url": "https://www.270towin.com/2026-senate-polls/virginia",
         "expected": "text"
       },
-      "raceToTheWhGenericBallot": {
+      "twoSeventyToWinPollsWY": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 929,
-        "url": "https://www.racetothewh.com/polls/genericballot",
+        "ms": 2151,
+        "url": "https://www.270towin.com/2026-senate-polls/wyoming",
         "expected": "text"
       },
-      "civicApiEndpoint": {
-        "health": "NOT_FOUND_404",
-        "ok": false,
-        "status": "NOT_FOUND_404",
-        "httpStatus": 404,
-        "ms": 45,
-        "url": "https://www.civicapi.org/api/v1/upcomingraces",
-        "expected": "text",
-        "error": "{\"message\":\"Route GET:/v1/upcomingraces not found\",\"error\":\"Not Found\",\"statusCode\":404}"
-      },
-      "twoSeventyToWinPollsNM": {
+      "twoSeventyToWinLatestPolls": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 1041,
-        "url": "https://www.270towin.com/2026-senate-polls/new-mexico",
+        "ms": 2147,
+        "url": "https://www.270towin.com/polls/latest-2026-senate-election-polls/",
         "expected": "text"
       },
-      "twoSeventyToWinPollsSD": {
+      "twoSeventyToWinPollsWV": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 1056,
-        "url": "https://www.270towin.com/2026-senate-polls/south-dakota",
+        "ms": 2181,
+        "url": "https://www.270towin.com/2026-senate-polls/west-virginia",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollingIndex": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2178,
+        "url": "https://www.270towin.com/content/2026-senate-polling",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsME": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2306,
+        "url": "https://www.270towin.com/2026-senate-polls/maine",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsNC": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2303,
+        "url": "https://www.270towin.com/2026-senate-polls/north-carolina",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsMA": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2308,
+        "url": "https://www.270towin.com/2026-senate-polls/massachusetts",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsMI": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2308,
+        "url": "https://www.270towin.com/2026-senate-polls/michigan",
         "expected": "text"
       },
       "twoSeventyToWinPollsSC": {
@@ -328,7 +285,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 1069,
+        "ms": 2341,
         "url": "https://www.270towin.com/2026-senate-polls/south-carolina",
         "expected": "text"
       },
@@ -337,128 +294,8 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 1080,
+        "ms": 2345,
         "url": "https://www.270towin.com/2026-senate-polls/ohio",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsOK": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1081,
-        "url": "https://www.270towin.com/2026-senate-polls/oklahoma",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsNE": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1095,
-        "url": "https://www.270towin.com/2026-senate-polls/nebraska",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsNH": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1096,
-        "url": "https://www.270towin.com/2026-senate-polls/new-hampshire",
-        "expected": "text"
-      },
-      "votehubGenericBallot": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1217,
-        "url": "https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026",
-        "expected": "json",
-        "rows": 518,
-        "usablePolls": 398,
-        "rawUsablePolls": 518
-      },
-      "twoSeventyToWinPollsRI": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1154,
-        "url": "https://www.270towin.com/2026-senate-polls/rhode-island",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsMT": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1158,
-        "url": "https://www.270towin.com/2026-senate-polls/montana",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsNJ": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1158,
-        "url": "https://www.270towin.com/2026-senate-polls/new-jersey",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsNC": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1159,
-        "url": "https://www.270towin.com/2026-senate-polls/north-carolina",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsOR": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1185,
-        "url": "https://www.270towin.com/2026-senate-polls/oregon",
-        "expected": "text"
-      },
-      "twoSeventyToWinLatestPolls": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1186,
-        "url": "https://www.270towin.com/polls/latest-2026-senate-election-polls/",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsMS": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1197,
-        "url": "https://www.270towin.com/2026-senate-polls/mississippi",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollingIndex": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1191,
-        "url": "https://www.270towin.com/content/2026-senate-polling",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsVA": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1208,
-        "url": "https://www.270towin.com/2026-senate-polls/virginia",
         "expected": "text"
       },
       "twoSeventyToWinPollsTX": {
@@ -466,8 +303,128 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 1217,
+        "ms": 2348,
         "url": "https://www.270towin.com/2026-senate-polls/texas",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsMT": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2362,
+        "url": "https://www.270towin.com/2026-senate-polls/montana",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsOK": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2360,
+        "url": "https://www.270towin.com/2026-senate-polls/oklahoma",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsRI": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2360,
+        "url": "https://www.270towin.com/2026-senate-polls/rhode-island",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsNH": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2365,
+        "url": "https://www.270towin.com/2026-senate-polls/new-hampshire",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsNM": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2365,
+        "url": "https://www.270towin.com/2026-senate-polls/new-mexico",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsSD": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2362,
+        "url": "https://www.270towin.com/2026-senate-polls/south-dakota",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsNE": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2368,
+        "url": "https://www.270towin.com/2026-senate-polls/nebraska",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsFL": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2377,
+        "url": "https://www.270towin.com/2026-senate-polls/florida",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsMN": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2372,
+        "url": "https://www.270towin.com/2026-senate-polls/minnesota",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsNJ": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2407,
+        "url": "https://www.270towin.com/2026-senate-polls/new-jersey",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsOR": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2409,
+        "url": "https://www.270towin.com/2026-senate-polls/oregon",
+        "expected": "text"
+      },
+      "censusPopulation": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2414,
+        "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2024/state/totals/NST-EST2024-POPCHG2020-2024.csv",
+        "expected": "text",
+        "rows": 66,
+        "states": 51,
+        "source": "Census Bureau no-key CSV"
+      },
+      "twoSeventyToWinPollsDE": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2441,
+        "url": "https://www.270towin.com/2026-senate-polls/delaware",
         "expected": "text"
       },
       "twoSeventyToWinPollsTN": {
@@ -475,120 +432,159 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 1253,
+        "ms": 2430,
         "url": "https://www.270towin.com/2026-senate-polls/tennessee",
         "expected": "text"
       },
-      "twoSeventyToWinPollsWV": {
+      "twoSeventyToWinPollsMS": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 1256,
-        "url": "https://www.270towin.com/2026-senate-polls/west-virginia",
+        "ms": 2435,
+        "url": "https://www.270towin.com/2026-senate-polls/mississippi",
         "expected": "text"
       },
-      "twoSeventyToWinPollsWY": {
+      "twoSeventyToWinPollsAR": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 1279,
-        "url": "https://www.270towin.com/2026-senate-polls/wyoming",
+        "ms": 2451,
+        "url": "https://www.270towin.com/2026-senate-polls/arkansas",
         "expected": "text"
       },
-      "realClearPollingSenate": {
-        "health": "BLOCKED_403",
-        "ok": false,
-        "status": "BLOCKED_403",
-        "httpStatus": 403,
-        "ms": 1340,
-        "url": "https://www.realclearpolling.com/latest-polls/senate",
-        "expected": "text",
-        "error": "<html lang=\"en\"><head><title>realclearpolling.com</title><style>#cmsg{animation: A 1.5s;}@keyframes A{0%{opacity:0;}99%{opacity:0;}100%{opacity:1;}}</style></head><body style=\"marg"
-      },
-      "usPollingDataGenericBallot": {
+      "twoSeventyToWinPollsCO": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 1508,
-        "url": "https://uspollingdata.com/polls/generic-ballot/",
-        "expected": "text",
-        "margin": 7
-      },
-      "electoralVoteSenatePolls": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1620,
-        "url": "https://electoral-vote.com/evp2026/Senate/senate_polls.csv",
-        "expected": "text",
-        "rows": 35,
-        "usablePolls": 0
-      },
-      "twoSeventyToWinPollsAL": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1641,
-        "url": "https://www.270towin.com/2026-senate-polls/alabama",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsAK": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1642,
-        "url": "https://www.270towin.com/2026-senate-polls/alaska",
+        "ms": 2450,
+        "url": "https://www.270towin.com/2026-senate-polls/colorado",
         "expected": "text"
       },
       "twoSeventyToWinRacePolls": {
         "ok": true,
         "status": 200,
-        "ms": 1642,
+        "ms": 2454,
         "url": "https://www.270towin.com/2026-senate-polls/{state}",
         "pages": 35,
         "okPages": 35,
         "usablePolls": 117,
         "states": 14
       },
-      "ddhqGenericBallot": {
+      "electoralVoteSenatePolls": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 1743,
-        "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
+        "ms": 2481,
+        "url": "https://electoral-vote.com/evp2026/Senate/senate_polls.csv",
         "expected": "text",
-        "polls": 0,
-        "margin": null
+        "rows": 35,
+        "usablePolls": 0
+      },
+      "raceToTheWhSenatePolls": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2625,
+        "url": "https://www.racetothewh.com/senate/26polls",
+        "expected": "text",
+        "hasStaticRows": false,
+        "note": "Reachable, but no stable row-level poll data was present in the fetched HTML."
+      },
+      "raceToTheWhGenericBallot": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2930,
+        "url": "https://www.racetothewh.com/polls/genericballot",
+        "expected": "text"
       },
       "usPollingDataSenatePolling": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 1740,
+        "ms": 2953,
         "url": "https://uspollingdata.com/polls/senate-polling/",
         "expected": "text",
         "hasSenateTable": true,
         "note": "Reachable, but not blended because several listed races/candidates do not match this Senate cycle ledger."
       },
-      "openFecCandidateSummary": {
+      "civicApiDocs": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 2373,
-        "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
+        "ms": 3016,
+        "url": "https://www.civicapi.org/api-documentation",
+        "expected": "text"
+      },
+      "civicApiEndpoint": {
+        "health": "NOT_FOUND_404",
+        "ok": false,
+        "status": "NOT_FOUND_404",
+        "httpStatus": 404,
+        "ms": 76,
+        "url": "https://www.civicapi.org/api/v1/upcomingraces",
         "expected": "text",
-        "rows": 4181,
-        "senateStates": 44,
-        "nationalFinanceSignal": 0.417
+        "error": "{\"message\":\"Route GET:/v1/upcomingraces not found\",\"error\":\"Not Found\",\"statusCode\":404}"
+      },
+      "ddhqGenericBallot": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 3577,
+        "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
+        "expected": "text",
+        "polls": 0,
+        "margin": null
+      },
+      "mitSenateReturns": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 3828,
+        "url": "https://raw.githubusercontent.com/MEDSL/constituency-returns/master/1976-2018-senate.csv",
+        "expected": "text",
+        "rows": 3421,
+        "states": 50
+      },
+      "votehubGenericBallot": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 4492,
+        "url": "https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026",
+        "expected": "json",
+        "rows": 518,
+        "usablePolls": 398,
+        "rawUsablePolls": 518
+      },
+      "usPollingDataGenericBallot": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 5409,
+        "url": "https://uspollingdata.com/polls/generic-ballot/",
+        "expected": "text",
+        "margin": 7
+      },
+      "openFecCandidateSummary": {
+        "health": "UNKNOWN_ERROR",
+        "ok": false,
+        "status": "UNKNOWN_ERROR",
+        "ms": 12553,
+        "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
+        "error": "fetch failed"
       },
       "fiftyPlusOneSenate": {
         "health": "DISABLED",
@@ -605,7 +601,7 @@
         "url": "data/direct-poll-ledger.json"
       }
     },
-    "lastUpdated": "2026-06-21T06:40:23.531Z"
+    "lastUpdated": "2026-06-21T15:21:08.502Z"
   },
   "racePollCoverage": {
     "races": 36,
@@ -639,7 +635,7 @@
     "gubernatorialNationalShift": 0.96,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-06-21T06:40:37.855Z",
+      "checkedAt": "2026-06-21T15:21:50.518Z",
       "governorFinance": {
         "ok": true,
         "states": 0,
@@ -662,7 +658,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 180,
+        "ms": 217,
         "url": "https://pollfinity.com/averages.json",
         "expected": "json"
       },
@@ -671,7 +667,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 386,
+        "ms": 217,
         "url": "https://www.270towin.com/2026-governor-polls/alaska",
         "expected": "text"
       },
@@ -680,7 +676,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 36,
+        "ms": 109,
         "url": "https://www.270towin.com/2026-governor-polls/arizona",
         "expected": "text"
       },
@@ -689,7 +685,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 34,
+        "ms": 96,
         "url": "https://www.270towin.com/2026-governor-polls/colorado",
         "expected": "text"
       },
@@ -698,7 +694,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 46,
+        "ms": 507,
         "url": "https://www.270towin.com/2026-governor-polls/connecticut",
         "expected": "text"
       },
@@ -707,7 +703,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 126,
+        "ms": 63,
         "url": "https://www.270towin.com/2026-governor-polls/florida",
         "expected": "text"
       },
@@ -716,7 +712,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 49,
+        "ms": 138,
         "url": "https://www.270towin.com/2026-governor-polls/georgia",
         "expected": "text"
       },
@@ -725,7 +721,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 36,
+        "ms": 100,
         "url": "https://www.270towin.com/2026-governor-polls/illinois",
         "expected": "text"
       },
@@ -734,7 +730,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 39,
+        "ms": 57,
         "url": "https://www.270towin.com/2026-governor-polls/iowa",
         "expected": "text"
       },
@@ -743,7 +739,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 542,
+        "ms": 762,
         "url": "https://www.270towin.com/2026-governor-polls/kansas",
         "expected": "text"
       },
@@ -752,7 +748,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 31,
+        "ms": 85,
         "url": "https://www.270towin.com/2026-governor-polls/maine",
         "expected": "text"
       },
@@ -761,7 +757,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 63,
+        "ms": 60,
         "url": "https://www.270towin.com/2026-governor-polls/michigan",
         "expected": "text"
       },
@@ -770,7 +766,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 74,
+        "ms": 127,
         "url": "https://www.270towin.com/2026-governor-polls/minnesota",
         "expected": "text"
       },
@@ -779,7 +775,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 147,
+        "ms": 182,
         "url": "https://www.270towin.com/2026-governor-polls/nebraska",
         "expected": "text"
       },
@@ -788,7 +784,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 48,
+        "ms": 111,
         "url": "https://www.270towin.com/2026-governor-polls/nevada",
         "expected": "text"
       },
@@ -797,7 +793,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 29,
+        "ms": 174,
         "url": "https://www.270towin.com/2026-governor-polls/new-hampshire",
         "expected": "text"
       },
@@ -806,7 +802,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 35,
+        "ms": 79,
         "url": "https://www.270towin.com/2026-governor-polls/new-mexico",
         "expected": "text"
       },
@@ -815,7 +811,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 419,
+        "ms": 160,
         "url": "https://www.270towin.com/2026-governor-polls/new-york",
         "expected": "text"
       },
@@ -824,7 +820,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 32,
+        "ms": 77,
         "url": "https://www.270towin.com/2026-governor-polls/ohio",
         "expected": "text"
       },
@@ -833,7 +829,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 148,
+        "ms": 74,
         "url": "https://www.270towin.com/2026-governor-polls/oregon",
         "expected": "text"
       },
@@ -842,7 +838,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 36,
+        "ms": 148,
         "url": "https://www.270towin.com/2026-governor-polls/pennsylvania",
         "expected": "text"
       },
@@ -851,7 +847,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 41,
+        "ms": 86,
         "url": "https://www.270towin.com/2026-governor-polls/rhode-island",
         "expected": "text"
       },
@@ -860,7 +856,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 74,
+        "ms": 215,
         "url": "https://www.270towin.com/2026-governor-polls/south-carolina",
         "expected": "text"
       },
@@ -869,7 +865,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 43,
+        "ms": 98,
         "url": "https://www.270towin.com/2026-governor-polls/texas",
         "expected": "text"
       },
@@ -878,7 +874,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 33,
+        "ms": 99,
         "url": "https://www.270towin.com/2026-governor-polls/wisconsin",
         "expected": "text"
       },
@@ -1430,23 +1426,23 @@
   "medianDemGovernors": 23,
   "medianRepGovernors": 27,
   "distribution": {
-    "15": 6,
-    "16": 26,
-    "17": 154,
-    "18": 611,
-    "19": 1911,
-    "20": 5023,
-    "21": 9850,
-    "22": 15244,
-    "23": 18596,
-    "24": 18065,
-    "25": 14500,
-    "26": 9058,
-    "27": 4544,
-    "28": 1792,
-    "29": 494,
-    "30": 112,
-    "31": 13,
+    "15": 4,
+    "16": 28,
+    "17": 148,
+    "18": 644,
+    "19": 2072,
+    "20": 4955,
+    "21": 9799,
+    "22": 15275,
+    "23": 18441,
+    "24": 18375,
+    "25": 14228,
+    "26": 9142,
+    "27": 4462,
+    "28": 1757,
+    "29": 510,
+    "30": 139,
+    "31": 20,
     "32": 1
   },
   "stateHistory": {
@@ -5334,7 +5330,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.506Z",
+      "lastUpdated": "2026-06-21T15:21:54.475Z",
       "error": 8.58,
       "fundamentalsMargin": -12.86,
       "structuralMargin": -12.86,
@@ -5595,7 +5591,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.95982,
       "competitive": false,
-      "tippingPower": 0.01196,
+      "tippingPower": 0.0121,
       "movementDrivers": [],
       "history": [
         {
@@ -5741,7 +5737,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.507Z",
+      "lastUpdated": "2026-06-21T15:21:54.476Z",
       "error": 9.81,
       "fundamentalsMargin": -3.41,
       "structuralMargin": -3.41,
@@ -5985,14 +5981,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.60368,
       "competitive": true,
-      "tippingPower": 0.04866,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.5,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04939,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -6137,7 +6127,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.507Z",
+      "lastUpdated": "2026-06-21T15:21:54.476Z",
       "error": 8.75,
       "fundamentalsMargin": 1.51,
       "structuralMargin": 1.51,
@@ -6400,19 +6390,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.5893,
       "competitive": true,
-      "tippingPower": 0.05586,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.72,
-          "detail": "Combined governor model margin changed."
-        },
-        {
-          "label": "Rating",
-          "change": null,
-          "detail": "Toss-up to Tilt D"
-        }
-      ],
+      "tippingPower": 0.05417,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -6557,7 +6536,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.507Z",
+      "lastUpdated": "2026-06-21T15:21:54.477Z",
       "error": 6.7,
       "fundamentalsMargin": -19.75,
       "structuralMargin": -19.75,
@@ -6809,14 +6788,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99869,
       "competitive": false,
-      "tippingPower": 0.00086,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.44,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00079,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -6961,7 +6934,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.507Z",
+      "lastUpdated": "2026-06-21T15:21:54.477Z",
       "error": 9.11,
       "fundamentalsMargin": 8.74,
       "structuralMargin": 8.74,
@@ -7222,7 +7195,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.94781,
       "competitive": false,
-      "tippingPower": 0.01391,
+      "tippingPower": 0.01386,
       "movementDrivers": [],
       "history": [
         {
@@ -7368,7 +7341,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.507Z",
+      "lastUpdated": "2026-06-21T15:21:54.477Z",
       "error": 9.52,
       "fundamentalsMargin": 5.59,
       "structuralMargin": 5.59,
@@ -7615,14 +7588,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.77405,
       "competitive": false,
-      "tippingPower": 0.03886,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.63,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.03883,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -7767,7 +7734,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.508Z",
+      "lastUpdated": "2026-06-21T15:21:54.477Z",
       "error": 7.52,
       "fundamentalsMargin": 11,
       "structuralMargin": 11,
@@ -8009,14 +7976,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.94659,
       "competitive": false,
-      "tippingPower": 0.01798,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.57,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.01742,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -8161,7 +8122,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.508Z",
+      "lastUpdated": "2026-06-21T15:21:54.477Z",
       "error": 9.59,
       "fundamentalsMargin": -5.05,
       "structuralMargin": -5.05,
@@ -8419,14 +8380,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.68306,
       "competitive": true,
-      "tippingPower": 0.04529,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.63,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04572,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -8571,7 +8526,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.508Z",
+      "lastUpdated": "2026-06-21T15:21:54.478Z",
       "error": 10.13,
       "fundamentalsMargin": -0.95,
       "structuralMargin": -0.95,
@@ -8845,14 +8800,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.53796,
       "competitive": true,
-      "tippingPower": 0.04894,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.77,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04873,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -8997,7 +8946,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.508Z",
+      "lastUpdated": "2026-06-21T15:21:54.478Z",
       "error": 6.7,
       "fundamentalsMargin": 18.79,
       "structuralMargin": 18.79,
@@ -9239,14 +9188,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.99867,
       "competitive": false,
-      "tippingPower": 0.00066,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.5,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00085,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -9391,7 +9334,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.508Z",
+      "lastUpdated": "2026-06-21T15:21:54.478Z",
       "error": 6.7,
       "fundamentalsMargin": -19.51,
       "structuralMargin": -19.51,
@@ -9638,14 +9581,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99853,
       "competitive": false,
-      "tippingPower": 0.00092,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.44,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00093,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -9790,7 +9727,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.508Z",
+      "lastUpdated": "2026-06-21T15:21:54.478Z",
       "error": 7.64,
       "fundamentalsMargin": 10.08,
       "structuralMargin": 10.08,
@@ -10042,14 +9979,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.93492,
       "competitive": false,
-      "tippingPower": 0.01933,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.57,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.02028,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -10194,7 +10125,7 @@
       "totalPollInputsUsed": 3,
       "pollingStatus": "MANUAL_POLLS_AVAILABLE",
       "forecastMode": "POLL_INFORMED",
-      "lastUpdated": "2026-06-21T06:40:40.509Z",
+      "lastUpdated": "2026-06-21T15:21:54.478Z",
       "error": 8.64,
       "fundamentalsMargin": -5.48,
       "structuralMargin": -5.48,
@@ -10501,14 +10432,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.53174,
       "competitive": true,
-      "tippingPower": 0.05759,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.5,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.05626,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -10653,7 +10578,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.509Z",
+      "lastUpdated": "2026-06-21T15:21:54.478Z",
       "error": 9.62,
       "fundamentalsMargin": -4.85,
       "structuralMargin": -4.85,
@@ -10902,19 +10827,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.65776,
       "competitive": true,
-      "tippingPower": 0.04779,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.57,
-          "detail": "Combined governor model margin changed."
-        },
-        {
-          "label": "Rating",
-          "change": null,
-          "detail": "Lean R to Tilt R"
-        }
-      ],
+      "tippingPower": 0.04689,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -11059,7 +10973,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.509Z",
+      "lastUpdated": "2026-06-21T15:21:54.478Z",
       "error": 9.8,
       "fundamentalsMargin": 3.45,
       "structuralMargin": 3.45,
@@ -11308,19 +11222,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.67203,
       "competitive": true,
-      "tippingPower": 0.04407,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.65,
-          "detail": "Combined governor model margin changed."
-        },
-        {
-          "label": "Rating",
-          "change": null,
-          "detail": "Tilt D to Lean D"
-        }
-      ],
+      "tippingPower": 0.04506,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -11465,7 +11368,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.509Z",
+      "lastUpdated": "2026-06-21T15:21:54.478Z",
       "error": 6.7,
       "fundamentalsMargin": 21.11,
       "structuralMargin": 21.11,
@@ -11712,14 +11615,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00016,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.57,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.0002,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -11864,7 +11761,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.509Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 6.7,
       "fundamentalsMargin": 20.32,
       "structuralMargin": 20.32,
@@ -12106,14 +12003,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00033,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.51,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00036,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -12258,7 +12149,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.509Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 10.13,
       "fundamentalsMargin": 0.9,
       "structuralMargin": 0.9,
@@ -12519,14 +12410,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.60399,
       "competitive": true,
-      "tippingPower": 0.04586,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.77,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04646,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -12671,7 +12556,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.509Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 9.53,
       "fundamentalsMargin": 2.08,
       "structuralMargin": 2.08,
@@ -12920,14 +12805,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.62777,
       "competitive": true,
-      "tippingPower": 0.04769,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.72,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04813,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -13072,7 +12951,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.509Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 6.84,
       "fundamentalsMargin": -16.23,
       "structuralMargin": -16.23,
@@ -13324,14 +13203,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.9881,
       "competitive": false,
-      "tippingPower": 0.00541,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.51,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00567,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -13476,7 +13349,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.509Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 8.5,
       "fundamentalsMargin": -3.47,
       "structuralMargin": -3.47,
@@ -13742,14 +13615,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.68593,
       "competitive": true,
-      "tippingPower": 0.05187,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.71,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.0521,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -13894,7 +13761,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.509Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 8.36,
       "fundamentalsMargin": -4.52,
       "structuralMargin": -4.52,
@@ -14155,14 +14022,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.73368,
       "competitive": true,
-      "tippingPower": 0.048,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.71,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04956,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -14307,7 +14168,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.509Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 9.93,
       "fundamentalsMargin": 2.42,
       "structuralMargin": 2.42,
@@ -14561,14 +14422,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.64619,
       "competitive": true,
-      "tippingPower": 0.04529,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.72,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04649,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -14713,7 +14568,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.509Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 7.77,
       "fundamentalsMargin": 9.04,
       "structuralMargin": 9.04,
@@ -14967,14 +14822,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.89835,
       "competitive": false,
-      "tippingPower": 0.02762,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.51,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.02738,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -15119,7 +14968,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.509Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 9.47,
       "fundamentalsMargin": -6.01,
       "structuralMargin": -6.01,
@@ -15392,14 +15241,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.69742,
       "competitive": true,
-      "tippingPower": 0.04404,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.57,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04545,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -15544,7 +15387,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.510Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 8.85,
       "fundamentalsMargin": -10.74,
       "structuralMargin": -10.74,
@@ -15791,14 +15634,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.88521,
       "competitive": false,
-      "tippingPower": 0.02665,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.5,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.02662,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -15943,7 +15780,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.510Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 7.91,
       "fundamentalsMargin": 7.99,
       "structuralMargin": 7.99,
@@ -16204,14 +16041,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.86454,
       "competitive": false,
-      "tippingPower": 0.03451,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.51,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.03487,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -16356,7 +16187,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.510Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 8.04,
       "fundamentalsMargin": 7.03,
       "structuralMargin": 7.03,
@@ -16634,14 +16465,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.90904,
       "competitive": false,
-      "tippingPower": 0.02485,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.71,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.0246,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -16786,7 +16611,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.510Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 7.19,
       "fundamentalsMargin": 13.56,
       "structuralMargin": 13.56,
@@ -17028,14 +16853,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.97849,
       "competitive": false,
-      "tippingPower": 0.00842,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.5,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.0085,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -17180,7 +16999,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.510Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 9.41,
       "fundamentalsMargin": -6.45,
       "structuralMargin": -6.45,
@@ -17439,14 +17258,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.75302,
       "competitive": false,
-      "tippingPower": 0.04178,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.63,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04078,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -17591,7 +17404,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.510Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 6.7,
       "fundamentalsMargin": -19.05,
       "structuralMargin": -19.05,
@@ -17843,14 +17656,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99807,
       "competitive": false,
-      "tippingPower": 0.00138,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.44,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00125,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -17995,7 +17802,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.510Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 8.67,
       "fundamentalsMargin": -12.13,
       "structuralMargin": -12.13,
@@ -18254,7 +18061,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.95814,
       "competitive": false,
-      "tippingPower": 0.0124,
+      "tippingPower": 0.01216,
       "movementDrivers": [],
       "history": [
         {
@@ -18400,7 +18207,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.510Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 7.71,
       "fundamentalsMargin": -9.52,
       "structuralMargin": -9.52,
@@ -18671,14 +18478,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.91117,
       "competitive": false,
-      "tippingPower": 0.02611,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.57,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.02446,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -18823,7 +18624,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.510Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 7.72,
       "fundamentalsMargin": -9.46,
       "structuralMargin": -9.46,
@@ -19084,14 +18885,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99503,
       "competitive": false,
-      "tippingPower": 0.00232,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.45,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00223,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -19236,7 +19031,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.510Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 9.77,
       "fundamentalsMargin": -0.26,
       "structuralMargin": -0.26,
@@ -19498,14 +19293,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.53052,
       "competitive": true,
-      "tippingPower": 0.0504,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.59,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.04949,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
@@ -19650,7 +19439,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T06:40:40.510Z",
+      "lastUpdated": "2026-06-21T15:21:54.479Z",
       "error": 8,
       "fundamentalsMargin": -20.46,
       "structuralMargin": -20.46,
@@ -19898,14 +19687,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99509,
       "competitive": false,
-      "tippingPower": 0.00223,
-      "movementDrivers": [
-        {
-          "label": "Projected margin",
-          "change": 0.5,
-          "detail": "Combined governor model margin changed."
-        }
-      ],
+      "tippingPower": 0.00196,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-06-01",
