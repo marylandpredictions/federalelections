@@ -4,12 +4,13 @@ import { markNoRows, markParseFailed, recordFetch, recordFetchError, sourceHealt
 import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
-import { benchmarkFor, benchmarkWarnings } from "./forecast-benchmarks.mjs";
+import { benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
 const CERTIFIED_SENATE_BASELINES_URL = new URL("../data/baselines/senate-last-states.json", import.meta.url);
 const previousForecast = readPreviousForecast();
+const OFFLINE = process.argv.includes("--offline");
 const certifiedSenateBaselines = readCertifiedSenateBaselines();
 
 // The MEDSL statewide general-election table does not include Georgia's final
@@ -1585,6 +1586,10 @@ function readPreviousForecast() {
 }
 
 async function fetchText(url, label, status, options = {}) {
+  if (OFFLINE) {
+    status[label] = { health: "DISABLED", ok: true, status: "DISABLED", reason: "Offline generation mode" };
+    return null;
+  }
   const startedAt = Date.now();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 20000);
@@ -2810,6 +2815,7 @@ async function writeForecast() {
   const sourceData = await fetchAllSources();
   const model = runModel(sourceData);
   const generatedAt = new Date().toISOString();
+  const toplineComparison = toplineBenchmark("senate", { demControlProbability: model.demControlProbability });
   const historicalMarginWarnings = model.races
     .filter((race) => race.historicalComparison?.needsReview)
     .map((race) => ({
@@ -2829,6 +2835,8 @@ async function writeForecast() {
     settings: { ...SETTINGS, modelWeights: MODEL_WEIGHTS },
     sourceStatus: sourceData.status,
     sourceHealth: sourceData.sourceHealth,
+    benchmarkComparison: toplineComparison,
+    raceBenchmarkStatus: "NOT_CONFIGURED",
     sourceSummary: {
       votehub: sourceData.votehub,
       genericPolling: sourceData.genericPolling,
@@ -2882,6 +2890,8 @@ async function writeForecast() {
     seatHistory: appendSeatHistory(model),
     ...model
   };
+  if (toplineComparison.warning) output.modelWarnings.push({ severity: "warning", type: "public-model-topline-divergence", message: toplineComparison.warning });
+  output.modelWarnings.push({ severity: "info", type: "race-benchmark-not-configured", message: "External race benchmark file is empty; benchmark comparisons are schema-only." });
   output.dataQualityWarnings = output.modelWarnings;
 
   mkdirSync(new URL("../data/", import.meta.url), { recursive: true });

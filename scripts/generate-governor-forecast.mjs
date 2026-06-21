@@ -4,7 +4,7 @@ import { markDisabled, markParseFailed, recordFetch, recordFetchError, sourceHea
 import { directPollLedger } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
-import { benchmarkFor, benchmarkWarnings } from "./forecast-benchmarks.mjs";
+import { benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const GOVERNOR_HISTORY_URL = new URL("../data/governor-history.json", import.meta.url);
@@ -13,8 +13,13 @@ const GOVERNOR_FINANCE_SOURCES_URL = new URL("../data/governor-finance-sources.j
 const previousForecast = readPreviousForecast();
 const governorHistoryArchive = readGovernorHistoryArchive();
 const MODEL_TIME_ZONE = "America/New_York";
+const OFFLINE = process.argv.includes("--offline");
 
 async function fetchText(url, label, status, options = {}) {
+  if (OFFLINE) {
+    status[label] = { health: "DISABLED", ok: true, status: "DISABLED", reason: "Offline generation mode" };
+    return null;
+  }
   const startedAt = Date.now();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 20000);
@@ -1368,11 +1373,21 @@ function buildRace(baseRace, nationalShift, sourceData) {
   const governorPoll = sourceData?.governorPolling?.governorPolls?.[race.state];
   const pollingSummary = classifyPollingInputs(governorPoll?.pollEntries || [], sourceData?.status || {});
   const governorPrimarySignal = sourceData?.twoSeventyGovernor?.governorPrimarySignals?.[race.state];
-  if (governorPoll && governorPoll.polls > 0) {
+  const hasUsableGeneralPoll = pollingSummary.usablePollCount > 0;
+  if (governorPoll && hasUsableGeneralPoll) {
     const pollWeight = clamp(.2 + Math.log1p(governorPoll.polls) * .12, .25, .5) * (governorPoll.weightScale || 1);
     pollMargin = governorPoll.margin * pollWeight;
   }
-  const directGovernorPoll = governorPoll?.reducedWeight ? null : governorPoll;
+  const pollMarginType = hasUsableGeneralPoll
+    ? pollingSummary.manualPollCount && !pollingSummary.livePollCount ? "MANUAL_GENERAL_ELECTION_POLL" : "GENERAL_ELECTION_POLL"
+    : governorPrimarySignal ? "PRIMARY_SIGNAL" : "NONE";
+  const pollMarginInput = {
+    value: Number(pollMargin.toFixed(2)),
+    type: pollMarginType,
+    usableAsGeneralElectionPoll: hasUsableGeneralPoll,
+    sourceCount: hasUsableGeneralPoll ? pollingSummary.usablePollCount : 0
+  };
+  const directGovernorPoll = hasUsableGeneralPoll && !governorPoll?.reducedWeight ? governorPoll : null;
   const primaryPollSignal = 0;
   
   const rawMargin = fundamentals + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin + primaryPollSignal;
@@ -1382,11 +1397,11 @@ function buildRace(baseRace, nationalShift, sourceData) {
   const expertRatingAdjustment = { margin: rawMargin, adjustment: 0, weight: 0 };
   const guardrail = governorMarginGuardrail(race, rawMargin, fundamentals, directGovernorPoll);
   const margin = guardrail.margin;
-  const error = governorRaceError(race, fundamentals, Boolean(governorPoll?.polls));
+  const error = governorRaceError(race, fundamentals, hasUsableGeneralPoll);
   const demProbability = clamp(normalCdf(margin, 0, error), 0.001, 0.999);
   const winnerParty = demProbability >= .5 ? "D" : "R";
   const modelRating = ratingFromProbability(demProbability, margin);
-  const historicalComparison = governorHistoricalComparison(race, margin, governorPoll);
+  const historicalComparison = governorHistoricalComparison(race, margin, directGovernorPoll);
   return {
     ...race,
     displayName: `${STATE_NAMES[race.state]} Governor`,
@@ -1416,7 +1431,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
       nationalFinance,
       candidateHistory,
       priorGovernorResultWeight: Number(priorResultWeight.toFixed(2)),
-      pollMargin,
+      pollMargin: pollMarginInput,
       pollCount: pollingSummary.usablePollCount,
       pollSources: governorPoll?.sources || [],
       pollSourceUrls: governorPoll?.sourceUrls || [],
@@ -1435,7 +1450,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
       sourceHealth: {
         forecast: sourceData.sourceHealth?.health || "UNKNOWN",
         degraded: Boolean(sourceData.sourceHealth?.degraded),
-        racePolling: governorPoll?.polls ? "OK_PARSED" : "OK_NO_ROWS",
+        racePolling: pollingSummary.pollingStatus,
         unavailableSources: sourceData.sourceHealth?.unavailableSources || []
       }
     },
@@ -1448,8 +1463,8 @@ function buildRace(baseRace, nationalShift, sourceData) {
     },
     matchupStatus: governorMatchupStatus(race),
     marginDecomposition: governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, guardrail, margin, financeUsed),
-    benchmarkComparison: governorBenchmarkComparison(race, margin, demProbability, governorPoll, sourceData.sourceHealth),
-    dataQualityWarnings: [...governorBenchmarkComparison(race, margin, demProbability, governorPoll, sourceData.sourceHealth).warnings, pollingStatusWarning(pollingSummary)].filter(Boolean),
+    benchmarkComparison: governorBenchmarkComparison(race, margin, demProbability, directGovernorPoll, sourceData.sourceHealth),
+    dataQualityWarnings: [...governorBenchmarkComparison(race, margin, demProbability, directGovernorPoll, sourceData.sourceHealth).warnings, pollingStatusWarning(pollingSummary)].filter(Boolean),
     modelRating,
     demProbability: Number(demProbability.toFixed(5)),
     repProbability: Number((1 - demProbability).toFixed(5)),
@@ -1602,7 +1617,7 @@ function governorMovementDrivers(race) {
     if (!Number.isFinite(value) || Math.abs(value) < .05) return;
     drivers.push({ label, change: Number(value.toFixed(2)), detail });
   };
-  addDriver("Polling", (race.sourceInputs?.pollMargin ?? 0) - (previousRace.sourceInputs?.pollMargin ?? 0), "Weighted governor polling margin changed.");
+  addDriver("Polling", (race.sourceInputs?.pollMargin?.value ?? 0) - (previousRace.sourceInputs?.pollMargin?.value ?? 0), "Weighted usable governor polling margin changed.");
   addDriver("Projected margin", race.margin - previousRace.margin, "Combined governor model margin changed.");
   addDriver("Finance", (race.sourceInputs?.financeSignal ?? 0) - (previousRace.sourceInputs?.financeSignal ?? 0), "State campaign-finance signal changed.");
   addDriver("Generic ballot", (race.sourceInputs?.nationalFinance ?? 0) - (previousRace.sourceInputs?.nationalFinance ?? 0), "Shared national environment changed.");
@@ -1705,16 +1720,37 @@ async function buildForecast() {
       race: race.state,
       message: `Projected ${race.margin >= 0 ? "D+" : "R+"}${Math.abs(race.margin).toFixed(1)} differs by ${Math.abs(race.historicalComparison.shift).toFixed(1)} points from the prior governor result without a multi-poll signal.`
     }));
+  const toplineComparison = toplineBenchmark("governor", {});
+  const benchmarkGovernor = toplineComparison.sources?.voteHub;
+  const governorBenchmarkWarning = benchmarkGovernor && Math.abs((benchmarkGovernor.demFavoredRaces || 0) - demWinningRaceTotal) >= 3
+    ? "Governor model diverges sharply from public benchmarks."
+    : null;
+  const usablePollRaces = modeledRaces.filter((race) => race.usablePollCount > 0).length;
+  const lowRacePollCoverage = usablePollRaces <= 1;
+  const aggregateSourceHealth = lowRacePollCoverage ? {
+    ...sourceData.sourceHealth,
+    degraded: true,
+    health: "PARTIAL",
+    message: "Governor forecast is fundamentals-driven: usable live/manual race polling is available in one or fewer races."
+  } : sourceData.sourceHealth;
   const forecast = {
     model: "2026 gubernatorial forecast",
     modelVersion: "2026.06.reliability.1",
-    forecastStatus: sourceData.sourceHealth?.degraded ? "DEGRADED" : "NORMAL",
+    forecastStatus: lowRacePollCoverage || sourceData.sourceHealth?.degraded ? "PARTIAL" : "NORMAL",
     modelDate,
     generatedAt: new Date().toISOString(),
     lastUpdated: new Date().toISOString(),
     runDate: localRunDateLabel(),
     settings: SETTINGS,
-    sourceHealth: sourceData.sourceHealth,
+    sourceHealth: aggregateSourceHealth,
+    racePollCoverage: { races: modeledRaces.length, usablePollRaces },
+    benchmarkComparison: {
+      ...toplineComparison,
+      modelDemFavoredRaces: demWinningRaceTotal,
+      modelRepFavoredRaces: repWinningRaceTotal,
+      warning: governorBenchmarkWarning
+    },
+    raceBenchmarkStatus: "NOT_CONFIGURED",
     sourceSummary: {
       genericBallotMargin: senateSignals.genericBallotMargin,
       gubernatorialNationalShift: Number(nationalShift.toFixed(2)),
@@ -1730,7 +1766,8 @@ async function buildForecast() {
       financeNote: "Gubernatorial finance uses local normalized records when available. Online state portal fetching is disabled by default."
     },
     modelWarnings: [
-      ...sourceHealthWarnings(sourceData.sourceHealth, "Governor"),
+      ...(lowRacePollCoverage ? [{ severity: "warning", type: "low-race-poll-coverage", message: "Governor forecast is fundamentals-driven: usable live/manual race polling is available in one or fewer races." }] : []),
+      ...sourceHealthWarnings(aggregateSourceHealth, "Governor"),
       ...forecastSanityWarnings(modeledRaces, {
         model: "governor",
         id: (race) => race.state,
@@ -1751,6 +1788,8 @@ async function buildForecast() {
     stateHistory: Object.fromEntries(modeledRaces.map((race) => [race.state, race.history])),
     races: modeledRaces.sort((a, b) => STATE_NAMES[a.state].localeCompare(STATE_NAMES[b.state]))
   };
+  if (governorBenchmarkWarning) forecast.modelWarnings.push({ severity: "warning", type: "public-model-topline-divergence", message: governorBenchmarkWarning });
+  forecast.modelWarnings.push({ severity: "info", type: "race-benchmark-not-configured", message: "External race benchmark file is empty; benchmark comparisons are schema-only." });
   forecast.dataQualityWarnings = forecast.modelWarnings;
   forecast.governorCountHistory = appendHistory(forecast);
   return forecast;

@@ -104,10 +104,13 @@ export function sourceHealthSummary(status = {}, options = {}) {
 
 export function sourceHealthWarnings(sourceHealth, label) {
   if (!sourceHealth?.degraded) return [];
+  const detail = sourceHealth.criticalFailures?.length
+    ? `${sourceHealth.criticalFailures.join(", ")} unavailable or unreadable.`
+    : sourceHealth.message || "important source coverage is incomplete.";
   return [{
     severity: "warning",
     type: "source-health-degraded",
     source: label,
-    message: `${label} forecast degraded: ${sourceHealth.criticalFailures.join(", ")} unavailable or unreadable.`
+    message: `${label} forecast degraded: ${detail}`
   }];
 }

@@ -4,12 +4,13 @@ import { markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, so
 import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
-import { benchmarkFor, benchmarkWarnings } from "./forecast-benchmarks.mjs";
+import { benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
 
 const OUTPUT_URL = new URL("../data/house-forecast.json", import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
 const previousForecast = readPreviousForecast();
+const OFFLINE = process.argv.includes("--offline");
 
 const SETTINGS = {
   simulations: 100000,
@@ -443,6 +444,10 @@ const MODEL_DATE_KEY = modelDateKey();
 const random = mulberry32(hashString(`house-${MODEL_DATE_KEY}`));
 
 async function fetchText(url, label, status, options = {}) {
+  if (OFFLINE) {
+    status[label] = { health: "DISABLED", ok: true, status: "DISABLED", reason: "Offline generation mode" };
+    return null;
+  }
   const started = Date.now();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 14000);
@@ -467,7 +472,7 @@ async function fetchText(url, label, status, options = {}) {
 }
 
 function htmlToLines(html) {
-  return html
+  return String(html || "")
     .replace(/<script[\s\S]*?<\/script>/gi, "\n")
     .replace(/<style[\s\S]*?<\/style>/gi, "\n")
     .replace(/<[^>]+>/g, "\n")
@@ -510,6 +515,7 @@ function parseCookDistricts(html) {
 }
 
 function extractJsonAssignment(html, marker) {
+  if (typeof html !== "string" || !html) return null;
   const markerIndex = html.indexOf(marker);
   if (markerIndex === -1) return null;
   const start = html.indexOf("{", markerIndex);
@@ -540,6 +546,7 @@ function extractJsonAssignment(html, marker) {
 }
 
 function parse270MapDistricts(html) {
+  if (typeof html !== "string" || !html) return [];
   const json = extractJsonAssignment(html, "map_d3.seats =");
   if (!json) return [];
   const parsed = JSON.parse(json);
@@ -552,10 +559,11 @@ function parse270MapDistricts(html) {
     const congressionalMargin = toNumber(district.margin_congress);
     const hasPresidentialMargin = Number.isFinite(presidentialMargin) && Math.abs(presidentialMargin) > .01;
     const hasCongressionalMargin = Number.isFinite(congressionalMargin) && Math.abs(congressionalMargin) > .01;
+    const previousResultComparable = hasCongressionalMargin && Math.abs(congressionalMargin) <= 70;
     // Several source rows use 0/0 as a missing-value placeholder. Preserve a
     // genuine close margin when data exists, but do not turn missing rows into
     // artificial tossups.
-    const fundamentalMargin = hasCongressionalMargin
+    const fundamentalMargin = previousResultComparable
       ? (hasPresidentialMargin ? presidentialMargin * .55 : 0) + congressionalMargin * .45
       : hasPresidentialMargin ? presidentialMargin : null;
     const incumbent = String(district.seat_rep_name || "").trim() || "Open seat";
@@ -574,6 +582,12 @@ function parse270MapDistricts(html) {
       seatParty: district.seat_party || null,
       presidentialMargin,
       congressionalMargin,
+      previousResult: {
+        congressionalMargin,
+        comparable: previousResultComparable,
+        reason: previousResultComparable ? null : "UNCONTESTED_OR_NEAR_UNCONTESTED",
+        fallbackBaseline: hasPresidentialMargin ? "presidentialMargin" : "districtBaseline"
+      },
       fundamentalMargin: Number.isFinite(fundamentalMargin) ? Number(fundamentalMargin.toFixed(2)) : null,
       rawMarginNote: "Raw 270toWin district margin fields are stored for context only; the model does not assume they are signed Democratic margins.",
       kalshiPrice: toNumber(district.kalshi_price),
@@ -1043,6 +1057,12 @@ function adjustedDistricts(sourceData) {
       mapVersion: district.mapVersion || "2026 enacted map / 119th Congress geometry",
       districtDataSource: sourceData.usingCachedDistricts ? "Cached prior forecast district universe" : (district.ratingSource || "Public district source"),
       lastUpdated: new Date().toISOString(),
+      previousResultComparable: Boolean(district.previousResult?.comparable),
+      previousResult: district.previousResult || null,
+      redistrictingConfidence: district.redistrictingConfidence || "UNKNOWN",
+      redistrictingAsOf: district.redistrictingAsOf || null,
+      redistrictingSources: district.redistrictingSources || [],
+      redistrictingWarnings: district.redistrictingWarnings || [],
       demProbability: Number(demProbability.toFixed(4)),
       repProbability: Number((1 - demProbability).toFixed(4)),
       winnerParty: demProbability >= .5 ? "D" : "R",
@@ -1089,7 +1109,7 @@ function adjustedDistricts(sourceData) {
       matchupStatus: houseMatchupStatus(nomination),
       marginDecomposition: houseMarginDecomposition(district, contextMargin, genericShift, nationalFinanceShift, incumbencyAdjustment, openPenalty, demographicPull.adjustment, financeSignal, candidateQualityAdjustment, nominationAdjustment, districtPollingAdjustment, guardrail, margin),
       benchmarkComparison: houseBenchmarkComparison(district, margin, demProbability, districtPollSignal, sourceData.sourceHealth),
-      dataQualityWarnings: [...houseBenchmarkComparison(district, margin, demProbability, districtPollSignal, sourceData.sourceHealth).warnings, pollingStatusWarning(pollingSummary)].filter(Boolean),
+      dataQualityWarnings: [...houseBenchmarkComparison(district, margin, demProbability, districtPollSignal, sourceData.sourceHealth).warnings, pollingStatusWarning(pollingSummary), ...(district.redistrictingWarnings || []).map((message) => ({ severity: "warning", type: "redistricting-conflict", message }))].filter(Boolean),
       primaryDate: nomination.primaryDate,
       primaryStatus: nomination.status,
       primarySummary: nomination.summary,
@@ -1240,7 +1260,14 @@ function isAtLargeDistrict(district) {
 function applyRedistrictingOverride(district) {
   const stateStatus = REDISTRICTING_STATE_STATUS[district.state] || null;
   const override = DISTRICT_REDISTRICTING_OVERRIDES[district.id];
-  if (!override && !stateStatus) return district;
+  if (!override && !stateStatus) {
+    return { ...district, redistrictingConfidence: "SETTLED", redistrictingAsOf: MODEL_DATE_KEY, redistrictingSources: [], redistrictingWarnings: [] };
+  }
+  const conflict = district.id === "AL-02";
+  const confidence = conflict ? "CONFLICTING_SOURCES"
+    : stateStatus?.status === "litigation-pending" ? "LITIGATION_PENDING"
+      : stateStatus?.effectiveFor2026 ? "LIKELY_ACTIVE" : "SETTLED";
+  const warnings = conflict ? ["AL-02 map assumption requires review: current local model uses court-remedial map, while at least one external rating source describes a GOP-favorable Trump+14 district."] : [];
   return {
     ...district,
     ...(override || {}),
@@ -1249,7 +1276,11 @@ function applyRedistrictingOverride(district) {
     redistrictingTreatment: stateStatus?.modelTreatment || "current map",
     redistrictingEffectiveFor2026: Boolean(stateStatus?.effectiveFor2026),
     redistrictingNote: override?.redistrictingNote || stateStatus?.note || null,
-    redistrictingOverride: Boolean(override)
+    redistrictingOverride: Boolean(override),
+    redistrictingConfidence: confidence,
+    redistrictingAsOf: MODEL_DATE_KEY,
+    redistrictingSources: stateStatus?.source ? [stateStatus.source] : [],
+    redistrictingWarnings: warnings
   };
 }
 
@@ -1770,6 +1801,19 @@ async function writeHouseForecast() {
   validateDistricts(districts, "district adjustment");
   const model = runModel(districts);
   model.districts = appendDistrictHistories(model.districts);
+  const pollingCoverage = {
+    districts: model.districts.length,
+    usablePollDistricts: model.districts.filter((district) => district.usablePollCount > 0).length,
+    sourceFailureDistricts: model.districts.filter((district) => district.pollingStatus === "SOURCE_FAILURE").length
+  };
+  const noDistrictPolling = pollingCoverage.usablePollDistricts === 0;
+  const toplineComparison = toplineBenchmark("house", { demControlProbability: model.demControlProbability });
+  const sourceHealth = noDistrictPolling ? {
+    ...sourceData.sourceHealth,
+    degraded: true,
+    health: "PARTIAL",
+    message: "House forecast limited: no usable district-level polling was available; output is ratings/fundamentals-driven."
+  } : sourceData.sourceHealth;
   validateDistricts(model.districts, "simulation");
   model.decisiveDistricts = model.decisiveDistricts.map((district) => ({
     ...(model.districts.find((item) => item.id === district.id) || district),
@@ -1785,7 +1829,7 @@ async function writeHouseForecast() {
     }));
   const output = {
     modelVersion: "2026.06.reliability.1",
-    forecastStatus: sourceData.sourceHealth?.degraded || sourceData.usingCachedDistricts ? "DEGRADED" : "NORMAL",
+    forecastStatus: noDistrictPolling || toplineComparison.warning || sourceData.sourceHealth?.degraded || sourceData.usingCachedDistricts ? "DEGRADED" : "NORMAL",
     generatedAt: new Date().toISOString(),
     lastUpdated: new Date().toISOString(),
     modelDate: MODEL_DATE_KEY,
@@ -1800,10 +1844,14 @@ async function writeHouseForecast() {
       redistrictingShapeWarning: "The visible shape map may lag enacted 2026 redistricting in states with new maps. The model uses the local redistricting override layer even when temporary map geometry has not been replaced."
     },
     sourceStatus: sourceData.status,
-    sourceHealth: sourceData.sourceHealth,
+    sourceHealth,
+    benchmarkComparison: toplineComparison,
+    racePollCoverage: pollingCoverage,
     dataQualityWarnings: [
       ...(sourceData.usingCachedDistricts ? [{ severity: "warning", type: "house-district-fallback", message: "House forecast degraded: ratings/district map source failed; using fallback baselines." }] : []),
-      ...sourceHealthWarnings(sourceData.sourceHealth, "House")
+      ...(noDistrictPolling ? [{ severity: "warning", type: "no-district-polling", message: "House forecast limited: no usable district-level polling was available; output is ratings/fundamentals-driven." }] : []),
+      ...(toplineComparison.warning ? [{ severity: "warning", type: "public-model-topline-divergence", message: `House model diverges sharply from public benchmarks: model gives Democrats ${(model.demControlProbability * 100).toFixed(1)}% while benchmark sources favor Democrats for House control.` }] : []),
+      ...sourceHealthWarnings(sourceHealth, "House")
     ],
     sourceSummary: {
       cookDistricts: sourceData.cookDistricts.length,
@@ -1827,7 +1875,7 @@ async function writeHouseForecast() {
     },
     ratingSummary: ratingSummary(districts),
     modelWarnings: [
-      ...sourceHealthWarnings(sourceData.sourceHealth, "House"),
+      ...sourceHealthWarnings(sourceHealth, "House"),
       ...forecastSanityWarnings(model.districts, {
         model: "house",
         id: (district) => district.id,

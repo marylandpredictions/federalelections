@@ -9,6 +9,7 @@
     "generate:senate": "node scripts/generate-forecast.mjs",
     "generate:house": "node scripts/generate-house-forecast.mjs",
     "generate:governor": "node scripts/generate-governor-forecast.mjs",
+    "generate:all": "npm run generate:senate && npm run generate:house && npm run generate:governor",
     "generate:president": "node scripts/generate-president-forecast.mjs",
     "generate:videos": "node scripts/generate-videos.mjs",
     "generate:results": "node scripts/generate-live-results.mjs",
@@ -20,6 +21,7 @@
     "test:forecast-infrastructure": "node scripts/test-forecast-infrastructure.mjs",
     "verify:data-json": "node scripts/verify-data-json.mjs",
     "verify:forecast-history": "node scripts/verify-forecast-history.mjs",
+    "verify:forecast-reliability": "node scripts/verify-forecast-reliability.mjs",
     "verify:image-assets": "node scripts/verify-image-assets.mjs"
   },
   "dependencies": {
