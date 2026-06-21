@@ -3,8 +3,8 @@
   "modelVersion": "2026.06.reliability.1",
   "forecastStatus": "PARTIAL",
   "modelDate": "2026-06-21",
-  "generatedAt": "2026-06-21T12:21:56.336Z",
-  "lastUpdated": "2026-06-21T12:21:56.336Z",
+  "generatedAt": "2026-06-21T06:40:41.188Z",
+  "lastUpdated": "2026-06-21T06:40:41.188Z",
   "runDate": "Jun 21, 2026",
   "settings": {
     "simulations": 100000,
@@ -60,6 +60,553 @@
     "criticalFailures": [],
     "message": "Governor forecast is fundamentals-driven: usable live/manual race polling is available in one or fewer races."
   },
+  "canonicalGenericBallot": {
+    "margin": 5.36,
+    "dem": 46.39,
+    "rep": 41.03,
+    "sources": [
+      {
+        "source": "VoteHub",
+        "margin": 5.26,
+        "dem": 47.21,
+        "rep": 41.95,
+        "polls": 398,
+        "weight": 1,
+        "status": "OK_PARSED"
+      },
+      {
+        "source": "Pollfinity",
+        "margin": 4.2,
+        "dem": 43.5,
+        "rep": 39.3,
+        "polls": 41,
+        "weight": 0.55,
+        "status": "OK_PARSED"
+      },
+      {
+        "source": "USPollingData",
+        "margin": 7,
+        "dem": 48.1,
+        "rep": 41.1,
+        "polls": 0,
+        "weight": 0.45,
+        "status": "OK_PARSED"
+      }
+    ],
+    "sourceHealth": {
+      "checkedAt": "2026-06-21T06:40:23.531Z",
+      "pollfinityAverages": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 428,
+        "url": "https://pollfinity.com/averages.json",
+        "expected": "json",
+        "genericBallotPolls": 41,
+        "genericBallotMargin": 4.2,
+        "approvalPolls": 51,
+        "approvalNet": -20.3
+      },
+      "raceToTheWhSenatePolls": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 723,
+        "url": "https://www.racetothewh.com/senate/26polls",
+        "expected": "text",
+        "hasStaticRows": false,
+        "note": "Reachable, but no stable row-level poll data was present in the fetched HTML."
+      },
+      "twoSeventyToWinPollsCO": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 741,
+        "url": "https://www.270towin.com/2026-senate-polls/colorado",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsFL": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 741,
+        "url": "https://www.270towin.com/2026-senate-polls/florida",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsGA": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 742,
+        "url": "https://www.270towin.com/2026-senate-polls/georgia",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsID": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 779,
+        "url": "https://www.270towin.com/2026-senate-polls/idaho",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsIA": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 779,
+        "url": "https://www.270towin.com/2026-senate-polls/iowa",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsIL": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 780,
+        "url": "https://www.270towin.com/2026-senate-polls/illinois",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsDE": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 791,
+        "url": "https://www.270towin.com/2026-senate-polls/delaware",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsAR": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 795,
+        "url": "https://www.270towin.com/2026-senate-polls/arkansas",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsMA": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 790,
+        "url": "https://www.270towin.com/2026-senate-polls/massachusetts",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsME": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 793,
+        "url": "https://www.270towin.com/2026-senate-polls/maine",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsKY": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 795,
+        "url": "https://www.270towin.com/2026-senate-polls/kentucky",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsMI": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 828,
+        "url": "https://www.270towin.com/2026-senate-polls/michigan",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsMN": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 831,
+        "url": "https://www.270towin.com/2026-senate-polls/minnesota",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsLA": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 842,
+        "url": "https://www.270towin.com/2026-senate-polls/louisiana",
+        "expected": "text"
+      },
+      "censusPopulation": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 837,
+        "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2024/state/totals/NST-EST2024-POPCHG2020-2024.csv",
+        "expected": "text",
+        "rows": 66,
+        "states": 51,
+        "source": "Census Bureau no-key CSV"
+      },
+      "twoSeventyToWinPollsKS": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 850,
+        "url": "https://www.270towin.com/2026-senate-polls/kansas",
+        "expected": "text"
+      },
+      "mitSenateReturns": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 861,
+        "url": "https://raw.githubusercontent.com/MEDSL/constituency-returns/master/1976-2018-senate.csv",
+        "expected": "text",
+        "rows": 3421,
+        "states": 50
+      },
+      "civicApiDocs": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 904,
+        "url": "https://www.civicapi.org/api-documentation",
+        "expected": "text"
+      },
+      "raceToTheWhGenericBallot": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 929,
+        "url": "https://www.racetothewh.com/polls/genericballot",
+        "expected": "text"
+      },
+      "civicApiEndpoint": {
+        "health": "NOT_FOUND_404",
+        "ok": false,
+        "status": "NOT_FOUND_404",
+        "httpStatus": 404,
+        "ms": 45,
+        "url": "https://www.civicapi.org/api/v1/upcomingraces",
+        "expected": "text",
+        "error": "{\"message\":\"Route GET:/v1/upcomingraces not found\",\"error\":\"Not Found\",\"statusCode\":404}"
+      },
+      "twoSeventyToWinPollsNM": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1041,
+        "url": "https://www.270towin.com/2026-senate-polls/new-mexico",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsSD": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1056,
+        "url": "https://www.270towin.com/2026-senate-polls/south-dakota",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsSC": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1069,
+        "url": "https://www.270towin.com/2026-senate-polls/south-carolina",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsOH": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1080,
+        "url": "https://www.270towin.com/2026-senate-polls/ohio",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsOK": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1081,
+        "url": "https://www.270towin.com/2026-senate-polls/oklahoma",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsNE": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1095,
+        "url": "https://www.270towin.com/2026-senate-polls/nebraska",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsNH": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1096,
+        "url": "https://www.270towin.com/2026-senate-polls/new-hampshire",
+        "expected": "text"
+      },
+      "votehubGenericBallot": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1217,
+        "url": "https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026",
+        "expected": "json",
+        "rows": 518,
+        "usablePolls": 398,
+        "rawUsablePolls": 518
+      },
+      "twoSeventyToWinPollsRI": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1154,
+        "url": "https://www.270towin.com/2026-senate-polls/rhode-island",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsMT": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1158,
+        "url": "https://www.270towin.com/2026-senate-polls/montana",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsNJ": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1158,
+        "url": "https://www.270towin.com/2026-senate-polls/new-jersey",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsNC": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1159,
+        "url": "https://www.270towin.com/2026-senate-polls/north-carolina",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsOR": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1185,
+        "url": "https://www.270towin.com/2026-senate-polls/oregon",
+        "expected": "text"
+      },
+      "twoSeventyToWinLatestPolls": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1186,
+        "url": "https://www.270towin.com/polls/latest-2026-senate-election-polls/",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsMS": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1197,
+        "url": "https://www.270towin.com/2026-senate-polls/mississippi",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollingIndex": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1191,
+        "url": "https://www.270towin.com/content/2026-senate-polling",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsVA": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1208,
+        "url": "https://www.270towin.com/2026-senate-polls/virginia",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsTX": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1217,
+        "url": "https://www.270towin.com/2026-senate-polls/texas",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsTN": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1253,
+        "url": "https://www.270towin.com/2026-senate-polls/tennessee",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsWV": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1256,
+        "url": "https://www.270towin.com/2026-senate-polls/west-virginia",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsWY": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1279,
+        "url": "https://www.270towin.com/2026-senate-polls/wyoming",
+        "expected": "text"
+      },
+      "realClearPollingSenate": {
+        "health": "BLOCKED_403",
+        "ok": false,
+        "status": "BLOCKED_403",
+        "httpStatus": 403,
+        "ms": 1340,
+        "url": "https://www.realclearpolling.com/latest-polls/senate",
+        "expected": "text",
+        "error": "<html lang=\"en\"><head><title>realclearpolling.com</title><style>#cmsg{animation: A 1.5s;}@keyframes A{0%{opacity:0;}99%{opacity:0;}100%{opacity:1;}}</style></head><body style=\"marg"
+      },
+      "usPollingDataGenericBallot": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1508,
+        "url": "https://uspollingdata.com/polls/generic-ballot/",
+        "expected": "text",
+        "margin": 7
+      },
+      "electoralVoteSenatePolls": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1620,
+        "url": "https://electoral-vote.com/evp2026/Senate/senate_polls.csv",
+        "expected": "text",
+        "rows": 35,
+        "usablePolls": 0
+      },
+      "twoSeventyToWinPollsAL": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1641,
+        "url": "https://www.270towin.com/2026-senate-polls/alabama",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsAK": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1642,
+        "url": "https://www.270towin.com/2026-senate-polls/alaska",
+        "expected": "text"
+      },
+      "twoSeventyToWinRacePolls": {
+        "ok": true,
+        "status": 200,
+        "ms": 1642,
+        "url": "https://www.270towin.com/2026-senate-polls/{state}",
+        "pages": 35,
+        "okPages": 35,
+        "usablePolls": 117,
+        "states": 14
+      },
+      "ddhqGenericBallot": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1743,
+        "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
+        "expected": "text",
+        "polls": 0,
+        "margin": null
+      },
+      "usPollingDataSenatePolling": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1740,
+        "url": "https://uspollingdata.com/polls/senate-polling/",
+        "expected": "text",
+        "hasSenateTable": true,
+        "note": "Reachable, but not blended because several listed races/candidates do not match this Senate cycle ledger."
+      },
+      "openFecCandidateSummary": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 2373,
+        "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
+        "expected": "text",
+        "rows": 4181,
+        "senateStates": 44,
+        "nationalFinanceSignal": 0.417
+      },
+      "fiftyPlusOneSenate": {
+        "health": "DISABLED",
+        "ok": true,
+        "status": "DISABLED",
+        "reason": "Set FIFTYPLUSONE_PATH to an authorized FiftyPlusOne export directory."
+      },
+      "directPollLedger": {
+        "health": "OK_NO_ROWS",
+        "ok": true,
+        "status": "OK_NO_ROWS",
+        "rows": 0,
+        "skipped": 0,
+        "url": "data/direct-poll-ledger.json"
+      }
+    },
+    "lastUpdated": "2026-06-21T06:40:23.531Z"
+  },
   "racePollCoverage": {
     "races": 36,
     "usablePollRaces": 1
@@ -82,13 +629,17 @@
     "modelDemFavoredRaces": 18,
     "modelRepFavoredRaces": 18
   },
-  "raceBenchmarkStatus": "NOT_CONFIGURED",
+  "raceBenchmarkStatus": {
+    "status": "CONFIGURED",
+    "updatedAt": "2026-06-20",
+    "configuredRaces": 48
+  },
   "sourceSummary": {
-    "genericBallotMargin": 5.359820244320187,
+    "genericBallotMargin": 5.36,
     "gubernatorialNationalShift": 0.96,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-06-21T12:21:54.304Z",
+      "checkedAt": "2026-06-21T06:40:37.855Z",
       "governorFinance": {
         "ok": true,
         "states": 0,
@@ -111,7 +662,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 83,
+        "ms": 180,
         "url": "https://pollfinity.com/averages.json",
         "expected": "json"
       },
@@ -120,7 +671,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 112,
+        "ms": 386,
         "url": "https://www.270towin.com/2026-governor-polls/alaska",
         "expected": "text"
       },
@@ -129,7 +680,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 24,
+        "ms": 36,
         "url": "https://www.270towin.com/2026-governor-polls/arizona",
         "expected": "text"
       },
@@ -138,7 +689,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 21,
+        "ms": 34,
         "url": "https://www.270towin.com/2026-governor-polls/colorado",
         "expected": "text"
       },
@@ -147,7 +698,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 76,
+        "ms": 46,
         "url": "https://www.270towin.com/2026-governor-polls/connecticut",
         "expected": "text"
       },
@@ -156,7 +707,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 26,
+        "ms": 126,
         "url": "https://www.270towin.com/2026-governor-polls/florida",
         "expected": "text"
       },
@@ -165,7 +716,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 23,
+        "ms": 49,
         "url": "https://www.270towin.com/2026-governor-polls/georgia",
         "expected": "text"
       },
@@ -174,7 +725,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 22,
+        "ms": 36,
         "url": "https://www.270towin.com/2026-governor-polls/illinois",
         "expected": "text"
       },
@@ -183,7 +734,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 86,
+        "ms": 39,
         "url": "https://www.270towin.com/2026-governor-polls/iowa",
         "expected": "text"
       },
@@ -192,7 +743,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 103,
+        "ms": 542,
         "url": "https://www.270towin.com/2026-governor-polls/kansas",
         "expected": "text"
       },
@@ -201,7 +752,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 24,
+        "ms": 31,
         "url": "https://www.270towin.com/2026-governor-polls/maine",
         "expected": "text"
       },
@@ -210,7 +761,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 25,
+        "ms": 63,
         "url": "https://www.270towin.com/2026-governor-polls/michigan",
         "expected": "text"
       },
@@ -219,7 +770,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 28,
+        "ms": 74,
         "url": "https://www.270towin.com/2026-governor-polls/minnesota",
         "expected": "text"
       },
@@ -228,7 +779,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 84,
+        "ms": 147,
         "url": "https://www.270towin.com/2026-governor-polls/nebraska",
         "expected": "text"
       },
@@ -237,7 +788,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 97,
+        "ms": 48,
         "url": "https://www.270towin.com/2026-governor-polls/nevada",
         "expected": "text"
       },
@@ -246,7 +797,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 23,
+        "ms": 29,
         "url": "https://www.270towin.com/2026-governor-polls/new-hampshire",
         "expected": "text"
       },
@@ -255,7 +806,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 22,
+        "ms": 35,
         "url": "https://www.270towin.com/2026-governor-polls/new-mexico",
         "expected": "text"
       },
@@ -264,7 +815,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 19,
+        "ms": 419,
         "url": "https://www.270towin.com/2026-governor-polls/new-york",
         "expected": "text"
       },
@@ -273,7 +824,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 20,
+        "ms": 32,
         "url": "https://www.270towin.com/2026-governor-polls/ohio",
         "expected": "text"
       },
@@ -282,7 +833,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 92,
+        "ms": 148,
         "url": "https://www.270towin.com/2026-governor-polls/oregon",
         "expected": "text"
       },
@@ -291,7 +842,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 20,
+        "ms": 36,
         "url": "https://www.270towin.com/2026-governor-polls/pennsylvania",
         "expected": "text"
       },
@@ -300,7 +851,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 23,
+        "ms": 41,
         "url": "https://www.270towin.com/2026-governor-polls/rhode-island",
         "expected": "text"
       },
@@ -309,7 +860,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 24,
+        "ms": 74,
         "url": "https://www.270towin.com/2026-governor-polls/south-carolina",
         "expected": "text"
       },
@@ -318,7 +869,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 22,
+        "ms": 43,
         "url": "https://www.270towin.com/2026-governor-polls/texas",
         "expected": "text"
       },
@@ -327,7 +878,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 22,
+        "ms": 33,
         "url": "https://www.270towin.com/2026-governor-polls/wisconsin",
         "expected": "text"
       },
@@ -874,31 +1425,29 @@
   ],
   "projectedDemRaceWins": 18,
   "projectedRepRaceWins": 18,
-  "averageDemGovernors": 23.45,
-  "averageRepGovernors": 26.55,
+  "averageDemGovernors": 23.43,
+  "averageRepGovernors": 26.57,
   "medianDemGovernors": 23,
   "medianRepGovernors": 27,
   "distribution": {
-    "14": 1,
-    "15": 4,
-    "16": 25,
-    "17": 137,
-    "18": 591,
-    "19": 1983,
-    "20": 4930,
-    "21": 9658,
-    "22": 15266,
-    "23": 18567,
-    "24": 18091,
-    "25": 14569,
-    "26": 9024,
-    "27": 4661,
-    "28": 1820,
-    "29": 532,
-    "30": 120,
-    "31": 17,
-    "32": 3,
-    "33": 1
+    "15": 6,
+    "16": 26,
+    "17": 154,
+    "18": 611,
+    "19": 1911,
+    "20": 5023,
+    "21": 9850,
+    "22": 15244,
+    "23": 18596,
+    "24": 18065,
+    "25": 14500,
+    "26": 9058,
+    "27": 4544,
+    "28": 1792,
+    "29": 494,
+    "30": 112,
+    "31": 13,
+    "32": 1
   },
   "stateHistory": {
     "AL": [
@@ -4535,8 +5084,8 @@
       },
       {
         "date": "2026-06-21",
-        "dem": 0.02953,
-        "rep": 0.97047
+        "dem": 0.00497,
+        "rep": 0.99503
       }
     ],
     "WI": [
@@ -4785,11 +5334,20 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.417Z",
+      "lastUpdated": "2026-06-21T06:40:40.506Z",
       "error": 8.58,
       "fundamentalsMargin": -12.86,
       "structuralMargin": -12.86,
       "candidateAndLocal": 1.2,
+      "candidateException": {
+        "candidate": "Doug Jones / Tommy Tuberville",
+        "party": "mixed",
+        "effect": 0,
+        "reason": "Open-seat matchup context is represented by explicit candidate and open-seat terms, not a hidden exception.",
+        "confirmed": true,
+        "source": "manual",
+        "applied": true
+      },
       "historicalComparison": {
         "priorComparableMargin": -33.8,
         "projectedMargin": -15,
@@ -4912,7 +5470,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe R",
         "expertRatingAdjustment": {
-          "margin": -11.040548707854313,
+          "margin": -11.040528,
           "adjustment": 0,
           "weight": 0
         },
@@ -4931,6 +5489,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -4963,7 +5529,11 @@
         },
         "previousResult": -33.8,
         "external": {
-          "cook": "Safe R",
+          "cook": {
+            "rating": "Safe R",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -5010,12 +5580,9 @@
           "criticalFailures": [],
           "message": "Core source feeds completed without a critical fetch failure."
         },
-        "warnings": [
-          "no-external-benchmark-sources"
-        ]
+        "warnings": []
       },
       "dataQualityWarnings": [
-        "no-external-benchmark-sources",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -5028,7 +5595,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.95982,
       "competitive": false,
-      "tippingPower": 0.01244,
+      "tippingPower": 0.01196,
       "movementDrivers": [],
       "history": [
         {
@@ -5174,11 +5741,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.417Z",
+      "lastUpdated": "2026-06-21T06:40:40.507Z",
       "error": 9.81,
       "fundamentalsMargin": -3.41,
       "structuralMargin": -3.41,
       "candidateAndLocal": 0.4,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -5.7,
         "projectedMargin": -2.58,
@@ -5291,7 +5859,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Lean R",
         "expertRatingAdjustment": {
-          "margin": -2.394548707854315,
+          "margin": -2.394528000000001,
           "adjustment": 0,
           "weight": 0
         },
@@ -5310,6 +5878,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "LOW",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -5409,8 +5985,14 @@
       "winnerParty": "R",
       "winnerProbability": 0.60368,
       "competitive": true,
-      "tippingPower": 0.04775,
-      "movementDrivers": [],
+      "tippingPower": 0.04866,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.5,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -5555,11 +6137,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.418Z",
+      "lastUpdated": "2026-06-21T06:40:40.507Z",
       "error": 8.75,
       "fundamentalsMargin": 1.51,
       "structuralMargin": 1.51,
       "candidateAndLocal": -0.4,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 0.6,
         "projectedMargin": 1.98,
@@ -5689,7 +6272,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Toss-up",
         "expertRatingAdjustment": {
-          "margin": 2.0782908795798702,
+          "margin": 2.0783199999999997,
           "adjustment": 0,
           "weight": 0
         },
@@ -5708,6 +6291,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "LOW",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -5740,7 +6331,11 @@
         },
         "previousResult": 0.6,
         "external": {
-          "cook": "Toss-up",
+          "cook": {
+            "rating": "Toss-up",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -5788,13 +6383,11 @@
           "message": "Core source feeds completed without a critical fetch failure."
         },
         "warnings": [
-          "competitive-race-no-usable-polls",
-          "no-external-benchmark-sources"
+          "competitive-race-no-usable-polls"
         ]
       },
       "dataQualityWarnings": [
         "competitive-race-no-usable-polls",
-        "no-external-benchmark-sources",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -5807,8 +6400,19 @@
       "winnerParty": "D",
       "winnerProbability": 0.5893,
       "competitive": true,
-      "tippingPower": 0.0548,
-      "movementDrivers": [],
+      "tippingPower": 0.05586,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.72,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Toss-up to Tilt D"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -5953,11 +6557,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.418Z",
+      "lastUpdated": "2026-06-21T06:40:40.507Z",
       "error": 6.7,
       "fundamentalsMargin": -19.75,
       "structuralMargin": -19.75,
       "candidateAndLocal": -1,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -26,
         "projectedMargin": -20.17,
@@ -6080,7 +6685,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe R",
         "expertRatingAdjustment": {
-          "margin": -20.259730119372527,
+          "margin": -20.259712,
           "adjustment": 0,
           "weight": 0
         },
@@ -6099,6 +6704,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -6196,8 +6809,14 @@
       "winnerParty": "R",
       "winnerProbability": 0.99869,
       "competitive": false,
-      "tippingPower": 0.00078,
-      "movementDrivers": [],
+      "tippingPower": 0.00086,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.44,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -6342,11 +6961,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.418Z",
+      "lastUpdated": "2026-06-21T06:40:40.507Z",
       "error": 9.11,
       "fundamentalsMargin": 8.74,
       "structuralMargin": 8.74,
       "candidateAndLocal": 0.2,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 18.4,
         "projectedMargin": 14.8,
@@ -6478,7 +7098,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe D",
         "expertRatingAdjustment": {
-          "margin": 9.738632703663894,
+          "margin": 9.738655999999999,
           "adjustment": 0,
           "weight": 0
         },
@@ -6497,6 +7117,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -6594,7 +7222,7 @@
       "winnerParty": "D",
       "winnerProbability": 0.94781,
       "competitive": false,
-      "tippingPower": 0.01315,
+      "tippingPower": 0.01391,
       "movementDrivers": [],
       "history": [
         {
@@ -6740,11 +7368,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.418Z",
+      "lastUpdated": "2026-06-21T06:40:40.507Z",
       "error": 9.52,
       "fundamentalsMargin": 5.59,
       "structuralMargin": 5.59,
       "candidateAndLocal": 1,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 19.3,
         "projectedMargin": 7.16,
@@ -6861,7 +7490,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe D",
         "expertRatingAdjustment": {
-          "margin": 7.509814115182107,
+          "margin": 7.5098400000000005,
           "adjustment": 0,
           "weight": 0
         },
@@ -6880,6 +7509,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "MEDIUM",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -6912,7 +7549,11 @@
         },
         "previousResult": 19.3,
         "external": {
-          "cook": "Safe D",
+          "cook": {
+            "rating": "Likely D",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -6959,12 +7600,9 @@
           "criticalFailures": [],
           "message": "Core source feeds completed without a critical fetch failure."
         },
-        "warnings": [
-          "no-external-benchmark-sources"
-        ]
+        "warnings": []
       },
       "dataQualityWarnings": [
-        "no-external-benchmark-sources",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -6977,8 +7615,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.77405,
       "competitive": false,
-      "tippingPower": 0.03867,
-      "movementDrivers": [],
+      "tippingPower": 0.03886,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.63,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -7123,11 +7767,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.418Z",
+      "lastUpdated": "2026-06-21T06:40:40.508Z",
       "error": 7.52,
       "fundamentalsMargin": 11,
       "structuralMargin": 11,
       "candidateAndLocal": 0.6,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 12,
         "projectedMargin": 12.13,
@@ -7240,7 +7885,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe D",
         "expertRatingAdjustment": {
-          "margin": 12.374632703663895,
+          "margin": 12.374656,
           "adjustment": 0,
           "weight": 0
         },
@@ -7259,6 +7904,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -7356,8 +8009,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.94659,
       "competitive": false,
-      "tippingPower": 0.01667,
-      "movementDrivers": [],
+      "tippingPower": 0.01798,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.57,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -7502,11 +8161,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.418Z",
+      "lastUpdated": "2026-06-21T06:40:40.508Z",
       "error": 9.59,
       "fundamentalsMargin": -5.05,
       "structuralMargin": -5.05,
       "candidateAndLocal": -0.2,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -19.4,
         "projectedMargin": -4.57,
@@ -7629,7 +8289,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Likely R",
         "expertRatingAdjustment": {
-          "margin": -4.4621858848178935,
+          "margin": -4.46216,
           "adjustment": 0,
           "weight": 0
         },
@@ -7648,6 +8308,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "MEDIUM",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -7680,7 +8348,11 @@
         },
         "previousResult": -19.4,
         "external": {
-          "cook": "Likely R",
+          "cook": {
+            "rating": "Toss-up",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -7729,12 +8401,12 @@
         },
         "warnings": [
           "competitive-race-no-usable-polls",
-          "no-external-benchmark-sources"
+          "rating-divergence:Lean R:Toss-up"
         ]
       },
       "dataQualityWarnings": [
         "competitive-race-no-usable-polls",
-        "no-external-benchmark-sources",
+        "rating-divergence:Lean R:Toss-up",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -7747,8 +8419,14 @@
       "winnerParty": "R",
       "winnerProbability": 0.68306,
       "competitive": true,
-      "tippingPower": 0.04524,
-      "movementDrivers": [],
+      "tippingPower": 0.04529,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.63,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -7893,11 +8571,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.419Z",
+      "lastUpdated": "2026-06-21T06:40:40.508Z",
       "error": 10.13,
       "fundamentalsMargin": -0.95,
       "structuralMargin": -0.95,
       "candidateAndLocal": 0.65,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -7.5,
         "projectedMargin": 0.96,
@@ -8038,7 +8717,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Toss-up",
         "expertRatingAdjustment": {
-          "margin": 1.385472291098081,
+          "margin": 1.385504,
           "adjustment": 0,
           "weight": 0
         },
@@ -8057,6 +8736,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "LOW",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -8089,7 +8776,11 @@
         },
         "previousResult": -7.5,
         "external": {
-          "cook": "Toss-up",
+          "cook": {
+            "rating": "Toss-up",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -8137,13 +8828,11 @@
           "message": "Core source feeds completed without a critical fetch failure."
         },
         "warnings": [
-          "competitive-race-no-usable-polls",
-          "no-external-benchmark-sources"
+          "competitive-race-no-usable-polls"
         ]
       },
       "dataQualityWarnings": [
         "competitive-race-no-usable-polls",
-        "no-external-benchmark-sources",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -8156,8 +8845,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.53796,
       "competitive": true,
-      "tippingPower": 0.04779,
-      "movementDrivers": [],
+      "tippingPower": 0.04894,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.77,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -8302,11 +8997,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.419Z",
+      "lastUpdated": "2026-06-21T06:40:40.508Z",
       "error": 6.7,
       "fundamentalsMargin": 18.79,
       "structuralMargin": 18.79,
       "candidateAndLocal": 1,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 26.4,
         "projectedMargin": 20.13,
@@ -8419,7 +9115,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe D",
         "expertRatingAdjustment": {
-          "margin": 20.427451292145683,
+          "margin": 20.427471999999998,
           "adjustment": 0,
           "weight": 0
         },
@@ -8438,6 +9134,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -8535,8 +9239,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.99867,
       "competitive": false,
-      "tippingPower": 0.00071,
-      "movementDrivers": [],
+      "tippingPower": 0.00066,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.5,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -8681,11 +9391,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.419Z",
+      "lastUpdated": "2026-06-21T06:40:40.508Z",
       "error": 6.7,
       "fundamentalsMargin": -19.51,
       "structuralMargin": -19.51,
       "candidateAndLocal": -1,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -20.6,
         "projectedMargin": -19.93,
@@ -8803,7 +9514,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe R",
         "expertRatingAdjustment": {
-          "margin": -20.019730119372525,
+          "margin": -20.019712,
           "adjustment": 0,
           "weight": 0
         },
@@ -8822,6 +9533,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -8919,8 +9638,14 @@
       "winnerParty": "R",
       "winnerProbability": 0.99853,
       "competitive": false,
-      "tippingPower": 0.00087,
-      "movementDrivers": [],
+      "tippingPower": 0.00092,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.44,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -9065,11 +9790,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.419Z",
+      "lastUpdated": "2026-06-21T06:40:40.508Z",
       "error": 7.64,
       "fundamentalsMargin": 10.08,
       "structuralMargin": 10.08,
       "candidateAndLocal": 1.1,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 12.5,
         "projectedMargin": 11.56,
@@ -9192,7 +9918,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe D",
         "expertRatingAdjustment": {
-          "margin": 11.889632703663896,
+          "margin": 11.889656,
           "adjustment": 0,
           "weight": 0
         },
@@ -9211,6 +9937,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -9308,8 +10042,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.93492,
       "competitive": false,
-      "tippingPower": 0.02025,
-      "movementDrivers": [],
+      "tippingPower": 0.01933,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.57,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -9454,11 +10194,12 @@
       "totalPollInputsUsed": 3,
       "pollingStatus": "MANUAL_POLLS_AVAILABLE",
       "forecastMode": "POLL_INFORMED",
-      "lastUpdated": "2026-06-21T12:21:55.419Z",
+      "lastUpdated": "2026-06-21T06:40:40.509Z",
       "error": 8.64,
       "fundamentalsMargin": -5.48,
       "structuralMargin": -5.48,
       "candidateAndLocal": 2.1,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -18.6,
         "projectedMargin": -0.69,
@@ -9641,7 +10382,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Toss-up",
         "expertRatingAdjustment": {
-          "margin": -0.27206384101344083,
+          "margin": -0.2720457216409158,
           "adjustment": 0,
           "weight": 0
         },
@@ -9660,6 +10401,14 @@
         "reasons": [
           "usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "LOW",
+        "marginConfidence": "HIGH",
+        "dataConfidence": "MEDIUM",
+        "reasons": [
+          "Usable race-level polling and structural inputs."
         ]
       },
       "sourceHealth": {
@@ -9692,7 +10441,11 @@
         },
         "previousResult": -18.6,
         "external": {
-          "cook": "Toss-up",
+          "cook": {
+            "rating": "Toss-up",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -9739,21 +10492,23 @@
           "criticalFailures": [],
           "message": "Core source feeds completed without a critical fetch failure."
         },
-        "warnings": [
-          "no-external-benchmark-sources"
-        ]
+        "warnings": []
       },
-      "dataQualityWarnings": [
-        "no-external-benchmark-sources"
-      ],
+      "dataQualityWarnings": [],
       "modelRating": "Toss-up",
       "demProbability": 0.46826,
       "repProbability": 0.53174,
       "winnerParty": "R",
       "winnerProbability": 0.53174,
       "competitive": true,
-      "tippingPower": 0.057,
-      "movementDrivers": [],
+      "tippingPower": 0.05759,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.5,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -9898,11 +10653,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.419Z",
+      "lastUpdated": "2026-06-21T06:40:40.509Z",
       "error": 9.62,
       "fundamentalsMargin": -4.85,
       "structuralMargin": -4.85,
       "candidateAndLocal": 0.5,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 2.2,
         "projectedMargin": -3.91,
@@ -10020,7 +10776,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Lean R",
         "expertRatingAdjustment": {
-          "margin": -3.7033672963361033,
+          "margin": -3.7033439999999995,
           "adjustment": 0,
           "weight": 0
         },
@@ -10039,6 +10795,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "MEDIUM",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -10138,8 +10902,19 @@
       "winnerParty": "R",
       "winnerProbability": 0.65776,
       "competitive": true,
-      "tippingPower": 0.04675,
-      "movementDrivers": [],
+      "tippingPower": 0.04779,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.57,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Lean R to Tilt R"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -10284,11 +11059,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.419Z",
+      "lastUpdated": "2026-06-21T06:40:40.509Z",
       "error": 9.8,
       "fundamentalsMargin": 3.45,
       "structuralMargin": 3.45,
       "candidateAndLocal": 0.4,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 12.8,
         "projectedMargin": 4.37,
@@ -10406,7 +11182,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Likely D",
         "expertRatingAdjustment": {
-          "margin": 4.56910946806166,
+          "margin": 4.569136,
           "adjustment": 0,
           "weight": 0
         },
@@ -10425,6 +11201,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "MEDIUM",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -10524,8 +11308,19 @@
       "winnerParty": "D",
       "winnerProbability": 0.67203,
       "competitive": true,
-      "tippingPower": 0.04481,
-      "movementDrivers": [],
+      "tippingPower": 0.04407,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.65,
+          "detail": "Combined governor model margin changed."
+        },
+        {
+          "label": "Rating",
+          "change": null,
+          "detail": "Tilt D to Lean D"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -10670,11 +11465,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.509Z",
       "error": 6.7,
       "fundamentalsMargin": 21.11,
       "structuralMargin": 21.11,
       "candidateAndLocal": 1.5,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 29.9,
         "projectedMargin": 22.99,
@@ -10792,7 +11588,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe D",
         "expertRatingAdjustment": {
-          "margin": 23.39963270366389,
+          "margin": 23.399655999999993,
           "adjustment": 0,
           "weight": 0
         },
@@ -10811,6 +11607,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -10908,8 +11712,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00028,
-      "movementDrivers": [],
+      "tippingPower": 0.00016,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.57,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -11054,11 +11864,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.509Z",
       "error": 6.7,
       "fundamentalsMargin": 20.32,
       "structuralMargin": 20.32,
       "candidateAndLocal": 1.2,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 29.2,
         "projectedMargin": 21.9,
@@ -11171,7 +11982,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe D",
         "expertRatingAdjustment": {
-          "margin": 22.247451292145684,
+          "margin": 22.247472,
           "adjustment": 0,
           "weight": 0
         },
@@ -11190,6 +12001,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -11287,8 +12106,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00034,
-      "movementDrivers": [],
+      "tippingPower": 0.00033,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.51,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -11433,11 +12258,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.509Z",
       "error": 10.13,
       "fundamentalsMargin": 0.9,
       "structuralMargin": 0.9,
       "candidateAndLocal": 0.9,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 10.6,
         "projectedMargin": 2.67,
@@ -11565,7 +12391,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Lean D",
         "expertRatingAdjustment": {
-          "margin": 3.0614722910980805,
+          "margin": 3.061504,
           "adjustment": 0,
           "weight": 0
         },
@@ -11584,6 +12410,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "LOW",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -11616,7 +12450,11 @@
         },
         "previousResult": 10.6,
         "external": {
-          "cook": "Lean D",
+          "cook": {
+            "rating": "Tilt D",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -11664,13 +12502,11 @@
           "message": "Core source feeds completed without a critical fetch failure."
         },
         "warnings": [
-          "competitive-race-no-usable-polls",
-          "no-external-benchmark-sources"
+          "competitive-race-no-usable-polls"
         ]
       },
       "dataQualityWarnings": [
         "competitive-race-no-usable-polls",
-        "no-external-benchmark-sources",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -11683,8 +12519,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.60399,
       "competitive": true,
-      "tippingPower": 0.04583,
-      "movementDrivers": [],
+      "tippingPower": 0.04586,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.77,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -11829,11 +12671,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.509Z",
       "error": 9.53,
       "fundamentalsMargin": 2.08,
       "structuralMargin": 2.08,
       "candidateAndLocal": 0.4,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 7.7,
         "projectedMargin": 3.11,
@@ -11951,7 +12794,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Likely D",
         "expertRatingAdjustment": {
-          "margin": 3.33029087957987,
+          "margin": 3.3303199999999995,
           "adjustment": 0,
           "weight": 0
         },
@@ -11970,6 +12813,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "LOW",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -12069,8 +12920,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.62777,
       "competitive": true,
-      "tippingPower": 0.04894,
-      "movementDrivers": [],
+      "tippingPower": 0.04769,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.72,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -12215,11 +13072,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.509Z",
       "error": 6.84,
       "fundamentalsMargin": -16.23,
       "structuralMargin": -16.23,
       "candidateAndLocal": -1,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -23.8,
         "projectedMargin": -15.46,
@@ -12342,7 +13200,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe R",
         "expertRatingAdjustment": {
-          "margin": -15.292548707854316,
+          "margin": -15.292528,
           "adjustment": 0,
           "weight": 0
         },
@@ -12361,6 +13219,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -12458,8 +13324,14 @@
       "winnerParty": "R",
       "winnerProbability": 0.9881,
       "competitive": false,
-      "tippingPower": 0.00519,
-      "movementDrivers": [],
+      "tippingPower": 0.00541,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.51,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -12604,11 +13476,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.509Z",
       "error": 8.5,
       "fundamentalsMargin": -3.47,
       "structuralMargin": -3.47,
       "candidateAndLocal": -1.6,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -1.5,
         "projectedMargin": -4.12,
@@ -12739,7 +13612,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Toss-up",
         "expertRatingAdjustment": {
-          "margin": -4.256709120420129,
+          "margin": -4.256679999999999,
           "adjustment": 0,
           "weight": 0
         },
@@ -12758,6 +13631,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "MEDIUM",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -12790,7 +13671,11 @@
         },
         "previousResult": -1.5,
         "external": {
-          "cook": "Toss-up",
+          "cook": {
+            "rating": "Toss-up",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -12839,12 +13724,12 @@
         },
         "warnings": [
           "competitive-race-no-usable-polls",
-          "no-external-benchmark-sources"
+          "rating-divergence:Lean R:Toss-up"
         ]
       },
       "dataQualityWarnings": [
         "competitive-race-no-usable-polls",
-        "no-external-benchmark-sources",
+        "rating-divergence:Lean R:Toss-up",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -12857,8 +13742,14 @@
       "winnerParty": "R",
       "winnerProbability": 0.68593,
       "competitive": true,
-      "tippingPower": 0.05018,
-      "movementDrivers": [],
+      "tippingPower": 0.05187,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.71,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -13003,11 +13894,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.509Z",
       "error": 8.36,
       "fundamentalsMargin": -4.52,
       "structuralMargin": -4.52,
       "candidateAndLocal": -1.6,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -9.2,
         "projectedMargin": -5.22,
@@ -13137,7 +14029,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Likely R",
         "expertRatingAdjustment": {
-          "margin": -5.371709120420129,
+          "margin": -5.37168,
           "adjustment": 0,
           "weight": 0
         },
@@ -13156,6 +14048,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "MEDIUM",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -13255,8 +14155,14 @@
       "winnerParty": "R",
       "winnerProbability": 0.73368,
       "competitive": true,
-      "tippingPower": 0.0493,
-      "movementDrivers": [],
+      "tippingPower": 0.048,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.71,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -13401,11 +14307,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.509Z",
       "error": 9.93,
       "fundamentalsMargin": 2.42,
       "structuralMargin": 2.42,
       "candidateAndLocal": 0.6,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 6.4,
         "projectedMargin": 3.73,
@@ -13528,7 +14435,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Likely D",
         "expertRatingAdjustment": {
-          "margin": 4.01229087957987,
+          "margin": 4.01232,
           "adjustment": 0,
           "weight": 0
         },
@@ -13547,6 +14454,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "LOW",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -13646,8 +14561,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.64619,
       "competitive": true,
-      "tippingPower": 0.0455,
-      "movementDrivers": [],
+      "tippingPower": 0.04529,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.72,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -13792,11 +14713,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.509Z",
       "error": 7.77,
       "fundamentalsMargin": 9.04,
       "structuralMargin": 9.04,
       "candidateAndLocal": 0.3,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 6.4,
         "projectedMargin": 9.89,
@@ -13920,7 +14842,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe D",
         "expertRatingAdjustment": {
-          "margin": 10.077451292145687,
+          "margin": 10.077472,
           "adjustment": 0,
           "weight": 0
         },
@@ -13939,6 +14861,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -13971,7 +14901,11 @@
         },
         "previousResult": 6.4,
         "external": {
-          "cook": "Safe D",
+          "cook": {
+            "rating": "Likely D",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -14018,12 +14952,9 @@
           "criticalFailures": [],
           "message": "Core source feeds completed without a critical fetch failure."
         },
-        "warnings": [
-          "no-external-benchmark-sources"
-        ]
+        "warnings": []
       },
       "dataQualityWarnings": [
-        "no-external-benchmark-sources",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -14036,8 +14967,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.89835,
       "competitive": false,
-      "tippingPower": 0.02803,
-      "movementDrivers": [],
+      "tippingPower": 0.02762,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.51,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -14182,11 +15119,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.509Z",
       "error": 9.47,
       "fundamentalsMargin": -6.01,
       "structuralMargin": -6.01,
       "candidateAndLocal": -0.4,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -25.4,
         "projectedMargin": -4.89,
@@ -14324,7 +15262,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Toss-up",
         "expertRatingAdjustment": {
-          "margin": -4.649367296336104,
+          "margin": -4.649344000000001,
           "adjustment": 0,
           "weight": 0
         },
@@ -14343,6 +15281,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "MEDIUM",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -14375,7 +15321,11 @@
         },
         "previousResult": -25.4,
         "external": {
-          "cook": "Toss-up",
+          "cook": {
+            "rating": "Toss-up",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -14424,12 +15374,12 @@
         },
         "warnings": [
           "competitive-race-no-usable-polls",
-          "no-external-benchmark-sources"
+          "rating-divergence:Lean R:Toss-up"
         ]
       },
       "dataQualityWarnings": [
         "competitive-race-no-usable-polls",
-        "no-external-benchmark-sources",
+        "rating-divergence:Lean R:Toss-up",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -14442,8 +15392,14 @@
       "winnerParty": "R",
       "winnerProbability": 0.69742,
       "competitive": true,
-      "tippingPower": 0.04558,
-      "movementDrivers": [],
+      "tippingPower": 0.04404,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.57,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -14588,11 +15544,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.510Z",
       "error": 8.85,
       "fundamentalsMargin": -10.74,
       "structuralMargin": -10.74,
       "candidateAndLocal": -0.45,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -13.7,
         "projectedMargin": -10.64,
@@ -14710,7 +15667,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe R",
         "expertRatingAdjustment": {
-          "margin": -10.614548707854313,
+          "margin": -10.614528,
           "adjustment": 0,
           "weight": 0
         },
@@ -14729,6 +15686,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -14826,8 +15791,14 @@
       "winnerParty": "R",
       "winnerProbability": 0.88521,
       "competitive": false,
-      "tippingPower": 0.02645,
-      "movementDrivers": [],
+      "tippingPower": 0.02665,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.5,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -14972,11 +15943,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.510Z",
       "error": 7.91,
       "fundamentalsMargin": 7.99,
       "structuralMargin": 7.99,
       "candidateAndLocal": 0.2,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 3.4,
         "projectedMargin": 8.71,
@@ -15108,7 +16080,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Likely D",
         "expertRatingAdjustment": {
-          "margin": 8.867451292145686,
+          "margin": 8.867472,
           "adjustment": 0,
           "weight": 0
         },
@@ -15127,6 +16099,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -15224,8 +16204,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.86454,
       "competitive": false,
-      "tippingPower": 0.0319,
-      "movementDrivers": [],
+      "tippingPower": 0.03451,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.51,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -15370,11 +16356,20 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.510Z",
       "error": 8.04,
       "fundamentalsMargin": 7.03,
       "structuralMargin": 7.03,
       "candidateAndLocal": 2.2,
+      "candidateException": {
+        "candidate": "Josh Shapiro",
+        "party": "D",
+        "effect": 1.25,
+        "reason": "Popular incumbent adjustment; additive to the structural incumbent term.",
+        "confirmed": true,
+        "source": "manual",
+        "applied": true
+      },
       "historicalComparison": {
         "priorComparableMargin": 14.8,
         "projectedMargin": 10.73,
@@ -15514,7 +16509,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe D",
         "expertRatingAdjustment": {
-          "margin": 11.53829087957987,
+          "margin": 11.53832,
           "adjustment": 0,
           "weight": 0
         },
@@ -15533,6 +16528,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -15565,7 +16568,11 @@
         },
         "previousResult": 14.8,
         "external": {
-          "cook": "Safe D",
+          "cook": {
+            "rating": "Likely D",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -15612,12 +16619,9 @@
           "criticalFailures": [],
           "message": "Core source feeds completed without a critical fetch failure."
         },
-        "warnings": [
-          "no-external-benchmark-sources"
-        ]
+        "warnings": []
       },
       "dataQualityWarnings": [
-        "no-external-benchmark-sources",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -15630,8 +16634,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.90904,
       "competitive": false,
-      "tippingPower": 0.02484,
-      "movementDrivers": [],
+      "tippingPower": 0.02485,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.71,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -15776,11 +16786,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.510Z",
       "error": 7.19,
       "fundamentalsMargin": 13.56,
       "structuralMargin": 13.56,
       "candidateAndLocal": 0.5,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 19.3,
         "projectedMargin": 14.54,
@@ -15893,7 +16904,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe D",
         "expertRatingAdjustment": {
-          "margin": 14.762451292145688,
+          "margin": 14.762472,
           "adjustment": 0,
           "weight": 0
         },
@@ -15912,6 +16923,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -16009,8 +17028,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.97849,
       "competitive": false,
-      "tippingPower": 0.00858,
-      "movementDrivers": [],
+      "tippingPower": 0.00842,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.5,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -16155,11 +17180,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.510Z",
       "error": 9.41,
       "fundamentalsMargin": -6.45,
       "structuralMargin": -6.45,
       "candidateAndLocal": -0.7,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -17.8,
         "projectedMargin": -6.44,
@@ -16288,7 +17314,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Likely R",
         "expertRatingAdjustment": {
-          "margin": -6.4361858848178946,
+          "margin": -6.436160000000001,
           "adjustment": 0,
           "weight": 0
         },
@@ -16307,6 +17333,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "MEDIUM",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -16339,7 +17373,11 @@
         },
         "previousResult": -17.8,
         "external": {
-          "cook": "Likely R",
+          "cook": {
+            "rating": "Likely R",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -16386,12 +17424,9 @@
           "criticalFailures": [],
           "message": "Core source feeds completed without a critical fetch failure."
         },
-        "warnings": [
-          "no-external-benchmark-sources"
-        ]
+        "warnings": []
       },
       "dataQualityWarnings": [
-        "no-external-benchmark-sources",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -16404,8 +17439,14 @@
       "winnerParty": "R",
       "winnerProbability": 0.75302,
       "competitive": false,
-      "tippingPower": 0.04033,
-      "movementDrivers": [],
+      "tippingPower": 0.04178,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.63,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -16550,11 +17591,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.510Z",
       "error": 6.7,
       "fundamentalsMargin": -19.05,
       "structuralMargin": -19.05,
       "candidateAndLocal": -0.8,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -24,
         "projectedMargin": -19.36,
@@ -16677,7 +17719,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe R",
         "expertRatingAdjustment": {
-          "margin": -19.429730119372525,
+          "margin": -19.429712,
           "adjustment": 0,
           "weight": 0
         },
@@ -16696,6 +17738,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -16793,8 +17843,14 @@
       "winnerParty": "R",
       "winnerProbability": 0.99807,
       "competitive": false,
-      "tippingPower": 0.00118,
-      "movementDrivers": [],
+      "tippingPower": 0.00138,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.44,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -16939,11 +17995,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.510Z",
       "error": 8.67,
       "fundamentalsMargin": -12.13,
       "structuralMargin": -12.13,
       "candidateAndLocal": -1,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -32.7,
         "projectedMargin": -15,
@@ -17072,7 +18129,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe R",
         "expertRatingAdjustment": {
-          "margin": -12.527367296336106,
+          "margin": -12.527344000000001,
           "adjustment": 0,
           "weight": 0
         },
@@ -17091,6 +18148,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -17123,7 +18188,11 @@
         },
         "previousResult": -32.7,
         "external": {
-          "cook": "Safe R",
+          "cook": {
+            "rating": "Safe R",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -17170,12 +18239,9 @@
           "criticalFailures": [],
           "message": "Core source feeds completed without a critical fetch failure."
         },
-        "warnings": [
-          "no-external-benchmark-sources"
-        ]
+        "warnings": []
       },
       "dataQualityWarnings": [
-        "no-external-benchmark-sources",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -17188,7 +18254,7 @@
       "winnerParty": "R",
       "winnerProbability": 0.95814,
       "competitive": false,
-      "tippingPower": 0.01225,
+      "tippingPower": 0.0124,
       "movementDrivers": [],
       "history": [
         {
@@ -17334,11 +18400,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.510Z",
       "error": 7.71,
       "fundamentalsMargin": -9.52,
       "structuralMargin": -9.52,
       "candidateAndLocal": -1.7,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -10.9,
         "projectedMargin": -10.4,
@@ -17480,7 +18547,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe R",
         "expertRatingAdjustment": {
-          "margin": -10.590367296336105,
+          "margin": -10.590344,
           "adjustment": 0,
           "weight": 0
         },
@@ -17499,6 +18566,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -17596,8 +18671,14 @@
       "winnerParty": "R",
       "winnerProbability": 0.91117,
       "competitive": false,
-      "tippingPower": 0.025,
-      "movementDrivers": [],
+      "tippingPower": 0.02611,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.57,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -17733,7 +18814,7 @@
       "independent": "none",
       "caucusTarget": "none",
       "displayName": "Vermont Governor",
-      "margin": -14.57,
+      "margin": -19.9,
       "pollCount": 0,
       "usablePollCount": 0,
       "livePollCount": 0,
@@ -17742,15 +18823,24 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.510Z",
       "error": 7.72,
       "fundamentalsMargin": -9.46,
       "structuralMargin": -9.46,
       "candidateAndLocal": -6.5,
+      "candidateException": {
+        "candidate": "Phil Scott",
+        "party": "R",
+        "effect": -6.5,
+        "reason": "Cross-party incumbent appeal.",
+        "confirmed": true,
+        "source": "manual",
+        "applied": true
+      },
       "historicalComparison": {
         "priorComparableMargin": -46.9,
-        "projectedMargin": -14.57,
-        "shift": 32.33,
+        "projectedMargin": -19.9,
+        "shift": 27,
         "level": "large",
         "expectedRegression": true,
         "needsReview": false,
@@ -17836,7 +18926,7 @@
         "financeSignal": 0,
         "finance": null,
         "nationalFinance": 0,
-        "candidateHistory": 0,
+        "candidateHistory": -6.5,
         "priorGovernorResultWeight": 0.35,
         "pollMargin": {
           "value": 0,
@@ -17869,7 +18959,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe R",
         "expertRatingAdjustment": {
-          "margin": -15.694730119372522,
+          "margin": -22.194711999999996,
           "adjustment": 0,
           "weight": 0
         },
@@ -17890,6 +18980,14 @@
           "state fundamentals"
         ]
       },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
+        ]
+      },
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
@@ -17903,24 +19001,28 @@
         "nationalEnvironmentEffect": 0.54,
         "pollingEffect": 0,
         "incumbencyEffect": -6.5,
-        "candidateQualityEffect": 0,
+        "candidateQualityEffect": -6.5,
         "fundraisingEffect": {
           "value": 0,
           "status": "DISABLED"
         },
         "ratingsAdjustment": 0,
-        "guardrailAdjustment": 1.12,
+        "guardrailAdjustment": 2.29,
         "guardrailReason": "within fundamentals-only guardrail",
-        "finalProjectedMargin": -14.57
+        "finalProjectedMargin": -19.9
       },
       "benchmarkComparison": {
         "model": {
-          "projectedMargin": -14.57,
-          "demProbability": 0.02953
+          "projectedMargin": -19.9,
+          "demProbability": 0.00497
         },
         "previousResult": -46.9,
         "external": {
-          "cook": "Safe R",
+          "cook": {
+            "rating": "Likely R",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -17967,12 +19069,9 @@
           "criticalFailures": [],
           "message": "Core source feeds completed without a critical fetch failure."
         },
-        "warnings": [
-          "no-external-benchmark-sources"
-        ]
+        "warnings": []
       },
       "dataQualityWarnings": [
-        "no-external-benchmark-sources",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -17980,13 +19079,19 @@
         }
       ],
       "modelRating": "Safe R",
-      "demProbability": 0.02953,
-      "repProbability": 0.97047,
+      "demProbability": 0.00497,
+      "repProbability": 0.99503,
       "winnerParty": "R",
-      "winnerProbability": 0.97047,
+      "winnerProbability": 0.99503,
       "competitive": false,
-      "tippingPower": 0.01005,
-      "movementDrivers": [],
+      "tippingPower": 0.00232,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.45,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -18090,13 +19195,13 @@
         },
         {
           "date": "2026-06-21",
-          "dem": 0.02953,
-          "rep": 0.97047
+          "dem": 0.00497,
+          "rep": 0.99503
         }
       ],
       "movement": {
-        "sinceLastRun": 0,
-        "sinceWeek": 2.4,
+        "sinceLastRun": -2.5,
+        "sinceWeek": 0,
         "previousDate": "2026-06-20",
         "weekDate": "2026-06-14"
       }
@@ -18131,11 +19236,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.510Z",
       "error": 9.77,
       "fundamentalsMargin": -0.26,
       "structuralMargin": -0.26,
       "candidateAndLocal": 0.5,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": 3.4,
         "projectedMargin": 0.75,
@@ -18264,7 +19370,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Toss-up",
         "expertRatingAdjustment": {
-          "margin": 0.9679280565434489,
+          "margin": 0.967952,
           "adjustment": 0,
           "weight": 0
         },
@@ -18283,6 +19389,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "LOW",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -18315,7 +19429,11 @@
         },
         "previousResult": 3.4,
         "external": {
-          "cook": "Toss-up",
+          "cook": {
+            "rating": "Toss-up",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -18363,13 +19481,11 @@
           "message": "Core source feeds completed without a critical fetch failure."
         },
         "warnings": [
-          "competitive-race-no-usable-polls",
-          "no-external-benchmark-sources"
+          "competitive-race-no-usable-polls"
         ]
       },
       "dataQualityWarnings": [
         "competitive-race-no-usable-polls",
-        "no-external-benchmark-sources",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -18382,8 +19498,14 @@
       "winnerParty": "D",
       "winnerProbability": 0.53052,
       "competitive": true,
-      "tippingPower": 0.05038,
-      "movementDrivers": [],
+      "tippingPower": 0.0504,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.59,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
@@ -18528,11 +19650,12 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-06-21T12:21:55.420Z",
+      "lastUpdated": "2026-06-21T06:40:40.510Z",
       "error": 8,
       "fundamentalsMargin": -20.46,
       "structuralMargin": -20.46,
       "candidateAndLocal": -0.8,
+      "candidateException": null,
       "historicalComparison": {
         "priorComparableMargin": -53.8,
         "projectedMargin": -20.66,
@@ -18650,7 +19773,7 @@
         "primaryPollMatchups": [],
         "expertRating": "Safe R",
         "expertRatingAdjustment": {
-          "margin": -20.700548707854317,
+          "margin": -20.700528000000002,
           "adjustment": 0,
           "weight": 0
         },
@@ -18669,6 +19792,14 @@
         "reasons": [
           "no usable live/manual governor polling",
           "state fundamentals"
+        ]
+      },
+      "confidence": {
+        "winConfidence": "HIGH",
+        "marginConfidence": "LOW",
+        "dataConfidence": "LOW",
+        "reasons": [
+          "No usable live/manual race polling; margin is fundamentals-led."
         ]
       },
       "sourceHealth": {
@@ -18701,7 +19832,11 @@
         },
         "previousResult": -53.8,
         "external": {
-          "cook": "Safe R",
+          "cook": {
+            "rating": "Safe R",
+            "asOf": "2026-06-20",
+            "url": ""
+          },
           "sabato": null,
           "insideElections": null,
           "splitTicket": null,
@@ -18748,12 +19883,9 @@
           "criticalFailures": [],
           "message": "Core source feeds completed without a critical fetch failure."
         },
-        "warnings": [
-          "no-external-benchmark-sources"
-        ]
+        "warnings": []
       },
       "dataQualityWarnings": [
-        "no-external-benchmark-sources",
         {
           "severity": "warning",
           "type": "no-usable-race-polls",
@@ -18766,8 +19898,14 @@
       "winnerParty": "R",
       "winnerProbability": 0.99509,
       "competitive": false,
-      "tippingPower": 0.00219,
-      "movementDrivers": [],
+      "tippingPower": 0.00223,
+      "movementDrivers": [
+        {
+          "label": "Projected margin",
+          "change": 0.5,
+          "detail": "Combined governor model margin changed."
+        }
+      ],
       "history": [
         {
           "date": "2026-06-01",
