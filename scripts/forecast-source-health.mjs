@@ -6,6 +6,7 @@ export const SOURCE_HEALTH = Object.freeze({
   HTML_FETCHED: "HTML_FETCHED",
   PARSE_FAILED: "PARSE_FAILED",
   STALE: "STALE",
+  TIMEOUT: "TIMEOUT",
   DISABLED: "DISABLED",
   UNKNOWN_ERROR: "UNKNOWN_ERROR"
 });
@@ -37,10 +38,11 @@ export function recordFetch(status, label, response, text, url, startedAt, optio
 }
 
 export function recordFetchError(status, label, error, url, startedAt) {
+  const timedOut = error?.name === "AbortError" || /abort|timed?\s*out/i.test(error?.message || "");
   status[label] = {
-    health: SOURCE_HEALTH.UNKNOWN_ERROR,
+    health: timedOut ? SOURCE_HEALTH.TIMEOUT : SOURCE_HEALTH.UNKNOWN_ERROR,
     ok: false,
-    status: SOURCE_HEALTH.UNKNOWN_ERROR,
+    status: timedOut ? SOURCE_HEALTH.TIMEOUT : SOURCE_HEALTH.UNKNOWN_ERROR,
     ms: Date.now() - startedAt,
     url,
     error: error?.message || String(error)
@@ -84,6 +86,7 @@ export function sourceHealthSummary(status = {}, options = {}) {
     SOURCE_HEALTH.HTML_FETCHED,
     SOURCE_HEALTH.PARSE_FAILED,
     SOURCE_HEALTH.STALE,
+    SOURCE_HEALTH.TIMEOUT,
     SOURCE_HEALTH.UNKNOWN_ERROR
   ]);
   const unhealthy = entries.filter(([, value]) => failure.has(value?.health));
@@ -113,4 +116,17 @@ export function sourceHealthWarnings(sourceHealth, label) {
     source: label,
     message: `${label} forecast degraded: ${detail}`
   }];
+}
+
+export function generationNetworkStatus(status = {}, offline = false) {
+  const entries = Object.entries(status).filter(([key]) => key !== "checkedAt" && key !== "generatedAt");
+  const failedSources = entries.filter(([, value]) => !value?.ok && value?.health !== SOURCE_HEALTH.DISABLED).map(([key]) => key);
+  const timedOutSources = entries.filter(([, value]) => value?.health === SOURCE_HEALTH.TIMEOUT).map(([key]) => key);
+  return {
+    attempted: !offline,
+    failedSources,
+    timedOutSources,
+    usedFallbackCache: entries.some(([key]) => /fallback|cached/i.test(key)),
+    mode: offline ? "OFFLINE" : timedOutSources.length ? "PARTIAL_NETWORK" : failedSources.length ? "PARTIAL_NETWORK" : "ONLINE"
+  };
 }

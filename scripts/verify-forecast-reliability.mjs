@@ -16,10 +16,16 @@ assert.ok(Number.isFinite(governorGeneric), "Governor must expose a canonical ge
 assert.ok(Math.abs(senateGeneric - houseGeneric) <= .3, "House raw generic ballot must match Senate's canonical margin.");
 assert.ok(Math.abs(senateGeneric - governorGeneric) <= .3, "Governor raw generic ballot must match Senate's canonical margin.");
 
+for (const [name, forecast] of [["Senate", senate], ["House", house], ["Governor", governor]]) {
+  assert.ok(["ONLINE", "PARTIAL_NETWORK", "OFFLINE"].includes(forecast.generationMode), `${name} must publish a generation mode.`);
+  assert.ok(forecast.networkStatus && typeof forecast.networkStatus.attempted === "boolean", `${name} must publish network status.`);
+}
+
 const allHousePollingFailed = house.districts.length && house.districts.every((district) => district.pollingStatus === "SOURCE_FAILURE");
-if (allHousePollingFailed) {
+const noHouseUsablePolling = (house.racePollCoverage?.usablePollDistricts || 0) === 0;
+if (allHousePollingFailed || noHouseUsablePolling) {
   assert.notEqual(house.forecastStatus, "NORMAL", "House forecast cannot be NORMAL when every district polling source failed.");
-  assert.notEqual(house.sourceHealth?.health, "HEALTHY", "House source health cannot be HEALTHY when every district polling source failed.");
+  assert.notEqual(house.sourceHealth?.health, "HEALTHY", "House source health cannot be HEALTHY without usable district polling.");
 }
 
 const governorUsablePollRaces = governor.races.filter((race) => race.usablePollCount > 0).length;

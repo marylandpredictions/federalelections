@@ -1,6 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { forecastSanityWarnings } from "./forecast-sanity.mjs";
-import { markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
+import { generationNetworkStatus, markNoRows, markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
 import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
@@ -443,6 +443,8 @@ function modelDateKey() {
 
 const MODEL_DATE_KEY = modelDateKey();
 const random = mulberry32(hashString(`house-${MODEL_DATE_KEY}`));
+const GENERATION_STARTED_AT = Date.now();
+const GENERATION_BUDGET_MS = Math.max(15000, Number(process.env.FORECAST_GENERATION_BUDGET_MS || 90000));
 
 async function fetchText(url, label, status, options = {}) {
   if (OFFLINE) {
@@ -450,8 +452,15 @@ async function fetchText(url, label, status, options = {}) {
     return null;
   }
   const started = Date.now();
+  const remaining = GENERATION_BUDGET_MS - (started - GENERATION_STARTED_AT);
+  if (remaining <= 0) {
+    status[label] = { health: "TIMEOUT", ok: false, status: "TIMEOUT", url, error: "Global generation time budget exhausted." };
+    return "";
+  }
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 14000);
+  const timeoutMs = Math.min(options.timeoutMs || 12000, remaining);
+  console.log(`[house] fetching ${label} (timeout ${timeoutMs}ms)`);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetch(url, {
       signal: controller.signal,
@@ -462,10 +471,12 @@ async function fetchText(url, label, status, options = {}) {
     });
     const text = await response.text();
     const record = recordFetch(status, label, response, text, url, started, options);
+    console.log(`[house] ${label}: ${record.status}`);
     status[label].bytes = text.length;
     return record.ok ? text : "";
   } catch (error) {
     recordFetchError(status, label, error, url, started);
+    console.warn(`[house] ${label}: ${status[label].status}`);
     return "";
   } finally {
     clearTimeout(timeout);
@@ -658,6 +669,9 @@ async function fetchGenericPolling(status) {
     parseCanonicalPollfinityGeneric(pollfinityJson),
     parseCanonicalUsPollingDataGeneric(usPollingHtml)
   ], { sourceHealth: status });
+  if (!parseCanonicalVoteHubGeneric(votehubJson)) markNoRows(status, "votehubGenericBallot");
+  if (!parseCanonicalPollfinityGeneric(pollfinityJson)) markNoRows(status, "pollfinityAverages");
+  if (!parseCanonicalUsPollingDataGeneric(usPollingHtml)) markNoRows(status, "usPollingDataGenericBallot");
   const senateFallback = readCachedGenericBallot();
   // Senate owns the live canonical blend. House consumes the checked-in blend
   // so the raw national environment cannot silently diverge by parser.
@@ -1242,7 +1256,12 @@ function houseBenchmarkComparison(district, margin, demProbability, pollSignal, 
     },
     usablePolls: pollSignal?.pollCount || 0,
     sourceHealth,
-    warnings
+    warnings,
+    benchmarkWarnings: warnings.map((warning) => ({
+      type: String(warning).startsWith("rating-divergence") ? "RATING_DIVERGENCE" : String(warning).includes("benchmark") ? "BENCHMARK_DIVERGENCE" : "DATA_QUALITY",
+      severity: String(warning).startsWith("rating-divergence") ? "HIGH" : "WARNING",
+      message: String(warning)
+    }))
   };
 }
 
@@ -1884,10 +1903,17 @@ async function writeHouseForecast() {
     },
     sourceStatus: sourceData.status,
     sourceHealth,
+    generationMode: generationNetworkStatus(sourceData.status, OFFLINE).mode,
+    networkStatus: generationNetworkStatus(sourceData.status, OFFLINE),
     canonicalGenericBallot: sourceData.genericPolling,
     benchmarkComparison: toplineComparison,
     raceBenchmarkStatus: benchmarkConfiguration(),
     racePollCoverage: pollingCoverage,
+    pollCoverage: {
+      usableDistrictPolls: pollingCoverage.usablePollDistricts,
+      totalDistricts: pollingCoverage.districts,
+      sourceFailureDistricts: pollingCoverage.sourceFailureDistricts
+    },
     dataQualityWarnings: [
       ...(sourceData.usingCachedDistricts ? [{ severity: "warning", type: "house-district-fallback", message: "House forecast degraded: ratings/district map source failed; using fallback baselines." }] : []),
       ...(noDistrictPolling ? [{ severity: "warning", type: "no-district-polling", message: "House forecast limited: no usable district-level polling was available; output is ratings/fundamentals-driven." }] : []),

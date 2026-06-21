@@ -93,19 +93,26 @@
     const pollSources = race.sourceInputs?.pollSources || [];
     const pollSourceUrls = race.sourceInputs?.pollSourceUrls || [];
     const pollMatchups = race.sourceInputs?.pollMatchups || [];
-    const pollingRows = Number(race.sourceInputs?.pollCount || 0) > 0 ? [
-      `<li>Polling pull: ${signedPointMargin(race.sourceInputs?.pollMargin || 0)}</li>`,
+    const pollMarginInput = race.sourceInputs?.pollMargin;
+    const pollMarginValue = Number(pollMarginInput?.value);
+    const usableGeneralPoll = Boolean(pollMarginInput?.usableAsGeneralElectionPoll);
+    const pollingRows = Number(race.sourceInputs?.pollCount || 0) > 0 && usableGeneralPoll ? [
+      `<li>Polling pull: ${signedPointMargin(pollMarginValue)}</li>`,
+      `<li>Type: ${escapeHtml(pollMarginInput?.type || "GENERAL_ELECTION_POLL")}</li>`,
       `<li>Usable polls: ${escapeHtml(String(race.sourceInputs?.pollCount || 0))}</li>`,
       `<li>Sources: ${escapeHtml(pollSources.join(", ") || "Governor polling source")}</li>`,
       pollSourceUrls.length ? `<li>Links: ${pollSourceUrls.map((url) => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a>`).join(" / ")}</li>` : "",
       pollMatchups.length ? `<li>Matched matchup: ${escapeHtml(pollMatchups.join(" / "))}</li>` : ""
-    ].filter(Boolean).join("") : `<li>No usable governor polling average is available for this race yet.</li>`;
+    ].filter(Boolean).join("") : [
+      `<li>No usable general-election polling average is available for this race yet.</li>`,
+      pollMarginInput?.type && pollMarginInput.type !== "NONE" ? `<li>Polling signal type: ${escapeHtml(pollMarginInput.type)} (not treated as a usable general-election poll)</li>` : ""
+    ].filter(Boolean).join("");
     const snapshotCards = [
       ["Model classification", race.modelRating || race.rating, "Generated from the current probability and projected margin"],
       ["Fundamentals", signedPointMargin(race.fundamentalsMargin), "PVI, prior gubernatorial result, and incumbency"],
       ["Candidate/local", signedPointMargin(race.candidateAndLocal), "Manual candidate-quality and local context adjustment"],
       ["Finance", signedPointMargin(race.sourceInputs?.financeSignal || 0), "State-level campaign finance input"],
-      ["Polling", signedPointMargin(race.sourceInputs?.pollMargin || 0), "Matched governor polling input"],
+      ["Polling", pollMarginInput?.value != null ? signedPointMargin(pollMarginValue) : "--", usableGeneralPoll ? "Matched governor general-election polling input" : "No usable governor general-election polling input"],
       ["Demographic pull", signedPointMargin(race.demographicPull?.adjustment || 0), "Candidate profile interaction with state electorate"],
       ["Model margin", signedPointMargin(race.margin), "Final projected vote margin"],
       ["Structural baseline", signedPointMargin(race.structuralMargin ?? race.ratingMargin), "PVI, prior gubernatorial result, and incumbency before other model adjustments"]

@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { forecastSanityWarnings } from "./forecast-sanity.mjs";
-import { markDisabled, markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
+import { generationNetworkStatus, markDisabled, markNoRows, markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
 import { directPollLedger } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
@@ -15,6 +15,8 @@ const previousForecast = readPreviousForecast();
 const governorHistoryArchive = readGovernorHistoryArchive();
 const MODEL_TIME_ZONE = "America/New_York";
 const OFFLINE = process.argv.includes("--offline");
+const GENERATION_STARTED_AT = Date.now();
+const GENERATION_BUDGET_MS = Math.max(15000, Number(process.env.FORECAST_GENERATION_BUDGET_MS || 90000));
 
 function readGovernorCandidateExceptions() {
   try { return JSON.parse(readFileSync(GOVERNOR_EXCEPTIONS_URL, "utf8")).races || {}; }
@@ -23,14 +25,33 @@ function readGovernorCandidateExceptions() {
 
 const GOVERNOR_CANDIDATE_EXCEPTIONS = readGovernorCandidateExceptions();
 
+async function mapWithConcurrency(items, limit, worker) {
+  let cursor = 0;
+  const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (cursor < items.length) {
+      const index = cursor;
+      cursor += 1;
+      await worker(items[index], index);
+    }
+  });
+  await Promise.all(runners);
+}
+
 async function fetchText(url, label, status, options = {}) {
   if (OFFLINE) {
     status[label] = { health: "DISABLED", ok: true, status: "DISABLED", reason: "Offline generation mode" };
     return null;
   }
   const startedAt = Date.now();
+  const remaining = GENERATION_BUDGET_MS - (startedAt - GENERATION_STARTED_AT);
+  if (remaining <= 0) {
+    status[label] = { health: "TIMEOUT", ok: false, status: "TIMEOUT", url, error: "Global generation time budget exhausted." };
+    return null;
+  }
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 20000);
+  const timeoutMs = Math.min(options.timeoutMs || 12000, remaining);
+  console.log(`[governor] fetching ${label} (timeout ${timeoutMs}ms)`);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const response = await fetch(url, {
@@ -39,9 +60,11 @@ async function fetchText(url, label, status, options = {}) {
     });
     const text = await response.text();
     const record = recordFetch(status, label, response, text, url, startedAt, options);
+    console.log(`[governor] ${label}: ${record.status}`);
     return record.ok ? text : null;
   } catch (error) {
     recordFetchError(status, label, error, url, startedAt);
+    console.warn(`[governor] ${label}: ${status[label].status}`);
     return null;
   } finally {
     clearTimeout(timeout);
@@ -464,6 +487,7 @@ async function fetchPollfinityAverages(status) {
         }
       }
     }
+    if (!Number.isFinite(generic) && !Object.keys(governorPolls).length) markNoRows(status, "pollfinityAverages");
     return { genericBallotMargin: Number.isFinite(generic) ? generic : null, governorPolls };
   } catch (error) {
     markParseFailed(status, "pollfinityAverages", error);
@@ -602,7 +626,7 @@ async function fetchTwoSeventyGovernorPolls(status) {
   const governorPrimarySignals = {};
   const sourceStatus = { checked: 0, parsed: 0, primarySignals: 0, noPolls: 0, failed: 0, states: {} };
   const racesToCheck = GOVERNOR_RACES.filter((race) => Math.abs(race.pvi || 0) < 12 || Math.abs(race.lastMargin || 0) < 12);
-  for (const baseRace of racesToCheck) {
+  await mapWithConcurrency(racesToCheck, 4, async (baseRace) => {
     const candidateInfo = GOVERNOR_CANDIDATE_STATUS[baseRace.state] || {};
     const race = {
       ...baseRace,
@@ -620,7 +644,7 @@ async function fetchTwoSeventyGovernorPolls(status) {
     if (!text) {
       sourceStatus.failed += 1;
       sourceStatus.states[race.state] = { ok: false, url };
-      continue;
+      return;
     }
     const parsed = parseTwoSeventyGovernorPage(text, race);
     if (!parsed) {
@@ -646,11 +670,11 @@ async function fetchTwoSeventyGovernorPolls(status) {
           matchup: primarySignal.matchup,
           url
         };
-        continue;
+        return;
       }
       sourceStatus.noPolls += 1;
       sourceStatus.states[race.state] = { ok: true, parsed: false, url };
-      continue;
+      return;
     }
     governorPolls[race.state] = {
       margin: Number(parsed.margin.toFixed(2)),
@@ -672,8 +696,13 @@ async function fetchTwoSeventyGovernorPolls(status) {
       matchup: parsed.matchup,
       url
     };
-  }
-  status.twoSeventyGovernorPolls = sourceStatus;
+  });
+  status.twoSeventyGovernorPolls = {
+    health: sourceStatus.parsed ? "OK_PARSED" : sourceStatus.noPolls ? "OK_NO_ROWS" : "PARSE_FAILED",
+    ok: sourceStatus.parsed > 0,
+    status: sourceStatus.parsed ? "OK_PARSED" : sourceStatus.noPolls ? "OK_NO_ROWS" : "PARSE_FAILED",
+    ...sourceStatus
+  };
   return { governorPolls, governorPrimarySignals };
 }
 
@@ -1415,6 +1444,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
   const winnerParty = demProbability >= .5 ? "D" : "R";
   const modelRating = ratingFromProbability(demProbability, margin);
   const historicalComparison = governorHistoricalComparison(race, margin, directGovernorPoll);
+  const largeShiftWarning = governorLargeShiftWarning(race, margin, directGovernorPoll);
   return {
     ...race,
     displayName: `${STATE_NAMES[race.state]} Governor`,
@@ -1440,6 +1470,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
       applied: Boolean(candidateException.confirmed)
     } : null,
     historicalComparison,
+    largeShiftWarning,
     electorateComposition,
     demographicPull,
     sourceInputs: {
@@ -1487,7 +1518,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
     matchupStatus: governorMatchupStatus(race),
     marginDecomposition: governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, guardrail, margin, financeUsed),
     benchmarkComparison: governorBenchmarkComparison(race, margin, demProbability, directGovernorPoll, sourceData.sourceHealth),
-    dataQualityWarnings: [...governorBenchmarkComparison(race, margin, demProbability, directGovernorPoll, sourceData.sourceHealth).warnings, pollingStatusWarning(pollingSummary)].filter(Boolean),
+    dataQualityWarnings: [...governorBenchmarkComparison(race, margin, demProbability, directGovernorPoll, sourceData.sourceHealth).warnings, largeShiftWarning?.message, pollingStatusWarning(pollingSummary)].filter(Boolean),
     modelRating,
     demProbability: Number(demProbability.toFixed(5)),
     repProbability: Number((1 - demProbability).toFixed(5)),
@@ -1522,6 +1553,20 @@ function governorHistoricalComparison(race, projectedMargin, governorPoll) {
     expectedRegression,
     needsReview: level === "large" && !hasMultiPollSignal && !expectedRegression,
     basis: hasMultiPollSignal ? "current multi-poll signal available" : "structural and candidate inputs only"
+  };
+}
+
+function governorLargeShiftWarning(race, projectedMargin, governorPoll) {
+  const shift = projectedMargin - race.lastMargin;
+  if (governorPoll?.polls || Math.abs(shift) < 10) return null;
+  return {
+    triggered: true,
+    previousComparableMargin: Number(race.lastMargin.toFixed(2)),
+    projectedMargin: Number(projectedMargin.toFixed(2)),
+    shift: Number(shift.toFixed(2)),
+    usablePollCount: 0,
+    reason: "SHIFT_TOO_LARGE_WITHOUT_USABLE_GENERAL_ELECTION_POLLING",
+    message: `${race.state} Governor projected margin has a ${Math.abs(shift).toFixed(1)}-point shift from its prior governor result without usable general-election polling.`
   };
 }
 
@@ -1766,6 +1811,8 @@ async function buildForecast() {
     runDate: localRunDateLabel(),
     settings: SETTINGS,
     sourceHealth: aggregateSourceHealth,
+    generationMode: generationNetworkStatus(sourceData.status, OFFLINE).mode,
+    networkStatus: generationNetworkStatus(sourceData.status, OFFLINE),
     canonicalGenericBallot: senateSignals.canonicalGenericBallot || null,
     racePollCoverage: { races: modeledRaces.length, usablePollRaces },
     benchmarkComparison: {

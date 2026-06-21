@@ -3,6 +3,7 @@ import {
   SOURCE_HEALTH,
   markNoRows,
   markParseFailed,
+  recordFetchError,
   recordFetch,
   sourceHealthSummary
 } from "./forecast-source-health.mjs";
@@ -32,6 +33,9 @@ assert.equal(status.emptyRows.health, SOURCE_HEALTH.OK_NO_ROWS);
 recordFetch(status, "malformed", response(200), "{", "https://example.test/data", Date.now(), { expected: "json" });
 markParseFailed(status, "malformed", new Error("Unexpected end of JSON input"));
 assert.equal(status.malformed.health, SOURCE_HEALTH.PARSE_FAILED);
+
+recordFetchError(status, "timedOut", new Error("request timed out"), "https://example.test/slow", Date.now());
+assert.equal(status.timedOut.health, SOURCE_HEALTH.TIMEOUT);
 
 const usPollingData = parseUsPollingDataGeneric("<table><tr><td>Democratic</td><td>48.1%</td></tr><tr><td>Republican</td><td>41.1%</td></tr></table>");
 assert.equal(usPollingData.margin, 7);

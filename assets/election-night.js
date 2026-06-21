@@ -2244,7 +2244,8 @@ class ElectionNightPage {
     const inputs = forecastRace.sourceInputs || {};
     const latest = this.latestPollObject(forecastRace);
     const pollCount = Number(inputs.pollCount ?? forecastRace.polls?.length ?? 0);
-    const pollMargin = this.formatForecastMargin(forecastRace.pollMargin ?? inputs.pollMargin);
+    const typedPollMargin = forecastRace.pollMargin ?? inputs.pollMargin;
+    const pollMargin = this.formatForecastMargin(typeof typedPollMargin === "object" ? typedPollMargin?.value : typedPollMargin);
     if (!latest && !pollCount && !pollMargin) {
       return `<div class="race-context-empty">This race is tracked by the forecast, but no public polling is currently included.</div>`;
     }

@@ -1,6 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { forecastSanityWarnings } from "./forecast-sanity.mjs";
-import { markNoRows, markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
+import { generationNetworkStatus, markNoRows, markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
 import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
@@ -12,6 +12,8 @@ const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import
 const CERTIFIED_SENATE_BASELINES_URL = new URL("../data/baselines/senate-last-states.json", import.meta.url);
 const previousForecast = readPreviousForecast();
 const OFFLINE = process.argv.includes("--offline");
+const GENERATION_STARTED_AT = Date.now();
+const GENERATION_BUDGET_MS = Math.max(15000, Number(process.env.FORECAST_GENERATION_BUDGET_MS || 90000));
 const certifiedSenateBaselines = readCertifiedSenateBaselines();
 
 // The MEDSL statewide general-election table does not include Georgia's final
@@ -1234,6 +1236,19 @@ function historicalMarginComparison(race, projectedMargin, pollSignal) {
   };
 }
 
+function largeShiftWithoutPolls(comparison, pollSignal, state) {
+  if (!comparison || pollSignal?.usablePollCount || Math.abs(comparison.shift || 0) < 10) return null;
+  return {
+    triggered: true,
+    previousComparableMargin: comparison.priorComparableMargin,
+    projectedMargin: comparison.projectedMargin,
+    shift: comparison.shift,
+    usablePollCount: 0,
+    reason: "SHIFT_TOO_LARGE_WITHOUT_USABLE_GENERAL_ELECTION_POLLING",
+    message: `${state} Senate projected margin has a ${Math.abs(comparison.shift).toFixed(1)}-point shift from its comparable baseline without usable general-election polling.`
+  };
+}
+
 function softExpertRatingAdjustment(margin, rating, office = "senate") {
   const interval = EXPERT_RATING_INTERVALS[rating];
   if (!interval || !Number.isFinite(margin)) return { margin, adjustment: 0, weight: 0 };
@@ -1347,6 +1362,7 @@ function runModel(sourceData) {
     const demProbability = logistic(margin, error);
     const demographicPull = demographicPullAdjustment(withComposition);
     const historicalComparison = historicalMarginComparison(withComposition, margin, pollSignal);
+    const largeShiftWarning = largeShiftWithoutPolls(historicalComparison, pollSignal, withComposition.state);
     const matchupStatus = senateMatchupStatus(withComposition);
     const marginDecomposition = senateMarginDecomposition(withComposition, pollSignal, guardrail, margin);
     const benchmarkComparison = senateBenchmarkComparison({ ...withComposition, historicalComparison }, margin, demProbability, pollSignal);
@@ -1382,7 +1398,7 @@ function runModel(sourceData) {
       lastUpdated: new Date().toISOString(),
       marginDecomposition,
       benchmarkComparison,
-      dataQualityWarnings: [...benchmarkComparison.warnings, pollingStatusWarning(withComposition.pollingSummary)].filter(Boolean),
+      dataQualityWarnings: [...benchmarkComparison.warnings, largeShiftWarning?.message, pollingStatusWarning(withComposition.pollingSummary)].filter(Boolean),
       uncertaintyAdjustment: uncertainty,
       primaryEvents: primaryEventsForRace(withCandidates),
       primaryRisk: primaryRisk(race),
@@ -1394,6 +1410,7 @@ function runModel(sourceData) {
       rcvAdjustment,
       demographicPull,
       historicalComparison,
+      largeShiftWarning,
       extraCandidateDemographicPulls: extraCandidateDemographicPulls(withComposition)
     };
   });
@@ -1598,8 +1615,15 @@ async function fetchText(url, label, status, options = {}) {
     return null;
   }
   const startedAt = Date.now();
+  const remaining = GENERATION_BUDGET_MS - (startedAt - GENERATION_STARTED_AT);
+  if (remaining <= 0) {
+    status[label] = { health: "TIMEOUT", ok: false, status: "TIMEOUT", url, error: "Global generation time budget exhausted." };
+    return null;
+  }
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 20000);
+  const timeoutMs = Math.min(options.timeoutMs || 15000, remaining);
+  console.log(`[forecast] fetching ${label} (timeout ${timeoutMs}ms)`);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const response = await fetch(url, {
@@ -1608,9 +1632,11 @@ async function fetchText(url, label, status, options = {}) {
     });
     const text = await response.text();
     const record = recordFetch(status, label, response, text, url, startedAt, options);
+    console.log(`[forecast] ${label}: ${record.status}`);
     return record.ok ? text : null;
   } catch (error) {
     recordFetchError(status, label, error, url, startedAt);
+    console.warn(`[forecast] ${label}: ${status[label].status}`);
     return null;
   } finally {
     clearTimeout(timeout);
@@ -1876,18 +1902,26 @@ async function fetchTwoSeventyToWinRacePolls(status) {
   let okPages = 0;
   let usablePolls = 0;
 
-  await Promise.all(sourceStates.map(async (state) => {
+  // Keep source pressure bounded: a failed external site must not leave dozens of
+  // concurrent requests alive long enough to stall the complete forecast run.
+  const workers = Math.min(4, sourceStates.length);
+  let nextIndex = 0;
+  async function worker() {
+    while (nextIndex < sourceStates.length) {
+      const state = sourceStates[nextIndex++];
     pages += 1;
     const url = `https://www.270towin.com/2026-senate-polls/${stateSlug(state)}`;
     const text = await fetchText(url, `twoSeventyToWinPolls${state}`, status, { timeoutMs: 15000 });
-    if (!text) return;
+      if (!text) continue;
     okPages += 1;
     const polls = parseTwoSeventyToWinStatePolls(state, text);
     if (polls.length) {
       byState[state] = polls;
       usablePolls += polls.length;
     }
-  }));
+    }
+  }
+  await Promise.all(Array.from({ length: workers }, worker));
 
   status.twoSeventyToWinRacePolls = {
     ok: okPages > 0,
@@ -2006,6 +2040,7 @@ async function fetchDdhqGenericBallot(status) {
     : { genericBallotMargin: null, polls: 0 };
   status.ddhqGenericBallot.polls = result.polls;
   status.ddhqGenericBallot.margin = result.genericBallotMargin;
+  if (!Number.isFinite(result.genericBallotMargin)) markNoRows(status, "ddhqGenericBallot", { polls: result.polls, margin: null });
   return result;
 }
 
@@ -2279,6 +2314,7 @@ async function fetchPollingReferencePages(status) {
     const rows = parseCsv(electoralVoteCsv);
     status.electoralVoteSenatePolls.rows = rows.length;
     status.electoralVoteSenatePolls.usablePolls = Object.values(electoralVoteByState).reduce((sum, polls) => sum + polls.length, 0);
+    if (!status.electoralVoteSenatePolls.usablePolls) markNoRows(status, "electoralVoteSenatePolls", { rows: rows.length, usablePolls: 0 });
   }
   if (usPollingDataSenate && status.usPollingDataSenatePolling) {
     status.usPollingDataSenatePolling.hasSenateTable = /Competitive Senate Races/i.test(usPollingDataSenate);
@@ -2289,6 +2325,7 @@ async function fetchPollingReferencePages(status) {
     status.raceToTheWhSenatePolls.note = status.raceToTheWhSenatePolls.hasStaticRows
       ? "Static poll rows detected."
       : "Reachable, but no stable row-level poll data was present in the fetched HTML.";
+    if (!status.raceToTheWhSenatePolls.hasStaticRows) markNoRows(status, "raceToTheWhSenatePolls", { hasStaticRows: false });
   }
   return {
     twoSeventyToWin: {
@@ -2843,6 +2880,8 @@ async function writeForecast() {
     settings: { ...SETTINGS, modelWeights: MODEL_WEIGHTS },
     sourceStatus: sourceData.status,
     sourceHealth: sourceData.sourceHealth,
+    generationMode: generationNetworkStatus(sourceData.status, OFFLINE).mode,
+    networkStatus: generationNetworkStatus(sourceData.status, OFFLINE),
     canonicalGenericBallot: sourceData.canonicalGenericBallot,
     benchmarkComparison: toplineComparison,
     raceBenchmarkStatus: benchmarkConfiguration(),
