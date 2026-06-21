@@ -4,16 +4,24 @@ import { markDisabled, markParseFailed, recordFetch, recordFetchError, sourceHea
 import { directPollLedger } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
-import { benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
+import { benchmarkConfiguration, benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const GOVERNOR_HISTORY_URL = new URL("../data/governor-history.json", import.meta.url);
 const GOVERNOR_FINANCE_URL = new URL("../data/governor-finance.json", import.meta.url);
 const GOVERNOR_FINANCE_SOURCES_URL = new URL("../data/governor-finance-sources.json", import.meta.url);
+const GOVERNOR_EXCEPTIONS_URL = new URL("../data/candidate-exceptions/governor-2026.json", import.meta.url);
 const previousForecast = readPreviousForecast();
 const governorHistoryArchive = readGovernorHistoryArchive();
 const MODEL_TIME_ZONE = "America/New_York";
 const OFFLINE = process.argv.includes("--offline");
+
+function readGovernorCandidateExceptions() {
+  try { return JSON.parse(readFileSync(GOVERNOR_EXCEPTIONS_URL, "utf8")).races || {}; }
+  catch { return {}; }
+}
+
+const GOVERNOR_CANDIDATE_EXCEPTIONS = readGovernorCandidateExceptions();
 
 async function fetchText(url, label, status, options = {}) {
   if (OFFLINE) {
@@ -1075,10 +1083,12 @@ function mergeHistoryPoints(...histories) {
 function readSenateSignals() {
   try {
     const senate = JSON.parse(readFileSync(new URL("../data/forecast.json", import.meta.url), "utf8"));
-    const generic = Number(senate?.sourceSummary?.genericPolling?.genericBallotMargin);
+    const canonical = senate?.canonicalGenericBallot || senate?.sourceSummary?.genericPolling || null;
+    const generic = Number(canonical?.margin ?? canonical?.genericBallotMargin);
     const approval = Number(senate?.sourceSummary?.trumpApproval?.netApproximation);
     return {
       genericBallotMargin: Number.isFinite(generic) ? generic : 0,
+      canonicalGenericBallot: canonical,
       approvalNet: Number.isFinite(approval) ? approval : null
     };
   } catch {
@@ -1348,7 +1358,10 @@ function buildRace(baseRace, nationalShift, sourceData) {
   const demographicPull = demographicPullAdjustment({ ...race, electorateComposition });
   
   // Candidate history adjustment
-  const candidateHistory = CANDIDATE_HISTORY[race.state] || 0;
+  const candidateException = GOVERNOR_CANDIDATE_EXCEPTIONS[`${race.state}-GOV-2026`] || null;
+  const candidateHistory = candidateException?.confirmed
+    ? Number(candidateException.effect || 0)
+    : (CANDIDATE_HISTORY[race.state] || 0);
   
   // Finance integration
   let financeSignal = 0;
@@ -1422,6 +1435,10 @@ function buildRace(baseRace, nationalShift, sourceData) {
     rating: modelRating,
     structuralMargin: Number(fundamentals.toFixed(2)),
     candidateAndLocal: Number(candidateAndLocal.toFixed(2)),
+    candidateException: candidateException ? {
+      ...candidateException,
+      applied: Boolean(candidateException.confirmed)
+    } : null,
     historicalComparison,
     electorateComposition,
     demographicPull,
@@ -1455,6 +1472,12 @@ function buildRace(baseRace, nationalShift, sourceData) {
       }
     },
     modelConfidence: governorModelConfidence({ ...governorPoll, pollingSummary }, race, sourceData.sourceHealth),
+    confidence: {
+      winConfidence: Math.max(demProbability, 1 - demProbability) >= .85 ? "HIGH" : Math.max(demProbability, 1 - demProbability) >= .65 ? "MEDIUM" : "LOW",
+      marginConfidence: pollingSummary.usablePollCount ? (pollingSummary.usablePollCount >= 2 ? "HIGH" : "MEDIUM") : "LOW",
+      dataConfidence: sourceData.sourceHealth?.degraded ? "DEGRADED" : pollingSummary.usablePollCount ? "MEDIUM" : "LOW",
+      reasons: pollingSummary.usablePollCount ? ["Usable race-level polling and structural inputs."] : ["No usable live/manual race polling; margin is fundamentals-led."]
+    },
     sourceHealth: {
       forecast: sourceData.sourceHealth?.health || "UNKNOWN",
       degraded: Boolean(sourceData.sourceHealth?.degraded),
@@ -1743,6 +1766,7 @@ async function buildForecast() {
     runDate: localRunDateLabel(),
     settings: SETTINGS,
     sourceHealth: aggregateSourceHealth,
+    canonicalGenericBallot: senateSignals.canonicalGenericBallot || null,
     racePollCoverage: { races: modeledRaces.length, usablePollRaces },
     benchmarkComparison: {
       ...toplineComparison,
@@ -1750,7 +1774,7 @@ async function buildForecast() {
       modelRepFavoredRaces: repWinningRaceTotal,
       warning: governorBenchmarkWarning
     },
-    raceBenchmarkStatus: "NOT_CONFIGURED",
+    raceBenchmarkStatus: benchmarkConfiguration(),
     sourceSummary: {
       genericBallotMargin: senateSignals.genericBallotMargin,
       gubernatorialNationalShift: Number(nationalShift.toFixed(2)),

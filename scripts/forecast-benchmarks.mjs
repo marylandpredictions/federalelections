@@ -15,6 +15,15 @@ export function benchmarkFor(raceId) {
   return inputs().races?.[raceId] || null;
 }
 
+export function benchmarkConfiguration() {
+  const races = inputs().races || {};
+  return {
+    status: Object.keys(races).length ? "CONFIGURED" : "EMPTY",
+    updatedAt: inputs().updatedAt || null,
+    configuredRaces: Object.keys(races).length
+  };
+}
+
 export function benchmarkWarnings(benchmark, modelMargin, demProbability) {
   if (!benchmark) return ["no-external-benchmark-sources"];
   const warnings = [];
@@ -24,8 +33,41 @@ export function benchmarkWarnings(benchmark, modelMargin, demProbability) {
   const numericProbabilities = sources.map((source) => Number(source.demProbability ?? source.probability)).filter(Number.isFinite);
   if (numericMargins.length && Math.abs(modelMargin - numericMargins.reduce((sum, value) => sum + value, 0) / numericMargins.length) >= 5) warnings.push("model-margin-differs-from-benchmark-consensus");
   if (numericProbabilities.length && Math.abs(demProbability - numericProbabilities.reduce((sum, value) => sum + value, 0) / numericProbabilities.length) >= .15) warnings.push("model-probability-differs-from-benchmark-consensus");
+  const modelRating = ratingFromMargin(modelMargin);
+  for (const source of sources) {
+    if (!source.rating) continue;
+    const externalRating = normalizeRating(source.rating);
+    if (!externalRating) continue;
+    const model = normalizeRating(modelRating);
+    const opposite = model.party && externalRating.party && model.party !== externalRating.party;
+    const categoryGap = Math.abs(model.rank - externalRating.rank);
+    if ((opposite && (model.rank >= 2 || externalRating.rank >= 2)) || categoryGap >= 2) {
+      warnings.push(`rating-divergence:${modelRating}:${source.rating}`);
+    }
+  }
   if (sources.some((source) => source.asOf && (Date.now() - new Date(source.asOf).getTime()) / 86400000 > 30)) warnings.push("external-benchmark-stale");
   return warnings;
+}
+
+function ratingFromMargin(margin) {
+  if (!Number.isFinite(modelMarginValue(margin))) return "Toss-up";
+  const value = modelMarginValue(margin);
+  const party = value >= 0 ? "D" : "R";
+  const abs = Math.abs(value);
+  return `${abs >= 14 ? "Safe" : abs >= 7 ? "Likely" : abs >= 3 ? "Lean" : abs >= 1 ? "Tilt" : "Toss-up"}${abs < 1 ? "" : ` ${party}`}`;
+}
+
+function modelMarginValue(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
+function normalizeRating(value) {
+  const text = String(value || "").toLowerCase();
+  if (text.includes("toss")) return { rank: 0, party: null };
+  const party = /\b(d|dem|blue)\b/.test(text) ? "D" : /\b(r|rep|red)\b/.test(text) ? "R" : null;
+  const rank = text.includes("safe") || text.includes("solid") ? 4 : text.includes("likely") ? 3 : text.includes("lean") ? 2 : text.includes("tilt") ? 1 : 0;
+  return party || rank === 0 ? { rank, party } : null;
 }
 
 export function toplineBenchmark(office, model = {}) {

@@ -4,7 +4,8 @@ import { markNoRows, markParseFailed, recordFetch, recordFetchError, sourceHealt
 import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
-import { benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
+import { benchmarkConfiguration, benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
+import { blendGenericBallotSources } from "./lib/generic-ballot.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
@@ -1369,6 +1370,12 @@ function runModel(sourceData) {
       expertRatingAdjustment,
       inputQuality: quality,
       modelConfidence: quality,
+      confidence: {
+        winConfidence: Math.max(demProbability, 1 - demProbability) >= .85 ? "HIGH" : Math.max(demProbability, 1 - demProbability) >= .65 ? "MEDIUM" : "LOW",
+        marginConfidence: pollSignal?.usablePollCount ? (pollSignal.usablePollCount >= 2 ? "HIGH" : "MEDIUM") : "LOW",
+        dataConfidence: withComposition.sourceInputs?.sourceHealth?.degraded ? "DEGRADED" : pollSignal?.usablePollCount ? "MEDIUM" : "LOW",
+        reasons: pollSignal?.usablePollCount ? ["Usable race-level polling and structural inputs."] : ["No usable live/manual race polling; margin is fundamentals-led."]
+      },
       matchupStatus,
       sourceHealth: withComposition.sourceInputs?.sourceHealth || {},
       forecastMode: pollSignal?.usablePollCount ? "POLL_INFORMED" : pollSignal?.legacyFallbackPollCount ? "LIMITED_DATA" : "FUNDAMENTALS_ONLY",
@@ -2456,18 +2463,19 @@ async function fetchAllSources() {
     { source: "Pollfinity", margin: pollfinity.genericBallotMargin, dem: pollfinity.genericBallotDem, rep: pollfinity.genericBallotRep, polls: pollfinity.genericBallotPolls, weight: .55 },
     { source: "USPollingData", margin: usPollingDataGeneric.genericBallotMargin, dem: usPollingDataGeneric.genericBallotDem, rep: usPollingDataGeneric.genericBallotRep, polls: 0, weight: .45 }
   ].filter(usableGenericSource);
-  const genericWeight = genericPollingSources.reduce((sum, source) => sum + source.weight, 0);
+  const canonicalGenericBallot = blendGenericBallotSources(genericPollingSources, { lastUpdated: status.checkedAt, sourceHealth: status });
   const genericPolling = {
-    sources: genericPollingSources,
-    genericBallotMargin: genericWeight ? genericPollingSources.reduce((sum, source) => sum + source.margin * source.weight, 0) / genericWeight : null,
-    genericBallotDem: genericWeight ? genericPollingSources.reduce((sum, source) => sum + (Number.isFinite(source.dem) ? source.dem : 0) * source.weight, 0) / genericWeight : null,
-    genericBallotRep: genericWeight ? genericPollingSources.reduce((sum, source) => sum + (Number.isFinite(source.rep) ? source.rep : 0) * source.weight, 0) / genericWeight : null
+    ...canonicalGenericBallot,
+    // Legacy aliases keep the existing model and UI consumers stable.
+    genericBallotMargin: canonicalGenericBallot.margin,
+    genericBallotDem: canonicalGenericBallot.dem,
+    genericBallotRep: canonicalGenericBallot.rep
   };
   const stableStatus = stableSourceStatus(status);
   const sourceHealth = sourceHealthSummary(stableStatus, {
     critical: ["votehubGenericBallot", "pollfinityAverages", "twoSeventyToWinStatePolls"]
   });
-  return { status: stableStatus, sourceHealth, votehub, ddhqGeneric, pollfinity, usPollingDataGeneric, genericPolling, realClearPolling, twoSeventyToWin, directPolls, fiftyPlusOneByState, fec, mit, census, civic, pollingReferences };
+  return { status: stableStatus, sourceHealth, votehub, ddhqGeneric, pollfinity, usPollingDataGeneric, genericPolling, canonicalGenericBallot, realClearPolling, twoSeventyToWin, directPolls, fiftyPlusOneByState, fec, mit, census, civic, pollingReferences };
 }
 
 function stableSourceStatus(status) {
@@ -2835,8 +2843,9 @@ async function writeForecast() {
     settings: { ...SETTINGS, modelWeights: MODEL_WEIGHTS },
     sourceStatus: sourceData.status,
     sourceHealth: sourceData.sourceHealth,
+    canonicalGenericBallot: sourceData.canonicalGenericBallot,
     benchmarkComparison: toplineComparison,
-    raceBenchmarkStatus: "NOT_CONFIGURED",
+    raceBenchmarkStatus: benchmarkConfiguration(),
     sourceSummary: {
       votehub: sourceData.votehub,
       genericPolling: sourceData.genericPolling,

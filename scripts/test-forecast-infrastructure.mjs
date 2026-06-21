@@ -9,6 +9,7 @@ import {
 import { candidateMatchConfidence, dedupePollRows } from "./poll-ledger.mjs";
 import { classifyPollingInputs } from "./forecast-polling-status.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
+import { parseUsPollingDataGeneric } from "./lib/generic-ballot.mjs";
 
 function response(status, ok = status >= 200 && status < 300) {
   return { status, ok };
@@ -22,7 +23,7 @@ recordFetch(status, "missing", response(404), "missing", "https://example.test/m
 assert.equal(status.missing.health, SOURCE_HEALTH.NOT_FOUND_404);
 
 recordFetch(status, "htmlInsteadOfJson", response(200), "<!doctype html><html></html>", "https://example.test/data", Date.now(), { expected: "json" });
-assert.equal(status.htmlInsteadOfJson.health, SOURCE_HEALTH.HTML_ONLY);
+assert.equal(status.htmlInsteadOfJson.health, SOURCE_HEALTH.HTML_FETCHED);
 
 recordFetch(status, "emptyRows", response(200), "[]", "https://example.test/data", Date.now(), { expected: "json" });
 markNoRows(status, "emptyRows");
@@ -31,6 +32,10 @@ assert.equal(status.emptyRows.health, SOURCE_HEALTH.OK_NO_ROWS);
 recordFetch(status, "malformed", response(200), "{", "https://example.test/data", Date.now(), { expected: "json" });
 markParseFailed(status, "malformed", new Error("Unexpected end of JSON input"));
 assert.equal(status.malformed.health, SOURCE_HEALTH.PARSE_FAILED);
+
+const usPollingData = parseUsPollingDataGeneric("<table><tr><td>Democratic</td><td>48.1%</td></tr><tr><td>Republican</td><td>41.1%</td></tr></table>");
+assert.equal(usPollingData.margin, 7);
+assert.equal(usPollingData.status, SOURCE_HEALTH.OK_PARSED);
 
 assert.equal(candidateMatchConfidence({ name: "Susan Collins", party: "R" }, "Susan Collins", "R"), "EXACT");
 assert.equal(candidateMatchConfidence({ name: "Collins", party: "R" }, "Susan Collins", "R"), "ALIAS");

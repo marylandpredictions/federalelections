@@ -3,7 +3,7 @@ export const SOURCE_HEALTH = Object.freeze({
   OK_NO_ROWS: "OK_NO_ROWS",
   BLOCKED_403: "BLOCKED_403",
   NOT_FOUND_404: "NOT_FOUND_404",
-  HTML_ONLY: "HTML_ONLY",
+  HTML_FETCHED: "HTML_FETCHED",
   PARSE_FAILED: "PARSE_FAILED",
   STALE: "STALE",
   DISABLED: "DISABLED",
@@ -20,7 +20,7 @@ export function recordFetch(status, label, response, text, url, startedAt, optio
   if (response.status === 403) health = SOURCE_HEALTH.BLOCKED_403;
   else if (response.status === 404) health = SOURCE_HEALTH.NOT_FOUND_404;
   else if (!response.ok) health = SOURCE_HEALTH.UNKNOWN_ERROR;
-  else if ((expected === "json" || expected === "csv") && isHtml(text)) health = SOURCE_HEALTH.HTML_ONLY;
+  else if ((expected === "json" || expected === "csv") && isHtml(text)) health = SOURCE_HEALTH.HTML_FETCHED;
 
   const record = {
     health,
@@ -81,7 +81,7 @@ export function sourceHealthSummary(status = {}, options = {}) {
   const failure = new Set([
     SOURCE_HEALTH.BLOCKED_403,
     SOURCE_HEALTH.NOT_FOUND_404,
-    SOURCE_HEALTH.HTML_ONLY,
+    SOURCE_HEALTH.HTML_FETCHED,
     SOURCE_HEALTH.PARSE_FAILED,
     SOURCE_HEALTH.STALE,
     SOURCE_HEALTH.UNKNOWN_ERROR

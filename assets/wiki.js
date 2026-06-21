@@ -2124,12 +2124,13 @@ function houseDistrictMarkup(district) {
     <div class="house-signal-grid" aria-label="House district model signals">
       <div><span>Baseline</span><strong>${signedPointMargin(inputs.districtBaseline)}</strong></div>
       <div><span>Context</span><strong>${signedPointMargin(inputs.contextualBaseline)}</strong></div>
-      <div><span>Generic</span><strong>${signedPointMargin(inputs.genericBallotShift)}</strong></div>
+      <div><span>National effect</span><strong>${signedPointMargin(inputs.genericBallotAppliedEffect ?? inputs.genericBallotShift)}</strong></div>
       <div><span>Profile</span><strong>${signedPointMargin(inputs.candidateQualityAdjustment ?? inputs.demographicPull?.adjustment)}</strong></div>
     </div>
     <details class="house-card-details">
       <summary>Model detail</summary>
       <p>${escapeHtml(district.sourceBlend || "Cook")} / ${district.open ? "open seat" : "incumbent seat"}</p>
+      <p>Generic ballot average ${signedPointMargin(inputs.genericBallotRawMargin)} / applied effect ${signedPointMargin(inputs.genericBallotAppliedEffect ?? inputs.genericBallotShift)}</p>
       <p>2024 pres ${signedPointMargin(inputs.presidentialBaseline)} / 2022 House ${signedPointMargin(inputs.congressionalBaseline)} / demographic ${signedPointMargin(inputs.demographicPull?.adjustment)}</p>
       ${nomination.summary ? `<p>${escapeHtml(nomination.summary)}</p>` : ""}
       ${inputs.demographicPull?.topGroups?.length ? `<p>Demographic pull: ${inputs.demographicPull.topGroups.map((item) => `${escapeHtml(item.label || item.group)} ${signedPointMargin(item.effect)}`).join(" / ")}</p>` : ""}

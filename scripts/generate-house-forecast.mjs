@@ -4,7 +4,8 @@ import { markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, so
 import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
-import { benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
+import { benchmarkConfiguration, benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
+import { blendGenericBallotSources, parsePollfinityGeneric as parseCanonicalPollfinityGeneric, parseUsPollingDataGeneric as parseCanonicalUsPollingDataGeneric, parseVoteHubGeneric as parseCanonicalVoteHubGeneric, readCachedGenericBallot } from "./lib/generic-ballot.mjs";
 
 const OUTPUT_URL = new URL("../data/house-forecast.json", import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
@@ -555,8 +556,11 @@ function parse270MapDistricts(html) {
     const number = Number(district.district_number);
     const atLarge = String(district.district_id_combo || "").endsWith("00");
     const id = `${state}-${atLarge ? "AL" : String(number).padStart(2, "0")}`;
-    const presidentialMargin = toNumber(district.margin_president);
-    const congressionalMargin = toNumber(district.margin_congress);
+    const parsedPresidentialMargin = toNumber(district.margin_president);
+    const parsedCongressionalMargin = toNumber(district.margin_congress);
+    // The upstream 0/0 placeholder is not an actual tied baseline.
+    const presidentialMargin = parsedPresidentialMargin === 0 ? null : parsedPresidentialMargin;
+    const congressionalMargin = parsedCongressionalMargin === 0 ? null : parsedCongressionalMargin;
     const hasPresidentialMargin = Number.isFinite(presidentialMargin) && Math.abs(presidentialMargin) > .01;
     const hasCongressionalMargin = Number.isFinite(congressionalMargin) && Math.abs(congressionalMargin) > .01;
     const previousResultComparable = hasCongressionalMargin && Math.abs(congressionalMargin) <= 70;
@@ -582,6 +586,12 @@ function parse270MapDistricts(html) {
       seatParty: district.seat_party || null,
       presidentialMargin,
       congressionalMargin,
+      districtBaseline: {
+        presidentialMargin,
+        congressionalMargin,
+        status: Number.isFinite(presidentialMargin) || Number.isFinite(congressionalMargin) ? "AVAILABLE" : "MISSING",
+        fallbackUsed: Number.isFinite(presidentialMargin) ? "PRESIDENTIAL_MARGIN" : "LOCAL_CONTEXTUAL_BASELINE"
+      },
       previousResult: {
         congressionalMargin,
         comparable: previousResultComparable,
@@ -643,19 +653,19 @@ async function fetchGenericPolling(status) {
     fetchText("https://pollfinity.com/averages.json", "pollfinityAverages", status, { timeoutMs: 12000, expected: "json" }),
     fetchText("https://uspollingdata.com/polls/generic-ballot/", "usPollingDataGenericBallot", status, { timeoutMs: 12000 })
   ]);
-  const sources = [
-    parseVoteHubGeneric(votehubJson),
-    parsePollfinityGeneric(pollfinityJson),
-    parseUsPollingDataGeneric(usPollingHtml)
-  ].filter(Boolean);
-  const senateFallback = readSenateGenericPolling();
-  if (!sources.length && senateFallback) {
+  const canonical = blendGenericBallotSources([
+    parseCanonicalVoteHubGeneric(votehubJson),
+    parseCanonicalPollfinityGeneric(pollfinityJson),
+    parseCanonicalUsPollingDataGeneric(usPollingHtml)
+  ], { sourceHealth: status });
+  const senateFallback = readCachedGenericBallot();
+  // Senate owns the live canonical blend. House consumes the checked-in blend
+  // so the raw national environment cannot silently diverge by parser.
+  if (senateFallback?.margin != null) {
     status.senateGenericPollingFallback = { ok: true, status: "local", ms: 0 };
     return senateFallback;
   }
-  const totalWeight = sources.reduce((sum, source) => sum + source.weight, 0);
-  const margin = totalWeight ? sources.reduce((sum, source) => sum + source.margin * source.weight, 0) / totalWeight : 0;
-  return { margin, sources };
+  return canonical;
 }
 
 function readSenateGenericPolling() {
@@ -1007,7 +1017,9 @@ async function fetchHouseSources() {
 }
 
 function adjustedDistricts(sourceData) {
-  const genericShift = clamp(sourceData.genericPolling.margin * .38, -3.4, 3.4);
+  const genericBallotRawMargin = Number(sourceData.genericPolling?.margin);
+  const genericBallotElasticity = .38;
+  const genericShift = clamp(genericBallotRawMargin * genericBallotElasticity, -3.4, 3.4);
   const nationalFinanceShift = (sourceData.fec.__national?.financeSignal || 0) * MODEL_WEIGHTS.nationalFinance;
   const baseDistricts = sourceData.mapDistricts.length >= 400 ? sourceData.mapDistricts : sourceData.cookDistricts;
   return baseDistricts.map((sourceDistrict) => {
@@ -1041,10 +1053,16 @@ function adjustedDistricts(sourceData) {
     const error = houseRaceError(district, contextMargin, nomination, districtPollSignal);
     const demProbability = logistic(margin, error);
     const { sourceRating: _legacySourceRating, ...districtWithoutLegacyRating } = district;
+    const mapConflict = district.redistrictingConfidence === "CONFLICTING_SOURCES";
+    const modelRating = ratingFromMargin(margin);
+    const confidence = houseConfidence(district, margin, pollingSummary, sourceData.sourceHealth, mapConflict);
     return {
       ...districtWithoutLegacyRating,
       baselineRating: ratingFromMargin(contextMargin),
-      rating: ratingFromMargin(margin),
+      rating: mapConflict ? "Map Conflict" : modelRating,
+      modelRating,
+      ratingIsConditional: mapConflict,
+      forecastStatus: mapConflict ? "SCENARIO_ONLY" : (pollingSummary.usablePollCount ? "NORMAL" : "LIMITED_DATA"),
       margin: Number(margin.toFixed(2)),
       pollCount: pollingSummary.usablePollCount,
       usablePollCount: pollingSummary.usablePollCount,
@@ -1071,7 +1089,11 @@ function adjustedDistricts(sourceData) {
       competitive: Math.abs(margin) < 8,
       historicalComparison,
       sourceInputs: {
+        // genericBallotShift remains for backwards-compatible clients only.
         genericBallotShift: Number(genericShift.toFixed(2)),
+        genericBallotRawMargin: Number.isFinite(genericBallotRawMargin) ? Number(genericBallotRawMargin.toFixed(2)) : null,
+        genericBallotAppliedEffect: Number(genericShift.toFixed(2)),
+        genericBallotElasticity,
         nationalFinanceShift: Number(nationalFinanceShift.toFixed(2)),
         presidentialBaseline: Number.isFinite(district.presidentialMargin) ? Number(district.presidentialMargin.toFixed(2)) : null,
         congressionalBaseline: Number.isFinite(district.congressionalMargin) ? Number(district.congressionalMargin.toFixed(2)) : null,
@@ -1100,6 +1122,7 @@ function adjustedDistricts(sourceData) {
         }
       },
       modelConfidence: houseModelConfidence(districtPollSignal, nomination, sourceData.sourceHealth, pollingSummary),
+      confidence,
       sourceHealth: {
         forecast: sourceData.sourceHealth?.health || "UNKNOWN",
         degraded: Boolean(sourceData.sourceHealth?.degraded),
@@ -1162,6 +1185,22 @@ function houseModelConfidence(pollSignal, nomination, sourceHealth, pollingSumma
     reason: pollingSummary.usablePollCount ? "district polls and structural inputs" : "fundamentals-only or limited race polling",
     reasons: pollingSummary.usablePollCount ? ["usable district polling", "structural district inputs"] : ["no usable live/manual district polling", "structural district inputs"]
   };
+}
+
+function houseConfidence(district, margin, pollingSummary, sourceHealth, mapConflict) {
+  const winConfidence = mapConflict ? "DEGRADED" : Math.abs(margin) >= 10 ? "HIGH" : Math.abs(margin) >= 4 ? "MEDIUM" : "LOW";
+  const marginConfidence = pollingSummary.usablePollCount
+    ? (pollingSummary.usablePollCount >= 2 ? "HIGH" : "MEDIUM")
+    : "LOW";
+  const dataConfidence = mapConflict || !district.districtBaseline || district.districtBaseline.status === "MISSING" || sourceHealth?.degraded
+    ? "DEGRADED"
+    : pollingSummary.usablePollCount ? "MEDIUM" : "LOW";
+  const reasons = [];
+  if (!pollingSummary.usablePollCount) reasons.push("No usable live/manual district polling.");
+  if (district.previousResult && !district.previousResult.comparable) reasons.push("Previous congressional result is not comparable.");
+  if (district.districtBaseline?.status === "MISSING") reasons.push("District baseline is missing; contextual fallback applied.");
+  if (mapConflict) reasons.push("Map assumption requires review; scenario-only output.");
+  return { winConfidence, marginConfidence, dataConfidence, reasons };
 }
 
 function houseMarginDecomposition(district, previousMargin, genericBallotEffect, nationalFinanceEffect, incumbencyEffect, openSeatEffect, demographicEffect, financeEffect, candidateEffect, nominationEffect, pollingEffect, guardrail, finalMargin) {
@@ -1845,11 +1884,14 @@ async function writeHouseForecast() {
     },
     sourceStatus: sourceData.status,
     sourceHealth,
+    canonicalGenericBallot: sourceData.genericPolling,
     benchmarkComparison: toplineComparison,
+    raceBenchmarkStatus: benchmarkConfiguration(),
     racePollCoverage: pollingCoverage,
     dataQualityWarnings: [
       ...(sourceData.usingCachedDistricts ? [{ severity: "warning", type: "house-district-fallback", message: "House forecast degraded: ratings/district map source failed; using fallback baselines." }] : []),
       ...(noDistrictPolling ? [{ severity: "warning", type: "no-district-polling", message: "House forecast limited: no usable district-level polling was available; output is ratings/fundamentals-driven." }] : []),
+      ...(benchmarkConfiguration().status === "EMPTY" ? [{ severity: "warning", type: "benchmark-file-empty", message: "External race benchmark file is empty; race-level benchmark comparisons are schema-only." }] : []),
       ...(toplineComparison.warning ? [{ severity: "warning", type: "public-model-topline-divergence", message: `House model diverges sharply from public benchmarks: model gives Democrats ${(model.demControlProbability * 100).toFixed(1)}% while benchmark sources favor Democrats for House control.` }] : []),
       ...sourceHealthWarnings(sourceHealth, "House")
     ],

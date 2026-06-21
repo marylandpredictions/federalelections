@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "notes": "Candidate-specific effects are applied only when confirmed. Unconfirmed entries remain visible as review context and never alter the forecast.",
+  "races": {
+    "PA-GOV-2026": {
+      "candidate": "Josh Shapiro",
+      "party": "D",
+      "effect": 1.25,
+      "reason": "Popular incumbent adjustment; additive to the structural incumbent term.",
+      "confirmed": true,
+      "source": "manual"
+    },
+    "VT-GOV-2026": {
+      "candidate": "Phil Scott",
+      "party": "R",
+      "effect": -6.5,
+      "reason": "Cross-party incumbent appeal.",
+      "confirmed": true,
+      "source": "manual"
+    },
+    "AL-GOV-2026": {
+      "candidate": "Doug Jones / Tommy Tuberville",
+      "party": "mixed",
+      "effect": 0,
+      "reason": "Open-seat matchup context is represented by explicit candidate and open-seat terms, not a hidden exception.",
+      "confirmed": true,
+      "source": "manual"
+    }
+  }
+}
