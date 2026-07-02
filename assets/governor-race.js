@@ -32,6 +32,11 @@
     return `${margin > 0 ? "D" : "R"}+${Math.abs(margin).toFixed(1)} pts`;
   }
 
+  function forecastDisplayMargin(race) {
+    const value = race?.projectedResultMargin?.value ?? race?.projectedMargin ?? race?.margin;
+    return Number.isFinite(Number(value)) ? Number(value) : 0;
+  }
+
   function candidateDisplayName(race, party) {
     const name = party === "D" ? race.dem : race.rep;
     const status = party === "D" ? race.demStatus : race.repStatus;
@@ -114,7 +119,7 @@
       ["Finance", signedPointMargin(race.sourceInputs?.financeSignal || 0), "State-level campaign finance input"],
       ["Polling", pollMarginInput?.value != null ? signedPointMargin(pollMarginValue) : "--", usableGeneralPoll ? "Matched governor general-election polling input" : "No usable governor general-election polling input"],
       ["Demographic pull", signedPointMargin(race.demographicPull?.adjustment || 0), "Candidate profile interaction with state electorate"],
-      ["Model margin", signedPointMargin(race.margin), "Final projected vote margin"],
+      ["Model margin", signedPointMargin(forecastDisplayMargin(race)), "Final projected vote margin"],
       ["Structural baseline", signedPointMargin(race.structuralMargin ?? race.ratingMargin), "PVI, prior gubernatorial result, and incumbency before other model adjustments"]
     ].map(([label, value, detail]) => `
       <article class="input-snapshot-card">
@@ -178,7 +183,7 @@
     setText("governor-race-rep", pct(race.repProbability));
     setText("governor-race-tipping", oneDecimal(race.tippingPower));
     setText("governor-race-rating", race.modelRating || race.rating);
-    setText("governor-race-margin", signedPointMargin(race.margin));
+    setText("governor-race-margin", signedPointMargin(forecastDisplayMargin(race)));
     setText("governor-race-seat", race.status || "--");
     setText("governor-race-incumbent", race.incumbent || "--");
     setText("governor-race-dem-candidate", candidateStatusLabel(race, "D"));

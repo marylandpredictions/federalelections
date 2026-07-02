@@ -5,7 +5,8 @@ import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
 import { benchmarkConfiguration, benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
-import { blendGenericBallotSources } from "./lib/generic-ballot.mjs";
+import { blendGenericBallotSources, readCachedGenericBallot } from "./lib/generic-ballot.mjs";
+import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./forecast-cache.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
@@ -1303,6 +1304,22 @@ function senateMarginGuardrail(race, rawMargin, pollSignal, fundamentals) {
   };
 }
 
+function projectedSenateResultMargin(race, probabilityMargin, fundamentals, pollSignal) {
+  let projected = Number(probabilityMargin);
+  const prior = Number(race.pastSenate);
+  const partisan = senateStructuralMargin(race);
+  const anchorCandidates = [fundamentals, partisan, prior].filter(Number.isFinite);
+  const sameSideAnchors = anchorCandidates.filter((value) => Math.sign(value) === Math.sign(projected) || !projected);
+  const anchor = sameSideAnchors.length
+    ? sameSideAnchors.reduce((sum, value) => sum + value, 0) / sameSideAnchors.length
+    : projected;
+  if (!pollSignal?.usablePollCount && Number.isFinite(anchor) && Math.abs(anchor) >= 16 && Math.sign(anchor) === Math.sign(projected || anchor)) {
+    const floor = Math.min(42, Math.abs(anchor) * .78);
+    projected = Math.sign(anchor) * Math.max(Math.abs(projected), floor);
+  }
+  return Number(clamp(projected, -55, 55).toFixed(3));
+}
+
 function senateRaceError(race, fundamentals, pollSignal, uncertainty) {
   const structuralCertainty = Math.min(2, Math.abs(fundamentals) * .12);
   // pollWeightMetrics exposes totalWeight and blendWeight. Referencing the old
@@ -1355,22 +1372,34 @@ function runModel(sourceData) {
     const fundamentals = senateStructuralMargin(withComposition);
     const guardrail = senateMarginGuardrail(withComposition, structuralAndPollingMargin, pollSignal, fundamentals);
     const margin = guardrail.margin;
+    const projectedMargin = projectedSenateResultMargin(withComposition, margin, fundamentals, pollSignal);
     const quality = inputQuality(withComposition, pollSignal);
     const uncertainty = raceTypeUncertainty(withComposition, pollSignal, quality);
     const calculatedError = senateRaceError(withComposition, fundamentals, pollSignal, uncertainty);
     const error = Number.isFinite(calculatedError) ? calculatedError : 8.2;
     const demProbability = logistic(margin, error);
     const demographicPull = demographicPullAdjustment(withComposition);
-    const historicalComparison = historicalMarginComparison(withComposition, margin, pollSignal);
+    const historicalComparison = historicalMarginComparison(withComposition, projectedMargin, pollSignal);
     const largeShiftWarning = largeShiftWithoutPolls(historicalComparison, pollSignal, withComposition.state);
     const matchupStatus = senateMatchupStatus(withComposition);
-    const marginDecomposition = senateMarginDecomposition(withComposition, pollSignal, guardrail, margin);
-    const benchmarkComparison = senateBenchmarkComparison({ ...withComposition, historicalComparison }, margin, demProbability, pollSignal);
+    const marginDecomposition = senateMarginDecomposition(withComposition, pollSignal, guardrail, projectedMargin);
+    const benchmarkComparison = senateBenchmarkComparison({ ...withComposition, historicalComparison }, projectedMargin, demProbability, pollSignal);
+    const inputBalance = buildInputBalance({
+      fundamentals: pollSignal?.usablePollCount ? 66 : 78,
+      polling: pollSignal?.usablePollCount ? 18 : 0,
+      nationalEnvironment: 7,
+      finance: 5,
+      ratings: 0
+    });
     return {
       ...withComposition,
-      rating: ratingFromProbability(demProbability, margin),
-      modelRating: ratingFromProbability(demProbability, margin),
+      rating: ratingFromProbability(demProbability, projectedMargin),
+      modelRating: ratingFromProbability(demProbability, projectedMargin),
       margin,
+      projectedMargin,
+      probabilityEngineMargin: margin,
+      ...marginSplit(projectedMargin, margin, projectedMargin),
+      inputBalance,
       error,
       demProbability,
       pollMargin: pollSignal?.margin ?? null,
@@ -2500,7 +2529,35 @@ async function fetchAllSources() {
     { source: "Pollfinity", margin: pollfinity.genericBallotMargin, dem: pollfinity.genericBallotDem, rep: pollfinity.genericBallotRep, polls: pollfinity.genericBallotPolls, weight: .55 },
     { source: "USPollingData", margin: usPollingDataGeneric.genericBallotMargin, dem: usPollingDataGeneric.genericBallotDem, rep: usPollingDataGeneric.genericBallotRep, polls: 0, weight: .45 }
   ].filter(usableGenericSource);
-  const canonicalGenericBallot = blendGenericBallotSources(genericPollingSources, { lastUpdated: status.checkedAt, sourceHealth: status });
+  let canonicalGenericBallot = blendGenericBallotSources(genericPollingSources, { lastUpdated: status.checkedAt, sourceHealth: status });
+  if (canonicalGenericBallot.margin === null) {
+    const cachedGenericBallot = readCachedGenericBallot();
+    if (Number.isFinite(Number(cachedGenericBallot?.margin))) {
+      status.cachedGenericBallotFallback = {
+        health: "OK_PARSED",
+        ok: true,
+        status: "OK_PARSED",
+        margin: cachedGenericBallot.margin,
+        reason: "Live/offline generic-ballot sources did not produce a usable margin."
+      };
+      canonicalGenericBallot = {
+        ...cachedGenericBallot,
+        sourceHealth: status,
+        sources: (cachedGenericBallot.sources || []).map((source) => ({
+          ...source,
+          status: source.status || "CACHED"
+        }))
+      };
+    } else {
+      status.cachedGenericBallotFallback = {
+        health: "OK_NO_ROWS",
+        ok: true,
+        status: "OK_NO_ROWS",
+        margin: null,
+        reason: "No usable cached generic-ballot margin was found."
+      };
+    }
+  }
   const genericPolling = {
     ...canonicalGenericBallot,
     // Legacy aliases keep the existing model and UI consumers stable.
@@ -2861,6 +2918,13 @@ async function writeForecast() {
   const model = runModel(sourceData);
   const generatedAt = new Date().toISOString();
   const toplineComparison = toplineBenchmark("senate", { demControlProbability: model.demControlProbability });
+  const cacheFreshness = forecastInputCacheFreshness({
+    genericBallot: "data/cache/polls/generic-ballot-2026.json",
+    polls: "data/cache/polls/senate-2026.json",
+    ratings: "data/cache/ratings/senate-2026.json",
+    fundamentals: "data/cache/fundamentals/state-baselines-2026.json",
+    finance: "data/cache/finance/senate-2026.json"
+  });
   const historicalMarginWarnings = model.races
     .filter((race) => race.historicalComparison?.needsReview)
     .map((race) => ({
@@ -2882,6 +2946,7 @@ async function writeForecast() {
     sourceHealth: sourceData.sourceHealth,
     generationMode: generationNetworkStatus(sourceData.status, OFFLINE).mode,
     networkStatus: generationNetworkStatus(sourceData.status, OFFLINE),
+    ...cacheFreshness,
     canonicalGenericBallot: sourceData.canonicalGenericBallot,
     benchmarkComparison: toplineComparison,
     raceBenchmarkStatus: benchmarkConfiguration(),
@@ -2923,6 +2988,7 @@ async function writeForecast() {
     },
     calibration: buildCalibrationReport(sourceData, model),
     modelWarnings: [
+      ...cacheFreshness.staleInputWarnings,
       ...sourceHealthWarnings(sourceData.sourceHealth, "Senate"),
       ...forecastSanityWarnings(model.races, {
         model: "senate",

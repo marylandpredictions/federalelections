@@ -6,6 +6,29 @@ const senate = read("forecast.json");
 const house = read("house-forecast.json");
 const governor = read("governor-forecast.json");
 
+function assertCacheMetadata(name, forecast) {
+  assert.ok(forecast.inputCacheFreshness && typeof forecast.inputCacheFreshness === "object", `${name} must publish input cache freshness.`);
+  for (const key of ["genericBallot", "racePolls", "ratings", "fundamentals", "finance"]) {
+    assert.ok(forecast.inputCacheFreshness[key], `${name} must publish ${key} cache freshness.`);
+    assert.ok(["FRESH", "STALE", "MISSING"].includes(forecast.inputCacheFreshness[key].status), `${name} ${key} cache freshness must be typed.`);
+  }
+  assert.ok(Array.isArray(forecast.staleInputWarnings), `${name} must publish stale input warnings.`);
+  assert.ok("oldestCriticalInput" in forecast, `${name} must publish oldestCriticalInput.`);
+}
+
+function assertMarginContract(label, item) {
+  assert.ok(item.projectedResultMargin && typeof item.projectedResultMargin === "object", `${label}: projectedResultMargin is required.`);
+  assert.ok(item.probabilityMargin && typeof item.probabilityMargin === "object", `${label}: probabilityMargin is required.`);
+  assert.ok(item.ratingMargin && typeof item.ratingMargin === "object", `${label}: ratingMargin is required.`);
+  assert.ok(["D", "R", null].includes(item.projectedResultMargin.party), `${label}: projected result margin party must be typed.`);
+  assert.ok(typeof item.projectedResultMargin.display === "string", `${label}: projected result margin display is required.`);
+  assert.ok(item.inputBalance?.shares && typeof item.inputBalance.shares === "object", `${label}: input balance shares are required.`);
+  assert.ok(item.inputBalance.dominantInput, `${label}: dominant input is required.`);
+  if (Number.isFinite(item.projectedResultMargin.value)) {
+    assert.equal(Number(item.projectedResultMargin.value), Number((item.projectedMargin ?? item.margin).toFixed?.(2) ?? item.projectedResultMargin.value), `${label}: projectedResultMargin value must match the public projected margin.`);
+  }
+}
+
 const genericMargin = (forecast) => Number(forecast.canonicalGenericBallot?.margin ?? forecast.sourceSummary?.genericPolling?.genericBallotMargin);
 const senateGeneric = genericMargin(senate);
 const houseGeneric = genericMargin(house);
@@ -19,6 +42,7 @@ assert.ok(Math.abs(senateGeneric - governorGeneric) <= .3, "Governor raw generic
 for (const [name, forecast] of [["Senate", senate], ["House", house], ["Governor", governor]]) {
   assert.ok(["ONLINE", "PARTIAL_NETWORK", "OFFLINE"].includes(forecast.generationMode), `${name} must publish a generation mode.`);
   assert.ok(forecast.networkStatus && typeof forecast.networkStatus.attempted === "boolean", `${name} must publish network status.`);
+  assertCacheMetadata(name, forecast);
 }
 
 const allHousePollingFailed = house.districts.length && house.districts.every((district) => district.pollingStatus === "SOURCE_FAILURE");
@@ -35,6 +59,7 @@ if (governorUsablePollRaces <= 1) {
 }
 
 for (const race of governor.races) {
+  assertMarginContract(`Governor ${race.state}`, race);
   assert.equal(race.benchmarkComparison?.usablePolls || 0, race.usablePollCount || 0, `${race.state}: benchmark usable polls must match race usable polls.`);
   if (!race.usablePollCount) {
     assert.ok(!/usable governor polling available/i.test(race.marginDecomposition?.guardrailReason || ""), `${race.state}: guardrail cannot claim usable governor polling.`);
@@ -52,6 +77,7 @@ if (al02) {
   assert.equal(al02.forecastStatus, "SCENARIO_ONLY", "AL-02 must be scenario-only under a map conflict.");
 }
 for (const district of house.districts) {
+  assertMarginContract(`House ${district.id}`, district);
   if (Math.abs(district.previousResult?.congressionalMargin || 0) > 70) assert.equal(district.previousResultComparable, false, `${district.id}: uncontested margin must not be comparable.`);
   assert.notEqual(district.presidentialMargin, 0, `${district.id}: missing presidential baseline must be null, not zero.`);
   assert.notEqual(district.congressionalMargin, 0, `${district.id}: missing congressional baseline must be null, not zero.`);
@@ -60,6 +86,7 @@ for (const district of house.districts) {
 
 assert.ok(senate.forecastStatus, "Senate must expose top-level forecast status.");
 for (const race of senate.races) {
+  assertMarginContract(`Senate ${race.state}`, race);
   assert.ok(race.confidence?.winConfidence && race.confidence?.marginConfidence && race.confidence?.dataConfidence, `${race.state}: split confidence fields are required.`);
 }
 console.log("Forecast reliability validation passed.");

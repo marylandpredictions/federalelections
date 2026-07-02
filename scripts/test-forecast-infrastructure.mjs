@@ -9,6 +9,13 @@ import {
 } from "./forecast-source-health.mjs";
 import { candidateMatchConfidence, dedupePollRows } from "./poll-ledger.mjs";
 import { classifyPollingInputs } from "./forecast-polling-status.mjs";
+import {
+  buildInputBalance,
+  cacheEnvelope,
+  cacheFreshnessRecord,
+  forecastInputCacheFreshness,
+  marginSplit
+} from "./forecast-cache.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { parseUsPollingDataGeneric } from "./lib/generic-ballot.mjs";
 
@@ -74,5 +81,28 @@ if (priorFifty) process.env.FIFTYPLUSONE_PATH = priorFifty;
 const health = sourceHealthSummary(status, { critical: ["forbidden"] });
 assert.equal(health.degraded, true);
 assert.ok(health.criticalFailures.includes("forbidden"));
+
+const cache = cacheEnvelope({
+  source: "unit-test",
+  office: "house",
+  asOf: new Date().toISOString(),
+  rows: [{ id: "TX-28" }]
+});
+assert.equal(cache.status, "OK_PARSED");
+assert.equal(cache.rows.length, 1);
+assert.equal(cacheFreshnessRecord("polls", cache, 14).status, "FRESH");
+assert.equal(cacheFreshnessRecord("polls", null, 14).status, "MISSING");
+const cacheFreshness = forecastInputCacheFreshness({ polls: "data/cache/__missing-test-file.json" });
+assert.equal(cacheFreshness.inputCacheFreshness.racePolls.status, "MISSING");
+assert.equal(cacheFreshness.staleInputWarnings[0].type, "STALE_INPUTS");
+
+const split = marginSplit(42, 15, 18);
+assert.equal(split.projectedResultMargin.display, "D+42.0");
+assert.equal(split.probabilityMargin.display, "D+15.0");
+assert.equal(split.ratingMargin.display, "D+18.0");
+
+const balance = buildInputBalance({ fundamentals: 60, polling: 20, ratings: 0, finance: 5 });
+assert.equal(balance.dominantInput, "fundamentals");
+assert.equal(balance.shares.fundamentals, 0.706);
 
 console.log("Forecast infrastructure tests passed.");

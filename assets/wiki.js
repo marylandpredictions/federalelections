@@ -239,6 +239,11 @@ function signedPointMargin(value) {
   return `${value > 0 ? "D" : "R"}+${Math.abs(value).toFixed(1)} pts`;
 }
 
+function forecastDisplayMargin(item) {
+  const value = item?.projectedResultMargin?.value ?? item?.projectedMargin ?? item?.margin;
+  return Number.isFinite(Number(value)) ? Number(value) : 0;
+}
+
 function ratingFromSignedValue(value, thresholds) {
   if (!Number.isFinite(value)) return "Toss-up";
   const abs = Math.abs(value);
@@ -521,7 +526,7 @@ function houseInputConfidence(district) {
     score -= 7;
     reasons.push("open seat");
   }
-  if (Math.abs(district.margin || 0) < 4) {
+  if (Math.abs(forecastDisplayMargin(district) || 0) < 4) {
     score -= 5;
     reasons.push("close district");
   }
@@ -582,7 +587,7 @@ function getRace(state) {
 
 function bucketForRace(race, mode = mapColorMode) {
   if (!race) return "state-muted";
-  if (mode === "margin") return RATING_BUCKET[ratingFromSignedValue(race.margin, { tilt: 1, lean: 3, likely: 7, safe: 12 })] || "tossup";
+  if (mode === "margin") return RATING_BUCKET[ratingFromSignedValue(forecastDisplayMargin(race), { tilt: 1, lean: 3, likely: 7, safe: 12 })] || "tossup";
   if (mode === "probability") {
     const probMargin = (race.demProbability - .5) * 100;
     return RATING_BUCKET[ratingFromSignedValue(probMargin, { tilt: 2.5, lean: 10, likely: 25, safe: 45 })] || "tossup";
@@ -592,14 +597,14 @@ function bucketForRace(race, mode = mapColorMode) {
 
 function ratingLabelForRace(race, mode = mapColorMode) {
   if (!race) return "No race";
-  if (mode === "margin") return ratingFromSignedValue(race.margin, { tilt: 1, lean: 3, likely: 7, safe: 12 });
+  if (mode === "margin") return ratingFromSignedValue(forecastDisplayMargin(race), { tilt: 1, lean: 3, likely: 7, safe: 12 });
   if (mode === "probability") return ratingFromSignedValue((race.demProbability - .5) * 100, { tilt: 2.5, lean: 10, likely: 25, safe: 45 });
   return race.rating;
 }
 
 function ratingColor(race, mode = mapColorMode) {
   if (!race) return null;
-  const colorData = getRaceColor(race.demProbability, race.margin);
+  const colorData = getRaceColor(race.demProbability, forecastDisplayMargin(race));
   return colorData.color;
 }
 
@@ -872,8 +877,8 @@ function renderHomeRadar() {
       id: race.state,
       probability: `${race.winnerParty} ${oneDecimal(race.winnerProbability)}`,
       probabilityParty: race.winnerParty,
-      margin: signedPointMargin(race.margin),
-      marginParty: race.margin
+      margin: signedPointMargin(forecastDisplayMargin(race)),
+      marginParty: forecastDisplayMargin(race)
     })).join("");
   }
 
@@ -889,8 +894,8 @@ function renderHomeRadar() {
       id: district.id,
       probability: `${district.winnerParty === "D" ? "D" : "R"} ${houseProbability(district.winnerProbability)}`,
       probabilityParty: district.winnerParty,
-      margin: signedPointMargin(district.margin),
-      marginParty: district.margin
+      margin: signedPointMargin(forecastDisplayMargin(district)),
+      marginParty: forecastDisplayMargin(district)
     })).join("");
   }
 
@@ -909,8 +914,8 @@ function renderHomeRadar() {
         id: race.state,
         probability: `${leader} ${oneDecimal(probability)}`,
         probabilityParty: leader,
-        margin: signedPointMargin(race.margin),
-        marginParty: race.margin
+        margin: signedPointMargin(forecastDisplayMargin(race)),
+        marginParty: forecastDisplayMargin(race)
       });
     }).join("");
   }
@@ -1050,7 +1055,7 @@ function hoverMarkup(race, mode = mapColorMode) {
         <span>${escapeHtml(repCandidate)} <i class="${candidateBadgeClass(repBadge, "R")}">${repBadge}</i>${presumptiveBadge(race, "R")}</span>
         <strong>${oneDecimal(1 - race.demProbability)}</strong>
       </div>
-      <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(race.margin)}</strong></div>
+      <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(forecastDisplayMargin(race))}</strong></div>
     </div>
     <div class="prob-track ${demIsIndependent ? "independent-track" : ""}" aria-label="${race.state} probability split">
       <span style="width:${race.demProbability * 100}%"></span>
@@ -1250,7 +1255,7 @@ function governorHoverMarkup(race) {
       <div class="candidate-table-head"><span>Party</span><span>Chance</span></div>
       <div class="candidate-row dem-row"><span>Democrat <i class="party-badge dem-badge">D</i></span><strong>${oneDecimal(race.demProbability)}</strong></div>
       <div class="candidate-row rep-row"><span>Republican <i class="party-badge rep-badge">R</i></span><strong>${oneDecimal(race.repProbability)}</strong></div>
-      <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(race.margin)}</strong></div>
+      <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(forecastDisplayMargin(race))}</strong></div>
     </div>
     <p>${escapeHtml(race.status)}. Incumbent party: ${escapeHtml(race.incumbentParty)}.</p>
     ${renderMovementPanel(race)}
@@ -1379,7 +1384,7 @@ function renderGovernorRaceBoard() {
         <span>${escapeHtml(race.displayName)}</span>
         <span>${escapeHtml(race.status)}</span>
         <span>${escapeHtml(race.rating)}</span>
-        <span>${signedPointMargin(race.margin)}</span>
+        <span>${signedPointMargin(forecastDisplayMargin(race))}</span>
         <span>${leader} ${oneDecimal(probability)}</span>
         <span>${escapeHtml(movementText(race))}</span>
       </div>
@@ -1873,7 +1878,7 @@ function renderRaceInputCards(race) {
     },
     {
       label: "Forecast margin",
-      value: signedInputText(race, race.margin),
+      value: signedInputText(race, forecastDisplayMargin(race)),
       detail: "Projected vote margin, not probability margin"
     },
     {
@@ -1911,7 +1916,7 @@ function renderRaceInputCards(race) {
   ].filter(Boolean).join("");
   const fundamentalRows = [
     `<li>Structural baseline: ${signedPointMargin((race.pvi || 0) * .24 + (race.pastSenate || 0) * .20)}</li>`,
-    `<li>Projected margin: ${signedPointMargin(race.margin)}</li>`,
+    `<li>Projected margin: ${signedPointMargin(forecastDisplayMargin(race))}</li>`,
     `<li>Primary risk: ${Number(race.primaryRisk || 0).toFixed(1)} pts</li>`,
     `<li>Incumbency adjustment: ${signedPointMargin(race.incumbencyAdjustment || 0)}</li>`,
     `<li>Candidate-history adjustment: ${signedPointMargin(race.candidateHistoryAdjustment || 0)}</li>`
@@ -1996,7 +2001,7 @@ function renderRacePage() {
     const label = demWinNode.parentElement.querySelector("dt");
     if (label) label.textContent = `${candidateChanceLabel(race, "D")} win`;
   }
-  setText("race-margin", signedPointMargin(race.margin));
+  setText("race-margin", signedPointMargin(forecastDisplayMargin(race)));
   setText("race-prob-margin", signedMargin(race.demProbability));
   setText("race-movement", movementText(race));
   setText("race-input-quality", inputQualityText(race));
@@ -2114,7 +2119,7 @@ function houseDistrictMarkup(district) {
       <div class="candidate-table-head"><span>Candidate</span><span>Chance</span></div>
       <div class="candidate-row dem-row"><span>${escapeHtml(district.demCandidate || "Democrat")} <i class="party-badge dem-badge">D</i></span><strong>${houseProbability(district.demProbability)}</strong></div>
       <div class="candidate-row rep-row"><span>${escapeHtml(district.repCandidate || "Republican")} <i class="party-badge rep-badge">R</i></span><strong>${houseProbability(district.repProbability)}</strong></div>
-      <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(district.margin)}</strong></div>
+      <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(forecastDisplayMargin(district))}</strong></div>
     </div>
     <div class="badge-row">
       <span>${escapeHtml(quality.label)}</span>
@@ -2344,7 +2349,7 @@ function renderHouseDistrictList() {
       <span>${escapeHtml(district.label || (district.open ? "Open seat" : ""))}</span>
       <b class="rating-pill ${houseDistrictBucket(district)}">${escapeHtml(houseDistrictColorLabel(district))}</b>
       <em>${district.winnerParty === "D" ? "D" : "R"} ${houseProbability(district.winnerProbability)}</em>
-      <i>${signedPointMargin(district.margin)}</i>
+      <i>${signedPointMargin(forecastDisplayMargin(district))}</i>
     </button>
   `).join("");
   container.querySelectorAll(".district-list-row").forEach((node) => {

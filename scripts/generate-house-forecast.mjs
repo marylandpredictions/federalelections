@@ -6,6 +6,7 @@ import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
 import { benchmarkConfiguration, benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
 import { blendGenericBallotSources, parsePollfinityGeneric as parseCanonicalPollfinityGeneric, parseUsPollingDataGeneric as parseCanonicalUsPollingDataGeneric, parseVoteHubGeneric as parseCanonicalVoteHubGeneric, readCachedGenericBallot } from "./lib/generic-ballot.mjs";
+import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./forecast-cache.mjs";
 
 const OUTPUT_URL = new URL("../data/house-forecast.json", import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
@@ -1062,14 +1063,29 @@ function adjustedDistricts(sourceData) {
       ? preMarketMargin * (1 - marketSignal.weight) + marketSignal.impliedMargin * marketSignal.weight
       : preMarketMargin;
     const guardrail = houseMarginGuardrail(district, rawMargin, contextMargin, districtPollSignal);
-    const margin = guardrail.margin;
-    const historicalComparison = houseHistoricalComparison(district, margin, contextMargin, districtPollSignal, marketSignal);
+    const probabilityMargin = guardrail.margin;
+    const projectedMargin = projectedHouseResultMargin(district, rawMargin, contextMargin, districtPollSignal, guardrail);
+    const historicalComparison = houseHistoricalComparison(district, projectedMargin, realisticDistrictBaseline(district, contextMargin), districtPollSignal, marketSignal);
     const error = houseRaceError(district, contextMargin, nomination, districtPollSignal);
-    const demProbability = logistic(margin, error);
+    const demProbability = logistic(probabilityMargin, error);
     const { sourceRating: _legacySourceRating, ...districtWithoutLegacyRating } = district;
     const mapConflict = district.redistrictingConfidence === "CONFLICTING_SOURCES";
-    const modelRating = ratingFromMargin(margin);
-    const confidence = houseConfidence(district, margin, pollingSummary, sourceData.sourceHealth, mapConflict);
+    const modelRating = ratingFromMargin(projectedMargin);
+    const confidence = houseConfidence(district, probabilityMargin, pollingSummary, sourceData.sourceHealth, mapConflict);
+    const inputBalance = buildInputBalance({
+      fundamentals: districtPollSignal ? 62 : 76,
+      polling: districtPollSignal ? 22 : 0,
+      nationalEnvironment: 10,
+      finance: 7,
+      ratings: 0
+    });
+    const marginFields = marginSplit(projectedMargin, probabilityMargin, projectedMargin);
+    const benchmarkComparison = houseBenchmarkComparison(district, projectedMargin, demProbability, districtPollSignal, sourceData.sourceHealth);
+    const dataQualityWarnings = [
+      ...benchmarkComparison.benchmarkWarnings,
+      pollingStatusWarning(pollingSummary),
+      ...(district.redistrictingWarnings || []).map((message) => ({ severity: "warning", type: "redistricting-conflict", message }))
+    ].filter(Boolean);
     return {
       ...districtWithoutLegacyRating,
       baselineRating: ratingFromMargin(contextMargin),
@@ -1077,7 +1093,11 @@ function adjustedDistricts(sourceData) {
       modelRating,
       ratingIsConditional: mapConflict,
       forecastStatus: mapConflict ? "SCENARIO_ONLY" : (pollingSummary.usablePollCount ? "NORMAL" : "LIMITED_DATA"),
-      margin: Number(margin.toFixed(2)),
+      margin: Number(projectedMargin.toFixed(2)),
+      projectedMargin: Number(projectedMargin.toFixed(2)),
+      probabilityEngineMargin: Number(probabilityMargin.toFixed(2)),
+      ...marginFields,
+      inputBalance,
       pollCount: pollingSummary.usablePollCount,
       usablePollCount: pollingSummary.usablePollCount,
       livePollCount: pollingSummary.livePollCount,
@@ -1100,7 +1120,7 @@ function adjustedDistricts(sourceData) {
       winnerParty: demProbability >= .5 ? "D" : "R",
       winnerProbability: Number(Math.max(demProbability, 1 - demProbability).toFixed(4)),
       error,
-      competitive: Math.abs(margin) < 8,
+      competitive: Math.abs(probabilityMargin) < 8,
       historicalComparison,
       sourceInputs: {
         // genericBallotShift remains for backwards-compatible clients only.
@@ -1112,6 +1132,7 @@ function adjustedDistricts(sourceData) {
         presidentialBaseline: Number.isFinite(district.presidentialMargin) ? Number(district.presidentialMargin.toFixed(2)) : null,
         congressionalBaseline: Number.isFinite(district.congressionalMargin) ? Number(district.congressionalMargin.toFixed(2)) : null,
         districtFundamentalMargin: Number.isFinite(district.fundamentalMargin) ? Number(district.fundamentalMargin.toFixed(2)) : null,
+        realisticBaseline: Number(realisticDistrictBaseline(district, contextMargin).toFixed(2)),
         contextualBaseline: Number(contextMargin.toFixed(2)),
         districtBaseline: Number(contextMargin.toFixed(2)),
         openPenalty: Number(openPenalty.toFixed(2)),
@@ -1144,9 +1165,9 @@ function adjustedDistricts(sourceData) {
         unavailableSources: sourceData.sourceHealth?.unavailableSources || []
       },
       matchupStatus: houseMatchupStatus(nomination),
-      marginDecomposition: houseMarginDecomposition(district, contextMargin, genericShift, nationalFinanceShift, incumbencyAdjustment, openPenalty, demographicPull.adjustment, financeSignal, candidateQualityAdjustment, nominationAdjustment, districtPollingAdjustment, guardrail, margin),
-      benchmarkComparison: houseBenchmarkComparison(district, margin, demProbability, districtPollSignal, sourceData.sourceHealth),
-      dataQualityWarnings: [...houseBenchmarkComparison(district, margin, demProbability, districtPollSignal, sourceData.sourceHealth).warnings, pollingStatusWarning(pollingSummary), ...(district.redistrictingWarnings || []).map((message) => ({ severity: "warning", type: "redistricting-conflict", message }))].filter(Boolean),
+      marginDecomposition: houseMarginDecomposition(district, realisticDistrictBaseline(district, contextMargin), genericShift, nationalFinanceShift, incumbencyAdjustment, openPenalty, demographicPull.adjustment, financeSignal, candidateQualityAdjustment, nominationAdjustment, districtPollingAdjustment, guardrail, projectedMargin),
+      benchmarkComparison,
+      dataQualityWarnings,
       primaryDate: nomination.primaryDate,
       primaryStatus: nomination.status,
       primarySummary: nomination.summary,
@@ -1176,6 +1197,31 @@ function houseMarginGuardrail(district, rawMargin, contextMargin, pollSignal = n
     adjustment: Number((capped - rawMargin).toFixed(2)),
     reason: pollSignal ? "usable district polling available" : `fundamentals-only shift capped at ${noPollCap} points from district baseline`
   };
+}
+
+function realisticDistrictBaseline(district, contextMargin) {
+  if (Number.isFinite(district.fundamentalMargin)) return clamp(district.fundamentalMargin, -62, 62);
+  if (Number.isFinite(district.presidentialMargin) && Number.isFinite(district.congressionalMargin) && Math.abs(district.congressionalMargin) <= 70) {
+    return clamp(district.presidentialMargin * .55 + district.congressionalMargin * .45, -62, 62);
+  }
+  if (Number.isFinite(district.presidentialMargin)) return clamp(district.presidentialMargin, -56, 56);
+  return contextMargin;
+}
+
+function projectedHouseResultMargin(district, rawMargin, contextMargin, pollSignal, probabilityGuardrail) {
+  const realisticBaseline = realisticDistrictBaseline(district, contextMargin);
+  const modelAdjustment = rawMargin - contextMargin;
+  let projected = realisticBaseline + modelAdjustment * (pollSignal ? .92 : .74);
+  if (!pollSignal && Math.abs(realisticBaseline) >= 22) {
+    const side = Math.sign(realisticBaseline);
+    const floor = Math.min(44, Math.abs(realisticBaseline) * .72);
+    projected = side * Math.max(Math.abs(projected), floor);
+  }
+  if (district.previousResult && !district.previousResult.comparable && !pollSignal) {
+    projected = realisticBaseline + modelAdjustment * .55;
+  }
+  if (!Number.isFinite(projected)) return probabilityGuardrail.margin;
+  return clamp(projected, -68, 68);
 }
 
 function houseMatchupStatus(nomination) {
@@ -1605,8 +1651,8 @@ function nationalFinanceSignal(finance) {
 }
 
 function contextualDistrictMargin(district) {
-  // Preserve enough structural range for genuinely one-sided districts. The
-  // former +/-16 cap let normal national shifts flatten safe districts.
+  // Probability-engine anchor. The public projected result margin uses
+  // realisticDistrictBaseline so safe districts do not display as fake-tight.
   if (Number.isFinite(district.fundamentalMargin)) return clamp(district.fundamentalMargin, -16.5, 16.5);
   // Missing federal-return rows should not start at a tossup. Use a guarded
   // incumbent-party anchor until the upstream district return is available.
@@ -1674,7 +1720,7 @@ function runModel(districts) {
     const pathCounts = { tossupD: 0, tossupR: 0, tiltRD: 0, leanRD: 0, vulnerableDHolds: 0, tiltDR: 0, leanDR: 0, vulnerableRHolds: 0 };
     for (const district of districts) {
       stateErrors[district.state] ??= normalRandom() * MODEL_WEIGHTS.stateCorrelationSd;
-      const simulatedMargin = district.margin + nationalError + stateErrors[district.state] + normalRandom() * (district.error ?? 8);
+      const simulatedMargin = (district.probabilityEngineMargin ?? district.margin) + nationalError + stateErrors[district.state] + normalRandom() * (district.error ?? 8);
       const demWin = simulatedMargin > 0;
       if (demWin) {
         demSeats += 1;
@@ -1873,6 +1919,13 @@ async function writeHouseForecast() {
     message: "House forecast limited: no usable district-level polling was available; output is ratings/fundamentals-driven."
   } : sourceData.sourceHealth;
   validateDistricts(model.districts, "simulation");
+  const cacheFreshness = forecastInputCacheFreshness({
+    genericBallot: "data/cache/polls/generic-ballot-2026.json",
+    polls: "data/cache/polls/house-2026.json",
+    ratings: "data/cache/ratings/house-2026.json",
+    fundamentals: "data/cache/fundamentals/house-district-baselines-2026.json",
+    finance: "data/cache/finance/house-2026.json"
+  });
   model.decisiveDistricts = model.decisiveDistricts.map((district) => ({
     ...(model.districts.find((item) => item.id === district.id) || district),
     leverage: district.leverage
@@ -1905,6 +1958,7 @@ async function writeHouseForecast() {
     sourceHealth,
     generationMode: generationNetworkStatus(sourceData.status, OFFLINE).mode,
     networkStatus: generationNetworkStatus(sourceData.status, OFFLINE),
+    ...cacheFreshness,
     canonicalGenericBallot: sourceData.genericPolling,
     benchmarkComparison: toplineComparison,
     raceBenchmarkStatus: benchmarkConfiguration(),
@@ -1919,6 +1973,7 @@ async function writeHouseForecast() {
       ...(noDistrictPolling ? [{ severity: "warning", type: "no-district-polling", message: "House forecast limited: no usable district-level polling was available; output is ratings/fundamentals-driven." }] : []),
       ...(benchmarkConfiguration().status === "EMPTY" ? [{ severity: "warning", type: "benchmark-file-empty", message: "External race benchmark file is empty; race-level benchmark comparisons are schema-only." }] : []),
       ...(toplineComparison.warning ? [{ severity: "warning", type: "public-model-topline-divergence", message: `House model diverges sharply from public benchmarks: model gives Democrats ${(model.demControlProbability * 100).toFixed(1)}% while benchmark sources favor Democrats for House control.` }] : []),
+      ...cacheFreshness.staleInputWarnings,
       ...sourceHealthWarnings(sourceHealth, "House")
     ],
     sourceSummary: {

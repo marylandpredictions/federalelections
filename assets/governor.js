@@ -70,7 +70,7 @@
 
   function ratingColor(race) {
     if (!race) return null;
-    const colorData = getRaceColor(race.demProbability, race.margin);
+    const colorData = getRaceColor(race.demProbability, forecastDisplayMargin(race));
     return colorData.color;
   }
 
@@ -99,6 +99,11 @@
     const margin = Number(value) || 0;
     if (Math.abs(margin) < 0.05) return "Tie";
     return `${margin > 0 ? "D" : "R"}+${Math.abs(margin).toFixed(1)}`;
+  }
+
+  function forecastDisplayMargin(race) {
+    const value = race?.projectedResultMargin?.value ?? race?.projectedMargin ?? race?.margin;
+    return Number.isFinite(Number(value)) ? Number(value) : 0;
   }
 
   function leaderClass(race) {
@@ -155,7 +160,7 @@
 
   function bucketForRace(race, mode = mapColorMode) {
     if (!race) return "state-muted";
-    if (mode === "margin") return RATING_BUCKET[ratingFromSignedValue(race.margin, { tilt: 1, lean: 3, likely: 7, safe: 12 })] || "tossup";
+    if (mode === "margin") return RATING_BUCKET[ratingFromSignedValue(forecastDisplayMargin(race), { tilt: 1, lean: 3, likely: 7, safe: 12 })] || "tossup";
     if (mode === "probability") {
       const probMargin = (race.demProbability - .5) * 100;
       return RATING_BUCKET[ratingFromSignedValue(probMargin, { tilt: 2.5, lean: 10, likely: 25, safe: 45 })] || "tossup";
@@ -286,7 +291,7 @@
         <div class="candidate-row dem-row"><span>${escapeHtml(candidateDisplayName(race, "D"))} <i class="party-badge dem-badge">${escapeHtml(candidateBadge(race, "D"))}</i>${presumptiveBadge(race, "D")}</span><strong>${oneDecimal(race.demProbability)}</strong></div>
         <div class="candidate-row rep-row"><span>${escapeHtml(candidateDisplayName(race, "R"))} <i class="party-badge rep-badge">${escapeHtml(candidateBadge(race, "R"))}</i>${presumptiveBadge(race, "R")}</span><strong>${oneDecimal(race.repProbability)}</strong></div>
         ${extraCandidateRows(race)}
-        <div class="candidate-margin"><span>Projected margin</span><strong>${signedMargin(race.margin)}</strong></div>
+        <div class="candidate-margin"><span>Projected margin</span><strong>${signedMargin(forecastDisplayMargin(race))}</strong></div>
       </div>
       <p>${escapeHtml(race.status)}. Incumbent party: ${escapeHtml(race.incumbentParty)}.</p>
       <p class="meta">Inputs: ${escapeHtml(race.rating)} rating, ${escapeHtml(String(race.pvi))} PVI, ${signedMargin(race.lastMargin)} last governor margin.</p>
@@ -363,7 +368,7 @@
           <span>${escapeHtml(candidateDisplayName(race, "D"))}${presumptiveBadge(race, "D")}</span>
           <span>${escapeHtml(candidateDisplayName(race, "R"))}${presumptiveBadge(race, "R")}</span>
           <span>${escapeHtml(race.rating)}</span>
-          <span>${signedMargin(race.margin)}</span>
+          <span>${signedMargin(forecastDisplayMargin(race))}</span>
           <span>${leader} ${oneDecimal(probability)}</span>
         </a>
       `;

@@ -47,6 +47,25 @@ function fileDate(data) {
 const expectedKey = todayKey();
 const expectedLabel = todayLabel();
 const failures = [];
+const MAX_FORECAST_AGE_MS = 48 * 60 * 60 * 1000;
+
+function generatedAtMs(data) {
+  const generatedAt = data.generatedAt || data.lastGeneratedAt || data.updatedAt || "";
+  const date = new Date(generatedAt);
+  return Number.isFinite(date.getTime()) ? date.getTime() : null;
+}
+
+function assertFreshGeneratedAt(label, file, data) {
+  const generatedAt = generatedAtMs(data);
+  if (!generatedAt) {
+    failures.push(`${label} ${file} is missing generatedAt`);
+    return;
+  }
+  const ageMs = Date.now() - generatedAt;
+  if (ageMs > MAX_FORECAST_AGE_MS) {
+    failures.push(`${label} ${file} is stale: generatedAt ${new Date(generatedAt).toISOString()} is older than 48 hours`);
+  }
+}
 
 for (const [label, file] of [
   ["Senate", "forecast.json"],
@@ -55,10 +74,7 @@ for (const [label, file] of [
   ["President aggregate", "president-forecast.json"]
 ]) {
   const data = readJson(file);
-  const value = fileDate(data);
-  if (value !== expectedKey && value !== expectedLabel) {
-    failures.push(`${label} ${file} is stale: ${value || "missing date"}; expected ${expectedKey} / ${expectedLabel}`);
-  }
+  assertFreshGeneratedAt(label, file, data);
 }
 
 const presidentFiles = readdirSync(DATA_URL)
@@ -71,10 +87,7 @@ if (presidentFiles.length !== 30) {
 
 for (const file of presidentFiles) {
   const data = readJson(file);
-  const value = fileDate(data);
-  if (value !== expectedKey && value !== expectedLabel) {
-    failures.push(`${file} is stale: ${value || "missing date"}; expected ${expectedKey} / ${expectedLabel}`);
-  }
+  assertFreshGeneratedAt(file, file, data);
 }
 
 if (failures.length) {
@@ -83,4 +96,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Forecast freshness check passed for ${expectedLabel}.`);
+console.log(`Forecast freshness check passed: generatedAt values are within 48 hours of ${expectedLabel} (${expectedKey}).`);

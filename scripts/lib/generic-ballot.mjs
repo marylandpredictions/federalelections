@@ -1,6 +1,8 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 
 const SENATE_FORECAST_URL = new URL("../../data/forecast.json", import.meta.url);
+const GENERIC_BALLOT_CACHE_URL = new URL("../../data/cache/polls/generic-ballot-2026.json", import.meta.url);
+const DATA_DIR_URL = new URL("../../data/", import.meta.url);
 
 function numberAfter(text, pattern) {
   const match = String(text || "").match(pattern);
@@ -86,19 +88,78 @@ export function blendGenericBallotSources(sources, options = {}) {
   };
 }
 
-export function readCachedGenericBallot() {
+function genericSourcesFromObject(generic, sourceLabel) {
+  const margin = Number(generic?.margin ?? generic?.genericBallotMargin);
+  if (!Number.isFinite(margin)) return null;
+  const sources = Array.isArray(generic?.sources) && generic.sources.length
+    ? generic.sources
+    : [{
+        source: sourceLabel,
+        margin,
+        dem: Number(generic?.dem ?? generic?.genericBallotDem),
+        rep: Number(generic?.rep ?? generic?.genericBallotRep),
+        polls: Number(generic?.polls ?? generic?.genericBallotPolls),
+        weight: 1,
+        status: "CACHED"
+      }];
+  return sources.map((source) => ({
+    ...source,
+    source: source.source || sourceLabel,
+    margin: Number(source.margin ?? margin),
+    dem: Number(source.dem ?? generic?.dem ?? generic?.genericBallotDem),
+    rep: Number(source.rep ?? generic?.rep ?? generic?.genericBallotRep),
+    polls: Number(source.polls ?? generic?.polls ?? generic?.genericBallotPolls),
+    weight: Number.isFinite(Number(source.weight)) ? Number(source.weight) : 1,
+    status: source.status || "CACHED"
+  }));
+}
+
+function cachedGenericFromFile(url, sourceLabel, pickGeneric) {
   try {
-    const senate = JSON.parse(readFileSync(SENATE_FORECAST_URL, "utf8"));
-    const generic = senate.canonicalGenericBallot || senate.sourceSummary?.genericPolling;
-    const margin = Number(generic?.margin ?? generic?.genericBallotMargin);
-    if (!Number.isFinite(margin)) return null;
-    return blendGenericBallotSources((generic.sources || []).map((source) => ({ ...source, status: source.status || "CACHED" })), {
-      lastUpdated: senate.generatedAt || null,
-      sourceHealth: { cached: true }
+    if (!existsSync(url)) return null;
+    const data = JSON.parse(readFileSync(url, "utf8"));
+    const generic = pickGeneric(data);
+    const sources = genericSourcesFromObject(generic, sourceLabel);
+    if (!sources) return null;
+    return blendGenericBallotSources(sources, {
+      lastUpdated: data.generatedAt || data.asOf || data.lastUpdated || null,
+      sourceHealth: { cached: true, source: sourceLabel }
     });
   } catch {
     return null;
   }
+}
+
+export function readCachedGenericBallot() {
+  const fromCache = cachedGenericFromFile(GENERIC_BALLOT_CACHE_URL, "generic ballot cache", (data) => {
+    const rows = Array.isArray(data.rows) ? data.rows : [];
+    return rows.find((row) => Number.isFinite(Number(row.margin ?? row.genericBallotMargin)));
+  });
+  if (Number.isFinite(Number(fromCache?.margin))) return fromCache;
+
+  const fromSenate = cachedGenericFromFile(SENATE_FORECAST_URL, "Senate forecast cache", (data) => (
+    data.canonicalGenericBallot || data.sourceSummary?.genericPolling
+  ));
+  if (Number.isFinite(Number(fromSenate?.margin))) return fromSenate;
+
+  try {
+    const presidentFiles = readdirSync(DATA_DIR_URL)
+      .filter((file) => /^president-forecast-.+\.json$/i.test(file))
+      .sort();
+    for (const file of presidentFiles) {
+      const fallback = cachedGenericFromFile(new URL(file, DATA_DIR_URL), `presidential forecast cache: ${file}`, (data) => (
+        data.canonicalGenericBallot || data.sourceSummary?.genericPolling || {
+          margin: data.genericBallotMargin,
+          dem: data.genericBallotDem,
+          rep: data.genericBallotRep
+        }
+      ));
+      if (Number.isFinite(Number(fallback?.margin))) return fallback;
+    }
+  } catch {
+    // No checked-in presidential fallback is available.
+  }
+  return null;
 }
 
 // Generators use their own fetch wrappers so their source-health telemetry stays
