@@ -18,6 +18,12 @@ import {
 } from "./forecast-cache.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { parseUsPollingDataGeneric } from "./lib/generic-ballot.mjs";
+import {
+  applyRatingPrior,
+  buildRatingPrior,
+  normalizeRating,
+  ratingToMargin
+} from "./lib/rating-priors.mjs";
 
 function response(status, ok = status >= 200 && status < 300) {
   return { status, ok };
@@ -104,5 +110,48 @@ assert.equal(split.ratingMargin.display, "D+18.0");
 const balance = buildInputBalance({ fundamentals: 60, polling: 20, ratings: 0, finance: 5 });
 assert.equal(balance.dominantInput, "fundamentals");
 assert.equal(balance.shares.fundamentals, 0.706);
+
+assert.equal(normalizeRating("Solid Republican").normalized, "Safe R");
+assert.equal(ratingToMargin("Lean Dem"), 5.5);
+const thinHousePrior = buildRatingPrior({
+  office: "house",
+  raceId: "TX-28-2026",
+  benchmark: { cook: { rating: "Lean D" } },
+  rawModelMargin: -5,
+  fundamentalsQuality: "WEAK"
+});
+assert.equal(thinHousePrior.enabled, true);
+assert.ok(thinHousePrior.weight >= 0.45, "TX-28 override should materially constrain thin-input House races.");
+assert.ok(applyRatingPrior(-5, thinHousePrior, 1) > -5, "Lean D prior should pull a raw R margin toward Democrats.");
+
+const mapConflictPrior = buildRatingPrior({
+  office: "house",
+  raceId: "AL-02-2026",
+  benchmark: { cook: { rating: "Likely R" } },
+  rawModelMargin: 4,
+  mapConflict: true
+});
+assert.equal(mapConflictPrior.enabled, false);
+assert.equal(mapConflictPrior.usedAs, "COMPARISON_ONLY_MAP_CONFLICT");
+assert.equal(applyRatingPrior(4, mapConflictPrior, 1), 4);
+
+const polledSenatePrior = buildRatingPrior({
+  office: "senate",
+  raceId: "GA-SEN-2026",
+  benchmark: { cook: { rating: "Toss-up" } },
+  rawModelMargin: 3,
+  pollingSummary: { pollCount: 4 }
+});
+assert.ok(polledSenatePrior.weight <= 0.1, "Multiple usable Senate polls should leave ratings as a light stabilizer.");
+
+const formulaPrior = buildRatingPrior({
+  office: "house",
+  raceId: "UNIT-2026",
+  benchmark: { cook: { rating: "Lean D" } },
+  rawModelMargin: -4,
+  fundamentalsQuality: "WEAK"
+});
+assert.equal(Number(formulaPrior.ratingPull.toFixed(2)), 4.51);
+assert.equal(Number(applyRatingPrior(-4, formulaPrior, 1).toFixed(2)), 0.51);
 
 console.log("Forecast infrastructure tests passed.");

@@ -1870,6 +1870,7 @@ function renderRaceInputCards(race) {
     race.sourceInputs?.twoSeventyToWin,
     race.sourceInputs?.realClearPolling
   ].filter(Boolean).length;
+  const ratingsPrior = race.ratingsPrior;
   const inputSnapshot = [
     {
       label: "Polling",
@@ -1886,6 +1887,11 @@ function renderRaceInputCards(race) {
       value: race.modelRating || race.rating,
       detail: `Generated from the current projected margin and probability`
     },
+    ...(ratingsPrior?.consensusRating ? [{
+      label: "Expert rating prior",
+      value: `${ratingsPrior.consensusRating} / ${Math.round((ratingsPrior.weight || 0) * 100)}%`,
+      detail: ratingsPrior.enabled ? ratingsPrior.reason : "Configured for comparison, not applied to this race"
+    }] : []),
     {
       label: "Money",
       value: financeInputText(race),
@@ -2101,6 +2107,7 @@ function houseDistrictMarkup(district) {
   const winner = district.winnerParty === "D" ? "Democrat" : "Republican";
   const colorLabel = houseDistrictColorLabel(district);
   const inputs = district.sourceInputs || {};
+  const ratingsPrior = district.ratingsPrior;
   const nomination = inputs.nomination || {};
   const quality = houseInputConfidence(district);
   const statusText = [
@@ -2131,10 +2138,12 @@ function houseDistrictMarkup(district) {
       <div><span>Context</span><strong>${signedPointMargin(inputs.contextualBaseline)}</strong></div>
       <div><span>National effect</span><strong>${signedPointMargin(inputs.genericBallotAppliedEffect ?? inputs.genericBallotShift)}</strong></div>
       <div><span>Profile</span><strong>${signedPointMargin(inputs.candidateQualityAdjustment ?? inputs.demographicPull?.adjustment)}</strong></div>
+      ${ratingsPrior?.consensusRating ? `<div><span>Rating prior</span><strong>${escapeHtml(ratingsPrior.consensusRating)} / ${Math.round((ratingsPrior.weight || 0) * 100)}%</strong></div>` : ""}
     </div>
     <details class="house-card-details">
       <summary>Model detail</summary>
       <p>${escapeHtml(district.sourceBlend || "Cook")} / ${district.open ? "open seat" : "incumbent seat"}</p>
+      ${ratingsPrior?.consensusRating ? `<p>Expert rating prior: ${escapeHtml(ratingsPrior.consensusRating)} (${Math.round((ratingsPrior.weight || 0) * 100)}% soft-prior weight). ${escapeHtml(ratingsPrior.reason || "")}</p>` : ""}
       <p>Generic ballot average ${signedPointMargin(inputs.genericBallotRawMargin)} / applied effect ${signedPointMargin(inputs.genericBallotAppliedEffect ?? inputs.genericBallotShift)}</p>
       <p>2024 pres ${signedPointMargin(inputs.presidentialBaseline)} / 2022 House ${signedPointMargin(inputs.congressionalBaseline)} / demographic ${signedPointMargin(inputs.demographicPull?.adjustment)}</p>
       ${nomination.summary ? `<p>${escapeHtml(nomination.summary)}</p>` : ""}

@@ -7,12 +7,14 @@ import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-
 import { benchmarkConfiguration, benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
 import { blendGenericBallotSources, readCachedGenericBallot } from "./lib/generic-ballot.mjs";
 import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./forecast-cache.mjs";
+import { applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
 const CERTIFIED_SENATE_BASELINES_URL = new URL("../data/baselines/senate-last-states.json", import.meta.url);
 const previousForecast = readPreviousForecast();
 const OFFLINE = process.argv.includes("--offline");
+const RATING_WEIGHT_CONFIG = loadRatingWeightConfig();
 const GENERATION_STARTED_AT = Date.now();
 const GENERATION_BUDGET_MS = Math.max(15000, Number(process.env.FORECAST_GENERATION_BUDGET_MS || 90000));
 const certifiedSenateBaselines = readCertifiedSenateBaselines();
@@ -1366,14 +1368,26 @@ function runModel(sourceData) {
     const withComposition = { ...withCandidates, sourceInputs, electorateComposition };
     const pollSignal = pollWeightMetrics(withComposition);
     const structuralAndPollingMargin = baselineMargin(withComposition);
-    // Public ratings remain provenance for comparison, not a hidden input.
-    // The displayed rating is derived from the simulated probability below.
-    const expertRatingAdjustment = { margin: structuralAndPollingMargin, adjustment: 0, weight: 0 };
     const fundamentals = senateStructuralMargin(withComposition);
     const guardrail = senateMarginGuardrail(withComposition, structuralAndPollingMargin, pollSignal, fundamentals);
-    const margin = guardrail.margin;
-    const projectedMargin = projectedSenateResultMargin(withComposition, margin, fundamentals, pollSignal);
+    const rawProbabilityMargin = guardrail.margin;
+    const rawProjectedMargin = projectedSenateResultMargin(withComposition, rawProbabilityMargin, fundamentals, pollSignal);
     const quality = inputQuality(withComposition, pollSignal);
+    const ratingsPrior = buildRatingPrior({
+      office: "senate",
+      raceId: `${withComposition.state}-SEN-2026`,
+      benchmark: benchmarkFor(`${withComposition.state}-SEN-2026`),
+      fallbackRating: expertRating,
+      fallbackSource: "Senate race configuration",
+      rawModelMargin: rawProbabilityMargin,
+      pollingSummary: pollSignal || withComposition.pollingSummary,
+      fundamentalsQuality: quality?.dataConfidence === "DEGRADED" ? "DEGRADED" : "MEDIUM",
+      sourceDegraded: Boolean(withComposition.sourceInputs?.sourceHealth?.degraded),
+      config: RATING_WEIGHT_CONFIG
+    });
+    const margin = applyRatingPrior(rawProbabilityMargin, ratingsPrior, ratingsPrior.probabilityPullStrength);
+    const projectedMargin = applyRatingPrior(rawProjectedMargin, ratingsPrior, ratingsPrior.projectedResultPullStrength);
+    const expertRatingAdjustment = { margin, adjustment: Number((projectedMargin - rawProjectedMargin).toFixed(2)), weight: ratingsPrior.weight };
     const uncertainty = raceTypeUncertainty(withComposition, pollSignal, quality);
     const calculatedError = senateRaceError(withComposition, fundamentals, pollSignal, uncertainty);
     const error = Number.isFinite(calculatedError) ? calculatedError : 8.2;
@@ -1382,14 +1396,14 @@ function runModel(sourceData) {
     const historicalComparison = historicalMarginComparison(withComposition, projectedMargin, pollSignal);
     const largeShiftWarning = largeShiftWithoutPolls(historicalComparison, pollSignal, withComposition.state);
     const matchupStatus = senateMatchupStatus(withComposition);
-    const marginDecomposition = senateMarginDecomposition(withComposition, pollSignal, guardrail, projectedMargin);
+    const marginDecomposition = senateMarginDecomposition(withComposition, pollSignal, ratingsPrior.ratingPull * ratingsPrior.projectedResultPullStrength, guardrail, projectedMargin);
     const benchmarkComparison = senateBenchmarkComparison({ ...withComposition, historicalComparison }, projectedMargin, demProbability, pollSignal);
     const inputBalance = buildInputBalance({
       fundamentals: pollSignal?.usablePollCount ? 66 : 78,
       polling: pollSignal?.usablePollCount ? 18 : 0,
       nationalEnvironment: 7,
       finance: 5,
-      ratings: 0
+      ratings: ratingsPrior.inputWeight
     });
     return {
       ...withComposition,
@@ -1398,7 +1412,10 @@ function runModel(sourceData) {
       margin,
       projectedMargin,
       probabilityEngineMargin: margin,
-      ...marginSplit(projectedMargin, margin, projectedMargin),
+      preRatingProbabilityMargin: Number(rawProbabilityMargin.toFixed(2)),
+      preRatingProjectedMargin: Number(rawProjectedMargin.toFixed(2)),
+      ratingsPrior,
+      ...marginSplit(projectedMargin, margin, ratingsPrior.impliedMargin ?? projectedMargin),
       inputBalance,
       error,
       demProbability,
@@ -1427,7 +1444,7 @@ function runModel(sourceData) {
       lastUpdated: new Date().toISOString(),
       marginDecomposition,
       benchmarkComparison,
-      dataQualityWarnings: [...benchmarkComparison.warnings, largeShiftWarning?.message, pollingStatusWarning(withComposition.pollingSummary)].filter(Boolean),
+      dataQualityWarnings: [...benchmarkComparison.warnings, ...(ratingsPrior.warnings || []), largeShiftWarning?.message, pollingStatusWarning(withComposition.pollingSummary)].filter(Boolean),
       uncertaintyAdjustment: uncertainty,
       primaryEvents: primaryEventsForRace(withCandidates),
       primaryRisk: primaryRisk(race),
@@ -2417,7 +2434,7 @@ function senateMatchupStatus(race) {
   return "LIKELY_MATCHUP";
 }
 
-function senateMarginDecomposition(race, pollSignal, guardrail, finalMargin) {
+function senateMarginDecomposition(race, pollSignal, ratingsEffect, guardrail, finalMargin) {
   const previousMargin = Number(race.pastSenate || 0);
   const partisanBaselineEffect = Number((race.pvi * .30 + previousMargin * .26 - previousMargin).toFixed(2));
   const nationalEnvironmentEffect = Number((race.nationalPolling || 0).toFixed(2));
@@ -2435,7 +2452,7 @@ function senateMarginDecomposition(race, pollSignal, guardrail, finalMargin) {
     candidateQualityEffect,
     fundraisingEffect,
     candidateHistoryEffect,
-    ratingsAdjustment: 0,
+    ratingsAdjustment: Number((ratingsEffect || 0).toFixed(2)),
     guardrailAdjustment: guardrail.adjustment,
     guardrailReason: guardrail.reason,
     finalProjectedMargin: Number(finalMargin.toFixed(2))

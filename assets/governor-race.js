@@ -112,6 +112,7 @@
       `<li>No usable general-election polling average is available for this race yet.</li>`,
       pollMarginInput?.type && pollMarginInput.type !== "NONE" ? `<li>Polling signal type: ${escapeHtml(pollMarginInput.type)} (not treated as a usable general-election poll)</li>` : ""
     ].filter(Boolean).join("");
+    const ratingsPrior = race.ratingsPrior;
     const snapshotCards = [
       ["Model classification", race.modelRating || race.rating, "Generated from the current probability and projected margin"],
       ["Fundamentals", signedPointMargin(race.fundamentalsMargin), "PVI, prior gubernatorial result, and incumbency"],
@@ -120,7 +121,12 @@
       ["Polling", pollMarginInput?.value != null ? signedPointMargin(pollMarginValue) : "--", usableGeneralPoll ? "Matched governor general-election polling input" : "No usable governor general-election polling input"],
       ["Demographic pull", signedPointMargin(race.demographicPull?.adjustment || 0), "Candidate profile interaction with state electorate"],
       ["Model margin", signedPointMargin(forecastDisplayMargin(race)), "Final projected vote margin"],
-      ["Structural baseline", signedPointMargin(race.structuralMargin ?? race.ratingMargin), "PVI, prior gubernatorial result, and incumbency before other model adjustments"]
+      ["Structural baseline", signedPointMargin(race.structuralMargin ?? race.ratingMargin), "PVI, prior gubernatorial result, and incumbency before other model adjustments"],
+      ...(ratingsPrior?.consensusRating ? [[
+        "Expert rating prior",
+        `${ratingsPrior.consensusRating} / ${Math.round((ratingsPrior.weight || 0) * 100)}%`,
+        ratingsPrior.enabled ? ratingsPrior.reason : "Configured for comparison, not applied to this race"
+      ]] : [])
     ].map(([label, value, detail]) => `
       <article class="input-snapshot-card">
         <span>${escapeHtml(label)}</span>

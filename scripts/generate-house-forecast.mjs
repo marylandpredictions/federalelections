@@ -7,12 +7,14 @@ import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-
 import { benchmarkConfiguration, benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
 import { blendGenericBallotSources, parsePollfinityGeneric as parseCanonicalPollfinityGeneric, parseUsPollingDataGeneric as parseCanonicalUsPollingDataGeneric, parseVoteHubGeneric as parseCanonicalVoteHubGeneric, readCachedGenericBallot } from "./lib/generic-ballot.mjs";
 import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./forecast-cache.mjs";
+import { applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
 
 const OUTPUT_URL = new URL("../data/house-forecast.json", import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
 const previousForecast = readPreviousForecast();
 const OFFLINE = process.argv.includes("--offline");
+const RATING_WEIGHT_CONFIG = loadRatingWeightConfig();
 
 const SETTINGS = {
   simulations: 100000,
@@ -619,6 +621,16 @@ function parse270MapDistricts(html) {
   }).filter((district) => district.id && !STATELESS_DISTRICTS.has(district.id));
 }
 
+function publicHouseRatingFallback(district, sourceData) {
+  if (!district || sourceData?.usingCachedDistricts) return { rating: null, source: null };
+  const source = String(district.ratingSource || "");
+  if (!/^Cook\b/i.test(source)) return { rating: null, source: null };
+  return {
+    rating: district.sourceRating || district.rating || null,
+    source
+  };
+}
+
 function ratingFromMargin(margin) {
   if (!Number.isFinite(margin)) return "Toss-up";
   const abs = Math.abs(margin);
@@ -1063,13 +1075,33 @@ function adjustedDistricts(sourceData) {
       ? preMarketMargin * (1 - marketSignal.weight) + marketSignal.impliedMargin * marketSignal.weight
       : preMarketMargin;
     const guardrail = houseMarginGuardrail(district, rawMargin, contextMargin, districtPollSignal);
-    const probabilityMargin = guardrail.margin;
-    const projectedMargin = projectedHouseResultMargin(district, rawMargin, contextMargin, districtPollSignal, guardrail);
+    const rawProbabilityMargin = guardrail.margin;
+    const rawProjectedMargin = projectedHouseResultMargin(district, rawMargin, contextMargin, districtPollSignal, guardrail);
+    const mapConflict = district.redistrictingConfidence === "CONFLICTING_SOURCES";
+    const ratingBenchmark = benchmarkFor(`${district.id}-2026`);
+    const fundamentalsQuality = sourceData.usingCachedDistricts
+      ? "DERIVED_FROM_PRIOR_FORECAST"
+      : district.districtBaseline?.status === "MISSING" ? "WEAK" : "MEDIUM";
+    const publicRatingFallback = publicHouseRatingFallback(district, sourceData);
+    const ratingsPrior = buildRatingPrior({
+      office: "house",
+      raceId: `${district.id}-2026`,
+      benchmark: ratingBenchmark,
+      fallbackRating: publicRatingFallback.rating,
+      fallbackSource: publicRatingFallback.source || "Public district source",
+      rawModelMargin: rawProbabilityMargin,
+      pollingSummary,
+      fundamentalsQuality,
+      sourceDegraded: Boolean(sourceData.sourceHealth?.degraded),
+      mapConflict,
+      config: RATING_WEIGHT_CONFIG
+    });
+    const probabilityMargin = applyRatingPrior(rawProbabilityMargin, ratingsPrior, ratingsPrior.probabilityPullStrength);
+    const projectedMargin = clamp(applyRatingPrior(rawProjectedMargin, ratingsPrior, ratingsPrior.projectedResultPullStrength), -68, 68);
     const historicalComparison = houseHistoricalComparison(district, projectedMargin, realisticDistrictBaseline(district, contextMargin), districtPollSignal, marketSignal);
     const error = houseRaceError(district, contextMargin, nomination, districtPollSignal);
     const demProbability = logistic(probabilityMargin, error);
     const { sourceRating: _legacySourceRating, ...districtWithoutLegacyRating } = district;
-    const mapConflict = district.redistrictingConfidence === "CONFLICTING_SOURCES";
     const modelRating = ratingFromMargin(projectedMargin);
     const confidence = houseConfidence(district, probabilityMargin, pollingSummary, sourceData.sourceHealth, mapConflict);
     const inputBalance = buildInputBalance({
@@ -1077,12 +1109,13 @@ function adjustedDistricts(sourceData) {
       polling: districtPollSignal ? 22 : 0,
       nationalEnvironment: 10,
       finance: 7,
-      ratings: 0
+      ratings: ratingsPrior.inputWeight
     });
-    const marginFields = marginSplit(projectedMargin, probabilityMargin, projectedMargin);
+    const marginFields = marginSplit(projectedMargin, probabilityMargin, ratingsPrior.impliedMargin ?? projectedMargin);
     const benchmarkComparison = houseBenchmarkComparison(district, projectedMargin, demProbability, districtPollSignal, sourceData.sourceHealth);
     const dataQualityWarnings = [
       ...benchmarkComparison.benchmarkWarnings,
+      ...(ratingsPrior.warnings || []),
       pollingStatusWarning(pollingSummary),
       ...(district.redistrictingWarnings || []).map((message) => ({ severity: "warning", type: "redistricting-conflict", message }))
     ].filter(Boolean);
@@ -1096,6 +1129,9 @@ function adjustedDistricts(sourceData) {
       margin: Number(projectedMargin.toFixed(2)),
       projectedMargin: Number(projectedMargin.toFixed(2)),
       probabilityEngineMargin: Number(probabilityMargin.toFixed(2)),
+      preRatingProbabilityMargin: Number(rawProbabilityMargin.toFixed(2)),
+      preRatingProjectedMargin: Number(rawProjectedMargin.toFixed(2)),
+      ratingsPrior,
       ...marginFields,
       inputBalance,
       pollCount: pollingSummary.usablePollCount,
@@ -1135,6 +1171,7 @@ function adjustedDistricts(sourceData) {
         realisticBaseline: Number(realisticDistrictBaseline(district, contextMargin).toFixed(2)),
         contextualBaseline: Number(contextMargin.toFixed(2)),
         districtBaseline: Number(contextMargin.toFixed(2)),
+        fundamentalsQuality,
         openPenalty: Number(openPenalty.toFixed(2)),
         incumbencyAdjustment: Number(incumbencyAdjustment.toFixed(2)),
         nomination,
@@ -1146,6 +1183,7 @@ function adjustedDistricts(sourceData) {
           polls: (sourceData.districtPolls?.[district.id] || []).slice(0, 8).map(({ source, pollster, endDate, margin, sampleSize, population }) => ({ source, pollster, endDate, margin, sampleSize, population }))
         } : null,
         marketSignal,
+        ratingsPrior,
         demographicPull,
         challengerStrength,
         finance: sourceData.fec[district.id] || null,
@@ -1165,7 +1203,7 @@ function adjustedDistricts(sourceData) {
         unavailableSources: sourceData.sourceHealth?.unavailableSources || []
       },
       matchupStatus: houseMatchupStatus(nomination),
-      marginDecomposition: houseMarginDecomposition(district, realisticDistrictBaseline(district, contextMargin), genericShift, nationalFinanceShift, incumbencyAdjustment, openPenalty, demographicPull.adjustment, financeSignal, candidateQualityAdjustment, nominationAdjustment, districtPollingAdjustment, guardrail, projectedMargin),
+      marginDecomposition: houseMarginDecomposition(district, realisticDistrictBaseline(district, contextMargin), genericShift, nationalFinanceShift, incumbencyAdjustment, openPenalty, demographicPull.adjustment, financeSignal, candidateQualityAdjustment, nominationAdjustment, districtPollingAdjustment, ratingsPrior.ratingPull * ratingsPrior.projectedResultPullStrength, guardrail, projectedMargin),
       benchmarkComparison,
       dataQualityWarnings,
       primaryDate: nomination.primaryDate,
@@ -1263,7 +1301,7 @@ function houseConfidence(district, margin, pollingSummary, sourceHealth, mapConf
   return { winConfidence, marginConfidence, dataConfidence, reasons };
 }
 
-function houseMarginDecomposition(district, previousMargin, genericBallotEffect, nationalFinanceEffect, incumbencyEffect, openSeatEffect, demographicEffect, financeEffect, candidateEffect, nominationEffect, pollingEffect, guardrail, finalMargin) {
+function houseMarginDecomposition(district, previousMargin, genericBallotEffect, nationalFinanceEffect, incumbencyEffect, openSeatEffect, demographicEffect, financeEffect, candidateEffect, nominationEffect, pollingEffect, ratingsEffect, guardrail, finalMargin) {
   return {
     previousMargin: Number(previousMargin.toFixed(2)),
     partisanBaselineEffect: Number((previousMargin - previousMargin).toFixed(2)),
@@ -1272,7 +1310,7 @@ function houseMarginDecomposition(district, previousMargin, genericBallotEffect,
     incumbencyEffect: Number(incumbencyEffect.toFixed(2)),
     candidateQualityEffect: Number((candidateEffect + nominationEffect + demographicEffect).toFixed(2)),
     fundraisingEffect: Number((financeEffect + nationalFinanceEffect).toFixed(2)),
-    ratingsAdjustment: 0,
+    ratingsAdjustment: Number((ratingsEffect || 0).toFixed(2)),
     guardrailAdjustment: guardrail.adjustment,
     guardrailReason: guardrail.reason,
     openSeatEffect: Number(openSeatEffect.toFixed(2)),
@@ -1856,6 +1894,30 @@ function redistrictingSummary(districts) {
   };
 }
 
+function houseControlDecomposition(districts) {
+  const rated = districts.filter((district) => district.ratingsPrior?.enabled);
+  const ratingsHeavy = rated.filter((district) => district.ratingsPrior?.ratingsHeavy);
+  const averageWeight = rated.length
+    ? rated.reduce((sum, district) => sum + Number(district.ratingsPrior.weight || 0), 0) / rated.length
+    : 0;
+  const averageProbabilityPull = rated.length
+    ? rated.reduce((sum, district) => sum + Math.abs(Number(district.ratingsPrior.ratingPull || 0)), 0) / rated.length
+    : 0;
+  const seatsChangedByPrior = districts.filter((district) => {
+    const raw = Number(district.preRatingProbabilityMargin);
+    const final = Number(district.probabilityEngineMargin);
+    return Number.isFinite(raw) && Number.isFinite(final) && Math.sign(raw) !== Math.sign(final);
+  }).map((district) => district.id);
+  return {
+    ratedDistricts: rated.length,
+    ratingsHeavyDistricts: ratingsHeavy.length,
+    averageRatingsWeight: Number(averageWeight.toFixed(3)),
+    averageAbsoluteRatingPull: Number(averageProbabilityPull.toFixed(2)),
+    seatsChangedBySoftPrior: seatsChangedByPrior,
+    note: "Ratings are a transparent soft prior. They constrain low-information districts but do not replace fundamentals, national environment, finance, candidate data, or polling."
+  };
+}
+
 function readPreviousForecast() {
   try {
     return JSON.parse(readFileSync(OUTPUT_URL, "utf8"));
@@ -1997,6 +2059,7 @@ async function writeHouseForecast() {
       redistricting: redistrictingSummary(districts)
     },
     ratingSummary: ratingSummary(districts),
+    houseControlDecomposition: houseControlDecomposition(model.districts),
     modelWarnings: [
       ...sourceHealthWarnings(sourceHealth, "House"),
       ...forecastSanityWarnings(model.districts, {

@@ -125,6 +125,18 @@ export function buildInputBalance(weights = {}) {
     .filter(([, value]) => value > 0);
   const total = entries.reduce((sum, [, value]) => sum + value, 0);
   const shares = Object.fromEntries(entries.map(([input, value]) => [input, total ? Number((value / total).toFixed(3)) : 0]));
+  const rawWeights = Object.fromEntries(entries.map(([input, value]) => [input, Number(value.toFixed(3))]));
   const dominantInput = entries.sort((a, b) => b[1] - a[1])[0]?.[0] || null;
-  return { shares, dominantInput };
+  return {
+    shares,
+    rawWeights,
+    dominantInput,
+    fundamentalsWeight: shares.fundamentals || 0,
+    nationalEnvironmentWeight: shares.nationalEnvironment || 0,
+    pollingWeight: shares.polling || 0,
+    ratingsWeight: shares.ratings || 0,
+    financeWeight: shares.finance || 0,
+    candidateWeight: shares.candidate || 0,
+    ratingsHeavy: (shares.ratings || 0) >= 0.25
+  };
 }

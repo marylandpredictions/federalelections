@@ -7,6 +7,7 @@ import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-
 import { benchmarkConfiguration, benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
 import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./forecast-cache.mjs";
 import { readCachedGenericBallot } from "./lib/generic-ballot.mjs";
+import { applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const GOVERNOR_HISTORY_URL = new URL("../data/governor-history.json", import.meta.url);
@@ -15,6 +16,7 @@ const GOVERNOR_FINANCE_SOURCES_URL = new URL("../data/governor-finance-sources.j
 const GOVERNOR_EXCEPTIONS_URL = new URL("../data/candidate-exceptions/governor-2026.json", import.meta.url);
 const previousForecast = readPreviousForecast();
 const governorHistoryArchive = readGovernorHistoryArchive();
+const RATING_WEIGHT_CONFIG = loadRatingWeightConfig();
 const MODEL_TIME_ZONE = "America/New_York";
 const OFFLINE = process.argv.includes("--offline");
 const GENERATION_STARTED_AT = Date.now();
@@ -1438,12 +1440,24 @@ function buildRace(baseRace, nationalShift, sourceData) {
   
   const rawMargin = fundamentals + candidateAndLocal + (nationalShift * governorStateElasticity(race)) + demographicPull.adjustment + candidateHistory + financeSignal + pollMargin + primaryPollSignal;
   const expertRating = race.rating;
-  // Retain the source rating as a diagnostic field only. Model ratings must
-  // describe the generated forecast, not feed back into its projected margin.
-  const expertRatingAdjustment = { margin: rawMargin, adjustment: 0, weight: 0 };
   const guardrail = governorMarginGuardrail(race, rawMargin, fundamentals, directGovernorPoll);
-  const margin = guardrail.margin;
-  const projectedMargin = projectedGovernorResultMargin(race, margin, fundamentals, directGovernorPoll);
+  const rawProbabilityMargin = guardrail.margin;
+  const rawProjectedMargin = projectedGovernorResultMargin(race, rawProbabilityMargin, fundamentals, directGovernorPoll);
+  const ratingsPrior = buildRatingPrior({
+    office: "governor",
+    raceId: `${race.state}-GOV-2026`,
+    benchmark: benchmarkFor(`${race.state}-GOV-2026`),
+    fallbackRating: expertRating,
+    fallbackSource: "Governor race configuration",
+    rawModelMargin: rawProbabilityMargin,
+    pollingSummary,
+    fundamentalsQuality: sourceData.sourceHealth?.degraded ? "DEGRADED" : "MEDIUM",
+    sourceDegraded: Boolean(sourceData.sourceHealth?.degraded),
+    config: RATING_WEIGHT_CONFIG
+  });
+  const margin = applyRatingPrior(rawProbabilityMargin, ratingsPrior, ratingsPrior.probabilityPullStrength);
+  const projectedMargin = applyRatingPrior(rawProjectedMargin, ratingsPrior, ratingsPrior.projectedResultPullStrength);
+  const expertRatingAdjustment = { margin, adjustment: Number((projectedMargin - rawProjectedMargin).toFixed(2)), weight: ratingsPrior.weight };
   const error = governorRaceError(race, fundamentals, hasUsableGeneralPoll);
   const demProbability = clamp(normalCdf(margin, 0, error), 0.001, 0.999);
   const winnerParty = demProbability >= .5 ? "D" : "R";
@@ -1455,8 +1469,9 @@ function buildRace(baseRace, nationalShift, sourceData) {
     polling: hasUsableGeneralPoll ? 18 : 0,
     nationalEnvironment: 7,
     finance: financeUsed ? 7 : 2,
-    ratings: 0
+    ratings: ratingsPrior.inputWeight
   });
+  const benchmarkComparison = governorBenchmarkComparison(race, projectedMargin, demProbability, directGovernorPoll, sourceData.sourceHealth);
   return {
     ...race,
     displayName: `${STATE_NAMES[race.state]} Governor`,
@@ -1465,7 +1480,10 @@ function buildRace(baseRace, nationalShift, sourceData) {
     margin: Number(margin.toFixed(2)),
     projectedMargin: Number(projectedMargin.toFixed(2)),
     probabilityEngineMargin: Number(margin.toFixed(2)),
-    ...marginSplit(projectedMargin, margin, projectedMargin),
+    preRatingProbabilityMargin: Number(rawProbabilityMargin.toFixed(2)),
+    preRatingProjectedMargin: Number(rawProjectedMargin.toFixed(2)),
+    ratingsPrior,
+    ...marginSplit(projectedMargin, margin, ratingsPrior.impliedMargin ?? projectedMargin),
     inputBalance,
     pollCount: pollingSummary.usablePollCount,
     usablePollCount: pollingSummary.usablePollCount,
@@ -1532,9 +1550,9 @@ function buildRace(baseRace, nationalShift, sourceData) {
       unavailableSources: sourceData.sourceHealth?.unavailableSources || []
     },
     matchupStatus: governorMatchupStatus(race),
-    marginDecomposition: governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, guardrail, projectedMargin, financeUsed),
-    benchmarkComparison: governorBenchmarkComparison(race, projectedMargin, demProbability, directGovernorPoll, sourceData.sourceHealth),
-    dataQualityWarnings: [...governorBenchmarkComparison(race, projectedMargin, demProbability, directGovernorPoll, sourceData.sourceHealth).warnings, largeShiftWarning?.message, pollingStatusWarning(pollingSummary)].filter(Boolean),
+    marginDecomposition: governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, ratingsPrior.ratingPull * ratingsPrior.projectedResultPullStrength, guardrail, projectedMargin, financeUsed),
+    benchmarkComparison,
+    dataQualityWarnings: [...benchmarkComparison.warnings, ...(ratingsPrior.warnings || []), largeShiftWarning?.message, pollingStatusWarning(pollingSummary)].filter(Boolean),
     modelRating,
     demProbability: Number(demProbability.toFixed(5)),
     repProbability: Number((1 - demProbability).toFixed(5)),
@@ -1654,7 +1672,7 @@ function governorModelConfidence(poll, race, sourceHealth) {
   };
 }
 
-function governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, guardrail, finalMargin, financeUsed) {
+function governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, ratingsEffect, guardrail, finalMargin, financeUsed) {
   return {
     previousMargin: Number(race.lastMargin.toFixed(2)),
     partisanBaselineEffect: Number((fundamentals - race.lastMargin).toFixed(2)),
@@ -1663,7 +1681,7 @@ function governorMarginDecomposition(race, fundamentals, nationalShift, candidat
     incumbencyEffect: Number(candidateAndLocal.toFixed(2)),
     candidateQualityEffect: Number(candidateHistory.toFixed(2)),
     fundraisingEffect: financeUsed ? Number(financeSignal.toFixed(2)) : { value: 0, status: "DISABLED" },
-    ratingsAdjustment: 0,
+    ratingsAdjustment: Number((ratingsEffect || 0).toFixed(2)),
     guardrailAdjustment: guardrail.adjustment,
     guardrailReason: guardrail.reason,
     finalProjectedMargin: Number(finalMargin.toFixed(2))

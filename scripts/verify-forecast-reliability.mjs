@@ -24,6 +24,9 @@ function assertMarginContract(label, item) {
   assert.ok(typeof item.projectedResultMargin.display === "string", `${label}: projected result margin display is required.`);
   assert.ok(item.inputBalance?.shares && typeof item.inputBalance.shares === "object", `${label}: input balance shares are required.`);
   assert.ok(item.inputBalance.dominantInput, `${label}: dominant input is required.`);
+  assert.ok(item.ratingsPrior && typeof item.ratingsPrior === "object", `${label}: ratings prior metadata is required.`);
+  assert.ok("enabled" in item.ratingsPrior, `${label}: ratings prior must state whether it was applied.`);
+  assert.ok("weight" in item.ratingsPrior, `${label}: ratings prior must publish its weight.`);
   if (Number.isFinite(item.projectedResultMargin.value)) {
     assert.equal(Number(item.projectedResultMargin.value), Number((item.projectedMargin ?? item.margin).toFixed?.(2) ?? item.projectedResultMargin.value), `${label}: projectedResultMargin value must match the public projected margin.`);
   }
@@ -82,6 +85,10 @@ for (const district of house.districts) {
   assert.notEqual(district.presidentialMargin, 0, `${district.id}: missing presidential baseline must be null, not zero.`);
   assert.notEqual(district.congressionalMargin, 0, `${district.id}: missing congressional baseline must be null, not zero.`);
   assert.ok(district.confidence?.winConfidence && district.confidence?.marginConfidence && district.confidence?.dataConfidence, `${district.id}: split confidence fields are required.`);
+  assert.ok(
+    !district.ratingsPrior?.sources?.some((source) => /cached prior house forecast/i.test(source)),
+    `${district.id}: generated/cached House ratings cannot be reused as expert-rating priors.`
+  );
 }
 
 assert.ok(senate.forecastStatus, "Senate must expose top-level forecast status.");

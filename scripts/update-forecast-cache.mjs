@@ -143,12 +143,15 @@ function writeFundamentalsCaches() {
   const governor = readJson("data/governor-forecast.json", {});
 
   write("fundamentals/house-district-baselines-2026.json", cacheEnvelope({
-    source: "data/house-forecast.json sourceInputs",
+    source: "DERIVED_FROM_PRIOR_FORECAST:data/house-forecast.json sourceInputs",
     office: "house",
     asOf: modelAsOf(house),
     rows: (house.districts || []).map((district) => ({
       id: district.id,
       state: district.state,
+      source: "DERIVED_FROM_PRIOR_FORECAST",
+      independentInput: false,
+      confidence: "LOW",
       presidentialMargin: district.sourceInputs?.presidentialBaseline ?? district.presidentialMargin ?? null,
       congressionalMargin: district.sourceInputs?.congressionalBaseline ?? district.congressionalMargin ?? null,
       contextualBaseline: district.sourceInputs?.contextualBaseline ?? district.sourceInputs?.districtBaseline ?? null,
@@ -157,17 +160,21 @@ function writeFundamentalsCaches() {
       mapVersion: district.mapVersion || null,
       redistrictingConfidence: district.redistrictingConfidence || null
     })),
-    status: house.districts?.length ? "OK_PARSED" : "OK_NO_ROWS"
+    status: house.districts?.length ? "DERIVED_FROM_PRIOR_FORECAST" : "OK_NO_ROWS",
+    warnings: ["This cache is rebuilt from saved forecast output and should not be treated as an independent fundamentals source."]
   }));
 
   write("fundamentals/state-baselines-2026.json", cacheEnvelope({
-    source: "saved Senate and governor forecast state fundamentals",
+    source: "DERIVED_FROM_PRIOR_FORECAST:saved Senate and governor forecast state fundamentals",
     office: "statewide",
     asOf: latestDate(modelAsOf(senate), modelAsOf(governor)),
     rows: [
       ...(senate.races || []).map((race) => ({
         office: "senate",
         state: race.state,
+        source: "DERIVED_FROM_PRIOR_FORECAST",
+        independentInput: false,
+        confidence: "LOW",
         pvi: race.pvi ?? null,
         pastSameOfficeMargin: race.pastSenate ?? null,
         structuralMargin: race.marginDecomposition?.fundamentalsMargin ?? race.sourceInputs?.structuralMargin ?? null
@@ -175,12 +182,16 @@ function writeFundamentalsCaches() {
       ...(governor.races || []).map((race) => ({
         office: "governor",
         state: race.state,
+        source: "DERIVED_FROM_PRIOR_FORECAST",
+        independentInput: false,
+        confidence: "LOW",
         pvi: race.pvi ?? null,
         pastSameOfficeMargin: race.lastMargin ?? null,
         structuralMargin: race.structuralMargin ?? null
       }))
     ],
-    status: (senate.races?.length || governor.races?.length) ? "OK_PARSED" : "OK_NO_ROWS"
+    status: (senate.races?.length || governor.races?.length) ? "DERIVED_FROM_PRIOR_FORECAST" : "OK_NO_ROWS",
+    warnings: ["This cache is rebuilt from saved forecast output and should not be treated as an independent fundamentals source."]
   }));
 }
 
