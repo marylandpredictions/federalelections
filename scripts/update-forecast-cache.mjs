@@ -1,6 +1,14 @@
 import { readFileSync } from "node:fs";
 import { cacheEnvelope, writeCacheFile } from "./forecast-cache.mjs";
 import { readCachedGenericBallot } from "./lib/generic-ballot.mjs";
+import {
+  COOK_HOUSE_270_URL,
+  HOUSE_MAP_270_URL,
+  fundamentalsCacheEnvelope,
+  mergedHouseRatingsCache,
+  parseCookHouseRatings,
+  sourceBackedHouseBaselines
+} from "./lib/house-input-caches.mjs";
 
 const ROOT = new URL("../", import.meta.url);
 const NOW = new Date().toISOString();
@@ -27,6 +35,22 @@ function write(relativePath, payload) {
   console.log(`cache/${relativePath}`);
 }
 
+async function fetchText(url, label) {
+  const started = Date.now();
+  try {
+    const response = await fetch(url, { headers: { "user-agent": "Mozilla/5.0 FEA Forecast Bot" } });
+    const text = await response.text();
+    const ms = Date.now() - started;
+    if (response.status === 403) return { ok: false, status: "BLOCKED_403", text, url, ms };
+    if (response.status === 404) return { ok: false, status: "NOT_FOUND_404", text, url, ms };
+    if (!response.ok) return { ok: false, status: "UNKNOWN_ERROR", text, url, ms };
+    console.log(`${label}: fetched ${text.length} bytes in ${ms}ms`);
+    return { ok: true, status: "HTML_FETCHED", text, url, ms };
+  } catch (error) {
+    return { ok: false, status: error?.name === "AbortError" ? "TIMEOUT" : "UNKNOWN_ERROR", error: error?.message || String(error), text: "", url, ms: Date.now() - started };
+  }
+}
+
 function latestDate(...values) {
   const dates = values
     .flat()
@@ -41,16 +65,45 @@ function modelAsOf(model) {
   return latestDate(model?.generatedAt, model?.lastUpdated, model?.modelDate);
 }
 
-function writeRatingsCaches() {
+async function writeRatingsCaches() {
   const benchmarks = readJson("data/forecast-benchmarks.json", { races: {}, updatedAt: NOW });
   const rows = Object.entries(benchmarks.races || {}).map(([raceId, sources]) => ({ raceId, sources }));
   const asOf = benchmarks.updatedAt || NOW;
+  console.log("Updating Cook House ratings cache...");
+  const cookFetch = await fetchText(COOK_HOUSE_270_URL, "Cook House ratings via 270toWin");
+  const cookRows = cookFetch.ok ? parseCookHouseRatings(cookFetch.text, { asOf: new Date().toISOString().slice(0, 10), url: COOK_HOUSE_270_URL }) : [];
+  const cookStatus = !cookFetch.ok
+    ? cookFetch.status
+    : cookRows.length ? "OK_PARSED" : "OK_NO_ROWS";
+  if (cookStatus === "OK_PARSED") console.log(`Parsed ${cookRows.length} Cook House rating rows.`);
+  else console.log(`Cook House ratings cache status: ${cookStatus}.`);
+  write("ratings/cook-house-2026.json", cacheEnvelope({
+    source: "Cook Political Report via 270toWin",
+    office: "house",
+    asOf: new Date().toISOString().slice(0, 10),
+    rows: cookRows,
+    status: cookStatus,
+    warnings: cookRows.length ? [] : [`Cook House ratings source returned status ${cookStatus}.`],
+    meta: { url: COOK_HOUSE_270_URL, fetchStatus: cookFetch.status, fetchMs: cookFetch.ms }
+  }));
+
+  const mapFetch = await fetchText(HOUSE_MAP_270_URL, "House map/fundamentals via 270toWin");
+  const sourceBackedRows = sourceBackedHouseBaselines(mapFetch.ok ? mapFetch.text : "");
+  const mergedHouse = mergedHouseRatingsCache({
+    cookRows,
+    baselines: sourceBackedRows,
+    asOf: new Date().toISOString().slice(0, 10)
+  });
   const byOffice = {
     senate: rows.filter((row) => row.raceId.includes("-SEN-")),
-    house: rows.filter((row) => /-[0-9]{2}-2026$/.test(row.raceId)),
+    house: mergedHouse.rows,
     governor: rows.filter((row) => row.raceId.includes("-GOV-"))
   };
   for (const [office, officeRows] of Object.entries(byOffice)) {
+    if (office === "house") {
+      write("ratings/house-2026.json", mergedHouse);
+      continue;
+    }
     write(`ratings/${office}-2026.json`, cacheEnvelope({
       source: "data/forecast-benchmarks.json",
       office,
@@ -137,31 +190,22 @@ function writePollingCaches() {
   }));
 }
 
-function writeFundamentalsCaches() {
+async function writeFundamentalsCaches() {
   const senate = readJson("data/forecast.json", {});
-  const house = readJson("data/house-forecast.json", {});
   const governor = readJson("data/governor-forecast.json", {});
 
-  write("fundamentals/house-district-baselines-2026.json", cacheEnvelope({
-    source: "DERIVED_FROM_PRIOR_FORECAST:data/house-forecast.json sourceInputs",
-    office: "house",
-    asOf: modelAsOf(house),
-    rows: (house.districts || []).map((district) => ({
-      id: district.id,
-      state: district.state,
-      source: "DERIVED_FROM_PRIOR_FORECAST",
-      independentInput: false,
-      confidence: "LOW",
-      presidentialMargin: district.sourceInputs?.presidentialBaseline ?? district.presidentialMargin ?? null,
-      congressionalMargin: district.sourceInputs?.congressionalBaseline ?? district.congressionalMargin ?? null,
-      contextualBaseline: district.sourceInputs?.contextualBaseline ?? district.sourceInputs?.districtBaseline ?? null,
-      fundamentalMargin: district.sourceInputs?.districtFundamentalMargin ?? district.fundamentalMargin ?? null,
-      previousResultComparable: district.previousResultComparable ?? district.previousResult?.comparable ?? null,
-      mapVersion: district.mapVersion || null,
-      redistrictingConfidence: district.redistrictingConfidence || null
-    })),
-    status: house.districts?.length ? "DERIVED_FROM_PRIOR_FORECAST" : "OK_NO_ROWS",
-    warnings: ["This cache is rebuilt from saved forecast output and should not be treated as an independent fundamentals source."]
+  console.log("Updating House fundamentals cache...");
+  const mapFetch = await fetchText(HOUSE_MAP_270_URL, "House map/fundamentals via 270toWin");
+  const houseRows = sourceBackedHouseBaselines(mapFetch.ok ? mapFetch.text : "");
+  const houseStatus = houseRows.length ? "OK_PARSED" : "OK_NO_ROWS";
+  console.log(`Loaded ${houseRows.length} source-backed House district baseline rows.`);
+  write("fundamentals/house-district-baselines-2026.json", fundamentalsCacheEnvelope(houseRows, {
+    asOf: latestDate(new Date().toISOString(), ...houseRows.flatMap((row) => row.sources || [])),
+    status: houseStatus,
+    warnings: [
+      ...(mapFetch.ok ? [] : [`270toWin map baseline fetch returned ${mapFetch.status}; using checked-in certified House baselines only.`]),
+      "Missing values are intentionally null; uncontested or near-uncontested House margins are non-comparable."
+    ]
   }));
 
   write("fundamentals/state-baselines-2026.json", cacheEnvelope({
@@ -225,7 +269,7 @@ function writeFinanceCaches() {
   }));
 }
 
-if (tasks.ratings) writeRatingsCaches();
+if (tasks.ratings) await writeRatingsCaches();
 if (tasks.polling) writePollingCaches();
-if (tasks.fundamentals) writeFundamentalsCaches();
+if (tasks.fundamentals) await writeFundamentalsCaches();
 if (tasks.finance) writeFinanceCaches();

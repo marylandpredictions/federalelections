@@ -2,7 +2,9 @@ import { readFileSync } from "node:fs";
 
 const BENCHMARK_URL = new URL("../data/forecast-benchmarks.json", import.meta.url);
 const TOPLINE_URL = new URL("../data/forecast-topline-benchmarks.json", import.meta.url);
+const HOUSE_RATINGS_CACHE_URL = new URL("../data/cache/ratings/house-2026.json", import.meta.url);
 let cache;
+let houseRatingsCache;
 
 function inputs() {
   if (cache) return cache;
@@ -11,16 +13,55 @@ function inputs() {
   return cache;
 }
 
+function houseRatingInputs() {
+  if (houseRatingsCache) return houseRatingsCache;
+  try { houseRatingsCache = JSON.parse(readFileSync(HOUSE_RATINGS_CACHE_URL, "utf8")); }
+  catch { houseRatingsCache = { rows: [] }; }
+  return houseRatingsCache;
+}
+
+function benchmarkFromHouseCache(raceId) {
+  const row = (houseRatingInputs().rows || []).find((item) => item.raceId === raceId);
+  if (!row || !row.rating) return null;
+  const sources = row.sources && typeof row.sources === "object" ? row.sources : {};
+  return {
+    ...sources,
+    consensusRating: row.rating,
+    cacheMeta: {
+      ratingSourceType: row.ratingSourceType || null,
+      status: row.status || null,
+      sourceCount: row.sourceCount || Object.keys(sources).length,
+      baselineConfidence: row.baselineConfidence || null,
+      asOf: row.asOf || null
+    }
+  };
+}
+
 export function benchmarkFor(raceId) {
-  return inputs().races?.[raceId] || null;
+  const manual = inputs().races?.[raceId] || null;
+  const houseCache = /-(?:AL|\d{2})-2026$/.test(raceId) ? benchmarkFromHouseCache(raceId) : null;
+  if (!houseCache) return manual;
+  if (!manual) return houseCache;
+  return {
+    ...houseCache,
+    ...manual,
+    cacheMeta: {
+      ...(houseCache.cacheMeta || {}),
+      manualBenchmarkConfigured: true
+    }
+  };
 }
 
 export function benchmarkConfiguration() {
   const races = inputs().races || {};
+  const houseRows = houseRatingInputs().rows || [];
   return {
-    status: Object.keys(races).length ? "CONFIGURED" : "EMPTY",
+    status: Object.keys(races).length || houseRows.length ? "CONFIGURED" : "EMPTY",
     updatedAt: inputs().updatedAt || null,
-    configuredRaces: Object.keys(races).length
+    configuredRaces: Object.keys(races).length,
+    cachedHouseRatings: houseRows.length,
+    cachedHouseExternalRatings: houseRows.filter((row) => row.ratingSourceType === "EXTERNAL_RATING").length,
+    cachedHouseInferredSafeRatings: houseRows.filter((row) => row.ratingSourceType === "INFERRED_SAFE_RATING").length
   };
 }
 

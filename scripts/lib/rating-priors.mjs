@@ -29,10 +29,13 @@ const RATING_IMPLIED_MARGINS = {
 const FALLBACK_CONFIG = {
   offices: {
     house: {
-      noPollingWeakFundamentals: [0.4, 0.55],
-      noPollingDecentBaseline: [0.25, 0.4],
-      somePolling: [0.1, 0.25],
-      multiplePolls: [0.05, 0.15],
+      noPollingWeakFundamentals: 0.45,
+      noPollingDerivedFundamentals: 0.5,
+      noPollingStrongFundamentals: 0.3,
+      pollInformed: 0.15,
+      wellPolled: 0.08,
+      inferredSafeRating: 0.15,
+      mapConflict: 0,
       probabilityPullStrength: 1,
       projectedResultPullStrength: 0.65
     },
@@ -152,6 +155,7 @@ export function pollingCount(pollingSummary) {
 }
 
 function rangeMidpoint(range, fallback) {
+  if (Number.isFinite(Number(range))) return Number(range);
   if (!Array.isArray(range) || range.length < 2) return fallback;
   const min = Number(range[0]);
   const max = Number(range[1]);
@@ -159,26 +163,41 @@ function rangeMidpoint(range, fallback) {
   return (min + max) / 2;
 }
 
-function dynamicWeight({ office, pollingSummary, fundamentalsQuality, sourceDegraded, config }) {
+function dynamicWeight({ office, pollingSummary, fundamentalsQuality, sourceDegraded, ratingSourceType, mapConflict, config }) {
   const officeConfig = config.offices?.[office] || config.offices?.house || {};
   const polls = pollingCount(pollingSummary);
-  const weakFundamentals = sourceDegraded || ["WEAK", "LOW", "DEGRADED", "DERIVED_FROM_PRIOR_FORECAST"].includes(String(fundamentalsQuality || "").toUpperCase());
+  const normalizedFundamentals = String(fundamentalsQuality || "").toUpperCase();
+  const derivedFundamentals = normalizedFundamentals === "DERIVED_FROM_PRIOR_FORECAST";
+  const weakFundamentals = sourceDegraded || ["WEAK", "LOW", "DEGRADED", "MISSING", "DERIVED_FROM_PRIOR_FORECAST"].includes(normalizedFundamentals);
+  if (mapConflict || ratingSourceType === "MAP_CONFLICT_RATING_DISABLED") {
+    return { weight: rangeMidpoint(officeConfig.mapConflict, 0), reasonKey: "map-conflict", polls, weakFundamentals, derivedFundamentals };
+  }
+  if (ratingSourceType === "INFERRED_SAFE_RATING") {
+    return { weight: rangeMidpoint(officeConfig.inferredSafeRating, office === "house" ? 0.15 : 0.08), reasonKey: "inferred-safe-rating", polls, weakFundamentals, derivedFundamentals };
+  }
   if (polls >= 3) {
-    return { weight: rangeMidpoint(officeConfig.multiplePolls, office === "house" ? 0.1 : 0.065), reasonKey: "multiple-polls", polls, weakFundamentals };
+    return { weight: rangeMidpoint(officeConfig.wellPolled ?? officeConfig.multiplePolls, office === "house" ? 0.08 : 0.065), reasonKey: "multiple-polls", polls, weakFundamentals, derivedFundamentals };
   }
   if (polls > 0) {
-    return { weight: rangeMidpoint(officeConfig.somePolling, office === "house" ? 0.175 : 0.1), reasonKey: "some-polling", polls, weakFundamentals };
+    return { weight: rangeMidpoint(officeConfig.pollInformed ?? officeConfig.somePolling, office === "house" ? 0.15 : 0.1), reasonKey: "some-polling", polls, weakFundamentals, derivedFundamentals };
+  }
+  if (derivedFundamentals) {
+    return { weight: rangeMidpoint(officeConfig.noPollingDerivedFundamentals ?? officeConfig.noPollingWeakFundamentals, office === "house" ? 0.5 : 0.275), reasonKey: "no-polling-derived-fundamentals", polls, weakFundamentals, derivedFundamentals };
   }
   if (weakFundamentals) {
-    return { weight: rangeMidpoint(officeConfig.noPollingWeakFundamentals, office === "house" ? 0.475 : 0.275), reasonKey: "no-polling-weak-fundamentals", polls, weakFundamentals };
+    return { weight: rangeMidpoint(officeConfig.noPollingWeakFundamentals, office === "house" ? 0.45 : 0.275), reasonKey: "no-polling-weak-fundamentals", polls, weakFundamentals, derivedFundamentals };
   }
-  return { weight: rangeMidpoint(officeConfig.noPollingDecentBaseline, office === "house" ? 0.325 : 0.15), reasonKey: "no-polling-decent-baseline", polls, weakFundamentals };
+  return { weight: rangeMidpoint(officeConfig.noPollingStrongFundamentals ?? officeConfig.noPollingDecentBaseline, office === "house" ? 0.3 : 0.15), reasonKey: "no-polling-strong-fundamentals", polls, weakFundamentals, derivedFundamentals };
 }
 
 function ratingReason({ office, reasonKey, polls, weakFundamentals }) {
   if (reasonKey === "multiple-polls") return `${office} race has multiple usable polls, so expert ratings are retained as a light stabilizer.`;
   if (reasonKey === "some-polling") return `${office} race has some usable polling, so expert ratings receive a reduced soft-prior weight.`;
+  if (reasonKey === "inferred-safe-rating") return `${office} race is absent from competitive public ratings tables and has a strong source-backed baseline, so an inferred safe rating is used as a light stabilizer.`;
+  if (reasonKey === "map-conflict") return `${office} race has conflicting map assumptions, so rating priors are disabled unless a scenario explicitly matches the map.`;
+  if (reasonKey === "no-polling-derived-fundamentals") return `${office} race has no usable race polling and derived or circular fundamentals, so expert ratings materially constrain the model.`;
   if (reasonKey === "no-polling-weak-fundamentals") return `${office} race has no usable race polling and weak or derived fundamentals, so expert ratings materially constrain the model.`;
+  if (reasonKey === "no-polling-strong-fundamentals") return `${office} race has no usable race polling but usable structural baselines, so expert ratings provide a moderate soft prior.`;
   if (reasonKey === "no-polling-decent-baseline") return `${office} race has no usable race polling but usable structural baselines, so expert ratings provide a moderate soft prior.`;
   return `${office} race rating prior selected from ${polls} usable polls and ${weakFundamentals ? "weak" : "usable"} fundamentals.`;
 }
@@ -195,6 +214,7 @@ export function buildRatingPrior({
   sourceDegraded = false,
   mapConflict = false,
   scenarioMatched = false,
+  ratingSourceType = benchmark?.cacheMeta?.ratingSourceType || null,
   config = loadRatingWeightConfig()
 }) {
   const consensus = ratingConsensusFromBenchmark(benchmark, fallbackRating, fallbackSource);
@@ -209,6 +229,8 @@ export function buildRatingPrior({
       impliedMargin: null,
       sources: [],
       usedAs: "NOT_USED",
+      ratingSourceType: ratingSourceType || "RATING_UNAVAILABLE",
+      guardrailEligible: false,
       ratingPull: 0,
       probabilityPullStrength: officeConfig.probabilityPullStrength ?? 1,
       projectedResultPullStrength: officeConfig.projectedResultPullStrength ?? 0.6,
@@ -227,6 +249,8 @@ export function buildRatingPrior({
       sources: consensus.sources,
       sourceRatings: consensus.sourceRatings,
       usedAs: "COMPARISON_ONLY_MAP_CONFLICT",
+      ratingSourceType: "MAP_CONFLICT_RATING_DISABLED",
+      guardrailEligible: false,
       ratingPull: 0,
       probabilityPullStrength: officeConfig.probabilityPullStrength ?? 1,
       projectedResultPullStrength: officeConfig.projectedResultPullStrength ?? 0.6,
@@ -239,7 +263,8 @@ export function buildRatingPrior({
     };
   }
 
-  const dynamic = dynamicWeight({ office, pollingSummary, fundamentalsQuality, sourceDegraded, config });
+  const normalizedRatingSourceType = ratingSourceType || (fallbackSource && /inferred/i.test(fallbackSource) ? "INFERRED_SAFE_RATING" : "EXTERNAL_RATING");
+  const dynamic = dynamicWeight({ office, pollingSummary, fundamentalsQuality, sourceDegraded, ratingSourceType: normalizedRatingSourceType, mapConflict, config });
   let weight = dynamic.weight;
   if (Number.isFinite(Number(override.weight))) weight = Number(override.weight);
   if (Number.isFinite(Number(override.minWeight))) weight = Math.max(weight, Number(override.minWeight));
@@ -256,6 +281,10 @@ export function buildRatingPrior({
   } else if (Number.isFinite(divergence) && divergence >= 5) {
     warnings.push({ severity: "warning", type: "RATING_PRIOR_DIVERGENCE", message: `Raw model margin differs from expert-rating implied margin by ${divergence.toFixed(1)} points.` });
   }
+  const guardrailEligible = normalizedRatingSourceType === "EXTERNAL_RATING"
+    && dynamic.polls === 0
+    && dynamic.weakFundamentals
+    && !mapConflict;
 
   return {
     enabled: weight > 0,
@@ -265,7 +294,9 @@ export function buildRatingPrior({
     impliedMargin: Number(implied.toFixed(2)),
     sources: consensus.sources,
     sourceRatings: consensus.sourceRatings,
-    usedAs: weight > 0 ? "SOFT_PRIOR" : "COMPARISON_ONLY",
+    usedAs: weight > 0 ? (guardrailEligible ? "SOFT_PRIOR_AND_GUARDRAIL" : "SOFT_PRIOR") : "COMPARISON_ONLY",
+    ratingSourceType: normalizedRatingSourceType,
+    guardrailEligible,
     rawModelMargin: Number.isFinite(raw) ? Number(raw.toFixed(2)) : null,
     ratingPull: Number(ratingPull.toFixed(2)),
     probabilityPullStrength: officeConfig.probabilityPullStrength ?? 1,
@@ -281,4 +312,41 @@ export function applyRatingPrior(margin, prior, strength = 1) {
   if (!Number.isFinite(value) || !prior?.enabled) return value;
   const pull = Number(prior.ratingPull) * Number(strength || 0);
   return value + (Number.isFinite(pull) ? pull : 0);
+}
+
+function guardrailLimit(value, prior) {
+  const rating = normalizeRating(prior?.consensusRating);
+  if (!rating) return { margin: value, triggered: false, reason: "NO_RATING" };
+  if (rating.normalized === "Toss-up") {
+    if (value > 2.99) return { margin: 2.99, triggered: true, reason: "TOSSUP_MAX_TILT_D" };
+    if (value < -2.99) return { margin: -2.99, triggered: true, reason: "TOSSUP_MAX_TILT_R" };
+    return { margin: value, triggered: false, reason: "WITHIN_TOSSUP_GUARDRAIL" };
+  }
+  if (rating.normalized === "Lean D" && value <= -3) return { margin: -1.5, triggered: true, reason: "LEAN_D_MAX_TILT_R" };
+  if (rating.normalized === "Lean R" && value >= 3) return { margin: 1.5, triggered: true, reason: "LEAN_R_MAX_TILT_D" };
+  if (rating.normalized === "Likely D" && value < 3) return { margin: 3, triggered: true, reason: "LIKELY_D_CANNOT_DROP_TO_TOSSUP_WITH_LOW_INPUTS" };
+  if (rating.normalized === "Likely R" && value > -3) return { margin: -3, triggered: true, reason: "LIKELY_R_CANNOT_DROP_TO_TOSSUP_WITH_LOW_INPUTS" };
+  if (rating.normalized === "Safe D" && value < 7) return { margin: 7, triggered: true, reason: "SAFE_D_FLOOR_WITH_LOW_INPUTS" };
+  if (rating.normalized === "Safe R" && value > -7) return { margin: -7, triggered: true, reason: "SAFE_R_FLOOR_WITH_LOW_INPUTS" };
+  return { margin: value, triggered: false, reason: "WITHIN_RATING_GUARDRAIL" };
+}
+
+export function applyRatingGuardrail(margin, prior) {
+  const value = Number(margin);
+  if (!Number.isFinite(value)) {
+    return { margin: value, triggered: false, reason: "INVALID_MARGIN" };
+  }
+  if (!prior?.enabled || !prior.guardrailEligible) {
+    return { margin: value, triggered: false, reason: prior?.enabled ? "GUARDRAIL_NOT_ELIGIBLE" : "RATING_PRIOR_DISABLED" };
+  }
+  const limited = guardrailLimit(value, prior);
+  return {
+    margin: limited.margin,
+    triggered: limited.triggered,
+    reason: limited.triggered ? `NO_POLLS_LOW_CONFIDENCE_FUNDAMENTALS_BENCHMARK_EXISTS:${limited.reason}` : limited.reason,
+    rawMargin: Number(value.toFixed(2)),
+    ratingImpliedMargin: Number.isFinite(Number(prior.impliedMargin)) ? Number(Number(prior.impliedMargin).toFixed(2)) : null,
+    guardrailedMargin: Number(limited.margin.toFixed(2)),
+    benchmark: prior.consensusRating || null
+  };
 }

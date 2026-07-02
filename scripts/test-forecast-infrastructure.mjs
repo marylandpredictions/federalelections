@@ -19,11 +19,17 @@ import {
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { parseUsPollingDataGeneric } from "./lib/generic-ballot.mjs";
 import {
+  applyRatingGuardrail,
   applyRatingPrior,
   buildRatingPrior,
   normalizeRating,
   ratingToMargin
 } from "./lib/rating-priors.mjs";
+import {
+  fundamentalsCacheEnvelope,
+  mergedHouseRatingsCache,
+  parseCookHouseRatings
+} from "./lib/house-input-caches.mjs";
 
 function response(status, ok = status >= 200 && status < 300) {
   return { status, ok };
@@ -151,7 +157,73 @@ const formulaPrior = buildRatingPrior({
   rawModelMargin: -4,
   fundamentalsQuality: "WEAK"
 });
-assert.equal(Number(formulaPrior.ratingPull.toFixed(2)), 4.51);
-assert.equal(Number(applyRatingPrior(-4, formulaPrior, 1).toFixed(2)), 0.51);
+assert.equal(Number(formulaPrior.ratingPull.toFixed(2)), 4.28);
+assert.equal(Number(applyRatingPrior(-4, formulaPrior, 1).toFixed(2)), 0.28);
+
+const cookRows = parseCookHouseRatings(`
+  <h3>Leans Dem (1)</h3>
+  <div>TX-28</div>
+  <h3>Toss-up (2)</h3>
+  <div>AZ-01</div>
+  <div>IA-03</div>
+`);
+assert.equal(cookRows.length, 3);
+assert.equal(cookRows.find((row) => row.raceId === "TX-28-2026")?.rating, "Lean D");
+assert.equal(cookRows.find((row) => row.raceId === "IA-03-2026")?.rating, "Toss-up");
+assert.equal(parseCookHouseRatings("<html>No House table here</html>").length, 0);
+
+const mergedHouse = mergedHouseRatingsCache({
+  cookRows,
+  baselines: [
+    { district: "WY-AL", presidentialMargin2024: -46, houseMargin2024: -44, confidence: "MEDIUM", source: "SOURCE_BACKED", independent: true },
+    { district: "TX-28", presidentialMargin2024: 7, houseMargin2024: 9, confidence: "MEDIUM", source: "SOURCE_BACKED", independent: true }
+  ],
+  asOf: "2026-07-02"
+});
+assert.equal(mergedHouse.rows.find((row) => row.raceId === "TX-28-2026")?.ratingSourceType, "EXTERNAL_RATING");
+assert.equal(mergedHouse.rows.find((row) => row.raceId === "WY-AL-2026")?.ratingSourceType, "INFERRED_SAFE_RATING");
+
+const sourceBackedEnvelope = fundamentalsCacheEnvelope([
+  { district: "WY-AL", source: "SOURCE_BACKED", independent: true, presidentialMargin2024: -46, houseMargin2024: -44, confidence: "MEDIUM" }
+], { asOf: "2026-07-02" });
+assert.equal(sourceBackedEnvelope.rows[0].source, "SOURCE_BACKED");
+assert.equal(sourceBackedEnvelope.meta.independentRows, 1);
+
+const leanDGuardrailPrior = buildRatingPrior({
+  office: "house",
+  raceId: "UNIT-LEAN-D-2026",
+  benchmark: { cook: { rating: "Lean D" } },
+  rawModelMargin: -20,
+  fundamentalsQuality: "LOW",
+  pollingSummary: { pollCount: 0 },
+  ratingSourceType: "EXTERNAL_RATING"
+});
+const leanDGuarded = applyRatingGuardrail(applyRatingPrior(-20, leanDGuardrailPrior, 1), leanDGuardrailPrior);
+assert.equal(leanDGuarded.triggered, true);
+assert.ok(leanDGuarded.margin > -3);
+
+const tossupGuardrailPrior = buildRatingPrior({
+  office: "house",
+  raceId: "UNIT-TOSSUP-2026",
+  benchmark: { cook: { rating: "Toss-up" } },
+  rawModelMargin: 9,
+  fundamentalsQuality: "LOW",
+  pollingSummary: { pollCount: 0 },
+  ratingSourceType: "EXTERNAL_RATING"
+});
+const tossupGuarded = applyRatingGuardrail(applyRatingPrior(9, tossupGuardrailPrior, 1), tossupGuardrailPrior);
+assert.equal(tossupGuarded.triggered, true);
+assert.ok(tossupGuarded.margin <= 2.99);
+
+const inferredSafePrior = buildRatingPrior({
+  office: "house",
+  raceId: "WY-AL-2026",
+  benchmark: { inferredSafeRating: { rating: "Safe R" } },
+  rawModelMargin: -30,
+  fundamentalsQuality: "MEDIUM",
+  pollingSummary: { pollCount: 0 },
+  ratingSourceType: "INFERRED_SAFE_RATING"
+});
+assert.ok(inferredSafePrior.weight <= 0.15, "Inferred safe ratings should remain lighter than external competitive-race ratings.");
 
 console.log("Forecast infrastructure tests passed.");

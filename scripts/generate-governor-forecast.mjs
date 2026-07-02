@@ -1471,7 +1471,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
     finance: financeUsed ? 7 : 2,
     ratings: ratingsPrior.inputWeight
   });
-  const benchmarkComparison = governorBenchmarkComparison(race, projectedMargin, demProbability, directGovernorPoll, sourceData.sourceHealth);
+  const benchmarkComparison = governorBenchmarkComparison(race, projectedMargin, demProbability, pollingSummary, sourceData.sourceHealth);
   return {
     ...race,
     displayName: `${STATE_NAMES[race.state]} Governor`,
@@ -1688,10 +1688,11 @@ function governorMarginDecomposition(race, fundamentals, nationalShift, candidat
   };
 }
 
-function governorBenchmarkComparison(race, margin, demProbability, poll, sourceHealth) {
+function governorBenchmarkComparison(race, margin, demProbability, pollingSummary = {}, sourceHealth) {
   const manual = benchmarkFor(`${race.state}-GOV-2026`);
   const warnings = [];
-  if (!poll?.polls && Math.abs(margin) < 6) warnings.push("competitive-race-no-usable-polls");
+  const usablePolls = Number(pollingSummary.usablePollCount || 0);
+  if (!usablePolls && Math.abs(margin) < 6) warnings.push("competitive-race-no-usable-polls");
   if (sourceHealth?.degraded && Math.abs(margin) < 6) warnings.push("source-failure-affects-competitive-race");
   warnings.push(...benchmarkWarnings(manual, margin, demProbability));
   return {
@@ -1707,7 +1708,7 @@ function governorBenchmarkComparison(race, margin, demProbability, poll, sourceH
       economist: manual?.economist || null,
       market: manual?.market || null
     },
-    usablePolls: poll?.polls || 0,
+    usablePolls,
     sourceHealth,
     warnings
   };
