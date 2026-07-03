@@ -789,7 +789,7 @@ function normalizeRacePolls(polls = []) {
     const poll = Array.isArray(raw)
       ? { days: raw[0], margin: raw[1], source: "Legacy model input", pollster: "legacy model input", legacy: true }
       : { ...raw };
-    if (!Number.isFinite(poll.margin)) continue;
+    if (!Number.isFinite(poll.margin) || Math.abs(poll.margin) > 50) continue;
     const dateKey = poll.endDate || `day-${poll.days ?? "unknown"}`;
     const key = `${normalizedPollsterName(poll.pollster)}|${dateKey}`;
     const existing = deduped.get(key);
@@ -2995,6 +2995,9 @@ async function writeForecast() {
       civicApi: sourceData.civic,
       wikipediaPolling: wikipediaPollingSummary(sourceData.wikipediaPolling),
       pollingReferences: sourceData.pollingReferences
+    },
+    pollingValidation: {
+      wikipediaPolling: sourceData.wikipediaPolling?.pollingValidation || null
     },
     modelInputs: {
       candidateDemographicPullModel: true,

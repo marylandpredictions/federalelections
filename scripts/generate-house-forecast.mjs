@@ -809,7 +809,7 @@ function housePollPriority(poll) {
 function dedupeHousePolls(polls = []) {
   const rows = new Map();
   for (const poll of polls) {
-    if (!poll || !Number.isFinite(poll.margin)) continue;
+    if (!poll || !Number.isFinite(poll.margin) || Math.abs(poll.margin) > 50) continue;
     const key = `${pollsterKey(poll.pollster)}|${poll.endDate || poll.days || "unknown"}`;
     const existing = rows.get(key);
     if (!existing || housePollPriority(poll) > housePollPriority(existing)) rows.set(key, poll);
@@ -1037,7 +1037,12 @@ async function fetchHouseSources() {
     ok: true,
     health: wikipediaPolling.status || "MANUAL_NOT_CONFIGURED",
     status: wikipediaPolling.status || "MANUAL_NOT_CONFIGURED",
+    rawRows: wikipediaPolling.rawRows?.length || 0,
+    usableRows: wikipediaPolling.usableRows?.length || 0,
+    rejectedRows: wikipediaPolling.rejectedRows?.length || 0,
     rows: wikipediaPolling.rows?.length || 0,
+    usedInModel: wikipediaPolling.usedInModel === true,
+    pollingValidation: wikipediaPolling.pollingValidation || null,
     averages: wikipediaPolling.averages?.length || 0,
     warnings: wikipediaPolling.warnings || [],
     url: "data/cache/polls/wikipedia-house-2026.json"
@@ -2330,6 +2335,9 @@ async function writeHouseForecast() {
       realClearHousePollsReachable: sourceData.realClearHousePollsReachable,
       censusDistrictBoundaryPageReachable: sourceData.censusDistrictBoundaryPageReachable,
       redistricting: redistrictingSummary(districts)
+    },
+    pollingValidation: {
+      wikipediaPolling: sourceData.wikipediaPolling?.pollingValidation || null
     },
     ratingSummary: ratingSummary(districts),
     houseControlDecomposition: houseControlDecomposition(model.districts),

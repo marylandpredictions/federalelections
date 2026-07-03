@@ -4,6 +4,7 @@ import {
   parseWikipediaPollingPage,
   wikipediaPageUrl
 } from "./lib/wikipedia-polls.mjs";
+import { sanitizePollingCache } from "./lib/poll-validation.mjs";
 
 const CACHE_DIR = new URL("../data/cache/polls/", import.meta.url);
 const YEAR = 2026;
@@ -85,19 +86,20 @@ async function fetchPage(page) {
 }
 
 function writeOfficeCache(office, pageResults) {
-  const rows = dedupeWikipediaPollRows(pageResults.flatMap((page) => page.rows || []));
+  const rawRows = dedupeWikipediaPollRows(pageResults.flatMap((page) => page.rows || []));
   const averages = dedupeWikipediaPollRows(pageResults.flatMap((page) => page.averages || []));
   const warnings = pageResults.flatMap((page) => [
     ...(page.warning ? [`${page.title}: ${page.warning}`] : []),
     ...(page.warnings || []).map((warning) => `${page.title}: ${warning}`)
   ]);
-  const payload = {
+  const basePayload = {
     source: "Wikipedia election polling tables",
     office,
     cycle: YEAR,
-    status: rows.length ? "OK_PARSED" : pageResults.some((page) => page.status === "FETCH_FAILED") ? "PARTIAL_FETCH_FAILURE" : "OK_NO_ROWS",
+    status: rawRows.length ? "EXPERIMENTAL_DO_NOT_USE_IN_FORECAST" : pageResults.some((page) => page.status === "FETCH_FAILED") ? "PARTIAL_FETCH_FAILURE" : "OK_NO_ROWS",
     generatedAt: new Date().toISOString(),
-    rows,
+    rawRows,
+    rows: rawRows,
     averages,
     warnings,
     meta: {
@@ -106,10 +108,20 @@ function writeOfficeCache(office, pageResults) {
       pagesWithNoRows: pageResults.filter((page) => page.status === "OK_NO_ROWS").length,
       failedPages: pageResults.filter((page) => page.status === "FETCH_FAILED" || /^HTTP_/.test(page.status)).length,
       duplicatesRemoved: pageResults.reduce((sum, page) => sum + Number(page.dedupe?.duplicatesRemoved || 0), 0),
-      note: "Polling-average rows are stored separately and are not counted as raw polls by the model."
+      note: "Raw rows are stored for inspection. The Wikipedia parser is quarantined and does not feed the model."
     },
     pages: pageResults.map(({ title, state, raceId, url, status }) => ({ title, state, raceId, url, status }))
   };
+  const payload = sanitizePollingCache(basePayload, {
+    office,
+    source: "Wikipedia election polling tables",
+    forceQuarantine: true,
+    quarantineReason: "WIKIPEDIA_EXPERIMENTAL_DO_NOT_USE_IN_FORECAST"
+  });
+  payload.status = rawRows.length ? "QUARANTINED" : payload.status;
+  payload.rows = [];
+  payload.usableRows = [];
+  payload.usedInModel = false;
   mkdirSync(CACHE_DIR, { recursive: true });
   writeFileSync(new URL(`wikipedia-${office}-2026.json`, CACHE_DIR), `${JSON.stringify(payload, null, 2)}\n`);
 }

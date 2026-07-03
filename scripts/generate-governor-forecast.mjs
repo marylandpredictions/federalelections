@@ -768,7 +768,8 @@ async function fetchAllSources() {
 }
 
 function mergeSupplementalGovernorPolls(governorPolling, polls, sourceLabel) {
-  for (const [state, rows] of Object.entries(Object.groupBy(polls || [], (poll) => poll.state))) {
+  const usablePolls = (polls || []).filter((poll) => Number.isFinite(poll?.margin) && Math.abs(poll.margin) <= 50);
+  for (const [state, rows] of Object.entries(Object.groupBy(usablePolls, (poll) => poll.state))) {
     if (!STATE_NAMES[state] || !rows?.length) continue;
     const current = governorPolling.governorPolls[state];
     const currentPolls = current?.polls || 0;
@@ -1897,6 +1898,9 @@ async function buildForecast() {
       governorPolling: sourceData.governorPolling || null,
       wikipediaPolling: wikipediaPollingSummary(sourceData.wikipediaPolling),
       financeNote: "Gubernatorial finance uses local normalized records when available. Online state portal fetching is disabled by default."
+    },
+    pollingValidation: {
+      wikipediaPolling: sourceData.wikipediaPolling?.pollingValidation || null
     },
     modelWarnings: [
       ...(lowRacePollCoverage ? [{ severity: "warning", type: "low-race-poll-coverage", message: "Governor forecast is fundamentals-driven: usable live/manual race polling is available in one or fewer races." }] : []),

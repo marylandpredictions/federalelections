@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
+import { sanitizePollingCache } from "./poll-validation.mjs";
 
 const CACHE_ROOT = new URL("../../data/cache/polls/", import.meta.url);
 const MONTHS = new Map([
@@ -165,6 +166,7 @@ export function parseWikipediaPollingPage(html, { office, state, raceId, title, 
         sampleSize,
         population: /lv|likely/i.test(sampleText) ? "LV" : /rv|registered/i.test(sampleText) ? "RV" : null,
         margin: Number(margin.toFixed(2)),
+        tableType: rowType(cells) === "POLLING_AVERAGE" ? "POLLING_AVERAGE" : "WIKIPEDIA_UNVALIDATED_TABLE_ROW",
         candidates,
         rowType: rowType(cells),
         wikipedia: true
@@ -201,24 +203,54 @@ export function dedupeWikipediaPollRows(rows = []) {
 export function readWikipediaPollingCache(office) {
   const url = new URL(`wikipedia-${office}-2026.json`, CACHE_ROOT);
   try {
-    if (!existsSync(url)) return { status: "MISSING", rows: [], averages: [] };
-    return JSON.parse(readFileSync(url, "utf8"));
+    if (!existsSync(url)) {
+      return {
+        status: "MISSING",
+        rows: [],
+        rawRows: [],
+        usableRows: [],
+        rejectedRows: [],
+        averages: [],
+        usedInModel: false
+      };
+    }
+    const cache = JSON.parse(readFileSync(url, "utf8"));
+    return sanitizePollingCache(cache, {
+      office,
+      source: "Wikipedia election polling tables",
+      forceQuarantine: true,
+      quarantineReason: "WIKIPEDIA_EXPERIMENTAL_DO_NOT_USE_IN_FORECAST"
+    });
   } catch (error) {
-    return { status: "PARSE_FAILED", rows: [], averages: [], warnings: [error.message] };
+    return {
+      status: "PARSE_FAILED",
+      rows: [],
+      rawRows: [],
+      usableRows: [],
+      rejectedRows: [],
+      averages: [],
+      usedInModel: false,
+      warnings: [error.message]
+    };
   }
 }
 
 export function wikipediaPollRowsByState(cache) {
-  return Object.groupBy((cache?.rows || []).filter((row) => row.rowType !== "POLLING_AVERAGE"), (row) => row.state);
+  if (cache?.usedInModel !== true) return {};
+  return Object.groupBy((cache?.usableRows || []).filter((row) => row.rowType !== "POLLING_AVERAGE"), (row) => row.state);
 }
 
 export function wikipediaPollingSummary(cache) {
   return {
     status: cache?.status || "MISSING",
-    rawPollRows: cache?.rows?.length || 0,
+    rawPollRows: cache?.rawRows?.length || cache?.rows?.length || 0,
+    usablePollRows: cache?.usableRows?.length || 0,
+    rejectedPollRows: cache?.rejectedRows?.length || 0,
     pollingAverageRows: cache?.averages?.length || 0,
+    usedInModel: cache?.usedInModel === true,
+    pollingValidation: cache?.pollingValidation || null,
     pages: cache?.meta?.pages || 0,
     parseWarnings: cache?.warnings?.length || 0,
-    note: "Wikipedia rows are supplemental secondary race-poll inputs; polling-average rows are stored separately and not counted as raw polls."
+    note: "Wikipedia rows are cached for inspection only. They are quarantined and not counted as model polling inputs until the parser is explicitly promoted."
   };
 }

@@ -18,6 +18,7 @@ import {
 } from "./forecast-cache.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { parseUsPollingDataGeneric } from "./lib/generic-ballot.mjs";
+import { sanitizePollingCache, validatePollRow } from "./lib/poll-validation.mjs";
 import {
   applyRatingGuardrail,
   applyRatingPrior,
@@ -247,5 +248,50 @@ assert.equal(wikiPollParse.rows.length, 1);
 assert.equal(wikiPollParse.averages.length, 1);
 assert.equal(wikiPollParse.rows[0].pollster, "Example Pollster");
 assert.equal(wikiPollParse.rows[0].population, "LV");
+
+const impossiblePoll = validatePollRow({
+  office: "governor",
+  state: "FL",
+  tableType: "WIKIPEDIA_UNVALIDATED_TABLE_ROW",
+  endDate: "2026-06-01",
+  source: "Wikipedia election polling tables",
+  pollster: "Candidate fundraising result",
+  margin: 324,
+  candidates: [
+    { name: "Democrat", party: "D", pct: 324 },
+    { name: "Republican", party: "R", pct: 48 }
+  ]
+}, { office: "governor", source: "Wikipedia election polling tables", requireStartDate: true });
+assert.equal(impossiblePoll.validationStatus, "REJECTED");
+assert.ok(impossiblePoll.rejectionReasons.includes("CANDIDATE_PERCENT_OUT_OF_RANGE"));
+assert.ok(impossiblePoll.rejectionReasons.includes("IMPOSSIBLE_POLL_MARGIN"));
+
+const quarantinedWiki = sanitizePollingCache({
+  source: "Wikipedia election polling tables",
+  office: "senate",
+  rows: [{
+    office: "senate",
+    state: "NC",
+    tableType: "INDIVIDUAL_GENERAL_ELECTION_POLL",
+    startDate: "2026-04-01",
+    endDate: "2026-04-03",
+    pollster: "Valid Pollster",
+    margin: 4,
+    candidates: [
+      { name: "Democrat", party: "D", pct: 48 },
+      { name: "Republican", party: "R", pct: 44 }
+    ]
+  }]
+}, {
+  office: "senate",
+  source: "Wikipedia election polling tables",
+  forceQuarantine: true,
+  quarantineReason: "WIKIPEDIA_EXPERIMENTAL_DO_NOT_USE_IN_FORECAST"
+});
+assert.equal(quarantinedWiki.status, "QUARANTINED");
+assert.equal(quarantinedWiki.rows.length, 0);
+assert.equal(quarantinedWiki.usableRows.length, 0);
+assert.equal(quarantinedWiki.rawRows.length, 1);
+assert.equal(quarantinedWiki.usedInModel, false);
 
 console.log("Forecast infrastructure tests passed.");
