@@ -1166,6 +1166,73 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+function signedMarginLabel(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return null;
+  if (Math.abs(number) < 0.05) return "Even";
+  return `${number > 0 ? "D" : "R"}+${Math.abs(number).toFixed(1)}`;
+}
+
+function governorMarginFields(projectedMargin, probabilityMargin, ratingMargin) {
+  return {
+    projectedResultMargin: {
+      value: Number.isFinite(Number(projectedMargin)) ? Number(Number(projectedMargin).toFixed(2)) : null,
+      display: signedMarginLabel(projectedMargin),
+      meaning: "Expected election result margin."
+    },
+    probabilityMargin: {
+      value: Number.isFinite(Number(probabilityMargin)) ? Number(Number(probabilityMargin).toFixed(2)) : null,
+      display: signedMarginLabel(probabilityMargin),
+      meaning: "Uncertainty-adjusted margin used for win-probability conversion."
+    },
+    ratingMargin: {
+      value: Number.isFinite(Number(ratingMargin)) ? Number(Number(ratingMargin).toFixed(2)) : null,
+      display: signedMarginLabel(ratingMargin),
+      meaning: "External-rating implied margin, when a ratings prior exists."
+    }
+  };
+}
+
+function governorPollingMergeStatus(pollingSummary, governorPoll) {
+  const parsedRows = Number(governorPoll?.pollEntries?.length || pollingSummary.totalPollInputsUsed || 0);
+  const validatedRows = Number(pollingSummary.totalPollInputsUsed || 0);
+  const mergedRows = Number(pollingSummary.usablePollCount || 0);
+  let mergeStatus = "NO_PARSED_POLLS";
+  if (mergedRows > 0) mergeStatus = "MERGED";
+  else if (parsedRows > 0 && validatedRows <= 0) mergeStatus = "PARSED_NOT_VALIDATED";
+  else if (parsedRows > 0) mergeStatus = "PARSED_NOT_MERGED";
+  return {
+    parsedPollRows: parsedRows,
+    validatedPollRows: validatedRows,
+    mergedPollRows: mergedRows,
+    mergeStatus,
+    pollingStatus: pollingSummary.pollingStatus || null,
+    reducedWeight: Boolean(governorPoll?.reducedWeight),
+    weightScale: governorPoll?.weightScale || 1
+  };
+}
+
+function governorPollingWeightDiagnostic(pollingSummary, inputBalance, pollMargin, marginDecomposition) {
+  const usablePollCount = Number(pollingSummary.usablePollCount || 0);
+  const pollingInputShare = Number(inputBalance?.shares?.polling ?? inputBalance?.polling);
+  const pollingAdjustment = Number(marginDecomposition?.pollingAdjustment ?? marginDecomposition?.pollingEffect);
+  const flags = [];
+  if (usablePollCount >= 2 && (!Number.isFinite(pollingInputShare) || pollingInputShare < 0.08)) {
+    flags.push("POLLING_WEIGHT_TOO_LOW");
+  }
+  if (!usablePollCount && Number.isFinite(pollingAdjustment) && Math.abs(pollingAdjustment) >= 0.5) {
+    flags.push("POLLING_ADJUSTMENT_WITHOUT_USABLE_POLLS");
+  }
+  return {
+    usablePollCount,
+    pollAverageMargin: Number.isFinite(Number(pollMargin)) ? Number(Number(pollMargin).toFixed(2)) : null,
+    pollingAdjustment: Number.isFinite(pollingAdjustment) ? Number(pollingAdjustment.toFixed(2)) : null,
+    pollingInputShare: Number.isFinite(pollingInputShare) ? Number(pollingInputShare.toFixed(3)) : null,
+    pollingStatus: pollingSummary.pollingStatus || null,
+    flags
+  };
+}
+
 function localDateKey(date = new Date()) {
   if (/^\d{4}-\d{2}-\d{2}$/.test(process.env.MODEL_DATE || "")) return process.env.MODEL_DATE;
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -1479,6 +1546,10 @@ function buildRace(baseRace, nationalShift, sourceData) {
     ratings: ratingsPrior.inputWeight
   });
   const benchmarkComparison = governorBenchmarkComparison(race, projectedMargin, demProbability, pollingSummary, sourceData.sourceHealth);
+  const marginDecomposition = governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, ratingsPrior.ratingPull * ratingsPrior.projectedResultPullStrength, guardrail, projectedMargin, financeUsed);
+  const pollingMergeStatus = governorPollingMergeStatus(pollingSummary, governorPoll);
+  const pollingWeightDiagnostic = governorPollingWeightDiagnostic(pollingSummary, inputBalance, pollMargin, marginDecomposition);
+  const marginDiagnostics = governorMarginFields(projectedMargin, margin, ratingsPrior.impliedMargin ?? projectedMargin);
   return {
     ...race,
     displayName: `${STATE_NAMES[race.state]} Governor`,
@@ -1490,6 +1561,9 @@ function buildRace(baseRace, nationalShift, sourceData) {
     preRatingProbabilityMargin: Number(rawProbabilityMargin.toFixed(2)),
     preRatingProjectedMargin: Number(rawProjectedMargin.toFixed(2)),
     ratingsPrior,
+    margins: marginDiagnostics,
+    pollingMergeStatus,
+    pollingWeightDiagnostic,
     ...marginSplit(projectedMargin, margin, ratingsPrior.impliedMargin ?? projectedMargin),
     inputBalance,
     pollCount: pollingSummary.usablePollCount,
@@ -1557,7 +1631,7 @@ function buildRace(baseRace, nationalShift, sourceData) {
       unavailableSources: sourceData.sourceHealth?.unavailableSources || []
     },
     matchupStatus: governorMatchupStatus(race),
-    marginDecomposition: governorMarginDecomposition(race, fundamentals, nationalShift, candidateAndLocal, candidateHistory, financeSignal, pollMargin, ratingsPrior.ratingPull * ratingsPrior.projectedResultPullStrength, guardrail, projectedMargin, financeUsed),
+    marginDecomposition,
     benchmarkComparison,
     dataQualityWarnings: [...benchmarkComparison.warnings, ...(ratingsPrior.warnings || []), largeShiftWarning?.message, pollingStatusWarning(pollingSummary)].filter(Boolean),
     modelRating,

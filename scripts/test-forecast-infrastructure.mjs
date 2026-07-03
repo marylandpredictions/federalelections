@@ -18,7 +18,13 @@ import {
 } from "./forecast-cache.mjs";
 import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
 import { parseUsPollingDataGeneric } from "./lib/generic-ballot.mjs";
+import {
+  auditHouseBaselineDistrict,
+  buildHouseBaselineAudit,
+  marginConsistencyCheck
+} from "./lib/house-baseline-audit.mjs";
 import { sanitizePollingCache, validatePollRow } from "./lib/poll-validation.mjs";
+import { raceReviewFlagsForRace } from "./lib/race-review-diagnostics.mjs";
 import {
   applyRatingGuardrail,
   applyRatingPrior,
@@ -235,6 +241,78 @@ const inferredSafePrior = buildRatingPrior({
   ratingSourceType: "INFERRED_SAFE_RATING"
 });
 assert.ok(inferredSafePrior.weight <= 0.15, "Inferred safe ratings should remain lighter than external competitive-race ratings.");
+
+const ca48AuditInput = {
+  id: "CA-48",
+  baselineAnchor: {
+    type: "HOUSE_2024",
+    margin: -18.6,
+    source: "source-backed district baseline",
+    confidence: "MEDIUM"
+  },
+  ratingsPrior: { consensusRating: "Lean D", impliedMargin: 5.5 },
+  rawModelMargin: -12,
+  projectedMargin: -2,
+  probabilityMargin: -1,
+  usablePollCount: 0,
+  nationalEnvironment: { districtElasticity: 0.65, nationalEnvironmentEffect: 4.1 }
+};
+const ca48Audit = auditHouseBaselineDistrict(ca48AuditInput);
+assert.ok(ca48Audit.auditFlags.includes("BASELINE_RATING_CONFLICT"));
+assert.ok(ca48Audit.auditFlags.includes("POSSIBLE_STALE_BOUNDARY_OR_OLD_DISTRICT_RESULT"));
+assert.ok(ca48Audit.auditFlags.includes("RATING_PRIOR_TOO_WEAK"));
+assert.equal(ca48Audit.severity, "high");
+
+const al02AuditInput = {
+  id: "AL-02",
+  mapConflict: true,
+  baselineAnchor: { margin: 10, confidence: "LOW" },
+  ratingsPrior: { consensusRating: "Likely R", impliedMargin: -10 },
+  rawModelMargin: 8,
+  usablePollCount: 0,
+  nationalEnvironment: { districtElasticity: 0.6, nationalEnvironmentEffect: 3 }
+};
+const al02Audit = auditHouseBaselineDistrict(al02AuditInput);
+assert.ok(al02Audit.auditFlags.includes("REDISTRICTING_CONFLICT"));
+
+const inconsistentMargin = marginConsistencyCheck({
+  projectedMargin: 4,
+  probabilityMargin: -1,
+  demProbability: 0.42,
+  repProbability: 0.58
+});
+assert.equal(inconsistentMargin.consistent, false);
+assert.ok(inconsistentMargin.flags.includes("PROJECTED_MARGIN_PROBABILITY_CONFLICT"));
+
+const baselineAudit = buildHouseBaselineAudit([ca48AuditInput, al02AuditInput], { generatedAt: "2026-07-03T00:00:00.000Z" });
+assert.ok(baselineAudit.summary.byFlag.BASELINE_RATING_CONFLICT >= 1);
+
+const iaReview = raceReviewFlagsForRace("2026 Senate forecast", {
+  state: "IA",
+  usablePollCount: 4,
+  inputBalance: { shares: { polling: 0.02 } },
+  candidateException: { enabled: false },
+  margins: {
+    projectedResultMargin: { value: -1 },
+    probabilityMargin: { value: -1 },
+    marginConfidence: "MEDIUM"
+  },
+  demProbability: 0.45
+});
+assert.ok(iaReview.some((flag) => flag.type === "POLLING_WEIGHT_TOO_LOW"));
+assert.ok(iaReview.some((flag) => flag.type === "NAMED_RACE_REVIEW"));
+
+const vtReview = raceReviewFlagsForRace("2026 Governor forecast", {
+  state: "VT",
+  candidateException: { enabled: true, type: "PHIL_SCOTT_REPUBLICAN_OVERPERFORMANCE", confidence: "LOW" },
+  margins: {
+    projectedResultMargin: { value: -18 },
+    probabilityMargin: { value: -10 },
+    marginConfidence: "LOW"
+  },
+  demProbability: 0.08
+});
+assert.ok(vtReview.some((flag) => flag.type === "CANDIDATE_EXCEPTION_MODE_ACTIVE"));
 
 const wikiPollParse = parseWikipediaPollingPage(`
   <h2>General election polling</h2>

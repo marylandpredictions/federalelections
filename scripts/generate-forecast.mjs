@@ -715,6 +715,134 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+function signedMarginLabel(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return null;
+  if (Math.abs(number) < 0.05) return "Even";
+  return `${number > 0 ? "D" : "R"}+${Math.abs(number).toFixed(1)}`;
+}
+
+function senateMarginFields(projectedMargin, probabilityMargin, ratingMargin) {
+  return {
+    projectedResultMargin: {
+      value: Number.isFinite(Number(projectedMargin)) ? Number(Number(projectedMargin).toFixed(2)) : null,
+      display: signedMarginLabel(projectedMargin),
+      meaning: "Expected election result margin."
+    },
+    probabilityMargin: {
+      value: Number.isFinite(Number(probabilityMargin)) ? Number(Number(probabilityMargin).toFixed(2)) : null,
+      display: signedMarginLabel(probabilityMargin),
+      meaning: "Uncertainty-adjusted margin used for win-probability conversion."
+    },
+    ratingMargin: {
+      value: Number.isFinite(Number(ratingMargin)) ? Number(Number(ratingMargin).toFixed(2)) : null,
+      display: signedMarginLabel(ratingMargin),
+      meaning: "External-rating implied margin, when a ratings prior exists."
+    }
+  };
+}
+
+function senatePollingWeightDiagnostic(pollSignal, inputBalance, marginDecomposition) {
+  const usablePollCount = Number(pollSignal?.usablePollCount || 0);
+  const pollingInputShare = Number(inputBalance?.shares?.polling ?? inputBalance?.polling);
+  const pollingAdjustment = Number(marginDecomposition?.pollingAdjustment ?? marginDecomposition?.pollingEffect);
+  const flags = [];
+  if (usablePollCount >= 2 && (!Number.isFinite(pollingInputShare) || pollingInputShare < 0.08)) {
+    flags.push("POLLING_WEIGHT_TOO_LOW");
+  }
+  if (!usablePollCount && Number.isFinite(pollingAdjustment) && Math.abs(pollingAdjustment) >= 0.5) {
+    flags.push("POLLING_ADJUSTMENT_WITHOUT_USABLE_POLLS");
+  }
+  return {
+    usablePollCount,
+    pollAverageMargin: Number.isFinite(Number(pollSignal?.margin)) ? Number(Number(pollSignal.margin).toFixed(2)) : null,
+    pollingAdjustment: Number.isFinite(pollingAdjustment) ? Number(pollingAdjustment.toFixed(2)) : null,
+    pollingInputShare: Number.isFinite(pollingInputShare) ? Number(pollingInputShare.toFixed(3)) : null,
+    pollingStatus: pollSignal?.pollingStatus || "NO_RACE_POLLS",
+    flags
+  };
+}
+
+const SENATE_CANDIDATE_EXCEPTION_MODES = {
+  NE: {
+    type: "OSBORN_INDEPENDENT_OVERPERFORMANCE",
+    candidate: "Dan Osborn",
+    normalPartisanBaseline: "R+20 or stronger",
+    specialCandidateBaseline: "R+6 to R+10",
+    selectedBaseline: "SPECIAL_CANDIDATE",
+    warning: "Margin depends heavily on Osborn's independent-populist overperformance and limited public polling."
+  },
+  NC: {
+    type: "COOPER_STATEWIDE_OVERPERFORMANCE",
+    candidate: "Roy Cooper",
+    normalPartisanBaseline: "Narrow R to Toss-up",
+    specialCandidateBaseline: "Toss-up to D-leaning",
+    selectedBaseline: "SPECIAL_CANDIDATE",
+    warning: "Cooper's statewide profile is explicitly carrying part of the Democratic margin."
+  },
+  OH: {
+    type: "BROWN_STATEWIDE_OVERPERFORMANCE",
+    candidate: "Sherrod Brown",
+    normalPartisanBaseline: "R-leaning",
+    specialCandidateBaseline: "Competitive",
+    selectedBaseline: "SPECIAL_CANDIDATE",
+    warning: "Brown's personal brand keeps Ohio more competitive than a generic Senate race."
+  },
+  AK: {
+    type: "ALASKA_COALITION_DYNAMICS",
+    candidate: "Mary Peltola",
+    normalPartisanBaseline: "R-leaning",
+    specialCandidateBaseline: "Candidate/coalition adjusted",
+    selectedBaseline: "SPECIAL_CANDIDATE",
+    warning: "Alaska polling, coalition behavior, and candidate fit are reviewed separately from the normal partisan baseline."
+  },
+  TX: {
+    type: "TEXAS_NOMINEE_CONTEXT",
+    candidate: "James Talarico / Ken Paxton",
+    normalPartisanBaseline: "R-leaning",
+    specialCandidateBaseline: "Nominee-adjusted competitive race",
+    selectedBaseline: "CANDIDATE_CONTEXT",
+    warning: "Texas depends on nominee-specific assumptions and should be treated as low-confidence without robust general-election polling."
+  },
+  GA: {
+    type: "OSSOFF_INCUMBENCY_AND_GOP_NOMINEE",
+    candidate: "Jon Ossoff",
+    normalPartisanBaseline: "Toss-up",
+    specialCandidateBaseline: "Incumbency and nominee-adjusted",
+    selectedBaseline: "CANDIDATE_CONTEXT",
+    warning: "Georgia combines Ossoff incumbency, GOP nominee uncertainty, and polling quality checks."
+  },
+  ME: {
+    type: "MAINE_CANDIDATE_CROSSOVER",
+    candidate: "Susan Collins / Graham Platner",
+    normalPartisanBaseline: "D-leaning federal baseline",
+    specialCandidateBaseline: "Candidate crossover adjusted",
+    selectedBaseline: "CANDIDATE_CONTEXT",
+    warning: "Maine requires candidate-specific handling because prior statewide Senate results are not clean generic-party baselines."
+  }
+};
+
+function senateCandidateExceptionDiagnostic(race, pollSignal, projectedMargin) {
+  const exception = SENATE_CANDIDATE_EXCEPTION_MODES[race.state];
+  if (!exception) return null;
+  const usablePolls = Number(pollSignal?.usablePollCount || 0);
+  const confidence = usablePolls >= 4 ? "MEDIUM" : "LOW";
+  return {
+    enabled: true,
+    type: exception.type,
+    candidate: exception.candidate,
+    baselineComparison: {
+      normalPartisanBaseline: exception.normalPartisanBaseline,
+      specialCandidateBaseline: exception.specialCandidateBaseline,
+      selectedBaseline: exception.selectedBaseline
+    },
+    confidence,
+    projectedResultMargin: signedMarginLabel(projectedMargin),
+    usablePolls,
+    warning: exception.warning
+  };
+}
+
 function pct(value) {
   if (Number.isFinite(value) && value === 1) return ">99%";
   if (Number.isFinite(value) && value === 0) return "<1%";
@@ -1408,6 +1536,9 @@ function runModel(sourceData) {
       finance: 5,
       ratings: ratingsPrior.inputWeight
     });
+    const marginDiagnostics = senateMarginFields(projectedMargin, margin, ratingsPrior.impliedMargin ?? projectedMargin);
+    const pollingWeightDiagnostic = senatePollingWeightDiagnostic(pollSignal, inputBalance, marginDecomposition);
+    const candidateException = senateCandidateExceptionDiagnostic(withComposition, pollSignal, projectedMargin);
     return {
       ...withComposition,
       rating: ratingFromProbability(demProbability, projectedMargin),
@@ -1418,6 +1549,9 @@ function runModel(sourceData) {
       preRatingProbabilityMargin: Number(rawProbabilityMargin.toFixed(2)),
       preRatingProjectedMargin: Number(rawProjectedMargin.toFixed(2)),
       ratingsPrior,
+      margins: marginDiagnostics,
+      pollingWeightDiagnostic,
+      candidateException,
       ...marginSplit(projectedMargin, margin, ratingsPrior.impliedMargin ?? projectedMargin),
       inputBalance,
       error,

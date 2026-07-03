@@ -3,8 +3,8 @@
   "source": "data/forecast.json race polling fields",
   "office": "senate",
   "cycle": 2026,
-  "generatedAt": "2026-07-03T05:59:24.054Z",
-  "asOf": "2026-07-03T04:39:06.514Z",
+  "generatedAt": "2026-07-03T21:15:16.634Z",
+  "asOf": "2026-07-03T20:53:53.642Z",
   "status": "OK_NO_ROWS",
   "rows": [],
   "warnings": [
@@ -15,9 +15,20 @@
       "id": "WY",
       "name": "Wyoming Senate",
       "message": "Projected margin has a large historical shift without a strong race-polling signal.",
-      "margin": -22.95,
+      "margin": -22.71,
       "demProbability": 0.001,
       "rating": "Safe R"
+    },
+    {
+      "model": "senate",
+      "code": "LARGE_SHIFT_WITHOUT_POLLING",
+      "severity": "warn",
+      "id": "LA",
+      "name": "Louisiana Senate",
+      "message": "Projected margin has a large historical shift without a strong race-polling signal.",
+      "margin": -11.93,
+      "demProbability": 0.1231,
+      "rating": "Likely R"
     },
     {
       "model": "senate",
@@ -26,7 +37,51 @@
       "id": "WV",
       "name": "West Virginia Senate",
       "message": "No usable race-level polling is available; forecast is fundamentals-led.",
-      "margin": -35.84,
+      "margin": -35.59,
+      "demProbability": 0.001,
+      "rating": "Safe R"
+    },
+    {
+      "model": "senate",
+      "code": "POLLING_UNAVAILABLE",
+      "severity": "review",
+      "id": "MA",
+      "name": "Massachusetts Senate",
+      "message": "No usable race-level polling is available; forecast is fundamentals-led.",
+      "margin": 25.86,
+      "demProbability": 0.999,
+      "rating": "Safe D"
+    },
+    {
+      "model": "senate",
+      "code": "POLLING_UNAVAILABLE",
+      "severity": "review",
+      "id": "OK",
+      "name": "Oklahoma Senate",
+      "message": "No usable race-level polling is available; forecast is fundamentals-led.",
+      "margin": -25.86,
+      "demProbability": 0.001,
+      "rating": "Safe R"
+    },
+    {
+      "model": "senate",
+      "code": "POLLING_UNAVAILABLE",
+      "severity": "review",
+      "id": "AR",
+      "name": "Arkansas Senate",
+      "message": "No usable race-level polling is available; forecast is fundamentals-led.",
+      "margin": -25.59,
+      "demProbability": 0.001,
+      "rating": "Safe R"
+    },
+    {
+      "model": "senate",
+      "code": "POLLING_UNAVAILABLE",
+      "severity": "review",
+      "id": "SD",
+      "name": "South Dakota Senate",
+      "message": "No usable race-level polling is available; forecast is fundamentals-led.",
+      "margin": -24.19,
       "demProbability": 0.001,
       "rating": "Safe R"
     },
@@ -37,7 +92,7 @@
       "id": "WY",
       "name": "Wyoming Senate",
       "message": "No usable race-level polling is available; forecast is fundamentals-led.",
-      "margin": -22.95,
+      "margin": -22.71,
       "demProbability": 0.001,
       "rating": "Safe R"
     },
@@ -48,8 +103,19 @@
       "id": "TN",
       "name": "Tennessee Senate",
       "message": "No usable race-level polling is available; forecast is fundamentals-led.",
-      "margin": -21.19,
+      "margin": -20.95,
       "demProbability": 0.001,
+      "rating": "Safe R"
+    },
+    {
+      "model": "senate",
+      "code": "poll-model-divergence",
+      "severity": "review",
+      "id": "ID",
+      "name": "Idaho Senate",
+      "message": "Race polling and projected margin diverge by more than 11 points.",
+      "margin": -17.62,
+      "demProbability": 0.0086,
       "rating": "Safe R"
     },
     {
@@ -59,31 +125,9 @@
       "id": "DE",
       "name": "Delaware Senate",
       "message": "No usable race-level polling is available; forecast is fundamentals-led.",
-      "margin": 16.2,
-      "demProbability": 0.9631,
+      "margin": 15.95,
+      "demProbability": 0.9613,
       "rating": "Safe D"
-    },
-    {
-      "model": "senate",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "AR",
-      "name": "Arkansas Senate",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": -15.96,
-      "demProbability": 0.0092,
-      "rating": "Safe R"
-    },
-    {
-      "model": "senate",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "IL",
-      "name": "Illinois Senate",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 13.68,
-      "demProbability": 0.9443,
-      "rating": "Likely D"
     },
     {
       "model": "senate",
@@ -92,8 +136,8 @@
       "id": "OR",
       "name": "Oregon Senate",
       "message": "No usable race-level polling is available; forecast is fundamentals-led.",
-      "margin": 12.87,
-      "demProbability": 0.9339,
+      "margin": 12.62,
+      "demProbability": 0.9292,
       "rating": "Likely D"
     },
     {
@@ -103,130 +147,86 @@
       "id": "NJ",
       "name": "New Jersey Senate",
       "message": "No usable race-level polling is available; forecast is fundamentals-led.",
-      "margin": 12.83,
-      "demProbability": 0.9204,
+      "margin": 12.58,
+      "demProbability": 0.9162,
       "rating": "Likely D"
     },
     {
       "model": "senate",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "CO",
-      "name": "Colorado Senate",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 12.68,
-      "demProbability": 0.8907,
-      "rating": "Likely D"
-    },
-    {
-      "model": "senate",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "OK",
-      "name": "Oklahoma Senate",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": -12.64,
-      "demProbability": 0.0955,
-      "rating": "Likely R"
-    },
-    {
-      "model": "senate",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "NM",
-      "name": "New Mexico Senate",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 12.34,
-      "demProbability": 0.8963,
-      "rating": "Likely D"
-    },
-    {
-      "model": "senate",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "VA",
-      "name": "Virginia Senate",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 11.44,
-      "demProbability": 0.8528,
-      "rating": "Likely D"
-    },
-    {
-      "model": "senate",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "NH",
-      "name": "New Hampshire Senate",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 9.17,
-      "demProbability": 0.8058,
-      "rating": "Likely D"
-    },
-    {
-      "model": "senate",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "LA",
-      "name": "Louisiana Senate",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": -8.07,
-      "demProbability": 0.2217,
-      "rating": "Likely R"
-    },
-    {
-      "model": "senate",
-      "code": "poll-model-divergence",
-      "severity": "review",
-      "id": "AL",
-      "name": "Alabama Senate",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": -7.9,
-      "demProbability": 0.186,
-      "rating": "Lean R"
-    },
-    {
-      "model": "senate",
-      "code": "poll-model-divergence",
+      "code": "POLLING_UNAVAILABLE",
       "severity": "review",
       "id": "KY",
       "name": "Kentucky Senate",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": -7.84,
-      "demProbability": 0.1863,
-      "rating": "Lean R"
+      "message": "No usable race-level polling is available; forecast is fundamentals-led.",
+      "margin": -12.51,
+      "demProbability": 0.07,
+      "rating": "Likely R"
     },
     {
       "model": "senate",
-      "code": "poll-model-divergence",
+      "code": "POLLING_UNAVAILABLE",
       "severity": "review",
-      "id": "GA",
-      "name": "Georgia Senate",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 7.82,
-      "demProbability": 0.7872,
-      "rating": "Lean D"
+      "id": "AL",
+      "name": "Alabama Senate",
+      "message": "No usable race-level polling is available; forecast is fundamentals-led.",
+      "margin": -12.5,
+      "demProbability": 0.0715,
+      "rating": "Likely R"
     },
     {
       "model": "senate",
-      "code": "poll-model-divergence",
+      "code": "POLLING_UNAVAILABLE",
       "severity": "review",
-      "id": "NC",
-      "name": "North Carolina Senate",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 6.85,
-      "demProbability": 0.7528,
-      "rating": "Lean D"
+      "id": "LA",
+      "name": "Louisiana Senate",
+      "message": "No usable race-level polling is available; forecast is fundamentals-led.",
+      "margin": -11.93,
+      "demProbability": 0.1231,
+      "rating": "Likely R"
     },
     {
       "model": "senate",
-      "code": "poll-model-divergence",
+      "code": "POLLING_UNAVAILABLE",
       "severity": "review",
-      "id": "MN",
-      "name": "Minnesota Senate",
-      "message": "Race polling and projected margin diverge by more than 11 points.",
-      "margin": 6.7,
-      "demProbability": 0.7364,
-      "rating": "Lean D"
+      "id": "IL",
+      "name": "Illinois Senate",
+      "message": "No usable race-level polling is available; forecast is fundamentals-led.",
+      "margin": 11.76,
+      "demProbability": 0.9093,
+      "rating": "Likely D"
+    },
+    {
+      "model": "senate",
+      "code": "POLLING_UNAVAILABLE",
+      "severity": "review",
+      "id": "CO",
+      "name": "Colorado Senate",
+      "message": "No usable race-level polling is available; forecast is fundamentals-led.",
+      "margin": 10.22,
+      "demProbability": 0.8463,
+      "rating": "Likely D"
+    },
+    {
+      "model": "senate",
+      "code": "POLLING_UNAVAILABLE",
+      "severity": "review",
+      "id": "NM",
+      "name": "New Mexico Senate",
+      "message": "No usable race-level polling is available; forecast is fundamentals-led.",
+      "margin": 9.84,
+      "demProbability": 0.8244,
+      "rating": "Likely D"
+    },
+    {
+      "model": "senate",
+      "code": "POLLING_UNAVAILABLE",
+      "severity": "review",
+      "id": "MS",
+      "name": "Mississippi Senate",
+      "message": "No usable race-level polling is available; forecast is fundamentals-led.",
+      "margin": -9.27,
+      "demProbability": 0.1522,
+      "rating": "Likely R"
     }
   ],
   "meta": {}

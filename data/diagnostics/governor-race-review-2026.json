@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-07-03T08:30:01.092Z",
+  "generatedAt": "2026-07-04T00:18:16.231Z",
   "model": "governor",
   "schemaVersion": "2026.race-review.1",
   "summary": {
     "races": 36,
-    "reviewRequired": 35,
+    "reviewRequired": 36,
     "highSeverity": 14,
     "noUsablePolling": 35
   },
@@ -13,17 +13,36 @@
       "id": "AL",
       "state": "AL",
       "race": "Alabama Governor",
-      "projectedMargin": -15.53,
-      "probabilityEngineMargin": -15.84,
-      "demProbability": 0.0324,
-      "repProbability": 0.9676,
+      "projectedMargin": -15.96,
+      "probabilityEngineMargin": -16.54,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -15.96,
+          "display": "R+16.0",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -16.54,
+          "display": "R+16.5",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.58,
+        "consistentDirection": true
+      },
+      "demProbability": 0.0269,
+      "repProbability": 0.9731,
       "winnerParty": "R",
       "rating": "Safe R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe R",
         "impliedMargin": -22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -32,7 +51,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "configured-exception",
+        "candidate": "Doug Jones / Tommy Tuberville",
+        "review": "Open-seat matchup context is represented by explicit candidate and open-seat terms, not a hidden exception.",
+        "applied": true
       },
       "candidates": {
         "dem": "Doug Jones",
@@ -48,18 +91,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -33.8,
-        "projectedMargin": -15.53,
-        "shift": 18.27,
+        "projectedMargin": -15.96,
+        "shift": 17.83,
         "level": "large",
         "expectedRegression": true,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -77,6 +122,16 @@
           "severity": "high",
           "type": "RATING_PRIOR_DIVERGENCE",
           "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "AL is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "info",
+          "type": "CANDIDATE_EXCEPTION_MODE_ACTIVE",
+          "message": "Open-seat matchup context is represented by explicit candidate and open-seat terms, not a hidden exception."
         }
       ]
     },
@@ -84,17 +139,36 @@
       "id": "AK",
       "state": "AK",
       "race": "Alaska Governor",
-      "projectedMargin": -2.8,
-      "probabilityEngineMargin": -2.93,
-      "demProbability": 0.3826,
-      "repProbability": 0.6175,
+      "projectedMargin": -2.98,
+      "probabilityEngineMargin": -3.22,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -2.98,
+          "display": "R+3.0",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -3.22,
+          "display": "R+3.2",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.24,
+        "consistentDirection": true
+      },
+      "demProbability": 0.3713,
+      "repProbability": 0.6287,
       "winnerParty": "R",
       "rating": "Tilt R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Lean R",
         "impliedMargin": -5.5,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -103,7 +177,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -119,18 +217,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -5.7,
-        "projectedMargin": -2.8,
-        "shift": 2.9,
+        "projectedMargin": -2.98,
+        "shift": 2.72,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -150,17 +250,36 @@
       "id": "AZ",
       "state": "AZ",
       "race": "Arizona Governor",
-      "projectedMargin": 1.83,
-      "probabilityEngineMargin": 1.74,
-      "demProbability": 0.5786,
-      "repProbability": 0.4214,
+      "projectedMargin": 1.7,
+      "probabilityEngineMargin": 1.54,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 1.7,
+          "display": "D+1.7",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 1.54,
+          "display": "D+1.5",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.16,
+        "consistentDirection": true
+      },
+      "demProbability": 0.5698,
+      "repProbability": 0.4302,
       "winnerParty": "D",
       "rating": "Tilt D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Toss-up",
         "impliedMargin": 0,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -169,7 +288,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "swing-state-candidate-quality",
+        "candidate": null,
+        "review": "Candidate quality and statewide environment can move the race materially.",
+        "applied": false
       },
       "candidates": {
         "dem": "Katie Hobbs",
@@ -185,18 +328,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 0.6,
-        "projectedMargin": 1.83,
-        "shift": 1.23,
+        "projectedMargin": 1.7,
+        "shift": 1.1,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -204,6 +349,16 @@
           "severity": "warning",
           "type": "NO_USABLE_POLLING",
           "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "AZ is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "warning",
+          "type": "CANDIDATE_EXCEPTION_MODE_REVIEW",
+          "message": "Candidate quality and statewide environment can move the race materially."
         },
         {
           "severity": "warning",
@@ -216,17 +371,36 @@
       "id": "AR",
       "state": "AR",
       "race": "Arkansas Governor",
-      "projectedMargin": -20.3,
-      "probabilityEngineMargin": -20.38,
-      "demProbability": 0.0012,
-      "repProbability": 0.9988,
+      "projectedMargin": -20.42,
+      "probabilityEngineMargin": -20.57,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -20.42,
+          "display": "R+20.4",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -20.57,
+          "display": "R+20.6",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.15,
+        "consistentDirection": true
+      },
+      "demProbability": 0.0011,
+      "repProbability": 0.9989,
       "winnerParty": "R",
       "rating": "Safe R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe R",
         "impliedMargin": -22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -235,7 +409,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Fredrick Love",
@@ -251,18 +449,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -26,
-        "projectedMargin": -20.3,
-        "shift": 5.7,
+        "projectedMargin": -20.42,
+        "shift": 5.58,
         "level": "normal",
         "expectedRegression": true,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -277,17 +477,36 @@
       "id": "CA",
       "state": "CA",
       "race": "California Governor",
-      "projectedMargin": 15.34,
-      "probabilityEngineMargin": 15.66,
-      "demProbability": 0.9572,
-      "repProbability": 0.0428,
+      "projectedMargin": 15.79,
+      "probabilityEngineMargin": 16.38,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 15.79,
+          "display": "D+15.8",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 16.38,
+          "display": "D+16.4",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.59,
+        "consistentDirection": true
+      },
+      "demProbability": 0.9639,
+      "repProbability": 0.0361,
       "winnerParty": "D",
       "rating": "Safe D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe D",
         "impliedMargin": 22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -296,7 +515,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Xavier Becerra",
@@ -312,18 +555,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 18.4,
-        "projectedMargin": 15.34,
-        "shift": -3.06,
+        "projectedMargin": 15.79,
+        "shift": -2.61,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -343,17 +588,36 @@
       "id": "CO",
       "state": "CO",
       "race": "Colorado Governor",
-      "projectedMargin": 7.45,
-      "probabilityEngineMargin": 7.63,
-      "demProbability": 0.7884,
-      "repProbability": 0.2116,
+      "projectedMargin": 7.69,
+      "probabilityEngineMargin": 8.01,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 7.69,
+          "display": "D+7.7",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 8.01,
+          "display": "D+8.0",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.32,
+        "consistentDirection": true
+      },
+      "demProbability": 0.7998,
+      "repProbability": 0.2002,
       "winnerParty": "D",
       "rating": "Lean D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Likely D",
         "impliedMargin": 11,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -362,7 +626,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Phil Weiser",
@@ -378,18 +666,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 19.3,
-        "projectedMargin": 7.45,
-        "shift": -11.85,
+        "projectedMargin": 7.69,
+        "shift": -11.61,
         "level": "notable",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -404,6 +694,11 @@
           "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
         },
         {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "CO is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
           "severity": "warning",
           "type": "PRIMARY_STATUS_PENDING",
           "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
@@ -414,17 +709,36 @@
       "id": "CT",
       "state": "CT",
       "race": "Connecticut Governor",
-      "projectedMargin": 12.87,
-      "probabilityEngineMargin": 13.31,
-      "demProbability": 0.9616,
-      "repProbability": 0.0384,
+      "projectedMargin": 13.48,
+      "probabilityEngineMargin": 14.3,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 13.48,
+          "display": "D+13.5",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 14.3,
+          "display": "D+14.3",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.82,
+        "consistentDirection": true
+      },
+      "demProbability": 0.9714,
+      "repProbability": 0.0286,
       "winnerParty": "D",
-      "rating": "Likely D",
+      "rating": "Safe D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe D",
         "impliedMargin": 22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -433,7 +747,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Ned Lamont",
@@ -449,18 +787,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 12,
-        "projectedMargin": 12.87,
-        "shift": 0.87,
+        "projectedMargin": 13.48,
+        "shift": 1.48,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -476,6 +816,11 @@
         },
         {
           "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
+        },
+        {
+          "severity": "warning",
           "type": "PRIMARY_STATUS_PENDING",
           "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
         }
@@ -485,17 +830,36 @@
       "id": "FL",
       "state": "FL",
       "race": "Florida Governor",
-      "projectedMargin": -4.22,
-      "probabilityEngineMargin": -4.02,
-      "demProbability": 0.3377,
-      "repProbability": 0.6623,
+      "projectedMargin": -3.94,
+      "probabilityEngineMargin": -3.56,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -3.94,
+          "display": "R+3.9",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -3.56,
+          "display": "R+3.6",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.38,
+        "consistentDirection": true
+      },
+      "demProbability": 0.3551,
+      "repProbability": 0.6449,
       "winnerParty": "R",
-      "rating": "Lean R",
+      "rating": "Tilt R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Toss-up",
         "impliedMargin": 0,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -504,7 +868,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -520,18 +908,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -19.4,
-        "projectedMargin": -4.22,
-        "shift": 15.18,
+        "projectedMargin": -3.94,
+        "shift": 15.46,
         "level": "large",
         "expectedRegression": false,
         "needsReview": true,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -546,6 +936,11 @@
           "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
         },
         {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "FL is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
           "severity": "warning",
           "type": "PRIMARY_STATUS_PENDING",
           "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
@@ -556,17 +951,36 @@
       "id": "GA",
       "state": "GA",
       "race": "Georgia Governor",
-      "projectedMargin": 0.9,
-      "probabilityEngineMargin": 0.85,
-      "demProbability": 0.5336,
-      "repProbability": 0.4664,
+      "projectedMargin": 0.83,
+      "probabilityEngineMargin": 0.75,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 0.83,
+          "display": "D+0.8",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 0.75,
+          "display": "D+0.8",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.08,
+        "consistentDirection": true
+      },
+      "demProbability": 0.5296,
+      "repProbability": 0.4704,
       "winnerParty": "D",
       "rating": "Toss-up",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Toss-up",
         "impliedMargin": 0,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -575,7 +989,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "candidate-field-sensitivity",
+        "candidate": null,
+        "review": "Nominee assumptions and candidate quality matter.",
+        "applied": false
       },
       "candidates": {
         "dem": "Keisha Lance Bottoms",
@@ -591,18 +1029,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -7.5,
-        "projectedMargin": 0.9,
-        "shift": 8.39,
+        "projectedMargin": 0.83,
+        "shift": 8.33,
         "level": "notable",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -610,6 +1050,16 @@
           "severity": "warning",
           "type": "NO_USABLE_POLLING",
           "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "GA is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "warning",
+          "type": "CANDIDATE_EXCEPTION_MODE_REVIEW",
+          "message": "Nominee assumptions and candidate quality matter."
         }
       ]
     },
@@ -617,17 +1067,36 @@
       "id": "HI",
       "state": "HI",
       "race": "Hawaii Governor",
-      "projectedMargin": 20.27,
-      "probabilityEngineMargin": 20.36,
-      "demProbability": 0.9988,
-      "repProbability": 0.0012,
+      "projectedMargin": 20.38,
+      "probabilityEngineMargin": 20.54,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 20.38,
+          "display": "D+20.4",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 20.54,
+          "display": "D+20.5",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.16,
+        "consistentDirection": true
+      },
+      "demProbability": 0.9989,
+      "repProbability": 0.0011,
       "winnerParty": "D",
       "rating": "Safe D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe D",
         "impliedMargin": 22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -636,7 +1105,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Josh Green",
@@ -652,18 +1145,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 26.4,
-        "projectedMargin": 20.27,
-        "shift": -6.13,
+        "projectedMargin": 20.38,
+        "shift": -6.02,
         "level": "normal",
         "expectedRegression": true,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -683,17 +1178,36 @@
       "id": "ID",
       "state": "ID",
       "race": "Idaho Governor",
-      "projectedMargin": -20.08,
-      "probabilityEngineMargin": -20.18,
-      "demProbability": 0.0013,
-      "repProbability": 0.9987,
+      "projectedMargin": -20.21,
+      "probabilityEngineMargin": -20.39,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -20.21,
+          "display": "R+20.2",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -20.39,
+          "display": "R+20.4",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.18,
+        "consistentDirection": true
+      },
+      "demProbability": 0.0012,
+      "repProbability": 0.9988,
       "winnerParty": "R",
       "rating": "Safe R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe R",
         "impliedMargin": -22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -702,7 +1216,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Terri Pickens",
@@ -718,18 +1256,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -20.6,
-        "projectedMargin": -20.08,
-        "shift": 0.52,
+        "projectedMargin": -20.21,
+        "shift": 0.39,
         "level": "normal",
         "expectedRegression": true,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -744,17 +1284,36 @@
       "id": "IL",
       "state": "IL",
       "race": "Illinois Governor",
-      "projectedMargin": 12.35,
-      "probabilityEngineMargin": 12.82,
-      "demProbability": 0.9533,
-      "repProbability": 0.0467,
+      "projectedMargin": 13,
+      "probabilityEngineMargin": 13.86,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 13,
+          "display": "D+13.0",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 13.86,
+          "display": "D+13.9",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.86,
+        "consistentDirection": true
+      },
+      "demProbability": 0.9651,
+      "repProbability": 0.0349,
       "winnerParty": "D",
       "rating": "Likely D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe D",
         "impliedMargin": 22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -763,7 +1322,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "JB Pritzker",
@@ -779,18 +1362,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 12.5,
-        "projectedMargin": 12.35,
-        "shift": -0.15,
+        "projectedMargin": 13,
+        "shift": 0.5,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -803,6 +1388,11 @@
           "severity": "high",
           "type": "RATING_PRIOR_DIVERGENCE",
           "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
         }
       ]
     },
@@ -810,10 +1400,29 @@
       "id": "IA",
       "state": "IA",
       "race": "Iowa Governor",
-      "projectedMargin": -0.6,
-      "probabilityEngineMargin": -0.58,
-      "demProbability": 0.4731,
-      "repProbability": 0.527,
+      "projectedMargin": -0.67,
+      "probabilityEngineMargin": -0.66,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -0.67,
+          "display": "R+0.7",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -0.66,
+          "display": "R+0.7",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.01,
+        "consistentDirection": true
+      },
+      "demProbability": 0.4696,
+      "repProbability": 0.5304,
       "winnerParty": "R",
       "rating": "Toss-up",
       "ratingPrior": {
@@ -831,6 +1440,30 @@
         "manualPollCount": 3,
         "status": "MANUAL_POLLS_AVAILABLE"
       },
+      "pollingMergeStatus": {
+        "parsedPollRows": 3,
+        "validatedPollRows": 3,
+        "mergedPollRows": 3,
+        "mergeStatus": "MERGED",
+        "pollingStatus": "MANUAL_POLLS_AVAILABLE",
+        "reducedWeight": false,
+        "weightScale": 0.7200000000000001
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 3,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 2.46,
+        "pollingInputShare": 0.185,
+        "pollingStatus": "MANUAL_POLLS_AVAILABLE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "crossover-appeal",
+        "candidate": "Rob Sand",
+        "review": "Candidate has statewide crossover profile and polling should override generic fundamentals when available.",
+        "applied": false
+      },
       "candidates": {
         "dem": "Rob Sand",
         "rep": "Zach Lahn",
@@ -845,25 +1478,32 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -18.6,
-        "projectedMargin": -0.6,
-        "shift": 18,
+        "projectedMargin": -0.67,
+        "shift": 17.93,
         "level": "large",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "current multi-poll signal available"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
+        "forecast": "DEGRADED",
+        "degraded": true,
         "racePolling": "MANUAL_POLLS_AVAILABLE",
-        "unavailableSources": []
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
-      "reviewRequired": false,
+      "reviewRequired": true,
       "reviewFlags": [
         {
           "severity": "info",
           "type": "NAMED_RACE_REVIEW",
           "message": "IA is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "warning",
+          "type": "CANDIDATE_EXCEPTION_MODE_REVIEW",
+          "message": "Candidate has statewide crossover profile and polling should override generic fundamentals when available."
         }
       ]
     },
@@ -871,17 +1511,36 @@
       "id": "KS",
       "state": "KS",
       "race": "Kansas Governor",
-      "projectedMargin": -4.03,
-      "probabilityEngineMargin": -4.1,
-      "demProbability": 0.3349,
-      "repProbability": 0.6651,
+      "projectedMargin": -4.13,
+      "probabilityEngineMargin": -4.26,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -4.13,
+          "display": "R+4.1",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -4.26,
+          "display": "R+4.3",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.13,
+        "consistentDirection": true
+      },
+      "demProbability": 0.3287,
+      "repProbability": 0.6713,
       "winnerParty": "R",
       "rating": "Lean R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Lean R",
         "impliedMargin": -5.5,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -890,7 +1549,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -906,18 +1589,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 2.2,
-        "projectedMargin": -4.03,
-        "shift": -6.23,
+        "projectedMargin": -4.13,
+        "shift": -6.33,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -925,6 +1610,11 @@
           "severity": "warning",
           "type": "NO_USABLE_POLLING",
           "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "KS is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
         },
         {
           "severity": "warning",
@@ -937,17 +1627,36 @@
       "id": "ME",
       "state": "ME",
       "race": "Maine Governor",
-      "projectedMargin": 4.86,
-      "probabilityEngineMargin": 5.16,
-      "demProbability": 0.7007,
-      "repProbability": 0.2993,
+      "projectedMargin": 5.27,
+      "probabilityEngineMargin": 5.82,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 5.27,
+          "display": "D+5.3",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 5.82,
+          "display": "D+5.8",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.55,
+        "consistentDirection": true
+      },
+      "demProbability": 0.7237,
+      "repProbability": 0.2763,
       "winnerParty": "D",
       "rating": "Lean D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Likely D",
         "impliedMargin": 11,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -956,7 +1665,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -972,18 +1705,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 12.8,
-        "projectedMargin": 4.86,
-        "shift": -7.94,
+        "projectedMargin": 5.27,
+        "shift": -7.53,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1013,8 +1748,27 @@
       "id": "MD",
       "state": "MD",
       "race": "Maryland Governor",
-      "projectedMargin": 22.91,
-      "probabilityEngineMargin": 22.87,
+      "projectedMargin": 22.85,
+      "probabilityEngineMargin": 22.77,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 22.85,
+          "display": "D+22.9",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 22.77,
+          "display": "D+22.8",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.08,
+        "consistentDirection": true
+      },
       "demProbability": 0.999,
       "repProbability": 0.001,
       "winnerParty": "D",
@@ -1023,7 +1777,7 @@
         "enabled": true,
         "consensusRating": "Safe D",
         "impliedMargin": 22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -1032,7 +1786,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Wes Moore",
@@ -1048,18 +1826,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 29.9,
-        "projectedMargin": 22.91,
-        "shift": -6.99,
+        "projectedMargin": 22.85,
+        "shift": -7.05,
         "level": "normal",
         "expectedRegression": true,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1080,7 +1860,26 @@
       "state": "MA",
       "race": "Massachusetts Governor",
       "projectedMargin": 21.91,
-      "probabilityEngineMargin": 21.91,
+      "probabilityEngineMargin": 21.92,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 21.91,
+          "display": "D+21.9",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 21.92,
+          "display": "D+21.9",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.01,
+        "consistentDirection": true
+      },
       "demProbability": 0.999,
       "repProbability": 0.001,
       "winnerParty": "D",
@@ -1089,7 +1888,7 @@
         "enabled": true,
         "consensusRating": "Safe D",
         "impliedMargin": 22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -1098,7 +1897,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Maura Healey",
@@ -1122,10 +1945,12 @@
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1145,17 +1970,36 @@
       "id": "MI",
       "state": "MI",
       "race": "Michigan Governor",
-      "projectedMargin": 2.62,
-      "probabilityEngineMargin": 2.59,
-      "demProbability": 0.6009,
-      "repProbability": 0.3991,
+      "projectedMargin": 2.58,
+      "probabilityEngineMargin": 2.52,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 2.58,
+          "display": "D+2.6",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 2.52,
+          "display": "D+2.5",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.06,
+        "consistentDirection": true
+      },
+      "demProbability": 0.5983,
+      "repProbability": 0.4017,
       "winnerParty": "D",
       "rating": "Tilt D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Tilt D",
         "impliedMargin": 2,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -1164,7 +2008,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Jocelyn Benson",
@@ -1180,18 +2048,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 10.6,
-        "projectedMargin": 2.62,
-        "shift": -7.98,
-        "level": "normal",
+        "projectedMargin": 2.58,
+        "shift": -8.02,
+        "level": "notable",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1199,6 +2069,11 @@
           "severity": "warning",
           "type": "NO_USABLE_POLLING",
           "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "MI is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
         },
         {
           "severity": "warning",
@@ -1211,17 +2086,36 @@
       "id": "MN",
       "state": "MN",
       "race": "Minnesota Governor",
-      "projectedMargin": 3.7,
-      "probabilityEngineMargin": 4.05,
-      "demProbability": 0.6646,
-      "repProbability": 0.3354,
+      "projectedMargin": 4.19,
+      "probabilityEngineMargin": 4.84,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 4.19,
+          "display": "D+4.2",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 4.84,
+          "display": "D+4.8",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.65,
+        "consistentDirection": true
+      },
+      "demProbability": 0.6942,
+      "repProbability": 0.3058,
       "winnerParty": "D",
-      "rating": "Tilt D",
+      "rating": "Lean D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Likely D",
         "impliedMargin": 11,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -1230,7 +2124,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -1246,18 +2164,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 7.7,
-        "projectedMargin": 3.7,
-        "shift": -4,
+        "projectedMargin": 4.19,
+        "shift": -3.51,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1287,17 +2207,36 @@
       "id": "NE",
       "state": "NE",
       "race": "Nebraska Governor",
-      "projectedMargin": -15.95,
-      "probabilityEngineMargin": -16.25,
-      "demProbability": 0.0088,
-      "repProbability": 0.9912,
+      "projectedMargin": -16.36,
+      "probabilityEngineMargin": -16.9,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -16.36,
+          "display": "R+16.4",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -16.9,
+          "display": "R+16.9",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.54,
+        "consistentDirection": true
+      },
+      "demProbability": 0.0067,
+      "repProbability": 0.9933,
       "winnerParty": "R",
       "rating": "Safe R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe R",
         "impliedMargin": -22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -1306,7 +2245,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Lynne Walz",
@@ -1322,18 +2285,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -23.8,
-        "projectedMargin": -15.95,
-        "shift": 7.85,
+        "projectedMargin": -16.36,
+        "shift": 7.44,
         "level": "normal",
         "expectedRegression": true,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1358,17 +2323,36 @@
       "id": "NV",
       "state": "NV",
       "race": "Nevada Governor",
-      "projectedMargin": -3.81,
-      "probabilityEngineMargin": -3.62,
-      "demProbability": 0.3351,
-      "repProbability": 0.6649,
+      "projectedMargin": -3.56,
+      "probabilityEngineMargin": -3.22,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -3.56,
+          "display": "R+3.6",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -3.22,
+          "display": "R+3.2",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.34,
+        "consistentDirection": true
+      },
+      "demProbability": 0.3526,
+      "repProbability": 0.6474,
       "winnerParty": "R",
       "rating": "Tilt R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Toss-up",
         "impliedMargin": 0,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -1377,7 +2361,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "incumbency-and-state-fit",
+        "candidate": "Joe Lombardo",
+        "review": "Incumbency and state fit are material inputs.",
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -1393,18 +2401,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -1.5,
-        "projectedMargin": -3.81,
-        "shift": -2.31,
+        "projectedMargin": -3.56,
+        "shift": -2.06,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1412,6 +2422,16 @@
           "severity": "warning",
           "type": "NO_USABLE_POLLING",
           "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "NV is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "warning",
+          "type": "CANDIDATE_EXCEPTION_MODE_REVIEW",
+          "message": "Incumbency and state fit are material inputs."
         },
         {
           "severity": "warning",
@@ -1424,17 +2444,36 @@
       "id": "NH",
       "state": "NH",
       "race": "New Hampshire Governor",
-      "projectedMargin": -5.65,
-      "probabilityEngineMargin": -5.91,
-      "demProbability": 0.2397,
-      "repProbability": 0.7603,
+      "projectedMargin": -6.02,
+      "probabilityEngineMargin": -6.49,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -6.02,
+          "display": "R+6.0",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -6.49,
+          "display": "R+6.5",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.47,
+        "consistentDirection": true
+      },
+      "demProbability": 0.2187,
+      "repProbability": 0.7813,
       "winnerParty": "R",
       "rating": "Lean R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Likely R",
         "impliedMargin": -11,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -1443,7 +2482,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -1459,18 +2522,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -9.2,
-        "projectedMargin": -5.65,
-        "shift": 3.55,
+        "projectedMargin": -6.02,
+        "shift": 3.18,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1495,17 +2560,36 @@
       "id": "NM",
       "state": "NM",
       "race": "New Mexico Governor",
-      "projectedMargin": 4.27,
-      "probabilityEngineMargin": 4.6,
-      "demProbability": 0.6783,
-      "repProbability": 0.3217,
+      "projectedMargin": 4.72,
+      "probabilityEngineMargin": 5.32,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 4.72,
+          "display": "D+4.7",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 5.32,
+          "display": "D+5.3",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.6,
+        "consistentDirection": true
+      },
+      "demProbability": 0.7039,
+      "repProbability": 0.2961,
       "winnerParty": "D",
       "rating": "Lean D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Likely D",
         "impliedMargin": 11,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -1514,7 +2598,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Deb Haaland",
@@ -1530,18 +2638,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 6.4,
-        "projectedMargin": 4.27,
-        "shift": -2.13,
+        "projectedMargin": 4.72,
+        "shift": -1.68,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1566,17 +2676,36 @@
       "id": "NY",
       "state": "NY",
       "race": "New York Governor",
-      "projectedMargin": 9.98,
-      "probabilityEngineMargin": 10.03,
-      "demProbability": 0.9014,
-      "repProbability": 0.0986,
+      "projectedMargin": 10.04,
+      "probabilityEngineMargin": 10.14,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 10.04,
+          "display": "D+10.0",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 10.14,
+          "display": "D+10.1",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.1,
+        "consistentDirection": true
+      },
+      "demProbability": 0.9038,
+      "repProbability": 0.0962,
       "winnerParty": "D",
       "rating": "Likely D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Likely D",
         "impliedMargin": 11,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -1585,7 +2714,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Kathy Hochul",
@@ -1601,18 +2754,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 6.4,
-        "projectedMargin": 9.98,
-        "shift": 3.58,
+        "projectedMargin": 10.04,
+        "shift": 3.64,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1620,6 +2775,11 @@
           "severity": "warning",
           "type": "NO_USABLE_POLLING",
           "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "NY is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
         },
         {
           "severity": "warning",
@@ -1632,17 +2792,36 @@
       "id": "OH",
       "state": "OH",
       "race": "Ohio Governor",
-      "projectedMargin": -4.53,
-      "probabilityEngineMargin": -4.31,
-      "demProbability": 0.3244,
-      "repProbability": 0.6756,
+      "projectedMargin": -4.22,
+      "probabilityEngineMargin": -3.82,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -4.22,
+          "display": "R+4.2",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -3.82,
+          "display": "R+3.8",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.4,
+        "consistentDirection": true
+      },
+      "demProbability": 0.3434,
+      "repProbability": 0.6566,
       "winnerParty": "R",
       "rating": "Lean R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Toss-up",
         "impliedMargin": 0,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -1651,7 +2830,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "state-trend-and-nominee-sensitivity",
+        "candidate": null,
+        "review": "Candidate field and red-state trend need explicit checks.",
+        "applied": false
       },
       "candidates": {
         "dem": "Amy Acton",
@@ -1667,18 +2870,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -25.4,
-        "projectedMargin": -4.53,
-        "shift": 20.87,
+        "projectedMargin": -4.22,
+        "shift": 21.18,
         "level": "large",
         "expectedRegression": false,
         "needsReview": true,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1696,6 +2901,11 @@
           "severity": "info",
           "type": "NAMED_RACE_REVIEW",
           "message": "OH is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "warning",
+          "type": "CANDIDATE_EXCEPTION_MODE_REVIEW",
+          "message": "Candidate field and red-state trend need explicit checks."
         }
       ]
     },
@@ -1703,17 +2913,36 @@
       "id": "OK",
       "state": "OK",
       "race": "Oklahoma Governor",
-      "projectedMargin": -11.49,
-      "probabilityEngineMargin": -12,
-      "demProbability": 0.0877,
-      "repProbability": 0.9123,
+      "projectedMargin": -12.2,
+      "probabilityEngineMargin": -13.14,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -12.2,
+          "display": "R+12.2",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -13.14,
+          "display": "R+13.1",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.94,
+        "consistentDirection": true
+      },
+      "demProbability": 0.0689,
+      "repProbability": 0.9311,
       "winnerParty": "R",
       "rating": "Likely R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe R",
         "impliedMargin": -22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -1722,7 +2951,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -1738,18 +2991,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -13.7,
-        "projectedMargin": -11.49,
-        "shift": 2.21,
+        "projectedMargin": -12.2,
+        "shift": 1.5,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1762,6 +3017,11 @@
           "severity": "high",
           "type": "RATING_PRIOR_DIVERGENCE",
           "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
         }
       ]
     },
@@ -1769,17 +3029,36 @@
       "id": "OR",
       "state": "OR",
       "race": "Oregon Governor",
-      "projectedMargin": 8.88,
-      "probabilityEngineMargin": 8.98,
-      "demProbability": 0.8719,
-      "repProbability": 0.1281,
+      "projectedMargin": 9.02,
+      "probabilityEngineMargin": 9.21,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 9.02,
+          "display": "D+9.0",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 9.21,
+          "display": "D+9.2",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.19,
+        "consistentDirection": true
+      },
+      "demProbability": 0.8779,
+      "repProbability": 0.1221,
       "winnerParty": "D",
       "rating": "Likely D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Likely D",
         "impliedMargin": 11,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -1788,7 +3067,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Tina Kotek",
@@ -1804,18 +3107,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 3.4,
-        "projectedMargin": 8.88,
-        "shift": 5.48,
+        "projectedMargin": 9.02,
+        "shift": 5.62,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1830,17 +3135,36 @@
       "id": "PA",
       "state": "PA",
       "race": "Pennsylvania Governor",
-      "projectedMargin": 10.75,
-      "probabilityEngineMargin": 10.76,
-      "demProbability": 0.9097,
-      "repProbability": 0.0903,
+      "projectedMargin": 10.76,
+      "probabilityEngineMargin": 10.79,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 10.76,
+          "display": "D+10.8",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 10.79,
+          "display": "D+10.8",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.03,
+        "consistentDirection": true
+      },
+      "demProbability": 0.9103,
+      "repProbability": 0.0897,
       "winnerParty": "D",
       "rating": "Likely D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Likely D",
         "impliedMargin": 11,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -1849,7 +3173,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "incumbent-overperformance",
+        "candidate": "Josh Shapiro",
+        "review": "Popular incumbent adjustment; additive to the structural incumbent term.",
+        "applied": true
       },
       "candidates": {
         "dem": "Josh Shapiro",
@@ -1865,18 +3213,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 14.8,
-        "projectedMargin": 10.75,
-        "shift": -4.05,
+        "projectedMargin": 10.76,
+        "shift": -4.04,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1884,6 +3234,16 @@
           "severity": "warning",
           "type": "NO_USABLE_POLLING",
           "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "PA is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "info",
+          "type": "CANDIDATE_EXCEPTION_MODE_ACTIVE",
+          "message": "Popular incumbent adjustment; additive to the structural incumbent term."
         }
       ]
     },
@@ -1891,17 +3251,36 @@
       "id": "RI",
       "state": "RI",
       "race": "Rhode Island Governor",
-      "projectedMargin": 15.11,
-      "probabilityEngineMargin": 15.44,
-      "demProbability": 0.9841,
-      "repProbability": 0.0158,
+      "projectedMargin": 15.57,
+      "probabilityEngineMargin": 16.18,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 15.57,
+          "display": "D+15.6",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 16.18,
+          "display": "D+16.2",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.61,
+        "consistentDirection": true
+      },
+      "demProbability": 0.9878,
+      "repProbability": 0.0122,
       "winnerParty": "D",
       "rating": "Safe D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe D",
         "impliedMargin": 22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -1910,7 +3289,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Dan McKee",
@@ -1926,18 +3329,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 19.3,
-        "projectedMargin": 15.11,
-        "shift": -4.2,
+        "projectedMargin": 15.57,
+        "shift": -3.73,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1962,17 +3367,36 @@
       "id": "SC",
       "state": "SC",
       "race": "South Carolina Governor",
-      "projectedMargin": -6.78,
-      "probabilityEngineMargin": -6.98,
-      "demProbability": 0.2291,
-      "repProbability": 0.7709,
+      "projectedMargin": -7.07,
+      "probabilityEngineMargin": -7.44,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -7.07,
+          "display": "R+7.1",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -7.44,
+          "display": "R+7.4",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.37,
+        "consistentDirection": true
+      },
+      "demProbability": 0.2146,
+      "repProbability": 0.7854,
       "winnerParty": "R",
       "rating": "Lean R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Likely R",
         "impliedMargin": -11,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -1981,7 +3405,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -1997,18 +3445,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -17.8,
-        "projectedMargin": -6.78,
-        "shift": 11.02,
+        "projectedMargin": -7.07,
+        "shift": 10.73,
         "level": "notable",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -2023,6 +3473,11 @@
           "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
         },
         {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "SC is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
           "severity": "warning",
           "type": "PRIMARY_STATUS_PENDING",
           "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
@@ -2033,17 +3488,36 @@
       "id": "SD",
       "state": "SD",
       "race": "South Dakota Governor",
-      "projectedMargin": -19.56,
-      "probabilityEngineMargin": -19.68,
-      "demProbability": 0.0016,
-      "repProbability": 0.9983,
+      "projectedMargin": -19.72,
+      "probabilityEngineMargin": -19.94,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -19.72,
+          "display": "R+19.7",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -19.94,
+          "display": "R+19.9",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.22,
+        "consistentDirection": true
+      },
+      "demProbability": 0.0015,
+      "repProbability": 0.9985,
       "winnerParty": "R",
       "rating": "Safe R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe R",
         "impliedMargin": -22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -2052,7 +3526,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Daniel Ahlers",
@@ -2068,18 +3566,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -24,
-        "projectedMargin": -19.56,
-        "shift": 4.44,
+        "projectedMargin": -19.72,
+        "shift": 4.28,
         "level": "normal",
         "expectedRegression": true,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -2099,17 +3599,36 @@
       "id": "TN",
       "state": "TN",
       "race": "Tennessee Governor",
-      "projectedMargin": -15.53,
-      "probabilityEngineMargin": -15.84,
-      "demProbability": 0.0339,
-      "repProbability": 0.9661,
+      "projectedMargin": -15.96,
+      "probabilityEngineMargin": -16.54,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -15.96,
+          "display": "R+16.0",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -16.54,
+          "display": "R+16.5",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.58,
+        "consistentDirection": true
+      },
+      "demProbability": 0.0282,
+      "repProbability": 0.9718,
       "winnerParty": "R",
       "rating": "Safe R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe R",
         "impliedMargin": -22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -2118,7 +3637,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -2134,18 +3677,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -32.7,
-        "projectedMargin": -15.53,
-        "shift": 17.18,
+        "projectedMargin": -15.96,
+        "shift": 16.74,
         "level": "large",
         "expectedRegression": true,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -2165,6 +3710,11 @@
           "message": "External rating prior and raw model margin diverged enough to require review."
         },
         {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "TN is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
           "severity": "warning",
           "type": "PRIMARY_STATUS_PENDING",
           "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
@@ -2175,17 +3725,36 @@
       "id": "TX",
       "state": "TX",
       "race": "Texas Governor",
-      "projectedMargin": -11.27,
-      "probabilityEngineMargin": -11.79,
-      "demProbability": 0.0632,
-      "repProbability": 0.9368,
+      "projectedMargin": -12,
+      "probabilityEngineMargin": -12.95,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -12,
+          "display": "R+12.0",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -12.95,
+          "display": "R+12.9",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.95,
+        "consistentDirection": true
+      },
+      "demProbability": 0.0466,
+      "repProbability": 0.9535,
       "winnerParty": "R",
       "rating": "Likely R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe R",
         "impliedMargin": -22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Governor race configuration"
         ]
@@ -2194,7 +3763,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Gina Hinojosa",
@@ -2210,18 +3803,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -10.9,
-        "projectedMargin": -11.27,
-        "shift": -0.37,
+        "projectedMargin": -12,
+        "shift": -1.1,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -2236,6 +3831,11 @@
           "message": "External rating prior and raw model margin diverged enough to require review."
         },
         {
+          "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
+        },
+        {
           "severity": "info",
           "type": "NAMED_RACE_REVIEW",
           "message": "TX is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
@@ -2246,17 +3846,36 @@
       "id": "VT",
       "state": "VT",
       "race": "Vermont Governor",
-      "projectedMargin": -19.23,
-      "probabilityEngineMargin": -18.83,
-      "demProbability": 0.0074,
-      "repProbability": 0.9926,
+      "projectedMargin": -18.68,
+      "probabilityEngineMargin": -17.95,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -18.68,
+          "display": "R+18.7",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -17.95,
+          "display": "R+17.9",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.73,
+        "consistentDirection": true
+      },
+      "demProbability": 0.01,
+      "repProbability": 0.99,
       "winnerParty": "R",
       "rating": "Safe R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Likely R",
         "impliedMargin": -11,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -2265,7 +3884,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "phil-scott-exception",
+        "candidate": "Phil Scott",
+        "review": "Cross-party incumbent appeal.",
+        "applied": true
       },
       "candidates": {
         "dem": "Democrat",
@@ -2281,18 +3924,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -46.9,
-        "projectedMargin": -19.23,
-        "shift": 27.67,
+        "projectedMargin": -18.68,
+        "shift": 28.22,
         "level": "large",
         "expectedRegression": true,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -2312,6 +3957,16 @@
           "message": "External rating prior and raw model margin diverged enough to require review."
         },
         {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "VT is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "info",
+          "type": "CANDIDATE_EXCEPTION_MODE_ACTIVE",
+          "message": "Cross-party incumbent appeal."
+        },
+        {
           "severity": "warning",
           "type": "PRIMARY_STATUS_PENDING",
           "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
@@ -2322,17 +3977,36 @@
       "id": "WI",
       "state": "WI",
       "race": "Wisconsin Governor",
-      "projectedMargin": 0.69,
-      "probabilityEngineMargin": 0.66,
-      "demProbability": 0.5269,
-      "repProbability": 0.4731,
+      "projectedMargin": 0.64,
+      "probabilityEngineMargin": 0.58,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 0.64,
+          "display": "D+0.6",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 0.58,
+          "display": "D+0.6",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.06,
+        "consistentDirection": true
+      },
+      "demProbability": 0.5238,
+      "repProbability": 0.4762,
       "winnerParty": "D",
       "rating": "Toss-up",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Toss-up",
         "impliedMargin": 0,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -2341,7 +4015,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "high-elasticity-state",
+        "candidate": null,
+        "review": "High-elasticity state where small environment moves can change odds.",
+        "applied": false
       },
       "candidates": {
         "dem": "Sara Rodriguez",
@@ -2357,18 +4055,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 3.4,
-        "projectedMargin": 0.69,
-        "shift": -2.71,
+        "projectedMargin": 0.64,
+        "shift": -2.76,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -2376,6 +4076,16 @@
           "severity": "warning",
           "type": "NO_USABLE_POLLING",
           "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "WI is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "warning",
+          "type": "CANDIDATE_EXCEPTION_MODE_REVIEW",
+          "message": "High-elasticity state where small environment moves can change odds."
         },
         {
           "severity": "warning",
@@ -2388,17 +4098,36 @@
       "id": "WY",
       "state": "WY",
       "race": "Wyoming Governor",
-      "projectedMargin": -23.44,
-      "probabilityEngineMargin": -20.82,
-      "demProbability": 0.0046,
-      "repProbability": 0.9954,
+      "projectedMargin": -23.53,
+      "probabilityEngineMargin": -20.96,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -23.53,
+          "display": "R+23.5",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -20.96,
+          "display": "R+21.0",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -2.57,
+        "consistentDirection": true
+      },
+      "demProbability": 0.0044,
+      "repProbability": 0.9956,
       "winnerParty": "R",
       "rating": "Safe R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe R",
         "impliedMargin": -22,
-        "weight": 0.15,
+        "weight": 0.275,
         "sources": [
           "Cook"
         ]
@@ -2407,7 +4136,31 @@
         "usablePollCount": 0,
         "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "NO_RACE_POLLS"
+        "status": "PARSE_FAILURE"
+      },
+      "pollingMergeStatus": {
+        "parsedPollRows": 0,
+        "validatedPollRows": 0,
+        "mergedPollRows": 0,
+        "mergeStatus": "NO_PARSED_POLLS",
+        "pollingStatus": "PARSE_FAILURE",
+        "reducedWeight": false,
+        "weightScale": 1
+      },
+      "pollingWeightDiagnostic": {
+        "model": "governor",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "PARSE_FAILURE",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Gabriel Green",
@@ -2423,18 +4176,20 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -53.8,
-        "projectedMargin": -23.44,
-        "shift": 30.36,
+        "projectedMargin": -23.53,
+        "shift": 30.27,
         "level": "large",
         "expectedRegression": true,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
-        "forecast": "HEALTHY",
-        "degraded": false,
-        "racePolling": "NO_RACE_POLLS",
-        "unavailableSources": []
+        "forecast": "DEGRADED",
+        "degraded": true,
+        "racePolling": "PARSE_FAILURE",
+        "unavailableSources": [
+          "twoSeventyGovernorPolls"
+        ]
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -2447,6 +4202,11 @@
           "severity": "warning",
           "type": "HISTORICAL_SHIFT_REVIEW",
           "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "WY is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
         },
         {
           "severity": "warning",

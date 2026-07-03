@@ -1,22 +1,41 @@
 {
-  "generatedAt": "2026-07-03T08:28:47.771Z",
+  "generatedAt": "2026-07-04T00:10:45.274Z",
   "model": "senate",
   "schemaVersion": "2026.race-review.1",
   "summary": {
     "races": 35,
-    "reviewRequired": 32,
-    "highSeverity": 17,
-    "noUsablePolling": 21
+    "reviewRequired": 35,
+    "highSeverity": 14,
+    "noUsablePolling": 35
   },
   "races": [
     {
       "id": "AL",
       "state": "AL",
       "race": "Alabama Senate",
-      "projectedMargin": -12.0036,
-      "probabilityEngineMargin": -12.4926,
-      "demProbability": 0.0699,
-      "repProbability": 0.9301,
+      "projectedMargin": -12.3076,
+      "probabilityEngineMargin": -12.7816,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -12.3076,
+          "display": "R+12.3",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -12.7816,
+          "display": "R+12.8",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.474,
+        "consistentDirection": true
+      },
+      "demProbability": 0.0752,
+      "repProbability": 0.9248,
       "winnerParty": "R",
       "rating": "Likely R",
       "ratingPrior": {
@@ -34,6 +53,22 @@
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
       },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
+      },
       "candidates": {
         "dem": "Dakarai Larriett / Everett Wess runoff",
         "rep": "Barry Moore",
@@ -48,8 +83,8 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -20.4,
-        "projectedMargin": -12,
-        "shift": 8.4,
+        "projectedMargin": -12.31,
+        "shift": 8.09,
         "level": "notable",
         "expectedRegression": true,
         "needsReview": false,
@@ -58,11 +93,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -75,6 +107,16 @@
           "severity": "high",
           "type": "RATING_PRIOR_DIVERGENCE",
           "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "AL is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
         }
       ]
     },
@@ -82,26 +124,61 @@
       "id": "AK",
       "state": "AK",
       "race": "Alaska Senate",
-      "projectedMargin": -2.0932,
-      "probabilityEngineMargin": -2.0512,
-      "demProbability": 0.4246,
-      "repProbability": 0.5754,
+      "projectedMargin": -2.4242,
+      "probabilityEngineMargin": -2.3072,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -2.4242,
+          "display": "R+2.4",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -2.3072,
+          "display": "R+2.3",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.117,
+        "consistentDirection": true
+      },
+      "demProbability": 0.4256,
+      "repProbability": 0.5744,
       "winnerParty": "R",
       "rating": "Tilt R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Toss-up",
         "impliedMargin": 0,
-        "weight": 0.065,
+        "weight": 0.15,
         "sources": [
           "Cook"
         ]
       },
       "polling": {
-        "usablePollCount": 5,
-        "livePollCount": 5,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "LEGACY_FALLBACK_ONLY"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": -0.2,
+        "pollingInputShare": null,
+        "pollingStatus": "LEGACY_FALLBACK_ONLY",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "ALASKA_COALITION_DYNAMICS",
+        "candidate": "Mary Peltola",
+        "review": "Alaska coalition, independent, and ranked-choice style dynamics can break ordinary partisan assumptions.",
+        "applied": true
       },
       "candidates": {
         "dem": "Mary Peltola",
@@ -117,28 +194,40 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -13.4,
-        "projectedMargin": -2.09,
-        "shift": 11.31,
+        "projectedMargin": -2.42,
+        "shift": 10.98,
         "level": "notable",
         "expectedRegression": false,
         "needsReview": false,
-        "basis": "current multi-poll signal available"
+        "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "LEGACY_FALLBACK_ONLY",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
         {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "HISTORICAL_SHIFT_REVIEW",
+          "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        },
+        {
           "severity": "info",
           "type": "NAMED_RACE_REVIEW",
           "message": "AK is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "info",
+          "type": "CANDIDATE_EXCEPTION_MODE_ACTIVE",
+          "message": "Alaska coalition, independent, and ranked-choice style dynamics can break ordinary partisan assumptions."
         },
         {
           "severity": "warning",
@@ -153,6 +242,25 @@
       "race": "Arkansas Senate",
       "projectedMargin": -25.7776,
       "probabilityEngineMargin": -25.5916,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -25.7776,
+          "display": "R+25.8",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -25.5916,
+          "display": "R+25.6",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.186,
+        "consistentDirection": true
+      },
       "demProbability": 0.001,
       "repProbability": 0.999,
       "winnerParty": "R",
@@ -171,6 +279,22 @@
         "livePollCount": 0,
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Hallie Shoffner",
@@ -196,11 +320,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -215,10 +336,29 @@
       "id": "CO",
       "state": "CO",
       "race": "Colorado Senate",
-      "projectedMargin": 9.6292,
-      "probabilityEngineMargin": 10.2322,
-      "demProbability": 0.8451,
-      "repProbability": 0.1549,
+      "projectedMargin": 9.378,
+      "probabilityEngineMargin": 9.993,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 9.378,
+          "display": "D+9.4",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 9.993,
+          "display": "D+10.0",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.615,
+        "consistentDirection": true
+      },
+      "demProbability": 0.8397,
+      "repProbability": 0.1603,
       "winnerParty": "D",
       "rating": "Likely D",
       "ratingPrior": {
@@ -236,6 +376,22 @@
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
       },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
+      },
       "candidates": {
         "dem": "John Hickenlooper",
         "rep": "Republican",
@@ -250,8 +406,8 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 9.5,
-        "projectedMargin": 9.63,
-        "shift": 0.13,
+        "projectedMargin": 9.38,
+        "shift": -0.12,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
@@ -260,11 +416,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -280,6 +433,16 @@
         },
         {
           "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "CO is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "warning",
           "type": "PRIMARY_STATUS_PENDING",
           "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
         }
@@ -291,8 +454,27 @@
       "race": "Delaware Senate",
       "projectedMargin": 15.6408,
       "probabilityEngineMargin": 15.9528,
-      "demProbability": 0.9602,
-      "repProbability": 0.0398,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 15.6408,
+          "display": "D+15.6",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 15.9528,
+          "display": "D+16.0",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.312,
+        "consistentDirection": true
+      },
+      "demProbability": 0.9612,
+      "repProbability": 0.0388,
       "winnerParty": "D",
       "rating": "Safe D",
       "ratingPrior": {
@@ -309,6 +491,22 @@
         "livePollCount": 0,
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Chris Coons",
@@ -334,11 +532,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -353,6 +548,11 @@
           "message": "External rating prior and raw model margin diverged enough to require review."
         },
         {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "DE is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
           "severity": "warning",
           "type": "PRIMARY_STATUS_PENDING",
           "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
@@ -363,26 +563,61 @@
       "id": "FL",
       "state": "FL",
       "race": "Florida Senate",
-      "projectedMargin": -8.8268,
-      "probabilityEngineMargin": -9.0938,
-      "demProbability": 0.1669,
-      "repProbability": 0.8331,
+      "projectedMargin": -8.785,
+      "probabilityEngineMargin": -9.43,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -8.785,
+          "display": "R+8.8",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -9.43,
+          "display": "R+9.4",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.645,
+        "consistentDirection": true
+      },
+      "demProbability": 0.1814,
+      "repProbability": 0.8186,
       "winnerParty": "R",
       "rating": "Likely R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe R",
         "impliedMargin": -22,
-        "weight": 0.065,
+        "weight": 0.15,
         "sources": [
           "Senate race configuration"
         ]
       },
       "polling": {
-        "usablePollCount": 3,
-        "livePollCount": 3,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -398,28 +633,35 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -13,
-        "projectedMargin": -8.83,
-        "shift": 4.17,
+        "projectedMargin": -8.79,
+        "shift": 4.21,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
-        "basis": "current multi-poll signal available"
+        "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
         {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
           "severity": "high",
           "type": "RATING_PRIOR_DIVERGENCE",
           "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
         },
         {
           "severity": "warning",
@@ -432,26 +674,61 @@
       "id": "GA",
       "state": "GA",
       "race": "Georgia Senate",
-      "projectedMargin": 6.0978,
-      "probabilityEngineMargin": 5.9748,
-      "demProbability": 0.7353,
-      "repProbability": 0.2647,
+      "projectedMargin": 4.0298,
+      "probabilityEngineMargin": 3.8318,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 4.0298,
+          "display": "D+4.0",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 3.8318,
+          "display": "D+3.8",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.198,
+        "consistentDirection": true
+      },
+      "demProbability": 0.6436,
+      "repProbability": 0.3564,
       "winnerParty": "D",
-      "rating": "Lean D",
+      "rating": "Tilt D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Toss-up",
         "impliedMargin": 0,
-        "weight": 0.065,
+        "weight": 0.15,
         "sources": [
           "Cook"
         ]
       },
       "polling": {
-        "usablePollCount": 3,
-        "livePollCount": 3,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "OSSOFF_INCUMBENCY_AND_GOP_NOMINEE",
+        "candidate": "Jon Ossoff",
+        "review": "Georgia is sensitive to candidate quality and runoff/turnout assumptions.",
+        "applied": true
       },
       "candidates": {
         "dem": "Jon Ossoff",
@@ -467,28 +744,35 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 1.2,
-        "projectedMargin": 6.1,
-        "shift": 4.9,
+        "projectedMargin": 4.03,
+        "shift": 2.83,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
-        "basis": "current multi-poll signal available"
+        "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
         {
-          "severity": "high",
-          "type": "RATING_PRIOR_DIVERGENCE",
-          "message": "External rating prior and raw model margin diverged enough to require review."
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "GA is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "info",
+          "type": "CANDIDATE_EXCEPTION_MODE_ACTIVE",
+          "message": "Georgia is sensitive to candidate quality and runoff/turnout assumptions."
         }
       ]
     },
@@ -496,26 +780,61 @@
       "id": "ID",
       "state": "ID",
       "race": "Idaho Senate",
-      "projectedMargin": -17.4736,
-      "probabilityEngineMargin": -17.6176,
-      "demProbability": 0.0089,
-      "repProbability": 0.9911,
+      "projectedMargin": -23.4752,
+      "probabilityEngineMargin": -23.4032,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -23.4752,
+          "display": "R+23.5",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -23.4032,
+          "display": "R+23.4",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.072,
+        "consistentDirection": true
+      },
+      "demProbability": 0.001,
+      "repProbability": 0.999,
       "winnerParty": "R",
       "rating": "Safe R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe R",
         "impliedMargin": -22,
-        "weight": 0.1,
+        "weight": 0.15,
         "sources": [
           "Cook"
         ]
       },
       "polling": {
-        "usablePollCount": 1,
-        "livePollCount": 1,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "David Roth",
@@ -531,9 +850,9 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -30.6,
-        "projectedMargin": -17.47,
-        "shift": 13.13,
-        "level": "large",
+        "projectedMargin": -23.48,
+        "shift": 7.12,
+        "level": "notable",
         "expectedRegression": true,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
@@ -541,14 +860,21 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
-      "reviewRequired": false,
+      "reviewRequired": true,
       "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "ID is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
         {
           "severity": "info",
           "type": "INDEPENDENT_OR_THIRD_PARTY_DYNAMIC",
@@ -560,10 +886,29 @@
       "id": "IL",
       "state": "IL",
       "race": "Illinois Senate",
-      "projectedMargin": 11.234,
-      "probabilityEngineMargin": 11.759,
-      "demProbability": 0.9115,
-      "repProbability": 0.0885,
+      "projectedMargin": 11.0586,
+      "probabilityEngineMargin": 11.5926,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 11.0586,
+          "display": "D+11.1",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 11.5926,
+          "display": "D+11.6",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.534,
+        "consistentDirection": true
+      },
+      "demProbability": 0.9059,
+      "repProbability": 0.0941,
       "winnerParty": "D",
       "rating": "Likely D",
       "ratingPrior": {
@@ -581,6 +926,22 @@
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
       },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
+      },
       "candidates": {
         "dem": "Juliana Stratton",
         "rep": "Don Tracy",
@@ -595,8 +956,8 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 17.1,
-        "projectedMargin": 11.23,
-        "shift": -5.87,
+        "projectedMargin": 11.06,
+        "shift": -6.04,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
@@ -605,11 +966,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -622,6 +980,11 @@
           "severity": "high",
           "type": "RATING_PRIOR_DIVERGENCE",
           "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
         }
       ]
     },
@@ -629,26 +992,61 @@
       "id": "IA",
       "state": "IA",
       "race": "Iowa Senate",
-      "projectedMargin": -2.7926,
-      "probabilityEngineMargin": -2.8466,
-      "demProbability": 0.3871,
-      "repProbability": 0.6129,
+      "projectedMargin": -3.0918,
+      "probabilityEngineMargin": -3.2088,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -3.0918,
+          "display": "R+3.1",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -3.2088,
+          "display": "R+3.2",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.117,
+        "consistentDirection": true
+      },
+      "demProbability": 0.3912,
+      "repProbability": 0.6088,
       "winnerParty": "R",
       "rating": "Tilt R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Lean R",
         "impliedMargin": -5.5,
-        "weight": 0.065,
+        "weight": 0.15,
         "sources": [
           "Cook"
         ]
       },
       "polling": {
-        "usablePollCount": 4,
-        "livePollCount": 4,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "LEGACY_FALLBACK_ONLY"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": -0.2,
+        "pollingInputShare": null,
+        "pollingStatus": "LEGACY_FALLBACK_ONLY",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Josh Turek",
@@ -664,24 +1062,26 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -6.8,
-        "projectedMargin": -2.79,
-        "shift": 4.01,
+        "projectedMargin": -3.09,
+        "shift": 3.71,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
-        "basis": "current multi-poll signal available"
+        "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "LEGACY_FALLBACK_ONLY",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
         {
           "severity": "info",
           "type": "NAMED_RACE_REVIEW",
@@ -698,10 +1098,29 @@
       "id": "KS",
       "state": "KS",
       "race": "Kansas Senate",
-      "projectedMargin": -7.93,
-      "probabilityEngineMargin": -8.08,
-      "demProbability": 0.2165,
-      "repProbability": 0.7835,
+      "projectedMargin": -8.0974,
+      "probabilityEngineMargin": -8.2384,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -8.0974,
+          "display": "R+8.1",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -8.2384,
+          "display": "R+8.2",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.141,
+        "consistentDirection": true
+      },
+      "demProbability": 0.212,
+      "repProbability": 0.788,
       "winnerParty": "R",
       "rating": "Likely R",
       "ratingPrior": {
@@ -719,6 +1138,22 @@
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
       },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
+      },
       "candidates": {
         "dem": "Democrat",
         "rep": "Roger Marshall",
@@ -733,8 +1168,8 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -12,
-        "projectedMargin": -7.93,
-        "shift": 4.07,
+        "projectedMargin": -8.1,
+        "shift": 3.9,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
@@ -743,11 +1178,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -767,10 +1199,29 @@
       "id": "KY",
       "state": "KY",
       "race": "Kentucky Senate",
-      "projectedMargin": -12.0244,
-      "probabilityEngineMargin": -12.5104,
-      "demProbability": 0.0688,
-      "repProbability": 0.9312,
+      "projectedMargin": -12.5028,
+      "probabilityEngineMargin": -12.9648,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -12.5028,
+          "display": "R+12.5",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -12.9648,
+          "display": "R+13.0",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.462,
+        "consistentDirection": true
+      },
+      "demProbability": 0.062,
+      "repProbability": 0.938,
       "winnerParty": "R",
       "rating": "Likely R",
       "ratingPrior": {
@@ -788,6 +1239,22 @@
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
       },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
+      },
       "candidates": {
         "dem": "Charles Booker",
         "rep": "Andy Barr",
@@ -802,8 +1269,8 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -20.3,
-        "projectedMargin": -12.02,
-        "shift": 8.28,
+        "projectedMargin": -12.5,
+        "shift": 7.8,
         "level": "notable",
         "expectedRegression": true,
         "needsReview": false,
@@ -812,11 +1279,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -829,6 +1293,11 @@
           "severity": "high",
           "type": "RATING_PRIOR_DIVERGENCE",
           "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
         }
       ]
     },
@@ -836,10 +1305,29 @@
       "id": "LA",
       "state": "LA",
       "race": "Louisiana Senate",
-      "projectedMargin": -11.9778,
-      "probabilityEngineMargin": -11.9298,
-      "demProbability": 0.1226,
-      "repProbability": 0.8774,
+      "projectedMargin": -12.245,
+      "probabilityEngineMargin": -12.185,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -12.245,
+          "display": "R+12.2",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -12.185,
+          "display": "R+12.2",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.06,
+        "consistentDirection": true
+      },
+      "demProbability": 0.118,
+      "repProbability": 0.882,
       "winnerParty": "R",
       "rating": "Likely R",
       "ratingPrior": {
@@ -857,6 +1345,22 @@
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
       },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
+      },
       "candidates": {
         "dem": "Jamie Davis / Gary Crockett runoff",
         "rep": "Julia Letlow / John Fleming runoff",
@@ -871,21 +1375,18 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -26.8,
-        "projectedMargin": -11.98,
-        "shift": 14.82,
+        "projectedMargin": -12.25,
+        "shift": 14.55,
         "level": "large",
-        "expectedRegression": false,
-        "needsReview": true,
+        "expectedRegression": true,
+        "needsReview": false,
         "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -898,6 +1399,11 @@
           "severity": "warning",
           "type": "HISTORICAL_SHIFT_REVIEW",
           "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "LA is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
         }
       ]
     },
@@ -905,26 +1411,61 @@
       "id": "ME",
       "state": "ME",
       "race": "Maine Senate",
-      "projectedMargin": 0.3246,
-      "probabilityEngineMargin": 0.3186,
-      "demProbability": 0.5113,
-      "repProbability": 0.4887,
+      "projectedMargin": -0.028,
+      "probabilityEngineMargin": -0.028,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -0.028,
+          "display": "Even",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -0.028,
+          "display": "Even",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0,
+        "consistentDirection": true
+      },
+      "demProbability": 0.5005,
+      "repProbability": 0.4995,
       "winnerParty": "D",
       "rating": "Toss-up",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Toss-up",
         "impliedMargin": 0,
-        "weight": 0.065,
+        "weight": 0.15,
         "sources": [
           "Cook"
         ]
       },
       "polling": {
-        "usablePollCount": 16,
-        "livePollCount": 16,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "LEGACY_FALLBACK_ONLY"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": -0.06,
+        "pollingInputShare": null,
+        "pollingStatus": "LEGACY_FALLBACK_ONLY",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "MAINE_CANDIDATE_CROSSOVER",
+        "candidate": "Susan Collins / Graham Platner",
+        "review": "Maine comparisons should use incumbent-specific context rather than the last Senate race alone.",
+        "applied": true
       },
       "candidates": {
         "dem": "Graham Platner",
@@ -940,28 +1481,35 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -9.2,
-        "projectedMargin": 0.32,
-        "shift": 9.52,
+        "projectedMargin": -0.03,
+        "shift": 9.17,
         "level": "notable",
         "expectedRegression": false,
         "needsReview": false,
-        "basis": "current multi-poll signal available"
+        "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "LEGACY_FALLBACK_ONLY",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
         {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
           "severity": "info",
           "type": "NAMED_RACE_REVIEW",
           "message": "ME is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "info",
+          "type": "CANDIDATE_EXCEPTION_MODE_ACTIVE",
+          "message": "Maine comparisons should use incumbent-specific context rather than the last Senate race alone."
         },
         {
           "severity": "info",
@@ -981,6 +1529,25 @@
       "race": "Massachusetts Senate",
       "projectedMargin": 26.0568,
       "probabilityEngineMargin": 25.8588,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 26.0568,
+          "display": "D+26.1",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 25.8588,
+          "display": "D+25.9",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.198,
+        "consistentDirection": true
+      },
       "demProbability": 0.999,
       "repProbability": 0.001,
       "winnerParty": "D",
@@ -999,6 +1566,22 @@
         "livePollCount": 0,
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Ed Markey",
@@ -1024,11 +1607,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1048,26 +1628,61 @@
       "id": "MI",
       "state": "MI",
       "race": "Michigan Senate",
-      "projectedMargin": 2.0782,
-      "probabilityEngineMargin": 2.0362,
-      "demProbability": 0.5704,
-      "repProbability": 0.4296,
+      "projectedMargin": 1.4324,
+      "probabilityEngineMargin": 1.3634,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 1.4324,
+          "display": "D+1.4",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 1.3634,
+          "display": "D+1.4",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.069,
+        "consistentDirection": true
+      },
+      "demProbability": 0.5447,
+      "repProbability": 0.4553,
       "winnerParty": "D",
-      "rating": "Tilt D",
+      "rating": "Toss-up",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Toss-up",
         "impliedMargin": 0,
-        "weight": 0.065,
+        "weight": 0.15,
         "sources": [
           "Cook"
         ]
       },
       "polling": {
-        "usablePollCount": 8,
-        "livePollCount": 8,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "LEGACY_FALLBACK_ONLY"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": -0.02,
+        "pollingInputShare": null,
+        "pollingStatus": "LEGACY_FALLBACK_ONLY",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -1083,24 +1698,26 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 1.7,
-        "projectedMargin": 2.08,
-        "shift": 0.38,
+        "projectedMargin": 1.43,
+        "shift": -0.27,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
-        "basis": "current multi-poll signal available"
+        "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "LEGACY_FALLBACK_ONLY",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
         {
           "severity": "warning",
           "type": "PRIMARY_STATUS_PENDING",
@@ -1112,10 +1729,29 @@
       "id": "MN",
       "state": "MN",
       "race": "Minnesota Senate",
-      "projectedMargin": 4.5012,
-      "probabilityEngineMargin": 4.8192,
-      "demProbability": 0.6634,
-      "repProbability": 0.3366,
+      "projectedMargin": 4.3326,
+      "probabilityEngineMargin": 4.6566,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 4.3326,
+          "display": "D+4.3",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 4.6566,
+          "display": "D+4.7",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.324,
+        "consistentDirection": true
+      },
+      "demProbability": 0.6581,
+      "repProbability": 0.3419,
       "winnerParty": "D",
       "rating": "Lean D",
       "ratingPrior": {
@@ -1133,6 +1769,22 @@
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
       },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
+      },
       "candidates": {
         "dem": "Democrat",
         "rep": "Republican",
@@ -1147,8 +1799,8 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 5.7,
-        "projectedMargin": 4.5,
-        "shift": -1.2,
+        "projectedMargin": 4.33,
+        "shift": -1.37,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
@@ -1157,11 +1809,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1191,10 +1840,29 @@
       "id": "MS",
       "state": "MS",
       "race": "Mississippi Senate",
-      "projectedMargin": -8.6076,
-      "probabilityEngineMargin": -9.2616,
-      "demProbability": 0.1527,
-      "repProbability": 0.8473,
+      "projectedMargin": -8.9336,
+      "probabilityEngineMargin": -9.5726,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -8.9336,
+          "display": "R+8.9",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -9.5726,
+          "display": "R+9.6",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.639,
+        "consistentDirection": true
+      },
+      "demProbability": 0.1439,
+      "repProbability": 0.8561,
       "winnerParty": "R",
       "rating": "Likely R",
       "ratingPrior": {
@@ -1212,6 +1880,22 @@
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
       },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
+      },
       "candidates": {
         "dem": "Scott Colom",
         "rep": "Cindy Hyde-Smith",
@@ -1226,8 +1910,8 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -10.2,
-        "projectedMargin": -8.61,
-        "shift": 1.59,
+        "projectedMargin": -8.93,
+        "shift": 1.27,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
@@ -1236,11 +1920,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1253,6 +1934,16 @@
           "severity": "high",
           "type": "RATING_PRIOR_DIVERGENCE",
           "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "MS is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
         }
       ]
     },
@@ -1260,26 +1951,61 @@
       "id": "MT",
       "state": "MT",
       "race": "Montana Senate",
-      "projectedMargin": -6.4548,
-      "probabilityEngineMargin": -6.9468,
-      "demProbability": 0.2763,
-      "repProbability": 0.7237,
+      "projectedMargin": -6.009,
+      "probabilityEngineMargin": -6.789,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -6.009,
+          "display": "R+6.0",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -6.789,
+          "display": "R+6.8",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.78,
+        "consistentDirection": true
+      },
+      "demProbability": 0.2686,
+      "repProbability": 0.7314,
       "winnerParty": "R",
       "rating": "Lean R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe R",
         "impliedMargin": -22,
-        "weight": 0.1,
+        "weight": 0.15,
         "sources": [
           "Senate race configuration"
         ]
       },
       "polling": {
-        "usablePollCount": 2,
-        "livePollCount": 2,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "LEGACY_FALLBACK_ONLY"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": -0.35,
+        "pollingInputShare": null,
+        "pollingStatus": "LEGACY_FALLBACK_ONLY",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Alani Bankhead",
@@ -1295,8 +2021,8 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -10,
-        "projectedMargin": -6.45,
-        "shift": 3.55,
+        "projectedMargin": -6.01,
+        "shift": 3.99,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
@@ -1305,18 +2031,25 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "LEGACY_FALLBACK_ONLY",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
         {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
           "severity": "high",
           "type": "RATING_PRIOR_DIVERGENCE",
           "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
         },
         {
           "severity": "info",
@@ -1334,26 +2067,61 @@
       "id": "NC",
       "state": "NC",
       "race": "North Carolina Senate",
-      "projectedMargin": 5.5746,
-      "probabilityEngineMargin": 5.4636,
-      "demProbability": 0.7183,
-      "repProbability": 0.2817,
+      "projectedMargin": 3.1666,
+      "probabilityEngineMargin": 3.0106,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 3.1666,
+          "display": "D+3.2",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 3.0106,
+          "display": "D+3.0",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.156,
+        "consistentDirection": true
+      },
+      "demProbability": 0.6152,
+      "repProbability": 0.3848,
       "winnerParty": "D",
-      "rating": "Lean D",
+      "rating": "Tilt D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Toss-up",
         "impliedMargin": 0,
-        "weight": 0.065,
+        "weight": 0.15,
         "sources": [
           "Cook"
         ]
       },
       "polling": {
-        "usablePollCount": 12,
-        "livePollCount": 12,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "LEGACY_FALLBACK_ONLY"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "LEGACY_FALLBACK_ONLY",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "COOPER_STATEWIDE_OVERPERFORMANCE",
+        "candidate": "Roy Cooper",
+        "review": "Candidate has unusual statewide profile that can outperform generic partisanship.",
+        "applied": true
       },
       "candidates": {
         "dem": "Roy Cooper",
@@ -1369,28 +2137,35 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -1.8,
-        "projectedMargin": 5.57,
-        "shift": 7.37,
-        "level": "notable",
+        "projectedMargin": 3.17,
+        "shift": 4.97,
+        "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
-        "basis": "current multi-poll signal available"
+        "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "LEGACY_FALLBACK_ONLY",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
         {
-          "severity": "high",
-          "type": "RATING_PRIOR_DIVERGENCE",
-          "message": "External rating prior and raw model margin diverged enough to require review."
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "NC is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "info",
+          "type": "CANDIDATE_EXCEPTION_MODE_ACTIVE",
+          "message": "Candidate has unusual statewide profile that can outperform generic partisanship."
         }
       ]
     },
@@ -1398,26 +2173,61 @@
       "id": "NE",
       "state": "NE",
       "race": "Nebraska Senate",
-      "projectedMargin": -1.6038,
-      "probabilityEngineMargin": -1.9008,
-      "demProbability": 0.4272,
-      "repProbability": 0.5728,
+      "projectedMargin": -2.671,
+      "probabilityEngineMargin": -3.076,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -2.671,
+          "display": "R+2.7",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -3.076,
+          "display": "R+3.1",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.405,
+        "consistentDirection": true
+      },
+      "demProbability": 0.3862,
+      "repProbability": 0.6138,
       "winnerParty": "R",
       "rating": "Tilt R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Likely R",
         "impliedMargin": -11,
-        "weight": 0.1,
+        "weight": 0.15,
         "sources": [
           "Cook"
         ]
       },
       "polling": {
-        "usablePollCount": 1,
-        "livePollCount": 1,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "LEGACY_FALLBACK_ONLY"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": -0.23,
+        "pollingInputShare": null,
+        "pollingStatus": "LEGACY_FALLBACK_ONLY",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "OSBORN_INDEPENDENT_OVERPERFORMANCE",
+        "candidate": "Dan Osborn",
+        "review": "Independent caucus and ballot-line dynamics make a normal binary partisan baseline less reliable.",
+        "applied": true
       },
       "candidates": {
         "dem": "Dan Osborn",
@@ -1433,8 +2243,8 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -6.7,
-        "projectedMargin": -1.6,
-        "shift": 5.1,
+        "projectedMargin": -2.67,
+        "shift": 4.03,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
@@ -1443,14 +2253,16 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "LEGACY_FALLBACK_ONLY",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
         {
           "severity": "high",
           "type": "RATING_PRIOR_DIVERGENCE",
@@ -1463,6 +2275,11 @@
         },
         {
           "severity": "info",
+          "type": "CANDIDATE_EXCEPTION_MODE_ACTIVE",
+          "message": "Independent caucus and ballot-line dynamics make a normal binary partisan baseline less reliable."
+        },
+        {
+          "severity": "info",
           "type": "INDEPENDENT_OR_THIRD_PARTY_DYNAMIC",
           "message": "Race includes a meaningful non-major-party candidate or caucus dynamic; binary margin interpretation needs review."
         }
@@ -1472,26 +2289,61 @@
       "id": "NH",
       "state": "NH",
       "race": "New Hampshire Senate",
-      "projectedMargin": 8.5214,
-      "probabilityEngineMargin": 8.5724,
-      "demProbability": 0.8081,
-      "repProbability": 0.1919,
+      "projectedMargin": 6.4926,
+      "probabilityEngineMargin": 6.7116,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 6.4926,
+          "display": "D+6.5",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 6.7116,
+          "display": "D+6.7",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.219,
+        "consistentDirection": true
+      },
+      "demProbability": 0.7228,
+      "repProbability": 0.2772,
       "winnerParty": "D",
-      "rating": "Likely D",
+      "rating": "Lean D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Likely D",
         "impliedMargin": 11,
-        "weight": 0.065,
+        "weight": 0.15,
         "sources": [
           "Cook"
         ]
       },
       "polling": {
-        "usablePollCount": 7,
-        "livePollCount": 7,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "LEGACY_FALLBACK_ONLY"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "LEGACY_FALLBACK_ONLY",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -1507,24 +2359,26 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 16,
-        "projectedMargin": 8.52,
-        "shift": -7.48,
+        "projectedMargin": 6.49,
+        "shift": -9.51,
         "level": "notable",
         "expectedRegression": false,
         "needsReview": false,
-        "basis": "current multi-poll signal available"
+        "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "LEGACY_FALLBACK_ONLY",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
         {
           "severity": "warning",
           "type": "PRIMARY_STATUS_PENDING",
@@ -1536,10 +2390,29 @@
       "id": "NJ",
       "state": "NJ",
       "race": "New Jersey Senate",
-      "projectedMargin": 12.1032,
-      "probabilityEngineMargin": 12.5862,
-      "demProbability": 0.9156,
-      "repProbability": 0.0844,
+      "projectedMargin": 11.7992,
+      "probabilityEngineMargin": 12.2972,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 11.7992,
+          "display": "D+11.8",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 12.2972,
+          "display": "D+12.3",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.498,
+        "consistentDirection": true
+      },
+      "demProbability": 0.901,
+      "repProbability": 0.099,
       "winnerParty": "D",
       "rating": "Likely D",
       "ratingPrior": {
@@ -1556,6 +2429,22 @@
         "livePollCount": 0,
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Cory Booker",
@@ -1571,8 +2460,8 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 16.6,
-        "projectedMargin": 12.1,
-        "shift": -4.5,
+        "projectedMargin": 11.8,
+        "shift": -4.8,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
@@ -1581,11 +2470,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1601,6 +2487,16 @@
         },
         {
           "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "NJ is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "warning",
           "type": "PRIMARY_STATUS_PENDING",
           "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
         }
@@ -1610,10 +2506,29 @@
       "id": "NM",
       "state": "NM",
       "race": "New Mexico Senate",
-      "projectedMargin": 9.2176,
-      "probabilityEngineMargin": 9.8416,
-      "demProbability": 0.8239,
-      "repProbability": 0.1761,
+      "projectedMargin": 9.0172,
+      "probabilityEngineMargin": 9.6502,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 9.0172,
+          "display": "D+9.0",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 9.6502,
+          "display": "D+9.7",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.633,
+        "consistentDirection": true
+      },
+      "demProbability": 0.8195,
+      "repProbability": 0.1805,
       "winnerParty": "D",
       "rating": "Likely D",
       "ratingPrior": {
@@ -1631,6 +2546,22 @@
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
       },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
+      },
       "candidates": {
         "dem": "Ben Ray Lujan",
         "rep": "Republican",
@@ -1645,8 +2576,8 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 6.3,
-        "projectedMargin": 9.22,
-        "shift": 2.92,
+        "projectedMargin": 9.02,
+        "shift": 2.72,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
@@ -1655,11 +2586,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1675,6 +2603,11 @@
         },
         {
           "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
+        },
+        {
+          "severity": "warning",
           "type": "PRIMARY_STATUS_PENDING",
           "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
         }
@@ -1684,26 +2617,61 @@
       "id": "OH",
       "state": "OH",
       "race": "Ohio Senate",
-      "projectedMargin": 1.3752,
-      "probabilityEngineMargin": 1.3482,
-      "demProbability": 0.5566,
-      "repProbability": 0.4434,
+      "projectedMargin": 0.8282,
+      "probabilityEngineMargin": 0.7862,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 0.8282,
+          "display": "D+0.8",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 0.7862,
+          "display": "D+0.8",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.042,
+        "consistentDirection": true
+      },
+      "demProbability": 0.5302,
+      "repProbability": 0.4698,
       "winnerParty": "D",
       "rating": "Toss-up",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Toss-up",
         "impliedMargin": 0,
-        "weight": 0.065,
+        "weight": 0.15,
         "sources": [
           "Cook"
         ]
       },
       "polling": {
-        "usablePollCount": 9,
-        "livePollCount": 9,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "LEGACY_FALLBACK_ONLY"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": -0.1,
+        "pollingInputShare": null,
+        "pollingStatus": "LEGACY_FALLBACK_ONLY",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "BROWN_STATEWIDE_OVERPERFORMANCE",
+        "candidate": "Sherrod Brown",
+        "review": "Incumbent profile should be treated separately from a generic open-seat Senate baseline.",
+        "applied": true
       },
       "candidates": {
         "dem": "Sherrod Brown",
@@ -1719,28 +2687,35 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -3.7,
-        "projectedMargin": 1.38,
-        "shift": 5.08,
+        "projectedMargin": 0.83,
+        "shift": 4.53,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
-        "basis": "current multi-poll signal available"
+        "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "LEGACY_FALLBACK_ONLY",
+        "unavailableSources": []
       },
-      "reviewRequired": false,
+      "reviewRequired": true,
       "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
         {
           "severity": "info",
           "type": "NAMED_RACE_REVIEW",
           "message": "OH is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "info",
+          "type": "CANDIDATE_EXCEPTION_MODE_ACTIVE",
+          "message": "Incumbent profile should be treated separately from a generic open-seat Senate baseline."
         }
       ]
     },
@@ -1750,6 +2725,25 @@
       "race": "Oklahoma Senate",
       "projectedMargin": -26.0568,
       "probabilityEngineMargin": -25.8588,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -26.0568,
+          "display": "R+26.1",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -25.8588,
+          "display": "R+25.9",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.198,
+        "consistentDirection": true
+      },
       "demProbability": 0.001,
       "repProbability": 0.999,
       "winnerParty": "R",
@@ -1768,6 +2762,22 @@
         "livePollCount": 0,
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -1793,11 +2803,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1819,6 +2826,25 @@
       "race": "Oregon Senate",
       "projectedMargin": 12.1372,
       "probabilityEngineMargin": 12.6202,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 12.1372,
+          "display": "D+12.1",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 12.6202,
+          "display": "D+12.6",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.483,
+        "consistentDirection": true
+      },
       "demProbability": 0.9292,
       "repProbability": 0.0708,
       "winnerParty": "D",
@@ -1837,6 +2863,22 @@
         "livePollCount": 0,
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Jeff Merkley",
@@ -1862,11 +2904,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -1879,6 +2918,11 @@
           "severity": "high",
           "type": "RATING_PRIOR_DIVERGENCE",
           "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "SAFE_STATE_PROJECTED_MARGIN_COMPRESSED",
+          "message": "Safe-rated race has a projected margin under 14 points; verify polling and fundamentals before publishing."
         }
       ]
     },
@@ -1886,26 +2930,61 @@
       "id": "RI",
       "state": "RI",
       "race": "Rhode Island Senate",
-      "projectedMargin": 17.9794,
-      "probabilityEngineMargin": 18.1054,
-      "demProbability": 0.9965,
-      "repProbability": 0.0035,
+      "projectedMargin": 25.8724,
+      "probabilityEngineMargin": 25.6834,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 25.8724,
+          "display": "D+25.9",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 25.6834,
+          "display": "D+25.7",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.189,
+        "consistentDirection": true
+      },
+      "demProbability": 0.999,
+      "repProbability": 0.001,
       "winnerParty": "D",
       "rating": "Safe D",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Safe D",
         "impliedMargin": 22,
-        "weight": 0.1,
+        "weight": 0.15,
         "sources": [
           "Cook"
         ]
       },
       "polling": {
-        "usablePollCount": 2,
-        "livePollCount": 2,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Jack Reed",
@@ -1921,9 +3000,9 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 33.2,
-        "projectedMargin": 17.98,
-        "shift": -15.22,
-        "level": "large",
+        "projectedMargin": 25.87,
+        "shift": -7.33,
+        "level": "notable",
         "expectedRegression": true,
         "needsReview": false,
         "basis": "structural and candidate inputs only"
@@ -1931,14 +3010,21 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "RI is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
         {
           "severity": "warning",
           "type": "PRIMARY_STATUS_PENDING",
@@ -1950,10 +3036,29 @@
       "id": "SC",
       "state": "SC",
       "race": "South Carolina Senate",
-      "projectedMargin": -5.8318,
-      "probabilityEngineMargin": -6.0838,
-      "demProbability": 0.2954,
-      "repProbability": 0.7046,
+      "projectedMargin": -6.415,
+      "probabilityEngineMargin": -6.64,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -6.415,
+          "display": "R+6.4",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -6.64,
+          "display": "R+6.6",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.225,
+        "consistentDirection": true
+      },
+      "demProbability": 0.2694,
+      "repProbability": 0.7306,
       "winnerParty": "R",
       "rating": "Lean R",
       "ratingPrior": {
@@ -1971,6 +3076,22 @@
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
       },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
+      },
       "candidates": {
         "dem": "Democrat",
         "rep": "Lindsey Graham",
@@ -1985,8 +3106,8 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -10.4,
-        "projectedMargin": -5.83,
-        "shift": 4.57,
+        "projectedMargin": -6.42,
+        "shift": 3.99,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
@@ -1995,11 +3116,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -2009,9 +3127,9 @@
           "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
         },
         {
-          "severity": "high",
-          "type": "RATING_PRIOR_DIVERGENCE",
-          "message": "External rating prior and raw model margin diverged enough to require review."
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "SC is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
         },
         {
           "severity": "warning",
@@ -2026,6 +3144,25 @@
       "race": "South Dakota Senate",
       "projectedMargin": -24.3024,
       "probabilityEngineMargin": -24.1884,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -24.3024,
+          "display": "R+24.3",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -24.1884,
+          "display": "R+24.2",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.114,
+        "consistentDirection": true
+      },
       "demProbability": 0.001,
       "repProbability": 0.999,
       "winnerParty": "R",
@@ -2044,6 +3181,22 @@
         "livePollCount": 0,
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -2069,11 +3222,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -2100,6 +3250,25 @@
       "race": "Tennessee Senate",
       "projectedMargin": -20.8936,
       "probabilityEngineMargin": -20.9476,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -20.8936,
+          "display": "R+20.9",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -20.9476,
+          "display": "R+20.9",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": 0.054,
+        "consistentDirection": true
+      },
       "demProbability": 0.001,
       "repProbability": 0.999,
       "winnerParty": "R",
@@ -2118,6 +3287,22 @@
         "livePollCount": 0,
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -2143,11 +3328,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -2167,26 +3349,61 @@
       "id": "TX",
       "state": "TX",
       "race": "Texas Senate",
-      "projectedMargin": -1.1964,
-      "probabilityEngineMargin": -1.1724,
-      "demProbability": 0.4476,
-      "repProbability": 0.5524,
+      "projectedMargin": -1.8888,
+      "probabilityEngineMargin": -1.7958,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -1.8888,
+          "display": "R+1.9",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -1.7958,
+          "display": "R+1.8",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.093,
+        "consistentDirection": true
+      },
+      "demProbability": 0.4311,
+      "repProbability": 0.5689,
       "winnerParty": "R",
-      "rating": "Toss-up",
+      "rating": "Tilt R",
       "ratingPrior": {
         "enabled": true,
         "consensusRating": "Toss-up",
         "impliedMargin": 0,
-        "weight": 0.065,
+        "weight": 0.15,
         "sources": [
           "Cook"
         ]
       },
       "polling": {
-        "usablePollCount": 11,
-        "livePollCount": 11,
+        "usablePollCount": 0,
+        "livePollCount": 0,
         "manualPollCount": 0,
-        "status": "LIVE_POLLS_AVAILABLE"
+        "status": "LEGACY_FALLBACK_ONLY"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": -0.16,
+        "pollingInputShare": null,
+        "pollingStatus": "LEGACY_FALLBACK_ONLY",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": "TEXAS_NOMINEE_CONTEXT",
+        "candidate": "James Talarico / Ken Paxton",
+        "review": "Texas outcome is sensitive to nominee assumptions and race-specific polling.",
+        "applied": true
       },
       "candidates": {
         "dem": "James Talarico",
@@ -2202,28 +3419,35 @@
       },
       "historicalComparison": {
         "priorComparableMargin": -9.9,
-        "projectedMargin": -1.2,
-        "shift": 8.7,
+        "projectedMargin": -1.89,
+        "shift": 8.01,
         "level": "notable",
         "expectedRegression": false,
         "needsReview": false,
-        "basis": "current multi-poll signal available"
+        "basis": "structural and candidate inputs only"
       },
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "LIVE_POLLS_AVAILABLE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "LEGACY_FALLBACK_ONLY",
+        "unavailableSources": []
       },
-      "reviewRequired": false,
+      "reviewRequired": true,
       "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
         {
           "severity": "info",
           "type": "NAMED_RACE_REVIEW",
           "message": "TX is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "info",
+          "type": "CANDIDATE_EXCEPTION_MODE_ACTIVE",
+          "message": "Texas outcome is sensitive to nominee assumptions and race-specific polling."
         }
       ]
     },
@@ -2231,10 +3455,29 @@
       "id": "VA",
       "state": "VA",
       "race": "Virginia Senate",
-      "projectedMargin": 9.177,
-      "probabilityEngineMargin": 9.267,
-      "demProbability": 0.8116,
-      "repProbability": 0.1884,
+      "projectedMargin": 8.9238,
+      "probabilityEngineMargin": 9.0258,
+      "margins": {
+        "projectedResultMargin": {
+          "value": 8.9238,
+          "display": "D+8.9",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": 9.0258,
+          "display": "D+9.0",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.102,
+        "consistentDirection": true
+      },
+      "demProbability": 0.8051,
+      "repProbability": 0.1949,
       "winnerParty": "D",
       "rating": "Likely D",
       "ratingPrior": {
@@ -2252,6 +3495,22 @@
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
       },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
+      },
       "candidates": {
         "dem": "Mark Warner",
         "rep": "Republican",
@@ -2266,8 +3525,8 @@
       },
       "historicalComparison": {
         "priorComparableMargin": 12.1,
-        "projectedMargin": 9.18,
-        "shift": -2.92,
+        "projectedMargin": 8.92,
+        "shift": -3.18,
         "level": "normal",
         "expectedRegression": false,
         "needsReview": false,
@@ -2276,11 +3535,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -2302,6 +3558,25 @@
       "race": "West Virginia Senate",
       "projectedMargin": -36.2884,
       "probabilityEngineMargin": -35.5894,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -36.2884,
+          "display": "R+36.3",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -35.5894,
+          "display": "R+35.6",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -0.699,
+        "consistentDirection": true
+      },
       "demProbability": 0.001,
       "repProbability": 0.999,
       "winnerParty": "R",
@@ -2320,6 +3595,22 @@
         "livePollCount": 0,
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Rachel Fetty Anderson",
@@ -2345,11 +3636,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -2369,8 +3657,27 @@
       "id": "WY",
       "state": "WY",
       "race": "Wyoming Senate",
-      "projectedMargin": -24.2846,
-      "probabilityEngineMargin": -22.7016,
+      "projectedMargin": -24.2806,
+      "probabilityEngineMargin": -22.9776,
+      "margins": {
+        "projectedResultMargin": {
+          "value": -24.2806,
+          "display": "R+24.3",
+          "meaning": "Expected election result margin."
+        },
+        "probabilityMargin": {
+          "value": -22.9776,
+          "display": "R+23.0",
+          "meaning": "Uncertainty-adjusted margin used for win-probability conversion."
+        },
+        "ratingMargin": {
+          "value": null,
+          "display": null,
+          "meaning": "External-rating implied margin, when a ratings prior exists."
+        },
+        "difference": -1.303,
+        "consistentDirection": true
+      },
       "demProbability": 0.001,
       "repProbability": 0.999,
       "winnerParty": "R",
@@ -2389,6 +3696,22 @@
         "livePollCount": 0,
         "manualPollCount": 0,
         "status": "NO_RACE_POLLS"
+      },
+      "pollingMergeStatus": null,
+      "pollingWeightDiagnostic": {
+        "model": "senate",
+        "usablePollCount": 0,
+        "pollAverageMargin": null,
+        "pollingAdjustment": 0,
+        "pollingInputShare": null,
+        "pollingStatus": "NO_RACE_POLLS",
+        "flags": []
+      },
+      "candidateException": {
+        "mode": null,
+        "candidate": null,
+        "review": null,
+        "applied": false
       },
       "candidates": {
         "dem": "Democrat",
@@ -2414,11 +3737,8 @@
       "sourceHealth": {
         "forecast": "HEALTHY",
         "degraded": false,
-        "racePolling": "SOURCE_FAILURE",
-        "unavailableSources": [
-          "civicApiEndpoint",
-          "realClearPollingSenate"
-        ]
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
       },
       "reviewRequired": true,
       "reviewFlags": [
@@ -2431,6 +3751,11 @@
           "severity": "warning",
           "type": "HISTORICAL_SHIFT_REVIEW",
           "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "WY is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
         },
         {
           "severity": "warning",

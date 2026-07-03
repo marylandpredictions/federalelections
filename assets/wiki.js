@@ -244,6 +244,40 @@ function forecastDisplayMargin(item) {
   return Number.isFinite(Number(value)) ? Number(value) : 0;
 }
 
+function diagnosticMarginDisplay(item, key, fallbackValue = null) {
+  const field = item?.margins?.[key];
+  if (field?.display) return field.display;
+  const value = field?.value ?? fallbackValue;
+  return Number.isFinite(Number(value)) ? signedPointMargin(Number(value)).replace(" pts", "") : "--";
+}
+
+function diagnosticFlagsHtml(flags = [], max = 4) {
+  const clean = [...new Set((flags || []).filter(Boolean))].slice(0, max);
+  return clean.map((flag) => `<span title="${escapeHtml(flag)}">${escapeHtml(String(flag).replace(/_/g, " ").toLowerCase())}</span>`).join("");
+}
+
+function pollingDiagnosticText(diagnostic) {
+  if (!diagnostic) return "Polls --";
+  const count = diagnostic.usablePollCount ?? diagnostic.usablePolls ?? 0;
+  const effect = diagnostic.pollingAdjustment ?? diagnostic.pollingEffect;
+  const effectText = Number.isFinite(Number(effect)) ? ` / effect ${signedPointMargin(Number(effect))}` : "";
+  return `${count} usable polls${effectText}`;
+}
+
+function candidateExceptionText(exception) {
+  if (!exception) return "";
+  const type = String(exception.type || "candidate exception").replace(/_/g, " ").toLowerCase();
+  const confidence = exception.confidence ? ` / ${exception.confidence}` : "";
+  return `Exception: ${type}${confidence}`;
+}
+
+function pollingMergeText(status) {
+  if (!status) return "";
+  const parsed = status.parsedPollRows ?? 0;
+  const merged = status.mergedPollRows ?? 0;
+  return `Polling merge: ${status.mergeStatus || "--"} / ${merged} of ${parsed} rows`;
+}
+
 function ratingFromSignedValue(value, thresholds) {
   if (!Number.isFinite(value)) return "Toss-up";
   const abs = Math.abs(value);
@@ -1037,6 +1071,14 @@ function hoverMarkup(race, mode = mapColorMode) {
   const demBadge = candidateStatusBadge(race, "D");
   const repBadge = candidateStatusBadge(race, "R");
   const demIsIndependent = race.demDisplayParty === "I" || String(race.dem || "").toLowerCase().includes("independent");
+  const marginConfidence = race.margins?.marginConfidence || race.modelConfidence?.level || race.confidence || "LOW";
+  const pollingDiagnostic = race.pollingWeightDiagnostic;
+  const exceptionText = candidateExceptionText(race.candidateException);
+  const diagnosticFlags = [
+    ...(pollingDiagnostic?.flags || []),
+    ...(race.candidateException?.flags || []),
+    ...(race.raceReviewFlags || [])
+  ];
   return `
     <span class="race-kicker">${race.displayName}</span>
     <div class="map-card-title">
@@ -1056,13 +1098,20 @@ function hoverMarkup(race, mode = mapColorMode) {
         <strong>${oneDecimal(1 - race.demProbability)}</strong>
       </div>
       <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(forecastDisplayMargin(race))}</strong></div>
+      <div class="candidate-margin"><span>Probability margin</span><strong>${escapeHtml(diagnosticMarginDisplay(race, "probabilityMargin"))}</strong></div>
     </div>
     <div class="prob-track ${demIsIndependent ? "independent-track" : ""}" aria-label="${race.state} probability split">
       <span style="width:${race.demProbability * 100}%"></span>
       <span style="width:${(1 - race.demProbability) * 100}%"></span>
     </div>
     <p class="candidate-key"><b>P</b> Presumptive nominee. <b>I</b> Independent.</p>
-    <div class="badge-row">${(race.uncertaintyBadges || []).slice(0, 4).map((badge) => `<span>${escapeHtml(badge)}</span>`).join("")}</div>
+    <div class="badge-row">
+      <span>Margin confidence ${escapeHtml(marginConfidence)}</span>
+      <span>${escapeHtml(pollingDiagnosticText(pollingDiagnostic))}</span>
+      ${exceptionText ? `<span>${escapeHtml(exceptionText)}</span>` : ""}
+      ${(race.uncertaintyBadges || []).slice(0, 2).map((badge) => `<span>${escapeHtml(badge)}</span>`).join("")}
+      ${diagnosticFlagsHtml(diagnosticFlags, 3)}
+    </div>
     <p>${escapeHtml(race.summary || race.note || "")}</p>
     <p class="meta">Color mode: ${escapeHtml(ratingModeLabel)} / Primary: ${race.primary} / Tipping power: ${oneDecimal(race.tippingPower)}</p>
     <a class="button-link" href="race.html?state=${race.state}">Open race page</a>
@@ -1244,6 +1293,15 @@ function governorHoverMarkup(race) {
   if (!race) return `<span class="panel-label">State detail</span><h3>No 2026 governor race</h3><p>This state is not on the 2026 governor board.</p>`;
   const leader = race.demProbability >= .5 ? "Democrat" : "Republican";
   const leaderProb = Math.max(race.demProbability, race.repProbability);
+  const marginConfidence = race.margins?.marginConfidence || race.modelConfidence?.level || race.confidence || "LOW";
+  const pollingDiagnostic = race.pollingWeightDiagnostic;
+  const mergeText = pollingMergeText(race.pollingMergeStatus);
+  const exceptionText = candidateExceptionText(race.candidateException);
+  const diagnosticFlags = [
+    ...(pollingDiagnostic?.flags || []),
+    ...(race.candidateException?.flags || []),
+    ...(race.raceReviewFlags || [])
+  ];
   return `
     <span class="race-kicker">${escapeHtml(race.displayName)}</span>
     <div class="map-card-title">
@@ -1256,8 +1314,16 @@ function governorHoverMarkup(race) {
       <div class="candidate-row dem-row"><span>Democrat <i class="party-badge dem-badge">D</i></span><strong>${oneDecimal(race.demProbability)}</strong></div>
       <div class="candidate-row rep-row"><span>Republican <i class="party-badge rep-badge">R</i></span><strong>${oneDecimal(race.repProbability)}</strong></div>
       <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(forecastDisplayMargin(race))}</strong></div>
+      <div class="candidate-margin"><span>Probability margin</span><strong>${escapeHtml(diagnosticMarginDisplay(race, "probabilityMargin"))}</strong></div>
     </div>
     <p>${escapeHtml(race.status)}. Incumbent party: ${escapeHtml(race.incumbentParty)}.</p>
+    <div class="badge-row">
+      <span>Margin confidence ${escapeHtml(marginConfidence)}</span>
+      <span>${escapeHtml(pollingDiagnosticText(pollingDiagnostic))}</span>
+      ${mergeText ? `<span>${escapeHtml(mergeText)}</span>` : ""}
+      ${exceptionText ? `<span>${escapeHtml(exceptionText)}</span>` : ""}
+      ${diagnosticFlagsHtml(diagnosticFlags, 3)}
+    </div>
     ${renderMovementPanel(race)}
     <p class="meta">Tipping power: ${oneDecimal(race.tippingPower || 0)}</p>
   `;
@@ -2109,12 +2175,28 @@ function houseDistrictMarkup(district) {
   const inputs = district.sourceInputs || {};
   const ratingsPrior = district.ratingsPrior;
   const nomination = inputs.nomination || {};
+  const baselineAudit = district.baselineAudit || inputs.baselineAudit || {};
+  const ratingGuardrail = district.ratingGuardrail || inputs.ratingGuardrail || {};
+  const marginConsistency = district.marginConsistency || inputs.marginConsistency || {};
+  const nationalEnvironment = district.nationalEnvironment || inputs.nationalEnvironment || {};
   const quality = houseInputConfidence(district);
   const statusText = [
     nomination.demStatus ? `D ${nomination.demStatus}` : null,
     nomination.repStatus ? `R ${nomination.repStatus}` : null,
     nomination.primaryDate || null
   ].filter(Boolean).join(" / ");
+  const guardrailStatus = ratingGuardrail.triggered
+    ? `Triggered / ${ratingGuardrail.externalRating || ratingGuardrail.projected?.externalRating || "--"}`
+    : ratingGuardrail.eligible === false
+      ? `Blocked / ${ratingGuardrail.blockedReason || "--"}`
+      : ratingGuardrail.eligible
+        ? `Eligible / ${ratingGuardrail.nonTriggerReason || "not triggered"}`
+        : "Not evaluated";
+  const consistencyStatus = marginConsistency.consistent === false
+    ? "Review required"
+    : marginConsistency.consistent === true
+      ? "Consistent"
+      : "--";
   return `
     <span class="race-kicker">${escapeHtml(houseDistrictLabel(district))}</span>
     <div class="map-card-title">
@@ -2127,6 +2209,7 @@ function houseDistrictMarkup(district) {
       <div class="candidate-row dem-row"><span>${escapeHtml(district.demCandidate || "Democrat")} <i class="party-badge dem-badge">D</i></span><strong>${houseProbability(district.demProbability)}</strong></div>
       <div class="candidate-row rep-row"><span>${escapeHtml(district.repCandidate || "Republican")} <i class="party-badge rep-badge">R</i></span><strong>${houseProbability(district.repProbability)}</strong></div>
       <div class="candidate-margin"><span>Projected margin</span><strong>${signedPointMargin(forecastDisplayMargin(district))}</strong></div>
+      <div class="candidate-margin"><span>Probability margin</span><strong>${signedPointMargin(marginConsistency.probabilityMargin ?? district.margin)}</strong></div>
     </div>
     <div class="badge-row">
       <span>${escapeHtml(quality.label)}</span>
@@ -2138,12 +2221,19 @@ function houseDistrictMarkup(district) {
       <div><span>Context</span><strong>${signedPointMargin(inputs.contextualBaseline)}</strong></div>
       <div><span>National effect</span><strong>${signedPointMargin(inputs.genericBallotAppliedEffect ?? inputs.genericBallotShift)}</strong></div>
       <div><span>Profile</span><strong>${signedPointMargin(inputs.candidateQualityAdjustment ?? inputs.demographicPull?.adjustment)}</strong></div>
+      <div><span>Current-map audit</span><strong>${escapeHtml(baselineAudit.severity || baselineAudit.reviewRequired ? "review" : "clear")}</strong></div>
+      <div><span>Guardrail</span><strong>${escapeHtml(guardrailStatus)}</strong></div>
       ${ratingsPrior?.consensusRating ? `<div><span>Rating prior</span><strong>${escapeHtml(ratingsPrior.consensusRating)} / ${Math.round((ratingsPrior.weight || 0) * 100)}%</strong></div>` : ""}
     </div>
     <details class="house-card-details">
       <summary>Model detail</summary>
       <p>${escapeHtml(district.sourceBlend || "Cook")} / ${district.open ? "open seat" : "incumbent seat"}</p>
       ${ratingsPrior?.consensusRating ? `<p>Expert rating prior: ${escapeHtml(ratingsPrior.consensusRating)} (${Math.round((ratingsPrior.weight || 0) * 100)}% soft-prior weight). ${escapeHtml(ratingsPrior.reason || "")}</p>` : ""}
+      <p>Baseline audit: ${escapeHtml(consistencyStatus)} / ${escapeHtml(baselineAudit.recommendedAction || "No current-map baseline warning.")}</p>
+      ${baselineAudit.auditFlags?.length ? `<div class="badge-row">${diagnosticFlagsHtml(baselineAudit.auditFlags, 5)}</div>` : ""}
+      ${ratingGuardrail.triggered ? `<p>Rating guardrail moved projected margin from ${signedPointMargin(ratingGuardrail.projected?.preGuardrailMargin ?? ratingGuardrail.preGuardrailMargin)} to ${signedPointMargin(ratingGuardrail.projected?.guardrailedMargin ?? ratingGuardrail.guardrailedMargin)}.</p>` : ""}
+      ${marginConsistency.flags?.length ? `<div class="badge-row">${diagnosticFlagsHtml(marginConsistency.flags, 3)}</div>` : ""}
+      <p>National environment: generic ${signedPointMargin(nationalEnvironment.currentGenericBallotMargin)} / swing ${signedPointMargin(nationalEnvironment.nationalSwingFromPriorHouse)} / district effect ${signedPointMargin(nationalEnvironment.nationalEnvironmentEffect)}.</p>
       <p>Generic ballot average ${signedPointMargin(inputs.genericBallotRawMargin)} / applied effect ${signedPointMargin(inputs.genericBallotAppliedEffect ?? inputs.genericBallotShift)}</p>
       <p>2024 pres ${signedPointMargin(inputs.presidentialBaseline)} / 2022 House ${signedPointMargin(inputs.congressionalBaseline)} / demographic ${signedPointMargin(inputs.demographicPull?.adjustment)}</p>
       ${nomination.summary ? `<p>${escapeHtml(nomination.summary)}</p>` : ""}
@@ -2534,10 +2624,16 @@ function renderHouseSourceStatus() {
   const divergence = houseForecast.toplineDivergenceExplanation || {};
   const benchmarkStatus = houseForecast.raceBenchmarkStatus || {};
   const wikipediaPolling = summary.wikipediaPolling || {};
+  const baselineAuditSummary = houseForecast.currentMapBaselineAudit || houseForecast.houseBaselineAudit?.summary || {};
+  const tossupCalibration = houseForecast.tossupBucketCalibration || {};
+  const simulationDiagnostics = houseForecast.simulationDiagnostics || {};
   const warningRows = [
     ["Forecast status", { ok: houseForecast.forecastStatus === "NORMAL" }, `${houseForecast.forecastStatus || "--"}${houseForecast.sourceHealth?.message ? ` / ${houseForecast.sourceHealth.message}` : ""}`],
     ["District polling", { ok: Number(pollCoverage.usableDistrictPolls || 0) > 0 }, `${pollCoverage.usableDistrictPolls ?? 0} usable district polls / ${pollCoverage.totalDistricts ?? houseForecast.districts?.length ?? "--"} districts`],
+    ["Current-map audit", { ok: !Number(baselineAuditSummary.highSeverity || 0) }, `${baselineAuditSummary.reviewRequired ?? "--"} review / ${baselineAuditSummary.highSeverity ?? "--"} high severity`],
     ["Rating guardrails", { ok: Number(houseForecast.guardrailCount || 0) > 0 }, `${houseForecast.guardrailCount ?? 0} triggered / ${summary.cachedHouseRatings ?? benchmarkStatus.cachedHouseRatings ?? "--"} rated districts`],
+    ["Toss-up calibration", { ok: !tossupCalibration.reviewRequired }, tossupCalibration.externalTossupCount ? `${tossupCalibration.externalTossupCount} toss-ups / ${tossupCalibration.skewDirection || "even"} ${Number(tossupCalibration.skewMagnitude || 0).toFixed(1)} pts` : "Not evaluated"],
+    ["Simulation diagnostics", { ok: simulationDiagnostics.usesFinalGuardrailedMargins && simulationDiagnostics.usesRatingsPriorDistribution }, `${simulationDiagnostics.simulations ?? "--"} sims / median ${simulationDiagnostics.medianDemSeats ?? "--"} D / guardrails ${simulationDiagnostics.guardrailedDistrictsInSimulation?.length ?? "--"}`],
     ["Topline benchmark", { ok: !divergence.triggered }, divergence.triggered ? `Review required / model ${(Number(divergence.modelDemProbability || 0) * 100).toFixed(1)}% D vs benchmark ${(Number(divergence.benchmarkDemProbability || 0) * 100).toFixed(1)}% D` : "Within configured benchmark tolerance"],
     ["VoteHub ratings", { ok: Number(benchmarkStatus.cachedHouseVoteHubRatings || 0) > 0 }, `${Number(benchmarkStatus.cachedHouseVoteHubRatings || 0) ? "MANUAL_PARSED" : "MANUAL_NOT_CONFIGURED"} / ${benchmarkStatus.cachedHouseVoteHubRatings ?? 0} rows`],
     ["Ratings aggregator", { ok: Number(benchmarkStatus.cachedHouseAggregatorRatings || 0) > 0 }, `${Number(benchmarkStatus.cachedHouseAggregatorRatings || 0) ? "OK_PARSED" : "MANUAL_NOT_CONFIGURED"} / ${benchmarkStatus.cachedHouseAggregatorRatings ?? 0} rows`],

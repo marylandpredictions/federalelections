@@ -8,6 +8,7 @@ import { benchmarkConfiguration, benchmarkFor, benchmarkWarnings, toplineBenchma
 import { blendGenericBallotSources, parsePollfinityGeneric as parseCanonicalPollfinityGeneric, parseUsPollingDataGeneric as parseCanonicalUsPollingDataGeneric, parseVoteHubGeneric as parseCanonicalVoteHubGeneric, readCachedGenericBallot } from "./lib/generic-ballot.mjs";
 import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./forecast-cache.mjs";
 import { applyRatingGuardrail, applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
+import { auditHouseBaselineDistrict, buildHouseBaselineAudit, marginConsistencyCheck } from "./lib/house-baseline-audit.mjs";
 import { readHouseFundamentalsCacheMap } from "./lib/house-input-caches.mjs";
 import { readWikipediaPollingCache, wikipediaPollingSummary } from "./lib/wikipedia-polls.mjs";
 import {
@@ -20,6 +21,7 @@ import {
 } from "./lib/house-elasticity.mjs";
 
 const OUTPUT_URL = new URL("../data/house-forecast.json", import.meta.url);
+const HOUSE_BASELINE_AUDIT_URL = new URL("../data/diagnostics/house-baseline-audit-2026.json", import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
 const previousForecast = readPreviousForecast();
@@ -1162,12 +1164,58 @@ function adjustedDistricts(sourceData) {
       ratingSourceType: ratingBenchmark?.cacheMeta?.ratingSourceType || null,
       config: RATING_WEIGHT_CONFIG
     });
-    const ratingsPrior = rawRatingsPrior.guardrailEligible ? {
-      ...rawRatingsPrior,
-      guardrailEligible: false,
-      usedAs: rawRatingsPrior.usedAs === "SOFT_PRIOR_AND_GUARDRAIL" ? "SOFT_PRIOR_DISTRIBUTION_ONLY" : rawRatingsPrior.usedAs,
-      guardrailDisabledReason: "House ratings are treated as probabilistic priors and diagnostics, not hard party-direction anchors."
-    } : rawRatingsPrior;
+    const preBaselineAudit = auditHouseBaselineDistrict({
+      district,
+      baselineAnchor,
+      ratingsPrior: rawRatingsPrior,
+      rawModelMargin: rawProbabilityMargin,
+      projectedMargin: rawProjectedMargin,
+      probabilityMargin: rawProbabilityMargin,
+      usablePollCount: pollingSummary.usablePollCount,
+      mapConflict,
+      redistrictingConfidence: district.redistrictingConfidence,
+      nationalEnvironment,
+      districtElasticity: elasticityInfo,
+      fundamentalsQuality,
+      mapVersion: district.mapVersion
+    });
+    let ratingsPrior = rawRatingsPrior;
+    const baselineConflictFlags = new Set(preBaselineAudit.auditFlags || []);
+    if (
+      rawRatingsPrior.enabled
+      && rawRatingsPrior.guardrailEligible
+      && (
+        baselineConflictFlags.has("BASELINE_RATING_CONFLICT")
+        || baselineConflictFlags.has("MISSING_CURRENT_MAP_BASELINE")
+        || baselineConflictFlags.has("RATING_PRIOR_TOO_WEAK")
+      )
+    ) {
+      const minimumWeight = baselineConflictFlags.has("BASELINE_RATING_CONFLICT") ? 0.55 : 0.4;
+      const boostedWeight = Math.min(0.75, Math.max(Number(rawRatingsPrior.weight || 0), minimumWeight));
+      const impliedMargin = Number(rawRatingsPrior.impliedMargin);
+      const rawPriorMargin = Number(rawRatingsPrior.rawModelMargin ?? rawProbabilityMargin);
+      const ratingPull = Number.isFinite(rawPriorMargin) && Number.isFinite(impliedMargin)
+        ? (impliedMargin - rawPriorMargin) * boostedWeight
+        : Number(rawRatingsPrior.ratingPull || 0);
+      ratingsPrior = {
+        ...rawRatingsPrior,
+        weight: Number(boostedWeight.toFixed(3)),
+        finalWeight: Number(boostedWeight.toFixed(3)),
+        inputWeight: Number((boostedWeight * 100).toFixed(1)),
+        ratingPull: Number(ratingPull.toFixed(2)),
+        ratingsHeavy: boostedWeight >= 0.35,
+        reason: `${rawRatingsPrior.reason || "External ratings prior retained."} Baseline audit increased ratings-prior weight.`,
+        auditFlags: preBaselineAudit.auditFlags || [],
+        warnings: [
+          ...(rawRatingsPrior.warnings || []),
+          {
+            severity: "warning",
+            type: "BASELINE_AUDIT_RATINGS_PRIOR_BOOST",
+            message: `${district.id}: baseline audit increased ratings-prior weight because current-map fundamentals and public ratings conflict.`
+          }
+        ]
+      };
+    }
     const priorAdjustedProbabilityMargin = applyRatingPrior(rawProbabilityMargin, ratingsPrior, ratingsPrior.probabilityPullStrength);
     const probabilityRatingGuardrail = applyRatingGuardrail(priorAdjustedProbabilityMargin, ratingsPrior);
     const probabilityMargin = probabilityRatingGuardrail.margin;
@@ -1175,6 +1223,19 @@ function adjustedDistricts(sourceData) {
     const projectedRatingGuardrail = applyRatingGuardrail(priorAdjustedProjectedMargin, ratingsPrior);
     const projectedMargin = clamp(projectedRatingGuardrail.margin, -68, 68);
     const ratingGuardrail = {
+      eligible: Boolean(ratingsPrior.enabled && ratingsPrior.guardrailEligible),
+      externalRating: ratingsPrior.consensusRating || null,
+      rawModelMargin: Number(rawProbabilityMargin.toFixed(2)),
+      preGuardrailMargin: Number(priorAdjustedProbabilityMargin.toFixed(2)),
+      guardrailedMargin: Number(probabilityMargin.toFixed(2)),
+      blockedReason: ratingsPrior.enabled && !ratingsPrior.guardrailEligible
+        ? (mapConflict ? "MAP_CONFLICT" : "GUARDRAIL_NOT_ELIGIBLE")
+        : null,
+      nonTriggerReason: ratingsPrior.enabled && ratingsPrior.guardrailEligible && !(probabilityRatingGuardrail.triggered || projectedRatingGuardrail.triggered)
+        ? "Model remains within allowed external-rating guardrail band."
+        : null,
+      sources: ratingsPrior.sourceRatings || ratingsPrior.sources || [],
+      auditFlags: preBaselineAudit.auditFlags || [],
       probability: probabilityRatingGuardrail,
       projected: projectedRatingGuardrail,
       triggered: Boolean(probabilityRatingGuardrail.triggered || projectedRatingGuardrail.triggered)
@@ -1194,10 +1255,41 @@ function adjustedDistricts(sourceData) {
       ratings: ratingsPrior.inputWeight
     });
     const marginFields = marginSplit(projectedMargin, probabilityMargin, ratingsPrior.impliedMargin ?? projectedMargin);
+    const marginConsistency = marginConsistencyCheck({
+      projectedMargin,
+      probabilityMargin,
+      demProbability,
+      repProbability: 1 - demProbability
+    });
+    const baselineAudit = auditHouseBaselineDistrict({
+      district,
+      baselineAnchor,
+      ratingsPrior,
+      rawModelMargin: rawProbabilityMargin,
+      projectedMargin,
+      probabilityMargin,
+      usablePollCount: pollingSummary.usablePollCount,
+      mapConflict,
+      redistrictingConfidence: district.redistrictingConfidence,
+      nationalEnvironment,
+      districtElasticity: elasticityInfo,
+      fundamentalsQuality,
+      mapVersion: district.mapVersion
+    });
     const benchmarkComparison = houseBenchmarkComparison(district, projectedMargin, demProbability, districtPollSignal, raceSourceHealth);
     const dataQualityWarnings = [
       ...benchmarkComparison.benchmarkWarnings,
       ...(ratingsPrior.warnings || []),
+      ...baselineAudit.auditFlags.map((flag) => ({
+        severity: baselineAudit.severity === "high" ? "high" : "warning",
+        type: flag.toLowerCase().replaceAll("_", "-"),
+        message: `${district.id}: ${baselineAudit.recommendedAction}`
+      })),
+      ...marginConsistency.flags.map((flag) => ({
+        severity: "high",
+        type: flag.toLowerCase().replaceAll("_", "-"),
+        message: `${district.id}: projected-result margin and probability-engine margin point in different directions.`
+      })),
       ...(ratingGuardrail.triggered ? [{
         severity: "warning",
         type: "rating-guardrail-applied",
@@ -1226,6 +1318,8 @@ function adjustedDistricts(sourceData) {
       districtElasticity: elasticityInfo,
       ratingsPrior,
       ratingGuardrail,
+      baselineAudit,
+      marginConsistency,
       ...marginFields,
       inputBalance,
       pollCount: pollingSummary.usablePollCount,
@@ -1284,6 +1378,8 @@ function adjustedDistricts(sourceData) {
         marketSignal,
         ratingsPrior,
         ratingGuardrail,
+        baselineAudit,
+        marginConsistency,
         demographicPull,
         challengerStrength,
         finance: sourceData.fec[district.id] || null,
@@ -1607,7 +1703,40 @@ function houseToplineDivergenceExplanation(toplineComparison, noDistrictPolling,
   };
 }
 
-function houseToplineCalibration(model, sourceData, pollingCoverage, toplineComparison, tossupRecenterDiagnostic) {
+function houseTossupBucketCalibration(districts) {
+  const config = HOUSE_ELASTICITY_CONFIG.tossupBucketCalibration || {};
+  const externalTossups = (districts || []).filter((district) =>
+    district.forecastStatus !== "SCENARIO_ONLY"
+    && String(district.ratingsPrior?.consensusRating || "").toLowerCase() === "toss-up"
+  );
+  const average = (values) => {
+    const usable = values.map(Number).filter(Number.isFinite);
+    return usable.length ? usable.reduce((sum, value) => sum + value, 0) / usable.length : null;
+  };
+  const averageProjectedMargin = average(externalTossups.map((district) => district.projectedMargin ?? district.margin));
+  const averageProbabilityMargin = average(externalTossups.map((district) => district.probabilityEngineMargin ?? district.margin));
+  const skewBasis = Number.isFinite(averageProjectedMargin) ? averageProjectedMargin : averageProbabilityMargin;
+  const skewMagnitude = Number.isFinite(skewBasis) ? Math.abs(skewBasis) : null;
+  const warningThreshold = Number(config.warningThreshold ?? 1.5);
+  const highSeverityThreshold = Number(config.highSeverityThreshold ?? 2.5);
+  return {
+    enabled: config.enabled !== false,
+    applied: false,
+    applyAdjustment: Boolean(config.applyAdjustment),
+    externalTossupCount: externalTossups.length,
+    averageProjectedMargin: Number.isFinite(averageProjectedMargin) ? Number(averageProjectedMargin.toFixed(2)) : null,
+    averageProbabilityMargin: Number.isFinite(averageProbabilityMargin) ? Number(averageProbabilityMargin.toFixed(2)) : null,
+    skewDirection: Number.isFinite(skewBasis) && Math.abs(skewBasis) >= 0.05 ? (skewBasis > 0 ? "D" : "R") : "None",
+    skewMagnitude: Number.isFinite(skewMagnitude) ? Number(skewMagnitude.toFixed(2)) : null,
+    reviewRequired: config.enabled !== false && Number.isFinite(skewMagnitude) && skewMagnitude >= warningThreshold,
+    severity: Number.isFinite(skewMagnitude) && skewMagnitude >= highSeverityThreshold ? "high" : Number.isFinite(skewMagnitude) && skewMagnitude >= warningThreshold ? "warning" : "none",
+    maxRecenterAdjustment: Number(config.maxRecenterAdjustment ?? 1.25),
+    districtIds: externalTossups.map((district) => district.id),
+    explanation: "Two-way external toss-up districts are checked as a bucket so the model cannot quietly lean the full toss-up set too far to one party."
+  };
+}
+
+function houseToplineCalibration(model, sourceData, pollingCoverage, toplineComparison, tossupRecenterDiagnostic, tossupBucketCalibration) {
   const benchmark = Number(toplineComparison?.benchmarkDemProbability);
   const modelProbability = Number(model.demControlProbability);
   const districtCount = model.districts?.length || 0;
@@ -1647,6 +1776,7 @@ function houseToplineCalibration(model, sourceData, pollingCoverage, toplineComp
     averageNationalEnvironmentEffect: average(nationalEffects),
     averageCompetitiveNationalEnvironmentEffect: average(competitiveNationalEffects),
     tossupRecenterDiagnostic,
+    tossupBucketCalibration,
     explanation: "House calibration compares control odds, seat math, no-polling coverage, toss-up skew, and district-level national-environment effects before publishing."
   };
 }
@@ -1677,10 +1807,17 @@ function houseSimulationDiagnostics(model) {
     meanDemSeats: Number.isFinite(meanSeats) ? Number(meanSeats.toFixed(2)) : null,
     seatStandardDeviation: Number.isFinite(variance) ? Number(Math.sqrt(variance).toFixed(2)) : null,
     nationalEnvironmentSd: MODEL_WEIGHTS.nationalEnvironmentSd,
+    nationalErrorSigma: MODEL_WEIGHTS.nationalEnvironmentSd,
     stateCorrelationSd: MODEL_WEIGHTS.stateCorrelationSd,
     medianDistrictError: Number.isFinite(medianDistrictError) ? Number(medianDistrictError.toFixed(2)) : null,
+    districtErrorSigmaMedian: Number.isFinite(medianDistrictError) ? Number(medianDistrictError.toFixed(2)) : null,
+    usesFinalGuardrailedMargins: true,
+    usesRatingsPriorDistribution: true,
+    usesTossupRecenterAdjustment: Boolean((model.districts || []).some((district) => Number(district.tossupRecenterAdjustment || 0) !== 0)),
+    guardrailedDistrictsInSimulation: (model.districts || []).filter((district) => district.ratingGuardrail?.triggered).map((district) => district.id),
     correlationStructure: "national error + state correlated error + district residual error",
-    skewCheck: Number.isFinite(meanSeats) ? Number((meanSeats - model.medianSeats).toFixed(2)) : null
+    skewCheck: Number.isFinite(meanSeats) ? Number((meanSeats - model.medianSeats).toFixed(2)) : null,
+    skewDetected: Number.isFinite(meanSeats) ? Math.abs(meanSeats - model.medianSeats) >= 1.5 : false
   };
 }
 
@@ -2473,7 +2610,9 @@ async function writeHouseForecast() {
     health: "PARTIAL",
     message: "House forecast limited: no usable district-level polling was available; output is ratings/fundamentals-driven."
   } : sourceData.sourceHealth;
-  const toplineCalibration = houseToplineCalibration(model, sourceData, pollingCoverage, toplineComparison, recentered.diagnostic);
+  const tossupBucketCalibration = houseTossupBucketCalibration(model.districts);
+  const houseBaselineAudit = buildHouseBaselineAudit(model.districts);
+  const toplineCalibration = houseToplineCalibration(model, sourceData, pollingCoverage, toplineComparison, recentered.diagnostic, tossupBucketCalibration);
   const simulationDiagnostics = houseSimulationDiagnostics(model);
   validateDistricts(model.districts, "simulation");
   const cacheFreshness = forecastInputCacheFreshness({
@@ -2521,8 +2660,11 @@ async function writeHouseForecast() {
     benchmarkComparison: toplineComparison,
     toplineDivergenceExplanation,
     houseToplineCalibration: toplineCalibration,
+    currentMapBaselineAudit: houseBaselineAudit.summary,
+    houseBaselineAudit,
     simulationDiagnostics,
     tossupRecenterDiagnostic: recentered.diagnostic,
+    tossupBucketCalibration,
     raceBenchmarkStatus: benchmarkConfiguration(),
     racePollCoverage: pollingCoverage,
     pollCoverage: {
@@ -2537,6 +2679,16 @@ async function writeHouseForecast() {
       ...(sourceData.usingCachedDistricts ? [{ severity: "warning", type: "house-district-fallback", message: "House forecast degraded: ratings/district map source failed; using fallback baselines." }] : []),
       ...(noDistrictPolling ? [{ severity: "warning", type: "no-district-polling", message: "House forecast limited: no usable district-level polling was available; output is ratings/fundamentals-driven." }] : []),
       ...(recentered.diagnostic?.triggered ? [{ severity: "info", type: "house-tossup-recenter", message: `House no-polling toss-up recenter applied ${recentered.diagnostic.adjustment >= 0 ? "+" : ""}${recentered.diagnostic.adjustment} points.` }] : []),
+      ...(tossupBucketCalibration.reviewRequired ? [{
+        severity: tossupBucketCalibration.severity === "high" ? "high" : "warning",
+        type: "house-tossup-bucket-skew",
+        message: `House external toss-up bucket skews ${tossupBucketCalibration.skewDirection}${tossupBucketCalibration.skewMagnitude ? ` by ${tossupBucketCalibration.skewMagnitude.toFixed(1)} points` : ""}; review calibration before publishing.`
+      }] : []),
+      ...(houseBaselineAudit.summary.highSeverity ? [{
+        severity: "high",
+        type: "house-baseline-audit",
+        message: `${houseBaselineAudit.summary.highSeverity} House districts have high-severity baseline, ratings, or margin consistency audit flags.`
+      }] : []),
       ...(benchmarkConfiguration().status === "EMPTY" ? [{ severity: "warning", type: "benchmark-file-empty", message: "External race benchmark file is empty; race-level benchmark comparisons are schema-only." }] : []),
       ...(toplineComparison.warning ? [{
         severity: toplineDivergenceExplanation?.severity || "warning",
@@ -2598,7 +2750,9 @@ async function writeHouseForecast() {
     ...model
   };
   mkdirSync(new URL("../data/", import.meta.url), { recursive: true });
+  mkdirSync(new URL("../data/diagnostics/", import.meta.url), { recursive: true });
   writeFileSync(OUTPUT_URL, `${JSON.stringify(output, null, 2)}\n`);
+  writeFileSync(HOUSE_BASELINE_AUDIT_URL, `${JSON.stringify(houseBaselineAudit, null, 2)}\n`);
   console.log(`Wrote data/house-forecast.json for ${MODEL_DATE_KEY}`);
 }
 
