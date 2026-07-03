@@ -2530,7 +2530,21 @@ function renderHouseSourceStatus() {
   if (!container || !houseForecast) return;
   const status = houseForecast.sourceStatus || {};
   const summary = houseForecast.sourceSummary || {};
+  const pollCoverage = houseForecast.pollCoverage || {};
+  const divergence = houseForecast.toplineDivergenceExplanation || {};
+  const benchmarkStatus = houseForecast.raceBenchmarkStatus || {};
+  const wikipediaPolling = summary.wikipediaPolling || {};
+  const warningRows = [
+    ["Forecast status", { ok: houseForecast.forecastStatus === "NORMAL" }, `${houseForecast.forecastStatus || "--"}${houseForecast.sourceHealth?.message ? ` / ${houseForecast.sourceHealth.message}` : ""}`],
+    ["District polling", { ok: Number(pollCoverage.usableDistrictPolls || 0) > 0 }, `${pollCoverage.usableDistrictPolls ?? 0} usable district polls / ${pollCoverage.totalDistricts ?? houseForecast.districts?.length ?? "--"} districts`],
+    ["Rating guardrails", { ok: Number(houseForecast.guardrailCount || 0) > 0 }, `${houseForecast.guardrailCount ?? 0} triggered / ${summary.cachedHouseRatings ?? benchmarkStatus.cachedHouseRatings ?? "--"} rated districts`],
+    ["Topline benchmark", { ok: !divergence.triggered }, divergence.triggered ? `Review required / model ${(Number(divergence.modelDemProbability || 0) * 100).toFixed(1)}% D vs benchmark ${(Number(divergence.benchmarkDemProbability || 0) * 100).toFixed(1)}% D` : "Within configured benchmark tolerance"],
+    ["VoteHub ratings", { ok: Number(benchmarkStatus.cachedHouseVoteHubRatings || 0) > 0 }, `${Number(benchmarkStatus.cachedHouseVoteHubRatings || 0) ? "MANUAL_PARSED" : "MANUAL_NOT_CONFIGURED"} / ${benchmarkStatus.cachedHouseVoteHubRatings ?? 0} rows`],
+    ["Ratings aggregator", { ok: Number(benchmarkStatus.cachedHouseAggregatorRatings || 0) > 0 }, `${Number(benchmarkStatus.cachedHouseAggregatorRatings || 0) ? "OK_PARSED" : "MANUAL_NOT_CONFIGURED"} / ${benchmarkStatus.cachedHouseAggregatorRatings ?? 0} rows`],
+    ["Wikipedia polling", { ok: wikipediaPolling.status === "OK_PARSED" }, `${wikipediaPolling.status || "--"} / ${wikipediaPolling.rawPollRows ?? 0} raw rows / ${wikipediaPolling.pollingAverageRows ?? 0} averages`]
+  ];
   const rows = [
+    ...warningRows,
     ["Cook House ratings", status.cookHouseRatings, `${summary.cookDistricts ?? 0} districts`],
     ["Inside / 270toWin", status.insideElections270ToWinRatings, `${summary.insideRatings ?? 0} district ratings`],
     ["House polls", status.twoSeventyToWinHousePolls, summary.housePollingReferenceReachable ? "Reference page reachable" : "Reference page not loaded"],

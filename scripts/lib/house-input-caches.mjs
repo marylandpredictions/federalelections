@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { cacheEnvelope } from "../forecast-cache.mjs";
-import { normalizeRating } from "./rating-priors.mjs";
+import { normalizeRating, ratingSourceWeight } from "./rating-priors.mjs";
 
 const ROOT = new URL("../../", import.meta.url);
 
@@ -68,6 +68,14 @@ function normalizeDistrictId(state, district) {
   return `${state}-${suffix}`;
 }
 
+function normalizeHouseRaceId(value, state = null, district = null) {
+  const raw = String(value || "").trim().toUpperCase();
+  const match = raw.match(/^([A-Z]{2})-(AL|\d{1,2})(?:-(?:HOUSE-)?2026)?$/);
+  if (match) return `${normalizeDistrictId(match[1], match[2])}-2026`;
+  const districtId = normalizeDistrictId(state, district);
+  return districtId ? `${districtId}-2026` : null;
+}
+
 function cookCategoryFromLine(line) {
   const clean = String(line || "")
     .replace(/\(\d+\).*/, "")
@@ -98,6 +106,7 @@ export function parseCookHouseRatings(html, { asOf = new Date().toISOString().sl
       cycle: 2026,
       source: "Cook Political Report via 270toWin",
       sourceKey: "cook",
+      sourceType: "EXTERNAL_RATING",
       rating,
       asOf,
       url,
@@ -217,6 +226,60 @@ export function sourceBackedHouseBaselines(mapHtml = "") {
   return uniqueBy(sourceRows, (row) => row.district).sort((a, b) => a.district.localeCompare(b.district, undefined, { numeric: true }));
 }
 
+function readManualRatingsFile(office) {
+  const fallback = {
+    source: `data/manual-ratings/votehub-${office}-2026.json`,
+    office,
+    status: "MANUAL_NOT_CONFIGURED",
+    rows: []
+  };
+  const data = readJson(`data/manual-ratings/votehub-${office}-2026.json`, fallback);
+  if (!data || typeof data !== "object") return fallback;
+  const rows = Array.isArray(data.rows) ? data.rows : Array.isArray(data.ratings) ? data.ratings : [];
+  return {
+    ...fallback,
+    ...data,
+    status: data.status || (rows.length ? "OK_PARSED" : "MANUAL_NOT_CONFIGURED"),
+    rows
+  };
+}
+
+export function readManualVoteHubRatings(office) {
+  return readManualRatingsFile(office);
+}
+
+function readHouseAggregatorRows() {
+  const cache = readJson("data/cache/ratings/house-aggregator-2026.json", { rows: [], status: "MANUAL_NOT_CONFIGURED" });
+  const rows = [];
+  for (const item of cache.rows || []) {
+    const raceId = normalizeHouseRaceId(item.raceId || item.id, item.state, item.district);
+    if (!raceId) continue;
+    const district = raceId.replace(/-2026$/, "");
+    const sourceEntries = item.sources && typeof item.sources === "object"
+      ? Object.entries(item.sources)
+      : [["aggregatorTable", item]];
+    for (const [sourceKey, value] of sourceEntries) {
+      const rating = typeof value === "string" ? value : value?.rating;
+      const parsed = normalizeRating(rating);
+      if (!parsed) continue;
+      rows.push({
+        raceId,
+        district,
+        office: "house",
+        cycle: 2026,
+        sourceKey,
+        sourceType: "AGGREGATOR_TABLE",
+        source: typeof value === "object" ? (value.source || sourceKey) : sourceKey,
+        rating: parsed.normalized,
+        asOf: typeof value === "object" ? (value.asOf || cache.asOf || cache.generatedAt || null) : cache.asOf || cache.generatedAt || null,
+        url: typeof value === "object" ? (value.url || item.url || cache.url || "") : item.url || cache.url || "",
+        status: "OK_PARSED"
+      });
+    }
+  }
+  return rows;
+}
+
 function manualHouseRatingRows() {
   const benchmarks = readJson("data/forecast-benchmarks.json", { races: {}, updatedAt: null });
   const rows = [];
@@ -233,6 +296,7 @@ function manualHouseRatingRows() {
         office: "house",
         cycle: 2026,
         sourceKey,
+        sourceType: value.sourceType || "MANUAL_SCREENSHOT_OR_PAGE_SNAPSHOT",
         source: value.source || sourceKey,
         rating: parsed.normalized,
         asOf: value.asOf || benchmarks.updatedAt || null,
@@ -241,6 +305,27 @@ function manualHouseRatingRows() {
       });
     }
   }
+  const voteHubManual = readManualRatingsFile("house");
+  for (const value of voteHubManual.rows || []) {
+    const raceId = normalizeHouseRaceId(value.raceId || value.id, value.state, value.district);
+    if (!raceId || !value.rating) continue;
+    const parsed = normalizeRating(value.rating);
+    if (!parsed) continue;
+    rows.push({
+      raceId,
+      district: raceId.replace(/-2026$/, ""),
+      office: "house",
+      cycle: 2026,
+      sourceKey: "voteHub",
+      sourceType: "EXTERNAL_RATING",
+      source: value.source || "VoteHub manual forecast rating",
+      rating: parsed.normalized,
+      asOf: value.asOf || voteHubManual.asOf || voteHubManual.updatedAt || null,
+      url: value.url || voteHubManual.url || "",
+      status: "OK_PARSED"
+    });
+  }
+  rows.push(...readHouseAggregatorRows());
   return rows;
 }
 
@@ -303,7 +388,15 @@ export function mergedHouseRatingsCache({ cookRows = [], baselines = sourceBacke
         cycle: 2026,
         rating: consensusRating(sourceRows),
         ratingSourceType: "MAP_CONFLICT_RATING_DISABLED",
-        sources: Object.fromEntries(sourceRows.map((row) => [row.sourceKey || row.source, { rating: row.rating, asOf: row.asOf, url: row.url, source: row.source }])),
+        sources: Object.fromEntries(sourceRows.map((row) => [row.sourceKey || row.source, {
+          rating: row.rating,
+          asOf: row.asOf,
+          url: row.url,
+          source: row.source,
+          sourceKey: row.sourceKey || row.source,
+          sourceType: row.sourceType || "EXTERNAL_RATING",
+          weight: ratingSourceWeight(row.sourceKey || row.source, row.sourceType || "EXTERNAL_RATING")
+        }])),
         status: "DISABLED",
         asOf,
         warnings: ["Map conflict: rating kept for comparison only."]
@@ -318,7 +411,15 @@ export function mergedHouseRatingsCache({ cookRows = [], baselines = sourceBacke
         cycle: 2026,
         rating: consensusRating(sourceRows),
         ratingSourceType: "EXTERNAL_RATING",
-        sources: Object.fromEntries(sourceRows.map((row) => [row.sourceKey || row.source, { rating: row.rating, asOf: row.asOf, url: row.url, source: row.source }])),
+        sources: Object.fromEntries(sourceRows.map((row) => [row.sourceKey || row.source, {
+          rating: row.rating,
+          asOf: row.asOf,
+          url: row.url,
+          source: row.source,
+          sourceKey: row.sourceKey || row.source,
+          sourceType: row.sourceType || "EXTERNAL_RATING",
+          weight: ratingSourceWeight(row.sourceKey || row.source, row.sourceType || "EXTERNAL_RATING")
+        }])),
         status: "OK_PARSED",
         asOf,
         sourceCount: sourceRows.length
@@ -337,6 +438,9 @@ export function mergedHouseRatingsCache({ cookRows = [], baselines = sourceBacke
         inferredSafeRating: {
           rating: inferred,
           source: "Source-backed district baseline",
+          sourceKey: "inferredSafeRating",
+          sourceType: "INFERRED_SAFE_RATING",
+          weight: ratingSourceWeight("inferredSafeRating", "INFERRED_SAFE_RATING"),
           asOf,
           notes: "District absent from competitive ratings tables and baseline is strongly one-party."
         }
@@ -347,7 +451,7 @@ export function mergedHouseRatingsCache({ cookRows = [], baselines = sourceBacke
     });
   }
   return cacheEnvelope({
-    source: "Merged House ratings cache: Cook/270toWin + manual ledger + source-backed inferred safe ratings",
+    source: "Merged House ratings cache: Cook/270toWin + optional manual VoteHub files + optional public aggregator table + source-backed inferred safe ratings",
     office: "house",
     asOf,
     rows,
@@ -356,6 +460,12 @@ export function mergedHouseRatingsCache({ cookRows = [], baselines = sourceBacke
       externalRows: externalRows.length,
       cookRows: cookRows.length,
       manualRows: manualRows.length,
+      voteHubManual: {
+        status: readManualRatingsFile("house").status,
+        rows: readManualRatingsFile("house").rows?.length || 0,
+        note: "VoteHub forecast ratings are manual-only unless data/manual-ratings/votehub-house-2026.json is configured."
+      },
+      aggregatorRows: readHouseAggregatorRows().length,
       inferredSafeRows: rows.filter((row) => row.ratingSourceType === "INFERRED_SAFE_RATING").length,
       unavailableRows: rows.filter((row) => row.ratingSourceType === "RATING_UNAVAILABLE").length
     }

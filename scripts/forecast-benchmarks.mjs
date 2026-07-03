@@ -55,20 +55,25 @@ export function benchmarkFor(raceId) {
 export function benchmarkConfiguration() {
   const races = inputs().races || {};
   const houseRows = houseRatingInputs().rows || [];
+  const houseSources = houseRows.flatMap((row) => Object.values(row.sources || {}));
   return {
     status: Object.keys(races).length || houseRows.length ? "CONFIGURED" : "EMPTY",
     updatedAt: inputs().updatedAt || null,
     configuredRaces: Object.keys(races).length,
     cachedHouseRatings: houseRows.length,
     cachedHouseExternalRatings: houseRows.filter((row) => row.ratingSourceType === "EXTERNAL_RATING").length,
-    cachedHouseInferredSafeRatings: houseRows.filter((row) => row.ratingSourceType === "INFERRED_SAFE_RATING").length
+    cachedHouseInferredSafeRatings: houseRows.filter((row) => row.ratingSourceType === "INFERRED_SAFE_RATING").length,
+    cachedHouseVoteHubRatings: houseSources.filter((source) => source.sourceKey === "voteHub").length,
+    cachedHouseAggregatorRatings: houseSources.filter((source) => source.sourceType === "AGGREGATOR_TABLE").length
   };
 }
 
 export function benchmarkWarnings(benchmark, modelMargin, demProbability) {
   if (!benchmark) return ["no-external-benchmark-sources"];
   const warnings = [];
-  const sources = Object.values(benchmark).filter((value) => value && typeof value === "object");
+  const sources = Object.entries(benchmark)
+    .filter(([key, value]) => key !== "cacheMeta" && value && typeof value === "object")
+    .map(([, value]) => value);
   if (!sources.length) warnings.push("no-external-benchmark-sources");
   const numericMargins = sources.map((source) => Number(source.margin)).filter(Number.isFinite);
   const numericProbabilities = sources.map((source) => Number(source.demProbability ?? source.probability)).filter(Number.isFinite);

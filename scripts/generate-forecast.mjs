@@ -8,6 +8,7 @@ import { benchmarkConfiguration, benchmarkFor, benchmarkWarnings, toplineBenchma
 import { blendGenericBallotSources, readCachedGenericBallot } from "./lib/generic-ballot.mjs";
 import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./forecast-cache.mjs";
 import { applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
+import { readWikipediaPollingCache, wikipediaPollingSummary, wikipediaPollRowsByState } from "./lib/wikipedia-polls.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
@@ -2524,6 +2525,8 @@ async function fetchAllSources() {
     fetchPollingReferencePages(status)
   ]);
   const directPolls = readDirectPollLedger();
+  const wikipediaPolling = readWikipediaPollingCache("senate");
+  const wikipediaPollingByState = wikipediaPollRowsByState(wikipediaPolling);
   const fiftyPlusOne = loadFiftyPlusOnePolls("senate", status);
   const fiftyPlusOneByState = Object.groupBy(fiftyPlusOne.polls, (poll) => poll.state);
   status.directPollLedger = {
@@ -2586,7 +2589,7 @@ async function fetchAllSources() {
   const sourceHealth = sourceHealthSummary(stableStatus, {
     critical: ["votehubGenericBallot", "pollfinityAverages", "twoSeventyToWinStatePolls"]
   });
-  return { status: stableStatus, sourceHealth, votehub, ddhqGeneric, pollfinity, usPollingDataGeneric, genericPolling, canonicalGenericBallot, realClearPolling, twoSeventyToWin, directPolls, fiftyPlusOneByState, fec, mit, census, civic, pollingReferences };
+  return { status: stableStatus, sourceHealth, votehub, ddhqGeneric, pollfinity, usPollingDataGeneric, genericPolling, canonicalGenericBallot, realClearPolling, twoSeventyToWin, directPolls, wikipediaPolling, wikipediaPollingByState, fiftyPlusOneByState, fec, mit, census, civic, pollingReferences };
 }
 
 function stableSourceStatus(status) {
@@ -2624,6 +2627,7 @@ function applySourceInputs(baseRaces, sourceData) {
       ...(sourceData?.realClearPolling?.byState?.[race.state] || []),
       ...(sourceData?.twoSeventyToWin?.byState?.[race.state] || []),
       ...(sourceData?.fiftyPlusOneByState?.[race.state] || []),
+      ...(sourceData?.wikipediaPollingByState?.[race.state] || []),
       ...(sourceData?.directPolls?.byState?.[race.state] || []),
       ...(sourceData?.pollingReferences?.electoralVoteByState?.[race.state] || [])
     ];
@@ -2989,6 +2993,7 @@ async function writeForecast() {
       mitStates: Object.keys(sourceData.mit).length,
       censusStates: Object.keys(sourceData.census).length,
       civicApi: sourceData.civic,
+      wikipediaPolling: wikipediaPollingSummary(sourceData.wikipediaPolling),
       pollingReferences: sourceData.pollingReferences
     },
     modelInputs: {

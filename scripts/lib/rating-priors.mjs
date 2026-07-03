@@ -2,16 +2,44 @@ import { readFileSync } from "node:fs";
 
 const CONFIG_URL = new URL("../../data/model-config/rating-weights-2026.json", import.meta.url);
 
-const SOURCE_LABELS = {
+export const SOURCE_LABELS = {
   cook: "Cook",
   insideElections: "Inside Elections",
   sabato: "Sabato",
   splitTicket: "Split Ticket",
   raceToWH: "Race to the WH",
   voteHub: "VoteHub",
+  voteHubManual: "VoteHub",
   economist: "Economist",
   market: "Market",
+  manualScreenshot: "Manual page snapshot",
+  aggregatorTable: "Ratings aggregator",
+  inferredSafeRating: "Inferred safe rating",
   consensusRating: "Consensus"
+};
+
+export const RATING_SOURCE_WEIGHTS = {
+  cook: 1,
+  insideElections: 0.9,
+  sabato: 0.8,
+  splitTicket: 0.8,
+  raceToWH: 0.6,
+  economist: 0.6,
+  voteHub: 0.6,
+  voteHubManual: 0.6,
+  manualScreenshot: 0.4,
+  aggregatorTable: 0.5,
+  market: 0.45,
+  consensusRating: 0.7,
+  inferredSafeRating: 0.25
+};
+
+const SOURCE_TYPE_WEIGHTS = {
+  EXTERNAL_RATING: 0.7,
+  MANUAL_SCREENSHOT_OR_PAGE_SNAPSHOT: 0.4,
+  AGGREGATOR_TABLE: 0.5,
+  INFERRED_SAFE_RATING: 0.25,
+  FALLBACK: 0.5
 };
 
 const RATING_IMPLIED_MARGINS = {
@@ -114,32 +142,72 @@ export function ratingToMargin(value) {
   return normalizeRating(value)?.impliedMargin ?? null;
 }
 
+export function ratingSourceWeight(sourceKey, sourceType = null, configuredWeight = null) {
+  const numeric = Number(configuredWeight);
+  if (Number.isFinite(numeric) && numeric > 0) return numeric;
+  const key = String(sourceKey || "").trim();
+  if (Object.hasOwn(RATING_SOURCE_WEIGHTS, key)) return RATING_SOURCE_WEIGHTS[key];
+  if (sourceType && Object.hasOwn(SOURCE_TYPE_WEIGHTS, sourceType)) return SOURCE_TYPE_WEIGHTS[sourceType];
+  return 0.5;
+}
+
 export function ratingConsensusFromBenchmark(benchmark, fallbackRating = null, fallbackSource = "Race configuration") {
   const ratings = [];
-  const add = (label, rating) => {
+  const add = (label, rating, meta = {}) => {
     const parsed = normalizeRating(rating);
     if (!parsed) return;
-    ratings.push({ source: label, rating: parsed.normalized, impliedMargin: parsed.impliedMargin, rank: parsed.rank, party: parsed.party });
+    const sourceKey = meta.sourceKey || label;
+    const sourceType = meta.sourceType || "EXTERNAL_RATING";
+    ratings.push({
+      source: label,
+      sourceKey,
+      sourceType,
+      rating: parsed.normalized,
+      impliedMargin: parsed.impliedMargin,
+      rank: parsed.rank,
+      party: parsed.party,
+      weight: Number(ratingSourceWeight(sourceKey, sourceType, meta.weight).toFixed(3)),
+      asOf: meta.asOf || null,
+      url: meta.url || ""
+    });
   };
 
   if (benchmark && typeof benchmark === "object") {
-    if (benchmark.consensusRating) add(SOURCE_LABELS.consensusRating, benchmark.consensusRating);
     for (const [key, value] of Object.entries(benchmark)) {
       if (!value || typeof value !== "object") continue;
-      add(SOURCE_LABELS[key] || key, value.rating);
+      if (key === "cacheMeta") continue;
+      add(SOURCE_LABELS[key] || value.source || key, value.rating, {
+        sourceKey: value.sourceKey || key,
+        sourceType: value.sourceType || benchmark.cacheMeta?.ratingSourceType || "EXTERNAL_RATING",
+        weight: value.weight,
+        asOf: value.asOf,
+        url: value.url
+      });
+    }
+    if (!ratings.length && benchmark.consensusRating) {
+      add(SOURCE_LABELS.consensusRating, benchmark.consensusRating, {
+        sourceKey: "consensusRating",
+        sourceType: benchmark.cacheMeta?.ratingSourceType || "EXTERNAL_RATING",
+        weight: benchmark.cacheMeta?.consensusWeight
+      });
     }
   }
-  if (!ratings.length && fallbackRating) add(fallbackSource, fallbackRating);
+  if (!ratings.length && fallbackRating) add(fallbackSource, fallbackRating, { sourceType: "FALLBACK", sourceKey: "fallback" });
   if (!ratings.length) return null;
 
-  const average = ratings.reduce((sum, item) => sum + item.impliedMargin, 0) / ratings.length;
+  const weight = ratings.reduce((sum, item) => sum + item.weight, 0) || ratings.length;
+  const average = ratings.reduce((sum, item) => sum + item.impliedMargin * (item.weight || 1), 0) / weight;
   const nearest = Object.entries(RATING_IMPLIED_MARGINS)
     .sort((a, b) => Math.abs(a[1] - average) - Math.abs(b[1] - average))[0][0];
+  const margins = ratings.map((item) => item.impliedMargin);
+  const parties = new Set(ratings.map((item) => item.party || "TOSSUP"));
   return {
     consensusRating: nearest,
     impliedMargin: Number(average.toFixed(2)),
     sources: [...new Set(ratings.map((item) => item.source))],
-    sourceRatings: ratings
+    sourceRatings: ratings,
+    sourceWeight: Number(weight.toFixed(3)),
+    ratingDisagreement: parties.size > 1 || Math.max(...margins) - Math.min(...margins) >= 6
   };
 }
 
@@ -200,6 +268,39 @@ function ratingReason({ office, reasonKey, polls, weakFundamentals }) {
   if (reasonKey === "no-polling-strong-fundamentals") return `${office} race has no usable race polling but usable structural baselines, so expert ratings provide a moderate soft prior.`;
   if (reasonKey === "no-polling-decent-baseline") return `${office} race has no usable race polling but usable structural baselines, so expert ratings provide a moderate soft prior.`;
   return `${office} race rating prior selected from ${polls} usable polls and ${weakFundamentals ? "weak" : "usable"} fundamentals.`;
+}
+
+function marginParty(value) {
+  const margin = Number(value);
+  if (!Number.isFinite(margin) || Math.abs(margin) < 0.05) return null;
+  return margin > 0 ? "D" : "R";
+}
+
+function marginToRatingCategory(value) {
+  const margin = Number(value);
+  if (!Number.isFinite(margin)) return null;
+  const party = marginParty(margin);
+  const abs = Math.abs(margin);
+  if (!party || abs < 1) return { normalized: "Toss-up", party: null, rank: 0 };
+  if (abs >= 14) return { normalized: `Safe ${party}`, party, rank: 4 };
+  if (abs >= 7) return { normalized: `Likely ${party}`, party, rank: 3 };
+  if (abs >= 3) return { normalized: `Lean ${party}`, party, rank: 2 };
+  return { normalized: `Tilt ${party}`, party, rank: 1 };
+}
+
+function ratingCategoryDistance(modelMargin, rating) {
+  const model = marginToRatingCategory(modelMargin);
+  const parsed = normalizeRating(rating);
+  if (!model || !parsed) return 0;
+  if (!model.party || !parsed.party) return Math.abs(model.rank - parsed.rank);
+  if (model.party !== parsed.party) return model.rank + parsed.rank;
+  return Math.abs(model.rank - parsed.rank);
+}
+
+function isExternalRatingSource(sourceType, consensus) {
+  if (sourceType === "EXTERNAL_RATING") return true;
+  const sourceTypes = new Set((consensus?.sourceRatings || []).map((item) => item.sourceType));
+  return ["EXTERNAL_RATING", "MANUAL_SCREENSHOT_OR_PAGE_SNAPSHOT", "AGGREGATOR_TABLE"].some((type) => sourceTypes.has(type));
 }
 
 export function buildRatingPrior({
@@ -269,10 +370,16 @@ export function buildRatingPrior({
   if (Number.isFinite(Number(override.weight))) weight = Number(override.weight);
   if (Number.isFinite(Number(override.minWeight))) weight = Math.max(weight, Number(override.minWeight));
   if (Number.isFinite(Number(override.maxWeight))) weight = Math.min(weight, Number(override.maxWeight));
-  weight = Math.max(0, Math.min(0.65, weight));
+  const baseWeight = Math.max(0, Math.min(0.65, weight));
 
   const raw = Number(rawModelMargin);
   const implied = Number(consensus.impliedMargin);
+  const externalRating = isExternalRatingSource(normalizedRatingSourceType, consensus);
+  const rawParty = marginParty(raw);
+  const impliedParty = marginParty(implied);
+  const crossesRatingParty = Boolean(externalRating && dynamic.polls === 0 && rawParty && impliedParty && rawParty !== impliedParty);
+  const crossRatingBoost = crossesRatingParty ? (office === "house" ? 0.22 : 0.15) : 0;
+  weight = Math.max(0, Math.min(0.75, baseWeight + crossRatingBoost));
   const ratingPull = Number.isFinite(raw) && Number.isFinite(implied) ? (implied - raw) * weight : 0;
   const divergence = Number.isFinite(raw) && Number.isFinite(implied) ? Math.abs(implied - raw) : null;
   const warnings = [];
@@ -281,15 +388,24 @@ export function buildRatingPrior({
   } else if (Number.isFinite(divergence) && divergence >= 5) {
     warnings.push({ severity: "warning", type: "RATING_PRIOR_DIVERGENCE", message: `Raw model margin differs from expert-rating implied margin by ${divergence.toFixed(1)} points.` });
   }
-  const guardrailEligible = normalizedRatingSourceType === "EXTERNAL_RATING"
+  const guardrailEligible = externalRating
     && dynamic.polls === 0
-    && dynamic.weakFundamentals
     && !mapConflict;
+  if (crossRatingBoost) {
+    warnings.push({
+      severity: "warning",
+      type: "RATING_PRIOR_CROSS_RATING_BOOST",
+      message: "No usable race polling and raw model margin crossed the external rating party, so the rating prior received a conditional boost."
+    });
+  }
 
   return {
     enabled: weight > 0,
     weight: Number(weight.toFixed(3)),
-    reason: override.reason || ratingReason({ office, ...dynamic }),
+    baseWeight: Number(baseWeight.toFixed(3)),
+    crossRatingBoost: Number(crossRatingBoost.toFixed(3)),
+    finalWeight: Number(weight.toFixed(3)),
+    reason: override.reason || `${ratingReason({ office, ...dynamic })}${crossRatingBoost ? " Conditional boost applied because the raw no-poll model crossed the external rating party." : ""}`,
     consensusRating: consensus.consensusRating,
     impliedMargin: Number(implied.toFixed(2)),
     sources: consensus.sources,
@@ -297,6 +413,11 @@ export function buildRatingPrior({
     usedAs: weight > 0 ? (guardrailEligible ? "SOFT_PRIOR_AND_GUARDRAIL" : "SOFT_PRIOR") : "COMPARISON_ONLY",
     ratingSourceType: normalizedRatingSourceType,
     guardrailEligible,
+    guardrailTriggers: {
+      crossesRatingParty,
+      categoryDistance: ratingCategoryDistance(raw, consensus.consensusRating),
+      rawRatingDivergence: Number.isFinite(divergence) ? Number(divergence.toFixed(2)) : null
+    },
     rawModelMargin: Number.isFinite(raw) ? Number(raw.toFixed(2)) : null,
     ratingPull: Number(ratingPull.toFixed(2)),
     probabilityPullStrength: officeConfig.probabilityPullStrength ?? 1,
@@ -322,8 +443,8 @@ function guardrailLimit(value, prior) {
     if (value < -2.99) return { margin: -2.99, triggered: true, reason: "TOSSUP_MAX_TILT_R" };
     return { margin: value, triggered: false, reason: "WITHIN_TOSSUP_GUARDRAIL" };
   }
-  if (rating.normalized === "Lean D" && value <= -3) return { margin: -1.5, triggered: true, reason: "LEAN_D_MAX_TILT_R" };
-  if (rating.normalized === "Lean R" && value >= 3) return { margin: 1.5, triggered: true, reason: "LEAN_R_MAX_TILT_D" };
+  if (rating.normalized === "Lean D" && value < 0) return { margin: 0.5, triggered: true, reason: "LEAN_D_CANNOT_CROSS_TO_R_WITH_NO_POLLS" };
+  if (rating.normalized === "Lean R" && value > 0) return { margin: -0.5, triggered: true, reason: "LEAN_R_CANNOT_CROSS_TO_D_WITH_NO_POLLS" };
   if (rating.normalized === "Likely D" && value < 3) return { margin: 3, triggered: true, reason: "LIKELY_D_CANNOT_DROP_TO_TOSSUP_WITH_LOW_INPUTS" };
   if (rating.normalized === "Likely R" && value > -3) return { margin: -3, triggered: true, reason: "LIKELY_R_CANNOT_DROP_TO_TOSSUP_WITH_LOW_INPUTS" };
   if (rating.normalized === "Safe D" && value < 7) return { margin: 7, triggered: true, reason: "SAFE_D_FLOOR_WITH_LOW_INPUTS" };
@@ -334,19 +455,52 @@ function guardrailLimit(value, prior) {
 export function applyRatingGuardrail(margin, prior) {
   const value = Number(margin);
   if (!Number.isFinite(value)) {
-    return { margin: value, triggered: false, reason: "INVALID_MARGIN" };
+    return { margin: value, triggered: false, eligible: false, reason: "INVALID_MARGIN" };
   }
   if (!prior?.enabled || !prior.guardrailEligible) {
-    return { margin: value, triggered: false, reason: prior?.enabled ? "GUARDRAIL_NOT_ELIGIBLE" : "RATING_PRIOR_DISABLED" };
+    return {
+      margin: value,
+      triggered: false,
+      eligible: Boolean(prior?.guardrailEligible),
+      blockedReason: prior?.enabled ? "GUARDRAIL_NOT_ELIGIBLE" : "RATING_PRIOR_DISABLED",
+      reason: prior?.enabled ? "GUARDRAIL_NOT_ELIGIBLE" : "RATING_PRIOR_DISABLED",
+      rawModelMargin: prior?.rawModelMargin ?? null,
+      preGuardrailMargin: Number(value.toFixed(2)),
+      ratingImpliedMargin: Number.isFinite(Number(prior?.impliedMargin)) ? Number(Number(prior.impliedMargin).toFixed(2)) : null,
+      externalRating: prior?.consensusRating || null,
+      sources: prior?.sourceRatings || []
+    };
   }
   const limited = guardrailLimit(value, prior);
+  const raw = Number(prior.rawModelMargin);
+  const divergence = Number.isFinite(raw) && Number.isFinite(Number(prior.impliedMargin))
+    ? Math.abs(raw - Number(prior.impliedMargin))
+    : null;
+  const distance = ratingCategoryDistance(raw, prior.consensusRating);
+  const rawParty = marginParty(raw);
+  const ratingParty = marginParty(prior.impliedMargin);
+  const crossesRatingParty = Boolean(rawParty && ratingParty && rawParty !== ratingParty);
+  const shouldTrigger = limited.triggered || crossesRatingParty || distance >= 2 || (Number.isFinite(divergence) && divergence >= 5);
   return {
     margin: limited.margin,
-    triggered: limited.triggered,
-    reason: limited.triggered ? `NO_POLLS_LOW_CONFIDENCE_FUNDAMENTALS_BENCHMARK_EXISTS:${limited.reason}` : limited.reason,
+    triggered: shouldTrigger,
+    eligible: true,
+    reason: shouldTrigger
+      ? `NO_POLLS_EXTERNAL_RATING_GUARDRAIL:${limited.reason}${crossesRatingParty ? ":CROSSES_RATING_PARTY" : ""}${distance >= 2 ? ":CATEGORY_DISTANCE_2_PLUS" : ""}${Number.isFinite(divergence) && divergence >= 5 ? ":RAW_DIVERGENCE_5_PLUS" : ""}`
+      : limited.reason,
     rawMargin: Number(value.toFixed(2)),
+    rawModelMargin: Number.isFinite(raw) ? Number(raw.toFixed(2)) : null,
+    preGuardrailMargin: Number(value.toFixed(2)),
     ratingImpliedMargin: Number.isFinite(Number(prior.impliedMargin)) ? Number(Number(prior.impliedMargin).toFixed(2)) : null,
     guardrailedMargin: Number(limited.margin.toFixed(2)),
-    benchmark: prior.consensusRating || null
+    externalRating: prior.consensusRating || null,
+    benchmark: prior.consensusRating || null,
+    sourceRatings: prior.sourceRatings || [],
+    triggers: {
+      crossesRatingParty,
+      categoryDistance: distance,
+      rawRatingDivergence: Number.isFinite(divergence) ? Number(divergence.toFixed(2)) : null,
+      categoryLimitApplied: limited.triggered
+    }
   };
 }

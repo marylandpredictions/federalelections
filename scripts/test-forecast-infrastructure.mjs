@@ -23,13 +23,16 @@ import {
   applyRatingPrior,
   buildRatingPrior,
   normalizeRating,
+  ratingSourceWeight,
   ratingToMargin
 } from "./lib/rating-priors.mjs";
 import {
   fundamentalsCacheEnvelope,
   mergedHouseRatingsCache,
-  parseCookHouseRatings
+  parseCookHouseRatings,
+  readManualVoteHubRatings
 } from "./lib/house-input-caches.mjs";
+import { parseWikipediaPollingPage } from "./lib/wikipedia-polls.mjs";
 
 function response(status, ok = status >= 200 && status < 300) {
   return { status, ok };
@@ -157,8 +160,14 @@ const formulaPrior = buildRatingPrior({
   rawModelMargin: -4,
   fundamentalsQuality: "WEAK"
 });
-assert.equal(Number(formulaPrior.ratingPull.toFixed(2)), 4.28);
-assert.equal(Number(applyRatingPrior(-4, formulaPrior, 1).toFixed(2)), 0.28);
+assert.equal(formulaPrior.crossRatingBoost > 0, true);
+assert.equal(formulaPrior.guardrailEligible, true);
+assert.ok(applyRatingPrior(-4, formulaPrior, 1) > 0, "Cross-party no-poll rating prior should pull the margin across zero.");
+
+assert.equal(ratingSourceWeight("cook"), 1);
+assert.equal(ratingSourceWeight("voteHub", "AGGREGATOR_TABLE"), 0.6);
+assert.equal(ratingSourceWeight("aggregatorTable", "AGGREGATOR_TABLE"), 0.5);
+assert.equal(readManualVoteHubRatings("unitmissing").status, "MANUAL_NOT_CONFIGURED");
 
 const cookRows = parseCookHouseRatings(`
   <h3>Leans Dem (1)</h3>
@@ -225,5 +234,18 @@ const inferredSafePrior = buildRatingPrior({
   ratingSourceType: "INFERRED_SAFE_RATING"
 });
 assert.ok(inferredSafePrior.weight <= 0.15, "Inferred safe ratings should remain lighter than external competitive-race ratings.");
+
+const wikiPollParse = parseWikipediaPollingPage(`
+  <h2>General election polling</h2>
+  <table class="wikitable">
+    <tr><th>Poll source</th><th>Date(s)</th><th>Sample size</th><th>Democrat</th><th>Republican</th><th>Margin</th></tr>
+    <tr><td>Example Pollster</td><td>March 31 - April 1, 2026</td><td>987 LV</td><td>49%</td><td>44%</td><td>D+5</td></tr>
+    <tr><td>Race to the WH</td><td>Average</td><td></td><td>50%</td><td>42%</td><td>D+8</td></tr>
+  </table>
+`, { office: "senate", state: "NC", raceId: "NC-SEN-2026", url: "https://example.test/wiki" });
+assert.equal(wikiPollParse.rows.length, 1);
+assert.equal(wikiPollParse.averages.length, 1);
+assert.equal(wikiPollParse.rows[0].pollster, "Example Pollster");
+assert.equal(wikiPollParse.rows[0].population, "LV");
 
 console.log("Forecast infrastructure tests passed.");

@@ -9,6 +9,7 @@ import { blendGenericBallotSources, parsePollfinityGeneric as parseCanonicalPoll
 import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./forecast-cache.mjs";
 import { applyRatingGuardrail, applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
 import { readHouseFundamentalsCacheMap } from "./lib/house-input-caches.mjs";
+import { readWikipediaPollingCache, wikipediaPollingSummary } from "./lib/wikipedia-polls.mjs";
 
 const OUTPUT_URL = new URL("../data/house-forecast.json", import.meta.url);
 const SENATE_FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
@@ -998,6 +999,14 @@ async function fetchHouseSources() {
   const directPolls = readDirectHousePollLedger();
   const fiftyPlusOne = loadFiftyPlusOnePolls("house", status);
   const fiftyPlusOneByDistrict = Object.groupBy(fiftyPlusOne.polls.filter((poll) => poll.district), (poll) => poll.district);
+  const wikipediaPolling = readWikipediaPollingCache("house");
+  const wikipediaByDistrict = Object.groupBy((wikipediaPolling.rows || [])
+    .filter((poll) => poll.district)
+    .map((poll) => ({
+      ...poll,
+      source: poll.source || "Wikipedia",
+      secondaryReported: true
+    })), (poll) => poll.district);
   status.directPollLedger = {
     health: directPolls.polls ? "OK_PARSED" : "OK_NO_ROWS",
     ok: true,
@@ -1012,7 +1021,8 @@ async function fetchHouseSources() {
     parseHousePollReferences(raceToTheWhHouse, "Race to the WH", pollingDistricts),
     parseHousePollReferences(raceToTheWhAllPolls, "Race to the WH", pollingDistricts),
     directPolls.byDistrict,
-    fiftyPlusOneByDistrict
+    fiftyPlusOneByDistrict,
+    wikipediaByDistrict
   );
   status.houseDistrictPolls = {
     ok: true,
@@ -1022,6 +1032,15 @@ async function fetchHouseSources() {
     directPolls: directPolls.polls,
     skippedDirectPolls: directPolls.skipped,
     note: "Only structured/current district matchups are blended; generic ballot data remains a separate national signal."
+  };
+  status.wikipediaHousePolling = {
+    ok: true,
+    health: wikipediaPolling.status || "MANUAL_NOT_CONFIGURED",
+    status: wikipediaPolling.status || "MANUAL_NOT_CONFIGURED",
+    rows: wikipediaPolling.rows?.length || 0,
+    averages: wikipediaPolling.averages?.length || 0,
+    warnings: wikipediaPolling.warnings || [],
+    url: "data/cache/polls/wikipedia-house-2026.json"
   };
   const sourceHealth = sourceHealthSummary(status, {
     critical: ["votehubGenericBallot", "pollfinityAverages", "twoSeventyToWinHousePolls"]
@@ -1034,6 +1053,7 @@ async function fetchHouseSources() {
     insideRatings: parseInsideRatings(insideHtml),
     fec,
     genericPolling,
+    wikipediaPolling,
     districtPolls,
     housePollingReferenceReachable: Boolean(pollingHtml),
     raceToTheWhHouseReachable: Boolean(raceToTheWhHouse),
@@ -1367,8 +1387,10 @@ function houseRaceSourceHealth({ sourceData, pollingSummary, fundamentalsPrior, 
   const hasBenchmark = Boolean(ratingsPrior?.consensusRating && !["RATING_UNAVAILABLE", "MAP_CONFLICT_RATING_DISABLED"].includes(ratingsPrior.ratingSourceType));
   const reasons = [];
   if (hasUsablePolls) reasons.push("usable race polling");
+  else reasons.push("no usable district polling");
   if (hasIndependentBaseline) reasons.push("source-backed district baseline");
   if (hasBenchmark) reasons.push(`${ratingsPrior.ratingSourceType === "INFERRED_SAFE_RATING" ? "inferred safe" : "external"} rating benchmark`);
+  if (ratingsPrior?.ratingsHeavy) reasons.push("ratings-heavy forecast");
   if (sourceData.sourceHealth?.degraded) reasons.push("global source degradation");
   if (mapConflict) {
     return {
@@ -1395,9 +1417,9 @@ function houseRaceSourceHealth({ sourceData, pollingSummary, fundamentalsPrior, 
         ? "Race has no usable live/manual district polling."
         : "Race lacks an independent district baseline.";
     return {
-      health: "PARTIAL",
-      degraded: false,
-      forecastStatus: "LIMITED_DATA",
+      health: !hasUsablePolls || ratingsPrior?.ratingsHeavy ? "PARTIAL" : "LIMITED_DATA",
+      degraded: !hasUsablePolls && !hasIndependentBaseline,
+      forecastStatus: !hasUsablePolls ? "LIMITED_DATA" : "NORMAL",
       reasons,
       warnings: [{ severity: "warning", type: "partial-house-race-inputs", message: warning }]
     };
@@ -1412,6 +1434,30 @@ function houseRaceSourceHealth({ sourceData, pollingSummary, fundamentalsPrior, 
       type: "degraded-house-race-inputs",
       message: "House race has no usable polling, no independent district baseline, and no usable benchmark rating."
     }]
+  };
+}
+
+function houseToplineDivergenceExplanation(toplineComparison, noDistrictPolling, sourceData) {
+  if (!toplineComparison?.warning) return null;
+  const modelDemProbability = Number(toplineComparison.modelDemProbability);
+  const benchmarkDemProbability = Number(toplineComparison.benchmarkDemProbability);
+  const highSeverity = Number.isFinite(modelDemProbability)
+    && Number.isFinite(benchmarkDemProbability)
+    && modelDemProbability < 0.5
+    && benchmarkDemProbability >= 0.65;
+  const mainReasons = [];
+  if (noDistrictPolling) mainReasons.push("No usable district-level polling.");
+  mainReasons.push("House output remains heavily dependent on fundamentals and public ratings priors.");
+  if (sourceData.sourceHealth?.degraded) mainReasons.push("One or more upstream source fetches were degraded during generation.");
+  mainReasons.push("Review race-level guardrails where no-poll districts disagree with public benchmarks.");
+  return {
+    triggered: true,
+    severity: highSeverity ? "high" : "warning",
+    modelDemProbability: Number.isFinite(modelDemProbability) ? modelDemProbability : null,
+    benchmarkDemProbability: Number.isFinite(benchmarkDemProbability) ? benchmarkDemProbability : null,
+    difference: Number.isFinite(Number(toplineComparison.difference)) ? Number(toplineComparison.difference) : null,
+    mainReasons,
+    reviewRequired: true
   };
 }
 
@@ -2187,6 +2233,7 @@ async function writeHouseForecast() {
   };
   const noDistrictPolling = pollingCoverage.usablePollDistricts === 0;
   const toplineComparison = toplineBenchmark("house", { demControlProbability: model.demControlProbability });
+  const toplineDivergenceExplanation = houseToplineDivergenceExplanation(toplineComparison, noDistrictPolling, sourceData);
   const sourceHealth = noDistrictPolling ? {
     ...sourceData.sourceHealth,
     degraded: true,
@@ -2236,6 +2283,7 @@ async function writeHouseForecast() {
     ...cacheFreshness,
     canonicalGenericBallot: sourceData.genericPolling,
     benchmarkComparison: toplineComparison,
+    toplineDivergenceExplanation,
     raceBenchmarkStatus: benchmarkConfiguration(),
     racePollCoverage: pollingCoverage,
     pollCoverage: {
@@ -2243,11 +2291,18 @@ async function writeHouseForecast() {
       totalDistricts: pollingCoverage.districts,
       sourceFailureDistricts: pollingCoverage.sourceFailureDistricts
     },
+    guardrailedDistricts: model.districts.filter((district) => district.ratingGuardrail?.triggered).map((district) => district.id),
+    guardrailCount: model.districts.filter((district) => district.ratingGuardrail?.triggered).length,
+    mapConflictDistricts: model.districts.filter((district) => district.ratingIsConditional || district.forecastStatus === "SCENARIO_ONLY").map((district) => district.id),
     dataQualityWarnings: [
       ...(sourceData.usingCachedDistricts ? [{ severity: "warning", type: "house-district-fallback", message: "House forecast degraded: ratings/district map source failed; using fallback baselines." }] : []),
       ...(noDistrictPolling ? [{ severity: "warning", type: "no-district-polling", message: "House forecast limited: no usable district-level polling was available; output is ratings/fundamentals-driven." }] : []),
       ...(benchmarkConfiguration().status === "EMPTY" ? [{ severity: "warning", type: "benchmark-file-empty", message: "External race benchmark file is empty; race-level benchmark comparisons are schema-only." }] : []),
-      ...(toplineComparison.warning ? [{ severity: "warning", type: "public-model-topline-divergence", message: `House model diverges sharply from public benchmarks: model gives Democrats ${(model.demControlProbability * 100).toFixed(1)}% while benchmark sources favor Democrats for House control.` }] : []),
+      ...(toplineComparison.warning ? [{
+        severity: toplineDivergenceExplanation?.severity || "warning",
+        type: "public-model-topline-divergence",
+        message: `House forecast review required: model gives Democrats ${(model.demControlProbability * 100).toFixed(1)}% while benchmark sources favor Democrats for House control.`
+      }] : []),
       ...cacheFreshness.staleInputWarnings,
       ...sourceHealthWarnings(sourceHealth, "House")
     ],
@@ -2262,6 +2317,7 @@ async function writeHouseForecast() {
       fecDistricts: Object.keys(sourceData.fec).filter((id) => id !== "__national").length,
       nationalFinance: sourceData.fec.__national || null,
       genericPolling: sourceData.genericPolling,
+      wikipediaPolling: wikipediaPollingSummary(sourceData.wikipediaPolling),
       districtPolling: {
         districts: Object.keys(sourceData.districtPolls || {}).length,
         polls: Object.values(sourceData.districtPolls || {}).reduce((sum, polls) => sum + polls.length, 0),

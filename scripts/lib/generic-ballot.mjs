@@ -1,8 +1,7 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 const SENATE_FORECAST_URL = new URL("../../data/forecast.json", import.meta.url);
 const GENERIC_BALLOT_CACHE_URL = new URL("../../data/cache/polls/generic-ballot-2026.json", import.meta.url);
-const DATA_DIR_URL = new URL("../../data/", import.meta.url);
 
 function numberAfter(text, pattern) {
   const match = String(text || "").match(pattern);
@@ -142,23 +141,6 @@ export function readCachedGenericBallot() {
   ));
   if (Number.isFinite(Number(fromSenate?.margin))) return fromSenate;
 
-  try {
-    const presidentFiles = readdirSync(DATA_DIR_URL)
-      .filter((file) => /^president-forecast-.+\.json$/i.test(file))
-      .sort();
-    for (const file of presidentFiles) {
-      const fallback = cachedGenericFromFile(new URL(file, DATA_DIR_URL), `presidential forecast cache: ${file}`, (data) => (
-        data.canonicalGenericBallot || data.sourceSummary?.genericPolling || {
-          margin: data.genericBallotMargin,
-          dem: data.genericBallotDem,
-          rep: data.genericBallotRep
-        }
-      ));
-      if (Number.isFinite(Number(fallback?.margin))) return fallback;
-    }
-  } catch {
-    // No checked-in presidential fallback is available.
-  }
   return null;
 }
 

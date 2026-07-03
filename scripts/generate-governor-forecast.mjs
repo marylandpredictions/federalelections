@@ -8,6 +8,7 @@ import { benchmarkConfiguration, benchmarkFor, benchmarkWarnings, toplineBenchma
 import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./forecast-cache.mjs";
 import { readCachedGenericBallot } from "./lib/generic-ballot.mjs";
 import { applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
+import { readWikipediaPollingCache, wikipediaPollingSummary, wikipediaPollRowsByState } from "./lib/wikipedia-polls.mjs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const GOVERNOR_HISTORY_URL = new URL("../data/governor-history.json", import.meta.url);
@@ -755,26 +756,29 @@ async function fetchAllSources() {
   const governorFinance = mergeGovernorFinance(manualGovernorFinance, onlineGovernorFinance, status);
   const governorPolling = mergeGovernorPolling(status, manualGovernorPolls, pollfinity, twoSeventyGovernor);
   const directGovernorPolls = mergeDirectGovernorPolls(governorPolling, status);
+  const wikipediaPolling = readWikipediaPollingCache("governor");
+  const wikipediaGovernorPolls = Object.values(wikipediaPollRowsByState(wikipediaPolling)).flat();
+  const withWikipediaPolls = mergeSupplementalGovernorPolls(directGovernorPolls, wikipediaGovernorPolls, "Wikipedia");
   const fiftyPlusOne = loadFiftyPlusOnePolls("governor", status);
-  const allGovernorPolls = mergeFiftyPlusOneGovernorPolls(directGovernorPolls, fiftyPlusOne.polls);
+  const allGovernorPolls = mergeSupplementalGovernorPolls(withWikipediaPolls, fiftyPlusOne.polls, "FiftyPlusOne");
   const sourceHealth = sourceHealthSummary(status, {
     critical: ["pollfinityAverages", "twoSeventyGovernorPolls"]
   });
-  return { governorFinance, fec: governorFinance, ddhqGeneric, pollfinity, twoSeventyGovernor, governorPolling: allGovernorPolls, status, sourceHealth };
+  return { governorFinance, fec: governorFinance, ddhqGeneric, pollfinity, twoSeventyGovernor, wikipediaPolling, governorPolling: allGovernorPolls, status, sourceHealth };
 }
 
-function mergeFiftyPlusOneGovernorPolls(governorPolling, polls) {
+function mergeSupplementalGovernorPolls(governorPolling, polls, sourceLabel) {
   for (const [state, rows] of Object.entries(Object.groupBy(polls || [], (poll) => poll.state))) {
     if (!STATE_NAMES[state] || !rows?.length) continue;
     const current = governorPolling.governorPolls[state];
     const currentPolls = current?.polls || 0;
-    const fiftyMargin = rows.reduce((sum, poll) => sum + poll.margin, 0) / rows.length;
+    const supplementalMargin = rows.reduce((sum, poll) => sum + poll.margin, 0) / rows.length;
     const total = currentPolls + rows.length;
     governorPolling.governorPolls[state] = {
       ...(current || {}),
-      margin: Number((((current?.margin || 0) * currentPolls + fiftyMargin * rows.length) / total).toFixed(2)),
+      margin: Number((((current?.margin || 0) * currentPolls + supplementalMargin * rows.length) / total).toFixed(2)),
       polls: total,
-      sources: [...new Set([...(current?.sources || []), "FiftyPlusOne"])],
+      sources: [...new Set([...(current?.sources || []), sourceLabel])],
       sourceUrls: current?.sourceUrls || [],
       pollEntries: [...(current?.pollEntries || []), ...rows],
       weightScale: current?.weightScale || 1
@@ -1891,6 +1895,7 @@ async function buildForecast() {
         usedInModel: Boolean(sourceData.status?.governorFinanceCoverage?.usedInModel)
       },
       governorPolling: sourceData.governorPolling || null,
+      wikipediaPolling: wikipediaPollingSummary(sourceData.wikipediaPolling),
       financeNote: "Gubernatorial finance uses local normalized records when available. Online state portal fetching is disabled by default."
     },
     modelWarnings: [
