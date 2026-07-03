@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { forecastSanityWarnings } from "./forecast-sanity.mjs";
 import { generationNetworkStatus, markDisabled, markNoRows, markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
 import { directPollLedger } from "./poll-ledger.mjs";
@@ -9,9 +9,11 @@ import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./f
 import { readCachedGenericBallot } from "./lib/generic-ballot.mjs";
 import { applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
 import { readWikipediaPollingCache, wikipediaPollingSummary, wikipediaPollRowsByState } from "./lib/wikipedia-polls.mjs";
+import { buildRaceReview } from "./lib/race-review-diagnostics.mjs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const GOVERNOR_HISTORY_URL = new URL("../data/governor-history.json", import.meta.url);
+const GOVERNOR_RACE_REVIEW_URL = new URL("../data/diagnostics/governor-race-review-2026.json", import.meta.url);
 const GOVERNOR_FINANCE_URL = new URL("../data/governor-finance.json", import.meta.url);
 const GOVERNOR_FINANCE_SOURCES_URL = new URL("../data/governor-finance-sources.json", import.meta.url);
 const GOVERNOR_EXCEPTIONS_URL = new URL("../data/candidate-exceptions/governor-2026.json", import.meta.url);
@@ -1935,7 +1937,9 @@ async function buildForecast() {
 
 async function writeForecast() {
   const forecast = await buildForecast();
+  mkdirSync(new URL("../data/diagnostics/", import.meta.url), { recursive: true });
   writeFileSync(FORECAST_URL, JSON.stringify(forecast, null, 2), "utf8");
+  writeFileSync(GOVERNOR_RACE_REVIEW_URL, `${JSON.stringify(buildRaceReview({ model: "governor", races: forecast.races, generatedAt: forecast.generatedAt }), null, 2)}\n`, "utf8");
   writeFileSync(GOVERNOR_HISTORY_URL, JSON.stringify({
     updatedAt: forecast.generatedAt,
     modelDate: forecast.modelDate,

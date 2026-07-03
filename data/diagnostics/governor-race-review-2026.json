@@ -1,0 +1,2459 @@
+{
+  "generatedAt": "2026-07-03T08:30:01.092Z",
+  "model": "governor",
+  "schemaVersion": "2026.race-review.1",
+  "summary": {
+    "races": 36,
+    "reviewRequired": 35,
+    "highSeverity": 14,
+    "noUsablePolling": 35
+  },
+  "races": [
+    {
+      "id": "AL",
+      "state": "AL",
+      "race": "Alabama Governor",
+      "projectedMargin": -15.53,
+      "probabilityEngineMargin": -15.84,
+      "demProbability": 0.0324,
+      "repProbability": 0.9676,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Doug Jones",
+        "rep": "Tommy Tuberville",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-05-19",
+        "summary": "Jones won the Democratic primary and Tuberville won the Republican primary on May 19, 2026."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -33.8,
+        "projectedMargin": -15.53,
+        "shift": 18.27,
+        "level": "large",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "HISTORICAL_SHIFT_REVIEW",
+          "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        }
+      ]
+    },
+    {
+      "id": "AK",
+      "state": "AK",
+      "race": "Alaska Governor",
+      "projectedMargin": -2.8,
+      "probabilityEngineMargin": -2.93,
+      "demProbability": 0.3826,
+      "repProbability": 0.6175,
+      "winnerParty": "R",
+      "rating": "Tilt R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Lean R",
+        "impliedMargin": -5.5,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Republican",
+        "demStatus": "unresolved",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "top-four",
+        "date": "2026-08-18",
+        "summary": "Alaska uses a nonpartisan top-four primary. Multiple Democrats, Republicans, and independents remain possible general-election options."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -5.7,
+        "projectedMargin": -2.8,
+        "shift": 2.9,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "AK is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        }
+      ]
+    },
+    {
+      "id": "AZ",
+      "state": "AZ",
+      "race": "Arizona Governor",
+      "projectedMargin": 1.83,
+      "probabilityEngineMargin": 1.74,
+      "demProbability": 0.5786,
+      "repProbability": 0.4214,
+      "winnerParty": "D",
+      "rating": "Tilt D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Katie Hobbs",
+        "rep": "Republican",
+        "demStatus": "presumptive",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-04",
+        "summary": "Hobbs is the Democratic incumbent and treated as presumptive; the Republican primary remains open."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 0.6,
+        "projectedMargin": 1.83,
+        "shift": 1.23,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "AR",
+      "state": "AR",
+      "race": "Arkansas Governor",
+      "projectedMargin": -20.3,
+      "probabilityEngineMargin": -20.38,
+      "demProbability": 0.0012,
+      "repProbability": 0.9988,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Fredrick Love",
+        "rep": "Sarah Huckabee Sanders",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-03-03",
+        "summary": "Sanders and Love are treated as nominated after Arkansas' March primary."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -26,
+        "projectedMargin": -20.3,
+        "shift": 5.7,
+        "level": "normal",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        }
+      ]
+    },
+    {
+      "id": "CA",
+      "state": "CA",
+      "race": "California Governor",
+      "projectedMargin": 15.34,
+      "probabilityEngineMargin": 15.66,
+      "demProbability": 0.9572,
+      "repProbability": 0.0428,
+      "winnerParty": "D",
+      "rating": "Safe D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Xavier Becerra",
+        "rep": "Steve Hilton",
+        "demStatus": "front-runner",
+        "repStatus": "front-runner",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "top-two",
+        "date": "2026-06-02",
+        "summary": "California's top-two primary has a large field. Becerra and Hilton are tracked as the leading Democratic and Republican options before votes are reported."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 18.4,
+        "projectedMargin": 15.34,
+        "shift": -3.06,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        }
+      ]
+    },
+    {
+      "id": "CO",
+      "state": "CO",
+      "race": "Colorado Governor",
+      "projectedMargin": 7.45,
+      "probabilityEngineMargin": 7.63,
+      "demProbability": 0.7884,
+      "repProbability": 0.2116,
+      "winnerParty": "D",
+      "rating": "Lean D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely D",
+        "impliedMargin": 11,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Phil Weiser",
+        "rep": "Republican",
+        "demStatus": "front-runner",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-30",
+        "summary": "Weiser is tracked as the leading Democratic option in Colorado's open-seat race; the Republican side remains unresolved."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 19.3,
+        "projectedMargin": 7.45,
+        "shift": -11.85,
+        "level": "notable",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "HISTORICAL_SHIFT_REVIEW",
+          "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "CT",
+      "state": "CT",
+      "race": "Connecticut Governor",
+      "projectedMargin": 12.87,
+      "probabilityEngineMargin": 13.31,
+      "demProbability": 0.9616,
+      "repProbability": 0.0384,
+      "winnerParty": "D",
+      "rating": "Likely D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Ned Lamont",
+        "rep": "Ryan Fazio",
+        "demStatus": "presumptive",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-11",
+        "summary": "Lamont is the Democratic incumbent and treated as presumptive while the Republican side remains unsettled."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 12,
+        "projectedMargin": 12.87,
+        "shift": 0.87,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "FL",
+      "state": "FL",
+      "race": "Florida Governor",
+      "projectedMargin": -4.22,
+      "probabilityEngineMargin": -4.02,
+      "demProbability": 0.3377,
+      "repProbability": 0.6623,
+      "winnerParty": "R",
+      "rating": "Lean R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Republican",
+        "demStatus": "unresolved",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-18",
+        "summary": "Florida is an open seat with both major-party primaries unresolved."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -19.4,
+        "projectedMargin": -4.22,
+        "shift": 15.18,
+        "level": "large",
+        "expectedRegression": false,
+        "needsReview": true,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "HISTORICAL_SHIFT_REVIEW",
+          "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "GA",
+      "state": "GA",
+      "race": "Georgia Governor",
+      "projectedMargin": 0.9,
+      "probabilityEngineMargin": 0.85,
+      "demProbability": 0.5336,
+      "repProbability": 0.4664,
+      "winnerParty": "D",
+      "rating": "Toss-up",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Keisha Lance Bottoms",
+        "rep": "Rick Jackson",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-06-16",
+        "summary": "Bottoms won the Democratic primary on May 19, 2026. Jackson won the June 16 Republican runoff."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -7.5,
+        "projectedMargin": 0.9,
+        "shift": 8.39,
+        "level": "notable",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        }
+      ]
+    },
+    {
+      "id": "HI",
+      "state": "HI",
+      "race": "Hawaii Governor",
+      "projectedMargin": 20.27,
+      "probabilityEngineMargin": 20.36,
+      "demProbability": 0.9988,
+      "repProbability": 0.0012,
+      "winnerParty": "D",
+      "rating": "Safe D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Josh Green",
+        "rep": "Gary Cordery",
+        "demStatus": "presumptive",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-08",
+        "summary": "Green is the Democratic incumbent and treated as presumptive."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 26.4,
+        "projectedMargin": 20.27,
+        "shift": -6.13,
+        "level": "normal",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "ID",
+      "state": "ID",
+      "race": "Idaho Governor",
+      "projectedMargin": -20.08,
+      "probabilityEngineMargin": -20.18,
+      "demProbability": 0.0013,
+      "repProbability": 0.9987,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Terri Pickens",
+        "rep": "Brad Little",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-05-19",
+        "summary": "Little and Pickens are treated as nominated after Idaho's May primary."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -20.6,
+        "projectedMargin": -20.08,
+        "shift": 0.52,
+        "level": "normal",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        }
+      ]
+    },
+    {
+      "id": "IL",
+      "state": "IL",
+      "race": "Illinois Governor",
+      "projectedMargin": 12.35,
+      "probabilityEngineMargin": 12.82,
+      "demProbability": 0.9533,
+      "repProbability": 0.0467,
+      "winnerParty": "D",
+      "rating": "Likely D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "JB Pritzker",
+        "rep": "Darren Bailey",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-03-17",
+        "summary": "Pritzker and Bailey are treated as nominated after Illinois' March primary."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 12.5,
+        "projectedMargin": 12.35,
+        "shift": -0.15,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        }
+      ]
+    },
+    {
+      "id": "IA",
+      "state": "IA",
+      "race": "Iowa Governor",
+      "projectedMargin": -0.6,
+      "probabilityEngineMargin": -0.58,
+      "demProbability": 0.4731,
+      "repProbability": 0.527,
+      "winnerParty": "R",
+      "rating": "Toss-up",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.065,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 3,
+        "livePollCount": 0,
+        "manualPollCount": 3,
+        "status": "MANUAL_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "Rob Sand",
+        "rep": "Zach Lahn",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-06-02",
+        "summary": "Iowa held its June 2 primaries. Sand won the Democratic nomination and Lahn won the Republican nomination."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -18.6,
+        "projectedMargin": -0.6,
+        "shift": 18,
+        "level": "large",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "current multi-poll signal available"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "MANUAL_POLLS_AVAILABLE",
+        "unavailableSources": []
+      },
+      "reviewRequired": false,
+      "reviewFlags": [
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "IA is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        }
+      ]
+    },
+    {
+      "id": "KS",
+      "state": "KS",
+      "race": "Kansas Governor",
+      "projectedMargin": -4.03,
+      "probabilityEngineMargin": -4.1,
+      "demProbability": 0.3349,
+      "repProbability": 0.6651,
+      "winnerParty": "R",
+      "rating": "Lean R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Lean R",
+        "impliedMargin": -5.5,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Republican",
+        "demStatus": "unresolved",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-04",
+        "summary": "Both Kansas primaries remain unresolved in the manual ledger."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 2.2,
+        "projectedMargin": -4.03,
+        "shift": -6.23,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "ME",
+      "state": "ME",
+      "race": "Maine Governor",
+      "projectedMargin": 4.86,
+      "probabilityEngineMargin": 5.16,
+      "demProbability": 0.7007,
+      "repProbability": 0.2993,
+      "winnerParty": "D",
+      "rating": "Lean D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely D",
+        "impliedMargin": 11,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Republican",
+        "demStatus": "unresolved",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-09",
+        "summary": "Maine's open-seat field is unsettled."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 12.8,
+        "projectedMargin": 4.86,
+        "shift": -7.94,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "ME is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "MD",
+      "state": "MD",
+      "race": "Maryland Governor",
+      "projectedMargin": 22.91,
+      "probabilityEngineMargin": 22.87,
+      "demProbability": 0.999,
+      "repProbability": 0.001,
+      "winnerParty": "D",
+      "rating": "Safe D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Wes Moore",
+        "rep": "Republican",
+        "demStatus": "presumptive",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-23",
+        "summary": "Moore is the Democratic incumbent and treated as presumptive."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 29.9,
+        "projectedMargin": 22.91,
+        "shift": -6.99,
+        "level": "normal",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "MA",
+      "state": "MA",
+      "race": "Massachusetts Governor",
+      "projectedMargin": 21.91,
+      "probabilityEngineMargin": 21.91,
+      "demProbability": 0.999,
+      "repProbability": 0.001,
+      "winnerParty": "D",
+      "rating": "Safe D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Maura Healey",
+        "rep": "Republican",
+        "demStatus": "presumptive",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-09-01",
+        "summary": "Healey is the Democratic incumbent and treated as presumptive."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 29.2,
+        "projectedMargin": 21.91,
+        "shift": -7.29,
+        "level": "normal",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "MI",
+      "state": "MI",
+      "race": "Michigan Governor",
+      "projectedMargin": 2.62,
+      "probabilityEngineMargin": 2.59,
+      "demProbability": 0.6009,
+      "repProbability": 0.3991,
+      "winnerParty": "D",
+      "rating": "Tilt D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Tilt D",
+        "impliedMargin": 2,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Jocelyn Benson",
+        "rep": "Republican",
+        "demStatus": "front-runner",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-04",
+        "summary": "Benson is tracked as the leading Democratic option in Michigan's open-seat race; the Republican primary remains unresolved."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 10.6,
+        "projectedMargin": 2.62,
+        "shift": -7.98,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "MN",
+      "state": "MN",
+      "race": "Minnesota Governor",
+      "projectedMargin": 3.7,
+      "probabilityEngineMargin": 4.05,
+      "demProbability": 0.6646,
+      "repProbability": 0.3354,
+      "winnerParty": "D",
+      "rating": "Tilt D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely D",
+        "impliedMargin": 11,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Republican",
+        "demStatus": "unresolved",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-11",
+        "summary": "Minnesota is an open seat and the model is not assigning a presumptive major-party nominee yet."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 7.7,
+        "projectedMargin": 3.7,
+        "shift": -4,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "MN is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "NE",
+      "state": "NE",
+      "race": "Nebraska Governor",
+      "projectedMargin": -15.95,
+      "probabilityEngineMargin": -16.25,
+      "demProbability": 0.0088,
+      "repProbability": 0.9912,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Lynne Walz",
+        "rep": "Jim Pillen",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-05-12",
+        "summary": "Walz won the Democratic primary and Pillen won the Republican primary on May 12, 2026."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -23.8,
+        "projectedMargin": -15.95,
+        "shift": 7.85,
+        "level": "normal",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "NE is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        }
+      ]
+    },
+    {
+      "id": "NV",
+      "state": "NV",
+      "race": "Nevada Governor",
+      "projectedMargin": -3.81,
+      "probabilityEngineMargin": -3.62,
+      "demProbability": 0.3351,
+      "repProbability": 0.6649,
+      "winnerParty": "R",
+      "rating": "Tilt R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Joe Lombardo",
+        "demStatus": "unresolved",
+        "repStatus": "presumptive",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-09",
+        "summary": "Lombardo is the Republican incumbent and treated as presumptive."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -1.5,
+        "projectedMargin": -3.81,
+        "shift": -2.31,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "NH",
+      "state": "NH",
+      "race": "New Hampshire Governor",
+      "projectedMargin": -5.65,
+      "probabilityEngineMargin": -5.91,
+      "demProbability": 0.2397,
+      "repProbability": 0.7603,
+      "winnerParty": "R",
+      "rating": "Lean R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely R",
+        "impliedMargin": -11,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Kelly Ayotte",
+        "demStatus": "unresolved",
+        "repStatus": "presumptive",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-09-08",
+        "summary": "Ayotte is the Republican incumbent and treated as presumptive."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -9.2,
+        "projectedMargin": -5.65,
+        "shift": 3.55,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "NM",
+      "state": "NM",
+      "race": "New Mexico Governor",
+      "projectedMargin": 4.27,
+      "probabilityEngineMargin": 4.6,
+      "demProbability": 0.6783,
+      "repProbability": 0.3217,
+      "winnerParty": "D",
+      "rating": "Lean D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely D",
+        "impliedMargin": 11,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Deb Haaland",
+        "rep": "Republican",
+        "demStatus": "front-runner",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-02",
+        "summary": "Haaland is tracked as the leading Democratic option in New Mexico's open-seat race; the Republican primary remains unresolved."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 6.4,
+        "projectedMargin": 4.27,
+        "shift": -2.13,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "NY",
+      "state": "NY",
+      "race": "New York Governor",
+      "projectedMargin": 9.98,
+      "probabilityEngineMargin": 10.03,
+      "demProbability": 0.9014,
+      "repProbability": 0.0986,
+      "winnerParty": "D",
+      "rating": "Likely D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely D",
+        "impliedMargin": 11,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Kathy Hochul",
+        "rep": "Republican",
+        "demStatus": "presumptive",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-23",
+        "summary": "Hochul is the Democratic incumbent and treated as presumptive."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 6.4,
+        "projectedMargin": 9.98,
+        "shift": 3.58,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "OH",
+      "state": "OH",
+      "race": "Ohio Governor",
+      "projectedMargin": -4.53,
+      "probabilityEngineMargin": -4.31,
+      "demProbability": 0.3244,
+      "repProbability": 0.6756,
+      "winnerParty": "R",
+      "rating": "Lean R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Amy Acton",
+        "rep": "Vivek Ramaswamy",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-05-05",
+        "summary": "Acton won the Democratic primary and Ramaswamy won the Republican primary on May 5, 2026."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -25.4,
+        "projectedMargin": -4.53,
+        "shift": 20.87,
+        "level": "large",
+        "expectedRegression": false,
+        "needsReview": true,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "HISTORICAL_SHIFT_REVIEW",
+          "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "OH is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        }
+      ]
+    },
+    {
+      "id": "OK",
+      "state": "OK",
+      "race": "Oklahoma Governor",
+      "projectedMargin": -11.49,
+      "probabilityEngineMargin": -12,
+      "demProbability": 0.0877,
+      "repProbability": 0.9123,
+      "winnerParty": "R",
+      "rating": "Likely R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Gentner Drummond / Mike Mazzei runoff",
+        "demStatus": "unresolved",
+        "repStatus": "runoff",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "runoff",
+        "date": "2026-08-25",
+        "summary": "Oklahoma's June 16 Republican primary advanced Drummond and Mazzei to an August 25 runoff; the Democratic side remains unresolved in the manual ledger."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -13.7,
+        "projectedMargin": -11.49,
+        "shift": 2.21,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        }
+      ]
+    },
+    {
+      "id": "OR",
+      "state": "OR",
+      "race": "Oregon Governor",
+      "projectedMargin": 8.88,
+      "probabilityEngineMargin": 8.98,
+      "demProbability": 0.8719,
+      "repProbability": 0.1281,
+      "winnerParty": "D",
+      "rating": "Likely D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely D",
+        "impliedMargin": 11,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Tina Kotek",
+        "rep": "Christine Drazan",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-05-19",
+        "summary": "Kotek won the Democratic primary and Drazan won the Republican primary on May 19, 2026."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 3.4,
+        "projectedMargin": 8.88,
+        "shift": 5.48,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        }
+      ]
+    },
+    {
+      "id": "PA",
+      "state": "PA",
+      "race": "Pennsylvania Governor",
+      "projectedMargin": 10.75,
+      "probabilityEngineMargin": 10.76,
+      "demProbability": 0.9097,
+      "repProbability": 0.0903,
+      "winnerParty": "D",
+      "rating": "Likely D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely D",
+        "impliedMargin": 11,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Josh Shapiro",
+        "rep": "Stacy Garrity",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-05-19",
+        "summary": "Shapiro won the Democratic primary and Garrity won the Republican primary on May 19, 2026."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 14.8,
+        "projectedMargin": 10.75,
+        "shift": -4.05,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        }
+      ]
+    },
+    {
+      "id": "RI",
+      "state": "RI",
+      "race": "Rhode Island Governor",
+      "projectedMargin": 15.11,
+      "probabilityEngineMargin": 15.44,
+      "demProbability": 0.9841,
+      "repProbability": 0.0158,
+      "winnerParty": "D",
+      "rating": "Safe D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Dan McKee",
+        "rep": "Republican",
+        "demStatus": "presumptive",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-09-09",
+        "summary": "McKee is the Democratic incumbent and treated as presumptive."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 19.3,
+        "projectedMargin": 15.11,
+        "shift": -4.2,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "SC",
+      "state": "SC",
+      "race": "South Carolina Governor",
+      "projectedMargin": -6.78,
+      "probabilityEngineMargin": -6.98,
+      "demProbability": 0.2291,
+      "repProbability": 0.7709,
+      "winnerParty": "R",
+      "rating": "Lean R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely R",
+        "impliedMargin": -11,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Alan Wilson",
+        "demStatus": "unresolved",
+        "repStatus": "front-runner",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-09",
+        "summary": "Wilson is tracked as the leading Republican option in South Carolina's open-seat race; the Democratic primary remains unresolved."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -17.8,
+        "projectedMargin": -6.78,
+        "shift": 11.02,
+        "level": "notable",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "HISTORICAL_SHIFT_REVIEW",
+          "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "SD",
+      "state": "SD",
+      "race": "South Dakota Governor",
+      "projectedMargin": -19.56,
+      "probabilityEngineMargin": -19.68,
+      "demProbability": 0.0016,
+      "repProbability": 0.9983,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Daniel Ahlers",
+        "rep": "Larry Rhoden",
+        "demStatus": "presumptive",
+        "repStatus": "presumptive",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-02",
+        "summary": "Ahlers is the presumptive Democratic nominee. Rhoden is the Republican incumbent and treated as presumptive for the June 2 primary."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -24,
+        "projectedMargin": -19.56,
+        "shift": 4.44,
+        "level": "normal",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "TN",
+      "state": "TN",
+      "race": "Tennessee Governor",
+      "projectedMargin": -15.53,
+      "probabilityEngineMargin": -15.84,
+      "demProbability": 0.0339,
+      "repProbability": 0.9661,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Andy Ogles",
+        "demStatus": "unresolved",
+        "repStatus": "front-runner",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-06",
+        "summary": "Ogles is tracked as the leading Republican option in Tennessee's open-seat race; the Democratic primary remains unresolved."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -32.7,
+        "projectedMargin": -15.53,
+        "shift": 17.18,
+        "level": "large",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "HISTORICAL_SHIFT_REVIEW",
+          "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "TX",
+      "state": "TX",
+      "race": "Texas Governor",
+      "projectedMargin": -11.27,
+      "probabilityEngineMargin": -11.79,
+      "demProbability": 0.0632,
+      "repProbability": 0.9368,
+      "winnerParty": "R",
+      "rating": "Likely R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Governor race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Gina Hinojosa",
+        "rep": "Greg Abbott",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-03-03",
+        "summary": "Abbott and Hinojosa are treated as nominated after the Texas primary."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -10.9,
+        "projectedMargin": -11.27,
+        "shift": -0.37,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "TX is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        }
+      ]
+    },
+    {
+      "id": "VT",
+      "state": "VT",
+      "race": "Vermont Governor",
+      "projectedMargin": -19.23,
+      "probabilityEngineMargin": -18.83,
+      "demProbability": 0.0074,
+      "repProbability": 0.9926,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely R",
+        "impliedMargin": -11,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Phil Scott",
+        "demStatus": "unresolved",
+        "repStatus": "presumptive",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-11",
+        "summary": "Scott is the Republican incumbent and treated as presumptive; Democrats have multiple declared candidates."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -46.9,
+        "projectedMargin": -19.23,
+        "shift": 27.67,
+        "level": "large",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "HISTORICAL_SHIFT_REVIEW",
+          "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "WI",
+      "state": "WI",
+      "race": "Wisconsin Governor",
+      "projectedMargin": 0.69,
+      "probabilityEngineMargin": 0.66,
+      "demProbability": 0.5269,
+      "repProbability": 0.4731,
+      "winnerParty": "D",
+      "rating": "Toss-up",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Sara Rodriguez",
+        "rep": "Tom Tiffany",
+        "demStatus": "front-runner",
+        "repStatus": "presumptive",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-11",
+        "summary": "Wisconsin is an open seat. Rodriguez is tracked as the leading Democratic option and Tiffany is treated as the Republican front-runner."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 3.4,
+        "projectedMargin": 0.69,
+        "shift": -2.71,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "WY",
+      "state": "WY",
+      "race": "Wyoming Governor",
+      "projectedMargin": -23.44,
+      "probabilityEngineMargin": -20.82,
+      "demProbability": 0.0046,
+      "repProbability": 0.9954,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Gabriel Green",
+        "rep": "Republican",
+        "demStatus": "unresolved",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-18",
+        "summary": "Wyoming is an open seat and both primaries remain unresolved."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -53.8,
+        "projectedMargin": -23.44,
+        "shift": 30.36,
+        "level": "large",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "NO_RACE_POLLS",
+        "unavailableSources": []
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "HISTORICAL_SHIFT_REVIEW",
+          "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    }
+  ]
+}

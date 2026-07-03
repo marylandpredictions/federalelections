@@ -9,8 +9,10 @@ import { blendGenericBallotSources, readCachedGenericBallot } from "./lib/generi
 import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./forecast-cache.mjs";
 import { applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
 import { readWikipediaPollingCache, wikipediaPollingSummary, wikipediaPollRowsByState } from "./lib/wikipedia-polls.mjs";
+import { buildRaceReview } from "./lib/race-review-diagnostics.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
+const SENATE_RACE_REVIEW_URL = new URL("../data/diagnostics/senate-race-review-2026.json", import.meta.url);
 const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
 const CERTIFIED_SENATE_BASELINES_URL = new URL("../data/baselines/senate-last-states.json", import.meta.url);
 const previousForecast = readPreviousForecast();
@@ -3034,7 +3036,9 @@ async function writeForecast() {
   output.dataQualityWarnings = output.modelWarnings;
 
   mkdirSync(new URL("../data/", import.meta.url), { recursive: true });
+  mkdirSync(new URL("../data/diagnostics/", import.meta.url), { recursive: true });
   writeFileSync(FORECAST_URL, `${JSON.stringify(output, null, 2)}\n`);
+  writeFileSync(SENATE_RACE_REVIEW_URL, `${JSON.stringify(buildRaceReview({ model: "senate", races: output.races, generatedAt }), null, 2)}\n`);
   console.log(`Wrote data/forecast.json for ${MODEL_DATE_KEY}`);
 }
 

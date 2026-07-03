@@ -43,7 +43,7 @@ const SOURCE_TYPE_WEIGHTS = {
 };
 
 const RATING_IMPLIED_MARGINS = {
-  "Safe D": 24,
+  "Safe D": 22,
   "Likely D": 11,
   "Lean D": 5.5,
   "Tilt D": 2,
@@ -51,7 +51,19 @@ const RATING_IMPLIED_MARGINS = {
   "Tilt R": -2,
   "Lean R": -5.5,
   "Likely R": -11,
-  "Safe R": -24
+  "Safe R": -22
+};
+
+const RATING_SIGMAS = {
+  "Safe D": 6,
+  "Likely D": 5,
+  "Lean D": 4.5,
+  "Tilt D": 4,
+  "Toss-up": 4.5,
+  "Tilt R": 4,
+  "Lean R": 4.5,
+  "Likely R": 5,
+  "Safe R": 6
 };
 
 const FALLBACK_CONFIG = {
@@ -140,6 +152,17 @@ export function normalizeRating(value) {
 
 export function ratingToMargin(value) {
   return normalizeRating(value)?.impliedMargin ?? null;
+}
+
+export function ratingPriorDistribution(consensus) {
+  if (!consensus?.consensusRating || !Number.isFinite(Number(consensus.impliedMargin))) return null;
+  return {
+    consensusRating: consensus.consensusRating,
+    meanMargin: Number(Number(consensus.impliedMargin).toFixed(2)),
+    sigma: Number(RATING_SIGMAS[consensus.consensusRating] ?? 5),
+    sources: consensus.sources || [],
+    sourceDisagreement: Boolean(consensus.ratingDisagreement)
+  };
 }
 
 export function ratingSourceWeight(sourceKey, sourceType = null, configuredWeight = null) {
@@ -336,9 +359,11 @@ export function buildRatingPrior({
       probabilityPullStrength: officeConfig.probabilityPullStrength ?? 1,
       projectedResultPullStrength: officeConfig.projectedResultPullStrength ?? 0.6,
       inputWeight: 0,
+      ratingsPriorDistribution: null,
       warnings: []
     };
   }
+  const priorDistribution = ratingPriorDistribution(consensus);
 
   if (mapConflict && !scenarioMatched) {
     return {
@@ -356,6 +381,7 @@ export function buildRatingPrior({
       probabilityPullStrength: officeConfig.probabilityPullStrength ?? 1,
       projectedResultPullStrength: officeConfig.projectedResultPullStrength ?? 0.6,
       inputWeight: 0,
+      ratingsPriorDistribution: priorDistribution,
       warnings: [{
         severity: "warning",
         type: "RATING_PRIOR_DISABLED_MAP_CONFLICT",
@@ -410,6 +436,7 @@ export function buildRatingPrior({
     impliedMargin: Number(implied.toFixed(2)),
     sources: consensus.sources,
     sourceRatings: consensus.sourceRatings,
+    ratingsPriorDistribution: priorDistribution,
     usedAs: weight > 0 ? (guardrailEligible ? "SOFT_PRIOR_AND_GUARDRAIL" : "SOFT_PRIOR") : "COMPARISON_ONLY",
     ratingSourceType: normalizedRatingSourceType,
     guardrailEligible,

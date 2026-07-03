@@ -1,0 +1,2443 @@
+{
+  "generatedAt": "2026-07-03T08:28:47.771Z",
+  "model": "senate",
+  "schemaVersion": "2026.race-review.1",
+  "summary": {
+    "races": 35,
+    "reviewRequired": 32,
+    "highSeverity": 17,
+    "noUsablePolling": 21
+  },
+  "races": [
+    {
+      "id": "AL",
+      "state": "AL",
+      "race": "Alabama Senate",
+      "projectedMargin": -12.0036,
+      "probabilityEngineMargin": -12.4926,
+      "demProbability": 0.0699,
+      "repProbability": 0.9301,
+      "winnerParty": "R",
+      "rating": "Likely R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Dakarai Larriett / Everett Wess runoff",
+        "rep": "Barry Moore",
+        "demStatus": "runoff",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-06-16",
+        "summary": "Moore won the June 16 Republican runoff. The Democratic runoff remains listed as unresolved in the manual ledger until certified candidate data is entered."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -20.4,
+        "projectedMargin": -12,
+        "shift": 8.4,
+        "level": "notable",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        }
+      ]
+    },
+    {
+      "id": "AK",
+      "state": "AK",
+      "race": "Alaska Senate",
+      "projectedMargin": -2.0932,
+      "probabilityEngineMargin": -2.0512,
+      "demProbability": 0.4246,
+      "repProbability": 0.5754,
+      "winnerParty": "R",
+      "rating": "Tilt R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.065,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 5,
+        "livePollCount": 5,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "Mary Peltola",
+        "rep": "Dan Sullivan",
+        "demStatus": "presumptive",
+        "repStatus": "presumptive",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-18",
+        "summary": "Peltola has launched her challenge and is treated as the presumptive Democratic nominee. Sullivan is the Republican incumbent and presumptive GOP nominee."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -13.4,
+        "projectedMargin": -2.09,
+        "shift": 11.31,
+        "level": "notable",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "current multi-poll signal available"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "AK is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "AR",
+      "state": "AR",
+      "race": "Arkansas Senate",
+      "projectedMargin": -25.7776,
+      "probabilityEngineMargin": -25.5916,
+      "demProbability": 0.001,
+      "repProbability": 0.999,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Hallie Shoffner",
+        "rep": "Tom Cotton",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-03-03",
+        "summary": "Primaries held March 3. Shoffner won the Democratic nomination; Cotton secured the Republican nomination."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -33.1,
+        "projectedMargin": -25.78,
+        "shift": 7.32,
+        "level": "notable",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        }
+      ]
+    },
+    {
+      "id": "CO",
+      "state": "CO",
+      "race": "Colorado Senate",
+      "projectedMargin": 9.6292,
+      "probabilityEngineMargin": 10.2322,
+      "demProbability": 0.8451,
+      "repProbability": 0.1549,
+      "winnerParty": "D",
+      "rating": "Likely D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "John Hickenlooper",
+        "rep": "Republican",
+        "demStatus": "presumptive",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-30",
+        "summary": "Colorado's Senate primary is scheduled for June 30. Hickenlooper is treated as the presumptive Democratic nominee."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 9.5,
+        "projectedMargin": 9.63,
+        "shift": 0.13,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "DE",
+      "state": "DE",
+      "race": "Delaware Senate",
+      "projectedMargin": 15.6408,
+      "probabilityEngineMargin": 15.9528,
+      "demProbability": 0.9602,
+      "repProbability": 0.0398,
+      "winnerParty": "D",
+      "rating": "Safe D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Chris Coons",
+        "rep": "Republican",
+        "demStatus": "presumptive",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-09-15",
+        "summary": "Delaware's Senate primary is scheduled for September 15. Coons is treated as the presumptive Democratic nominee."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 22.1,
+        "projectedMargin": 15.64,
+        "shift": -6.46,
+        "level": "normal",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "FL",
+      "state": "FL",
+      "race": "Florida Senate",
+      "projectedMargin": -8.8268,
+      "probabilityEngineMargin": -9.0938,
+      "demProbability": 0.1669,
+      "repProbability": 0.8331,
+      "winnerParty": "R",
+      "rating": "Likely R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.065,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 3,
+        "livePollCount": 3,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Ashley Moody",
+        "demStatus": "unresolved",
+        "repStatus": "presumptive",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-18",
+        "summary": "Florida's special Senate primary is scheduled for August 18. Moody is treated as the presumptive Republican nominee."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -13,
+        "projectedMargin": -8.83,
+        "shift": 4.17,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "current multi-poll signal available"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "GA",
+      "state": "GA",
+      "race": "Georgia Senate",
+      "projectedMargin": 6.0978,
+      "probabilityEngineMargin": 5.9748,
+      "demProbability": 0.7353,
+      "repProbability": 0.2647,
+      "winnerParty": "D",
+      "rating": "Lean D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.065,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 3,
+        "livePollCount": 3,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "Jon Ossoff",
+        "rep": "Mike Collins",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-06-16",
+        "summary": "Ossoff was renominated and Collins won the June 16 Republican runoff."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 1.2,
+        "projectedMargin": 6.1,
+        "shift": 4.9,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "current multi-poll signal available"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        }
+      ]
+    },
+    {
+      "id": "ID",
+      "state": "ID",
+      "race": "Idaho Senate",
+      "projectedMargin": -17.4736,
+      "probabilityEngineMargin": -17.6176,
+      "demProbability": 0.0089,
+      "repProbability": 0.9911,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.1,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 1,
+        "livePollCount": 1,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "David Roth",
+        "rep": "Jim Risch",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "independent longshot, no assumed caucus"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-05-19",
+        "summary": "Primaries held May 19. Roth won the Democratic nomination and Risch secured the Republican nomination."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -30.6,
+        "projectedMargin": -17.47,
+        "shift": 13.13,
+        "level": "large",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": false,
+      "reviewFlags": [
+        {
+          "severity": "info",
+          "type": "INDEPENDENT_OR_THIRD_PARTY_DYNAMIC",
+          "message": "Race includes a meaningful non-major-party candidate or caucus dynamic; binary margin interpretation needs review."
+        }
+      ]
+    },
+    {
+      "id": "IL",
+      "state": "IL",
+      "race": "Illinois Senate",
+      "projectedMargin": 11.234,
+      "probabilityEngineMargin": 11.759,
+      "demProbability": 0.9115,
+      "repProbability": 0.0885,
+      "winnerParty": "D",
+      "rating": "Likely D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Juliana Stratton",
+        "rep": "Don Tracy",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-03-17",
+        "summary": "Primaries held March 17. Stratton and Tracy are the general-election nominees."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 17.1,
+        "projectedMargin": 11.23,
+        "shift": -5.87,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        }
+      ]
+    },
+    {
+      "id": "IA",
+      "state": "IA",
+      "race": "Iowa Senate",
+      "projectedMargin": -2.7926,
+      "probabilityEngineMargin": -2.8466,
+      "demProbability": 0.3871,
+      "repProbability": 0.6129,
+      "winnerParty": "R",
+      "rating": "Tilt R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Lean R",
+        "impliedMargin": -5.5,
+        "weight": 0.065,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 4,
+        "livePollCount": 4,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "Josh Turek",
+        "rep": "Ashley Hinson",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-02",
+        "summary": "Iowa held its June 2 primaries. Turek won the Democratic nomination and Hinson won the Republican nomination."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -6.8,
+        "projectedMargin": -2.79,
+        "shift": 4.01,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "current multi-poll signal available"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "IA is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "KS",
+      "state": "KS",
+      "race": "Kansas Senate",
+      "projectedMargin": -7.93,
+      "probabilityEngineMargin": -8.08,
+      "demProbability": 0.2165,
+      "repProbability": 0.7835,
+      "winnerParty": "R",
+      "rating": "Likely R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely R",
+        "impliedMargin": -11,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Roger Marshall",
+        "demStatus": "unresolved",
+        "repStatus": "presumptive",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-04",
+        "summary": "Kansas' Senate primary is scheduled for August 4. Marshall is treated as the presumptive Republican nominee."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -12,
+        "projectedMargin": -7.93,
+        "shift": 4.07,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "KY",
+      "state": "KY",
+      "race": "Kentucky Senate",
+      "projectedMargin": -12.0244,
+      "probabilityEngineMargin": -12.5104,
+      "demProbability": 0.0688,
+      "repProbability": 0.9312,
+      "winnerParty": "R",
+      "rating": "Likely R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Charles Booker",
+        "rep": "Andy Barr",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-05-19",
+        "summary": "Primaries held May 19. Booker won the Democratic nomination and Barr won the Republican nomination."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -20.3,
+        "projectedMargin": -12.02,
+        "shift": 8.28,
+        "level": "notable",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        }
+      ]
+    },
+    {
+      "id": "LA",
+      "state": "LA",
+      "race": "Louisiana Senate",
+      "projectedMargin": -11.9778,
+      "probabilityEngineMargin": -11.9298,
+      "demProbability": 0.1226,
+      "repProbability": 0.8774,
+      "winnerParty": "R",
+      "rating": "Likely R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely R",
+        "impliedMargin": -11,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Jamie Davis / Gary Crockett runoff",
+        "rep": "Julia Letlow / John Fleming runoff",
+        "demStatus": "unresolved",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "runoff",
+        "date": "2026-06-27",
+        "summary": "Louisiana voted May 16. Cassidy missed the Republican runoff; Letlow and Fleming advanced. Davis advanced on the Democratic side, with Crockett treated as the second runoff candidate after Albares fell short."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -26.8,
+        "projectedMargin": -11.98,
+        "shift": 14.82,
+        "level": "large",
+        "expectedRegression": false,
+        "needsReview": true,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "HISTORICAL_SHIFT_REVIEW",
+          "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        }
+      ]
+    },
+    {
+      "id": "ME",
+      "state": "ME",
+      "race": "Maine Senate",
+      "projectedMargin": 0.3246,
+      "probabilityEngineMargin": 0.3186,
+      "demProbability": 0.5113,
+      "repProbability": 0.4887,
+      "winnerParty": "D",
+      "rating": "Toss-up",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.065,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 16,
+        "livePollCount": 16,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "Graham Platner",
+        "rep": "Susan Collins",
+        "demStatus": "presumptive",
+        "repStatus": "presumptive",
+        "independent": "possible independent spoiler risk"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-09",
+        "summary": "Platner is treated as the presumptive Democratic nominee after Mills' exit and party consolidation. Collins is the Republican incumbent and presumptive GOP nominee."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -9.2,
+        "projectedMargin": 0.32,
+        "shift": 9.52,
+        "level": "notable",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "current multi-poll signal available"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "ME is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "info",
+          "type": "INDEPENDENT_OR_THIRD_PARTY_DYNAMIC",
+          "message": "Race includes a meaningful non-major-party candidate or caucus dynamic; binary margin interpretation needs review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "MA",
+      "state": "MA",
+      "race": "Massachusetts Senate",
+      "projectedMargin": 26.0568,
+      "probabilityEngineMargin": 25.8588,
+      "demProbability": 0.999,
+      "repProbability": 0.001,
+      "winnerParty": "D",
+      "rating": "Safe D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Ed Markey",
+        "rep": "Republican",
+        "demStatus": "presumptive",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-09-01",
+        "summary": "Massachusetts' Senate primary is scheduled for September 1. Markey is treated as the presumptive Democratic nominee."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 33.4,
+        "projectedMargin": 26.06,
+        "shift": -7.34,
+        "level": "notable",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "MI",
+      "state": "MI",
+      "race": "Michigan Senate",
+      "projectedMargin": 2.0782,
+      "probabilityEngineMargin": 2.0362,
+      "demProbability": 0.5704,
+      "repProbability": 0.4296,
+      "winnerParty": "D",
+      "rating": "Tilt D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.065,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 8,
+        "livePollCount": 8,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Mike Rogers",
+        "demStatus": "unresolved",
+        "repStatus": "presumptive",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-04",
+        "summary": "Michigan's Senate primary is scheduled for August 4. Rogers is treated as the presumptive Republican nominee while the Democratic primary remains open."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 1.7,
+        "projectedMargin": 2.08,
+        "shift": 0.38,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "current multi-poll signal available"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "MN",
+      "state": "MN",
+      "race": "Minnesota Senate",
+      "projectedMargin": 4.5012,
+      "probabilityEngineMargin": 4.8192,
+      "demProbability": 0.6634,
+      "repProbability": 0.3366,
+      "winnerParty": "D",
+      "rating": "Lean D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely D",
+        "impliedMargin": 11,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Republican",
+        "demStatus": "unresolved",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-11",
+        "summary": "Minnesota's Senate primary is scheduled for August 11."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 5.7,
+        "projectedMargin": 4.5,
+        "shift": -1.2,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "MN is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "MS",
+      "state": "MS",
+      "race": "Mississippi Senate",
+      "projectedMargin": -8.6076,
+      "probabilityEngineMargin": -9.2616,
+      "demProbability": 0.1527,
+      "repProbability": 0.8473,
+      "winnerParty": "R",
+      "rating": "Likely R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Scott Colom",
+        "rep": "Cindy Hyde-Smith",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-03-10",
+        "summary": "Primaries held March 10. Hyde-Smith defeated a GOP challenger; Colom is the Democratic nominee."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -10.2,
+        "projectedMargin": -8.61,
+        "shift": 1.59,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        }
+      ]
+    },
+    {
+      "id": "MT",
+      "state": "MT",
+      "race": "Montana Senate",
+      "projectedMargin": -6.4548,
+      "probabilityEngineMargin": -6.9468,
+      "demProbability": 0.2763,
+      "repProbability": 0.7237,
+      "winnerParty": "R",
+      "rating": "Lean R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.1,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 2,
+        "livePollCount": 2,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "Alani Bankhead",
+        "rep": "Kurt Alme",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "Seth Bodnar independent path, caucus assumption uncertain"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-02",
+        "summary": "Montana held its June 2 primaries. Bankhead won the Democratic nomination and Alme won the Republican nomination."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -10,
+        "projectedMargin": -6.45,
+        "shift": 3.55,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "info",
+          "type": "INDEPENDENT_OR_THIRD_PARTY_DYNAMIC",
+          "message": "Race includes a meaningful non-major-party candidate or caucus dynamic; binary margin interpretation needs review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "NC",
+      "state": "NC",
+      "race": "North Carolina Senate",
+      "projectedMargin": 5.5746,
+      "probabilityEngineMargin": 5.4636,
+      "demProbability": 0.7183,
+      "repProbability": 0.2817,
+      "winnerParty": "D",
+      "rating": "Lean D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.065,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 12,
+        "livePollCount": 12,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "Roy Cooper",
+        "rep": "Michael Whatley",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-03-03",
+        "summary": "Primaries held March 3. Cooper and Whatley won their nominations."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -1.8,
+        "projectedMargin": 5.57,
+        "shift": 7.37,
+        "level": "notable",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "current multi-poll signal available"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        }
+      ]
+    },
+    {
+      "id": "NE",
+      "state": "NE",
+      "race": "Nebraska Senate",
+      "projectedMargin": -1.6038,
+      "probabilityEngineMargin": -1.9008,
+      "demProbability": 0.4272,
+      "repProbability": 0.5728,
+      "winnerParty": "R",
+      "rating": "Tilt R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely R",
+        "impliedMargin": -11,
+        "weight": 0.1,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 1,
+        "livePollCount": 1,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "Dan Osborn",
+        "rep": "Pete Ricketts",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "Democratic nominee has said they will withdraw for Dan Osborn"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-05-12",
+        "summary": "Ricketts won the Republican primary on May 12. Cindy Burbank won the Democratic primary and said she will withdraw so Osborn can consolidate the anti-Ricketts vote."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -6.7,
+        "projectedMargin": -1.6,
+        "shift": 5.1,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "NE is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        },
+        {
+          "severity": "info",
+          "type": "INDEPENDENT_OR_THIRD_PARTY_DYNAMIC",
+          "message": "Race includes a meaningful non-major-party candidate or caucus dynamic; binary margin interpretation needs review."
+        }
+      ]
+    },
+    {
+      "id": "NH",
+      "state": "NH",
+      "race": "New Hampshire Senate",
+      "projectedMargin": 8.5214,
+      "probabilityEngineMargin": 8.5724,
+      "demProbability": 0.8081,
+      "repProbability": 0.1919,
+      "winnerParty": "D",
+      "rating": "Likely D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely D",
+        "impliedMargin": 11,
+        "weight": 0.065,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 7,
+        "livePollCount": 7,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Republican",
+        "demStatus": "unresolved",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-09-08",
+        "summary": "New Hampshire's Senate primary is scheduled for September 8."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 16,
+        "projectedMargin": 8.52,
+        "shift": -7.48,
+        "level": "notable",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "current multi-poll signal available"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "NJ",
+      "state": "NJ",
+      "race": "New Jersey Senate",
+      "projectedMargin": 12.1032,
+      "probabilityEngineMargin": 12.5862,
+      "demProbability": 0.9156,
+      "repProbability": 0.0844,
+      "winnerParty": "D",
+      "rating": "Likely D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Cory Booker",
+        "rep": "Justin Murphy",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-02",
+        "summary": "New Jersey held its June 2 primaries. Booker was renominated and Murphy won the Republican nomination."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 16.6,
+        "projectedMargin": 12.1,
+        "shift": -4.5,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "NM",
+      "state": "NM",
+      "race": "New Mexico Senate",
+      "projectedMargin": 9.2176,
+      "probabilityEngineMargin": 9.8416,
+      "demProbability": 0.8239,
+      "repProbability": 0.1761,
+      "winnerParty": "D",
+      "rating": "Likely D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Ben Ray Lujan",
+        "rep": "Republican",
+        "demStatus": "presumptive",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-02",
+        "summary": "New Mexico's Senate primary is scheduled for June 2. Lujan is treated as the presumptive Democratic nominee."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 6.3,
+        "projectedMargin": 9.22,
+        "shift": 2.92,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "OH",
+      "state": "OH",
+      "race": "Ohio Senate",
+      "projectedMargin": 1.3752,
+      "probabilityEngineMargin": 1.3482,
+      "demProbability": 0.5566,
+      "repProbability": 0.4434,
+      "winnerParty": "D",
+      "rating": "Toss-up",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.065,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 9,
+        "livePollCount": 9,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "Sherrod Brown",
+        "rep": "Jon Husted",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-05-05",
+        "summary": "Primaries held May 5. Brown won the Democratic primary; Husted was unopposed for the GOP nomination."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -3.7,
+        "projectedMargin": 1.38,
+        "shift": 5.08,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "current multi-poll signal available"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": false,
+      "reviewFlags": [
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "OH is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        }
+      ]
+    },
+    {
+      "id": "OK",
+      "state": "OK",
+      "race": "Oklahoma Senate",
+      "projectedMargin": -26.0568,
+      "probabilityEngineMargin": -25.8588,
+      "demProbability": 0.001,
+      "repProbability": 0.999,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Republican",
+        "demStatus": "unresolved",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-16",
+        "summary": "Oklahoma's special Senate primary remains unresolved in the manual candidate ledger."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -33.4,
+        "projectedMargin": -26.06,
+        "shift": 7.34,
+        "level": "notable",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "OR",
+      "state": "OR",
+      "race": "Oregon Senate",
+      "projectedMargin": 12.1372,
+      "probabilityEngineMargin": 12.6202,
+      "demProbability": 0.9292,
+      "repProbability": 0.0708,
+      "winnerParty": "D",
+      "rating": "Likely D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Jeff Merkley",
+        "rep": "David Brock Smith",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-05-19",
+        "summary": "Primaries held May 19. Merkley secured renomination and Smith won the Republican nomination."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 18.3,
+        "projectedMargin": 12.14,
+        "shift": -6.16,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        }
+      ]
+    },
+    {
+      "id": "RI",
+      "state": "RI",
+      "race": "Rhode Island Senate",
+      "projectedMargin": 17.9794,
+      "probabilityEngineMargin": 18.1054,
+      "demProbability": 0.9965,
+      "repProbability": 0.0035,
+      "winnerParty": "D",
+      "rating": "Safe D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe D",
+        "impliedMargin": 22,
+        "weight": 0.1,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 2,
+        "livePollCount": 2,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "Jack Reed",
+        "rep": "Republican",
+        "demStatus": "presumptive",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-09-09",
+        "summary": "Rhode Island's Senate primary is scheduled for September 9. Reed is treated as the presumptive Democratic nominee."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 33.2,
+        "projectedMargin": 17.98,
+        "shift": -15.22,
+        "level": "large",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "SC",
+      "state": "SC",
+      "race": "South Carolina Senate",
+      "projectedMargin": -5.8318,
+      "probabilityEngineMargin": -6.0838,
+      "demProbability": 0.2954,
+      "repProbability": 0.7046,
+      "winnerParty": "R",
+      "rating": "Lean R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely R",
+        "impliedMargin": -11,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Lindsey Graham",
+        "demStatus": "unresolved",
+        "repStatus": "presumptive",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-09",
+        "summary": "South Carolina's Senate primary is scheduled for June 9. Graham is treated as the presumptive Republican nominee."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -10.4,
+        "projectedMargin": -5.83,
+        "shift": 4.57,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "SD",
+      "state": "SD",
+      "race": "South Dakota Senate",
+      "projectedMargin": -24.3024,
+      "probabilityEngineMargin": -24.1884,
+      "demProbability": 0.001,
+      "repProbability": 0.999,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Mike Rounds",
+        "demStatus": "unresolved",
+        "repStatus": "nominee",
+        "independent": "independent longshot, caucus not credited"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-06-02",
+        "summary": "South Dakota held its June 2 Republican Senate primary. Rounds won renomination; the Democratic side remains unresolved in the current ledger."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -31.5,
+        "projectedMargin": -24.3,
+        "shift": 7.2,
+        "level": "notable",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "info",
+          "type": "INDEPENDENT_OR_THIRD_PARTY_DYNAMIC",
+          "message": "Race includes a meaningful non-major-party candidate or caucus dynamic; binary margin interpretation needs review."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "TN",
+      "state": "TN",
+      "race": "Tennessee Senate",
+      "projectedMargin": -20.8936,
+      "probabilityEngineMargin": -20.9476,
+      "demProbability": 0.001,
+      "repProbability": 0.999,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Bill Hagerty",
+        "demStatus": "unresolved",
+        "repStatus": "presumptive",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-06",
+        "summary": "Tennessee's Senate primary is scheduled for August 6. Hagerty is treated as the presumptive Republican nominee."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -27.8,
+        "projectedMargin": -20.89,
+        "shift": 6.91,
+        "level": "normal",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "TX",
+      "state": "TX",
+      "race": "Texas Senate",
+      "projectedMargin": -1.1964,
+      "probabilityEngineMargin": -1.1724,
+      "demProbability": 0.4476,
+      "repProbability": 0.5524,
+      "winnerParty": "R",
+      "rating": "Toss-up",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Toss-up",
+        "impliedMargin": 0,
+        "weight": 0.065,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 11,
+        "livePollCount": 11,
+        "manualPollCount": 0,
+        "status": "LIVE_POLLS_AVAILABLE"
+      },
+      "candidates": {
+        "dem": "James Talarico",
+        "rep": "Ken Paxton",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-03-03",
+        "summary": "Talarico won the March 3 Democratic primary. Paxton won the May 26 Republican runoff after no Republican secured the nomination on March 3."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -9.9,
+        "projectedMargin": -1.2,
+        "shift": 8.7,
+        "level": "notable",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "current multi-poll signal available"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "LIVE_POLLS_AVAILABLE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": false,
+      "reviewFlags": [
+        {
+          "severity": "info",
+          "type": "NAMED_RACE_REVIEW",
+          "message": "TX is on the recurring manual review list because public expectations, candidate profiles, or independent dynamics can move faster than fundamentals."
+        }
+      ]
+    },
+    {
+      "id": "VA",
+      "state": "VA",
+      "race": "Virginia Senate",
+      "projectedMargin": 9.177,
+      "probabilityEngineMargin": 9.267,
+      "demProbability": 0.8116,
+      "repProbability": 0.1884,
+      "winnerParty": "D",
+      "rating": "Likely D",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Likely D",
+        "impliedMargin": 11,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Mark Warner",
+        "rep": "Republican",
+        "demStatus": "presumptive",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-04",
+        "summary": "Virginia's congressional primary is scheduled for August 4. Warner is treated as the presumptive Democratic nominee."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": 12.1,
+        "projectedMargin": 9.18,
+        "shift": -2.92,
+        "level": "normal",
+        "expectedRegression": false,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    },
+    {
+      "id": "WV",
+      "state": "WV",
+      "race": "West Virginia Senate",
+      "projectedMargin": -36.2884,
+      "probabilityEngineMargin": -35.5894,
+      "demProbability": 0.001,
+      "repProbability": 0.999,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Senate race configuration"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Rachel Fetty Anderson",
+        "rep": "Shelley Moore Capito",
+        "demStatus": "nominee",
+        "repStatus": "nominee",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "resolved",
+        "date": "2026-05-12",
+        "summary": "Primaries held May 12. Capito and Anderson are the projected nominees."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -44.5,
+        "projectedMargin": -36.29,
+        "shift": 8.21,
+        "level": "notable",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "high",
+          "type": "RATING_PRIOR_DIVERGENCE",
+          "message": "External rating prior and raw model margin diverged enough to require review."
+        }
+      ]
+    },
+    {
+      "id": "WY",
+      "state": "WY",
+      "race": "Wyoming Senate",
+      "projectedMargin": -24.2846,
+      "probabilityEngineMargin": -22.7016,
+      "demProbability": 0.001,
+      "repProbability": 0.999,
+      "winnerParty": "R",
+      "rating": "Safe R",
+      "ratingPrior": {
+        "enabled": true,
+        "consensusRating": "Safe R",
+        "impliedMargin": -22,
+        "weight": 0.15,
+        "sources": [
+          "Cook"
+        ]
+      },
+      "polling": {
+        "usablePollCount": 0,
+        "livePollCount": 0,
+        "manualPollCount": 0,
+        "status": "NO_RACE_POLLS"
+      },
+      "candidates": {
+        "dem": "Democrat",
+        "rep": "Republican",
+        "demStatus": "unresolved",
+        "repStatus": "unresolved",
+        "independent": "none"
+      },
+      "primary": {
+        "status": "unresolved",
+        "date": "2026-08-18",
+        "summary": "Wyoming's Senate primary is scheduled for August 18."
+      },
+      "historicalComparison": {
+        "priorComparableMargin": -51.4,
+        "projectedMargin": -24.28,
+        "shift": 27.12,
+        "level": "large",
+        "expectedRegression": true,
+        "needsReview": false,
+        "basis": "structural and candidate inputs only"
+      },
+      "sourceHealth": {
+        "forecast": "HEALTHY",
+        "degraded": false,
+        "racePolling": "SOURCE_FAILURE",
+        "unavailableSources": [
+          "civicApiEndpoint",
+          "realClearPollingSenate"
+        ]
+      },
+      "reviewRequired": true,
+      "reviewFlags": [
+        {
+          "severity": "warning",
+          "type": "NO_USABLE_POLLING",
+          "message": "Race has no usable live/manual polling; fundamentals, priors, and uncertainty carry the forecast."
+        },
+        {
+          "severity": "warning",
+          "type": "HISTORICAL_SHIFT_REVIEW",
+          "message": "Projected margin diverges materially from historical baseline without enough direct race signal."
+        },
+        {
+          "severity": "warning",
+          "type": "PRIMARY_STATUS_PENDING",
+          "message": "Nominee field is not fully resolved; candidate-quality and primary effects remain provisional."
+        }
+      ]
+    }
+  ]
+}
