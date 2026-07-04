@@ -95,14 +95,16 @@ function baselineIsVerified(input) {
   const confidence = baselineConfidence(input);
   const type = String(input?.baselineAnchor?.type || "").toUpperCase();
   const source = String(input?.baselineAnchor?.source || "").toUpperCase();
-  return confidence === "HIGH" || source.includes("CURRENT") || source.includes("119TH") || type.includes("CURRENT_MAP");
+  const explicitEffective = input?.baselineAnchor?.effectiveFor2026;
+  if (explicitEffective === false) return false;
+  return ["HIGH", "VERIFIED"].includes(confidence) || source.includes("CURRENT") || source.includes("119TH") || type.includes("CURRENT_MAP");
 }
 
 function diagnosticMessage(flags) {
-  if (flags.includes("REDISTRICTING_CONFLICT")) return "Map scenario must be verified before a hard ratings guardrail is allowed.";
-  if (flags.includes("BASELINE_RATING_CONFLICT")) return "Reduce fundamentals weight and increase ratings-prior weight unless current-map baseline is verified.";
-  if (flags.includes("MISSING_CURRENT_MAP_BASELINE")) return "Treat district as ratings-heavy until a source-backed current-map baseline is available.";
-  if (flags.includes("PROJECTED_MARGIN_PROBABILITY_CONFLICT")) return "Review projected-result and probability-engine margin fields before publishing.";
+  if (flags.includes("REDISTRICTING_CONFLICT")) return "Map scenario must be verified before external-rating priors are allowed to shape the model.";
+  if (flags.includes("BASELINE_DIRECTION_CONFLICT")) return "Reduce fundamentals weight and increase ratings-prior weight unless current-map baseline is verified.";
+  if (flags.includes("BASELINE_MISSING")) return "Treat district as ratings-heavy until a source-backed current-map baseline is available.";
+  if (flags.includes("PROJECTED_PROBABILITY_DIRECTION_CONFLICT")) return "Review projected-result and probability-engine margin fields before publishing.";
   return "No immediate baseline correction recommended.";
 }
 
@@ -114,7 +116,7 @@ export function marginConsistencyCheck({ projectedMargin, probabilityMargin, dem
     const projectedParty = partyFromMargin(projected);
     const probabilityParty = partyFromMargin(probability);
     if (projectedParty && probabilityParty && projectedParty !== probabilityParty) {
-      flags.push("PROJECTED_MARGIN_PROBABILITY_CONFLICT");
+      flags.push("PROJECTED_PROBABILITY_DIRECTION_CONFLICT");
     }
   }
   return {
@@ -166,24 +168,32 @@ export function auditHouseBaselineDistrict(input = {}) {
   const probabilityParty = partyFromMargin(probabilityMargin);
   const ratingDistance = categoryDistance(rawModelMargin, consensus);
 
-  if (baselineMissing) flags.push("MISSING_CURRENT_MAP_BASELINE");
+  if (baselineMissing) flags.push("BASELINE_MISSING");
+  if (confidence === "UNVERIFIED" || input?.baselineAnchor?.effectiveFor2026 === false) flags.push("UNVERIFIED_CURRENT_MAP");
   if (mapConflict) flags.push("REDISTRICTING_CONFLICT");
   if (
     Number.isFinite(baselineRatingDifference)
     && ratingParty
     && baselineParty
-    && (
-      (ratingParty !== baselineParty && Math.abs(baselineRatingDifference) >= 5)
-      || Math.abs(baselineRatingDifference) >= 10
-    )
+    && ratingParty !== baselineParty
+    && Math.abs(baselineRatingDifference) >= 5
   ) {
-    flags.push("BASELINE_RATING_CONFLICT");
+    flags.push("BASELINE_DIRECTION_CONFLICT");
   }
-  if (flags.includes("BASELINE_RATING_CONFLICT") && !baselineIsVerified(input)) {
+  if (
+    Number.isFinite(baselineRatingDifference)
+    && ratingParty
+    && baselineParty
+    && ratingParty === baselineParty
+    && Math.abs(baselineRatingDifference) >= 10
+  ) {
+    flags.push("BASELINE_RATING_SAME_PARTY_GAP");
+  }
+  if (flags.includes("BASELINE_DIRECTION_CONFLICT") && !baselineIsVerified(input)) {
     flags.push("POSSIBLE_STALE_BOUNDARY_OR_OLD_DISTRICT_RESULT");
   }
   if (projectedParty && probabilityParty && projectedParty !== probabilityParty) {
-    flags.push("PROJECTED_MARGIN_PROBABILITY_CONFLICT");
+    flags.push("PROJECTED_PROBABILITY_DIRECTION_CONFLICT");
   }
   if (
     usablePolls === 0
@@ -194,7 +204,7 @@ export function auditHouseBaselineDistrict(input = {}) {
     flags.push("RATING_PRIOR_TOO_WEAK");
   }
   if (
-    flags.includes("BASELINE_RATING_CONFLICT")
+    flags.includes("BASELINE_DIRECTION_CONFLICT")
     && !baselineIsVerified(input)
     && rawParty
     && baselineParty
@@ -219,10 +229,11 @@ export function auditHouseBaselineDistrict(input = {}) {
 
   const uniqueFlags = [...new Set(flags)];
   const highSeverityFlags = uniqueFlags.filter((flag) => [
-    "BASELINE_RATING_CONFLICT",
+    "UNVERIFIED_CURRENT_MAP",
+    "BASELINE_DIRECTION_CONFLICT",
+    "BASELINE_MISSING",
     "REDISTRICTING_CONFLICT",
-    "PROJECTED_MARGIN_PROBABILITY_CONFLICT",
-    "FUNDAMENTALS_TOO_STRONG_FOR_UNVERIFIED_BASELINE"
+    "PROJECTED_PROBABILITY_DIRECTION_CONFLICT"
   ].includes(flag));
 
   return {
@@ -233,7 +244,9 @@ export function auditHouseBaselineDistrict(input = {}) {
       margin: Number.isFinite(baselineMargin) ? finite(baselineMargin) : null,
       source: input.baselineAnchor?.source || null,
       mapVersion: input.baselineAnchor?.mapVersion || input.mapVersion || "2026 current assumption",
-      confidence
+      confidence,
+      baselineSource: input.baselineAnchor?.baselineSource || input.baselineAnchor?.source || null,
+      effectiveFor2026: input.baselineAnchor?.effectiveFor2026 ?? null
     },
     externalRatings,
     consensusRating: parsedRating?.normalized || consensus || null,
@@ -261,6 +274,11 @@ export function buildHouseBaselineAudit(districts = [], options = {}) {
   for (const item of audits) {
     for (const flag of item.auditFlags) byFlag[flag] = (byFlag[flag] || 0) + 1;
   }
+  const samePartyGapCount = byFlag.BASELINE_RATING_SAME_PARTY_GAP || 0;
+  const highConflictCount = audits.filter((item) => item.severity === "high").length;
+  const falsePositiveEstimate = samePartyGapCount + highConflictCount
+    ? samePartyGapCount / (samePartyGapCount + highConflictCount)
+    : 0;
   return {
     generatedAt: options.generatedAt || new Date().toISOString(),
     schemaVersion: "2026.house-baseline-audit.1",
@@ -270,6 +288,7 @@ export function buildHouseBaselineAudit(districts = [], options = {}) {
       mandatoryReviewFlagged: audits.filter((item) => item.mandatoryReview && item.reviewRequired).map((item) => item.district),
       reviewRequired: audits.filter((item) => item.reviewRequired).length,
       highSeverity: audits.filter((item) => item.severity === "high").length,
+      samePartyFalsePositiveRateEstimate: Number(falsePositiveEstimate.toFixed(3)),
       byFlag
     },
     districts: audits

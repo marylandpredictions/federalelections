@@ -275,6 +275,9 @@ function dynamicWeight({ office, pollingSummary, fundamentalsQuality, sourceDegr
   if (derivedFundamentals) {
     return { weight: rangeMidpoint(officeConfig.noPollingDerivedFundamentals ?? officeConfig.noPollingWeakFundamentals, office === "house" ? 0.5 : 0.275), reasonKey: "no-polling-derived-fundamentals", polls, weakFundamentals, derivedFundamentals };
   }
+  if (normalizedFundamentals === "UNVERIFIED" || normalizedFundamentals === "UNKNOWN") {
+    return { weight: rangeMidpoint(officeConfig.noPollingUnverifiedFundamentals ?? officeConfig.noPollingWeakFundamentals, office === "house" ? 0.4 : 0.16), reasonKey: "no-polling-unverified-fundamentals", polls, weakFundamentals, derivedFundamentals };
+  }
   if (weakFundamentals) {
     return { weight: rangeMidpoint(officeConfig.noPollingWeakFundamentals, office === "house" ? 0.45 : 0.275), reasonKey: "no-polling-weak-fundamentals", polls, weakFundamentals, derivedFundamentals };
   }
@@ -287,6 +290,7 @@ function ratingReason({ office, reasonKey, polls, weakFundamentals }) {
   if (reasonKey === "inferred-safe-rating") return `${office} race is absent from competitive public ratings tables and has a strong source-backed baseline, so an inferred safe rating is used as a light stabilizer.`;
   if (reasonKey === "map-conflict") return `${office} race has conflicting map assumptions, so rating priors are disabled unless a scenario explicitly matches the map.`;
   if (reasonKey === "no-polling-derived-fundamentals") return `${office} race has no usable race polling and derived or circular fundamentals, so expert ratings materially constrain the model.`;
+  if (reasonKey === "no-polling-unverified-fundamentals") return `${office} race has no usable race polling and unverified current-map fundamentals, so expert ratings materially constrain the model.`;
   if (reasonKey === "no-polling-weak-fundamentals") return `${office} race has no usable race polling and weak or derived fundamentals, so expert ratings materially constrain the model.`;
   if (reasonKey === "no-polling-strong-fundamentals") return `${office} race has no usable race polling but usable structural baselines, so expert ratings provide a moderate soft prior.`;
   if (reasonKey === "no-polling-decent-baseline") return `${office} race has no usable race polling but usable structural baselines, so expert ratings provide a moderate soft prior.`;
@@ -462,21 +466,41 @@ export function applyRatingPrior(margin, prior, strength = 1) {
   return value + (Number.isFinite(pull) ? pull : 0);
 }
 
-function guardrailLimit(value, prior) {
+function softGuardrailPenalty(value, prior) {
   const rating = normalizeRating(prior?.consensusRating);
-  if (!rating) return { margin: value, triggered: false, reason: "NO_RATING" };
-  if (rating.normalized === "Toss-up") {
-    if (value > 2.99) return { margin: 2.99, triggered: true, reason: "TOSSUP_MAX_TILT_D" };
-    if (value < -2.99) return { margin: -2.99, triggered: true, reason: "TOSSUP_MAX_TILT_R" };
-    return { margin: value, triggered: false, reason: "WITHIN_TOSSUP_GUARDRAIL" };
+  const implied = Number(prior?.impliedMargin);
+  if (!rating || !Number.isFinite(implied)) {
+    return { margin: value, triggered: false, reason: "NO_RATING", penaltyApplied: 0, crossingSeverity: "none" };
   }
-  if (rating.normalized === "Lean D" && value < 0) return { margin: 0.5, triggered: true, reason: "LEAN_D_CANNOT_CROSS_TO_R_WITH_NO_POLLS" };
-  if (rating.normalized === "Lean R" && value > 0) return { margin: -0.5, triggered: true, reason: "LEAN_R_CANNOT_CROSS_TO_D_WITH_NO_POLLS" };
-  if (rating.normalized === "Likely D" && value < 3) return { margin: 3, triggered: true, reason: "LIKELY_D_CANNOT_DROP_TO_TOSSUP_WITH_LOW_INPUTS" };
-  if (rating.normalized === "Likely R" && value > -3) return { margin: -3, triggered: true, reason: "LIKELY_R_CANNOT_DROP_TO_TOSSUP_WITH_LOW_INPUTS" };
-  if (rating.normalized === "Safe D" && value < 7) return { margin: 7, triggered: true, reason: "SAFE_D_FLOOR_WITH_LOW_INPUTS" };
-  if (rating.normalized === "Safe R" && value > -7) return { margin: -7, triggered: true, reason: "SAFE_R_FLOOR_WITH_LOW_INPUTS" };
-  return { margin: value, triggered: false, reason: "WITHIN_RATING_GUARDRAIL" };
+  const raw = Number(prior?.rawModelMargin);
+  const rawParty = marginParty(Number.isFinite(raw) ? raw : value);
+  const ratingParty = marginParty(implied);
+  const distance = ratingCategoryDistance(Number.isFinite(raw) ? raw : value, prior.consensusRating);
+  const divergence = Math.abs(value - implied);
+  const crossesRatingParty = Boolean(rawParty && ratingParty && rawParty !== ratingParty);
+  let penalty = 0;
+  if (crossesRatingParty) penalty += 0.28;
+  if (distance >= 2) penalty += Math.min(0.18, distance * 0.045);
+  if (divergence >= 5) penalty += Math.min(0.22, (divergence - 4) * 0.025);
+  penalty = Math.max(0, Math.min(0.55, penalty));
+  const margin = value + (implied - value) * penalty;
+  const crossingSeverity = !penalty
+    ? "none"
+    : penalty >= 0.4
+      ? "high"
+      : penalty >= 0.22
+        ? "medium"
+        : "low";
+  return {
+    margin,
+    triggered: penalty > 0,
+    reason: penalty > 0 ? "SOFT_RATING_CROSSING_PENALTY" : "WITHIN_SOFT_RATING_PRIOR",
+    penaltyApplied: Number(penalty.toFixed(3)),
+    crossingSeverity,
+    crossesRatingParty,
+    categoryDistance: distance,
+    rawRatingDivergence: Number.isFinite(divergence) ? Number(divergence.toFixed(2)) : null
+  };
 }
 
 export function applyRatingGuardrail(margin, prior) {
@@ -498,7 +522,7 @@ export function applyRatingGuardrail(margin, prior) {
       sources: prior?.sourceRatings || []
     };
   }
-  const limited = guardrailLimit(value, prior);
+  const limited = softGuardrailPenalty(value, prior);
   const raw = Number(prior.rawModelMargin);
   const divergence = Number.isFinite(raw) && Number.isFinite(Number(prior.impliedMargin))
     ? Math.abs(raw - Number(prior.impliedMargin))
@@ -512,8 +536,12 @@ export function applyRatingGuardrail(margin, prior) {
     margin: limited.margin,
     triggered: shouldTrigger,
     eligible: true,
+    mode: "soft-penalty",
+    guardrailMode: "soft-penalty",
+    penaltyApplied: limited.penaltyApplied || 0,
+    crossingSeverity: limited.crossingSeverity || "none",
     reason: shouldTrigger
-      ? `NO_POLLS_EXTERNAL_RATING_GUARDRAIL:${limited.reason}${crossesRatingParty ? ":CROSSES_RATING_PARTY" : ""}${distance >= 2 ? ":CATEGORY_DISTANCE_2_PLUS" : ""}${Number.isFinite(divergence) && divergence >= 5 ? ":RAW_DIVERGENCE_5_PLUS" : ""}`
+      ? `NO_POLLS_EXTERNAL_RATING_SOFT_PENALTY:${limited.reason}${crossesRatingParty ? ":CROSSES_RATING_PARTY" : ""}${distance >= 2 ? ":CATEGORY_DISTANCE_2_PLUS" : ""}${Number.isFinite(divergence) && divergence >= 5 ? ":RAW_DIVERGENCE_5_PLUS" : ""}`
       : limited.reason,
     rawMargin: Number(value.toFixed(2)),
     rawModelMargin: Number.isFinite(raw) ? Number(raw.toFixed(2)) : null,
@@ -527,7 +555,8 @@ export function applyRatingGuardrail(margin, prior) {
       crossesRatingParty,
       categoryDistance: distance,
       rawRatingDivergence: Number.isFinite(divergence) ? Number(divergence.toFixed(2)) : null,
-      categoryLimitApplied: limited.triggered
+      categoryLimitApplied: false,
+      softPenaltyApplied: limited.triggered
     }
   };
 }

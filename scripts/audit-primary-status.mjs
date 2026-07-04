@@ -1,7 +1,10 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { applyPrimarySyncToRace, loadPrimarySyncConfig, primarySyncMap } from "./lib/primary-sync.mjs";
 
 const OUTPUT_URL = new URL("../data/diagnostics/primary-status-audit-2026.json", import.meta.url);
 const AUDIT_DATE = new Date(process.env.AUDIT_DATE || new Date().toISOString());
+const PRIMARY_SYNC_CONFIG = loadPrimarySyncConfig();
+const PRIMARY_SYNC_MAP = primarySyncMap(PRIMARY_SYNC_CONFIG);
 
 const SOURCES = [
   { model: "senate", url: new URL("../data/forecast.json", import.meta.url), type: "races" },
@@ -53,6 +56,8 @@ function auditRace(model, race) {
     primaryDate,
     primaryPassed,
     primaryStatus,
+    primarySyncApplied: Boolean(race.primarySync?.applied),
+    primarySyncRaceId: race.primarySync?.raceId || null,
     demCandidate: demName,
     repCandidate: repName,
     demStatus,
@@ -69,6 +74,7 @@ function isGenericCandidate(value) {
 
 const fileErrors = [];
 const rows = [];
+let primarySyncApplied = 0;
 for (const source of SOURCES) {
   const { data, error } = readJson(source.url);
   if (error) {
@@ -76,7 +82,11 @@ for (const source of SOURCES) {
     continue;
   }
   const items = Array.isArray(data?.[source.type]) ? data[source.type] : [];
-  rows.push(...items.map((race) => auditRace(source.model, race)));
+  rows.push(...items.map((race) => {
+    const synced = applyPrimarySyncToRace(race, source.model, PRIMARY_SYNC_MAP);
+    if (synced !== race) primarySyncApplied += 1;
+    return auditRace(source.model, synced);
+  }));
 }
 
 const output = {
@@ -87,6 +97,8 @@ const output = {
     rows: rows.length,
     reviewRequired: rows.filter((row) => row.reviewRequired).length,
     warnings: rows.reduce((sum, row) => sum + row.flags.filter((flag) => flag.severity === "warning").length, 0),
+    primarySyncApplied,
+    primarySyncRowsConfigured: PRIMARY_SYNC_CONFIG.races.length,
     fileErrors: fileErrors.length
   },
   fileErrors,

@@ -1,10 +1,12 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { buildHouseBaselineAudit } from "./lib/house-baseline-audit.mjs";
+import { applyCurrentMapBaselineAnchor, currentMapBaselineForDistrict, readCurrentMapBaselineMap } from "./lib/house-current-map-baselines.mjs";
 import { readHouseFundamentalsCacheMap, readHouseRatingsCacheMap } from "./lib/house-input-caches.mjs";
 import { normalizeRating } from "./lib/rating-priors.mjs";
 
 const FORECAST_URL = new URL("../data/house-forecast.json", import.meta.url);
 const OUTPUT_URL = new URL("../data/diagnostics/house-baseline-audit-2026.json", import.meta.url);
+const CURRENT_MAP_BASELINES = readCurrentMapBaselineMap();
 
 function readJson(url) {
   try {
@@ -52,15 +54,16 @@ function fallbackDistrictsFromCaches() {
     );
     const rating = ratingsRow.consensusRating || ratingsRow.rating || null;
     const parsedRating = normalizeRating(rating);
+    const sourceBaselineAnchor = {
+      type: fundamentalsRow.baselineType || fundamentalsRow.source || "CACHE_BASELINE",
+      margin: Number.isFinite(contextualMargin) ? contextualMargin : null,
+      source: fundamentalsRow.source || "data/cache/fundamentals/house-district-baselines-2026.json",
+      mapVersion: fundamentalsRow.mapVersion || "2026 current assumption",
+      confidence: fundamentalsRow.confidence || fundamentalsRow.sourceConfidence || "UNKNOWN"
+    };
     return {
       id,
-      baselineAnchor: {
-        type: fundamentalsRow.baselineType || fundamentalsRow.source || "CACHE_BASELINE",
-        margin: Number.isFinite(contextualMargin) ? contextualMargin : null,
-        source: fundamentalsRow.source || "data/cache/fundamentals/house-district-baselines-2026.json",
-        mapVersion: fundamentalsRow.mapVersion || "2026 current assumption",
-        confidence: fundamentalsRow.confidence || fundamentalsRow.sourceConfidence || "UNKNOWN"
-      },
+      baselineAnchor: applyCurrentMapBaselineAnchor(sourceBaselineAnchor, currentMapBaselineForDistrict(id, CURRENT_MAP_BASELINES)),
       ratingsPrior: {
         enabled: Boolean(rating),
         consensusRating: parsedRating?.normalized || rating,

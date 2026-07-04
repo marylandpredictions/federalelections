@@ -4,29 +4,30 @@
   "description": "Dynamic expert-rating soft-prior weights for 2026 forecast models. Ratings are not hard locks; they pull the probability engine and displayed margin toward public expert consensus only when race-specific inputs are thin.",
   "offices": {
     "house": {
-      "noPollingWeakFundamentals": 0.45,
-      "noPollingDerivedFundamentals": 0.5,
-      "noPollingStrongFundamentals": 0.3,
-      "pollInformed": 0.15,
-      "wellPolled": 0.08,
+      "noPollingWeakFundamentals": 0.4,
+      "noPollingDerivedFundamentals": 0.4,
+      "noPollingStrongFundamentals": 0.25,
+      "noPollingUnverifiedFundamentals": 0.4,
+      "pollInformed": 0.12,
+      "wellPolled": 0.06,
       "inferredSafeRating": 0.15,
       "mapConflict": 0,
       "probabilityPullStrength": 1,
       "projectedResultPullStrength": 0.65
     },
     "senate": {
-      "noPollingWeakFundamentals": [0.2, 0.35],
-      "noPollingDecentBaseline": [0.1, 0.2],
-      "somePolling": [0.05, 0.15],
-      "multiplePolls": [0.03, 0.1],
+      "noPollingWeakFundamentals": [0.12, 0.2],
+      "noPollingDecentBaseline": [0.12, 0.18],
+      "somePolling": [0.06, 0.1],
+      "multiplePolls": [0.03, 0.07],
       "probabilityPullStrength": 0.82,
       "projectedResultPullStrength": 0.52
     },
     "governor": {
-      "noPollingWeakFundamentals": [0.2, 0.35],
-      "noPollingDecentBaseline": [0.1, 0.2],
-      "somePolling": [0.05, 0.15],
-      "multiplePolls": [0.03, 0.1],
+      "noPollingWeakFundamentals": [0.12, 0.2],
+      "noPollingDecentBaseline": [0.12, 0.18],
+      "somePolling": [0.06, 0.1],
+      "multiplePolls": [0.03, 0.07],
       "probabilityPullStrength": 0.8,
       "projectedResultPullStrength": 0.5
     }

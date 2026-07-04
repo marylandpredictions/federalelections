@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-07-03",
+  "description": "Source trust policy for 2026 race polling inputs. Trusted structured and semi-structured rows may enter the model after row validation. Legacy fallback rows are kept for continuity diagnostics only and are not model inputs.",
+  "sources": {
+    "270towin": {
+      "label": "270toWin",
+      "trust": "TRUSTED_SEMI_STRUCTURED",
+      "usable": true
+    },
+    "racetowh": {
+      "label": "Race to the WH",
+      "trust": "TRUSTED_SEMI_STRUCTURED",
+      "usable": true
+    },
+    "realclearpolling": {
+      "label": "RealClearPolling",
+      "trust": "TRUSTED_SEMI_STRUCTURED",
+      "usable": true
+    },
+    "fiftyplusone": {
+      "label": "Fifty Plus One",
+      "trust": "TRUSTED_STRUCTURED",
+      "usable": true
+    },
+    "direct-poll-ledger": {
+      "label": "FEA direct poll ledger",
+      "trust": "TRUSTED_STRUCTURED",
+      "usable": true
+    },
+    "wikipedia": {
+      "label": "Wikipedia polling tables",
+      "trust": "QUARANTINED",
+      "usable": false,
+      "reason": "Wikipedia tables are cached for review but are not source-of-truth race polling inputs."
+    },
+    "legacy-model-input": {
+      "label": "Legacy model input",
+      "trust": "LEGACY_FALLBACK",
+      "usable": false,
+      "reason": "Built-in legacy fallback polls are provenance only and must never be counted as live race polling."
+    }
+  },
+  "default": {
+    "trust": "QUARANTINED",
+    "usable": false,
+    "reason": "Unknown polling source; review before model use."
+  }
+}

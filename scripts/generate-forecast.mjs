@@ -10,6 +10,7 @@ import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./f
 import { applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
 import { readWikipediaPollingCache, wikipediaPollingSummary, wikipediaPollRowsByState } from "./lib/wikipedia-polls.mjs";
 import { buildRaceReview } from "./lib/race-review-diagnostics.mjs";
+import { applyPrimarySyncToRace, loadPrimarySyncConfig, primarySyncMap } from "./lib/primary-sync.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const SENATE_RACE_REVIEW_URL = new URL("../data/diagnostics/senate-race-review-2026.json", import.meta.url);
@@ -18,6 +19,8 @@ const CERTIFIED_SENATE_BASELINES_URL = new URL("../data/baselines/senate-last-st
 const previousForecast = readPreviousForecast();
 const OFFLINE = process.argv.includes("--offline");
 const RATING_WEIGHT_CONFIG = loadRatingWeightConfig();
+const PRIMARY_SYNC_CONFIG = loadPrimarySyncConfig();
+const PRIMARY_SYNC_MAP = primarySyncMap(PRIMARY_SYNC_CONFIG);
 const GENERATION_STARTED_AT = Date.now();
 const GENERATION_BUDGET_MS = Math.max(15000, Number(process.env.FORECAST_GENERATION_BUDGET_MS || 90000));
 const certifiedSenateBaselines = readCertifiedSenateBaselines();
@@ -2737,7 +2740,8 @@ function stableSourceStatus(status) {
 }
 
 function applySourceInputs(baseRaces, sourceData) {
-  return baseRaces.map((race) => {
+  return baseRaces.map((inputRace) => {
+    const race = applyPrimarySyncToRace(inputRace, "senate", PRIMARY_SYNC_MAP);
     const fec = sourceData?.fec?.[race.state];
     const mit = sourceData?.mit?.[race.state];
     const census = sourceData?.census?.[race.state];

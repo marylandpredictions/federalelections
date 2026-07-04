@@ -9,7 +9,9 @@ import { blendGenericBallotSources, parsePollfinityGeneric as parseCanonicalPoll
 import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./forecast-cache.mjs";
 import { applyRatingGuardrail, applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
 import { auditHouseBaselineDistrict, buildHouseBaselineAudit, marginConsistencyCheck } from "./lib/house-baseline-audit.mjs";
+import { applyCurrentMapBaselineAnchor, currentMapBaselineForDistrict, readCurrentMapBaselineMap } from "./lib/house-current-map-baselines.mjs";
 import { readHouseFundamentalsCacheMap } from "./lib/house-input-caches.mjs";
+import { applyPrimarySyncToRace, loadPrimarySyncConfig, primarySyncMap } from "./lib/primary-sync.mjs";
 import { readWikipediaPollingCache, wikipediaPollingSummary } from "./lib/wikipedia-polls.mjs";
 import {
   buildHouseNationalEnvironment,
@@ -28,6 +30,9 @@ const previousForecast = readPreviousForecast();
 const OFFLINE = process.argv.includes("--offline");
 const RATING_WEIGHT_CONFIG = loadRatingWeightConfig();
 const HOUSE_FUNDAMENTALS_CACHE = readHouseFundamentalsCacheMap();
+const CURRENT_MAP_BASELINES = readCurrentMapBaselineMap();
+const PRIMARY_SYNC_CONFIG = loadPrimarySyncConfig();
+const PRIMARY_SYNC_MAP = primarySyncMap(PRIMARY_SYNC_CONFIG);
 const HOUSE_NATIONAL_ENVIRONMENT_CONFIG = loadHouseNationalEnvironmentConfig();
 const HOUSE_ELASTICITY_CONFIG = loadHouseElasticityConfig();
 
@@ -1088,7 +1093,11 @@ function adjustedDistricts(sourceData) {
   const nationalFinanceShift = (sourceData.fec.__national?.financeSignal || 0) * MODEL_WEIGHTS.nationalFinance;
   const baseDistricts = sourceData.mapDistricts.length >= 400 ? sourceData.mapDistricts : sourceData.cookDistricts;
   return baseDistricts.map((sourceDistrict) => {
-    const districtWithCandidates = applyRedistrictingOverride(applyCandidateData(sourceDistrict, sourceData.fec[sourceDistrict.id]));
+    const districtWithCandidates = applyPrimarySyncToRace(
+      applyRedistrictingOverride(applyCandidateData(sourceDistrict, sourceData.fec[sourceDistrict.id])),
+      "house",
+      PRIMARY_SYNC_MAP
+    );
     const initialFundamentalsPrior = houseFundamentalsPrior(districtWithCandidates, sourceData);
     const district = applyHouseFundamentalsPrior(districtWithCandidates, initialFundamentalsPrior);
     const fundamentalsPrior = houseFundamentalsPrior(district, sourceData);
@@ -1113,13 +1122,25 @@ function adjustedDistricts(sourceData) {
     const fundamentalsQuality = fundamentalsPrior.qualityForRating;
     const publicRatingFallback = publicHouseRatingFallback(district, sourceData);
     const preliminaryElasticityRating = publicRatingFallback.rating || ratingBenchmark?.consensusRating || ratingFromMargin(contextMargin);
-    const baselineAnchor = houseBaselineAnchor({
+    const sourceBaselineAnchor = houseBaselineAnchor({
       district,
       fundamentalsPrior,
       contextMargin,
       hasRatingPrior: Boolean(ratingBenchmark || publicRatingFallback.rating)
     });
-    const baselineMargin = houseStructuralBaselineMargin(baselineAnchor, contextMargin) * MODEL_WEIGHTS.districtBaseline;
+    const baselineAnchor = applyCurrentMapBaselineAnchor(
+      sourceBaselineAnchor,
+      currentMapBaselineForDistrict(district.id, CURRENT_MAP_BASELINES)
+    );
+    const baselineConfidence = String(baselineAnchor?.confidence || "").toUpperCase();
+    const baselineReliabilityMultiplier = baselineAnchor?.effectiveFor2026 === false
+      ? 0
+      : baselineConfidence === "UNVERIFIED"
+        ? 0.5
+        : baselineConfidence === "ESTIMATED"
+          ? 0.85
+          : 1;
+    const baselineMargin = houseStructuralBaselineMargin(baselineAnchor, contextMargin) * MODEL_WEIGHTS.districtBaseline * baselineReliabilityMultiplier;
     const elasticityInfo = districtElasticity({
       district,
       rating: preliminaryElasticityRating,
@@ -1158,7 +1179,7 @@ function adjustedDistricts(sourceData) {
       fallbackSource: publicRatingFallback.source || "Public district source",
       rawModelMargin: rawProbabilityMargin,
       pollingSummary,
-      fundamentalsQuality,
+      fundamentalsQuality: baselineConfidence === "UNVERIFIED" ? "UNVERIFIED" : fundamentalsQuality,
       sourceDegraded: Boolean(sourceData.sourceHealth?.degraded),
       mapConflict,
       ratingSourceType: ratingBenchmark?.cacheMeta?.ratingSourceType || null,
@@ -1185,12 +1206,13 @@ function adjustedDistricts(sourceData) {
       rawRatingsPrior.enabled
       && rawRatingsPrior.guardrailEligible
       && (
-        baselineConflictFlags.has("BASELINE_RATING_CONFLICT")
-        || baselineConflictFlags.has("MISSING_CURRENT_MAP_BASELINE")
+        baselineConflictFlags.has("BASELINE_DIRECTION_CONFLICT")
+        || baselineConflictFlags.has("BASELINE_MISSING")
+        || baselineConflictFlags.has("UNVERIFIED_CURRENT_MAP")
         || baselineConflictFlags.has("RATING_PRIOR_TOO_WEAK")
       )
     ) {
-      const minimumWeight = baselineConflictFlags.has("BASELINE_RATING_CONFLICT") ? 0.55 : 0.4;
+      const minimumWeight = baselineConflictFlags.has("BASELINE_DIRECTION_CONFLICT") ? 0.55 : 0.4;
       const boostedWeight = Math.min(0.75, Math.max(Number(rawRatingsPrior.weight || 0), minimumWeight));
       const impliedMargin = Number(rawRatingsPrior.impliedMargin);
       const rawPriorMargin = Number(rawRatingsPrior.rawModelMargin ?? rawProbabilityMargin);
@@ -1331,6 +1353,7 @@ function adjustedDistricts(sourceData) {
       pollingStatus: pollingSummary.pollingStatus,
       forecastMode: pollingSummary.usablePollCount ? "POLL_INFORMED" : "FUNDAMENTALS_ONLY",
       mapVersion: district.mapVersion || "2026 enacted map / 119th Congress geometry",
+      baselineReliabilityMultiplier: Number(baselineReliabilityMultiplier.toFixed(2)),
       districtDataSource: sourceData.usingCachedDistricts ? "Cached prior forecast district universe" : (district.ratingSource || "Public district source"),
       lastUpdated: new Date().toISOString(),
       previousResultComparable: Boolean(district.previousResult?.comparable),
@@ -1354,6 +1377,7 @@ function adjustedDistricts(sourceData) {
         genericBallotElasticity: elasticityInfo.districtElasticity,
         houseNationalEnvironment: houseNationalEnvironment,
         baselineAnchor,
+        baselineReliabilityMultiplier: Number(baselineReliabilityMultiplier.toFixed(2)),
         nationalEnvironment,
         districtElasticity: elasticityInfo,
         nationalFinanceShift: Number(nationalFinanceShift.toFixed(2)),
@@ -1419,6 +1443,10 @@ function adjustedDistricts(sourceData) {
 }
 
 function houseStructuralBaselineMargin(baselineAnchor, contextMargin) {
+  if (baselineAnchor?.effectiveFor2026 === false) return Number.isFinite(Number(contextMargin)) ? Number(contextMargin) : 0;
+  if (/CURRENT_MAP|2024|PRESIDENTIAL/i.test(String(baselineAnchor?.type || "")) && Number.isFinite(Number(baselineAnchor.margin))) {
+    return Number(baselineAnchor.margin);
+  }
   if (baselineAnchor?.containsPriorNationalEnvironment && Number.isFinite(Number(baselineAnchor.margin))) {
     return Number(baselineAnchor.margin);
   }

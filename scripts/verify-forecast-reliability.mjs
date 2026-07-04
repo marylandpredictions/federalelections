@@ -27,8 +27,31 @@ function assertMarginContract(label, item) {
   assert.ok(item.ratingsPrior && typeof item.ratingsPrior === "object", `${label}: ratings prior metadata is required.`);
   assert.ok("enabled" in item.ratingsPrior, `${label}: ratings prior must state whether it was applied.`);
   assert.ok("weight" in item.ratingsPrior, `${label}: ratings prior must publish its weight.`);
+  if (item.ratingsPrior.enabled) {
+    assert.ok(item.ratingsPrior.ratingsPriorDistribution, `${label}: enabled ratings prior must publish distribution metadata.`);
+  }
   if (Number.isFinite(item.projectedResultMargin.value)) {
     assert.equal(Number(item.projectedResultMargin.value), Number((item.projectedMargin ?? item.margin).toFixed?.(2) ?? item.projectedResultMargin.value), `${label}: projectedResultMargin value must match the public projected margin.`);
+  }
+}
+
+function assertNoHardRatingGuardrail(label, item) {
+  const reasons = [
+    item.ratingGuardrail?.projected?.reason,
+    item.ratingGuardrail?.probability?.reason,
+    item.marginDecomposition?.ratingGuardrailReason
+  ].filter(Boolean);
+  for (const reason of reasons) {
+    assert.ok(!/CANNOT|FLOOR|MAX/i.test(reason), `${label}: stale hard rating guardrail reason is still present.`);
+  }
+  const modes = [
+    item.ratingGuardrail?.projected?.guardrailMode,
+    item.ratingGuardrail?.probability?.guardrailMode,
+    item.ratingGuardrail?.projected?.mode,
+    item.ratingGuardrail?.probability?.mode
+  ].filter(Boolean);
+  for (const mode of modes) {
+    assert.equal(mode, "soft-penalty", `${label}: rating guardrail must use soft-penalty mode.`);
   }
 }
 
@@ -81,6 +104,7 @@ if (al02) {
 }
 for (const district of house.districts) {
   assertMarginContract(`House ${district.id}`, district);
+  assertNoHardRatingGuardrail(`House ${district.id}`, district);
   if (Math.abs(district.previousResult?.congressionalMargin || 0) > 70) assert.equal(district.previousResultComparable, false, `${district.id}: uncontested margin must not be comparable.`);
   assert.notEqual(district.presidentialMargin, 0, `${district.id}: missing presidential baseline must be null, not zero.`);
   assert.notEqual(district.congressionalMargin, 0, `${district.id}: missing congressional baseline must be null, not zero.`);

@@ -10,6 +10,7 @@ import { readCachedGenericBallot } from "./lib/generic-ballot.mjs";
 import { applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
 import { readWikipediaPollingCache, wikipediaPollingSummary, wikipediaPollRowsByState } from "./lib/wikipedia-polls.mjs";
 import { buildRaceReview } from "./lib/race-review-diagnostics.mjs";
+import { applyPrimarySyncToRace, loadPrimarySyncConfig, primarySyncMap } from "./lib/primary-sync.mjs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const GOVERNOR_HISTORY_URL = new URL("../data/governor-history.json", import.meta.url);
@@ -20,6 +21,8 @@ const GOVERNOR_EXCEPTIONS_URL = new URL("../data/candidate-exceptions/governor-2
 const previousForecast = readPreviousForecast();
 const governorHistoryArchive = readGovernorHistoryArchive();
 const RATING_WEIGHT_CONFIG = loadRatingWeightConfig();
+const PRIMARY_SYNC_CONFIG = loadPrimarySyncConfig();
+const PRIMARY_SYNC_MAP = primarySyncMap(PRIMARY_SYNC_CONFIG);
 const MODEL_TIME_ZONE = "America/New_York";
 const OFFLINE = process.argv.includes("--offline");
 const GENERATION_STARTED_AT = Date.now();
@@ -1862,7 +1865,7 @@ async function buildForecast() {
   const modelDate = localDateKey();
   const senateSignals = readSenateSignals();
   const nationalShift = clamp(senateSignals.genericBallotMargin * 0.18, -1.8, 1.8);
-  const modeledRaces = GOVERNOR_RACES.map((race) => buildRace(race, nationalShift, sourceData));
+  const modeledRaces = GOVERNOR_RACES.map((race) => buildRace(applyPrimarySyncToRace(race, "governor", PRIMARY_SYNC_MAP), nationalShift, sourceData));
   const distribution = {};
   const decisive = Object.fromEntries(modeledRaces.map((race) => [race.state, 0]));
   const demCounts = [];

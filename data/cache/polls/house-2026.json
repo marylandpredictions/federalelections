@@ -229,5 +229,37 @@
       "rating": "Safe D"
     }
   ],
-  "meta": {}
+  "meta": {},
+  "updatedAt": "2026-07-04T02:41:21.819Z",
+  "rawRows": [],
+  "usableRows": [],
+  "pollingValidation": {
+    "trustedIngest": {
+      "sourceKey": "racetowh",
+      "rows": 0,
+      "retainedRows": 0,
+      "fetches": [
+        {
+          "url": "https://www.racetothewh.com/senate-polls",
+          "ok": true,
+          "status": 200
+        },
+        {
+          "url": "https://www.racetothewh.com/governor-polls",
+          "ok": false,
+          "status": 404
+        },
+        {
+          "url": "https://www.racetothewh.com/allpolls",
+          "ok": true,
+          "status": 200
+        },
+        {
+          "url": "https://www.racetothewh.com/house-3",
+          "ok": true,
+          "status": 200
+        }
+      ]
+    }
+  }
 }
