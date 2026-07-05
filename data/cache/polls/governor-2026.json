@@ -3,39 +3,105 @@
   "source": "data/governor-forecast.json race polling fields",
   "office": "governor",
   "cycle": 2026,
-  "generatedAt": "2026-07-03T21:15:16.641Z",
-  "asOf": "2026-07-03T20:53:56.701Z",
+  "generatedAt": "2026-07-05T00:15:55.442Z",
+  "asOf": "2026-07-05T00:14:38.545Z",
   "status": "OK_PARSED",
   "rows": [
     {
       "raceId": "IA-race-2026",
       "state": "IA",
+      "district": null,
       "pollster": "Global Strategy Group",
       "source": "NYT Iowa governor polling table / FEA manual aggregation",
+      "sourceUrl": "https://www.nytimes.com/interactive/polls/iowa-governor-election-polls-2026.html",
+      "startDate": "2026-04-23",
       "endDate": "2026-04-28",
+      "tableType": "INDIVIDUAL_GENERAL_ELECTION_POLL",
       "margin": 9,
-      "sampleSize": 0,
-      "population": null
+      "sampleSize": null,
+      "population": null,
+      "candidates": [
+        {
+          "name": "Rob Sand",
+          "party": "D",
+          "pct": 50
+        },
+        {
+          "name": "Zach Lahn",
+          "party": "R",
+          "pct": 41
+        }
+      ],
+      "candidateMatchConfidence": null,
+      "manual": true,
+      "legacy": false,
+      "staleCandidates": false,
+      "unmatchedRace": false,
+      "superseded": false
     },
     {
       "raceId": "IA-race-2026",
       "state": "IA",
+      "district": null,
       "pollster": "Echelon Insights",
       "source": "NYT Iowa governor polling table / FEA manual aggregation",
+      "sourceUrl": "https://www.nytimes.com/interactive/polls/iowa-governor-election-polls-2026.html",
+      "startDate": "2026-04-03",
       "endDate": "2026-04-09",
+      "tableType": "INDIVIDUAL_GENERAL_ELECTION_POLL",
       "margin": 12,
       "sampleSize": 377,
-      "population": null
+      "population": null,
+      "candidates": [
+        {
+          "name": "Rob Sand",
+          "party": "D",
+          "pct": 51
+        },
+        {
+          "name": "Randy Feenstra",
+          "party": "R",
+          "pct": 39
+        }
+      ],
+      "candidateMatchConfidence": null,
+      "manual": true,
+      "legacy": false,
+      "staleCandidates": false,
+      "unmatchedRace": false,
+      "superseded": false
     },
     {
       "raceId": "IA-race-2026",
       "state": "IA",
+      "district": null,
       "pollster": "GBAO",
       "source": "NYT Iowa governor polling table / FEA manual aggregation",
+      "sourceUrl": "https://www.nytimes.com/interactive/polls/iowa-governor-election-polls-2026.html",
+      "startDate": "2026-03-10",
       "endDate": "2026-03-16",
+      "tableType": "INDIVIDUAL_GENERAL_ELECTION_POLL",
       "margin": 8,
       "sampleSize": 1200,
-      "population": null
+      "population": null,
+      "candidates": [
+        {
+          "name": "Rob Sand",
+          "party": "D",
+          "pct": 50
+        },
+        {
+          "name": "Randy Feenstra",
+          "party": "R",
+          "pct": 42
+        }
+      ],
+      "candidateMatchConfidence": null,
+      "manual": true,
+      "legacy": false,
+      "staleCandidates": false,
+      "unmatchedRace": false,
+      "superseded": false
     }
   ],
   "warnings": [
@@ -254,68 +320,5 @@
       "rating": "Safe R"
     }
   ],
-  "meta": {},
-  "updatedAt": "2026-07-04T02:41:21.816Z",
-  "rawRows": [
-    {
-      "raceId": "IA-race-2026",
-      "state": "IA",
-      "pollster": "Global Strategy Group",
-      "source": "NYT Iowa governor polling table / FEA manual aggregation",
-      "endDate": "2026-04-28",
-      "margin": 9,
-      "sampleSize": 0,
-      "population": null
-    },
-    {
-      "raceId": "IA-race-2026",
-      "state": "IA",
-      "pollster": "Echelon Insights",
-      "source": "NYT Iowa governor polling table / FEA manual aggregation",
-      "endDate": "2026-04-09",
-      "margin": 12,
-      "sampleSize": 377,
-      "population": null
-    },
-    {
-      "raceId": "IA-race-2026",
-      "state": "IA",
-      "pollster": "GBAO",
-      "source": "NYT Iowa governor polling table / FEA manual aggregation",
-      "endDate": "2026-03-16",
-      "margin": 8,
-      "sampleSize": 1200,
-      "population": null
-    }
-  ],
-  "usableRows": [],
-  "pollingValidation": {
-    "trustedIngest": {
-      "sourceKey": "racetowh",
-      "rows": 0,
-      "retainedRows": 3,
-      "fetches": [
-        {
-          "url": "https://www.racetothewh.com/senate-polls",
-          "ok": true,
-          "status": 200
-        },
-        {
-          "url": "https://www.racetothewh.com/governor-polls",
-          "ok": false,
-          "status": 404
-        },
-        {
-          "url": "https://www.racetothewh.com/allpolls",
-          "ok": true,
-          "status": 200
-        },
-        {
-          "url": "https://www.racetothewh.com/house-3",
-          "ok": true,
-          "status": 200
-        }
-      ]
-    }
-  }
+  "meta": {}
 }

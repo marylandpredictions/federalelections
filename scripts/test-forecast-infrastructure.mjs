@@ -340,7 +340,7 @@ const impossiblePoll = validatePollRow({
     { name: "Republican", party: "R", pct: 48 }
   ]
 }, { office: "governor", source: "Wikipedia election polling tables", requireStartDate: true });
-assert.equal(impossiblePoll.validationStatus, "REJECTED");
+assert.equal(impossiblePoll.validationStatus, "QUARANTINED");
 assert.ok(impossiblePoll.rejectionReasons.includes("CANDIDATE_PERCENT_OUT_OF_RANGE"));
 assert.ok(impossiblePoll.rejectionReasons.includes("IMPOSSIBLE_POLL_MARGIN"));
 

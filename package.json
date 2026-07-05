@@ -17,12 +17,17 @@
     "update:forecast-cache": "node scripts/update-forecast-cache.mjs",
     "update:house-ratings-aggregator": "node scripts/update-house-ratings-aggregator.mjs",
     "update:ratings-cache": "npm run update:house-ratings-aggregator && node scripts/update-forecast-cache.mjs --ratings",
-    "update:polling-cache": "node scripts/update-forecast-cache.mjs --polling",
+    "update:polling-cache": "node scripts/update-polling-cache.mjs",
     "update:trusted-polling-cache": "node scripts/update-trusted-polling-cache.mjs",
     "update:wikipedia-polling-cache": "node scripts/update-wikipedia-polling-cache.mjs",
-    "update:finance-cache": "node scripts/update-forecast-cache.mjs --finance",
+    "update:finance-cache": "node scripts/update-finance-cache.mjs",
+    "update:candidate-freshness-cache": "node scripts/update-candidate-freshness-cache.mjs",
+    "update:benchmark-diff-cache": "node scripts/update-benchmark-diff-cache.mjs",
     "update:fundamentals-cache": "node scripts/update-forecast-cache.mjs --fundamentals",
     "build:comparison-baselines": "node scripts/build-result-comparison-baselines.mjs",
+    "build:poll-quarantine-ledger": "node scripts/build-poll-quarantine-ledger.mjs",
+    "build:poll-validation-diagnostics": "node scripts/build-poll-validation-diagnostics.mjs",
+    "build:house-baseline-staleness": "node scripts/build-house-baseline-staleness.mjs",
     "build:result-counties": "node scripts/build-result-county-map-from-congress.mjs",
     "build:district-county-maps": "node scripts/build-district-county-maps.mjs",
     "build:current-map-baselines": "node scripts/lib/house-current-map-baselines.mjs",
@@ -36,7 +41,9 @@
     "verify:forecast-history": "node scripts/verify-forecast-history.mjs",
     "verify:forecast-reliability": "node scripts/verify-forecast-reliability.mjs",
     "verify:house-calibration": "node scripts/verify-house-calibration.mjs",
-    "verify:image-assets": "node scripts/verify-image-assets.mjs"
+    "verify:image-assets": "node scripts/verify-image-assets.mjs",
+    "verify-benchmark-alignment": "node scripts/verify-benchmark-alignment.mjs",
+    "run:sensitivity-experiments": "node scripts/run-sensitivity-experiments.mjs"
   },
   "dependencies": {
     "sharp": "^0.34.5"

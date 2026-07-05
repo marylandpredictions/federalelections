@@ -3,15 +3,15 @@
   "source": "saved forecast canonicalGenericBallot fields",
   "office": "generic-ballot",
   "cycle": 2026,
-  "generatedAt": "2026-07-03T21:15:16.629Z",
-  "asOf": "2026-07-03T20:53:56.701Z",
+  "generatedAt": "2026-07-05T00:15:55.427Z",
+  "asOf": "2026-07-05T00:14:38.545Z",
   "status": "OK_PARSED",
   "rows": [
     {
       "sourceModel": "senate",
       "margin": 5.33,
-      "dem": 46.46,
-      "rep": 41.13,
+      "dem": 46.41,
+      "rep": 41.07,
       "sources": [
         {
           "source": "VoteHub",
@@ -25,9 +25,9 @@
         {
           "source": "Pollfinity",
           "margin": 4,
-          "dem": 43.7,
-          "rep": 39.7,
-          "polls": 31,
+          "dem": 43.5,
+          "rep": 39.5,
+          "polls": 29,
           "weight": 0.55,
           "status": "OK_PARSED"
         },
@@ -42,63 +42,66 @@
         }
       ],
       "sourceHealth": {
-        "checkedAt": "2026-07-03T20:53:45.419Z",
+        "checkedAt": "2026-07-05T00:13:31.626Z",
         "pollfinityAverages": {
           "health": "OK_PARSED",
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 452,
+          "ms": 420,
           "url": "https://pollfinity.com/averages.json",
           "expected": "json",
-          "genericBallotPolls": 31,
+          "genericBallotPolls": 29,
           "genericBallotMargin": 4,
-          "approvalPolls": 39,
-          "approvalNet": -20.6
+          "approvalPolls": 38,
+          "approvalNet": -20.5
         },
         "realClearPollingSenate": {
           "health": "BLOCKED_403",
           "ok": false,
           "status": "BLOCKED_403",
           "httpStatus": 403,
-          "ms": 450,
+          "ms": 418,
           "url": "https://www.realclearpolling.com/latest-polls/senate",
           "expected": "text",
           "error": "<html lang=\"en\"><head><title>realclearpolling.com</title><style>#cmsg{animation: A 1.5s;}@keyframes A{0%{opacity:0;}99%{opacity:0;}100%{opacity:1;}}</style></head><body style=\"marg"
-        },
-        "twoSeventyToWinPollsCO": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 454,
-          "url": "https://www.270towin.com/2026-senate-polls/colorado",
-          "expected": "text"
         },
         "twoSeventyToWinPollsAL": {
           "health": "OK_PARSED",
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 458,
+          "ms": 420,
           "url": "https://www.270towin.com/2026-senate-polls/alabama",
           "expected": "text"
         },
-        "twoSeventyToWinPollsFL": {
+        "twoSeventyToWinPollsAK": {
           "health": "OK_PARSED",
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 34,
-          "url": "https://www.270towin.com/2026-senate-polls/florida",
+          "ms": 480,
+          "url": "https://www.270towin.com/2026-senate-polls/alaska",
           "expected": "text"
+        },
+        "censusPopulation": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 480,
+          "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2024/state/totals/NST-EST2024-POPCHG2020-2024.csv",
+          "expected": "text",
+          "rows": 66,
+          "states": 51,
+          "source": "Census Bureau no-key CSV"
         },
         "twoSeventyToWinPollingIndex": {
           "health": "OK_PARSED",
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 511,
+          "ms": 524,
           "url": "https://www.270towin.com/content/2026-senate-polling",
           "expected": "text"
         },
@@ -107,35 +110,8 @@
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 530,
+          "ms": 523,
           "url": "https://www.270towin.com/polls/latest-2026-senate-election-polls/",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsDE": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 106,
-          "url": "https://www.270towin.com/2026-senate-polls/delaware",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsAK": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 592,
-          "url": "https://www.270towin.com/2026-senate-polls/alaska",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsID": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 61,
-          "url": "https://www.270towin.com/2026-senate-polls/idaho",
           "expected": "text"
         },
         "civicApiDocs": {
@@ -143,44 +119,8 @@
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 621,
+          "ms": 613,
           "url": "https://www.civicapi.org/api-documentation",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsIL": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 40,
-          "url": "https://www.270towin.com/2026-senate-polls/illinois",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsIA": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 34,
-          "url": "https://www.270towin.com/2026-senate-polls/iowa",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsKS": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 40,
-          "url": "https://www.270towin.com/2026-senate-polls/kansas",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsKY": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 33,
-          "url": "https://www.270towin.com/2026-senate-polls/kentucky",
           "expected": "text"
         },
         "civicApiEndpoint": {
@@ -188,308 +128,17 @@
           "ok": false,
           "status": "NOT_FOUND_404",
           "httpStatus": 404,
-          "ms": 94,
+          "ms": 88,
           "url": "https://www.civicapi.org/api/v1/upcomingraces",
           "expected": "text",
           "error": "{\"message\":\"Route GET:/v1/upcomingraces not found\",\"error\":\"Not Found\",\"statusCode\":404}"
-        },
-        "censusPopulation": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 736,
-          "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2024/state/totals/NST-EST2024-POPCHG2020-2024.csv",
-          "expected": "text",
-          "rows": 66,
-          "states": 51,
-          "source": "Census Bureau no-key CSV"
-        },
-        "twoSeventyToWinPollsME": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 71,
-          "url": "https://www.270towin.com/2026-senate-polls/maine",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsMA": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 41,
-          "url": "https://www.270towin.com/2026-senate-polls/massachusetts",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsLA": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 132,
-          "url": "https://www.270towin.com/2026-senate-polls/louisiana",
-          "expected": "text"
-        },
-        "votehubGenericBallot": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 899,
-          "url": "https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026",
-          "expected": "json",
-          "rows": 532,
-          "usablePolls": 410,
-          "rawUsablePolls": 532
-        },
-        "twoSeventyToWinPollsMI": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 36,
-          "url": "https://www.270towin.com/2026-senate-polls/michigan",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsMN": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 53,
-          "url": "https://www.270towin.com/2026-senate-polls/minnesota",
-          "expected": "text"
-        },
-        "usPollingDataGenericBallot": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 863,
-          "url": "https://uspollingdata.com/polls/generic-ballot/",
-          "expected": "text",
-          "margin": 7
-        },
-        "twoSeventyToWinPollsMT": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 45,
-          "url": "https://www.270towin.com/2026-senate-polls/montana",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsNC": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 40,
-          "url": "https://www.270towin.com/2026-senate-polls/north-carolina",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsMS": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 121,
-          "url": "https://www.270towin.com/2026-senate-polls/mississippi",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsGA": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 501,
-          "url": "https://www.270towin.com/2026-senate-polls/georgia",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsNH": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 37,
-          "url": "https://www.270towin.com/2026-senate-polls/new-hampshire",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsNM": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 41,
-          "url": "https://www.270towin.com/2026-senate-polls/new-mexico",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsOH": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 42,
-          "url": "https://www.270towin.com/2026-senate-polls/ohio",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsNE": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 170,
-          "url": "https://www.270towin.com/2026-senate-polls/nebraska",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsNJ": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 120,
-          "url": "https://www.270towin.com/2026-senate-polls/new-jersey",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsOK": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 46,
-          "url": "https://www.270towin.com/2026-senate-polls/oklahoma",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsRI": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 36,
-          "url": "https://www.270towin.com/2026-senate-polls/rhode-island",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsSD": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 39,
-          "url": "https://www.270towin.com/2026-senate-polls/south-dakota",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsOR": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 110,
-          "url": "https://www.270towin.com/2026-senate-polls/oregon",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsTX": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 38,
-          "url": "https://www.270towin.com/2026-senate-polls/texas",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsSC": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 136,
-          "url": "https://www.270towin.com/2026-senate-polls/south-carolina",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsVA": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 35,
-          "url": "https://www.270towin.com/2026-senate-polls/virginia",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsTN": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 122,
-          "url": "https://www.270towin.com/2026-senate-polls/tennessee",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsWV": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 109,
-          "url": "https://www.270towin.com/2026-senate-polls/west-virginia",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsWY": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 104,
-          "url": "https://www.270towin.com/2026-senate-polls/wyoming",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsAR": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 1540,
-          "url": "https://www.270towin.com/2026-senate-polls/arkansas",
-          "expected": "text"
-        },
-        "twoSeventyToWinRacePolls": {
-          "ok": true,
-          "status": 200,
-          "ms": 1542,
-          "url": "https://www.270towin.com/2026-senate-polls/{state}",
-          "pages": 35,
-          "okPages": 35,
-          "usablePolls": 143,
-          "states": 14
-        },
-        "ddhqGenericBallot": {
-          "health": "OK_NO_ROWS",
-          "ok": true,
-          "status": "OK_NO_ROWS",
-          "httpStatus": 200,
-          "ms": 1744,
-          "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
-          "expected": "text",
-          "polls": 0,
-          "margin": null
-        },
-        "usPollingDataSenatePolling": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 1780,
-          "url": "https://uspollingdata.com/polls/senate-polling/",
-          "expected": "text",
-          "hasSenateTable": true,
-          "note": "Reachable, but not blended because several listed races/candidates do not match this Senate cycle ledger."
         },
         "mitSenateReturns": {
           "health": "OK_PARSED",
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 1849,
+          "ms": 831,
           "url": "https://raw.githubusercontent.com/MEDSL/constituency-returns/master/1976-2018-senate.csv",
           "expected": "text",
           "rows": 3421,
@@ -500,43 +149,394 @@
           "ok": true,
           "status": "OK_NO_ROWS",
           "httpStatus": 200,
-          "ms": 1899,
+          "ms": 878,
           "url": "https://www.racetothewh.com/senate/26polls",
           "expected": "text",
           "hasStaticRows": false,
           "note": "Reachable, but no stable row-level poll data was present in the fetched HTML."
-        },
-        "raceToTheWhGenericBallot": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 2039,
-          "url": "https://www.racetothewh.com/polls/genericballot",
-          "expected": "text"
         },
         "electoralVoteSenatePolls": {
           "health": "OK_NO_ROWS",
           "ok": true,
           "status": "OK_NO_ROWS",
           "httpStatus": 200,
-          "ms": 2666,
+          "ms": 899,
           "url": "https://electoral-vote.com/evp2026/Senate/senate_polls.csv",
           "expected": "text",
           "rows": 35,
           "usablePolls": 0
+        },
+        "twoSeventyToWinPollsFL": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 495,
+          "url": "https://www.270towin.com/2026-senate-polls/florida",
+          "expected": "text"
+        },
+        "ddhqGenericBallot": {
+          "health": "OK_NO_ROWS",
+          "ok": true,
+          "status": "OK_NO_ROWS",
+          "httpStatus": 200,
+          "ms": 1049,
+          "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
+          "expected": "text",
+          "polls": 0,
+          "margin": null
+        },
+        "twoSeventyToWinPollsGA": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 76,
+          "url": "https://www.270towin.com/2026-senate-polls/georgia",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsID": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 50,
+          "url": "https://www.270towin.com/2026-senate-polls/idaho",
+          "expected": "text"
+        },
+        "raceToTheWhGenericBallot": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1111,
+          "url": "https://www.racetothewh.com/polls/genericballot",
+          "expected": "text"
+        },
+        "usPollingDataSenatePolling": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1118,
+          "url": "https://uspollingdata.com/polls/senate-polling/",
+          "expected": "text",
+          "hasSenateTable": true,
+          "note": "Reachable, but not blended because several listed races/candidates do not match this Senate cycle ledger."
+        },
+        "votehubGenericBallot": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1271,
+          "url": "https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026",
+          "expected": "json",
+          "rows": 532,
+          "usablePolls": 410,
+          "rawUsablePolls": 532
+        },
+        "twoSeventyToWinPollsIL": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 164,
+          "url": "https://www.270towin.com/2026-senate-polls/illinois",
+          "expected": "text"
+        },
+        "usPollingDataGenericBallot": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1277,
+          "url": "https://uspollingdata.com/polls/generic-ballot/",
+          "expected": "text",
+          "margin": 7
+        },
+        "twoSeventyToWinPollsIA": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 83,
+          "url": "https://www.270towin.com/2026-senate-polls/iowa",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsKS": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 44,
+          "url": "https://www.270towin.com/2026-senate-polls/kansas",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsKY": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 34,
+          "url": "https://www.270towin.com/2026-senate-polls/kentucky",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsLA": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 34,
+          "url": "https://www.270towin.com/2026-senate-polls/louisiana",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsME": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 36,
+          "url": "https://www.270towin.com/2026-senate-polls/maine",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsCO": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1570,
+          "url": "https://www.270towin.com/2026-senate-polls/colorado",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsMA": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 82,
+          "url": "https://www.270towin.com/2026-senate-polls/massachusetts",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsMI": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 93,
+          "url": "https://www.270towin.com/2026-senate-polls/michigan",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsAR": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1674,
+          "url": "https://www.270towin.com/2026-senate-polls/arkansas",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsMT": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 64,
+          "url": "https://www.270towin.com/2026-senate-polls/montana",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsMN": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 197,
+          "url": "https://www.270towin.com/2026-senate-polls/minnesota",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsNC": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 41,
+          "url": "https://www.270towin.com/2026-senate-polls/north-carolina",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsNE": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 39,
+          "url": "https://www.270towin.com/2026-senate-polls/nebraska",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsNH": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 40,
+          "url": "https://www.270towin.com/2026-senate-polls/new-hampshire",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsMS": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 159,
+          "url": "https://www.270towin.com/2026-senate-polls/mississippi",
+          "expected": "text"
         },
         "openFecCandidateSummary": {
           "health": "OK_PARSED",
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 6816,
+          "ms": 1834,
           "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
           "expected": "text",
-          "rows": 4220,
+          "rows": 4222,
           "senateStates": 46,
           "nationalFinanceSignal": 0.417
+        },
+        "twoSeventyToWinPollsOH": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 84,
+          "url": "https://www.270towin.com/2026-senate-polls/ohio",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsNM": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 87,
+          "url": "https://www.270towin.com/2026-senate-polls/new-mexico",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsNJ": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 119,
+          "url": "https://www.270towin.com/2026-senate-polls/new-jersey",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsDE": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1519,
+          "url": "https://www.270towin.com/2026-senate-polls/delaware",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsRI": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 35,
+          "url": "https://www.270towin.com/2026-senate-polls/rhode-island",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsSC": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 65,
+          "url": "https://www.270towin.com/2026-senate-polls/south-carolina",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsSD": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 35,
+          "url": "https://www.270towin.com/2026-senate-polls/south-dakota",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsOR": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 120,
+          "url": "https://www.270towin.com/2026-senate-polls/oregon",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsOK": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 133,
+          "url": "https://www.270towin.com/2026-senate-polls/oklahoma",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsTX": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 34,
+          "url": "https://www.270towin.com/2026-senate-polls/texas",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsVA": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 42,
+          "url": "https://www.270towin.com/2026-senate-polls/virginia",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsTN": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 120,
+          "url": "https://www.270towin.com/2026-senate-polls/tennessee",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsWY": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 114,
+          "url": "https://www.270towin.com/2026-senate-polls/wyoming",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsWV": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 122,
+          "url": "https://www.270towin.com/2026-senate-polls/west-virginia",
+          "expected": "text"
+        },
+        "twoSeventyToWinRacePolls": {
+          "ok": true,
+          "status": 200,
+          "ms": 2164,
+          "url": "https://www.270towin.com/2026-senate-polls/{state}",
+          "pages": 35,
+          "okPages": 35,
+          "usablePolls": 143,
+          "states": 14
         },
         "fiftyPlusOneSenate": {
           "health": "DISABLED",
@@ -553,13 +553,13 @@
           "url": "data/direct-poll-ledger.json"
         }
       },
-      "lastUpdated": "2026-07-03T20:53:45.419Z"
+      "lastUpdated": "2026-07-05T00:13:31.626Z"
     },
     {
       "sourceModel": "house",
       "margin": 5.33,
-      "dem": 46.46,
-      "rep": 41.13,
+      "dem": 46.41,
+      "rep": 41.07,
       "sources": [
         {
           "source": "VoteHub",
@@ -573,9 +573,9 @@
         {
           "source": "Pollfinity",
           "margin": 4,
-          "dem": 43.7,
-          "rep": 39.7,
-          "polls": 31,
+          "dem": 43.5,
+          "rep": 39.5,
+          "polls": 29,
           "weight": 0.55,
           "status": "OK_PARSED"
         },
@@ -593,13 +593,13 @@
         "cached": true,
         "source": "generic ballot cache"
       },
-      "lastUpdated": "2026-07-03T20:36:52.649Z"
+      "lastUpdated": "2026-07-05T00:10:31.256Z"
     },
     {
       "sourceModel": "governor",
       "margin": 5.33,
-      "dem": 46.46,
-      "rep": 41.13,
+      "dem": 46.41,
+      "rep": 41.07,
       "sources": [
         {
           "source": "VoteHub",
@@ -613,9 +613,9 @@
         {
           "source": "Pollfinity",
           "margin": 4,
-          "dem": 43.7,
-          "rep": 39.7,
-          "polls": 31,
+          "dem": 43.5,
+          "rep": 39.5,
+          "polls": 29,
           "weight": 0.55,
           "status": "OK_PARSED"
         },
@@ -630,63 +630,66 @@
         }
       ],
       "sourceHealth": {
-        "checkedAt": "2026-07-03T20:53:45.419Z",
+        "checkedAt": "2026-07-05T00:13:31.626Z",
         "pollfinityAverages": {
           "health": "OK_PARSED",
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 452,
+          "ms": 420,
           "url": "https://pollfinity.com/averages.json",
           "expected": "json",
-          "genericBallotPolls": 31,
+          "genericBallotPolls": 29,
           "genericBallotMargin": 4,
-          "approvalPolls": 39,
-          "approvalNet": -20.6
+          "approvalPolls": 38,
+          "approvalNet": -20.5
         },
         "realClearPollingSenate": {
           "health": "BLOCKED_403",
           "ok": false,
           "status": "BLOCKED_403",
           "httpStatus": 403,
-          "ms": 450,
+          "ms": 418,
           "url": "https://www.realclearpolling.com/latest-polls/senate",
           "expected": "text",
           "error": "<html lang=\"en\"><head><title>realclearpolling.com</title><style>#cmsg{animation: A 1.5s;}@keyframes A{0%{opacity:0;}99%{opacity:0;}100%{opacity:1;}}</style></head><body style=\"marg"
-        },
-        "twoSeventyToWinPollsCO": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 454,
-          "url": "https://www.270towin.com/2026-senate-polls/colorado",
-          "expected": "text"
         },
         "twoSeventyToWinPollsAL": {
           "health": "OK_PARSED",
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 458,
+          "ms": 420,
           "url": "https://www.270towin.com/2026-senate-polls/alabama",
           "expected": "text"
         },
-        "twoSeventyToWinPollsFL": {
+        "twoSeventyToWinPollsAK": {
           "health": "OK_PARSED",
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 34,
-          "url": "https://www.270towin.com/2026-senate-polls/florida",
+          "ms": 480,
+          "url": "https://www.270towin.com/2026-senate-polls/alaska",
           "expected": "text"
+        },
+        "censusPopulation": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 480,
+          "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2024/state/totals/NST-EST2024-POPCHG2020-2024.csv",
+          "expected": "text",
+          "rows": 66,
+          "states": 51,
+          "source": "Census Bureau no-key CSV"
         },
         "twoSeventyToWinPollingIndex": {
           "health": "OK_PARSED",
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 511,
+          "ms": 524,
           "url": "https://www.270towin.com/content/2026-senate-polling",
           "expected": "text"
         },
@@ -695,35 +698,8 @@
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 530,
+          "ms": 523,
           "url": "https://www.270towin.com/polls/latest-2026-senate-election-polls/",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsDE": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 106,
-          "url": "https://www.270towin.com/2026-senate-polls/delaware",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsAK": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 592,
-          "url": "https://www.270towin.com/2026-senate-polls/alaska",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsID": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 61,
-          "url": "https://www.270towin.com/2026-senate-polls/idaho",
           "expected": "text"
         },
         "civicApiDocs": {
@@ -731,44 +707,8 @@
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 621,
+          "ms": 613,
           "url": "https://www.civicapi.org/api-documentation",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsIL": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 40,
-          "url": "https://www.270towin.com/2026-senate-polls/illinois",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsIA": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 34,
-          "url": "https://www.270towin.com/2026-senate-polls/iowa",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsKS": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 40,
-          "url": "https://www.270towin.com/2026-senate-polls/kansas",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsKY": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 33,
-          "url": "https://www.270towin.com/2026-senate-polls/kentucky",
           "expected": "text"
         },
         "civicApiEndpoint": {
@@ -776,308 +716,17 @@
           "ok": false,
           "status": "NOT_FOUND_404",
           "httpStatus": 404,
-          "ms": 94,
+          "ms": 88,
           "url": "https://www.civicapi.org/api/v1/upcomingraces",
           "expected": "text",
           "error": "{\"message\":\"Route GET:/v1/upcomingraces not found\",\"error\":\"Not Found\",\"statusCode\":404}"
-        },
-        "censusPopulation": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 736,
-          "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2024/state/totals/NST-EST2024-POPCHG2020-2024.csv",
-          "expected": "text",
-          "rows": 66,
-          "states": 51,
-          "source": "Census Bureau no-key CSV"
-        },
-        "twoSeventyToWinPollsME": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 71,
-          "url": "https://www.270towin.com/2026-senate-polls/maine",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsMA": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 41,
-          "url": "https://www.270towin.com/2026-senate-polls/massachusetts",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsLA": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 132,
-          "url": "https://www.270towin.com/2026-senate-polls/louisiana",
-          "expected": "text"
-        },
-        "votehubGenericBallot": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 899,
-          "url": "https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026",
-          "expected": "json",
-          "rows": 532,
-          "usablePolls": 410,
-          "rawUsablePolls": 532
-        },
-        "twoSeventyToWinPollsMI": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 36,
-          "url": "https://www.270towin.com/2026-senate-polls/michigan",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsMN": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 53,
-          "url": "https://www.270towin.com/2026-senate-polls/minnesota",
-          "expected": "text"
-        },
-        "usPollingDataGenericBallot": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 863,
-          "url": "https://uspollingdata.com/polls/generic-ballot/",
-          "expected": "text",
-          "margin": 7
-        },
-        "twoSeventyToWinPollsMT": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 45,
-          "url": "https://www.270towin.com/2026-senate-polls/montana",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsNC": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 40,
-          "url": "https://www.270towin.com/2026-senate-polls/north-carolina",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsMS": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 121,
-          "url": "https://www.270towin.com/2026-senate-polls/mississippi",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsGA": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 501,
-          "url": "https://www.270towin.com/2026-senate-polls/georgia",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsNH": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 37,
-          "url": "https://www.270towin.com/2026-senate-polls/new-hampshire",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsNM": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 41,
-          "url": "https://www.270towin.com/2026-senate-polls/new-mexico",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsOH": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 42,
-          "url": "https://www.270towin.com/2026-senate-polls/ohio",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsNE": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 170,
-          "url": "https://www.270towin.com/2026-senate-polls/nebraska",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsNJ": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 120,
-          "url": "https://www.270towin.com/2026-senate-polls/new-jersey",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsOK": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 46,
-          "url": "https://www.270towin.com/2026-senate-polls/oklahoma",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsRI": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 36,
-          "url": "https://www.270towin.com/2026-senate-polls/rhode-island",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsSD": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 39,
-          "url": "https://www.270towin.com/2026-senate-polls/south-dakota",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsOR": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 110,
-          "url": "https://www.270towin.com/2026-senate-polls/oregon",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsTX": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 38,
-          "url": "https://www.270towin.com/2026-senate-polls/texas",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsSC": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 136,
-          "url": "https://www.270towin.com/2026-senate-polls/south-carolina",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsVA": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 35,
-          "url": "https://www.270towin.com/2026-senate-polls/virginia",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsTN": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 122,
-          "url": "https://www.270towin.com/2026-senate-polls/tennessee",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsWV": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 109,
-          "url": "https://www.270towin.com/2026-senate-polls/west-virginia",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsWY": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 104,
-          "url": "https://www.270towin.com/2026-senate-polls/wyoming",
-          "expected": "text"
-        },
-        "twoSeventyToWinPollsAR": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 1540,
-          "url": "https://www.270towin.com/2026-senate-polls/arkansas",
-          "expected": "text"
-        },
-        "twoSeventyToWinRacePolls": {
-          "ok": true,
-          "status": 200,
-          "ms": 1542,
-          "url": "https://www.270towin.com/2026-senate-polls/{state}",
-          "pages": 35,
-          "okPages": 35,
-          "usablePolls": 143,
-          "states": 14
-        },
-        "ddhqGenericBallot": {
-          "health": "OK_NO_ROWS",
-          "ok": true,
-          "status": "OK_NO_ROWS",
-          "httpStatus": 200,
-          "ms": 1744,
-          "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
-          "expected": "text",
-          "polls": 0,
-          "margin": null
-        },
-        "usPollingDataSenatePolling": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 1780,
-          "url": "https://uspollingdata.com/polls/senate-polling/",
-          "expected": "text",
-          "hasSenateTable": true,
-          "note": "Reachable, but not blended because several listed races/candidates do not match this Senate cycle ledger."
         },
         "mitSenateReturns": {
           "health": "OK_PARSED",
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 1849,
+          "ms": 831,
           "url": "https://raw.githubusercontent.com/MEDSL/constituency-returns/master/1976-2018-senate.csv",
           "expected": "text",
           "rows": 3421,
@@ -1088,43 +737,394 @@
           "ok": true,
           "status": "OK_NO_ROWS",
           "httpStatus": 200,
-          "ms": 1899,
+          "ms": 878,
           "url": "https://www.racetothewh.com/senate/26polls",
           "expected": "text",
           "hasStaticRows": false,
           "note": "Reachable, but no stable row-level poll data was present in the fetched HTML."
-        },
-        "raceToTheWhGenericBallot": {
-          "health": "OK_PARSED",
-          "ok": true,
-          "status": "OK_PARSED",
-          "httpStatus": 200,
-          "ms": 2039,
-          "url": "https://www.racetothewh.com/polls/genericballot",
-          "expected": "text"
         },
         "electoralVoteSenatePolls": {
           "health": "OK_NO_ROWS",
           "ok": true,
           "status": "OK_NO_ROWS",
           "httpStatus": 200,
-          "ms": 2666,
+          "ms": 899,
           "url": "https://electoral-vote.com/evp2026/Senate/senate_polls.csv",
           "expected": "text",
           "rows": 35,
           "usablePolls": 0
+        },
+        "twoSeventyToWinPollsFL": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 495,
+          "url": "https://www.270towin.com/2026-senate-polls/florida",
+          "expected": "text"
+        },
+        "ddhqGenericBallot": {
+          "health": "OK_NO_ROWS",
+          "ok": true,
+          "status": "OK_NO_ROWS",
+          "httpStatus": 200,
+          "ms": 1049,
+          "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
+          "expected": "text",
+          "polls": 0,
+          "margin": null
+        },
+        "twoSeventyToWinPollsGA": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 76,
+          "url": "https://www.270towin.com/2026-senate-polls/georgia",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsID": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 50,
+          "url": "https://www.270towin.com/2026-senate-polls/idaho",
+          "expected": "text"
+        },
+        "raceToTheWhGenericBallot": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1111,
+          "url": "https://www.racetothewh.com/polls/genericballot",
+          "expected": "text"
+        },
+        "usPollingDataSenatePolling": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1118,
+          "url": "https://uspollingdata.com/polls/senate-polling/",
+          "expected": "text",
+          "hasSenateTable": true,
+          "note": "Reachable, but not blended because several listed races/candidates do not match this Senate cycle ledger."
+        },
+        "votehubGenericBallot": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1271,
+          "url": "https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026",
+          "expected": "json",
+          "rows": 532,
+          "usablePolls": 410,
+          "rawUsablePolls": 532
+        },
+        "twoSeventyToWinPollsIL": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 164,
+          "url": "https://www.270towin.com/2026-senate-polls/illinois",
+          "expected": "text"
+        },
+        "usPollingDataGenericBallot": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1277,
+          "url": "https://uspollingdata.com/polls/generic-ballot/",
+          "expected": "text",
+          "margin": 7
+        },
+        "twoSeventyToWinPollsIA": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 83,
+          "url": "https://www.270towin.com/2026-senate-polls/iowa",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsKS": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 44,
+          "url": "https://www.270towin.com/2026-senate-polls/kansas",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsKY": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 34,
+          "url": "https://www.270towin.com/2026-senate-polls/kentucky",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsLA": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 34,
+          "url": "https://www.270towin.com/2026-senate-polls/louisiana",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsME": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 36,
+          "url": "https://www.270towin.com/2026-senate-polls/maine",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsCO": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1570,
+          "url": "https://www.270towin.com/2026-senate-polls/colorado",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsMA": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 82,
+          "url": "https://www.270towin.com/2026-senate-polls/massachusetts",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsMI": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 93,
+          "url": "https://www.270towin.com/2026-senate-polls/michigan",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsAR": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1674,
+          "url": "https://www.270towin.com/2026-senate-polls/arkansas",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsMT": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 64,
+          "url": "https://www.270towin.com/2026-senate-polls/montana",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsMN": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 197,
+          "url": "https://www.270towin.com/2026-senate-polls/minnesota",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsNC": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 41,
+          "url": "https://www.270towin.com/2026-senate-polls/north-carolina",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsNE": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 39,
+          "url": "https://www.270towin.com/2026-senate-polls/nebraska",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsNH": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 40,
+          "url": "https://www.270towin.com/2026-senate-polls/new-hampshire",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsMS": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 159,
+          "url": "https://www.270towin.com/2026-senate-polls/mississippi",
+          "expected": "text"
         },
         "openFecCandidateSummary": {
           "health": "OK_PARSED",
           "ok": true,
           "status": "OK_PARSED",
           "httpStatus": 200,
-          "ms": 6816,
+          "ms": 1834,
           "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
           "expected": "text",
-          "rows": 4220,
+          "rows": 4222,
           "senateStates": 46,
           "nationalFinanceSignal": 0.417
+        },
+        "twoSeventyToWinPollsOH": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 84,
+          "url": "https://www.270towin.com/2026-senate-polls/ohio",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsNM": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 87,
+          "url": "https://www.270towin.com/2026-senate-polls/new-mexico",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsNJ": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 119,
+          "url": "https://www.270towin.com/2026-senate-polls/new-jersey",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsDE": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 1519,
+          "url": "https://www.270towin.com/2026-senate-polls/delaware",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsRI": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 35,
+          "url": "https://www.270towin.com/2026-senate-polls/rhode-island",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsSC": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 65,
+          "url": "https://www.270towin.com/2026-senate-polls/south-carolina",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsSD": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 35,
+          "url": "https://www.270towin.com/2026-senate-polls/south-dakota",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsOR": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 120,
+          "url": "https://www.270towin.com/2026-senate-polls/oregon",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsOK": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 133,
+          "url": "https://www.270towin.com/2026-senate-polls/oklahoma",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsTX": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 34,
+          "url": "https://www.270towin.com/2026-senate-polls/texas",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsVA": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 42,
+          "url": "https://www.270towin.com/2026-senate-polls/virginia",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsTN": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 120,
+          "url": "https://www.270towin.com/2026-senate-polls/tennessee",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsWY": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 114,
+          "url": "https://www.270towin.com/2026-senate-polls/wyoming",
+          "expected": "text"
+        },
+        "twoSeventyToWinPollsWV": {
+          "health": "OK_PARSED",
+          "ok": true,
+          "status": "OK_PARSED",
+          "httpStatus": 200,
+          "ms": 122,
+          "url": "https://www.270towin.com/2026-senate-polls/west-virginia",
+          "expected": "text"
+        },
+        "twoSeventyToWinRacePolls": {
+          "ok": true,
+          "status": 200,
+          "ms": 2164,
+          "url": "https://www.270towin.com/2026-senate-polls/{state}",
+          "pages": 35,
+          "okPages": 35,
+          "usablePolls": 143,
+          "states": 14
         },
         "fiftyPlusOneSenate": {
           "health": "DISABLED",
@@ -1141,7 +1141,7 @@
           "url": "data/direct-poll-ledger.json"
         }
       },
-      "lastUpdated": "2026-07-03T20:53:45.419Z"
+      "lastUpdated": "2026-07-05T00:13:31.626Z"
     }
   ],
   "warnings": [],

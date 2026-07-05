@@ -8,11 +8,12 @@ import { benchmarkConfiguration, benchmarkFor, benchmarkWarnings, toplineBenchma
 import { blendGenericBallotSources, parsePollfinityGeneric as parseCanonicalPollfinityGeneric, parseUsPollingDataGeneric as parseCanonicalUsPollingDataGeneric, parseVoteHubGeneric as parseCanonicalVoteHubGeneric, readCachedGenericBallot } from "./lib/generic-ballot.mjs";
 import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./forecast-cache.mjs";
 import { applyRatingGuardrail, applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
-import { auditHouseBaselineDistrict, buildHouseBaselineAudit, marginConsistencyCheck } from "./lib/house-baseline-audit.mjs";
+import { auditHouseBaselineDistrict, baselineVerificationStatus, buildHouseBaselineAudit, marginConsistencyCheck } from "./lib/house-baseline-audit.mjs";
 import { applyCurrentMapBaselineAnchor, currentMapBaselineForDistrict, readCurrentMapBaselineMap } from "./lib/house-current-map-baselines.mjs";
 import { readHouseFundamentalsCacheMap } from "./lib/house-input-caches.mjs";
 import { applyPrimarySyncToRace, loadPrimarySyncConfig, primarySyncMap } from "./lib/primary-sync.mjs";
 import { readWikipediaPollingCache, wikipediaPollingSummary } from "./lib/wikipedia-polls.mjs";
+import { candidateFreshnessSummary } from "./lib/candidate-freshness.mjs";
 import {
   buildHouseNationalEnvironment,
   districtElasticity,
@@ -1128,18 +1129,30 @@ function adjustedDistricts(sourceData) {
       contextMargin,
       hasRatingPrior: Boolean(ratingBenchmark || publicRatingFallback.rating)
     });
-    const baselineAnchor = applyCurrentMapBaselineAnchor(
+    const baselineAnchorBase = applyCurrentMapBaselineAnchor(
       sourceBaselineAnchor,
       currentMapBaselineForDistrict(district.id, CURRENT_MAP_BASELINES)
     );
+    const baselineVerification = baselineVerificationStatus({
+      district,
+      baselineAnchor: baselineAnchorBase,
+      mapConflict,
+      redistrictingConfidence: district.redistrictingConfidence,
+      mapVersion: district.mapVersion
+    });
+    const baselineAnchor = { ...baselineAnchorBase, verificationStatus: baselineVerification };
     const baselineConfidence = String(baselineAnchor?.confidence || "").toUpperCase();
     const baselineReliabilityMultiplier = baselineAnchor?.effectiveFor2026 === false
       ? 0
-      : baselineConfidence === "UNVERIFIED"
-        ? 0.5
-        : baselineConfidence === "ESTIMATED"
-          ? 0.85
-          : 1;
+      : baselineVerification === "SCENARIO_CONFLICT"
+        ? 0
+        : baselineVerification === "UNVERIFIED_CURRENT_MAP"
+          ? 0.35
+          : baselineVerification === "CURRENT_MAP_ESTIMATE_LOW_CONFIDENCE"
+            ? 0.55
+            : baselineVerification === "CROSSWALK_HIGH"
+              ? 0.85
+              : 1;
     const baselineMargin = houseStructuralBaselineMargin(baselineAnchor, contextMargin) * MODEL_WEIGHTS.districtBaseline * baselineReliabilityMultiplier;
     const elasticityInfo = districtElasticity({
       district,
@@ -1179,7 +1192,7 @@ function adjustedDistricts(sourceData) {
       fallbackSource: publicRatingFallback.source || "Public district source",
       rawModelMargin: rawProbabilityMargin,
       pollingSummary,
-      fundamentalsQuality: baselineConfidence === "UNVERIFIED" ? "UNVERIFIED" : fundamentalsQuality,
+      fundamentalsQuality: baselineVerification === "VERIFIED" ? fundamentalsQuality : baselineVerification,
       sourceDegraded: Boolean(sourceData.sourceHealth?.degraded),
       mapConflict,
       ratingSourceType: ratingBenchmark?.cacheMeta?.ratingSourceType || null,
@@ -1352,8 +1365,20 @@ function adjustedDistricts(sourceData) {
       totalPollInputsUsed: pollingSummary.totalPollInputsUsed,
       pollingStatus: pollingSummary.pollingStatus,
       forecastMode: pollingSummary.usablePollCount ? "POLL_INFORMED" : "FUNDAMENTALS_ONLY",
+      recommendedMode: baselineAudit.recommendedMode,
       mapVersion: district.mapVersion || "2026 enacted map / 119th Congress geometry",
       baselineReliabilityMultiplier: Number(baselineReliabilityMultiplier.toFixed(2)),
+      baselineConfidence: baselineAudit.baselineConfidence,
+      dataQualityFlags: dataQualityWarnings.map((warning) => warning.type || warning),
+      pollSourceQuality: pollingSummary,
+      benchmarkOutlier: Boolean(benchmarkComparison.benchmarkOutlier || benchmarkComparison.warnings?.length),
+      candidateFreshness: {
+        status: district.primaryPassed && /^(Democrat|Republican)$/i.test(`${district.demCandidate || district.repCandidate || ""}`)
+          ? "PLACEHOLDER_AFTER_PRIMARY"
+          : "OK"
+      },
+      financeStatus: sourceData.fec[district.id]?.financeStatus || (sourceData.fec[district.id] ? "ACTIVE_RACE_LEVEL" : "UNAVAILABLE"),
+      ratingsPriorDistribution: ratingsPrior.priorDistribution || ratingsPrior.sourceRatings || null,
       districtDataSource: sourceData.usingCachedDistricts ? "Cached prior forecast district universe" : (district.ratingSource || "Public district source"),
       lastUpdated: new Date().toISOString(),
       previousResultComparable: Boolean(district.previousResult?.comparable),
@@ -2640,6 +2665,7 @@ async function writeHouseForecast() {
   } : sourceData.sourceHealth;
   const tossupBucketCalibration = houseTossupBucketCalibration(model.districts);
   const houseBaselineAudit = buildHouseBaselineAudit(model.districts);
+  const houseCandidateFreshness = candidateFreshnessSummary(model.districts);
   const toplineCalibration = houseToplineCalibration(model, sourceData, pollingCoverage, toplineComparison, recentered.diagnostic, tossupBucketCalibration);
   const simulationDiagnostics = houseSimulationDiagnostics(model);
   validateDistricts(model.districts, "simulation");
@@ -2690,6 +2716,17 @@ async function writeHouseForecast() {
     houseToplineCalibration: toplineCalibration,
     currentMapBaselineAudit: houseBaselineAudit.summary,
     houseBaselineAudit,
+    baselineStalenessSummary: houseBaselineAudit.summary,
+    candidateFreshnessSummary: houseCandidateFreshness,
+    districtPollingCoverage: pollingCoverage,
+    benchmarkDiffSummary: {
+      status: toplineComparison.warning ? "REVIEW" : "OK",
+      toplineComparison,
+      raceBenchmarkStatus: benchmarkConfiguration()
+    },
+    quarantineSummary: {
+      wikipediaPolling: sourceData.wikipediaPolling?.pollingValidation || null
+    },
     simulationDiagnostics,
     tossupRecenterDiagnostic: recentered.diagnostic,
     tossupBucketCalibration,

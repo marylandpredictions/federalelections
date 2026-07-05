@@ -9,6 +9,8 @@ const POLLING_STATUSES = new Set([
   "PARSE_FAILURE"
 ]);
 
+// VALIDATED is retained only for reading stale pre-migration caches; new
+// validation emits USABLE or one of the explicit non-usable statuses.
 const USABLE_VALIDATION_STATUSES = new Set(["VALIDATED", "USABLE"]);
 const LEGACY_TRUST = new Set(["LEGACY_FALLBACK"]);
 const QUARANTINE_STATUSES = new Set(["QUARANTINED", "STALE_CANDIDATES", "PRIMARY_ONLY", "UNMATCHED_RACE", "SUPERSEDED"]);
@@ -16,6 +18,7 @@ const QUARANTINE_STATUSES = new Set(["QUARANTINED", "STALE_CANDIDATES", "PRIMARY
 function kindForPoll(poll = {}) {
   const status = String(poll.validationStatus || "").toUpperCase();
   const trust = String(poll.sourceTrust || poll.validationTrust || "").toUpperCase();
+  if (status === "LEGACY_FALLBACK") return "legacy";
   if (LEGACY_TRUST.has(trust) || poll.legacy || String(poll.source || "").toLowerCase().includes("legacy")) return "legacy";
   if (QUARANTINE_STATUSES.has(status) || trust === "QUARANTINED" || poll.usedInModel === false) return "quarantined";
   if (poll.legacy || String(poll.source || "").toLowerCase().includes("legacy")) return "legacy";
@@ -36,6 +39,7 @@ export function classifyPollingInputs(polls = [], sourceHealth = {}) {
     staleCandidates: 0,
     primaryOnly: 0,
     unmatchedRace: 0,
+    legacyFallback: 0,
     superseded: 0
   };
   for (const poll of rows) counts[kindForPoll(poll)] += 1;
@@ -46,6 +50,7 @@ export function classifyPollingInputs(polls = [], sourceHealth = {}) {
     if (status === "STALE_CANDIDATES") counts.staleCandidates += 1;
     if (status === "PRIMARY_ONLY") counts.primaryOnly += 1;
     if (status === "UNMATCHED_RACE") counts.unmatchedRace += 1;
+    if (status === "LEGACY_FALLBACK") counts.legacyFallback += 1;
     if (status === "SUPERSEDED") counts.superseded += 1;
   }
   const parseFailure = Object.values(sourceHealth).some((entry) => entry?.health === "PARSE_FAILED");
@@ -70,6 +75,7 @@ export function classifyPollingInputs(polls = [], sourceHealth = {}) {
     staleCandidatePollCount: counts.staleCandidates,
     primaryOnlyPollCount: counts.primaryOnly,
     unmatchedRacePollCount: counts.unmatchedRace,
+    legacyFallbackStatusPollCount: counts.legacyFallback,
     supersededPollCount: counts.superseded,
     totalPollInputsUsed: rows.length,
     pollCount: usablePollCount,

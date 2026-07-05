@@ -143,7 +143,13 @@ assert.equal(staleAnchor.margin, -20, "Diagnostics keep stale baseline data visi
 
 const audit = auditHouseBaselineDistrict({
   id: "UNIT-02",
-  baselineAnchor: { margin: 13, confidence: "VERIFIED", effectiveFor2026: true },
+  baselineAnchor: {
+    margin: 13,
+    confidence: "VERIFIED",
+    effectiveFor2026: true,
+    source: "MIT/MEDSL source-backed current map",
+    mapVersion: "119th current map result"
+  },
   ratingsPrior: { consensusRating: "Safe D", impliedMargin: 24, sourceRatings: [{ source: "Cook", rating: "Safe D", impliedMargin: 24 }] },
   projectedMargin: 18,
   probabilityEngineMargin: 16,
@@ -158,7 +164,13 @@ assert.ok(consistency.flags.includes("PROJECTED_PROBABILITY_DIRECTION_CONFLICT")
 const summary = buildHouseBaselineAudit([
   {
   id: "UNIT-03",
-    baselineAnchor: { margin: 13, confidence: "VERIFIED", effectiveFor2026: true },
+    baselineAnchor: {
+      margin: 13,
+      confidence: "VERIFIED",
+      effectiveFor2026: true,
+      source: "MIT/MEDSL source-backed current map",
+      mapVersion: "119th current map result"
+    },
     ratingsPrior: { consensusRating: "Safe D", impliedMargin: 24 },
     projectedMargin: 18,
     probabilityEngineMargin: 16,

@@ -11,6 +11,8 @@ import { applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./li
 import { readWikipediaPollingCache, wikipediaPollingSummary, wikipediaPollRowsByState } from "./lib/wikipedia-polls.mjs";
 import { buildRaceReview } from "./lib/race-review-diagnostics.mjs";
 import { applyPrimarySyncToRace, loadPrimarySyncConfig, primarySyncMap } from "./lib/primary-sync.mjs";
+import { marginConsistencyCheck } from "./lib/margin-consistency.mjs";
+import { candidateFreshnessSummary } from "./lib/candidate-freshness.mjs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const GOVERNOR_HISTORY_URL = new URL("../data/governor-history.json", import.meta.url);
@@ -1553,6 +1555,12 @@ function buildRace(baseRace, nationalShift, sourceData) {
   const pollingMergeStatus = governorPollingMergeStatus(pollingSummary, governorPoll);
   const pollingWeightDiagnostic = governorPollingWeightDiagnostic(pollingSummary, inputBalance, pollMargin, marginDecomposition);
   const marginDiagnostics = governorMarginFields(projectedMargin, margin, ratingsPrior.impliedMargin ?? projectedMargin);
+  const marginConsistency = marginConsistencyCheck({
+    projectedResultMargin: projectedMargin,
+    probabilityEngineMargin: margin,
+    demProbability,
+    repProbability: 1 - demProbability
+  });
   return {
     ...race,
     displayName: `${STATE_NAMES[race.state]} Governor`,
@@ -1564,9 +1572,25 @@ function buildRace(baseRace, nationalShift, sourceData) {
     preRatingProbabilityMargin: Number(rawProbabilityMargin.toFixed(2)),
     preRatingProjectedMargin: Number(rawProjectedMargin.toFixed(2)),
     ratingsPrior,
+    marginConsistency,
     margins: marginDiagnostics,
     pollingMergeStatus,
     pollingWeightDiagnostic,
+    dataQualityFlags: [
+      ...benchmarkComparison.warnings.map((warning) => warning.type || "benchmark-warning"),
+      ...(ratingsPrior.warnings || []).map((warning) => warning.type || "ratings-prior-warning"),
+      ...marginConsistency.flags
+    ],
+    pollSourceQuality: pollingSummary,
+    baselineConfidence: directGovernorPoll ? "POLL_INFORMED" : "FUNDAMENTALS_LED",
+    benchmarkOutlier: Boolean(benchmarkComparison.benchmarkOutlier || benchmarkComparison.warnings?.length),
+    candidateFreshness: {
+      status: race.primaryPassed && (/^(Democrat|Republican)$/i.test(String(race.dem)) || /^(Democrat|Republican)$/i.test(String(race.rep)))
+        ? "PLACEHOLDER_AFTER_PRIMARY"
+        : "OK"
+    },
+    financeStatus: financeUsed ? "ACTIVE_RACE_LEVEL" : "DISABLED_OR_UNAVAILABLE",
+    ratingsPriorDistribution: ratingsPrior.priorDistribution || ratingsPrior.sourceRatings || null,
     ...marginSplit(projectedMargin, margin, ratingsPrior.impliedMargin ?? projectedMargin),
     inputBalance,
     pollCount: pollingSummary.usablePollCount,
@@ -1962,7 +1986,25 @@ async function buildForecast() {
       modelRepFavoredRaces: repWinningRaceTotal,
       warning: governorBenchmarkWarning
     },
+    benchmarkDiffSummary: {
+      status: governorBenchmarkWarning ? "REVIEW" : "OK",
+      toplineComparison,
+      raceBenchmarkStatus: benchmarkConfiguration()
+    },
     raceBenchmarkStatus: benchmarkConfiguration(),
+    districtPollingCoverage: {
+      races: modeledRaces.length,
+      usablePollRaces: modeledRaces.filter((race) => race.usablePollCount > 0).length,
+      sourceFailureRaces: modeledRaces.filter((race) => race.pollingStatus === "SOURCE_FAILURE").length
+    },
+    candidateFreshnessSummary: candidateFreshnessSummary(modeledRaces),
+    baselineStalenessSummary: {
+      status: "STATEWIDE_BASELINES",
+      note: "Governor baselines use statewide prior-election and structural inputs; district map staleness does not apply."
+    },
+    quarantineSummary: {
+      wikipediaPolling: sourceData.wikipediaPolling?.pollingValidation || null
+    },
     sourceSummary: {
       genericBallotMargin: senateSignals.genericBallotMargin,
       gubernatorialNationalShift: Number(nationalShift.toFixed(2)),

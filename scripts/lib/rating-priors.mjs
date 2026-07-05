@@ -522,7 +522,16 @@ export function applyRatingGuardrail(margin, prior) {
       sources: prior?.sourceRatings || []
     };
   }
-  const limited = softGuardrailPenalty(value, prior);
+  const limitedBase = softGuardrailPenalty(value, prior);
+  const tossupCategoryLimit = prior.consensusRating === "Toss-up" && Math.abs(limitedBase.margin) > 2.99;
+  const limited = tossupCategoryLimit
+    ? {
+      ...limitedBase,
+      margin: Math.sign(limitedBase.margin || value) * 2.99,
+      triggered: true,
+      reason: `${limitedBase.reason}:TOSSUP_CATEGORY_LIMIT`
+    }
+    : limitedBase;
   const raw = Number(prior.rawModelMargin);
   const divergence = Number.isFinite(raw) && Number.isFinite(Number(prior.impliedMargin))
     ? Math.abs(raw - Number(prior.impliedMargin))
@@ -555,7 +564,7 @@ export function applyRatingGuardrail(margin, prior) {
       crossesRatingParty,
       categoryDistance: distance,
       rawRatingDivergence: Number.isFinite(divergence) ? Number(divergence.toFixed(2)) : null,
-      categoryLimitApplied: false,
+      categoryLimitApplied: tossupCategoryLimit,
       softPenaltyApplied: limited.triggered
     }
   };

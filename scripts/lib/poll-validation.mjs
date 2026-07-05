@@ -3,12 +3,12 @@ import { readFileSync } from "node:fs";
 const TRUST_CONFIG_URL = new URL("../../data/model-config/poll-source-trust-2026.json", import.meta.url);
 
 export const POLL_VALIDATION_STATUSES = {
-  VALIDATED: "VALIDATED",
   USABLE: "USABLE",
   QUARANTINED: "QUARANTINED",
   STALE_CANDIDATES: "STALE_CANDIDATES",
   PRIMARY_ONLY: "PRIMARY_ONLY",
   UNMATCHED_RACE: "UNMATCHED_RACE",
+  LEGACY_FALLBACK: "LEGACY_FALLBACK",
   SUPERSEDED: "SUPERSEDED"
 };
 
@@ -20,7 +20,7 @@ export const SOURCE_TRUST_LEVELS = {
   LEGACY_FALLBACK: "LEGACY_FALLBACK"
 };
 
-const USABLE_STATUSES = new Set([POLL_VALIDATION_STATUSES.VALIDATED, POLL_VALIDATION_STATUSES.USABLE]);
+const USABLE_STATUSES = new Set([POLL_VALIDATION_STATUSES.USABLE]);
 
 const VALID_STATES = new Set([
   "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
@@ -85,10 +85,10 @@ export function loadPollSourceTrustConfig() {
 export function sourceTrustFor(source, config = loadPollSourceTrustConfig()) {
   const direct = sourceKeyFrom(source);
   const aliased = config.aliases?.[direct] || direct;
-  const row = config.sources?.[aliased] || {};
+  const row = config.sources?.[aliased] || config.default || {};
   return {
     sourceKey: aliased || direct || "unknown",
-    sourceTrust: row.trust || row.sourceTrust || SOURCE_TRUST_LEVELS.LEGACY_FALLBACK,
+    sourceTrust: row.trust || row.sourceTrust || SOURCE_TRUST_LEVELS.QUARANTINED,
     sourceLabel: row.label || source || aliased || "Unknown source",
     notes: row.notes || ""
   };
@@ -132,6 +132,14 @@ export function validatePollRow(row = {}, {
 } = {}) {
   const rejectionReasons = [];
   const trust = sourceTrustFor(sourceKey, trustConfig);
+  const manualVerified = row.manual === true
+    && !row.legacy
+    && !row.staleCandidates
+    && !row.unmatchedRace
+    && !row.superseded
+    && !quarantine
+    && trust.sourceTrust === SOURCE_TRUST_LEVELS.QUARANTINED;
+  const sourceTrust = manualVerified ? SOURCE_TRUST_LEVELS.MANUAL_VERIFIED : (row.sourceTrust || trust.sourceTrust);
   const normalized = {
     ...row,
     office: normalizedOffice(row, office),
@@ -139,8 +147,9 @@ export function validatePollRow(row = {}, {
     tableType: normalizedTableType(row),
     source,
     sourceKey: trust.sourceKey,
-    sourceTrust: row.sourceTrust || trust.sourceTrust,
-    validationTrust: row.validationTrust || trust.sourceTrust
+    sourceLabel: trust.sourceLabel,
+    sourceTrust,
+    validationTrust: row.validationTrust || sourceTrust
   };
 
   if (!VALID_OFFICES.has(normalized.office)) rejectionReasons.push("INVALID_OFFICE");
@@ -186,15 +195,12 @@ export function validatePollRow(row = {}, {
   if (quarantine) rejectionReasons.push(quarantineReason);
 
   const accepted = rejectionReasons.length === 0;
-  let validationStatus = accepted
-    ? (normalized.sourceTrust === SOURCE_TRUST_LEVELS.TRUSTED_STRUCTURED || normalized.sourceTrust === SOURCE_TRUST_LEVELS.MANUAL_VERIFIED
-      ? POLL_VALIDATION_STATUSES.VALIDATED
-      : POLL_VALIDATION_STATUSES.USABLE)
-    : POLL_VALIDATION_STATUSES.QUARANTINED;
+  let validationStatus = accepted ? POLL_VALIDATION_STATUSES.USABLE : POLL_VALIDATION_STATUSES.QUARANTINED;
   if (!accepted) {
     if (rejectionReasons.includes("PRIMARY_POLL_NOT_ALLOWED_FOR_GENERAL_FORECAST")) validationStatus = POLL_VALIDATION_STATUSES.PRIMARY_ONLY;
     else if (rejectionReasons.includes("STALE_CANDIDATES")) validationStatus = POLL_VALIDATION_STATUSES.STALE_CANDIDATES;
     else if (rejectionReasons.includes("UNMATCHED_RACE")) validationStatus = POLL_VALIDATION_STATUSES.UNMATCHED_RACE;
+    else if (rejectionReasons.includes("LEGACY_FALLBACK_NOT_MODEL_USABLE")) validationStatus = POLL_VALIDATION_STATUSES.LEGACY_FALLBACK;
     else if (rejectionReasons.includes("SUPERSEDED_BY_NEWER_ROW")) validationStatus = POLL_VALIDATION_STATUSES.SUPERSEDED;
   }
   return {
@@ -224,9 +230,28 @@ export function pollingValidationSummary({ rawRows = [], usableRows = [], reject
   const rejectionReasons = {};
   const statuses = {};
   const sourceTrust = {};
+  const bySource = {};
+  const byRace = {};
   for (const row of rawRows) {
-    statuses[row.validationStatus || "UNKNOWN"] = (statuses[row.validationStatus || "UNKNOWN"] || 0) + 1;
-    sourceTrust[row.sourceTrust || row.validationTrust || "UNKNOWN"] = (sourceTrust[row.sourceTrust || row.validationTrust || "UNKNOWN"] || 0) + 1;
+    const status = row.validationStatus || "UNKNOWN";
+    const trust = row.sourceTrust || row.validationTrust || "UNKNOWN";
+    const source = row.sourceLabel || row.source || row.sourceKey || "Unknown source";
+    const race = row.raceId || row.district || row.state || "UNKNOWN_RACE";
+    statuses[status] = (statuses[status] || 0) + 1;
+    sourceTrust[trust] = (sourceTrust[trust] || 0) + 1;
+    bySource[source] = bySource[source] || { rawRows: 0, usableRows: 0, rejectedRows: 0, byValidationStatus: {} };
+    bySource[source].rawRows += 1;
+    bySource[source].byValidationStatus[status] = (bySource[source].byValidationStatus[status] || 0) + 1;
+    byRace[race] = byRace[race] || { rawRows: 0, usableRows: 0, rejectedRows: 0, byValidationStatus: {} };
+    byRace[race].rawRows += 1;
+    byRace[race].byValidationStatus[status] = (byRace[race].byValidationStatus[status] || 0) + 1;
+    if (USABLE_STATUSES.has(status) && row.usedInModel) {
+      bySource[source].usableRows += 1;
+      byRace[race].usableRows += 1;
+    } else {
+      bySource[source].rejectedRows += 1;
+      byRace[race].rejectedRows += 1;
+    }
   }
   for (const row of rejectedRows) {
     for (const reason of row.rejectionReasons || ["UNKNOWN_REJECTION"]) {
@@ -240,7 +265,10 @@ export function pollingValidationSummary({ rawRows = [], usableRows = [], reject
     usedInModel: usableRows.length > 0,
     rejectionReasons,
     statuses,
-    sourceTrust
+    byValidationStatus: statuses,
+    sourceTrust,
+    bySource,
+    byRace
   };
 }
 

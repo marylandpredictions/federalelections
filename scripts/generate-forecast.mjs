@@ -11,6 +11,8 @@ import { applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./li
 import { readWikipediaPollingCache, wikipediaPollingSummary, wikipediaPollRowsByState } from "./lib/wikipedia-polls.mjs";
 import { buildRaceReview } from "./lib/race-review-diagnostics.mjs";
 import { applyPrimarySyncToRace, loadPrimarySyncConfig, primarySyncMap } from "./lib/primary-sync.mjs";
+import { marginConsistencyCheck } from "./lib/margin-consistency.mjs";
+import { candidateFreshnessSummary } from "./lib/candidate-freshness.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const SENATE_RACE_REVIEW_URL = new URL("../data/diagnostics/senate-race-review-2026.json", import.meta.url);
@@ -1540,6 +1542,12 @@ function runModel(sourceData) {
       ratings: ratingsPrior.inputWeight
     });
     const marginDiagnostics = senateMarginFields(projectedMargin, margin, ratingsPrior.impliedMargin ?? projectedMargin);
+    const marginConsistency = marginConsistencyCheck({
+      projectedResultMargin: projectedMargin,
+      probabilityEngineMargin: margin,
+      demProbability,
+      repProbability: 1 - demProbability
+    });
     const pollingWeightDiagnostic = senatePollingWeightDiagnostic(pollSignal, inputBalance, marginDecomposition);
     const candidateException = senateCandidateExceptionDiagnostic(withComposition, pollSignal, projectedMargin);
     return {
@@ -1552,6 +1560,7 @@ function runModel(sourceData) {
       preRatingProbabilityMargin: Number(rawProbabilityMargin.toFixed(2)),
       preRatingProjectedMargin: Number(rawProjectedMargin.toFixed(2)),
       ratingsPrior,
+      marginConsistency,
       margins: marginDiagnostics,
       pollingWeightDiagnostic,
       candidateException,
@@ -1584,7 +1593,30 @@ function runModel(sourceData) {
       lastUpdated: new Date().toISOString(),
       marginDecomposition,
       benchmarkComparison,
-      dataQualityWarnings: [...benchmarkComparison.warnings, ...(ratingsPrior.warnings || []), largeShiftWarning?.message, pollingStatusWarning(withComposition.pollingSummary)].filter(Boolean),
+      dataQualityWarnings: [
+        ...benchmarkComparison.warnings,
+        ...(ratingsPrior.warnings || []),
+        largeShiftWarning?.message,
+        pollingStatusWarning(withComposition.pollingSummary),
+        ...marginConsistency.flags.map((flag) => ({
+          severity: "high",
+          type: flag.toLowerCase().replaceAll("_", "-"),
+          message: `${withComposition.state}: projected-result margin and probability-engine margin need review.`
+        }))
+      ].filter(Boolean),
+      dataQualityFlags: [
+        ...benchmarkComparison.warnings.map((warning) => warning.type || "benchmark-warning"),
+        ...(ratingsPrior.warnings || []).map((warning) => warning.type || "ratings-prior-warning"),
+        ...marginConsistency.flags
+      ],
+      pollSourceQuality: pollSignal || withComposition.pollingSummary,
+      baselineConfidence: quality?.dataConfidence || "UNKNOWN",
+      benchmarkOutlier: Boolean(benchmarkComparison.benchmarkOutlier || benchmarkComparison.warnings?.length),
+      candidateFreshness: {
+        status: matchupStatus === "PRIMARY_UNRESOLVED" && withComposition.primaryPassed ? "PLACEHOLDER_AFTER_PRIMARY" : "OK"
+      },
+      financeStatus: sourceData.fec[withComposition.state]?.financeStatus || (sourceData.fec[withComposition.state] ? "ACTIVE_RACE_LEVEL" : "UNAVAILABLE"),
+      ratingsPriorDistribution: ratingsPrior.priorDistribution || ratingsPrior.sourceRatings || null,
       uncertaintyAdjustment: uncertainty,
       primaryEvents: primaryEventsForRace(withCandidates),
       primaryRisk: primaryRisk(race),
@@ -3110,7 +3142,25 @@ async function writeForecast() {
     ...cacheFreshness,
     canonicalGenericBallot: sourceData.canonicalGenericBallot,
     benchmarkComparison: toplineComparison,
+    benchmarkDiffSummary: {
+      status: toplineComparison.warning ? "REVIEW" : "OK",
+      toplineComparison,
+      raceBenchmarkStatus: benchmarkConfiguration()
+    },
     raceBenchmarkStatus: benchmarkConfiguration(),
+    districtPollingCoverage: {
+      races: model.races.length,
+      usablePollRaces: model.races.filter((race) => race.usablePollCount > 0).length,
+      sourceFailureRaces: model.races.filter((race) => race.pollingStatus === "SOURCE_FAILURE").length
+    },
+    candidateFreshnessSummary: candidateFreshnessSummary(model.races),
+    baselineStalenessSummary: {
+      status: "STATEWIDE_BASELINES",
+      note: "Senate baselines use statewide prior-election and structural inputs rather than district map crosswalks."
+    },
+    quarantineSummary: {
+      wikipediaPolling: sourceData.wikipediaPolling?.pollingValidation || null
+    },
     sourceSummary: {
       votehub: sourceData.votehub,
       genericPolling: sourceData.genericPolling,

@@ -35,6 +35,13 @@ function write(relativePath, payload) {
   console.log(`cache/${relativePath}`);
 }
 
+function finiteNumber(value) {
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  if (value === null || value === undefined || value === "") return null;
+  const parsed = Number(String(value).replace(/,/g, "").trim());
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 async function fetchText(url, label) {
   const started = Date.now();
   try {
@@ -122,16 +129,39 @@ function racePollRows(model, collectionName) {
       || race.pollSignal?.pollEntries
       || race.sourceInputs?.pollingLedger?.rows
       || [];
-    return (Array.isArray(pollRows) ? pollRows : []).map((poll) => ({
-      raceId: race.id || `${race.state}-${race.office || "race"}-2026`,
-      state: race.state || null,
-      pollster: poll.pollster || poll.source || null,
-      source: poll.source || null,
-      endDate: poll.endDate || poll.date || null,
-      margin: Number.isFinite(Number(poll.margin)) ? Number(poll.margin) : null,
-      sampleSize: Number.isFinite(Number(poll.sampleSize)) ? Number(poll.sampleSize) : null,
-      population: poll.population || null
-    }));
+    return (Array.isArray(pollRows) ? pollRows : []).map((poll) => {
+      const demPct = finiteNumber(poll.demPct);
+      const repPct = finiteNumber(poll.repPct);
+      const candidates = Array.isArray(poll.candidates) && poll.candidates.length
+        ? poll.candidates
+        : Number.isFinite(demPct) && Number.isFinite(repPct)
+          ? [
+              { name: poll.demCandidate || race.demCandidate || race.dem || "Democrat", party: "D", pct: demPct },
+              { name: poll.repCandidate || race.repCandidate || race.rep || "Republican", party: "R", pct: repPct }
+            ]
+          : [];
+      return {
+        raceId: race.id || `${race.state}-${race.office || "race"}-2026`,
+        state: race.state || null,
+        district: race.id || race.district || null,
+        pollster: poll.pollster || poll.source || null,
+        source: poll.source || null,
+        sourceUrl: poll.sourceUrl || poll.url || race.sourceInputs?.pollSourceUrls?.[0] || null,
+        startDate: poll.startDate || null,
+        endDate: poll.endDate || poll.date || null,
+        tableType: poll.tableType || "INDIVIDUAL_GENERAL_ELECTION_POLL",
+        margin: finiteNumber(poll.margin),
+        sampleSize: finiteNumber(poll.sampleSize),
+        population: poll.population || null,
+        candidates,
+        candidateMatchConfidence: poll.candidateMatchConfidence || null,
+        manual: Boolean(poll.manual),
+        legacy: Boolean(poll.legacy),
+        staleCandidates: Boolean(poll.staleCandidates),
+        unmatchedRace: Boolean(poll.unmatchedRace),
+        superseded: Boolean(poll.superseded)
+      };
+    });
   });
 }
 
