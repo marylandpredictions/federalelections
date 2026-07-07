@@ -4,10 +4,11 @@
   "description": "Dynamic expert-rating soft-prior weights for 2026 forecast models. Ratings are not hard locks; they pull the probability engine and displayed margin toward public expert consensus only when race-specific inputs are thin.",
   "offices": {
     "house": {
-      "noPollingWeakFundamentals": 0.4,
-      "noPollingDerivedFundamentals": 0.4,
+      "noPollingWeakFundamentals": 0.55,
+      "noPollingDerivedFundamentals": 0.58,
       "noPollingStrongFundamentals": 0.25,
-      "noPollingUnverifiedFundamentals": 0.4,
+      "noPollingUnverifiedFundamentals": 0.68,
+      "noPollingMapAmbiguous": 0.68,
       "pollInformed": 0.12,
       "wellPolled": 0.06,
       "inferredSafeRating": 0.15,

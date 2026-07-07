@@ -39,6 +39,7 @@ import {
   parseCookHouseRatings,
   readManualVoteHubRatings
 } from "./lib/house-input-caches.mjs";
+import { baselineTrustFor } from "./lib/house-baseline-trust.mjs";
 import { parseWikipediaPollingPage } from "./lib/wikipedia-polls.mjs";
 
 function response(status, ok = status >= 200 && status < 300) {
@@ -151,6 +152,22 @@ assert.equal(mapConflictPrior.enabled, false);
 assert.equal(mapConflictPrior.usedAs, "COMPARISON_ONLY_MAP_CONFLICT");
 assert.equal(applyRatingPrior(4, mapConflictPrior, 1), 4);
 
+const mapAmbiguousPrior = buildRatingPrior({
+  office: "house",
+  raceId: "UNIT-MAP-AMBIGUOUS-2026",
+  benchmark: { cook: { rating: "Lean D" } },
+  rawModelMargin: -4,
+  mapConflict: true,
+  mapAmbiguous: true,
+  fundamentalsQuality: "CURRENT_MAP_ESTIMATE_LOW_CONFIDENCE",
+  pollingSummary: { pollCount: 0 },
+  ratingSourceType: "EXTERNAL_RATING"
+});
+assert.equal(mapAmbiguousPrior.enabled, true);
+assert.equal(mapAmbiguousPrior.guardrailEligible, true);
+assert.ok(mapAmbiguousPrior.weight >= 0.68, "Map-ambiguous no-poll House races should be ratings-heavy.");
+assert.equal(mapAmbiguousPrior.usedAs, "PRIOR_DOMINANT_AND_GUARDRAIL");
+
 const polledSenatePrior = buildRatingPrior({
   office: "senate",
   raceId: "GA-SEN-2026",
@@ -170,6 +187,17 @@ const formulaPrior = buildRatingPrior({
 assert.equal(formulaPrior.crossRatingBoost > 0, true);
 assert.equal(formulaPrior.guardrailEligible, true);
 assert.ok(applyRatingPrior(-4, formulaPrior, 1) > 0, "Cross-party no-poll rating prior should pull the margin across zero.");
+
+const unavailableTrust = baselineTrustFor({
+  district: "CA-48",
+  baselineMargin: -18.6,
+  confidence: "VERIFIED",
+  mapVersion: "2024 certified district result baseline; 2026 map crosswalk unavailable"
+});
+assert.equal(unavailableTrust.crosswalkAvailable, false);
+assert.equal(unavailableTrust.mapComparable, false);
+assert.equal(unavailableTrust.effectiveFor2026, false);
+assert.notEqual(unavailableTrust.confidence, "VERIFIED");
 
 assert.equal(ratingSourceWeight("cook"), 1);
 assert.equal(ratingSourceWeight("voteHub", "AGGREGATOR_TABLE"), 0.6);
@@ -216,6 +244,7 @@ const leanDGuardrailPrior = buildRatingPrior({
 });
 const leanDGuarded = applyRatingGuardrail(applyRatingPrior(-20, leanDGuardrailPrior, 1), leanDGuardrailPrior);
 assert.equal(leanDGuarded.triggered, true);
+assert.ok(["soft-penalty", "prior-dominant", "hard-stop"].includes(leanDGuarded.guardrailMode));
 assert.ok(leanDGuarded.margin > -3);
 
 const tossupGuardrailPrior = buildRatingPrior({
@@ -229,6 +258,7 @@ const tossupGuardrailPrior = buildRatingPrior({
 });
 const tossupGuarded = applyRatingGuardrail(applyRatingPrior(9, tossupGuardrailPrior, 1), tossupGuardrailPrior);
 assert.equal(tossupGuarded.triggered, true);
+assert.ok(["soft-penalty", "prior-dominant", "hard-stop"].includes(tossupGuarded.guardrailMode));
 assert.ok(tossupGuarded.margin <= 2.99);
 
 const inferredSafePrior = buildRatingPrior({

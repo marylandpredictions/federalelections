@@ -1133,6 +1133,11 @@ function adjustedDistricts(sourceData) {
       sourceBaselineAnchor,
       currentMapBaselineForDistrict(district.id, CURRENT_MAP_BASELINES)
     );
+    const mapAmbiguous = Boolean(
+      baselineAnchorBase?.mapComparable === false
+      || baselineAnchorBase?.crosswalkAvailable === false
+      || baselineAnchorBase?.useAsHistoricalContextOnly === true
+    );
     const baselineVerification = baselineVerificationStatus({
       district,
       baselineAnchor: baselineAnchorBase,
@@ -1142,10 +1147,15 @@ function adjustedDistricts(sourceData) {
     });
     const baselineAnchor = { ...baselineAnchorBase, verificationStatus: baselineVerification };
     const baselineConfidence = String(baselineAnchor?.confidence || "").toUpperCase();
+    const trustWeight = Number(baselineAnchor?.baselineEffectiveWeight);
     const baselineReliabilityMultiplier = baselineAnchor?.effectiveFor2026 === false
+      || baselineAnchor?.mapComparable === false
+      || baselineAnchor?.crosswalkAvailable === false
       ? 0
       : baselineVerification === "SCENARIO_CONFLICT"
         ? 0
+        : Number.isFinite(trustWeight)
+          ? clamp(trustWeight, 0, 1)
         : baselineVerification === "UNVERIFIED_CURRENT_MAP"
           ? 0.35
           : baselineVerification === "CURRENT_MAP_ESTIMATE_LOW_CONFIDENCE"
@@ -1192,9 +1202,10 @@ function adjustedDistricts(sourceData) {
       fallbackSource: publicRatingFallback.source || "Public district source",
       rawModelMargin: rawProbabilityMargin,
       pollingSummary,
-      fundamentalsQuality: baselineVerification === "VERIFIED" ? fundamentalsQuality : baselineVerification,
+      fundamentalsQuality: mapAmbiguous ? baselineVerification : baselineVerification === "VERIFIED" ? fundamentalsQuality : baselineVerification,
       sourceDegraded: Boolean(sourceData.sourceHealth?.degraded),
       mapConflict,
+      mapAmbiguous,
       ratingSourceType: ratingBenchmark?.cacheMeta?.ratingSourceType || null,
       config: RATING_WEIGHT_CONFIG
     });
@@ -1222,11 +1233,16 @@ function adjustedDistricts(sourceData) {
         baselineConflictFlags.has("BASELINE_DIRECTION_CONFLICT")
         || baselineConflictFlags.has("BASELINE_MISSING")
         || baselineConflictFlags.has("UNVERIFIED_CURRENT_MAP")
+        || baselineConflictFlags.has("CURRENT_MAP_ESTIMATE_LOW_CONFIDENCE")
         || baselineConflictFlags.has("RATING_PRIOR_TOO_WEAK")
       )
     ) {
-      const minimumWeight = baselineConflictFlags.has("BASELINE_DIRECTION_CONFLICT") ? 0.55 : 0.4;
-      const boostedWeight = Math.min(0.75, Math.max(Number(rawRatingsPrior.weight || 0), minimumWeight));
+      const minimumWeight = baselineConflictFlags.has("BASELINE_DIRECTION_CONFLICT")
+        ? 0.75
+        : (baselineConflictFlags.has("BASELINE_MISSING") || baselineConflictFlags.has("UNVERIFIED_CURRENT_MAP") || baselineConflictFlags.has("CURRENT_MAP_ESTIMATE_LOW_CONFIDENCE"))
+          ? 0.68
+          : 0.55;
+      const boostedWeight = Math.min(0.88, Math.max(Number(rawRatingsPrior.weight || 0), minimumWeight));
       const impliedMargin = Number(rawRatingsPrior.impliedMargin);
       const rawPriorMargin = Number(rawRatingsPrior.rawModelMargin ?? rawProbabilityMargin);
       const ratingPull = Number.isFinite(rawPriorMargin) && Number.isFinite(impliedMargin)
@@ -1235,10 +1251,12 @@ function adjustedDistricts(sourceData) {
       ratingsPrior = {
         ...rawRatingsPrior,
         weight: Number(boostedWeight.toFixed(3)),
+        baseWeight: Number(Math.max(Number(rawRatingsPrior.baseWeight || 0), minimumWeight).toFixed(3)),
         finalWeight: Number(boostedWeight.toFixed(3)),
         inputWeight: Number((boostedWeight * 100).toFixed(1)),
         ratingPull: Number(ratingPull.toFixed(2)),
-        ratingsHeavy: boostedWeight >= 0.35,
+        ratingsHeavy: boostedWeight >= 0.5,
+        usedAs: boostedWeight >= 0.65 ? "PRIOR_DOMINANT_AND_GUARDRAIL" : rawRatingsPrior.usedAs,
         reason: `${rawRatingsPrior.reason || "External ratings prior retained."} Baseline audit increased ratings-prior weight.`,
         auditFlags: preBaselineAudit.auditFlags || [],
         warnings: [
@@ -1277,7 +1295,10 @@ function adjustedDistricts(sourceData) {
     };
     const raceSourceHealth = houseRaceSourceHealth({ sourceData, pollingSummary, fundamentalsPrior, ratingsPrior, mapConflict });
     const historicalComparison = houseHistoricalComparison(district, projectedMargin, realisticDistrictBaseline(district, contextMargin), districtPollSignal, marketSignal);
-    const error = houseRaceError(district, contextMargin, nomination, districtPollSignal);
+    const error = calibratedHouseRaceError(
+      houseRaceError(district, contextMargin, nomination, districtPollSignal),
+      { district, ratingsPrior, baselineAnchor, pollSignal: districtPollSignal, baselineVerification }
+    );
     const demProbability = logistic(probabilityMargin, error);
     const { sourceRating: _legacySourceRating, ...districtWithoutLegacyRating } = district;
     const modelRating = ratingFromMargin(projectedMargin);
@@ -2031,6 +2052,38 @@ function houseRaceError(district, contextMargin, nomination, pollSignal = null) 
   const pollingCertainty = pollSignal ? Math.min(.9, .22 + Math.log1p(pollSignal.pollCount || 0) * .18 + (pollSignal.pollsters || 0) * .06) : 0;
   const disagreementPenalty = pollSignal ? Math.min(1.2, (pollSignal.disagreement || 0) * .16) : 0;
   return clamp(9.2 - structuralCertainty - pollingCertainty + disagreementPenalty + openSeatUncertainty + (nomination.errorAdjustment || 0), 5.2, 11.5);
+}
+
+function ratingRankForError(rating) {
+  const text = String(rating || "").toLowerCase();
+  if (text.includes("safe") || text.includes("solid")) return 4;
+  if (text.includes("likely")) return 3;
+  if (text.includes("lean")) return 2;
+  if (text.includes("tilt")) return 1;
+  if (text.includes("toss")) return 0;
+  return null;
+}
+
+function calibratedHouseRaceError(baseError, { district, ratingsPrior, baselineAnchor, pollSignal, baselineVerification }) {
+  let error = Number(baseError);
+  if (!Number.isFinite(error)) return 9.2;
+  const ratingRank = ratingRankForError(ratingsPrior?.consensusRating);
+  const noUsablePolls = !pollSignal || Number(pollSignal.pollCount || 0) <= 0;
+  if (noUsablePolls && ratingsPrior?.enabled && ratingsPrior?.ratingsHeavy && Number.isFinite(ratingRank)) {
+    if (ratingRank >= 4) error -= 1.05;
+    else if (ratingRank >= 3) error -= .8;
+    else if (ratingRank >= 2) error -= .45;
+  }
+  if (noUsablePolls && ratingsPrior?.guardrailEligible && ratingsPrior?.usedAs === "PRIOR_DOMINANT_AND_GUARDRAIL") {
+    error -= .25;
+  }
+  if (baselineAnchor?.mapComparable === false || baselineAnchor?.crosswalkAvailable === false || baselineVerification === "CURRENT_MAP_ESTIMATE_LOW_CONFIDENCE") {
+    error += .35;
+  }
+  if (district?.redistrictingConfidence === "CONFLICTING_SOURCES") {
+    error += .65;
+  }
+  return clamp(error, 4.8, 11.5);
 }
 
 function houseMarketSignal(district, error) {

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "2026.house-baseline-trust.1",
+  "updatedAt": "2026-07-06",
+  "description": "Trust policy for using House current-map baselines. A historical district result is not model-effective unless a current-map crosswalk or same-boundary source is explicit.",
+  "defaultPolicy": {
+    "crosswalkUnavailableIsHistoricalOnly": true,
+    "unverifiedBaselineEffectiveWeight": 0,
+    "lowConfidenceBaselineEffectiveWeight": 0.15,
+    "verifiedBaselineEffectiveWeight": 1
+  },
+  "signals": {
+    "crosswalkUnavailable": [
+      "crosswalk unavailable",
+      "no current-map crosswalk",
+      "crosswalk missing",
+      "pre-redistrict",
+      "old district",
+      "prior district result"
+    ],
+    "explicitlyVerified": [
+      "manual_override",
+      "manual override",
+      "block-level",
+      "precinct-level",
+      "current-map certified",
+      "same-shape",
+      "unchanged district",
+      "119th current map result"
+    ],
+    "materialUncertainty": [
+      "estimated",
+      "reconstructed",
+      "low confidence",
+      "unknown",
+      "material uncertainty"
+    ]
+  },
+  "districtOverrides": {}
+}

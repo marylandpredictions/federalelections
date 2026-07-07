@@ -19,6 +19,29 @@ for (const office of OFFICES) {
   }
 }
 
+try {
+  const payload = JSON.parse(readFileSync(new URL("../data/cache/benchmarks/public-models-2026.json", import.meta.url), "utf8"));
+  if (!payload.topline || typeof payload.topline !== "object") {
+    console.error("Public benchmark cache is missing topline rows.");
+    failures += 1;
+  }
+  for (const office of OFFICES) {
+    const row = payload.topline?.[office];
+    if (!row) {
+      console.error(`Public benchmark cache is missing ${office}.`);
+      failures += 1;
+      continue;
+    }
+    if (!row.releaseGate || !["OK", "WARN_REVIEW", "BLOCK_REVIEW"].includes(row.releaseGate.releaseStatus)) {
+      console.error(`Public benchmark cache has malformed release gate for ${office}.`);
+      failures += 1;
+    }
+  }
+} catch (error) {
+  console.error(`Missing public benchmark cache: ${error.message}`);
+  failures += 1;
+}
+
 if (failures) process.exit(1);
 console.log("Benchmark alignment diagnostics are present and well-formed.");
 

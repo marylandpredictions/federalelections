@@ -259,7 +259,16 @@ function dynamicWeight({ office, pollingSummary, fundamentalsQuality, sourceDegr
   const polls = pollingCount(pollingSummary);
   const normalizedFundamentals = String(fundamentalsQuality || "").toUpperCase();
   const derivedFundamentals = normalizedFundamentals === "DERIVED_FROM_PRIOR_FORECAST";
-  const weakFundamentals = sourceDegraded || ["WEAK", "LOW", "DEGRADED", "MISSING", "DERIVED_FROM_PRIOR_FORECAST"].includes(normalizedFundamentals);
+  const weakFundamentals = sourceDegraded || [
+    "WEAK",
+    "LOW",
+    "LOW_CONFIDENCE",
+    "DEGRADED",
+    "MISSING",
+    "DERIVED_FROM_PRIOR_FORECAST",
+    "UNVERIFIED_CURRENT_MAP",
+    "CURRENT_MAP_ESTIMATE_LOW_CONFIDENCE"
+  ].includes(normalizedFundamentals);
   if (mapConflict || ratingSourceType === "MAP_CONFLICT_RATING_DISABLED") {
     return { weight: rangeMidpoint(officeConfig.mapConflict, 0), reasonKey: "map-conflict", polls, weakFundamentals, derivedFundamentals };
   }
@@ -275,8 +284,8 @@ function dynamicWeight({ office, pollingSummary, fundamentalsQuality, sourceDegr
   if (derivedFundamentals) {
     return { weight: rangeMidpoint(officeConfig.noPollingDerivedFundamentals ?? officeConfig.noPollingWeakFundamentals, office === "house" ? 0.5 : 0.275), reasonKey: "no-polling-derived-fundamentals", polls, weakFundamentals, derivedFundamentals };
   }
-  if (normalizedFundamentals === "UNVERIFIED" || normalizedFundamentals === "UNKNOWN") {
-    return { weight: rangeMidpoint(officeConfig.noPollingUnverifiedFundamentals ?? officeConfig.noPollingWeakFundamentals, office === "house" ? 0.4 : 0.16), reasonKey: "no-polling-unverified-fundamentals", polls, weakFundamentals, derivedFundamentals };
+  if (["UNVERIFIED", "UNKNOWN", "UNVERIFIED_CURRENT_MAP", "CURRENT_MAP_ESTIMATE_LOW_CONFIDENCE", "LOW_CONFIDENCE"].includes(normalizedFundamentals)) {
+    return { weight: rangeMidpoint(officeConfig.noPollingUnverifiedFundamentals ?? officeConfig.noPollingWeakFundamentals, office === "house" ? 0.68 : 0.16), reasonKey: "no-polling-unverified-fundamentals", polls, weakFundamentals, derivedFundamentals };
   }
   if (weakFundamentals) {
     return { weight: rangeMidpoint(officeConfig.noPollingWeakFundamentals, office === "house" ? 0.45 : 0.275), reasonKey: "no-polling-weak-fundamentals", polls, weakFundamentals, derivedFundamentals };
@@ -341,6 +350,7 @@ export function buildRatingPrior({
   fundamentalsQuality = "MEDIUM",
   sourceDegraded = false,
   mapConflict = false,
+  mapAmbiguous = false,
   scenarioMatched = false,
   ratingSourceType = benchmark?.cacheMeta?.ratingSourceType || null,
   config = loadRatingWeightConfig()
@@ -369,7 +379,8 @@ export function buildRatingPrior({
   }
   const priorDistribution = ratingPriorDistribution(consensus);
 
-  if (mapConflict && !scenarioMatched) {
+  const disableForMapConflict = mapConflict && !scenarioMatched && !mapAmbiguous;
+  if (disableForMapConflict) {
     return {
       enabled: false,
       weight: 0,
@@ -395,12 +406,15 @@ export function buildRatingPrior({
   }
 
   const normalizedRatingSourceType = ratingSourceType || (fallbackSource && /inferred/i.test(fallbackSource) ? "INFERRED_SAFE_RATING" : "EXTERNAL_RATING");
-  const dynamic = dynamicWeight({ office, pollingSummary, fundamentalsQuality, sourceDegraded, ratingSourceType: normalizedRatingSourceType, mapConflict, config });
+  const dynamic = dynamicWeight({ office, pollingSummary, fundamentalsQuality, sourceDegraded, ratingSourceType: normalizedRatingSourceType, mapConflict: disableForMapConflict, config });
   let weight = dynamic.weight;
+  if (office === "house" && dynamic.polls === 0 && mapAmbiguous && normalizedRatingSourceType !== "INFERRED_SAFE_RATING") {
+    weight = Math.max(weight, Number(config.offices?.house?.noPollingMapAmbiguous ?? 0.68));
+  }
   if (Number.isFinite(Number(override.weight))) weight = Number(override.weight);
   if (Number.isFinite(Number(override.minWeight))) weight = Math.max(weight, Number(override.minWeight));
   if (Number.isFinite(Number(override.maxWeight))) weight = Math.min(weight, Number(override.maxWeight));
-  const baseWeight = Math.max(0, Math.min(0.65, weight));
+  const baseWeight = Math.max(0, Math.min(0.8, weight));
 
   const raw = Number(rawModelMargin);
   const implied = Number(consensus.impliedMargin);
@@ -409,7 +423,7 @@ export function buildRatingPrior({
   const impliedParty = marginParty(implied);
   const crossesRatingParty = Boolean(externalRating && dynamic.polls === 0 && rawParty && impliedParty && rawParty !== impliedParty);
   const crossRatingBoost = crossesRatingParty ? (office === "house" ? 0.22 : 0.15) : 0;
-  weight = Math.max(0, Math.min(0.75, baseWeight + crossRatingBoost));
+  weight = Math.max(0, Math.min(0.88, baseWeight + crossRatingBoost));
   const ratingPull = Number.isFinite(raw) && Number.isFinite(implied) ? (implied - raw) * weight : 0;
   const divergence = Number.isFinite(raw) && Number.isFinite(implied) ? Math.abs(implied - raw) : null;
   const warnings = [];
@@ -420,7 +434,7 @@ export function buildRatingPrior({
   }
   const guardrailEligible = externalRating
     && dynamic.polls === 0
-    && !mapConflict;
+    && !disableForMapConflict;
   if (crossRatingBoost) {
     warnings.push({
       severity: "warning",
@@ -441,7 +455,11 @@ export function buildRatingPrior({
     sources: consensus.sources,
     sourceRatings: consensus.sourceRatings,
     ratingsPriorDistribution: priorDistribution,
-    usedAs: weight > 0 ? (guardrailEligible ? "SOFT_PRIOR_AND_GUARDRAIL" : "SOFT_PRIOR") : "COMPARISON_ONLY",
+    usedAs: weight > 0
+      ? (guardrailEligible
+        ? (weight >= 0.65 && dynamic.polls === 0 ? "PRIOR_DOMINANT_AND_GUARDRAIL" : "SOFT_PRIOR_AND_GUARDRAIL")
+        : "SOFT_PRIOR")
+      : "COMPARISON_ONLY",
     ratingSourceType: normalizedRatingSourceType,
     guardrailEligible,
     guardrailTriggers: {
@@ -454,7 +472,8 @@ export function buildRatingPrior({
     probabilityPullStrength: officeConfig.probabilityPullStrength ?? 1,
     projectedResultPullStrength: officeConfig.projectedResultPullStrength ?? 0.6,
     inputWeight: Number((weight * 100).toFixed(1)),
-    ratingsHeavy: weight >= 0.35,
+    ratingsHeavy: weight >= 0.5,
+    mapAmbiguous,
     warnings
   };
 }
@@ -522,6 +541,40 @@ export function applyRatingGuardrail(margin, prior) {
       sources: prior?.sourceRatings || []
     };
   }
+  const rating = normalizeRating(prior.consensusRating);
+  const implied = Number(prior.impliedMargin);
+  const ratingParty = marginParty(implied);
+  const currentParty = marginParty(value);
+  if (rating?.rank >= 2 && ratingParty && currentParty && ratingParty !== currentParty) {
+    const minimum = rating.rank >= 4 ? 6 : rating.rank >= 3 ? 4 : 1.25;
+    const bounded = Math.sign(implied) * Math.min(Math.abs(implied), Math.max(minimum, Math.abs(value) * 0.25));
+    return {
+      margin: bounded,
+      triggered: true,
+      eligible: true,
+      mode: "hard-stop",
+      guardrailMode: "hard-stop",
+      penaltyApplied: 1,
+      crossingSeverity: "high",
+      reason: "NO_POLLS_EXTERNAL_RATING_HARD_STOP:CROSSES_LEAN_OR_STRONGER_RATING",
+      rawMargin: Number(value.toFixed(2)),
+      rawModelMargin: Number.isFinite(Number(prior.rawModelMargin)) ? Number(Number(prior.rawModelMargin).toFixed(2)) : null,
+      preGuardrailMargin: Number(value.toFixed(2)),
+      ratingImpliedMargin: Number.isFinite(implied) ? Number(implied.toFixed(2)) : null,
+      guardrailedMargin: Number(bounded.toFixed(2)),
+      externalRating: prior.consensusRating || null,
+      benchmark: prior.consensusRating || null,
+      sourceRatings: prior.sourceRatings || [],
+      triggers: {
+        crossesRatingParty: true,
+        categoryDistance: ratingCategoryDistance(Number(prior.rawModelMargin ?? value), prior.consensusRating),
+        rawRatingDivergence: Number.isFinite(implied) ? Number(Math.abs(Number(prior.rawModelMargin ?? value) - implied).toFixed(2)) : null,
+        categoryLimitApplied: false,
+        softPenaltyApplied: false,
+        hardStopApplied: true
+      }
+    };
+  }
   const limitedBase = softGuardrailPenalty(value, prior);
   const tossupCategoryLimit = prior.consensusRating === "Toss-up" && Math.abs(limitedBase.margin) > 2.99;
   const limited = tossupCategoryLimit
@@ -538,15 +591,14 @@ export function applyRatingGuardrail(margin, prior) {
     : null;
   const distance = ratingCategoryDistance(raw, prior.consensusRating);
   const rawParty = marginParty(raw);
-  const ratingParty = marginParty(prior.impliedMargin);
   const crossesRatingParty = Boolean(rawParty && ratingParty && rawParty !== ratingParty);
   const shouldTrigger = limited.triggered || crossesRatingParty || distance >= 2 || (Number.isFinite(divergence) && divergence >= 5);
   return {
     margin: limited.margin,
     triggered: shouldTrigger,
     eligible: true,
-    mode: "soft-penalty",
-    guardrailMode: "soft-penalty",
+    mode: prior.usedAs === "PRIOR_DOMINANT_AND_GUARDRAIL" ? "prior-dominant" : "soft-penalty",
+    guardrailMode: prior.usedAs === "PRIOR_DOMINANT_AND_GUARDRAIL" ? "prior-dominant" : "soft-penalty",
     penaltyApplied: limited.penaltyApplied || 0,
     crossingSeverity: limited.crossingSeverity || "none",
     reason: shouldTrigger

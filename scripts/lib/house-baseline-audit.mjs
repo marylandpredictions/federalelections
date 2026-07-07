@@ -106,15 +106,26 @@ export function baselineVerificationStatus(input = {}) {
     input?.redistrictingConfidence
   ].filter(Boolean).join(" ").toUpperCase();
   const effective = anchor.effectiveFor2026;
-  const mapConflict = Boolean(
-    effective === false
-    || input.mapConflict
+  const hasTrustDowngrade = Boolean(
+    anchor.crosswalkAvailable === false
+    || anchor.mapComparable === false
+    || anchor.useAsHistoricalContextOnly === true
+    || (Number.isFinite(Number(anchor.baselineEffectiveWeight)) && Number(anchor.baselineEffectiveWeight) < 0.5)
+    || /CROSSWALK UNAVAILABLE|NO CURRENT[-_ ]?MAP CROSSWALK/i.test(text)
+  );
+  const trueMapConflict = Boolean(
+    input.mapConflict
     || input.ratingIsConditional
     || input.forecastStatus === "SCENARIO_ONLY"
     || /CONFLICT|SCENARIO|OLD_DISTRICT|PRE[-_ ]?REDISTRICT/i.test(String(input.redistrictingConfidence || ""))
     || /CONFLICT|SCENARIO|OLD_DISTRICT|PRE[-_ ]?REDISTRICT/i.test(text)
   );
-  if (mapConflict) return "SCENARIO_CONFLICT";
+  if (trueMapConflict) return "SCENARIO_CONFLICT";
+  if (hasTrustDowngrade || effective === false) {
+    return confidence === "LOW_CONFIDENCE" || confidence === "ESTIMATED"
+      ? "CURRENT_MAP_ESTIMATE_LOW_CONFIDENCE"
+      : "UNVERIFIED_CURRENT_MAP";
+  }
   if (!anchor || !Number.isFinite(Number(anchor.margin ?? input.baselineMargin))) return "UNVERIFIED_CURRENT_MAP";
 
   const sourceBacked = /SOURCE[-_ ]?BACKED|CERTIFIED|OFFICIAL|CENSUS|FEC|STATE[-_ ]?CERTIFIED|MEDSL|MIT/i.test(text);
@@ -266,9 +277,7 @@ export function auditHouseBaselineDistrict(input = {}) {
 
   const uniqueFlags = [...new Set(flags)];
   const highSeverityFlags = uniqueFlags.filter((flag) => [
-    "UNVERIFIED_CURRENT_MAP",
     "BASELINE_DIRECTION_CONFLICT",
-    "BASELINE_MISSING",
     "REDISTRICTING_CONFLICT",
     "PROJECTED_PROBABILITY_DIRECTION_CONFLICT",
     "PROJECTED_MARGIN_PROBABILITY_CONFLICT"
@@ -286,7 +295,14 @@ export function auditHouseBaselineDistrict(input = {}) {
       confidence,
       verificationStatus,
       baselineSource: input.baselineAnchor?.baselineSource || input.baselineAnchor?.source || null,
-      effectiveFor2026: input.baselineAnchor?.effectiveFor2026 ?? null
+      effectiveFor2026: input.baselineAnchor?.effectiveFor2026 ?? null,
+      crosswalkAvailable: input.baselineAnchor?.crosswalkAvailable ?? null,
+      mapComparable: input.baselineAnchor?.mapComparable ?? null,
+      useAsHistoricalContextOnly: input.baselineAnchor?.useAsHistoricalContextOnly ?? null,
+      baselineEffectiveWeight: Number.isFinite(Number(input.baselineAnchor?.baselineEffectiveWeight))
+        ? Number(input.baselineAnchor.baselineEffectiveWeight)
+        : null,
+      trustReasons: input.baselineAnchor?.trustReasons || []
     },
     baselineConfidence: verificationStatus,
     externalRatings,
@@ -312,6 +328,9 @@ export function auditHouseBaselineDistrict(input = {}) {
 
 function pollingSummaryMode({ usablePolls, uniqueFlags, verificationStatus }) {
   if (Number(usablePolls) > 0) return "POLLS_HEAVY";
+  if (["UNVERIFIED_CURRENT_MAP", "CURRENT_MAP_ESTIMATE_LOW_CONFIDENCE"].includes(verificationStatus)) {
+    return "RATINGS_HEAVY";
+  }
   const unverifiedConflict = uniqueFlags.includes("BASELINE_DIRECTION_CONFLICT")
     && ["UNVERIFIED_CURRENT_MAP", "CURRENT_MAP_ESTIMATE_LOW_CONFIDENCE", "SCENARIO_CONFLICT"].includes(verificationStatus);
   if (unverifiedConflict || uniqueFlags.includes("BASELINE_MISSING") || uniqueFlags.includes("REDISTRICTING_CONFLICT")) {

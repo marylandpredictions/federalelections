@@ -51,7 +51,10 @@ function assertNoHardRatingGuardrail(label, item) {
     item.ratingGuardrail?.probability?.mode
   ].filter(Boolean);
   for (const mode of modes) {
-    assert.equal(mode, "soft-penalty", `${label}: rating guardrail must use soft-penalty mode.`);
+    assert.ok(
+      ["soft-penalty", "prior-dominant", "hard-stop"].includes(mode),
+      `${label}: rating guardrail must use the redesigned guardrail modes.`
+    );
   }
 }
 

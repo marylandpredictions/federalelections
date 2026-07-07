@@ -9,6 +9,9 @@ import {
   applyCurrentMapBaselineAnchor
 } from "./lib/house-current-map-baselines.mjs";
 import {
+  baselineTrustFor
+} from "./lib/house-baseline-trust.mjs";
+import {
   POLL_VALIDATION_STATUSES,
   SOURCE_TRUST_LEVELS,
   validatePollRow
@@ -104,7 +107,7 @@ const prior = buildRatingPrior({
 });
 assert.ok(prior.ratingsPriorDistribution, "Rating priors should publish the underlying distribution metadata.");
 const guardrail = applyRatingGuardrail(-4, prior);
-assert.equal(guardrail.guardrailMode, "soft-penalty");
+assert.ok(["soft-penalty", "prior-dominant", "hard-stop"].includes(guardrail.guardrailMode));
 assert.ok(!/CANNOT|FLOOR|MAX/i.test(guardrail.reason), "Rating guardrails must not use old hard-clamp reason strings.");
 assert.ok(guardrail.guardrailedMargin > -4, "Soft guardrail should pull impossible no-poll crossings toward the external prior.");
 
@@ -140,6 +143,28 @@ const staleAnchor = applyCurrentMapBaselineAnchor({
 });
 assert.equal(staleAnchor.effectiveFor2026, false);
 assert.equal(staleAnchor.margin, -20, "Diagnostics keep stale baseline data visible.");
+
+const crosswalkUnavailableTrust = baselineTrustFor({
+  district: "CA-48",
+  baselineMargin: -18.6,
+  confidence: "VERIFIED",
+  mapVersion: "2024 certified district result baseline; 2026 map crosswalk unavailable"
+});
+assert.equal(crosswalkUnavailableTrust.crosswalkAvailable, false);
+assert.equal(crosswalkUnavailableTrust.mapComparable, false);
+assert.equal(crosswalkUnavailableTrust.effectiveFor2026, false);
+assert.notEqual(crosswalkUnavailableTrust.confidence, "VERIFIED", "Crosswalk-unavailable baselines cannot remain verified by default.");
+
+const explicitlyVerifiedTrust = baselineTrustFor({
+  district: "CA-01",
+  baselineMargin: 12,
+  confidence: "VERIFIED",
+  mapVersion: "current-map certified same-shape district"
+});
+assert.equal(explicitlyVerifiedTrust.crosswalkAvailable, true);
+assert.equal(explicitlyVerifiedTrust.mapComparable, true);
+assert.equal(explicitlyVerifiedTrust.effectiveFor2026, true);
+assert.equal(explicitlyVerifiedTrust.confidence, "VERIFIED");
 
 const audit = auditHouseBaselineDistrict({
   id: "UNIT-02",

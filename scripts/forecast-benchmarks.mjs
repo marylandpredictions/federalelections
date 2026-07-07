@@ -3,8 +3,10 @@ import { readFileSync } from "node:fs";
 const BENCHMARK_URL = new URL("../data/forecast-benchmarks.json", import.meta.url);
 const TOPLINE_URL = new URL("../data/forecast-topline-benchmarks.json", import.meta.url);
 const HOUSE_RATINGS_CACHE_URL = new URL("../data/cache/ratings/house-2026.json", import.meta.url);
+const PUBLIC_BENCHMARK_CACHE_URL = new URL("../data/cache/benchmarks/public-models-2026.json", import.meta.url);
 let cache;
 let houseRatingsCache;
+let publicBenchmarkCache;
 
 function inputs() {
   if (cache) return cache;
@@ -18,6 +20,13 @@ function houseRatingInputs() {
   try { houseRatingsCache = JSON.parse(readFileSync(HOUSE_RATINGS_CACHE_URL, "utf8")); }
   catch { houseRatingsCache = { rows: [] }; }
   return houseRatingsCache;
+}
+
+function publicBenchmarkInputs() {
+  if (publicBenchmarkCache) return publicBenchmarkCache;
+  try { publicBenchmarkCache = JSON.parse(readFileSync(PUBLIC_BENCHMARK_CACHE_URL, "utf8")); }
+  catch { publicBenchmarkCache = { topline: {} }; }
+  return publicBenchmarkCache;
 }
 
 function benchmarkFromHouseCache(raceId) {
@@ -119,6 +128,7 @@ function normalizeRating(value) {
 export function toplineBenchmark(office, model = {}) {
   try {
     const inputs = JSON.parse(readFileSync(TOPLINE_URL, "utf8"));
+    const publicCache = publicBenchmarkInputs().topline?.[office] || null;
     const sources = inputs[office] || {};
     const demProbabilities = Object.values(sources)
       .map((source) => Number(source.demControlProbability ?? source.demHouseProbability))
@@ -136,13 +146,19 @@ export function toplineBenchmark(office, model = {}) {
     return {
       status: Object.keys(sources).length ? "CONFIGURED" : "NOT_CONFIGURED",
       updatedAt: inputs.updatedAt || null,
+      cacheGeneratedAt: publicCache?.generatedAt || null,
       sources,
       benchmarkDemProbability: Number.isFinite(benchmarkDemProbability) ? Number(benchmarkDemProbability.toFixed(4)) : null,
+      benchmarkMedianProbability: Number.isFinite(Number(publicCache?.benchmarkMedianProbability))
+        ? Number(Number(publicCache.benchmarkMedianProbability).toFixed(4))
+        : Number.isFinite(benchmarkDemProbability) ? Number(benchmarkDemProbability.toFixed(4)) : null,
       modelDemProbability: Number.isFinite(modelDemProbability) ? Number(modelDemProbability.toFixed(4)) : null,
       difference: Number.isFinite(difference) ? Number(difference.toFixed(4)) : null,
+      releaseGate: publicCache?.releaseGate || null,
+      releaseStatus: publicCache?.releaseGate?.releaseStatus || null,
       warning
     };
   } catch {
-    return { status: "NOT_CONFIGURED", sources: {}, benchmarkDemProbability: null, modelDemProbability: null, difference: null, warning: null };
+    return { status: "NOT_CONFIGURED", sources: {}, benchmarkDemProbability: null, benchmarkMedianProbability: null, modelDemProbability: null, difference: null, releaseGate: null, releaseStatus: null, warning: null };
   }
 }

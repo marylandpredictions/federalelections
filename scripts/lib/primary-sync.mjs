@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
+import { nominationStatusFor } from "./candidate-freshness.mjs";
 
 const CONFIG_URL = new URL("../../data/model-config/primary-sync-2026.json", import.meta.url);
 const FILES = {
@@ -66,6 +67,8 @@ export function applyPrimarySyncToRace(race, office, configOrMap = loadPrimarySy
     source: sync.source || "FEA primary sync",
     demStatus: sync.demStatus || null,
     repStatus: sync.repStatus || null,
+    demNominationStatus: nominationStatusFor(`${sync.primaryStatus || ""} ${sync.demStatus || ""}`, sync.demNominee || output.dem || output.demCandidate),
+    repNominationStatus: nominationStatusFor(`${sync.primaryStatus || ""} ${sync.repStatus || ""}`, sync.repNominee || output.rep || output.repCandidate),
     applied: true
   };
   return output;

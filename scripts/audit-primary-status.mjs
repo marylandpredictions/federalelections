@@ -1,4 +1,5 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { NOMINATION_STATUSES, nominationStatusFor } from "./lib/candidate-freshness.mjs";
 import { applyPrimarySyncToRace, loadPrimarySyncConfig, primarySyncMap } from "./lib/primary-sync.mjs";
 
 const OUTPUT_URL = new URL("../data/diagnostics/primary-status-audit-2026.json", import.meta.url);
@@ -11,6 +12,16 @@ const SOURCES = [
   { model: "governor", url: new URL("../data/governor-forecast.json", import.meta.url), type: "races" },
   { model: "house", url: new URL("../data/house-forecast.json", import.meta.url), type: "districts" }
 ];
+
+const RESOLVED_STATUSES = new Set([
+  NOMINATION_STATUSES.VERIFIED_NOMINEE,
+  NOMINATION_STATUSES.PROJECTED_NOMINEE,
+  NOMINATION_STATUSES.PRESUMPTIVE_NOMINEE,
+  NOMINATION_STATUSES.ADVANCED_TOP_TWO
+]);
+const EXCEPTION_STATUSES = new Set([
+  NOMINATION_STATUSES.RUNOFF_PENDING
+]);
 
 function readJson(url) {
   try {
@@ -29,19 +40,22 @@ function auditRace(model, race) {
   const repStatus = String(race.repStatus || "").trim() || null;
   const demName = race.dem || race.demCandidate || "Democrat";
   const repName = race.rep || race.repCandidate || "Republican";
+  const demNominationStatus = race.primarySync?.demNominationStatus || nominationStatusFor(`${primaryStatus || ""} ${demStatus || ""}`, demName);
+  const repNominationStatus = race.primarySync?.repNominationStatus || nominationStatusFor(`${primaryStatus || ""} ${repStatus || ""}`, repName);
   const flags = [];
-  const statusText = `${primaryStatus || ""} ${demStatus || ""} ${repStatus || ""}`.toLowerCase();
+  const anyResolved = RESOLVED_STATUSES.has(demNominationStatus) || RESOLVED_STATUSES.has(repNominationStatus);
+  const anyException = EXCEPTION_STATUSES.has(demNominationStatus) || EXCEPTION_STATUSES.has(repNominationStatus);
 
   if (!primaryDate) {
     flags.push({ severity: "info", type: "PRIMARY_DATE_MISSING", message: "Primary date is not present in this forecast row." });
   }
-  if (primaryPassed && !/(resolved|nominee|presumptive|advanced|winner)/.test(statusText)) {
+  if (primaryPassed && !anyResolved && !anyException) {
     flags.push({ severity: "warning", type: "PRIMARY_PASSED_UNRESOLVED", message: "Primary date has passed but nominee/presumptive status is not resolved." });
   }
-  if (primaryPassed && isGenericCandidate(demName) && !/nominee|presumptive/.test(String(demStatus).toLowerCase())) {
+  if (primaryPassed && isGenericCandidate(demName) && !RESOLVED_STATUSES.has(demNominationStatus) && !EXCEPTION_STATUSES.has(demNominationStatus)) {
     flags.push({ severity: "warning", type: "DEMOCRATIC_CANDIDATE_GENERIC_AFTER_PRIMARY", message: "Democratic candidate remains generic after the primary date." });
   }
-  if (primaryPassed && isGenericCandidate(repName) && !/nominee|presumptive/.test(String(repStatus).toLowerCase())) {
+  if (primaryPassed && isGenericCandidate(repName) && !RESOLVED_STATUSES.has(repNominationStatus) && !EXCEPTION_STATUSES.has(repNominationStatus)) {
     flags.push({ severity: "warning", type: "REPUBLICAN_CANDIDATE_GENERIC_AFTER_PRIMARY", message: "Republican candidate remains generic after the primary date." });
   }
   if (race.matchupStatus && /unknown|provisional|pending/i.test(String(race.matchupStatus))) {
@@ -62,6 +76,8 @@ function auditRace(model, race) {
     repCandidate: repName,
     demStatus,
     repStatus,
+    demNominationStatus,
+    repNominationStatus,
     matchupStatus: race.matchupStatus || null,
     reviewRequired: flags.some((flag) => flag.severity !== "info"),
     flags

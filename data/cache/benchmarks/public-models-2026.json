@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "2026.public-model-benchmark-cache.1",
+  "generatedAt": "2026-07-07T01:45:55.636Z",
+  "sourceFiles": {
+    "topline": "data/forecast-topline-benchmarks.json",
+    "raceBenchmarks": "data/forecast-benchmarks.json",
+    "houseRatings": "data/cache/ratings/house-2026.json"
+  },
+  "sourceUpdatedAt": {
+    "topline": "2026-06-20",
+    "raceBenchmarks": "2026-06-20",
+    "houseRatings": "2026-07-03T21:15:16.509Z"
+  },
+  "releasePolicy": {
+    "staleBenchmarkDays": 30,
+    "houseBlockDifference": 0.15,
+    "senateBlockDifference": 0.12,
+    "governorBlockDifference": 0.15
+  },
+  "topline": {
+    "house": {
+      "office": "house",
+      "generatedAt": "2026-07-07T01:45:55.620Z",
+      "sourceUpdatedAt": "2026-06-20",
+      "sourceCount": 3,
+      "sources": [
+        {
+          "sourceKey": "voteHub",
+          "source": "manual",
+          "asOf": "2026-06-20",
+          "demProbability": 0.71,
+          "staleDays": 17.073558958333333,
+          "raw": {
+            "demControlProbability": 0.71,
+            "source": "manual",
+            "asOf": "2026-06-20"
+          }
+        },
+        {
+          "sourceKey": "economist",
+          "source": "manual",
+          "asOf": "2026-06-20",
+          "demProbability": 0.95,
+          "staleDays": 17.073558958333333,
+          "raw": {
+            "demControlProbability": 0.95,
+            "source": "manual",
+            "asOf": "2026-06-20"
+          }
+        },
+        {
+          "sourceKey": "polymarket",
+          "source": "manual",
+          "asOf": "2026-06-20",
+          "demProbability": 0.79,
+          "staleDays": 17.073558958333333,
+          "raw": {
+            "demControlProbability": 0.79,
+            "source": "manual",
+            "asOf": "2026-06-20"
+          }
+        }
+      ],
+      "benchmarkMedianProbability": 0.79,
+      "localModelDemProbability": 0.4828,
+      "releaseGate": {
+        "releaseStatus": "BLOCK_REVIEW",
+        "difference": -0.3072,
+        "reasons": [
+          "MODEL_PUBLIC_BENCHMARK_DIVERGENCE_BLOCK"
+        ],
+        "thresholds": {
+          "warn": 0.1,
+          "block": 0.15
+        }
+      }
+    },
+    "senate": {
+      "office": "senate",
+      "generatedAt": "2026-07-07T01:45:55.630Z",
+      "sourceUpdatedAt": "2026-06-20",
+      "sourceCount": 1,
+      "sources": [
+        {
+          "sourceKey": "voteHub",
+          "source": "manual",
+          "asOf": "2026-06-20",
+          "demProbability": 0.49,
+          "staleDays": 17.073560439814816,
+          "raw": {
+            "repControlProbability": 0.51,
+            "source": "manual",
+            "asOf": "2026-06-20"
+          }
+        }
+      ],
+      "benchmarkMedianProbability": 0.49,
+      "localModelDemProbability": 0.438,
+      "releaseGate": {
+        "releaseStatus": "OK",
+        "difference": -0.052,
+        "reasons": [],
+        "thresholds": {
+          "warn": 0.08,
+          "block": 0.12
+        }
+      }
+    },
+    "governor": {
+      "office": "governor",
+      "generatedAt": "2026-07-07T01:45:55.635Z",
+      "sourceUpdatedAt": "2026-06-20",
+      "sourceCount": 0,
+      "sources": [],
+      "benchmarkMedianProbability": null,
+      "localModelDemProbability": null,
+      "releaseGate": {
+        "releaseStatus": "BLOCK_REVIEW",
+        "difference": null,
+        "reasons": [
+          "NO_PUBLIC_TOPLINE_BENCHMARK",
+          "NO_LOCAL_MODEL_TOPLINE"
+        ],
+        "thresholds": {
+          "warn": 0.1,
+          "block": 0.15
+        }
+      }
+    }
+  },
+  "raceBenchmarkCount": 48,
+  "cachedHouseRatings": 435
+}

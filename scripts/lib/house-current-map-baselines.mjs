@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { readHouseFundamentalsCacheMap, sourceBackedHouseBaselines } from "./house-input-caches.mjs";
+import { applyTrustToBaseline } from "./house-baseline-trust.mjs";
 
 const OUTPUT_URL = new URL("../../data/model-config/current-map-baselines-2026.json", import.meta.url);
 
@@ -26,7 +27,7 @@ function baselineSourceFor(row) {
 function confidenceFor(row, baselineSource) {
   const raw = String(row?.confidence || row?.sourceConfidence || row?.redistrictingConfidence || "").toUpperCase();
   if (baselineSource === "manual_override") return "VERIFIED";
-  if (baselineSource === "2024_house_on_current_map" && ["HIGH", "VERIFIED", "MEDIUM"].includes(raw)) return "VERIFIED";
+  if (baselineSource === "2024_house_on_current_map" && ["HIGH", "VERIFIED", "MEDIUM"].includes(raw)) return "SOURCE_DECLARED";
   if (baselineSource === "estimated_from_presidential_2024") return "ESTIMATED";
   if (["CONFLICTING_SOURCES", "LOW", "UNKNOWN", "MISSING"].includes(raw)) return "UNVERIFIED";
   return baselineSource === "missing" ? "UNVERIFIED" : "ESTIMATED";
@@ -59,8 +60,7 @@ export function buildCurrentMapBaselines({ mapHtml = "" } = {}) {
         : finite(row.margin ?? row.fundamentalMargin);
     const confidence = confidenceFor(row, baselineSource);
     const mapVersion = row.mapVersion || "2025-current-congressional-map";
-    const effectiveFor2026 = baselineSource !== "missing" && !/CONFLICT/i.test(String(row.redistrictingConfidence || ""));
-    return {
+    const sourceDeclaredBaseline = {
       district: id,
       raceId: `${id}-2026`,
       state: id.slice(0, 2),
@@ -68,15 +68,28 @@ export function buildCurrentMapBaselines({ mapHtml = "" } = {}) {
       baselineParty: Number.isFinite(baselineMargin) ? (baselineMargin >= 0 ? "D" : "R") : null,
       baselineSource,
       mapVersion,
-      effectiveFor2026,
       confidence,
-      geometryHash: geometryHash([id, mapVersion, baselineMargin, baselineSource, confidence]),
       sourceFields: {
         houseMargin2024: Number.isFinite(houseMargin) ? Number(houseMargin.toFixed(2)) : null,
         presidentialMargin2024: Number.isFinite(presidentialMargin) ? Number(presidentialMargin.toFixed(2)) : null,
         redistrictingConfidence: row.redistrictingConfidence || null,
         sources: row.sources || (row.source ? [row.source] : [])
       }
+    };
+    const trusted = applyTrustToBaseline(sourceDeclaredBaseline);
+    return {
+      ...trusted,
+      geometryHash: geometryHash([
+        id,
+        mapVersion,
+        baselineMargin,
+        baselineSource,
+        trusted.confidence,
+        trusted.crosswalkAvailable,
+        trusted.mapComparable,
+        trusted.effectiveFor2026,
+        trusted.baselineEffectiveWeight
+      ])
     };
   });
 
@@ -103,6 +116,14 @@ export function currentMapBaselineForDistrict(districtId, map = readCurrentMapBa
 
 export function applyCurrentMapBaselineAnchor(anchor, baseline) {
   if (!baseline) return anchor;
+  const trustFields = {
+    crosswalkAvailable: baseline.crosswalkAvailable === true,
+    mapComparable: baseline.mapComparable === true,
+    useAsHistoricalContextOnly: baseline.useAsHistoricalContextOnly === true,
+    baselineEffectiveWeight: Number.isFinite(Number(baseline.baselineEffectiveWeight)) ? Number(baseline.baselineEffectiveWeight) : null,
+    trustReasons: baseline.trustReasons || [],
+    trustPolicyVersion: baseline.trustPolicyVersion || null
+  };
   if (baseline.effectiveFor2026 !== true) {
     return {
       ...anchor,
@@ -110,7 +131,8 @@ export function applyCurrentMapBaselineAnchor(anchor, baseline) {
       effectiveFor2026: false,
       confidence: baseline.confidence || anchor?.confidence || "UNVERIFIED",
       mapVersion: baseline.mapVersion || anchor?.mapVersion || null,
-      baselineSource: baseline.baselineSource || anchor?.baselineSource || anchor?.source || null
+      baselineSource: baseline.baselineSource || anchor?.baselineSource || anchor?.source || null,
+      ...trustFields
     };
   }
   const margin = finite(baseline.baselineMargin);
@@ -129,7 +151,8 @@ export function applyCurrentMapBaselineAnchor(anchor, baseline) {
     effectiveFor2026: baseline.effectiveFor2026 === true,
     confidence: baseline.confidence || "UNVERIFIED",
     geometryHash: baseline.geometryHash || null,
-    currentMapBaseline: baseline
+    currentMapBaseline: baseline,
+    ...trustFields
   };
 }
 
