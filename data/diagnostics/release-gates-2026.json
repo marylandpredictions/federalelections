@@ -1,0 +1,252 @@
+{
+  "schemaVersion": "2026.release-gates-v2.1",
+  "generatedAt": "2026-07-07T04:37:53.220Z",
+  "status": "FAIL",
+  "forecastGeneratedAt": {
+    "senate": "2026-07-07T04:26:40.094Z",
+    "house": "2026-07-07T04:26:52.744Z",
+    "governor": "2026-07-07T04:26:58.246Z"
+  },
+  "upstreamPollCounts": {
+    "senate": {
+      "rows": 0,
+      "usedInModel": 0,
+      "generatedAt": "2026-07-07T04:22:04.239Z"
+    },
+    "house": {
+      "rows": 0,
+      "usedInModel": 0,
+      "generatedAt": "2026-07-07T04:22:04.239Z"
+    },
+    "governor": {
+      "rows": 3,
+      "usedInModel": 3,
+      "generatedAt": "2026-07-07T04:22:04.239Z"
+    },
+    "generic-ballot": {
+      "rows": 0,
+      "usedInModel": 0,
+      "generatedAt": "2026-07-07T04:22:04.239Z"
+    }
+  },
+  "houseVerifiedCurrentMapBaselineCoverage": 0,
+  "benchmarkDivergenceSummary": {
+    "senate": 5.2,
+    "house": 33.39,
+    "governor": 0
+  },
+  "benchmarkReleaseStatus": {
+    "senate": "OK",
+    "house": "BLOCK_REVIEW",
+    "governor": "BLOCK_REVIEW"
+  },
+  "gates": [
+    {
+      "name": "upstream-polls-only",
+      "status": "PASS",
+      "generatedForecastRows": 0
+    },
+    {
+      "name": "canonical-ledger-provenance",
+      "status": "PASS",
+      "rows": 3
+    },
+    {
+      "name": "house-current-map-baseline-coverage",
+      "status": "FAIL",
+      "coverage": 0,
+      "threshold": 0.65,
+      "effectiveFor2026": 0,
+      "total": 435
+    },
+    {
+      "name": "candidate-primary-freshness",
+      "status": "PASS",
+      "candidates": 1012,
+      "reviewRequired": 0
+    },
+    {
+      "name": "senate-benchmark-divergence",
+      "status": "PASS",
+      "maxDivergence": 5.2,
+      "threshold": 8,
+      "releaseStatus": "OK"
+    },
+    {
+      "name": "house-benchmark-divergence",
+      "status": "FAIL",
+      "maxDivergence": 33.39,
+      "threshold": 8,
+      "releaseStatus": "BLOCK_REVIEW"
+    },
+    {
+      "name": "governor-benchmark-divergence",
+      "status": "FAIL",
+      "maxDivergence": 0,
+      "threshold": 8,
+      "releaseStatus": "BLOCK_REVIEW"
+    }
+  ],
+  "manualReviewTop15": [
+    {
+      "office": "senate",
+      "raceId": "AL",
+      "state": "AL",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "AR",
+      "state": "AR",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "CO",
+      "state": "CO",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "DE",
+      "state": "DE",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "FL",
+      "state": "FL",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "GA",
+      "state": "GA",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_DIVERGENCE"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "IL",
+      "state": "IL",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "KS",
+      "state": "KS",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "KY",
+      "state": "KY",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "LA",
+      "state": "LA",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "warning",
+        "no-usable-race-polls",
+        "historical-margin-discrepancy"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "MA",
+      "state": "MA",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "MN",
+      "state": "MN",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "warning",
+        "RATING_PRIOR_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "MS",
+      "state": "MS",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "MT",
+      "state": "MT",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "NC",
+      "state": "NC",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_DIVERGENCE"
+      ]
+    }
+  ]
+}

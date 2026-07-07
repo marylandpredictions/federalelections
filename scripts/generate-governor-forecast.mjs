@@ -13,6 +13,7 @@ import { buildRaceReview } from "./lib/race-review-diagnostics.mjs";
 import { applyPrimarySyncToRace, loadPrimarySyncConfig, primarySyncMap } from "./lib/primary-sync.mjs";
 import { marginConsistencyCheck } from "./lib/margin-consistency.mjs";
 import { candidateFreshnessSummary } from "./lib/candidate-freshness.mjs";
+import { coreV2Metadata } from "./lib/core-v2-provenance.mjs";
 
 const FORECAST_URL = new URL("../data/governor-forecast.json", import.meta.url);
 const GOVERNOR_HISTORY_URL = new URL("../data/governor-history.json", import.meta.url);
@@ -1968,6 +1969,7 @@ async function buildForecast() {
   const forecast = {
     model: "2026 gubernatorial forecast",
     modelVersion: "2026.06.reliability.1",
+    ...coreV2Metadata("governor"),
     forecastStatus: lowRacePollCoverage || sourceData.sourceHealth?.degraded ? "PARTIAL" : "NORMAL",
     modelDate,
     generatedAt: new Date().toISOString(),

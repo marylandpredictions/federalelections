@@ -13,6 +13,7 @@ import { buildRaceReview } from "./lib/race-review-diagnostics.mjs";
 import { applyPrimarySyncToRace, loadPrimarySyncConfig, primarySyncMap } from "./lib/primary-sync.mjs";
 import { marginConsistencyCheck } from "./lib/margin-consistency.mjs";
 import { candidateFreshnessSummary } from "./lib/candidate-freshness.mjs";
+import { coreV2Metadata } from "./lib/core-v2-provenance.mjs";
 
 const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
 const SENATE_RACE_REVIEW_URL = new URL("../data/diagnostics/senate-race-review-2026.json", import.meta.url);
@@ -3128,6 +3129,7 @@ async function writeForecast() {
     }));
   const output = {
     modelVersion: "2026.06.reliability.1",
+    ...coreV2Metadata("senate"),
     forecastStatus: sourceData.sourceHealth?.degraded ? "DEGRADED" : "NORMAL",
     generatedAt,
     lastUpdated: generatedAt,

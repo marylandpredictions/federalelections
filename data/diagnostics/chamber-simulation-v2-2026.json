@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "2026.chamber-simulation-v2.1",
+  "generatedAt": "2026-07-07T04:28:14.539Z",
+  "simulations": [
+    {
+      "office": "senate",
+      "source": "data/forecast.json",
+      "metadata": {
+        "runs": 100000,
+        "nationalSd": 2.8,
+        "structuredSd": 1.5,
+        "residualSd": "race.uncertaintySigma",
+        "calibrationVersion": "simulation-v2-shadow.1",
+        "randomSeed": 20260707,
+        "separatesProjectedResultMarginFromProbabilityMargin": true
+      },
+      "races": 35,
+      "totalSeats": 100,
+      "demBase": 0,
+      "controlThreshold": 50,
+      "demControlProbability": 0,
+      "distribution": [
+        {
+          "demSeats": 0,
+          "probability": 1
+        }
+      ]
+    },
+    {
+      "office": "house",
+      "source": "data/house-forecast.json",
+      "metadata": {
+        "runs": 100000,
+        "nationalSd": 2.8,
+        "structuredSd": 1.5,
+        "residualSd": "race.uncertaintySigma",
+        "calibrationVersion": "simulation-v2-shadow.1",
+        "randomSeed": 20260707,
+        "separatesProjectedResultMarginFromProbabilityMargin": true
+      },
+      "races": 435,
+      "totalSeats": 435,
+      "demBase": 0,
+      "controlThreshold": 218,
+      "demControlProbability": 0,
+      "distribution": [
+        {
+          "demSeats": 0,
+          "probability": 1
+        }
+      ]
+    },
+    {
+      "office": "governor",
+      "source": "data/governor-forecast.json",
+      "metadata": {
+        "runs": 100000,
+        "nationalSd": 2.8,
+        "structuredSd": 1.5,
+        "residualSd": "race.uncertaintySigma",
+        "calibrationVersion": "simulation-v2-shadow.1",
+        "randomSeed": 20260707,
+        "separatesProjectedResultMarginFromProbabilityMargin": true
+      },
+      "races": 36,
+      "totalSeats": 36,
+      "demBase": 0,
+      "controlThreshold": 19,
+      "demControlProbability": 0,
+      "distribution": [
+        {
+          "demSeats": 0,
+          "probability": 1
+        }
+      ]
+    }
+  ]
+}

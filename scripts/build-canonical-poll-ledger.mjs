@@ -4,22 +4,7 @@ const POLL_CACHE_DIR = new URL("../data/cache/polls/", import.meta.url);
 const OUTPUT_URL = new URL("../data/cache/polls/canonical-2026.json", import.meta.url);
 
 const CACHE_FILES = [
-  "generic-ballot-2026.json",
-  "senate-2026.json",
-  "governor-2026.json",
-  "house-2026.json",
-  "wikipedia-senate-2026.json",
-  "wikipedia-governor-2026.json",
-  "wikipedia-house-2026.json",
-  "quarantine/senate-2026.json",
-  "quarantine/governor-2026.json",
-  "quarantine/house-2026.json"
-];
-
-const GENERATED_FORECAST_FILES = [
-  { path: "../data/forecast.json", office: "senate", racesKey: "races" },
-  { path: "../data/governor-forecast.json", office: "governor", racesKey: "races" },
-  { path: "../data/house-forecast.json", office: "house", racesKey: "districts" }
+  "upstream-canonical-2026.json"
 ];
 
 function readJson(url) {
@@ -61,7 +46,7 @@ function validationFor(row, cachePath, rowType) {
   if (rowType === "AVERAGE") return { status: "DIAGNOSTIC_ONLY", usedInModel: false, reason: "POLLING_AVERAGE_NOT_RAW_POLL" };
   if (rowType !== "INDIVIDUAL_GENERAL_ELECTION_POLL") return { status: "DIAGNOSTIC_ONLY", usedInModel: false, reason: "NON_GENERAL_ELECTION_POLL_ROW" };
   if (row?.validationStatus === "QUARANTINED" || reasons.size) return { status: "QUARANTINED", usedInModel: false, reason: [...reasons].join(";") || row?.excludedReason || "QUARANTINED_BY_VALIDATION" };
-  if (row?.validationStatus && row.validationStatus !== "USABLE") return { status: row.validationStatus, usedInModel: false, reason: row?.excludedReason || row.validationStatus };
+  if (row?.validationStatus && !["USABLE", "VALID"].includes(row.validationStatus)) return { status: row.validationStatus, usedInModel: false, reason: row?.excludedReason || row.validationStatus };
   return { status: "VALID", usedInModel: row?.usedInModel !== false, reason: null };
 }
 
@@ -93,47 +78,6 @@ function normalizeCandidates(row) {
   if (row?.demCandidate || row?.dem !== undefined) candidates.push({ name: row.demCandidate || "Democrat", party: "D", pct: Number.isFinite(Number(row.dem)) ? Number(row.dem) : null });
   if (row?.repCandidate || row?.rep !== undefined) candidates.push({ name: row.repCandidate || "Republican", party: "R", pct: Number.isFinite(Number(row.rep)) ? Number(row.rep) : null });
   return candidates;
-}
-
-function stripHtml(value) {
-  return String(value || "")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&amp;/g, "&")
-    .replace(/&nbsp;/g, " ")
-    .trim();
-}
-
-function extractHref(value) {
-  const match = String(value || "").match(/href=["']([^"']+)["']/i);
-  return match ? match[1] : null;
-}
-
-function parsePollResultCandidates(poll) {
-  const result = String(poll?.result || "");
-  if (!result) return [];
-  return result
-    .split("/")
-    .map((piece) => piece.trim())
-    .map((piece) => {
-      const match = piece.match(/^(.+?)\s+(-?\d+(?:\.\d+)?)$/);
-      if (!match) return null;
-      return {
-        name: match[1].trim(),
-        party: null,
-        pct: Number(match[2])
-      };
-    })
-    .filter(Boolean);
-}
-
-function generatedRaceId(race, office) {
-  if (race?.raceId) return race.raceId;
-  if (race?.id) return race.id;
-  const state = race?.state || "US";
-  if (office === "senate") return `${state}-SEN-2026`;
-  if (office === "governor") return `${state}-GOV-2026`;
-  const district = race?.district || race?.districtId || "AL";
-  return `${state}-${String(district).padStart(2, "0")}`;
 }
 
 function normalizeRow(row, context) {
@@ -174,46 +118,6 @@ function normalizeRow(row, context) {
   };
 }
 
-function normalizeGeneratedPoll(poll, context) {
-  const candidates = parsePollResultCandidates(poll);
-  return {
-    ledgerId: `generated:${context.office}:${context.raceId}:${context.index}`,
-    office: context.office,
-    cycle: 2026,
-    raceId: context.raceId,
-    state: context.state || null,
-    district: context.district || null,
-    sourceKind: "generated-forecast-output",
-    sourceTrust: sourceTextTrust(poll, "generated-forecast-output"),
-    sourceName: poll.source || null,
-    sourceUrl: poll.sourceUrl || extractHref(poll.pollster),
-    pollster: stripHtml(poll.pollster) || null,
-    sponsor: poll.sponsor || null,
-    startDate: poll.startDate || null,
-    endDate: poll.endDate || poll.date || null,
-    sampleSize: Number.isFinite(Number(poll.sampleSize)) ? Number(poll.sampleSize) : null,
-    population: poll.population || null,
-    rowType: "INDIVIDUAL_GENERAL_ELECTION_POLL",
-    tableType: null,
-    candidates,
-    candidateMap: candidates,
-    demShare: null,
-    repShare: null,
-    margin: Number.isFinite(Number(poll.margin)) ? Number(poll.margin) : null,
-    rawValidationStatus: "USABLE",
-    validationStatus: "VALID",
-    usedInModel: true,
-    usedBy: [officeUsedBy(context.office)],
-    excludedReason: null,
-    cachePath: context.cachePath,
-    cacheGeneratedAt: context.generatedAt || null,
-    sourceRaceTitle: poll.title || null,
-    sourceResultText: poll.result || null,
-    sourceSpreadText: poll.spread || null,
-    modelWeight: Number.isFinite(Number(poll.weight)) ? Number(poll.weight) : null
-  };
-}
-
 function dedupeRows(inputRows) {
   const byKey = new Map();
   for (const row of inputRows) {
@@ -240,7 +144,7 @@ function dedupeRows(inputRows) {
     existing.usedBy = [...new Set([...(existing.usedBy || []), ...(row.usedBy || [])])];
     existing.validationStatus = existing.usedInModel ? "VALID" : existing.validationStatus;
     existing.excludedReason = existing.usedInModel ? null : existing.excludedReason;
-    existing.sourceKind = existing.sourceKind === "generated-forecast-output" ? existing.sourceKind : row.sourceKind;
+    existing.sourceKind = row.sourceKind;
     existing.cachePath = existing.cachePath || row.cachePath;
   }
   return [...byKey.values()].map((row, index) => ({ ...row, ledgerId: `canonical-2026:${index + 1}` }));
@@ -273,36 +177,10 @@ for (const cachePath of CACHE_FILES) {
   });
 }
 
-for (const forecastFile of GENERATED_FORECAST_FILES) {
-  const payload = readJson(new URL(forecastFile.path, import.meta.url));
-  if (!payload) continue;
-  const races = Array.isArray(payload?.[forecastFile.racesKey]) ? payload[forecastFile.racesKey] : [];
-  let generatedRows = 0;
-  for (const race of races) {
-    const polls = Array.isArray(race?.polls) ? race.polls : [];
-    polls.forEach((poll, index) => {
-      rows.push(normalizeGeneratedPoll(poll, {
-        office: forecastFile.office,
-        raceId: generatedRaceId(race, forecastFile.office),
-        state: race.state,
-        district: race.district || race.districtId || null,
-        index,
-        cachePath: forecastFile.path,
-        generatedAt: payload.generatedAt || payload.lastUpdated || null
-      }));
-      generatedRows += 1;
-    });
-  }
-  sourceSummaries.push({
-    cachePath: forecastFile.path,
-    office: forecastFile.office,
-    status: payload.readError ? "READ_ERROR" : "OK_GENERATED_FORECAST",
-    rowCount: generatedRows,
-    readError: payload.readError || null
-  });
-}
-
 const canonicalRows = dedupeRows(rows);
+if (canonicalRows.some((row) => row.sourceKind === "generated-forecast-output")) {
+  throw new Error("Generated forecast output rows are not allowed in the canonical poll ledger.");
+}
 
 const counts = canonicalRows.reduce((acc, row) => {
   acc.total += 1;
@@ -316,7 +194,7 @@ mkdirSync(new URL("../data/cache/polls/", import.meta.url), { recursive: true })
 writeFileSync(OUTPUT_URL, `${JSON.stringify({
   schemaVersion: "2026.canonical-poll-ledger.1",
   generatedAt: new Date().toISOString(),
-  description: "Canonical poll provenance ledger. Only VALID raw-poll rows may be used by forecast models; Wikipedia, legacy fallback, and polling-average rows are diagnostic-only or quarantined.",
+  description: "Canonical poll provenance ledger. Only upstream cache rows may be used by forecast models; forecast output rows are never ingested.",
   counts,
   sourceSummaries,
   rows: canonicalRows

@@ -1,0 +1,217 @@
+{
+  "schemaVersion": "2026.ui-health-v2.1",
+  "generatedAt": "2026-07-07T04:37:53.611Z",
+  "releaseGateStatus": "FAIL",
+  "forecastGeneratedAt": {
+    "senate": "2026-07-07T04:26:40.094Z",
+    "house": "2026-07-07T04:26:52.744Z",
+    "governor": "2026-07-07T04:26:58.246Z"
+  },
+  "cards": [
+    {
+      "id": "upstream-polls",
+      "label": "Upstream validated polls",
+      "value": {
+        "senate": {
+          "rows": 0,
+          "usedInModel": 0,
+          "generatedAt": "2026-07-07T04:22:04.239Z"
+        },
+        "house": {
+          "rows": 0,
+          "usedInModel": 0,
+          "generatedAt": "2026-07-07T04:22:04.239Z"
+        },
+        "governor": {
+          "rows": 3,
+          "usedInModel": 3,
+          "generatedAt": "2026-07-07T04:22:04.239Z"
+        },
+        "generic-ballot": {
+          "rows": 0,
+          "usedInModel": 0,
+          "generatedAt": "2026-07-07T04:22:04.239Z"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "house-baselines",
+      "label": "House current-map baseline coverage",
+      "value": 0,
+      "status": "FAIL"
+    },
+    {
+      "id": "benchmark-divergence",
+      "label": "Benchmark divergence",
+      "value": {
+        "senate": 5.2,
+        "house": 33.39,
+        "governor": 0
+      },
+      "status": "REVIEW"
+    }
+  ],
+  "manualReviewTop15": [
+    {
+      "office": "senate",
+      "raceId": "AL",
+      "state": "AL",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "AR",
+      "state": "AR",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "CO",
+      "state": "CO",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "DE",
+      "state": "DE",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "FL",
+      "state": "FL",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "GA",
+      "state": "GA",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_DIVERGENCE"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "IL",
+      "state": "IL",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "KS",
+      "state": "KS",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "KY",
+      "state": "KY",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "LA",
+      "state": "LA",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "warning",
+        "no-usable-race-polls",
+        "historical-margin-discrepancy"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "MA",
+      "state": "MA",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "MN",
+      "state": "MN",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "warning",
+        "RATING_PRIOR_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "MS",
+      "state": "MS",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE",
+        "no-usable-race-polls"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "MT",
+      "state": "MT",
+      "severity": "high",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_LARGE_DIVERGENCE"
+      ]
+    },
+    {
+      "office": "senate",
+      "raceId": "NC",
+      "state": "NC",
+      "severity": "review",
+      "reasons": [
+        "warning",
+        "RATING_PRIOR_DIVERGENCE"
+      ]
+    }
+  ]
+}

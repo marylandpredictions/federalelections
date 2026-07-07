@@ -1,0 +1,500 @@
+{
+  "schemaVersion": "2026.sensitivity-experiments-v2.1",
+  "generatedAt": "2026-07-07T04:28:21.491Z",
+  "mode": "shadow-plan",
+  "note": "This framework records pipeline-level variants and baseline snapshots. Set RUN_FULL_EXPERIMENTS=1 after generator variant hooks are enabled to execute full model re-runs.",
+  "variants": [
+    {
+      "variant": "polls_off",
+      "status": "PLANNED",
+      "rerunCommands": [
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=polls_off node scripts/generate-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=polls_off node scripts/generate-house-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=polls_off node scripts/generate-governor-forecast.mjs --core=v2"
+      ],
+      "base": [
+        {
+          "office": "senate",
+          "path": "data/forecast.json",
+          "generatedAt": "2026-07-07T04:26:40.094Z",
+          "races": 35,
+          "demControlProbability": 0.43797,
+          "demSeats": null,
+          "competitive": 8,
+          "noPolling": 21
+        },
+        {
+          "office": "house",
+          "path": "data/house-forecast.json",
+          "generatedAt": "2026-07-07T04:26:52.744Z",
+          "races": 435,
+          "demControlProbability": 0.48274,
+          "demSeats": null,
+          "competitive": 55,
+          "noPolling": 435
+        },
+        {
+          "office": "governor",
+          "path": "data/governor-forecast.json",
+          "generatedAt": "2026-07-07T04:26:58.246Z",
+          "races": 36,
+          "demControlProbability": null,
+          "demSeats": null,
+          "competitive": 12,
+          "noPolling": 35
+        }
+      ]
+    },
+    {
+      "variant": "ratings_off",
+      "status": "PLANNED",
+      "rerunCommands": [
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=ratings_off node scripts/generate-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=ratings_off node scripts/generate-house-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=ratings_off node scripts/generate-governor-forecast.mjs --core=v2"
+      ],
+      "base": [
+        {
+          "office": "senate",
+          "path": "data/forecast.json",
+          "generatedAt": "2026-07-07T04:26:40.094Z",
+          "races": 35,
+          "demControlProbability": 0.43797,
+          "demSeats": null,
+          "competitive": 8,
+          "noPolling": 21
+        },
+        {
+          "office": "house",
+          "path": "data/house-forecast.json",
+          "generatedAt": "2026-07-07T04:26:52.744Z",
+          "races": 435,
+          "demControlProbability": 0.48274,
+          "demSeats": null,
+          "competitive": 55,
+          "noPolling": 435
+        },
+        {
+          "office": "governor",
+          "path": "data/governor-forecast.json",
+          "generatedAt": "2026-07-07T04:26:58.246Z",
+          "races": 36,
+          "demControlProbability": null,
+          "demSeats": null,
+          "competitive": 12,
+          "noPolling": 35
+        }
+      ]
+    },
+    {
+      "variant": "ratings_half",
+      "status": "PLANNED",
+      "rerunCommands": [
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=ratings_half node scripts/generate-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=ratings_half node scripts/generate-house-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=ratings_half node scripts/generate-governor-forecast.mjs --core=v2"
+      ],
+      "base": [
+        {
+          "office": "senate",
+          "path": "data/forecast.json",
+          "generatedAt": "2026-07-07T04:26:40.094Z",
+          "races": 35,
+          "demControlProbability": 0.43797,
+          "demSeats": null,
+          "competitive": 8,
+          "noPolling": 21
+        },
+        {
+          "office": "house",
+          "path": "data/house-forecast.json",
+          "generatedAt": "2026-07-07T04:26:52.744Z",
+          "races": 435,
+          "demControlProbability": 0.48274,
+          "demSeats": null,
+          "competitive": 55,
+          "noPolling": 435
+        },
+        {
+          "office": "governor",
+          "path": "data/governor-forecast.json",
+          "generatedAt": "2026-07-07T04:26:58.246Z",
+          "races": 36,
+          "demControlProbability": null,
+          "demSeats": null,
+          "competitive": 12,
+          "noPolling": 35
+        }
+      ]
+    },
+    {
+      "variant": "ratings_full",
+      "status": "PLANNED",
+      "rerunCommands": [
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=ratings_full node scripts/generate-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=ratings_full node scripts/generate-house-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=ratings_full node scripts/generate-governor-forecast.mjs --core=v2"
+      ],
+      "base": [
+        {
+          "office": "senate",
+          "path": "data/forecast.json",
+          "generatedAt": "2026-07-07T04:26:40.094Z",
+          "races": 35,
+          "demControlProbability": 0.43797,
+          "demSeats": null,
+          "competitive": 8,
+          "noPolling": 21
+        },
+        {
+          "office": "house",
+          "path": "data/house-forecast.json",
+          "generatedAt": "2026-07-07T04:26:52.744Z",
+          "races": 435,
+          "demControlProbability": 0.48274,
+          "demSeats": null,
+          "competitive": 55,
+          "noPolling": 435
+        },
+        {
+          "office": "governor",
+          "path": "data/governor-forecast.json",
+          "generatedAt": "2026-07-07T04:26:58.246Z",
+          "races": 36,
+          "demControlProbability": null,
+          "demSeats": null,
+          "competitive": 12,
+          "noPolling": 35
+        }
+      ]
+    },
+    {
+      "variant": "baseline_observed_only",
+      "status": "PLANNED",
+      "rerunCommands": [
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=baseline_observed_only node scripts/generate-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=baseline_observed_only node scripts/generate-house-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=baseline_observed_only node scripts/generate-governor-forecast.mjs --core=v2"
+      ],
+      "base": [
+        {
+          "office": "senate",
+          "path": "data/forecast.json",
+          "generatedAt": "2026-07-07T04:26:40.094Z",
+          "races": 35,
+          "demControlProbability": 0.43797,
+          "demSeats": null,
+          "competitive": 8,
+          "noPolling": 21
+        },
+        {
+          "office": "house",
+          "path": "data/house-forecast.json",
+          "generatedAt": "2026-07-07T04:26:52.744Z",
+          "races": 435,
+          "demControlProbability": 0.48274,
+          "demSeats": null,
+          "competitive": 55,
+          "noPolling": 435
+        },
+        {
+          "office": "governor",
+          "path": "data/governor-forecast.json",
+          "generatedAt": "2026-07-07T04:26:58.246Z",
+          "races": 36,
+          "demControlProbability": null,
+          "demSeats": null,
+          "competitive": 12,
+          "noPolling": 35
+        }
+      ]
+    },
+    {
+      "variant": "baseline_translated_only",
+      "status": "PLANNED",
+      "rerunCommands": [
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=baseline_translated_only node scripts/generate-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=baseline_translated_only node scripts/generate-house-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=baseline_translated_only node scripts/generate-governor-forecast.mjs --core=v2"
+      ],
+      "base": [
+        {
+          "office": "senate",
+          "path": "data/forecast.json",
+          "generatedAt": "2026-07-07T04:26:40.094Z",
+          "races": 35,
+          "demControlProbability": 0.43797,
+          "demSeats": null,
+          "competitive": 8,
+          "noPolling": 21
+        },
+        {
+          "office": "house",
+          "path": "data/house-forecast.json",
+          "generatedAt": "2026-07-07T04:26:52.744Z",
+          "races": 435,
+          "demControlProbability": 0.48274,
+          "demSeats": null,
+          "competitive": 55,
+          "noPolling": 435
+        },
+        {
+          "office": "governor",
+          "path": "data/governor-forecast.json",
+          "generatedAt": "2026-07-07T04:26:58.246Z",
+          "races": 36,
+          "demControlProbability": null,
+          "demSeats": null,
+          "competitive": 12,
+          "noPolling": 35
+        }
+      ]
+    },
+    {
+      "variant": "elasticity_half",
+      "status": "PLANNED",
+      "rerunCommands": [
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=elasticity_half node scripts/generate-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=elasticity_half node scripts/generate-house-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=elasticity_half node scripts/generate-governor-forecast.mjs --core=v2"
+      ],
+      "base": [
+        {
+          "office": "senate",
+          "path": "data/forecast.json",
+          "generatedAt": "2026-07-07T04:26:40.094Z",
+          "races": 35,
+          "demControlProbability": 0.43797,
+          "demSeats": null,
+          "competitive": 8,
+          "noPolling": 21
+        },
+        {
+          "office": "house",
+          "path": "data/house-forecast.json",
+          "generatedAt": "2026-07-07T04:26:52.744Z",
+          "races": 435,
+          "demControlProbability": 0.48274,
+          "demSeats": null,
+          "competitive": 55,
+          "noPolling": 435
+        },
+        {
+          "office": "governor",
+          "path": "data/governor-forecast.json",
+          "generatedAt": "2026-07-07T04:26:58.246Z",
+          "races": 36,
+          "demControlProbability": null,
+          "demSeats": null,
+          "competitive": 12,
+          "noPolling": 35
+        }
+      ]
+    },
+    {
+      "variant": "elasticity_full",
+      "status": "PLANNED",
+      "rerunCommands": [
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=elasticity_full node scripts/generate-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=elasticity_full node scripts/generate-house-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=elasticity_full node scripts/generate-governor-forecast.mjs --core=v2"
+      ],
+      "base": [
+        {
+          "office": "senate",
+          "path": "data/forecast.json",
+          "generatedAt": "2026-07-07T04:26:40.094Z",
+          "races": 35,
+          "demControlProbability": 0.43797,
+          "demSeats": null,
+          "competitive": 8,
+          "noPolling": 21
+        },
+        {
+          "office": "house",
+          "path": "data/house-forecast.json",
+          "generatedAt": "2026-07-07T04:26:52.744Z",
+          "races": 435,
+          "demControlProbability": 0.48274,
+          "demSeats": null,
+          "competitive": 55,
+          "noPolling": 435
+        },
+        {
+          "office": "governor",
+          "path": "data/governor-forecast.json",
+          "generatedAt": "2026-07-07T04:26:58.246Z",
+          "races": 36,
+          "demControlProbability": null,
+          "demSeats": null,
+          "competitive": 12,
+          "noPolling": 35
+        }
+      ]
+    },
+    {
+      "variant": "market_off",
+      "status": "PLANNED",
+      "rerunCommands": [
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=market_off node scripts/generate-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=market_off node scripts/generate-house-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=market_off node scripts/generate-governor-forecast.mjs --core=v2"
+      ],
+      "base": [
+        {
+          "office": "senate",
+          "path": "data/forecast.json",
+          "generatedAt": "2026-07-07T04:26:40.094Z",
+          "races": 35,
+          "demControlProbability": 0.43797,
+          "demSeats": null,
+          "competitive": 8,
+          "noPolling": 21
+        },
+        {
+          "office": "house",
+          "path": "data/house-forecast.json",
+          "generatedAt": "2026-07-07T04:26:52.744Z",
+          "races": 435,
+          "demControlProbability": 0.48274,
+          "demSeats": null,
+          "competitive": 55,
+          "noPolling": 435
+        },
+        {
+          "office": "governor",
+          "path": "data/governor-forecast.json",
+          "generatedAt": "2026-07-07T04:26:58.246Z",
+          "races": 36,
+          "demControlProbability": null,
+          "demSeats": null,
+          "competitive": 12,
+          "noPolling": 35
+        }
+      ]
+    },
+    {
+      "variant": "correlation_low",
+      "status": "PLANNED",
+      "rerunCommands": [
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=correlation_low node scripts/generate-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=correlation_low node scripts/generate-house-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=correlation_low node scripts/generate-governor-forecast.mjs --core=v2"
+      ],
+      "base": [
+        {
+          "office": "senate",
+          "path": "data/forecast.json",
+          "generatedAt": "2026-07-07T04:26:40.094Z",
+          "races": 35,
+          "demControlProbability": 0.43797,
+          "demSeats": null,
+          "competitive": 8,
+          "noPolling": 21
+        },
+        {
+          "office": "house",
+          "path": "data/house-forecast.json",
+          "generatedAt": "2026-07-07T04:26:52.744Z",
+          "races": 435,
+          "demControlProbability": 0.48274,
+          "demSeats": null,
+          "competitive": 55,
+          "noPolling": 435
+        },
+        {
+          "office": "governor",
+          "path": "data/governor-forecast.json",
+          "generatedAt": "2026-07-07T04:26:58.246Z",
+          "races": 36,
+          "demControlProbability": null,
+          "demSeats": null,
+          "competitive": 12,
+          "noPolling": 35
+        }
+      ]
+    },
+    {
+      "variant": "correlation_medium",
+      "status": "PLANNED",
+      "rerunCommands": [
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=correlation_medium node scripts/generate-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=correlation_medium node scripts/generate-house-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=correlation_medium node scripts/generate-governor-forecast.mjs --core=v2"
+      ],
+      "base": [
+        {
+          "office": "senate",
+          "path": "data/forecast.json",
+          "generatedAt": "2026-07-07T04:26:40.094Z",
+          "races": 35,
+          "demControlProbability": 0.43797,
+          "demSeats": null,
+          "competitive": 8,
+          "noPolling": 21
+        },
+        {
+          "office": "house",
+          "path": "data/house-forecast.json",
+          "generatedAt": "2026-07-07T04:26:52.744Z",
+          "races": 435,
+          "demControlProbability": 0.48274,
+          "demSeats": null,
+          "competitive": 55,
+          "noPolling": 435
+        },
+        {
+          "office": "governor",
+          "path": "data/governor-forecast.json",
+          "generatedAt": "2026-07-07T04:26:58.246Z",
+          "races": 36,
+          "demControlProbability": null,
+          "demSeats": null,
+          "competitive": 12,
+          "noPolling": 35
+        }
+      ]
+    },
+    {
+      "variant": "correlation_high",
+      "status": "PLANNED",
+      "rerunCommands": [
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=correlation_high node scripts/generate-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=correlation_high node scripts/generate-house-forecast.mjs --core=v2",
+        "FORECAST_CORE_V2=1 FORECAST_EXPERIMENT_VARIANT=correlation_high node scripts/generate-governor-forecast.mjs --core=v2"
+      ],
+      "base": [
+        {
+          "office": "senate",
+          "path": "data/forecast.json",
+          "generatedAt": "2026-07-07T04:26:40.094Z",
+          "races": 35,
+          "demControlProbability": 0.43797,
+          "demSeats": null,
+          "competitive": 8,
+          "noPolling": 21
+        },
+        {
+          "office": "house",
+          "path": "data/house-forecast.json",
+          "generatedAt": "2026-07-07T04:26:52.744Z",
+          "races": 435,
+          "demControlProbability": 0.48274,
+          "demSeats": null,
+          "competitive": 55,
+          "noPolling": 435
+        },
+        {
+          "office": "governor",
+          "path": "data/governor-forecast.json",
+          "generatedAt": "2026-07-07T04:26:58.246Z",
+          "races": 36,
+          "demControlProbability": null,
+          "demSeats": null,
+          "competitive": 12,
+          "noPolling": 35
+        }
+      ]
+    }
+  ]
+}

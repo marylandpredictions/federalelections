@@ -1,11 +1,53 @@
 {
   "model": "2026 gubernatorial forecast",
   "modelVersion": "2026.06.reliability.1",
+  "coreVersion": "v2",
+  "inputPipeline": "upstream-ingest-validate-ledger-v2",
+  "featureFlags": {
+    "FORECAST_CORE_V2": false,
+    "UPSTREAM_POLLS_ONLY": false,
+    "STRICT_RELEASE_GATES": false,
+    "EXPORT_FORECAST_POLL_VIEW": false
+  },
+  "structuredMargins": {
+    "projectedResultMargin": "race.margin / race.projectedResultMargin",
+    "probabilityMargin": "race.probabilityEngineMargin / race.probabilityMargin",
+    "ratingsRegularizedMargin": "ratings prior diagnostic pull only",
+    "marketAdjustedMargin": "null unless market source is explicitly used",
+    "uncertaintySigma": "race.error / race.uncertainty"
+  },
+  "upstreamPollLedger": {
+    "path": "data/cache/polls/upstream-canonical-governor-2026.json",
+    "rows": 3,
+    "usedInModel": 3,
+    "generatedAt": "2026-07-07T04:22:04.239Z"
+  },
+  "sourceProvenanceSummary": {
+    "polls": {
+      "path": "data/cache/polls/upstream-canonical-governor-2026.json",
+      "rows": 3,
+      "usedInModel": 3,
+      "generatedAt": "2026-07-07T04:22:04.239Z",
+      "upstreamOnly": true
+    },
+    "ratingsPriors": {
+      "path": "data/cache/ratings/governor-ratings-priors-2026.json",
+      "rows": 16,
+      "generatedAt": "2026-07-07T04:14:43.511Z",
+      "status": "OK_PARSED"
+    },
+    "finance": {
+      "path": "data/cache/finance/governor-2026-v2.json",
+      "status": "OK",
+      "rows": 36,
+      "generatedAt": "2026-07-07T04:14:46.121Z"
+    }
+  },
   "forecastStatus": "PARTIAL",
-  "modelDate": "2026-07-06",
-  "generatedAt": "2026-07-07T01:44:40.928Z",
-  "lastUpdated": "2026-07-07T01:44:40.928Z",
-  "runDate": "Jul 6, 2026",
+  "modelDate": "2026-07-07",
+  "generatedAt": "2026-07-07T04:26:58.246Z",
+  "lastUpdated": "2026-07-07T04:26:58.246Z",
+  "runDate": "Jul 7, 2026",
   "settings": {
     "simulations": 100000,
     "electionDate": "2026-11-03",
@@ -27,31 +69,31 @@
     "degraded": true,
     "health": "PARTIAL",
     "usableSources": [
-      "twoSeventyGovernorPollsCT",
-      "twoSeventyGovernorPollsAK",
+      "pollfinityAverages",
       "twoSeventyGovernorPollsAZ",
-      "twoSeventyGovernorPollsIL",
       "twoSeventyGovernorPollsCO",
       "twoSeventyGovernorPollsFL",
+      "twoSeventyGovernorPollsAK",
+      "twoSeventyGovernorPollsCT",
       "twoSeventyGovernorPollsGA",
-      "twoSeventyGovernorPollsKS",
-      "twoSeventyGovernorPollsMI",
-      "twoSeventyGovernorPollsME",
-      "twoSeventyGovernorPollsMN",
       "twoSeventyGovernorPollsIA",
+      "twoSeventyGovernorPollsME",
+      "twoSeventyGovernorPollsIL",
+      "twoSeventyGovernorPollsKS",
+      "twoSeventyGovernorPollsMN",
       "twoSeventyGovernorPollsNV",
-      "twoSeventyGovernorPollsNY",
-      "pollfinityAverages",
-      "twoSeventyGovernorPollsOH",
       "twoSeventyGovernorPollsNM",
       "twoSeventyGovernorPollsNH",
-      "twoSeventyGovernorPollsRI",
-      "twoSeventyGovernorPollsOR",
+      "twoSeventyGovernorPollsOH",
+      "twoSeventyGovernorPollsNY",
       "twoSeventyGovernorPollsPA",
+      "twoSeventyGovernorPollsOR",
       "twoSeventyGovernorPollsSC",
-      "twoSeventyGovernorPollsTX",
-      "twoSeventyGovernorPollsWI",
+      "twoSeventyGovernorPollsRI",
+      "twoSeventyGovernorPollsMI",
       "twoSeventyGovernorPollsNE",
+      "twoSeventyGovernorPollsWI",
+      "twoSeventyGovernorPollsTX",
       "twoSeventyGovernorPolls"
     ],
     "noRowSources": [
@@ -79,7 +121,7 @@
       "status": "FRESH",
       "cacheStatus": "OK_PARSED",
       "maxAgeDays": 7,
-      "ageDays": 2.06,
+      "ageDays": 2.18,
       "asOf": "2026-07-05T00:14:38.545Z",
       "generatedAt": "2026-07-07T01:03:24.818Z",
       "rowCount": 3,
@@ -91,7 +133,7 @@
       "status": "FRESH",
       "cacheStatus": "OK_PARSED",
       "maxAgeDays": 14,
-      "ageDays": 2.06,
+      "ageDays": 2.18,
       "asOf": "2026-07-05T00:14:38.545Z",
       "generatedAt": "2026-07-07T01:03:24.835Z",
       "rowCount": 3,
@@ -318,7 +360,7 @@
       "status": "FRESH",
       "cacheStatus": "OK_PARSED",
       "maxAgeDays": 21,
-      "ageDays": 17.07,
+      "ageDays": 17.19,
       "asOf": "2026-06-20",
       "generatedAt": "2026-07-03T21:15:16.521Z",
       "rowCount": 16,
@@ -332,7 +374,7 @@
       "status": "FRESH",
       "cacheStatus": "DERIVED_FROM_PRIOR_FORECAST",
       "maxAgeDays": 365,
-      "ageDays": 3.2,
+      "ageDays": 3.31,
       "asOf": "2026-07-03T20:53:56.701Z",
       "generatedAt": "2026-07-03T21:15:16.799Z",
       "rowCount": 71,
@@ -346,7 +388,7 @@
       "status": "FRESH",
       "cacheStatus": "PLACEHOLDER_DISABLED",
       "maxAgeDays": 30,
-      "ageDays": 2.06,
+      "ageDays": 2.17,
       "asOf": "2026-07-05T00:15:54.819Z",
       "generatedAt": null,
       "rowCount": 36,
@@ -359,7 +401,7 @@
     "status": "FRESH",
     "cacheStatus": "OK_PARSED",
     "maxAgeDays": 21,
-    "ageDays": 17.07,
+    "ageDays": 17.19,
     "asOf": "2026-06-20",
     "generatedAt": "2026-07-03T21:15:16.521Z",
     "rowCount": 16,
@@ -402,13 +444,13 @@
       }
     ],
     "sourceHealth": {
-      "checkedAt": "2026-07-07T01:43:14.600Z",
+      "checkedAt": "2026-07-07T04:26:28.600Z",
       "pollfinityAverages": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 296,
+        "ms": 369,
         "url": "https://pollfinity.com/averages.json",
         "expected": "json",
         "genericBallotPolls": 28,
@@ -416,41 +458,32 @@
         "approvalPolls": 35,
         "approvalNet": -20
       },
-      "twoSeventyToWinPollsCO": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 291,
-        "url": "https://www.270towin.com/2026-senate-polls/colorado",
-        "expected": "text"
-      },
       "realClearPollingSenate": {
         "health": "BLOCKED_403",
         "ok": false,
         "status": "BLOCKED_403",
         "httpStatus": 403,
-        "ms": 304,
+        "ms": 369,
         "url": "https://www.realclearpolling.com/latest-polls/senate",
         "expected": "text",
         "error": "<html lang=\"en\"><head><title>realclearpolling.com</title><style>#cmsg{animation: A 1.5s;}@keyframes A{0%{opacity:0;}99%{opacity:0;}100%{opacity:1;}}</style></head><body style=\"marg"
+      },
+      "twoSeventyToWinPollsAK": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 432,
+        "url": "https://www.270towin.com/2026-senate-polls/alaska",
+        "expected": "text"
       },
       "twoSeventyToWinPollsAL": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 411,
+        "ms": 440,
         "url": "https://www.270towin.com/2026-senate-polls/alabama",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsDE": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 156,
-        "url": "https://www.270towin.com/2026-senate-polls/delaware",
         "expected": "text"
       },
       "twoSeventyToWinPollsFL": {
@@ -458,29 +491,8 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 56,
+        "ms": 98,
         "url": "https://www.270towin.com/2026-senate-polls/florida",
-        "expected": "text"
-      },
-      "censusPopulation": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 473,
-        "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2024/state/totals/NST-EST2024-POPCHG2020-2024.csv",
-        "expected": "text",
-        "rows": 66,
-        "states": 51,
-        "source": "Census Bureau no-key CSV"
-      },
-      "twoSeventyToWinLatestPolls": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 492,
-        "url": "https://www.270towin.com/polls/latest-2026-senate-election-polls/",
         "expected": "text"
       },
       "twoSeventyToWinPollingIndex": {
@@ -488,17 +500,35 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 492,
+        "ms": 532,
         "url": "https://www.270towin.com/content/2026-senate-polling",
         "expected": "text"
       },
-      "twoSeventyToWinPollsID": {
+      "twoSeventyToWinLatestPolls": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 46,
-        "url": "https://www.270towin.com/2026-senate-polls/idaho",
+        "ms": 532,
+        "url": "https://www.270towin.com/polls/latest-2026-senate-election-polls/",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsDE": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 130,
+        "url": "https://www.270towin.com/2026-senate-polls/delaware",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsAR": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 569,
+        "url": "https://www.270towin.com/2026-senate-polls/arkansas",
         "expected": "text"
       },
       "twoSeventyToWinPollsGA": {
@@ -506,45 +536,8 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 87,
+        "ms": 66,
         "url": "https://www.270towin.com/2026-senate-polls/georgia",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsIL": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 45,
-        "url": "https://www.270towin.com/2026-senate-polls/illinois",
-        "expected": "text"
-      },
-      "usPollingDataGenericBallot": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 574,
-        "url": "https://uspollingdata.com/polls/generic-ballot/",
-        "expected": "text",
-        "margin": 7
-      },
-      "twoSeventyToWinPollsIA": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 38,
-        "url": "https://www.270towin.com/2026-senate-polls/iowa",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsKY": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 58,
-        "url": "https://www.270towin.com/2026-senate-polls/kentucky",
         "expected": "text"
       },
       "raceToTheWhGenericBallot": {
@@ -552,7 +545,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 625,
+        "ms": 613,
         "url": "https://www.racetothewh.com/polls/genericballot",
         "expected": "text"
       },
@@ -561,19 +554,116 @@
         "ok": true,
         "status": "OK_NO_ROWS",
         "httpStatus": 200,
-        "ms": 654,
+        "ms": 631,
         "url": "https://www.racetothewh.com/senate/26polls",
         "expected": "text",
         "hasStaticRows": false,
         "note": "Reachable, but no stable row-level poll data was present in the fetched HTML."
+      },
+      "twoSeventyToWinPollsIA": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 72,
+        "url": "https://www.270towin.com/2026-senate-polls/iowa",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsID": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 135,
+        "url": "https://www.270towin.com/2026-senate-polls/idaho",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsIL": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 143,
+        "url": "https://www.270towin.com/2026-senate-polls/illinois",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsCO": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 722,
+        "url": "https://www.270towin.com/2026-senate-polls/colorado",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsKY": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 35,
+        "url": "https://www.270towin.com/2026-senate-polls/kentucky",
+        "expected": "text"
       },
       "twoSeventyToWinPollsKS": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 145,
+        "ms": 78,
         "url": "https://www.270towin.com/2026-senate-polls/kansas",
+        "expected": "text"
+      },
+      "censusPopulation": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 764,
+        "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2024/state/totals/NST-EST2024-POPCHG2020-2024.csv",
+        "expected": "text",
+        "rows": 66,
+        "states": 51,
+        "source": "Census Bureau no-key CSV"
+      },
+      "twoSeventyToWinPollsME": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 49,
+        "url": "https://www.270towin.com/2026-senate-polls/maine",
+        "expected": "text"
+      },
+      "ddhqGenericBallot": {
+        "health": "OK_NO_ROWS",
+        "ok": true,
+        "status": "OK_NO_ROWS",
+        "httpStatus": 200,
+        "ms": 786,
+        "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
+        "expected": "text",
+        "polls": 0,
+        "margin": null
+      },
+      "electoralVoteSenatePolls": {
+        "health": "OK_NO_ROWS",
+        "ok": true,
+        "status": "OK_NO_ROWS",
+        "httpStatus": 200,
+        "ms": 817,
+        "url": "https://electoral-vote.com/evp2026/Senate/senate_polls.csv",
+        "expected": "text",
+        "rows": 35,
+        "usablePolls": 0
+      },
+      "twoSeventyToWinPollsMI": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 74,
+        "url": "https://www.270towin.com/2026-senate-polls/michigan",
         "expected": "text"
       },
       "twoSeventyToWinPollsLA": {
@@ -581,84 +671,17 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 83,
+        "ms": 125,
         "url": "https://www.270towin.com/2026-senate-polls/louisiana",
         "expected": "text"
-      },
-      "twoSeventyToWinPollsAK": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 724,
-        "url": "https://www.270towin.com/2026-senate-polls/alaska",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsMI": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 48,
-        "url": "https://www.270towin.com/2026-senate-polls/michigan",
-        "expected": "text"
-      },
-      "civicApiDocs": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 792,
-        "url": "https://www.civicapi.org/api-documentation",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsMA": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 82,
-        "url": "https://www.270towin.com/2026-senate-polls/massachusetts",
-        "expected": "text"
-      },
-      "votehubGenericBallot": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 918,
-        "url": "https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026",
-        "expected": "json",
-        "rows": 533,
-        "usablePolls": 411,
-        "rawUsablePolls": 533
       },
       "twoSeventyToWinPollsMN": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 71,
+        "ms": 102,
         "url": "https://www.270towin.com/2026-senate-polls/minnesota",
-        "expected": "text"
-      },
-      "civicApiEndpoint": {
-        "health": "NOT_FOUND_404",
-        "ok": false,
-        "status": "NOT_FOUND_404",
-        "httpStatus": 404,
-        "ms": 61,
-        "url": "https://www.civicapi.org/api/v1/upcomingraces",
-        "expected": "text",
-        "error": "{\"message\":\"Route GET:/v1/upcomingraces not found\",\"error\":\"Not Found\",\"statusCode\":404}"
-      },
-      "twoSeventyToWinPollsME": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 155,
-        "url": "https://www.270towin.com/2026-senate-polls/maine",
         "expected": "text"
       },
       "twoSeventyToWinPollsMT": {
@@ -666,17 +689,8 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 50,
+        "ms": 70,
         "url": "https://www.270towin.com/2026-senate-polls/montana",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsMS": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 114,
-        "url": "https://www.270towin.com/2026-senate-polls/mississippi",
         "expected": "text"
       },
       "twoSeventyToWinPollsNC": {
@@ -684,44 +698,37 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 73,
+        "ms": 62,
         "url": "https://www.270towin.com/2026-senate-polls/north-carolina",
         "expected": "text"
       },
-      "twoSeventyToWinPollsNH": {
+      "twoSeventyToWinPollsMS": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 43,
-        "url": "https://www.270towin.com/2026-senate-polls/new-hampshire",
+        "ms": 149,
+        "url": "https://www.270towin.com/2026-senate-polls/mississippi",
         "expected": "text"
+      },
+      "mitSenateReturns": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1015,
+        "url": "https://raw.githubusercontent.com/MEDSL/constituency-returns/master/1976-2018-senate.csv",
+        "expected": "text",
+        "rows": 3421,
+        "states": 50
       },
       "twoSeventyToWinPollsNE": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 76,
+        "ms": 157,
         "url": "https://www.270towin.com/2026-senate-polls/nebraska",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsOH": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 41,
-        "url": "https://www.270towin.com/2026-senate-polls/ohio",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsNM": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 77,
-        "url": "https://www.270towin.com/2026-senate-polls/new-mexico",
         "expected": "text"
       },
       "twoSeventyToWinPollsNJ": {
@@ -729,34 +736,113 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 121,
+        "ms": 108,
         "url": "https://www.270towin.com/2026-senate-polls/new-jersey",
         "expected": "text"
+      },
+      "twoSeventyToWinPollsNH": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 157,
+        "url": "https://www.270towin.com/2026-senate-polls/new-hampshire",
+        "expected": "text"
+      },
+      "usPollingDataGenericBallot": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1110,
+        "url": "https://uspollingdata.com/polls/generic-ballot/",
+        "expected": "text",
+        "margin": 7
+      },
+      "votehubGenericBallot": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1186,
+        "url": "https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026",
+        "expected": "json",
+        "rows": 533,
+        "usablePolls": 411,
+        "rawUsablePolls": 533
+      },
+      "twoSeventyToWinPollsOH": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 35,
+        "url": "https://www.270towin.com/2026-senate-polls/ohio",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsMA": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 436,
+        "url": "https://www.270towin.com/2026-senate-polls/massachusetts",
+        "expected": "text"
+      },
+      "civicApiDocs": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 1171,
+        "url": "https://www.civicapi.org/api-documentation",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsNM": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 113,
+        "url": "https://www.270towin.com/2026-senate-polls/new-mexico",
+        "expected": "text"
+      },
+      "civicApiEndpoint": {
+        "health": "NOT_FOUND_404",
+        "ok": false,
+        "status": "NOT_FOUND_404",
+        "httpStatus": 404,
+        "ms": 53,
+        "url": "https://www.civicapi.org/api/v1/upcomingraces",
+        "expected": "text",
+        "error": "{\"message\":\"Route GET:/v1/upcomingraces not found\",\"error\":\"Not Found\",\"statusCode\":404}"
       },
       "twoSeventyToWinPollsOK": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 47,
+        "ms": 137,
         "url": "https://www.270towin.com/2026-senate-polls/oklahoma",
         "expected": "text"
       },
-      "twoSeventyToWinPollsRI": {
+      "usPollingDataSenatePolling": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 73,
-        "url": "https://www.270towin.com/2026-senate-polls/rhode-island",
-        "expected": "text"
+        "ms": 1223,
+        "url": "https://uspollingdata.com/polls/senate-polling/",
+        "expected": "text",
+        "hasSenateTable": true,
+        "note": "Reachable, but not blended because several listed races/candidates do not match this Senate cycle ledger."
       },
       "twoSeventyToWinPollsOR": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 116,
+        "ms": 113,
         "url": "https://www.270towin.com/2026-senate-polls/oregon",
         "expected": "text"
       },
@@ -765,17 +851,17 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 139,
+        "ms": 79,
         "url": "https://www.270towin.com/2026-senate-polls/south-carolina",
         "expected": "text"
       },
-      "twoSeventyToWinPollsSD": {
+      "twoSeventyToWinPollsRI": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 84,
-        "url": "https://www.270towin.com/2026-senate-polls/south-dakota",
+        "ms": 127,
+        "url": "https://www.270towin.com/2026-senate-polls/rhode-island",
         "expected": "text"
       },
       "twoSeventyToWinPollsTX": {
@@ -783,17 +869,8 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 49,
+        "ms": 43,
         "url": "https://www.270towin.com/2026-senate-polls/texas",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsVA": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 73,
-        "url": "https://www.270towin.com/2026-senate-polls/virginia",
         "expected": "text"
       },
       "twoSeventyToWinPollsTN": {
@@ -801,8 +878,17 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 142,
+        "ms": 120,
         "url": "https://www.270towin.com/2026-senate-polls/tennessee",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsSD": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 127,
+        "url": "https://www.270towin.com/2026-senate-polls/south-dakota",
         "expected": "text"
       },
       "twoSeventyToWinPollsWV": {
@@ -810,8 +896,17 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 136,
+        "ms": 137,
         "url": "https://www.270towin.com/2026-senate-polls/west-virginia",
+        "expected": "text"
+      },
+      "twoSeventyToWinPollsVA": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 153,
+        "url": "https://www.270towin.com/2026-senate-polls/virginia",
         "expected": "text"
       },
       "twoSeventyToWinPollsWY": {
@@ -819,79 +914,26 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 129,
+        "ms": 110,
         "url": "https://www.270towin.com/2026-senate-polls/wyoming",
-        "expected": "text"
-      },
-      "twoSeventyToWinPollsAR": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1636,
-        "url": "https://www.270towin.com/2026-senate-polls/arkansas",
         "expected": "text"
       },
       "twoSeventyToWinRacePolls": {
         "ok": true,
         "status": 200,
-        "ms": 1638,
+        "ms": 1465,
         "url": "https://www.270towin.com/2026-senate-polls/{state}",
         "pages": 35,
         "okPages": 35,
         "usablePolls": 131,
         "states": 14
       },
-      "electoralVoteSenatePolls": {
-        "health": "OK_NO_ROWS",
-        "ok": true,
-        "status": "OK_NO_ROWS",
-        "httpStatus": 200,
-        "ms": 1700,
-        "url": "https://electoral-vote.com/evp2026/Senate/senate_polls.csv",
-        "expected": "text",
-        "rows": 35,
-        "usablePolls": 0
-      },
-      "usPollingDataSenatePolling": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 1810,
-        "url": "https://uspollingdata.com/polls/senate-polling/",
-        "expected": "text",
-        "hasSenateTable": true,
-        "note": "Reachable, but not blended because several listed races/candidates do not match this Senate cycle ledger."
-      },
-      "ddhqGenericBallot": {
-        "health": "OK_NO_ROWS",
-        "ok": true,
-        "status": "OK_NO_ROWS",
-        "httpStatus": 200,
-        "ms": 1883,
-        "url": "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults",
-        "expected": "text",
-        "polls": 0,
-        "margin": null
-      },
-      "mitSenateReturns": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 2349,
-        "url": "https://raw.githubusercontent.com/MEDSL/constituency-returns/master/1976-2018-senate.csv",
-        "expected": "text",
-        "rows": 3421,
-        "states": 50
-      },
       "openFecCandidateSummary": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 3219,
+        "ms": 9311,
         "url": "https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv",
         "expected": "text",
         "rows": 4228,
@@ -913,7 +955,7 @@
         "url": "data/direct-poll-ledger.json"
       }
     },
-    "lastUpdated": "2026-07-07T01:43:14.600Z"
+    "lastUpdated": "2026-07-07T04:26:28.600Z"
   },
   "racePollCoverage": {
     "races": 36,
@@ -922,7 +964,7 @@
   "benchmarkComparison": {
     "status": "CONFIGURED",
     "updatedAt": "2026-06-20",
-    "cacheGeneratedAt": "2026-07-07T01:08:38.959Z",
+    "cacheGeneratedAt": "2026-07-07T01:45:55.635Z",
     "sources": {
       "voteHub": {
         "demFavoredRaces": 18,
@@ -957,7 +999,7 @@
     "toplineComparison": {
       "status": "CONFIGURED",
       "updatedAt": "2026-06-20",
-      "cacheGeneratedAt": "2026-07-07T01:08:38.959Z",
+      "cacheGeneratedAt": "2026-07-07T01:45:55.635Z",
       "sources": {
         "voteHub": {
           "demFavoredRaces": 18,
@@ -1827,7 +1869,7 @@
     "gubernatorialNationalShift": 0.96,
     "approvalNet": null,
     "dataSources": {
-      "checkedAt": "2026-07-07T01:44:39.352Z",
+      "checkedAt": "2026-07-07T04:26:56.669Z",
       "governorFinance": {
         "ok": true,
         "states": 0,
@@ -1845,40 +1887,22 @@
         "status": "DISABLED",
         "reason": "DDHQ public endpoint is not a stable machine-readable source."
       },
-      "twoSeventyGovernorPollsCT": {
+      "pollfinityAverages": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 157,
-        "url": "https://www.270towin.com/2026-governor-polls/connecticut",
-        "expected": "text"
-      },
-      "twoSeventyGovernorPollsAK": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 172,
-        "url": "https://www.270towin.com/2026-governor-polls/alaska",
-        "expected": "text"
+        "ms": 205,
+        "url": "https://pollfinity.com/averages.json",
+        "expected": "json"
       },
       "twoSeventyGovernorPollsAZ": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 179,
+        "ms": 143,
         "url": "https://www.270towin.com/2026-governor-polls/arizona",
-        "expected": "text"
-      },
-      "twoSeventyGovernorPollsIL": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 38,
-        "url": "https://www.270towin.com/2026-governor-polls/illinois",
         "expected": "text"
       },
       "twoSeventyGovernorPollsCO": {
@@ -1886,7 +1910,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 229,
+        "ms": 176,
         "url": "https://www.270towin.com/2026-governor-polls/colorado",
         "expected": "text"
       },
@@ -1895,8 +1919,26 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 79,
+        "ms": 44,
         "url": "https://www.270towin.com/2026-governor-polls/florida",
+        "expected": "text"
+      },
+      "twoSeventyGovernorPollsAK": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 194,
+        "url": "https://www.270towin.com/2026-governor-polls/alaska",
+        "expected": "text"
+      },
+      "twoSeventyGovernorPollsCT": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 193,
+        "url": "https://www.270towin.com/2026-governor-polls/connecticut",
         "expected": "text"
       },
       "twoSeventyGovernorPollsGA": {
@@ -1904,44 +1946,8 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 80,
+        "ms": 48,
         "url": "https://www.270towin.com/2026-governor-polls/georgia",
-        "expected": "text"
-      },
-      "twoSeventyGovernorPollsKS": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 71,
-        "url": "https://www.270towin.com/2026-governor-polls/kansas",
-        "expected": "text"
-      },
-      "twoSeventyGovernorPollsMI": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 56,
-        "url": "https://www.270towin.com/2026-governor-polls/michigan",
-        "expected": "text"
-      },
-      "twoSeventyGovernorPollsME": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 89,
-        "url": "https://www.270towin.com/2026-governor-polls/maine",
-        "expected": "text"
-      },
-      "twoSeventyGovernorPollsMN": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 45,
-        "url": "https://www.270towin.com/2026-governor-polls/minnesota",
         "expected": "text"
       },
       "twoSeventyGovernorPollsIA": {
@@ -1949,8 +1955,44 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 140,
+        "ms": 33,
         "url": "https://www.270towin.com/2026-governor-polls/iowa",
+        "expected": "text"
+      },
+      "twoSeventyGovernorPollsME": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 41,
+        "url": "https://www.270towin.com/2026-governor-polls/maine",
+        "expected": "text"
+      },
+      "twoSeventyGovernorPollsIL": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 79,
+        "url": "https://www.270towin.com/2026-governor-polls/illinois",
+        "expected": "text"
+      },
+      "twoSeventyGovernorPollsKS": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 83,
+        "url": "https://www.270towin.com/2026-governor-polls/kansas",
+        "expected": "text"
+      },
+      "twoSeventyGovernorPollsMN": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 35,
+        "url": "https://www.270towin.com/2026-governor-polls/minnesota",
         "expected": "text"
       },
       "twoSeventyGovernorPollsNV": {
@@ -1958,35 +2000,8 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 86,
+        "ms": 68,
         "url": "https://www.270towin.com/2026-governor-polls/nevada",
-        "expected": "text"
-      },
-      "twoSeventyGovernorPollsNY": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 30,
-        "url": "https://www.270towin.com/2026-governor-polls/new-york",
-        "expected": "text"
-      },
-      "pollfinityAverages": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 532,
-        "url": "https://pollfinity.com/averages.json",
-        "expected": "json"
-      },
-      "twoSeventyGovernorPollsOH": {
-        "health": "OK_PARSED",
-        "ok": true,
-        "status": "OK_PARSED",
-        "httpStatus": 200,
-        "ms": 33,
-        "url": "https://www.270towin.com/2026-governor-polls/ohio",
         "expected": "text"
       },
       "twoSeventyGovernorPollsNM": {
@@ -1994,7 +2009,7 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 125,
+        "ms": 45,
         "url": "https://www.270towin.com/2026-governor-polls/new-mexico",
         "expected": "text"
       },
@@ -2003,26 +2018,26 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 142,
+        "ms": 90,
         "url": "https://www.270towin.com/2026-governor-polls/new-hampshire",
         "expected": "text"
       },
-      "twoSeventyGovernorPollsRI": {
+      "twoSeventyGovernorPollsOH": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 50,
-        "url": "https://www.270towin.com/2026-governor-polls/rhode-island",
+        "ms": 34,
+        "url": "https://www.270towin.com/2026-governor-polls/ohio",
         "expected": "text"
       },
-      "twoSeventyGovernorPollsOR": {
+      "twoSeventyGovernorPollsNY": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 69,
-        "url": "https://www.270towin.com/2026-governor-polls/oregon",
+        "ms": 38,
+        "url": "https://www.270towin.com/2026-governor-polls/new-york",
         "expected": "text"
       },
       "twoSeventyGovernorPollsPA": {
@@ -2030,8 +2045,17 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 81,
+        "ms": 50,
         "url": "https://www.270towin.com/2026-governor-polls/pennsylvania",
+        "expected": "text"
+      },
+      "twoSeventyGovernorPollsOR": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 61,
+        "url": "https://www.270towin.com/2026-governor-polls/oregon",
         "expected": "text"
       },
       "twoSeventyGovernorPollsSC": {
@@ -2039,26 +2063,26 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 37,
+        "ms": 52,
         "url": "https://www.270towin.com/2026-governor-polls/south-carolina",
         "expected": "text"
       },
-      "twoSeventyGovernorPollsTX": {
+      "twoSeventyGovernorPollsRI": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 35,
-        "url": "https://www.270towin.com/2026-governor-polls/texas",
+        "ms": 60,
+        "url": "https://www.270towin.com/2026-governor-polls/rhode-island",
         "expected": "text"
       },
-      "twoSeventyGovernorPollsWI": {
+      "twoSeventyGovernorPollsMI": {
         "health": "OK_PARSED",
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 34,
-        "url": "https://www.270towin.com/2026-governor-polls/wisconsin",
+        "ms": 315,
+        "url": "https://www.270towin.com/2026-governor-polls/michigan",
         "expected": "text"
       },
       "twoSeventyGovernorPollsNE": {
@@ -2066,8 +2090,26 @@
         "ok": true,
         "status": "OK_PARSED",
         "httpStatus": 200,
-        "ms": 305,
+        "ms": 337,
         "url": "https://www.270towin.com/2026-governor-polls/nebraska",
+        "expected": "text"
+      },
+      "twoSeventyGovernorPollsWI": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 67,
+        "url": "https://www.270towin.com/2026-governor-polls/wisconsin",
+        "expected": "text"
+      },
+      "twoSeventyGovernorPollsTX": {
+        "health": "OK_PARSED",
+        "ok": true,
+        "status": "OK_PARSED",
+        "httpStatus": 200,
+        "ms": 74,
+        "url": "https://www.270towin.com/2026-governor-polls/texas",
         "expected": "text"
       },
       "twoSeventyGovernorPolls": {
@@ -2080,19 +2122,6 @@
         "noPolls": 6,
         "failed": 0,
         "states": {
-          "CT": {
-            "ok": true,
-            "parsed": true,
-            "polls": 1,
-            "margin": 13,
-            "matchup": "Lamont vs. Fazio",
-            "url": "https://www.270towin.com/2026-governor-polls/connecticut"
-          },
-          "AK": {
-            "ok": true,
-            "parsed": false,
-            "url": "https://www.270towin.com/2026-governor-polls/alaska"
-          },
           "AZ": {
             "ok": true,
             "parsed": true,
@@ -2100,15 +2129,6 @@
             "margin": 7,
             "matchup": "Hobbs vs. Schweikert",
             "url": "https://www.270towin.com/2026-governor-polls/arizona"
-          },
-          "IL": {
-            "ok": true,
-            "parsed": true,
-            "primarySignal": true,
-            "polls": 1,
-            "margin": -0.55,
-            "matchup": "Republican Primary",
-            "url": "https://www.270towin.com/2026-governor-polls/illinois"
           },
           "CO": {
             "ok": true,
@@ -2124,6 +2144,19 @@
             "parsed": false,
             "url": "https://www.270towin.com/2026-governor-polls/florida"
           },
+          "AK": {
+            "ok": true,
+            "parsed": false,
+            "url": "https://www.270towin.com/2026-governor-polls/alaska"
+          },
+          "CT": {
+            "ok": true,
+            "parsed": true,
+            "polls": 1,
+            "margin": 13,
+            "matchup": "Lamont vs. Fazio",
+            "url": "https://www.270towin.com/2026-governor-polls/connecticut"
+          },
           "GA": {
             "ok": true,
             "parsed": true,
@@ -2131,29 +2164,6 @@
             "margin": 5.5,
             "matchup": "Bottoms vs. Jackson",
             "url": "https://www.270towin.com/2026-governor-polls/georgia"
-          },
-          "KS": {
-            "ok": true,
-            "parsed": false,
-            "url": "https://www.270towin.com/2026-governor-polls/kansas"
-          },
-          "MI": {
-            "ok": true,
-            "parsed": true,
-            "polls": 6,
-            "margin": 5.33,
-            "matchup": "Benson vs. Duggan vs. Cox",
-            "url": "https://www.270towin.com/2026-governor-polls/michigan"
-          },
-          "ME": {
-            "ok": true,
-            "parsed": false,
-            "url": "https://www.270towin.com/2026-governor-polls/maine"
-          },
-          "MN": {
-            "ok": true,
-            "parsed": false,
-            "url": "https://www.270towin.com/2026-governor-polls/minnesota"
           },
           "IA": {
             "ok": true,
@@ -2163,6 +2173,30 @@
             "matchup": "Sand vs. Lahn",
             "url": "https://www.270towin.com/2026-governor-polls/iowa"
           },
+          "ME": {
+            "ok": true,
+            "parsed": false,
+            "url": "https://www.270towin.com/2026-governor-polls/maine"
+          },
+          "IL": {
+            "ok": true,
+            "parsed": true,
+            "primarySignal": true,
+            "polls": 1,
+            "margin": -0.55,
+            "matchup": "Republican Primary",
+            "url": "https://www.270towin.com/2026-governor-polls/illinois"
+          },
+          "KS": {
+            "ok": true,
+            "parsed": false,
+            "url": "https://www.270towin.com/2026-governor-polls/kansas"
+          },
+          "MN": {
+            "ok": true,
+            "parsed": false,
+            "url": "https://www.270towin.com/2026-governor-polls/minnesota"
+          },
           "NV": {
             "ok": true,
             "parsed": true,
@@ -2170,22 +2204,6 @@
             "margin": -1.33,
             "matchup": "Ford vs. Lombardo",
             "url": "https://www.270towin.com/2026-governor-polls/nevada"
-          },
-          "NY": {
-            "ok": true,
-            "parsed": true,
-            "polls": 2,
-            "margin": 15.5,
-            "matchup": "Hochul vs. Blakeman",
-            "url": "https://www.270towin.com/2026-governor-polls/new-york"
-          },
-          "OH": {
-            "ok": true,
-            "parsed": true,
-            "polls": 3,
-            "margin": 1.3,
-            "matchup": "Acton vs. Ramaswamy",
-            "url": "https://www.270towin.com/2026-governor-polls/ohio"
           },
           "NM": {
             "ok": true,
@@ -2204,22 +2222,21 @@
             "matchup": "Warmington vs. Ayotte",
             "url": "https://www.270towin.com/2026-governor-polls/new-hampshire"
           },
-          "RI": {
+          "OH": {
             "ok": true,
             "parsed": true,
-            "primarySignal": true,
-            "polls": 8,
-            "margin": -0.55,
-            "matchup": "Democratic Primary",
-            "url": "https://www.270towin.com/2026-governor-polls/rhode-island"
+            "polls": 3,
+            "margin": 1.3,
+            "matchup": "Acton vs. Ramaswamy",
+            "url": "https://www.270towin.com/2026-governor-polls/ohio"
           },
-          "OR": {
+          "NY": {
             "ok": true,
             "parsed": true,
-            "polls": 1,
-            "margin": 5,
-            "matchup": "Kotek vs. Drazan",
-            "url": "https://www.270towin.com/2026-governor-polls/oregon"
+            "polls": 2,
+            "margin": 15.5,
+            "matchup": "Hochul vs. Blakeman",
+            "url": "https://www.270towin.com/2026-governor-polls/new-york"
           },
           "PA": {
             "ok": true,
@@ -2228,6 +2245,14 @@
             "margin": 23.5,
             "matchup": "Shapiro vs. Garrity",
             "url": "https://www.270towin.com/2026-governor-polls/pennsylvania"
+          },
+          "OR": {
+            "ok": true,
+            "parsed": true,
+            "polls": 1,
+            "margin": 5,
+            "matchup": "Kotek vs. Drazan",
+            "url": "https://www.270towin.com/2026-governor-polls/oregon"
           },
           "SC": {
             "ok": true,
@@ -2238,13 +2263,27 @@
             "matchup": "Republican Primary",
             "url": "https://www.270towin.com/2026-governor-polls/south-carolina"
           },
-          "TX": {
+          "RI": {
             "ok": true,
             "parsed": true,
-            "polls": 4,
-            "margin": -6.7,
-            "matchup": "Hinojosa vs. Abbott",
-            "url": "https://www.270towin.com/2026-governor-polls/texas"
+            "primarySignal": true,
+            "polls": 8,
+            "margin": -0.55,
+            "matchup": "Democratic Primary",
+            "url": "https://www.270towin.com/2026-governor-polls/rhode-island"
+          },
+          "MI": {
+            "ok": true,
+            "parsed": true,
+            "polls": 6,
+            "margin": 5.33,
+            "matchup": "Benson vs. Duggan vs. Cox",
+            "url": "https://www.270towin.com/2026-governor-polls/michigan"
+          },
+          "NE": {
+            "ok": true,
+            "parsed": false,
+            "url": "https://www.270towin.com/2026-governor-polls/nebraska"
           },
           "WI": {
             "ok": true,
@@ -2254,10 +2293,13 @@
             "matchup": "Rodriguez vs. Tiffany",
             "url": "https://www.270towin.com/2026-governor-polls/wisconsin"
           },
-          "NE": {
+          "TX": {
             "ok": true,
-            "parsed": false,
-            "url": "https://www.270towin.com/2026-governor-polls/nebraska"
+            "parsed": true,
+            "polls": 4,
+            "margin": -6.7,
+            "matchup": "Hinojosa vs. Abbott",
+            "url": "https://www.270towin.com/2026-governor-polls/texas"
           }
         }
       },
@@ -2400,22 +2442,6 @@
             }
           ]
         },
-        "CT": {
-          "margin": 13,
-          "polls": 1,
-          "sources": [
-            "270toWin latest governor polls"
-          ],
-          "sourceUrls": [
-            "https://www.270towin.com/2026-governor-polls/connecticut"
-          ],
-          "matchups": [
-            "Lamont vs. Fazio"
-          ],
-          "reducedWeight": false,
-          "weightScale": 1,
-          "pollEntries": []
-        },
         "AZ": {
           "margin": 7,
           "polls": 3,
@@ -2427,6 +2453,22 @@
           ],
           "matchups": [
             "Hobbs vs. Schweikert"
+          ],
+          "reducedWeight": false,
+          "weightScale": 1,
+          "pollEntries": []
+        },
+        "CT": {
+          "margin": 13,
+          "polls": 1,
+          "sources": [
+            "270toWin latest governor polls"
+          ],
+          "sourceUrls": [
+            "https://www.270towin.com/2026-governor-polls/connecticut"
+          ],
+          "matchups": [
+            "Lamont vs. Fazio"
           ],
           "reducedWeight": false,
           "weightScale": 1,
@@ -2448,22 +2490,6 @@
           "weightScale": 1,
           "pollEntries": []
         },
-        "MI": {
-          "margin": 5.33,
-          "polls": 6,
-          "sources": [
-            "270toWin latest governor polls"
-          ],
-          "sourceUrls": [
-            "https://www.270towin.com/2026-governor-polls/michigan"
-          ],
-          "matchups": [
-            "Benson vs. Duggan vs. Cox"
-          ],
-          "reducedWeight": false,
-          "weightScale": 1,
-          "pollEntries": []
-        },
         "NV": {
           "margin": -1.33,
           "polls": 3,
@@ -2475,38 +2501,6 @@
           ],
           "matchups": [
             "Ford vs. Lombardo"
-          ],
-          "reducedWeight": false,
-          "weightScale": 1,
-          "pollEntries": []
-        },
-        "NY": {
-          "margin": 15.5,
-          "polls": 2,
-          "sources": [
-            "270toWin polling average"
-          ],
-          "sourceUrls": [
-            "https://www.270towin.com/2026-governor-polls/new-york"
-          ],
-          "matchups": [
-            "Hochul vs. Blakeman"
-          ],
-          "reducedWeight": false,
-          "weightScale": 1,
-          "pollEntries": []
-        },
-        "OH": {
-          "margin": 1.3,
-          "polls": 3,
-          "sources": [
-            "270toWin polling average"
-          ],
-          "sourceUrls": [
-            "https://www.270towin.com/2026-governor-polls/ohio"
-          ],
-          "matchups": [
-            "Acton vs. Ramaswamy"
           ],
           "reducedWeight": false,
           "weightScale": 1,
@@ -2528,17 +2522,33 @@
           "weightScale": 1,
           "pollEntries": []
         },
-        "OR": {
-          "margin": 5,
-          "polls": 1,
+        "OH": {
+          "margin": 1.3,
+          "polls": 3,
           "sources": [
-            "270toWin latest governor polls"
+            "270toWin polling average"
           ],
           "sourceUrls": [
-            "https://www.270towin.com/2026-governor-polls/oregon"
+            "https://www.270towin.com/2026-governor-polls/ohio"
           ],
           "matchups": [
-            "Kotek vs. Drazan"
+            "Acton vs. Ramaswamy"
+          ],
+          "reducedWeight": false,
+          "weightScale": 1,
+          "pollEntries": []
+        },
+        "NY": {
+          "margin": 15.5,
+          "polls": 2,
+          "sources": [
+            "270toWin polling average"
+          ],
+          "sourceUrls": [
+            "https://www.270towin.com/2026-governor-polls/new-york"
+          ],
+          "matchups": [
+            "Hochul vs. Blakeman"
           ],
           "reducedWeight": false,
           "weightScale": 1,
@@ -2560,17 +2570,33 @@
           "weightScale": 1,
           "pollEntries": []
         },
-        "TX": {
-          "margin": -6.7,
-          "polls": 4,
+        "OR": {
+          "margin": 5,
+          "polls": 1,
           "sources": [
-            "270toWin polling average"
+            "270toWin latest governor polls"
           ],
           "sourceUrls": [
-            "https://www.270towin.com/2026-governor-polls/texas"
+            "https://www.270towin.com/2026-governor-polls/oregon"
           ],
           "matchups": [
-            "Hinojosa vs. Abbott"
+            "Kotek vs. Drazan"
+          ],
+          "reducedWeight": false,
+          "weightScale": 1,
+          "pollEntries": []
+        },
+        "MI": {
+          "margin": 5.33,
+          "polls": 6,
+          "sources": [
+            "270toWin latest governor polls"
+          ],
+          "sourceUrls": [
+            "https://www.270towin.com/2026-governor-polls/michigan"
+          ],
+          "matchups": [
+            "Benson vs. Duggan vs. Cox"
           ],
           "reducedWeight": false,
           "weightScale": 1,
@@ -2587,6 +2613,22 @@
           ],
           "matchups": [
             "Rodriguez vs. Tiffany"
+          ],
+          "reducedWeight": false,
+          "weightScale": 1,
+          "pollEntries": []
+        },
+        "TX": {
+          "margin": -6.7,
+          "polls": 4,
+          "sources": [
+            "270toWin polling average"
+          ],
+          "sourceUrls": [
+            "https://www.270towin.com/2026-governor-polls/texas"
+          ],
+          "matchups": [
+            "Hinojosa vs. Abbott"
           ],
           "reducedWeight": false,
           "weightScale": 1,
@@ -4035,24 +4077,24 @@
   "medianDemGovernors": 24,
   "medianRepGovernors": 26,
   "distribution": {
-    "15": 3,
-    "16": 17,
-    "17": 106,
-    "18": 512,
-    "19": 1730,
-    "20": 4549,
-    "21": 9216,
-    "22": 14723,
-    "23": 18919,
-    "24": 18725,
-    "25": 15143,
-    "26": 9220,
-    "27": 4634,
-    "28": 1799,
-    "29": 564,
-    "30": 115,
-    "31": 23,
-    "32": 2
+    "15": 5,
+    "16": 16,
+    "17": 120,
+    "18": 540,
+    "19": 1674,
+    "20": 4582,
+    "21": 9147,
+    "22": 14786,
+    "23": 18676,
+    "24": 18827,
+    "25": 15185,
+    "26": 9428,
+    "27": 4636,
+    "28": 1775,
+    "29": 455,
+    "30": 121,
+    "31": 24,
+    "32": 3
   },
   "stateHistory": {
     "AL": [
@@ -4073,6 +4115,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.03241,
+        "rep": 0.96759
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.03241,
         "rep": 0.96759
       }
@@ -4097,6 +4144,11 @@
         "date": "2026-07-06",
         "dem": 0.38247,
         "rep": 0.61753
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.38247,
+        "rep": 0.61753
       }
     ],
     "AZ": [
@@ -4117,6 +4169,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.57847,
+        "rep": 0.42153
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.57847,
         "rep": 0.42153
       }
@@ -4141,6 +4198,11 @@
         "date": "2026-07-06",
         "dem": 0.00117,
         "rep": 0.99883
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.00117,
+        "rep": 0.99883
       }
     ],
     "CA": [
@@ -4161,6 +4223,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.95718,
+        "rep": 0.04282
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.95718,
         "rep": 0.04282
       }
@@ -4185,6 +4252,11 @@
         "date": "2026-07-06",
         "dem": 0.78836,
         "rep": 0.21164
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.78836,
+        "rep": 0.21164
       }
     ],
     "CT": [
@@ -4205,6 +4277,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.96162,
+        "rep": 0.03838
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.96162,
         "rep": 0.03838
       }
@@ -4229,6 +4306,11 @@
         "date": "2026-07-06",
         "dem": 0.33763,
         "rep": 0.66237
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.33763,
+        "rep": 0.66237
       }
     ],
     "GA": [
@@ -4249,6 +4331,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.53345,
+        "rep": 0.46655
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.53345,
         "rep": 0.46655
       }
@@ -4273,6 +4360,11 @@
         "date": "2026-07-06",
         "dem": 0.99881,
         "rep": 0.00119
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.99881,
+        "rep": 0.00119
       }
     ],
     "ID": [
@@ -4293,6 +4385,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.0013,
+        "rep": 0.9987
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.0013,
         "rep": 0.9987
       }
@@ -4317,6 +4414,11 @@
         "date": "2026-07-06",
         "dem": 0.95328,
         "rep": 0.04672
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.95328,
+        "rep": 0.04672
       }
     ],
     "IA": [
@@ -4337,6 +4439,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.47259,
+        "rep": 0.52741
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.47259,
         "rep": 0.52741
       }
@@ -4361,6 +4468,11 @@
         "date": "2026-07-06",
         "dem": 0.33483,
         "rep": 0.66517
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.33483,
+        "rep": 0.66517
       }
     ],
     "ME": [
@@ -4381,6 +4493,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.70088,
+        "rep": 0.29912
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.70088,
         "rep": 0.29912
       }
@@ -4405,6 +4522,11 @@
         "date": "2026-07-06",
         "dem": 0.999,
         "rep": 0.001
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.999,
+        "rep": 0.001
       }
     ],
     "MA": [
@@ -4425,6 +4547,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.999,
+        "rep": 0.001
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.999,
         "rep": 0.001
       }
@@ -4449,6 +4576,11 @@
         "date": "2026-07-06",
         "dem": 0.60083,
         "rep": 0.39917
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.60083,
+        "rep": 0.39917
       }
     ],
     "MN": [
@@ -4469,6 +4601,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.66447,
+        "rep": 0.33553
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.66447,
         "rep": 0.33553
       }
@@ -4493,6 +4630,11 @@
         "date": "2026-07-06",
         "dem": 0.00877,
         "rep": 0.99123
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.00877,
+        "rep": 0.99123
       }
     ],
     "NV": [
@@ -4513,6 +4655,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.33494,
+        "rep": 0.66506
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.33494,
         "rep": 0.66506
       }
@@ -4537,6 +4684,11 @@
         "date": "2026-07-06",
         "dem": 0.23961,
         "rep": 0.76039
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.23961,
+        "rep": 0.76039
       }
     ],
     "NM": [
@@ -4557,6 +4709,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.67818,
+        "rep": 0.32182
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.67818,
         "rep": 0.32182
       }
@@ -4581,6 +4738,11 @@
         "date": "2026-07-06",
         "dem": 0.90137,
         "rep": 0.09863
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.90137,
+        "rep": 0.09863
       }
     ],
     "OH": [
@@ -4601,6 +4763,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.32437,
+        "rep": 0.67563
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.32437,
         "rep": 0.67563
       }
@@ -4625,6 +4792,11 @@
         "date": "2026-07-06",
         "dem": 0.08766,
         "rep": 0.91234
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.08766,
+        "rep": 0.91234
       }
     ],
     "OR": [
@@ -4645,6 +4817,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.87183,
+        "rep": 0.12817
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.87183,
         "rep": 0.12817
       }
@@ -4669,6 +4846,11 @@
         "date": "2026-07-06",
         "dem": 0.90963,
         "rep": 0.09037
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.90963,
+        "rep": 0.09037
       }
     ],
     "RI": [
@@ -4689,6 +4871,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.98414,
+        "rep": 0.01586
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.98414,
         "rep": 0.01586
       }
@@ -4713,6 +4900,11 @@
         "date": "2026-07-06",
         "dem": 0.229,
         "rep": 0.771
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.229,
+        "rep": 0.771
       }
     ],
     "SD": [
@@ -4733,6 +4925,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.00165,
+        "rep": 0.99835
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.00165,
         "rep": 0.99835
       }
@@ -4757,6 +4954,11 @@
         "date": "2026-07-06",
         "dem": 0.0339,
         "rep": 0.9661
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.0339,
+        "rep": 0.9661
       }
     ],
     "TX": [
@@ -4777,6 +4979,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.06317,
+        "rep": 0.93683
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.06317,
         "rep": 0.93683
       }
@@ -4801,6 +5008,11 @@
         "date": "2026-07-06",
         "dem": 0.00735,
         "rep": 0.99265
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.00735,
+        "rep": 0.99265
       }
     ],
     "WI": [
@@ -4823,6 +5035,11 @@
         "date": "2026-07-06",
         "dem": 0.52682,
         "rep": 0.47318
+      },
+      {
+        "date": "2026-07-07",
+        "dem": 0.52682,
+        "rep": 0.47318
       }
     ],
     "WY": [
@@ -4843,6 +5060,11 @@
       },
       {
         "date": "2026-07-06",
+        "dem": 0.00463,
+        "rep": 0.99537
+      },
+      {
+        "date": "2026-07-07",
         "dem": 0.00463,
         "rep": 0.99537
       }
@@ -5061,7 +5283,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.103Z",
+      "lastUpdated": "2026-07-07T04:26:57.458Z",
       "error": 8.58,
       "fundamentalsMargin": -12.86,
       "structuralMargin": -12.86,
@@ -5291,31 +5513,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -5346,13 +5568,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.96759,
       "competitive": false,
-      "tippingPower": 0.01068,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.01027,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -5373,13 +5590,18 @@
           "date": "2026-07-06",
           "dem": 0.03241,
           "rep": 0.96759
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.03241,
+          "rep": 0.96759
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -5589,7 +5811,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.104Z",
+      "lastUpdated": "2026-07-07T04:26:57.459Z",
       "error": 9.81,
       "fundamentalsMargin": -3.41,
       "structuralMargin": -3.41,
@@ -5789,31 +6011,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -5843,13 +6065,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.61753,
       "competitive": true,
-      "tippingPower": 0.04954,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.04962,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -5870,13 +6087,18 @@
           "date": "2026-07-06",
           "dem": 0.38247,
           "rep": 0.61753
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.38247,
+          "rep": 0.61753
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -6085,7 +6307,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.105Z",
+      "lastUpdated": "2026-07-07T04:26:57.459Z",
       "error": 8.75,
       "fundamentalsMargin": 1.51,
       "structuralMargin": 1.51,
@@ -6306,31 +6528,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -6358,13 +6580,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.57847,
       "competitive": true,
-      "tippingPower": 0.05716,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.05821,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -6385,13 +6602,18 @@
           "date": "2026-07-06",
           "dem": 0.57847,
           "rep": 0.42153
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.57847,
+          "rep": 0.42153
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -6600,7 +6822,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.105Z",
+      "lastUpdated": "2026-07-07T04:26:57.460Z",
       "error": 6.7,
       "fundamentalsMargin": -19.75,
       "structuralMargin": -19.75,
@@ -6810,31 +7032,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -6862,13 +7084,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99883,
       "competitive": false,
-      "tippingPower": 0.00064,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00087,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -6889,13 +7106,18 @@
           "date": "2026-07-06",
           "dem": 0.00117,
           "rep": 0.99883
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.00117,
+          "rep": 0.99883
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -7122,7 +7344,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.106Z",
+      "lastUpdated": "2026-07-07T04:26:57.461Z",
       "error": 9.11,
       "fundamentalsMargin": 8.74,
       "structuralMargin": 8.74,
@@ -7341,31 +7563,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -7398,13 +7620,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.95718,
       "competitive": false,
-      "tippingPower": 0.01266,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.01192,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -7425,13 +7642,18 @@
           "date": "2026-07-06",
           "dem": 0.95718,
           "rep": 0.04282
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.95718,
+          "rep": 0.04282
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -7638,7 +7860,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.106Z",
+      "lastUpdated": "2026-07-07T04:26:57.461Z",
       "error": 9.52,
       "fundamentalsMargin": 5.59,
       "structuralMargin": 5.59,
@@ -7854,31 +8076,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -7904,13 +8126,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.78836,
       "competitive": false,
-      "tippingPower": 0.0382,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.03765,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -7931,13 +8148,18 @@
           "date": "2026-07-06",
           "dem": 0.78836,
           "rep": 0.21164
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.78836,
+          "rep": 0.21164
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -8153,7 +8375,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.107Z",
+      "lastUpdated": "2026-07-07T04:26:57.462Z",
       "error": 7.52,
       "fundamentalsMargin": 11,
       "structuralMargin": 11,
@@ -8359,31 +8581,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -8416,13 +8638,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.96162,
       "competitive": false,
-      "tippingPower": 0.01399,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.0133,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -8443,13 +8660,18 @@
           "date": "2026-07-06",
           "dem": 0.96162,
           "rep": 0.03838
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.96162,
+          "rep": 0.03838
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -8659,7 +8881,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.107Z",
+      "lastUpdated": "2026-07-07T04:26:57.462Z",
       "error": 9.59,
       "fundamentalsMargin": -5.05,
       "structuralMargin": -5.05,
@@ -8881,31 +9103,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -8936,13 +9158,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.66237,
       "competitive": true,
-      "tippingPower": 0.05073,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.04904,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -8963,13 +9180,18 @@
           "date": "2026-07-06",
           "dem": 0.33763,
           "rep": 0.66237
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.33763,
+          "rep": 0.66237
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -9178,7 +9400,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.107Z",
+      "lastUpdated": "2026-07-07T04:26:57.462Z",
       "error": 10.13,
       "fundamentalsMargin": -0.95,
       "structuralMargin": -0.95,
@@ -9410,31 +9632,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -9462,13 +9684,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.53345,
       "competitive": true,
-      "tippingPower": 0.04916,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.05193,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -9489,13 +9706,18 @@
           "date": "2026-07-06",
           "dem": 0.53345,
           "rep": 0.46655
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.53345,
+          "rep": 0.46655
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -9704,7 +9926,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.108Z",
+      "lastUpdated": "2026-07-07T04:26:57.463Z",
       "error": 6.7,
       "fundamentalsMargin": 18.79,
       "structuralMargin": 18.79,
@@ -9904,31 +10126,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -9956,13 +10178,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.99881,
       "competitive": false,
-      "tippingPower": 0.0008,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00093,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -9983,13 +10200,18 @@
           "date": "2026-07-06",
           "dem": 0.99881,
           "rep": 0.00119
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.99881,
+          "rep": 0.00119
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -10198,7 +10420,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.108Z",
+      "lastUpdated": "2026-07-07T04:26:57.463Z",
       "error": 6.7,
       "fundamentalsMargin": -19.51,
       "structuralMargin": -19.51,
@@ -10403,31 +10625,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -10455,13 +10677,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.9987,
       "competitive": false,
-      "tippingPower": 0.00087,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00091,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -10482,13 +10699,18 @@
           "date": "2026-07-06",
           "dem": 0.0013,
           "rep": 0.9987
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.0013,
+          "rep": 0.9987
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -10704,7 +10926,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.108Z",
+      "lastUpdated": "2026-07-07T04:26:57.463Z",
       "error": 7.64,
       "fundamentalsMargin": 10.08,
       "structuralMargin": 10.08,
@@ -10914,31 +11136,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -10971,13 +11193,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.95328,
       "competitive": false,
-      "tippingPower": 0.01566,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.01569,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -10998,13 +11215,18 @@
           "date": "2026-07-06",
           "dem": 0.95328,
           "rep": 0.04672
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.95328,
+          "rep": 0.04672
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -11213,7 +11435,7 @@
       "totalPollInputsUsed": 3,
       "pollingStatus": "MANUAL_POLLS_AVAILABLE",
       "forecastMode": "POLL_INFORMED",
-      "lastUpdated": "2026-07-07T01:44:40.108Z",
+      "lastUpdated": "2026-07-07T04:26:57.464Z",
       "error": 8.64,
       "fundamentalsMargin": -5.48,
       "structuralMargin": -5.48,
@@ -11490,31 +11712,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -11533,13 +11755,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.52741,
       "competitive": true,
-      "tippingPower": 0.05944,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.05873,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -11560,13 +11777,18 @@
           "date": "2026-07-06",
           "dem": 0.47259,
           "rep": 0.52741
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.47259,
+          "rep": 0.52741
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -11776,7 +11998,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.109Z",
+      "lastUpdated": "2026-07-07T04:26:57.464Z",
       "error": 9.62,
       "fundamentalsMargin": -4.85,
       "structuralMargin": -4.85,
@@ -11981,31 +12203,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -12035,13 +12257,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.66517,
       "competitive": true,
-      "tippingPower": 0.04685,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.04885,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -12062,13 +12279,18 @@
           "date": "2026-07-06",
           "dem": 0.33483,
           "rep": 0.66517
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.33483,
+          "rep": 0.66517
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -12296,7 +12518,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.109Z",
+      "lastUpdated": "2026-07-07T04:26:57.464Z",
       "error": 9.8,
       "fundamentalsMargin": 3.45,
       "structuralMargin": 3.45,
@@ -12501,31 +12723,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -12560,13 +12782,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.70088,
       "competitive": true,
-      "tippingPower": 0.04512,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.04551,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -12587,13 +12804,18 @@
           "date": "2026-07-06",
           "dem": 0.70088,
           "rep": 0.29912
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.70088,
+          "rep": 0.29912
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -12813,7 +13035,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.109Z",
+      "lastUpdated": "2026-07-07T04:26:57.465Z",
       "error": 6.7,
       "fundamentalsMargin": 21.11,
       "structuralMargin": 21.11,
@@ -13018,31 +13240,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -13070,13 +13292,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00026,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00024,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -13097,13 +13314,18 @@
           "date": "2026-07-06",
           "dem": 0.999,
           "rep": 0.001
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.999,
+          "rep": 0.001
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -13312,7 +13534,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.109Z",
+      "lastUpdated": "2026-07-07T04:26:57.465Z",
       "error": 6.7,
       "fundamentalsMargin": 20.32,
       "structuralMargin": 20.32,
@@ -13512,31 +13734,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -13564,13 +13786,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.999,
       "competitive": false,
-      "tippingPower": 0.00045,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00038,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -13591,13 +13808,18 @@
           "date": "2026-07-06",
           "dem": 0.999,
           "rep": 0.001
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.999,
+          "rep": 0.001
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -13806,7 +14028,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.109Z",
+      "lastUpdated": "2026-07-07T04:26:57.465Z",
       "error": 10.13,
       "fundamentalsMargin": 0.9,
       "structuralMargin": 0.9,
@@ -14025,31 +14247,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -14077,13 +14299,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.60083,
       "competitive": true,
-      "tippingPower": 0.04905,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.0487,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -14104,13 +14321,18 @@
           "date": "2026-07-06",
           "dem": 0.60083,
           "rep": 0.39917
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.60083,
+          "rep": 0.39917
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -14327,7 +14549,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.109Z",
+      "lastUpdated": "2026-07-07T04:26:57.465Z",
       "error": 9.53,
       "fundamentalsMargin": 2.08,
       "structuralMargin": 2.08,
@@ -14532,31 +14754,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -14591,13 +14813,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.66447,
       "competitive": true,
-      "tippingPower": 0.04808,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.05001,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -14618,13 +14835,18 @@
           "date": "2026-07-06",
           "dem": 0.66447,
           "rep": 0.33553
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.66447,
+          "rep": 0.33553
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -14840,7 +15062,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.109Z",
+      "lastUpdated": "2026-07-07T04:26:57.465Z",
       "error": 6.84,
       "fundamentalsMargin": -16.23,
       "structuralMargin": -16.23,
@@ -15050,31 +15272,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -15107,13 +15329,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99123,
       "competitive": false,
-      "tippingPower": 0.00431,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00429,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -15134,13 +15351,18 @@
           "date": "2026-07-06",
           "dem": 0.00877,
           "rep": 0.99123
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.00877,
+          "rep": 0.99123
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -15361,7 +15583,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.110Z",
+      "lastUpdated": "2026-07-07T04:26:57.466Z",
       "error": 8.5,
       "fundamentalsMargin": -3.47,
       "structuralMargin": -3.47,
@@ -15583,31 +15805,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -15637,13 +15859,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.66506,
       "competitive": true,
-      "tippingPower": 0.05421,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.05557,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -15664,13 +15881,18 @@
           "date": "2026-07-06",
           "dem": 0.33494,
           "rep": 0.66506
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.33494,
+          "rep": 0.66506
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -15887,7 +16109,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.110Z",
+      "lastUpdated": "2026-07-07T04:26:57.466Z",
       "error": 8.36,
       "fundamentalsMargin": -4.52,
       "structuralMargin": -4.52,
@@ -16104,31 +16326,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -16163,13 +16385,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.76039,
       "competitive": false,
-      "tippingPower": 0.04753,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.04763,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -16190,13 +16407,18 @@
           "date": "2026-07-06",
           "dem": 0.23961,
           "rep": 0.76039
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.23961,
+          "rep": 0.76039
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -16424,7 +16646,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.110Z",
+      "lastUpdated": "2026-07-07T04:26:57.466Z",
       "error": 9.93,
       "fundamentalsMargin": 2.42,
       "structuralMargin": 2.42,
@@ -16634,31 +16856,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -16693,13 +16915,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.67818,
       "competitive": true,
-      "tippingPower": 0.04676,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.0463,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -16720,13 +16937,18 @@
           "date": "2026-07-06",
           "dem": 0.67818,
           "rep": 0.32182
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.67818,
+          "rep": 0.32182
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -16933,7 +17155,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.110Z",
+      "lastUpdated": "2026-07-07T04:26:57.466Z",
       "error": 7.77,
       "fundamentalsMargin": 9.04,
       "structuralMargin": 9.04,
@@ -17148,31 +17370,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -17197,13 +17419,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.90137,
       "competitive": false,
-      "tippingPower": 0.02804,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.028,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -17224,13 +17441,18 @@
           "date": "2026-07-06",
           "dem": 0.90137,
           "rep": 0.09863
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.90137,
+          "rep": 0.09863
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -17440,7 +17662,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.110Z",
+      "lastUpdated": "2026-07-07T04:26:57.466Z",
       "error": 9.47,
       "fundamentalsMargin": -6.01,
       "structuralMargin": -6.01,
@@ -17677,31 +17899,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -17732,13 +17954,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.67563,
       "competitive": true,
-      "tippingPower": 0.04893,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.04822,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -17759,13 +17976,18 @@
           "date": "2026-07-06",
           "dem": 0.32437,
           "rep": 0.67563
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.32437,
+          "rep": 0.67563
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -17981,7 +18203,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.110Z",
+      "lastUpdated": "2026-07-07T04:26:57.467Z",
       "error": 8.85,
       "fundamentalsMargin": -10.74,
       "structuralMargin": -10.74,
@@ -18186,31 +18408,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -18243,13 +18465,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.91234,
       "competitive": false,
-      "tippingPower": 0.02328,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.02167,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -18270,13 +18487,18 @@
           "date": "2026-07-06",
           "dem": 0.08766,
           "rep": 0.91234
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.08766,
+          "rep": 0.91234
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -18485,7 +18707,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.110Z",
+      "lastUpdated": "2026-07-07T04:26:57.467Z",
       "error": 7.91,
       "fundamentalsMargin": 7.99,
       "structuralMargin": 7.99,
@@ -18704,31 +18926,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -18756,13 +18978,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.87183,
       "competitive": false,
-      "tippingPower": 0.03335,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.03383,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -18783,13 +19000,18 @@
           "date": "2026-07-06",
           "dem": 0.87183,
           "rep": 0.12817
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.87183,
+          "rep": 0.12817
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -18996,7 +19218,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.110Z",
+      "lastUpdated": "2026-07-07T04:26:57.467Z",
       "error": 8.04,
       "fundamentalsMargin": 7.03,
       "structuralMargin": 7.03,
@@ -19235,31 +19457,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -19284,13 +19506,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.90963,
       "competitive": false,
-      "tippingPower": 0.02569,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.02521,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -19311,13 +19528,18 @@
           "date": "2026-07-06",
           "dem": 0.90963,
           "rep": 0.09037
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.90963,
+          "rep": 0.09037
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -19533,7 +19755,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.110Z",
+      "lastUpdated": "2026-07-07T04:26:57.467Z",
       "error": 7.19,
       "fundamentalsMargin": 13.56,
       "structuralMargin": 13.56,
@@ -19733,31 +19955,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -19790,13 +20012,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.98414,
       "competitive": false,
-      "tippingPower": 0.00713,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.0071,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -19817,13 +20034,18 @@
           "date": "2026-07-06",
           "dem": 0.98414,
           "rep": 0.01586
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.98414,
+          "rep": 0.01586
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -20041,7 +20263,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.110Z",
+      "lastUpdated": "2026-07-07T04:26:57.467Z",
       "error": 9.41,
       "fundamentalsMargin": -6.45,
       "structuralMargin": -6.45,
@@ -20269,31 +20491,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -20319,13 +20541,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.771,
       "competitive": false,
-      "tippingPower": 0.04159,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.04097,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -20346,13 +20563,18 @@
           "date": "2026-07-06",
           "dem": 0.229,
           "rep": 0.771
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.229,
+          "rep": 0.771
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -20561,7 +20783,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.110Z",
+      "lastUpdated": "2026-07-07T04:26:57.467Z",
       "error": 6.7,
       "fundamentalsMargin": -19.05,
       "structuralMargin": -19.05,
@@ -20771,31 +20993,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -20823,13 +21045,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99835,
       "competitive": false,
-      "tippingPower": 0.00126,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00093,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -20850,13 +21067,18 @@
           "date": "2026-07-06",
           "dem": 0.00165,
           "rep": 0.99835
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.00165,
+          "rep": 0.99835
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -21071,7 +21293,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.111Z",
+      "lastUpdated": "2026-07-07T04:26:57.467Z",
       "error": 8.67,
       "fundamentalsMargin": -12.13,
       "structuralMargin": -12.13,
@@ -21299,31 +21521,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -21354,13 +21576,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.9661,
       "competitive": false,
-      "tippingPower": 0.01058,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.01045,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -21381,13 +21598,18 @@
           "date": "2026-07-06",
           "dem": 0.0339,
           "rep": 0.9661
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.0339,
+          "rep": 0.9661
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -21603,7 +21825,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.111Z",
+      "lastUpdated": "2026-07-07T04:26:57.468Z",
       "error": 7.71,
       "fundamentalsMargin": -9.52,
       "structuralMargin": -9.52,
@@ -21832,31 +22054,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -21889,13 +22111,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.93683,
       "competitive": false,
-      "tippingPower": 0.02131,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.02011,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -21916,13 +22133,18 @@
           "date": "2026-07-06",
           "dem": 0.06317,
           "rep": 0.93683
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.06317,
+          "rep": 0.93683
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -22137,7 +22359,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.111Z",
+      "lastUpdated": "2026-07-07T04:26:57.468Z",
       "error": 7.72,
       "fundamentalsMargin": -9.46,
       "structuralMargin": -9.46,
@@ -22367,31 +22589,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -22422,13 +22644,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99265,
       "competitive": false,
-      "tippingPower": 0.00346,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.0033,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -22449,13 +22666,18 @@
           "date": "2026-07-06",
           "dem": 0.00735,
           "rep": 0.99265
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.00735,
+          "rep": 0.99265
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -22664,7 +22886,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.111Z",
+      "lastUpdated": "2026-07-07T04:26:57.468Z",
       "error": 9.77,
       "fundamentalsMargin": -0.26,
       "structuralMargin": -0.26,
@@ -22884,31 +23106,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -22936,13 +23158,8 @@
       "winnerParty": "D",
       "winnerProbability": 0.52682,
       "competitive": true,
-      "tippingPower": 0.05118,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.05171,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -22963,13 +23180,18 @@
           "date": "2026-07-06",
           "dem": 0.52682,
           "rep": 0.47318
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.52682,
+          "rep": 0.47318
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     },
     {
@@ -23176,7 +23398,7 @@
       "totalPollInputsUsed": 0,
       "pollingStatus": "NO_RACE_POLLS",
       "forecastMode": "FUNDAMENTALS_ONLY",
-      "lastUpdated": "2026-07-07T01:44:40.111Z",
+      "lastUpdated": "2026-07-07T04:26:57.468Z",
       "error": 8,
       "fundamentalsMargin": -20.46,
       "structuralMargin": -20.46,
@@ -23393,31 +23615,31 @@
           "degraded": false,
           "health": "HEALTHY",
           "usableSources": [
-            "twoSeventyGovernorPollsCT",
-            "twoSeventyGovernorPollsAK",
+            "pollfinityAverages",
             "twoSeventyGovernorPollsAZ",
-            "twoSeventyGovernorPollsIL",
             "twoSeventyGovernorPollsCO",
             "twoSeventyGovernorPollsFL",
+            "twoSeventyGovernorPollsAK",
+            "twoSeventyGovernorPollsCT",
             "twoSeventyGovernorPollsGA",
-            "twoSeventyGovernorPollsKS",
-            "twoSeventyGovernorPollsMI",
-            "twoSeventyGovernorPollsME",
-            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsIA",
+            "twoSeventyGovernorPollsME",
+            "twoSeventyGovernorPollsIL",
+            "twoSeventyGovernorPollsKS",
+            "twoSeventyGovernorPollsMN",
             "twoSeventyGovernorPollsNV",
-            "twoSeventyGovernorPollsNY",
-            "pollfinityAverages",
-            "twoSeventyGovernorPollsOH",
             "twoSeventyGovernorPollsNM",
             "twoSeventyGovernorPollsNH",
-            "twoSeventyGovernorPollsRI",
-            "twoSeventyGovernorPollsOR",
+            "twoSeventyGovernorPollsOH",
+            "twoSeventyGovernorPollsNY",
             "twoSeventyGovernorPollsPA",
+            "twoSeventyGovernorPollsOR",
             "twoSeventyGovernorPollsSC",
-            "twoSeventyGovernorPollsTX",
-            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsRI",
+            "twoSeventyGovernorPollsMI",
             "twoSeventyGovernorPollsNE",
+            "twoSeventyGovernorPollsWI",
+            "twoSeventyGovernorPollsTX",
             "twoSeventyGovernorPolls"
           ],
           "noRowSources": [
@@ -23443,13 +23665,8 @@
       "winnerParty": "R",
       "winnerProbability": 0.99537,
       "competitive": false,
-      "tippingPower": 0.00205,
-      "movementDrivers": [
-        {
-          "label": "First saved run",
-          "detail": "No previous generated race file to compare."
-        }
-      ],
+      "tippingPower": 0.00195,
+      "movementDrivers": [],
       "history": [
         {
           "date": "2026-07-03",
@@ -23470,13 +23687,18 @@
           "date": "2026-07-06",
           "dem": 0.00463,
           "rep": 0.99537
+        },
+        {
+          "date": "2026-07-07",
+          "dem": 0.00463,
+          "rep": 0.99537
         }
       ],
       "movement": {
         "sinceLastRun": 0,
         "sinceWeek": 0,
-        "previousDate": null,
-        "weekDate": null
+        "previousDate": "2026-07-06",
+        "weekDate": "2026-07-03"
       }
     }
   ],
@@ -24331,6 +24553,11 @@
     },
     {
       "date": "2026-07-06",
+      "demGovernors": 24,
+      "repGovernors": 26
+    },
+    {
+      "date": "2026-07-07",
       "demGovernors": 24,
       "repGovernors": 26
     }

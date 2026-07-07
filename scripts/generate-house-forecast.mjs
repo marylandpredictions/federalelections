@@ -14,6 +14,7 @@ import { readHouseFundamentalsCacheMap } from "./lib/house-input-caches.mjs";
 import { applyPrimarySyncToRace, loadPrimarySyncConfig, primarySyncMap } from "./lib/primary-sync.mjs";
 import { readWikipediaPollingCache, wikipediaPollingSummary } from "./lib/wikipedia-polls.mjs";
 import { candidateFreshnessSummary } from "./lib/candidate-freshness.mjs";
+import { coreV2Metadata } from "./lib/core-v2-provenance.mjs";
 import {
   buildHouseNationalEnvironment,
   districtElasticity,
@@ -2743,6 +2744,7 @@ async function writeHouseForecast() {
     }));
   const output = {
     modelVersion: "2026.06.reliability.1",
+    ...coreV2Metadata("house"),
     forecastStatus: noDistrictPolling || toplineComparison.warning || sourceData.sourceHealth?.degraded || sourceData.usingCachedDistricts ? "DEGRADED" : "NORMAL",
     generatedAt: new Date().toISOString(),
     lastUpdated: new Date().toISOString(),
