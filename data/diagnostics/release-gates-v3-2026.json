@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "v3",
+  "generatedAt": "2026-07-07T21:10:29.681Z",
+  "status": "FAIL",
+  "releaseRecommendation": "BLOCK_PUBLISH_REVIEW_REQUIRED",
+  "pollLedgerCounts": {
+    "total": 3,
+    "byOffice": {
+      "governor": 3
+    }
+  },
+  "baselineLedgerMode": "RATINGS_FIRST_NO_CURRENT_MAP_BASELINES",
+  "financeLedgerCounts": {
+    "total": 506,
+    "activeRaceLevelRows": 0,
+    "inactiveRows": 506
+  },
+  "benchmarkDivergenceSummary": {
+    "senate": {
+      "releaseStatus": "OK",
+      "difference": -0.052,
+      "absoluteDifference": 0.052,
+      "reasons": [],
+      "warning": null
+    },
+    "house": {
+      "releaseStatus": "BLOCK_REVIEW",
+      "difference": -0.3339,
+      "absoluteDifference": 0.3339,
+      "reasons": [
+        "MODEL_PUBLIC_BENCHMARK_DIVERGENCE_BLOCK"
+      ],
+      "warning": "House model diverges sharply from public benchmarks."
+    },
+    "governor": {
+      "releaseStatus": "BLOCK_REVIEW",
+      "difference": null,
+      "absoluteDifference": null,
+      "reasons": [
+        "NO_PUBLIC_TOPLINE_BENCHMARK",
+        "NO_LOCAL_MODEL_TOPLINE"
+      ],
+      "warning": null
+    }
+  },
+  "gates": [
+    {
+      "name": "v3-output-readable",
+      "status": "PASS",
+      "forecastGeneratedAt": {
+        "senate": "2026-07-07T20:44:23.242Z",
+        "house": "2026-07-07T20:42:52.072Z",
+        "governor": "2026-07-07T20:45:15.689Z"
+      },
+      "raceCounts": {
+        "senate": 35,
+        "house": 435,
+        "governor": 36
+      }
+    },
+    {
+      "name": "senate-poll-provenance",
+      "status": "PASS",
+      "validatedRows": 0,
+      "noPollRaces": 35
+    },
+    {
+      "name": "governor-poll-provenance",
+      "status": "PASS",
+      "validatedRows": 3,
+      "pollRaces": 1,
+      "noPollRaces": 35
+    },
+    {
+      "name": "house-current-map-baseline-coverage",
+      "status": "REVIEW",
+      "mode": "RATINGS_FIRST_NO_CURRENT_MAP_BASELINES",
+      "verifiedCurrentMapBaselineCount": 0,
+      "total": 435,
+      "note": "Coverage is effectively zero, but v3 is explicitly running in ratings-first no-current-map-baselines mode."
+    },
+    {
+      "name": "house-probability-calibration",
+      "status": "PASS",
+      "expectedDemSeatsFromDistrictProbabilities": 213.1,
+      "simulatorExpectedDemSeats": 213.1,
+      "unsafeSafeSeats": 0
+    },
+    {
+      "name": "finance-placeholder-suppression",
+      "status": "PASS",
+      "activeRaceLevelRows": 0,
+      "inactiveRows": 506
+    },
+    {
+      "name": "sensitivity-experiments-executed",
+      "status": "PASS",
+      "variants": 12
+    },
+    {
+      "name": "senate-benchmark-divergence",
+      "status": "PASS",
+      "releaseStatus": "OK",
+      "difference": -0.052,
+      "threshold": 0.15
+    },
+    {
+      "name": "house-benchmark-divergence",
+      "status": "FAIL",
+      "releaseStatus": "BLOCK_REVIEW",
+      "difference": -0.3339,
+      "threshold": 0.15,
+      "reasons": [
+        "MODEL_PUBLIC_BENCHMARK_DIVERGENCE_BLOCK"
+      ],
+      "warning": "House model diverges sharply from public benchmarks."
+    },
+    {
+      "name": "governor-benchmark-divergence",
+      "status": "FAIL",
+      "releaseStatus": "BLOCK_REVIEW",
+      "difference": null,
+      "threshold": 0.15,
+      "reasons": [
+        "NO_PUBLIC_TOPLINE_BENCHMARK",
+        "NO_LOCAL_MODEL_TOPLINE"
+      ],
+      "warning": null
+    }
+  ]
+}

@@ -1,0 +1,3235 @@
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { forecastSanityWarnings } from "./forecast-sanity.mjs";
+import { generationNetworkStatus, markNoRows, markParseFailed, recordFetch, recordFetchError, sourceHealthSummary, sourceHealthWarnings } from "./forecast-source-health.mjs";
+import { directPollLedger, dedupePollRows } from "./poll-ledger.mjs";
+import { loadFiftyPlusOnePolls } from "./fiftyplusone-polls.mjs";
+import { classifyPollingInputs, pollingStatusWarning } from "./forecast-polling-status.mjs";
+import { benchmarkConfiguration, benchmarkFor, benchmarkWarnings, toplineBenchmark } from "./forecast-benchmarks.mjs";
+import { blendGenericBallotSources, readCachedGenericBallot } from "./lib/generic-ballot.mjs";
+import { buildInputBalance, forecastInputCacheFreshness, marginSplit } from "./forecast-cache.mjs";
+import { applyRatingPrior, buildRatingPrior, loadRatingWeightConfig } from "./lib/rating-priors.mjs";
+import { readWikipediaPollingCache, wikipediaPollingSummary, wikipediaPollRowsByState } from "./lib/wikipedia-polls.mjs";
+import { buildRaceReview } from "./lib/race-review-diagnostics.mjs";
+import { applyPrimarySyncToRace, loadPrimarySyncConfig, primarySyncMap } from "./lib/primary-sync.mjs";
+import { marginConsistencyCheck } from "./lib/margin-consistency.mjs";
+import { candidateFreshnessSummary } from "./lib/candidate-freshness.mjs";
+import { coreV2Metadata } from "./lib/core-v2-provenance.mjs";
+
+const FORECAST_URL = new URL("../data/forecast.json", import.meta.url);
+const SENATE_RACE_REVIEW_URL = new URL("../data/diagnostics/senate-race-review-2026.json", import.meta.url);
+const DIRECT_POLL_LEDGER_URL = new URL("../data/direct-poll-ledger.json", import.meta.url);
+const CERTIFIED_SENATE_BASELINES_URL = new URL("../data/baselines/senate-last-states.json", import.meta.url);
+const previousForecast = readPreviousForecast();
+const OFFLINE = process.argv.includes("--offline");
+const RATING_WEIGHT_CONFIG = loadRatingWeightConfig();
+const PRIMARY_SYNC_CONFIG = loadPrimarySyncConfig();
+const PRIMARY_SYNC_MAP = primarySyncMap(PRIMARY_SYNC_CONFIG);
+const GENERATION_STARTED_AT = Date.now();
+const GENERATION_BUDGET_MS = Math.max(15000, Number(process.env.FORECAST_GENERATION_BUDGET_MS || 90000));
+const certifiedSenateBaselines = readCertifiedSenateBaselines();
+
+// The MEDSL statewide general-election table does not include Georgia's final
+// 2021 runoff, which was the election that decided this 2026 seat. Keep this
+// narrowly scoped correction beside the source provenance instead of carrying
+// a separate untracked baseline in the race configuration.
+const SENATE_BASELINE_OVERRIDES = {
+  GA: { margin: 1.2, year: 2021, baselineRace: "2021 Senate runoff", note: "Certified runoff result replaces the 2020 pre-runoff general-election row." }
+};
+
+function readCertifiedSenateBaselines() {
+  try {
+    const parsed = JSON.parse(readFileSync(CERTIFIED_SENATE_BASELINES_URL, "utf8"));
+    return Object.fromEntries((parsed.states || []).filter((row) => row?.state && Number.isFinite(row.margin)).map((row) => [row.state, row]));
+  } catch (error) {
+    console.warn(`Could not load certified Senate baselines: ${error.message}`);
+    return {};
+  }
+}
+
+const SETTINGS = {
+  simulations: 100000,
+  safeDemSeats: 34,
+  demControlThreshold: 51,
+  runDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+  electionDate: new Date("2026-11-03T12:00:00"),
+  updateHour: 6,
+  updateMinute: 0,
+  updateZone: "America/New_York",
+  dataSources: [
+      "Candidate and structural-fundamentals ledger",
+    "Public polling adapter when reachable from GitHub Actions",
+    "DDHQ generic-ballot polling average",
+    "Pollfinity public averages JSON",
+    "RealClearPolling latest Senate polls page",
+    "270toWin state Senate polling pages",
+    "Race to the WH public polling pages when parseable",
+    "Electoral-Vote.com downloadable Senate polling archive",
+    "OpenFEC candidate finance bulk files",
+    "MIT/MEDSL historical Senate returns",
+    "Census state population estimates",
+    "Historical and fundamentals inputs stored in this generator"
+  ]
+};
+
+const STATE_NAMES = {
+  AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California", CO: "Colorado", CT: "Connecticut", DE: "Delaware", FL: "Florida", GA: "Georgia", HI: "Hawaii", ID: "Idaho", IL: "Illinois", IN: "Indiana", IA: "Iowa", KS: "Kansas", KY: "Kentucky", LA: "Louisiana", ME: "Maine", MD: "Maryland", MA: "Massachusetts", MI: "Michigan", MN: "Minnesota", MS: "Mississippi", MO: "Missouri", MT: "Montana", NE: "Nebraska", NV: "Nevada", NH: "New Hampshire", NJ: "New Jersey", NM: "New Mexico", NY: "New York", NC: "North Carolina", ND: "North Dakota", OH: "Ohio", OK: "Oklahoma", OR: "Oregon", PA: "Pennsylvania", RI: "Rhode Island", SC: "South Carolina", SD: "South Dakota", TN: "Tennessee", TX: "Texas", UT: "Utah", VT: "Vermont", VA: "Virginia", WA: "Washington", WV: "West Virginia", WI: "Wisconsin", WY: "Wyoming", DC: "District of Columbia"
+};
+
+const FIPS_TO_STATE = {
+  "01": "AL", "02": "AK", "04": "AZ", "05": "AR", "06": "CA", "08": "CO", "09": "CT", "10": "DE", "11": "DC", "12": "FL", "13": "GA", "15": "HI", "16": "ID", "17": "IL", "18": "IN", "19": "IA", "20": "KS", "21": "KY", "22": "LA", "23": "ME", "24": "MD", "25": "MA", "26": "MI", "27": "MN", "28": "MS", "29": "MO", "30": "MT", "31": "NE", "32": "NV", "33": "NH", "34": "NJ", "35": "NM", "36": "NY", "37": "NC", "38": "ND", "39": "OH", "40": "OK", "41": "OR", "42": "PA", "44": "RI", "45": "SC", "46": "SD", "47": "TN", "48": "TX", "49": "UT", "50": "VT", "51": "VA", "53": "WA", "54": "WV", "55": "WI", "56": "WY"
+};
+
+const REGION_BY_STATE = {
+  AL: "South", AR: "South", FL: "South", GA: "South", KY: "South", LA: "South", MS: "South", NC: "South", SC: "South", TN: "South", TX: "South", VA: "South", WV: "South",
+  AK: "West", CO: "West", ID: "West", MT: "West", NM: "West", OR: "West", WY: "West",
+  IA: "Midwest", IL: "Midwest", MI: "Midwest", MN: "Midwest", OH: "Midwest",
+  KS: "Plains", NE: "Plains", OK: "Plains", SD: "Plains",
+  DE: "Northeast", MA: "Northeast", ME: "Northeast", NH: "Northeast", NJ: "Northeast", RI: "Northeast"
+};
+
+const RATING_BUCKET = {
+  "Safe D": "safe-d", "Likely D": "likely-d", "Lean D": "lean-d", "Tilt D": "tilt-d", "Toss-up": "tossup",
+  "Tilt R": "tilt-r", "Lean R": "lean-r", "Likely R": "likely-r", "Safe R": "safe-r"
+};
+
+const MODEL_WEIGHTS = {
+  racePollsBase: .08,
+  racePollsPerWeight: .045,
+  racePollsPerPollster: .012,
+  racePollsCap: .22,
+  fundamentalsWithPolls: .9,
+  genericBallot: .12,
+  genericBallotCap: .9,
+  nationalFinance: .45
+};
+
+const EXPERT_RATING_INTERVALS = {
+  "Safe D": [12, Infinity], "Likely D": [6, 12], "Lean D": [2, 6], "Tilt D": [.5, 2],
+  "Toss-up": [-1, 1],
+  "Tilt R": [-2, -.5], "Lean R": [-6, -2], "Likely R": [-12, -6], "Safe R": [-Infinity, -12]
+};
+
+const CHALLENGER_STRENGTH_DISCOUNTS = {
+  sameSeat: .85,
+  statewide: .55,
+  majorOffice: .35,
+  notable: .22,
+  none: 0
+};
+
+const STATE_COALITION_TRAITS = {
+  AL: ["deep_south", "rural", "evangelical"], AK: ["frontier", "independent"], AZ: ["sunbelt", "suburban", "latino"], AR: ["south", "rural"],
+  CA: ["urban", "college", "latino"], CO: ["suburban", "college"], CT: ["suburban", "college"], DE: ["suburban"],
+  FL: ["sunbelt", "suburban", "latino", "senior"], GA: ["suburban", "black_belt"], HI: ["minority"], ID: ["rural"],
+  IL: ["urban", "suburban"], IN: ["working_class"], IA: ["rural", "working_class"], KS: ["suburban", "rural"],
+  KY: ["appalachian", "rural", "working_class"], LA: ["deep_south", "black_belt"], ME: ["independent", "rural"], MD: ["suburban", "college"],
+  MA: ["college", "urban"], MI: ["working_class", "suburban"], MN: ["college", "suburban"], MS: ["black_belt", "rural"],
+  MO: ["rural", "working_class"], MT: ["frontier", "rural", "independent"], NE: ["rural", "suburban", "independent"], NV: ["sunbelt", "working_class", "latino"],
+  NH: ["independent", "suburban"], NJ: ["suburban", "college"], NM: ["latino"], NY: ["urban", "college"], NC: ["suburban", "black_belt"],
+  ND: ["rural"], OH: ["appalachian", "working_class"], OK: ["evangelical", "rural"], OR: ["college"], PA: ["working_class", "suburban"],
+  RI: ["urban"], SC: ["black_belt", "suburban", "evangelical"], SD: ["rural"], TN: ["appalachian", "evangelical"], TX: ["sunbelt", "suburban", "latino"],
+  UT: ["suburban", "religious"], VT: ["rural", "college"], VA: ["suburban", "college"], WA: ["college", "urban"], WV: ["appalachian", "rural", "working_class"],
+  WI: ["working_class", "rural"], WY: ["rural"]
+};
+
+const SENATE_DEMOGRAPHIC_PROFILES = {
+  standardDemocrat: { white_college: .16, white_noncollege: -.14, black: .16, latino: .1, asian_other: .08, youth: .08, senior: -.04 },
+  incumbentDemocrat: { white_college: .15, white_noncollege: -.06, black: .14, latino: .08, asian_other: .06, youth: .04, senior: .06 },
+  statewideDemocrat: { white_college: .2, white_noncollege: .06, black: .1, latino: .06, asian_other: .06, youth: .02, senior: .04 },
+  independentLabor: { white_college: .02, white_noncollege: .28, black: .04, latino: .04, asian_other: .02, youth: .06, senior: .02 },
+  standardRepublican: { white_college: -.08, white_noncollege: .18, black: -.12, latino: -.06, asian_other: -.06, youth: -.06, senior: .08 },
+  incumbentRepublican: { white_college: -.03, white_noncollege: .14, black: -.1, latino: -.04, asian_other: -.04, youth: -.04, senior: .12 },
+  statewideRepublican: { white_college: .04, white_noncollege: .1, black: -.08, latino: -.02, asian_other: -.02, youth: -.04, senior: .08 },
+  weakRepublican: { white_college: -.1, white_noncollege: .08, black: -.08, latino: -.04, asian_other: -.04, youth: -.06, senior: .04 }
+};
+
+const SENATE_CANDIDATE_DEMOGRAPHIC_PROFILES = {
+  "mary peltola": { profile: "Alaska crossover Democrat", scores: { white_college: .1, white_noncollege: .22, black: .02, latino: .03, asian_other: .08, youth: .06, senior: .04 }, strengths: ["White non-college", "Asian/other", "18-29"], weaknesses: [] },
+  "dan sullivan": { profile: "Alaska Republican incumbent", scores: { white_college: -.04, white_noncollege: .16, black: -.06, latino: -.03, asian_other: -.02, youth: -.04, senior: .12 }, strengths: ["White non-college", "65+"], weaknesses: ["Black"] },
+  "jon ossoff": { profile: "metro-South Democratic incumbent", scores: { white_college: .24, white_noncollege: -.05, black: .18, latino: .08, asian_other: .08, youth: .12, senior: -.02 }, strengths: ["White college", "Black", "18-29"], weaknesses: ["White non-college"] },
+  "susan collins": { profile: "New England Republican crossover incumbent", scores: { white_college: .18, white_noncollege: .12, black: -.04, latino: -.02, asian_other: .02, youth: -.1, senior: .18 }, strengths: ["65+", "White college", "White non-college"], weaknesses: ["18-29"] },
+  "graham platner": { profile: "Maine labor-populist Democrat", scores: { white_college: .08, white_noncollege: .3, black: .04, latino: .04, asian_other: .03, youth: .12, senior: -.02 }, strengths: ["White non-college", "18-29"], weaknesses: ["65+"] },
+  "sherrod brown": { profile: "labor-populist Democrat", scores: { white_college: .08, white_noncollege: .36, black: .08, latino: .04, asian_other: .02, youth: .04, senior: .08 }, strengths: ["White non-college", "65+", "Black"], weaknesses: [] },
+  "jon husted": { profile: "Ohio establishment Republican", scores: { white_college: .02, white_noncollege: .13, black: -.08, latino: -.04, asian_other: -.02, youth: -.06, senior: .12 }, strengths: ["White non-college", "65+"], weaknesses: ["Black", "18-29"] },
+  "roy cooper": { profile: "North Carolina statewide Democrat", scores: { white_college: .24, white_noncollege: .08, black: .14, latino: .06, asian_other: .06, youth: .02, senior: .1 }, strengths: ["White college", "Black", "65+"], weaknesses: [] },
+  "michael whatley": { profile: "party-aligned North Carolina Republican", scores: { white_college: -.08, white_noncollege: .16, black: -.12, latino: -.04, asian_other: -.04, youth: -.06, senior: .08 }, strengths: ["White non-college", "65+"], weaknesses: ["Black", "White college"] },
+  "mike rogers": { profile: "Michigan statewide Republican nominee", scores: { white_college: .02, white_noncollege: .18, black: -.09, latino: -.03, asian_other: -.02, youth: -.05, senior: .12 }, strengths: ["White non-college", "65+", "White college"], weaknesses: ["Black", "18-29"] },
+  "james talarico": { profile: "young Texas Democrat", scores: { white_college: .2, white_noncollege: -.06, black: .12, latino: .18, asian_other: .08, youth: .22, senior: -.08 }, strengths: ["18-29", "White college", "Latino"], weaknesses: ["65+"] },
+  "ken paxton / john cornyn runoff": { profile: "Texas Republican runoff field", scores: { white_college: -.14, white_noncollege: .22, black: -.1, latino: -.03, asian_other: -.06, youth: -.08, senior: .12 }, strengths: ["White non-college", "65+"], weaknesses: ["White college", "Black"] },
+  "ken paxton": { profile: "Texas Republican nominee", scores: { white_college: -.18, white_noncollege: .24, black: -.11, latino: -.04, asian_other: -.07, youth: -.09, senior: .11 }, strengths: ["White non-college", "65+"], weaknesses: ["White college", "Black", "18-29"] },
+  "dan osborn": { profile: "Nebraska independent labor candidate", scores: { white_college: .02, white_noncollege: .34, black: .03, latino: .04, asian_other: .02, youth: .08, senior: .02 }, strengths: ["White non-college", "18-29"], weaknesses: [] },
+  "pete ricketts": { profile: "Nebraska Republican incumbent", scores: { white_college: -.04, white_noncollege: .2, black: -.08, latino: -.04, asian_other: -.04, youth: -.08, senior: .12 }, strengths: ["White non-college", "65+"], weaknesses: ["Black", "18-29"] },
+  "seth bodnar": { profile: "Montana independent veteran/business profile", scores: { white_college: .08, white_noncollege: .28, black: .02, latino: .03, asian_other: .02, youth: .06, senior: .04 }, strengths: ["White non-college", "White college", "18-29"], weaknesses: [] },
+  "kurt alme": { profile: "Montana Republican establishment successor", scores: { white_college: .03, white_noncollege: .2, black: -.08, latino: -.04, asian_other: -.03, youth: -.06, senior: .1 }, strengths: ["White non-college", "65+", "White college"], weaknesses: ["Black", "18-29"] },
+  "mark warner": { profile: "Virginia suburban Democratic incumbent", scores: { white_college: .24, white_noncollege: -.02, black: .12, latino: .07, asian_other: .1, youth: .02, senior: .12 }, strengths: ["White college", "65+", "Black"], weaknesses: [] },
+  "lindsey graham": { profile: "South Carolina Republican incumbent", scores: { white_college: -.04, white_noncollege: .16, black: -.12, latino: -.04, asian_other: -.04, youth: -.08, senior: .14 }, strengths: ["White non-college", "65+"], weaknesses: ["Black", "18-29"] },
+  "john hickenlooper": { profile: "Colorado suburban Democratic incumbent", scores: { white_college: .24, white_noncollege: -.02, black: .08, latino: .1, asian_other: .08, youth: .02, senior: .08 }, strengths: ["White college", "Latino", "65+"], weaknesses: [] },
+  "cory booker": { profile: "urban/suburban Democratic incumbent", scores: { white_college: .18, white_noncollege: -.08, black: .2, latino: .1, asian_other: .08, youth: .1, senior: -.02 }, strengths: ["Black", "White college", "18-29"], weaknesses: ["White non-college"] },
+  "justin murphy": { profile: "New Jersey Republican county-executive profile", scores: { white_college: -.02, white_noncollege: .1, black: -.08, latino: -.02, asian_other: -.02, youth: -.05, senior: .08 }, strengths: ["White non-college", "65+"], weaknesses: ["Black", "18-29"] },
+  "josh turek": { profile: "Iowa Democratic legislator and Paralympian", scores: { white_college: .08, white_noncollege: .16, black: .05, latino: .04, asian_other: .03, youth: .08, senior: .04 }, strengths: ["White non-college", "18-29", "White college"], weaknesses: [] },
+  "ashley hinson": { profile: "Iowa Republican congresswoman", scores: { white_college: -.02, white_noncollege: .16, black: -.08, latino: -.03, asian_other: -.02, youth: -.05, senior: .1 }, strengths: ["White non-college", "65+"], weaknesses: ["Black", "18-29"] },
+  "alani bankhead": { profile: "Montana Democratic nominee with rural-state profile", scores: { white_college: .06, white_noncollege: .18, black: .02, latino: .03, asian_other: .03, youth: .07, senior: .02 }, strengths: ["White non-college", "18-29"], weaknesses: [] },
+  "kurt alme": { profile: "Montana Republican nominee with statewide conservative profile", scores: { white_college: -.01, white_noncollege: .17, black: -.07, latino: -.03, asian_other: -.02, youth: -.05, senior: .1 }, strengths: ["White non-college", "65+"], weaknesses: ["Black", "18-29"] },
+  "mike rounds": { profile: "South Dakota Republican incumbent", scores: { white_college: -.02, white_noncollege: .18, black: -.08, latino: -.03, asian_other: -.02, youth: -.05, senior: .14 }, strengths: ["White non-college", "65+"], weaknesses: ["Black", "18-29"] },
+  "ed markey": { profile: "progressive Democratic incumbent", scores: { white_college: .18, white_noncollege: -.1, black: .12, latino: .1, asian_other: .08, youth: .22, senior: -.08 }, strengths: ["18-29", "White college", "Black"], weaknesses: ["White non-college", "65+"] },
+  "jeff merkley": { profile: "Oregon progressive Democratic incumbent", scores: { white_college: .18, white_noncollege: -.04, black: .08, latino: .08, asian_other: .08, youth: .16, senior: -.02 }, strengths: ["White college", "18-29"], weaknesses: [] },
+  "jack reed": { profile: "Rhode Island Democratic incumbent", scores: { white_college: .16, white_noncollege: -.04, black: .1, latino: .08, asian_other: .06, youth: .02, senior: .12 }, strengths: ["White college", "65+", "Black"], weaknesses: [] },
+  "shelley moore capito": { profile: "West Virginia Republican incumbent", scores: { white_college: .02, white_noncollege: .24, black: -.08, latino: -.04, asian_other: -.04, youth: -.06, senior: .18 }, strengths: ["White non-college", "65+"], weaknesses: ["Black"] }
+};
+
+const DEMOGRAPHIC_GROUP_LABELS = {
+  white_college: "White college",
+  white_noncollege: "White non-college",
+  black: "Black",
+  latino: "Latino",
+  asian_other: "Asian/other",
+  youth: "18-29",
+  senior: "65+"
+};
+
+const MIDTERM_LIKELY_VOTER_BASELINES = {
+  AL: { white_college: .24, white_noncollege: .43, black: .27, latino: .03, asian_other: .03 },
+  AK: { white_college: .31, white_noncollege: .42, black: .03, latino: .04, asian_other: .20 },
+  AR: { white_college: .25, white_noncollege: .55, black: .14, latino: .03, asian_other: .03 },
+  CO: { white_college: .47, white_noncollege: .31, black: .03, latino: .14, asian_other: .05 },
+  DE: { white_college: .39, white_noncollege: .35, black: .18, latino: .05, asian_other: .03 },
+  FL: { white_college: .31, white_noncollege: .36, black: .12, latino: .16, asian_other: .05 },
+  GA: { white_college: .31, white_noncollege: .31, black: .30, latino: .04, asian_other: .04 },
+  ID: { white_college: .32, white_noncollege: .54, black: .01, latino: .09, asian_other: .04 },
+  IL: { white_college: .40, white_noncollege: .36, black: .13, latino: .07, asian_other: .04 },
+  IA: { white_college: .32, white_noncollege: .58, black: .03, latino: .04, asian_other: .03 },
+  KS: { white_college: .34, white_noncollege: .49, black: .06, latino: .07, asian_other: .04 },
+  KY: { white_college: .28, white_noncollege: .59, black: .08, latino: .03, asian_other: .02 },
+  LA: { white_college: .24, white_noncollege: .41, black: .29, latino: .03, asian_other: .03 },
+  ME: { white_college: .42, white_noncollege: .51, black: .01, latino: .02, asian_other: .04 },
+  MA: { white_college: .55, white_noncollege: .28, black: .07, latino: .06, asian_other: .04 },
+  MI: { white_college: .35, white_noncollege: .49, black: .10, latino: .03, asian_other: .03 },
+  MN: { white_college: .42, white_noncollege: .44, black: .06, latino: .04, asian_other: .04 },
+  MS: { white_college: .21, white_noncollege: .41, black: .34, latino: .02, asian_other: .02 },
+  MT: { white_college: .36, white_noncollege: .54, black: .01, latino: .03, asian_other: .06 },
+  NE: { white_college: .33, white_noncollege: .54, black: .04, latino: .06, asian_other: .03 },
+  NH: { white_college: .47, white_noncollege: .47, black: .01, latino: .02, asian_other: .03 },
+  NJ: { white_college: .43, white_noncollege: .31, black: .12, latino: .10, asian_other: .04 },
+  NM: { white_college: .30, white_noncollege: .30, black: .02, latino: .33, asian_other: .05 },
+  NC: { white_college: .34, white_noncollege: .42, black: .19, latino: .03, asian_other: .02 },
+  OH: { white_college: .33, white_noncollege: .53, black: .09, latino: .03, asian_other: .02 },
+  OK: { white_college: .25, white_noncollege: .51, black: .07, latino: .06, asian_other: .11 },
+  OR: { white_college: .43, white_noncollege: .40, black: .02, latino: .08, asian_other: .07 },
+  RI: { white_college: .43, white_noncollege: .36, black: .06, latino: .11, asian_other: .04 },
+  SC: { white_college: .29, white_noncollege: .43, black: .24, latino: .02, asian_other: .02 },
+  SD: { white_college: .31, white_noncollege: .56, black: .02, latino: .03, asian_other: .08 },
+  TN: { white_college: .29, white_noncollege: .53, black: .13, latino: .03, asian_other: .02 },
+  TX: { white_college: .29, white_noncollege: .37, black: .12, latino: .18, asian_other: .04 },
+  VA: { white_college: .43, white_noncollege: .33, black: .16, latino: .05, asian_other: .03 },
+  WV: { white_college: .23, white_noncollege: .72, black: .03, latino: .01, asian_other: .01 },
+  WY: { white_college: .30, white_noncollege: .61, black: .01, latino: .05, asian_other: .03 }
+};
+
+const MIDTERM_AGE_BASELINES = {
+  AL: { youth: .13, core_age: .57, senior: .30 },
+  AK: { youth: .16, core_age: .63, senior: .21 },
+  AR: { youth: .13, core_age: .56, senior: .31 },
+  CO: { youth: .17, core_age: .60, senior: .23 },
+  DE: { youth: .13, core_age: .55, senior: .32 },
+  FL: { youth: .12, core_age: .55, senior: .33 },
+  GA: { youth: .15, core_age: .59, senior: .26 },
+  ID: { youth: .15, core_age: .57, senior: .28 },
+  IL: { youth: .15, core_age: .58, senior: .27 },
+  IA: { youth: .14, core_age: .55, senior: .31 },
+  KS: { youth: .15, core_age: .57, senior: .28 },
+  KY: { youth: .13, core_age: .56, senior: .31 },
+  LA: { youth: .14, core_age: .58, senior: .28 },
+  ME: { youth: .11, core_age: .52, senior: .37 },
+  MA: { youth: .15, core_age: .57, senior: .28 },
+  MI: { youth: .14, core_age: .56, senior: .30 },
+  MN: { youth: .15, core_age: .57, senior: .28 },
+  MS: { youth: .14, core_age: .57, senior: .29 },
+  MT: { youth: .13, core_age: .55, senior: .32 },
+  NE: { youth: .15, core_age: .56, senior: .29 },
+  NH: { youth: .12, core_age: .55, senior: .33 },
+  NJ: { youth: .14, core_age: .57, senior: .29 },
+  NM: { youth: .14, core_age: .56, senior: .30 },
+  NC: { youth: .15, core_age: .58, senior: .27 },
+  OH: { youth: .14, core_age: .56, senior: .30 },
+  OK: { youth: .14, core_age: .57, senior: .29 },
+  OR: { youth: .14, core_age: .57, senior: .29 },
+  RI: { youth: .13, core_age: .56, senior: .31 },
+  SC: { youth: .13, core_age: .56, senior: .31 },
+  SD: { youth: .14, core_age: .55, senior: .31 },
+  TN: { youth: .13, core_age: .57, senior: .30 },
+  TX: { youth: .16, core_age: .60, senior: .24 },
+  VA: { youth: .15, core_age: .58, senior: .27 },
+  WV: { youth: .11, core_age: .54, senior: .35 },
+  WY: { youth: .13, core_age: .56, senior: .31 }
+};
+
+const PATH_CENTRALITY = {
+  OH: 1.85, TX: 1.65, AK: 1.6, MI: 1.35, GA: 1.25, NC: 1.12, ME: 1.1, NH: 1,
+  IA: .75, NE: .72, MT: .68, SC: .55, KS: .45, FL: .25
+};
+
+const STATE_ELASTICITY = {
+  AK: 1.18, AZ: 1.08, GA: 1.12, IA: 1.1, ME: .86, MI: 1.12, MN: .9, MT: 1.04,
+  NC: 1.18, NH: .94, OH: 1.22, PA: 1.12, TX: 1.16, VA: .86, WI: 1.12
+};
+
+const CANDIDATE_HISTORY = {
+  // Keep demonstrated crossover appeal distinct from the broader candidate
+  // profile term below. These values previously double-counted the same case.
+  AK: .85,
+  GA: .7,
+  ME: -1.25, // Collins' historical overperformance is Republican-favorable.
+  MI: .25,
+  MT: .8,
+  NC: 1.25,
+  NE: 1.45,
+  NH: .35,
+  OH: 1.15,
+  TX: .5, // Paxton's nomination adds drag, but not enough to erase Texas fundamentals by itself.
+  VA: .55
+};
+
+const INDEPENDENT_CONTROL_FINANCE = {
+  NE: { side: "dem", label: "Dan Osborn" }
+};
+
+const RCV_STATES = {
+  AK: { transferMean: .55, transferSd: 1.55, exhaustedSd: .75 },
+  ME: { transferMean: .55, transferSd: .9, exhaustedSd: .45 }
+};
+
+const PRIMARY_EVENTS_BY_STATE = {
+  AL: [{ date: "2026-05-19", label: "Primary" }, { date: "2026-06-16", label: "Runoff" }],
+  AK: [{ date: "2026-08-18", label: "Primary" }],
+  AR: [{ date: "2026-03-03", label: "Primary" }],
+  CO: [{ date: "2026-06-30", label: "Primary" }],
+  DE: [{ date: "2026-09-15", label: "Primary" }],
+  FL: [{ date: "2026-08-18", label: "Primary" }],
+  GA: [{ date: "2026-05-19", label: "Primary" }, { date: "2026-06-16", label: "Runoff" }],
+  ID: [{ date: "2026-05-19", label: "Primary" }],
+  IL: [{ date: "2026-03-17", label: "Primary" }],
+  IA: [{ date: "2026-06-02", label: "Primary" }],
+  KS: [{ date: "2026-08-04", label: "Primary" }],
+  KY: [{ date: "2026-05-19", label: "Primary" }],
+  LA: [{ date: "2026-05-16", label: "Primary" }, { date: "2026-06-27", label: "Runoff" }],
+  ME: [{ date: "2026-06-09", label: "Primary" }],
+  MA: [{ date: "2026-09-01", label: "Primary" }],
+  MI: [{ date: "2026-08-04", label: "Primary" }],
+  MN: [{ date: "2026-08-11", label: "Primary" }],
+  MS: [{ date: "2026-03-10", label: "Primary" }],
+  MT: [{ date: "2026-06-02", label: "Primary" }],
+  NC: [{ date: "2026-03-03", label: "Primary" }],
+  NE: [{ date: "2026-05-12", label: "Primary" }],
+  NH: [{ date: "2026-09-08", label: "Primary" }],
+  NJ: [{ date: "2026-06-02", label: "Primary" }],
+  NM: [{ date: "2026-06-02", label: "Primary" }],
+  OH: [{ date: "2026-05-05", label: "Primary" }],
+  OK: [{ date: "2026-06-16", label: "Primary" }],
+  OR: [{ date: "2026-05-19", label: "Primary" }],
+  RI: [{ date: "2026-09-09", label: "Primary" }],
+  SC: [{ date: "2026-06-09", label: "Primary" }],
+  SD: [{ date: "2026-06-02", label: "Primary" }],
+  TN: [{ date: "2026-08-06", label: "Primary" }],
+  TX: [{ date: "2026-03-03", label: "Primary" }, { date: "2026-05-26", label: "Runoff", actual: true }],
+  VA: [{ date: "2026-08-04", label: "Primary" }],
+  WV: [{ date: "2026-05-12", label: "Primary" }],
+  WY: [{ date: "2026-08-18", label: "Primary" }]
+};
+
+const ARCHIVED_SENATE_BACKTESTS = [
+  {
+    cycle: 2024,
+    chamber: "Senate",
+    freezeDate: "2024-10-15",
+    status: "partial",
+    note: "Partial archived-input seed for competitive and high-attention 2024 Senate races. Inputs are frozen late-cycle probability estimates from public race ratings, polling-average context, incumbency, candidate field, and generic-ballot environment. This is not yet the complete 34-seat cycle.",
+    races: [
+      { state: "AZ", rating: "Lean D", probability: .73, favorite: "D", actualMargin: 2.4, tags: ["Open seat", "Major-party baseline"] },
+      { state: "MI", rating: "Toss-up", probability: .50, favorite: "D", actualMargin: .34, tags: ["Open seat", "Major-party baseline"] },
+      { state: "NV", rating: "Lean D", probability: .73, favorite: "D", actualMargin: 1.7, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "WI", rating: "Lean D", probability: .73, favorite: "D", actualMargin: .85, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "PA", rating: "Lean D", probability: .73, favorite: "D", actualMargin: -.22, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "OH", rating: "Toss-up", probability: .50, favorite: "R", actualMargin: -3.62, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "MT", rating: "Lean R", probability: .27, favorite: "R", actualMargin: -7.14, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "NE", rating: "Likely R", probability: .17, favorite: "R", actualMargin: -6.6, tags: ["Incumbent race", "Independent factor"] },
+      { state: "TX", rating: "Likely R", probability: .17, favorite: "R", actualMargin: -10.86, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "FL", rating: "Likely R", probability: .17, favorite: "R", actualMargin: -12.77, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "MD", rating: "Likely D", probability: .83, favorite: "D", actualMargin: 10.1, tags: ["Open seat", "Major-party baseline"] },
+      { state: "CA", rating: "Safe D", probability: .97, favorite: "D", actualMargin: 21.2, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "MS", rating: "Safe R", probability: .03, favorite: "R", actualMargin: -23.6, tags: ["Open seat", "Major-party baseline"] },
+      { state: "OR", rating: "Tilt D", probability: .64, favorite: "D", actualMargin: 16.5, tags: ["Incumbent race", "Major-party baseline"] }
+    ],
+    sources: [
+      "Late-cycle public race ratings and polling-average context",
+      "Final certified or reported state Senate margins",
+      "Manual candidate/open-seat notes"
+    ]
+  },
+  {
+    cycle: 2022,
+    chamber: "Senate",
+    freezeDate: "2022-10-25",
+    status: "partial",
+    note: "Archived-input seed for competitive 2022 Senate races. Inputs reflect late-cycle ratings, polling averages, and fundamentals available before Election Day.",
+    races: [
+      { state: "AZ", rating: "Lean D", probability: .73, favorite: "D", actualMargin: 5.3, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "GA", rating: "Tilt R", probability: .36, favorite: "R", actualMargin: 2.8, tags: ["Open seat", "Major-party baseline"] },
+      { state: "NV", rating: "Toss-up", probability: .50, favorite: "D", actualMargin: -.8, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "PA", rating: "Toss-up", probability: .50, favorite: "D", actualMargin: 4.9, tags: ["Open seat", "Major-party baseline"] },
+      { state: "WI", rating: "Lean D", probability: .73, favorite: "D", actualMargin: 1.1, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "NC", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 3.2, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "OH", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 6.6, tags: ["Open seat", "Major-party baseline"] },
+      { state: "NH", rating: "Lean D", probability: .73, favorite: "D", actualMargin: 9.1, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "CO", rating: "Likely D", probability: .83, favorite: "D", actualMargin: 12.4, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "FL", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 16.4, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "WA", rating: "Likely D", probability: .83, favorite: "D", actualMargin: 5.7, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "CT", rating: "Likely D", probability: .83, favorite: "D", actualMargin: 13.8, tags: ["Open seat", "Major-party baseline"] },
+      { state: "VT", rating: "Safe D", probability: .97, favorite: "D", actualMargin: 33.2, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "AL", rating: "Safe R", probability: .03, favorite: "R", actualMargin: -25.3, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "NM", rating: "Tilt D", probability: .64, favorite: "D", actualMargin: 18.5, tags: ["Open seat", "Major-party baseline"] }
+    ],
+    sources: [
+      "Late-cycle Cook Political Report and Sabato's Crystal Ball ratings",
+      "RealClearPolitics polling averages",
+      "Final certified state election results"
+    ]
+  },
+  {
+    cycle: 2020,
+    chamber: "Senate",
+    freezeDate: "2020-10-27",
+    status: "partial",
+    note: "Archived-input seed for competitive 2020 Senate races. Inputs reflect pre-election ratings, polling context, and fundamentals.",
+    races: [
+      { state: "AL", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 20.7, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "AZ", rating: "Lean D", probability: .73, favorite: "D", actualMargin: 4.5, tags: ["Special election", "Major-party baseline"] },
+      { state: "GA", rating: "Tilt R", probability: .36, favorite: "R", actualMargin: -1.2, tags: ["Open seat", "Major-party baseline"] },
+      { state: "GA", rating: "Tilt R", probability: .36, favorite: "R", actualMargin: -2.1, tags: ["Special election", "Major-party baseline"] },
+      { state: "IA", rating: "Toss-up", probability: .50, favorite: "R", actualMargin: 6.6, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "ME", rating: "Toss-up", probability: .50, favorite: "D", actualMargin: 9.1, tags: ["Incumbent race", "Ranked-choice"] },
+      { state: "MI", rating: "Lean D", probability: .73, favorite: "D", actualMargin: 1.7, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "MN", rating: "Lean D", probability: .73, favorite: "D", actualMargin: 8.8, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "MT", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 10.2, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "NC", rating: "Tilt R", probability: .36, favorite: "R", actualMargin: 1.8, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "SC", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 10.9, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "TX", rating: "Lean R", probability: .27, favorite: "R", actualMargin: 5.8, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "MA", rating: "Safe D", probability: .97, favorite: "D", actualMargin: 36.3, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "WY", rating: "Safe R", probability: .03, favorite: "R", actualMargin: -45.8, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "VA", rating: "Tilt D", probability: .64, favorite: "D", actualMargin: 12.1, tags: ["Incumbent race", "Major-party baseline"] }
+    ],
+    sources: [
+      "Late-cycle FiveThirtyEight and Cook Political Report ratings",
+      "RealClearPolitics polling averages",
+      "Final certified state election results"
+    ]
+  },
+  {
+    cycle: 2018,
+    chamber: "Senate",
+    freezeDate: "2018-10-30",
+    status: "partial",
+    note: "Archived-input seed for competitive 2018 Senate races. Inputs reflect pre-election ratings and polling context in a midterm environment.",
+    races: [
+      { state: "AZ", rating: "Toss-up", probability: .50, favorite: "D", actualMargin: 2.4, tags: ["Open seat", "Major-party baseline"] },
+      { state: "FL", rating: "Toss-up", probability: .50, favorite: "R", actualMargin: -.1, tags: ["Open seat", "Major-party baseline"] },
+      { state: "IN", rating: "Toss-up", probability: .50, favorite: "D", actualMargin: 6.0, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "MO", rating: "Lean R", probability: .27, favorite: "R", actualMargin: 2.4, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "MT", rating: "Toss-up", probability: .50, favorite: "D", actualMargin: 3.5, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "ND", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 11.5, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "NV", rating: "Lean D", probability: .73, favorite: "D", actualMargin: 4.7, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "OH", rating: "Lean D", probability: .73, favorite: "D", actualMargin: 7.7, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "TN", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 11.3, tags: ["Open seat", "Major-party baseline"] },
+      { state: "TX", rating: "Lean R", probability: .27, favorite: "R", actualMargin: 2.6, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "WV", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 19.3, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "NY", rating: "Safe D", probability: .97, favorite: "D", actualMargin: 33.7, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "UT", rating: "Safe R", probability: .03, favorite: "R", actualMargin: -30.9, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "NJ", rating: "Tilt D", probability: .64, favorite: "D", actualMargin: 11.2, tags: ["Incumbent race", "Major-party baseline"] }
+    ],
+    sources: [
+      "Late-cycle Cook Political Report and Sabato's Crystal Ball ratings",
+      "RealClearPolitics polling averages",
+      "Final certified state election results"
+    ]
+  },
+  {
+    cycle: 2016,
+    chamber: "Senate",
+    freezeDate: "2016-11-01",
+    status: "partial",
+    note: "Archived-input seed for competitive 2016 Senate races. Inputs reflect pre-election ratings and polling context in a presidential year.",
+    races: [
+      { state: "AZ", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 13.9, tags: ["Open seat", "Major-party baseline"] },
+      { state: "FL", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 8.1, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "IN", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 10.1, tags: ["Open seat", "Major-party baseline"] },
+      { state: "MO", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 18.6, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "NC", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 6.4, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "NH", rating: "Toss-up", probability: .50, favorite: "D", actualMargin: .1, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "NV", rating: "Lean D", probability: .73, favorite: "D", actualMargin: 1.4, tags: ["Open seat", "Major-party baseline"] },
+      { state: "PA", rating: "Likely R", probability: .17, favorite: "R", actualMargin: 1.7, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "WI", rating: "Likely R", probability: .17, favorite: "R", actualMargin: .7, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "CA", rating: "Safe D", probability: .97, favorite: "D", actualMargin: 29.0, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "MS", rating: "Safe R", probability: .03, favorite: "R", actualMargin: -21.6, tags: ["Incumbent race", "Major-party baseline"] },
+      { state: "IL", rating: "Tilt D", probability: .64, favorite: "D", actualMargin: 15.5, tags: ["Incumbent race", "Major-party baseline"] }
+    ],
+    sources: [
+      "Late-cycle Cook Political Report and Sabato's Crystal Ball ratings",
+      "RealClearPolitics polling averages",
+      "Final certified state election results"
+    ]
+  }
+];
+
+const races = [
+  { state: "AL", seat: "Open seat", incumbent: "Tommy Tuberville", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -15, pastSenate: -16, money: -1, candidate: -.9, approval: -.85, primary: "resolved", primaryDate: "2026-06-16", nomination: .1, independent: "none", polls: [], note: "Moore is nominated on the Republican side; Alabama remains a heavily Republican open-seat race." },
+  { state: "AK", seat: "Dan Sullivan", incumbent: "Dan Sullivan", hold: "R", caucusTarget: "D", rating: "Toss-up", pvi: -8, pastSenate: -12, money: .3, candidate: .75, approval: .1, primary: "unresolved", primaryDate: "2026-08-18", nomination: .6, independent: "none", challengerStrength: "majorOffice", polls: [[-150, 31], [-105, 36], [-62, 42], [-20, 47]], note: "Alaska uses a nonpartisan top-four primary and ranked-choice general election, so the extra uncertainty is election-format risk rather than a Nebraska-style independent factor." },
+  { state: "AR", seat: "Tom Cotton", incumbent: "Tom Cotton", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -18, pastSenate: -24, money: -1, candidate: -1, approval: -1, primary: "resolved", primaryDate: "2026-03-03", nomination: .05, independent: "none", polls: [], note: "A deeply Republican state with no normal Democratic path." },
+  { state: "CO", seat: "John Hickenlooper", incumbent: "John Hickenlooper", hold: "D", caucusTarget: "D", rating: "Safe D", pvi: 8, pastSenate: 12, money: 1, candidate: 1, approval: .5, primary: "unresolved", primaryDate: "2026-06-30", nomination: .15, independent: "none", polls: [], note: "Colorado starts outside the serious battleground set." },
+  { state: "DE", seat: "Chris Coons", incumbent: "Chris Coons", hold: "D", caucusTarget: "D", rating: "Safe D", pvi: 14, pastSenate: 16, money: 1, candidate: 1, approval: .6, primary: "unresolved", primaryDate: "2026-09-15", nomination: .12, independent: "none", polls: [], note: "Safe Democratic hold under ordinary conditions." },
+  { state: "FL", seat: "Special election", incumbent: "Ashley Moody", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -8, pastSenate: -13, money: -1, candidate: -1, approval: -.4, primary: "unresolved", primaryDate: "2026-08-18", nomination: .3, independent: "none", polls: [], note: "Special election for the remainder of Marco Rubio's term." },
+  { state: "GA", seat: "Jon Ossoff", incumbent: "Jon Ossoff", hold: "D", caucusTarget: "D", rating: "Likely D", pvi: 0, pastSenate: 1, money: 1.4, candidate: 1.05, approval: .5, primary: "resolved", primaryDate: "2026-06-16", nomination: .1, independent: "none", polls: [[-120, 51], [-80, 53], [-35, 55], [-8, 57]], note: "Ossoff and Collins are nominated; Georgia remains a high-priority Democratic hold." },
+  { state: "ID", seat: "Jim Risch", incumbent: "Jim Risch", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -19, pastSenate: -25, money: -1, candidate: -1, approval: -.8, primary: "resolved", primaryDate: "2026-05-19", nomination: .05, independent: "independent longshot, no assumed caucus", polls: [], note: "Risch and Roth are nominated; independent upside is tracked, but no caucus assumption is credited." },
+  { state: "IL", seat: "Open seat", incumbent: "Dick Durbin", hold: "D", caucusTarget: "D", rating: "Safe D", pvi: 13, pastSenate: 14, money: 1, candidate: .4, approval: .4, primary: "resolved", primaryDate: "2026-03-17", nomination: .2, independent: "none", polls: [], note: "Open seat, but the state floor remains strongly Democratic." },
+  { state: "IA", seat: "Open seat", incumbent: "Joni Ernst", hold: "R", caucusTarget: "D", rating: "Lean R", pvi: -6, pastSenate: -6, money: 0, candidate: .2, approval: -.2, primary: "unresolved", primaryDate: "2026-06-02", nomination: .55, independent: "none", polls: [[-130, 38], [-83, 41], [-42, 43], [-14, 44]], note: "Open-seat uncertainty keeps Iowa on the long Democratic path." },
+  { state: "KS", seat: "Roger Marshall", incumbent: "Roger Marshall", hold: "R", caucusTarget: "D", rating: "Likely R", pvi: -10, pastSenate: -11, money: -1, candidate: -.5, approval: -.5, primary: "unresolved", primaryDate: "2026-08-04", nomination: .25, independent: "none", polls: [], note: "Kansas becomes live only in a large wave." },
+  { state: "KY", seat: "Open seat", incumbent: "Mitch McConnell", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -16, pastSenate: -18, money: -1, candidate: -.85, approval: -.65, primary: "resolved", primaryDate: "2026-05-19", nomination: .1, independent: "none", polls: [], note: "Booker and Barr are nominated; fundamentals remain heavily Republican." },
+  { state: "LA", seat: "Incumbent eliminated", incumbent: "Bill Cassidy", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -12, pastSenate: -18, money: -1, candidate: -1, approval: -.8, primary: "runoff", primaryDate: "2026-06-27", nomination: .25, independent: "none", polls: [], note: "Not enough evidence for a serious control path." },
+  { state: "ME", seat: "Susan Collins", incumbent: "Susan Collins", hold: "R", caucusTarget: "D", rating: "Lean D", pvi: 5, pastSenate: 8, money: .7, candidate: .55, approval: .2, primary: "unresolved", primaryDate: "2026-06-09", nomination: .9, independent: "possible independent spoiler risk", challengerStrength: "statewide", polls: [[-140, 46], [-90, 49], [-45, 51], [-12, 54]], note: "Platner is treated as the presumptive Democratic nominee, while Collins' personal brand keeps the race contested." },
+  { state: "MA", seat: "Ed Markey", incumbent: "Ed Markey", hold: "D", caucusTarget: "D", rating: "Safe D", pvi: 16, pastSenate: 20, money: 1, candidate: 1, approval: .7, primary: "unresolved", primaryDate: "2026-09-01", nomination: .1, independent: "none", polls: [], note: "A safe Democratic anchor." },
+  { state: "MI", seat: "Open seat", incumbent: "Gary Peters", hold: "D", caucusTarget: "D", rating: "Tilt D", pvi: 1, pastSenate: 2, money: .4, candidate: .3, approval: .2, primary: "unresolved", primaryDate: "2026-08-04", nomination: .65, independent: "none", polls: [[-160, 48], [-100, 50], [-52, 52], [-18, 54]], note: "Democrats probably need to hold Michigan before the pickup path matters." },
+  { state: "MN", seat: "Open seat", incumbent: "Tina Smith", hold: "D", caucusTarget: "D", rating: "Likely D", pvi: 4, pastSenate: 7, money: .6, candidate: .2, approval: .2, primary: "unresolved", primaryDate: "2026-08-11", nomination: .45, independent: "none", polls: [], note: "Competitive mainly under a poor Democratic national climate." },
+  { state: "MS", seat: "Cindy Hyde-Smith", incumbent: "Cindy Hyde-Smith", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -11, pastSenate: -18, money: -1, candidate: -1, approval: -.7, primary: "resolved", primaryDate: "2026-03-10", nomination: .1, independent: "none", polls: [], note: "A high Republican floor unless candidate quality breaks badly." },
+  { state: "MT", seat: "Open seat", incumbent: "Steve Daines", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -11, pastSenate: -10, money: .3, candidate: .8, approval: -.2, primary: "unresolved", primaryDate: "2026-06-02", nomination: .35, independent: "Seth Bodnar independent path, caucus assumption uncertain", polls: [[-120, 33], [-75, 36], [-34, 39]], note: "Bodnar is modeled as the main non-Republican path while the Democratic primary remains unsettled; caucus uncertainty keeps the seat discounted." },
+  { state: "NC", seat: "Open seat", incumbent: "Thom Tillis", hold: "R", caucusTarget: "D", rating: "Likely D", pvi: -2, pastSenate: -1, money: 1.2, candidate: 1.4, approval: .3, primary: "resolved", primaryDate: "2026-03-03", nomination: .2, independent: "none", polls: [[-150, 50], [-92, 53], [-45, 56], [-9, 59]], note: "A core Democratic pickup in most plausible majority paths." },
+  { state: "NE", seat: "Special election", incumbent: "Pete Ricketts", hold: "R", caucusTarget: "D", rating: "Likely R", pvi: -13, pastSenate: -7, money: .4, candidate: 1.25, approval: -.1, primary: "resolved", primaryDate: "2026-05-12", nomination: .15, independent: "Democratic nominee has said they will withdraw for Dan Osborn", polls: [[-140, 35], [-90, 38], [-40, 42], [-10, 44]], note: "Modeled as a purple independent who counts as Democrat for control if elected." },
+  { state: "NH", seat: "Open seat", incumbent: "Jeanne Shaheen", hold: "D", caucusTarget: "D", rating: "Likely D", pvi: 3, pastSenate: 5, money: .4, candidate: .4, approval: .2, primary: "unresolved", primaryDate: "2026-09-08", nomination: .55, independent: "none", polls: [[-90, 50], [-40, 52], [-12, 54]], note: "A necessary Democratic hold in almost every route to a majority." },
+  { state: "NJ", seat: "Cory Booker", incumbent: "Cory Booker", hold: "D", caucusTarget: "D", rating: "Safe D", pvi: 12, pastSenate: 13, money: 1, candidate: 1, approval: .5, primary: "unresolved", primaryDate: "2026-06-02", nomination: .1, independent: "none", polls: [], note: "Not part of a normal majority path." },
+  { state: "NM", seat: "Ben Ray Lujan", incumbent: "Ben Ray Lujan", hold: "D", caucusTarget: "D", rating: "Safe D", pvi: 10, pastSenate: 12, money: 1, candidate: 1, approval: .4, primary: "unresolved", primaryDate: "2026-06-02", nomination: .1, independent: "none", polls: [], note: "Safe Democratic hold." },
+  { state: "OH", seat: "Special election", incumbent: "Jon Husted", hold: "R", caucusTarget: "D", rating: "Toss-up", pvi: -7, pastSenate: -1, money: .7, candidate: 1.2, approval: .1, primary: "resolved", primaryDate: "2026-05-05", nomination: .2, independent: "none", challengerStrength: "sameSeat", polls: [[-160, 42], [-110, 45], [-55, 48], [-15, 51]], note: "The cleanest Democratic pickup after the easier blue-leaning seats." },
+  { state: "OK", seat: "Special election", incumbent: "Open", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -20, pastSenate: -30, money: -1, candidate: -1, approval: -.9, primary: "unresolved", primaryDate: "2026-06-16", nomination: .25, independent: "none", polls: [], note: "Special election, but not competitive in the baseline." },
+  { state: "OR", seat: "Jeff Merkley", incumbent: "Jeff Merkley", hold: "D", caucusTarget: "D", rating: "Safe D", pvi: 10, pastSenate: 15, money: 1, candidate: 1, approval: .5, primary: "resolved", primaryDate: "2026-05-19", nomination: .05, independent: "none", polls: [], note: "Merkley and Smith are nominated; Oregon keeps a high Democratic floor." },
+  { state: "RI", seat: "Jack Reed", incumbent: "Jack Reed", hold: "D", caucusTarget: "D", rating: "Safe D", pvi: 15, pastSenate: 18, money: 1, candidate: 1, approval: .7, primary: "unresolved", primaryDate: "2026-09-09", nomination: .1, independent: "none", polls: [], note: "A safe Democratic hold in nearly all runs." },
+  { state: "SC", seat: "Lindsey Graham", incumbent: "Lindsey Graham", hold: "R", caucusTarget: "D", rating: "Likely R", pvi: -8, pastSenate: -10, money: -.4, candidate: -.2, approval: -.4, primary: "unresolved", primaryDate: "2026-06-09", nomination: .5, independent: "none", polls: [], note: "Long-shot Democratic upside, but not a core path." },
+  { state: "SD", seat: "Mike Rounds", incumbent: "Mike Rounds", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -16, pastSenate: -20, money: -1, candidate: -1, approval: -.8, primary: "unresolved", primaryDate: "2026-06-02", nomination: .1, independent: "independent longshot, caucus not credited", polls: [], note: "Republican lock in the baseline." },
+  { state: "TN", seat: "Bill Hagerty", incumbent: "Bill Hagerty", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -14, pastSenate: -16, money: -1, candidate: -1, approval: -.8, primary: "unresolved", primaryDate: "2026-08-06", nomination: .2, independent: "none", polls: [], note: "Tail risk only." },
+  { state: "TX", seat: "Open seat", incumbent: "John Cornyn", hold: "R", caucusTarget: "D", rating: "Tilt R", pvi: -5, pastSenate: -5, money: .7, candidate: .65, approval: -.65, primary: "resolved", primaryDate: "2026-03-03", nomination: .1, independent: "none", polls: [[-150, 38], [-92, 41], [-48, 44], [-13, 46]], note: "Paxton is treated as the Republican nominee; scandals, fundraising drag, and general-election polling make him weaker than a generic Texas Republican." },
+  { state: "VA", seat: "Mark Warner", incumbent: "Mark Warner", hold: "D", caucusTarget: "D", rating: "Likely D", pvi: 6, pastSenate: 9, money: 1, candidate: 1, approval: .5, primary: "unresolved", primaryDate: "2026-08-04", nomination: .2, independent: "none", polls: [], note: "Usually not central unless the environment turns hard red." },
+  { state: "WV", seat: "Shelley Moore Capito", incumbent: "Shelley Moore Capito", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -23, pastSenate: -28, money: -1, candidate: -1, approval: -.9, primary: "resolved", primaryDate: "2026-05-12", nomination: .05, independent: "none", polls: [], note: "The least Democratic state on the board." },
+  { state: "WY", seat: "Open seat", incumbent: "Cynthia Lummis", hold: "R", caucusTarget: "D", rating: "Safe R", pvi: -26, pastSenate: -32, money: -1, candidate: -1, approval: -1, primary: "unresolved", primaryDate: "2026-08-18", nomination: .15, independent: "none", polls: [], note: "Republican floor seat." }
+];
+
+const CANDIDATE_STATUS = {
+  AL: { dem: "Dakarai Larriett / Everett Wess runoff", rep: "Barry Moore", demStatus: "runoff", repStatus: "nominee", primarySummary: "Moore won the June 16 Republican runoff. The Democratic runoff remains listed as unresolved in the manual ledger until certified candidate data is entered." },
+  AK: { dem: "Mary Peltola", rep: "Dan Sullivan", demStatus: "presumptive", repStatus: "presumptive", primarySummary: "Peltola has launched her challenge and is treated as the presumptive Democratic nominee. Sullivan is the Republican incumbent and presumptive GOP nominee." },
+  AR: { dem: "Hallie Shoffner", rep: "Tom Cotton", demStatus: "nominee", repStatus: "nominee", primarySummary: "Primaries held March 3. Shoffner won the Democratic nomination; Cotton secured the Republican nomination." },
+  CO: { dem: "John Hickenlooper", rep: "Republican", demStatus: "presumptive", repStatus: "unresolved", primarySummary: "Colorado's Senate primary is scheduled for June 30. Hickenlooper is treated as the presumptive Democratic nominee." },
+  DE: { dem: "Chris Coons", rep: "Republican", demStatus: "presumptive", repStatus: "unresolved", primarySummary: "Delaware's Senate primary is scheduled for September 15. Coons is treated as the presumptive Democratic nominee." },
+  FL: { dem: "Democrat", rep: "Ashley Moody", demStatus: "unresolved", repStatus: "presumptive", primarySummary: "Florida's special Senate primary is scheduled for August 18. Moody is treated as the presumptive Republican nominee." },
+  GA: { dem: "Jon Ossoff", rep: "Mike Collins", demStatus: "nominee", repStatus: "nominee", primarySummary: "Ossoff was renominated and Collins won the June 16 Republican runoff." },
+  ID: { dem: "David Roth", rep: "Jim Risch", demStatus: "nominee", repStatus: "nominee", primarySummary: "Primaries held May 19. Roth won the Democratic nomination and Risch secured the Republican nomination." },
+  IL: { dem: "Juliana Stratton", rep: "Don Tracy", demStatus: "nominee", repStatus: "nominee", primarySummary: "Primaries held March 17. Stratton and Tracy are the general-election nominees." },
+  IA: { dem: "Josh Turek", rep: "Ashley Hinson", demStatus: "nominee", repStatus: "nominee", primarySummary: "Iowa held its June 2 primaries. Turek won the Democratic nomination and Hinson won the Republican nomination." },
+  KS: { dem: "Democrat", rep: "Roger Marshall", demStatus: "unresolved", repStatus: "presumptive", primarySummary: "Kansas' Senate primary is scheduled for August 4. Marshall is treated as the presumptive Republican nominee." },
+  KY: { dem: "Charles Booker", rep: "Andy Barr", demStatus: "nominee", repStatus: "nominee", primarySummary: "Primaries held May 19. Booker won the Democratic nomination and Barr won the Republican nomination." },
+  MS: { dem: "Scott Colom", rep: "Cindy Hyde-Smith", demStatus: "nominee", repStatus: "nominee", primarySummary: "Primaries held March 10. Hyde-Smith defeated a GOP challenger; Colom is the Democratic nominee." },
+  MA: { dem: "Ed Markey", rep: "Republican", demStatus: "presumptive", repStatus: "unresolved", primarySummary: "Massachusetts' Senate primary is scheduled for September 1. Markey is treated as the presumptive Democratic nominee." },
+  MI: { dem: "Democrat", rep: "Mike Rogers", demStatus: "unresolved", repStatus: "presumptive", primarySummary: "Michigan's Senate primary is scheduled for August 4. Rogers is treated as the presumptive Republican nominee while the Democratic primary remains open." },
+  MN: { dem: "Democrat", rep: "Republican", demStatus: "unresolved", repStatus: "unresolved", primarySummary: "Minnesota's Senate primary is scheduled for August 11." },
+  MT: { dem: "Alani Bankhead", rep: "Kurt Alme", demStatus: "nominee", repStatus: "nominee", primarySummary: "Montana held its June 2 primaries. Bankhead won the Democratic nomination and Alme won the Republican nomination." },
+  ME: { dem: "Graham Platner", rep: "Susan Collins", demStatus: "presumptive", repStatus: "presumptive", primarySummary: "Platner is treated as the presumptive Democratic nominee after Mills' exit and party consolidation. Collins is the Republican incumbent and presumptive GOP nominee." },
+  NC: { dem: "Roy Cooper", rep: "Michael Whatley", demStatus: "nominee", repStatus: "nominee", primarySummary: "Primaries held March 3. Cooper and Whatley won their nominations." },
+  NH: { dem: "Democrat", rep: "Republican", demStatus: "unresolved", repStatus: "unresolved", primarySummary: "New Hampshire's Senate primary is scheduled for September 8." },
+  NJ: { dem: "Cory Booker", rep: "Justin Murphy", demStatus: "nominee", repStatus: "nominee", primarySummary: "New Jersey held its June 2 primaries. Booker was renominated and Murphy won the Republican nomination." },
+  NM: { dem: "Ben Ray Lujan", rep: "Republican", demStatus: "presumptive", repStatus: "unresolved", primarySummary: "New Mexico's Senate primary is scheduled for June 2. Lujan is treated as the presumptive Democratic nominee." },
+  OH: { dem: "Sherrod Brown", rep: "Jon Husted", demStatus: "nominee", repStatus: "nominee", primarySummary: "Primaries held May 5. Brown won the Democratic primary; Husted was unopposed for the GOP nomination." },
+  OK: { dem: "Democrat", rep: "Republican", demStatus: "unresolved", repStatus: "unresolved", primarySummary: "Oklahoma's special Senate primary remains unresolved in the manual candidate ledger." },
+  OR: { dem: "Jeff Merkley", rep: "David Brock Smith", demStatus: "nominee", repStatus: "nominee", primarySummary: "Primaries held May 19. Merkley secured renomination and Smith won the Republican nomination." },
+  RI: { dem: "Jack Reed", rep: "Republican", demStatus: "presumptive", repStatus: "unresolved", primarySummary: "Rhode Island's Senate primary is scheduled for September 9. Reed is treated as the presumptive Democratic nominee." },
+  SC: { dem: "Democrat", rep: "Lindsey Graham", demStatus: "unresolved", repStatus: "presumptive", primarySummary: "South Carolina's Senate primary is scheduled for June 9. Graham is treated as the presumptive Republican nominee." },
+  SD: { dem: "Democrat", rep: "Mike Rounds", demStatus: "unresolved", repStatus: "nominee", primarySummary: "South Dakota held its June 2 Republican Senate primary. Rounds won renomination; the Democratic side remains unresolved in the current ledger." },
+  TN: { dem: "Democrat", rep: "Bill Hagerty", demStatus: "unresolved", repStatus: "presumptive", primarySummary: "Tennessee's Senate primary is scheduled for August 6. Hagerty is treated as the presumptive Republican nominee." },
+  TX: { dem: "James Talarico", rep: "Ken Paxton", demStatus: "nominee", repStatus: "nominee", primarySummary: "Talarico won the March 3 Democratic primary. Paxton won the May 26 Republican runoff after no Republican secured the nomination on March 3." },
+  VA: { dem: "Mark Warner", rep: "Republican", demStatus: "presumptive", repStatus: "unresolved", primarySummary: "Virginia's congressional primary is scheduled for August 4. Warner is treated as the presumptive Democratic nominee." },
+  NE: { dem: "Dan Osborn", rep: "Pete Ricketts", demStatus: "nominee", repStatus: "nominee", demDisplayParty: "I", primarySummary: "Ricketts won the Republican primary on May 12. Cindy Burbank won the Democratic primary and said she will withdraw so Osborn can consolidate the anti-Ricketts vote." },
+  WV: { dem: "Rachel Fetty Anderson", rep: "Shelley Moore Capito", demStatus: "nominee", repStatus: "nominee", primarySummary: "Primaries held May 12. Capito and Anderson are the projected nominees." },
+  WY: { dem: "Democrat", rep: "Republican", demStatus: "unresolved", repStatus: "unresolved", primarySummary: "Wyoming's Senate primary is scheduled for August 18." },
+  LA: { dem: "Jamie Davis / Gary Crockett runoff", rep: "Julia Letlow / John Fleming runoff", demStatus: "unresolved", repStatus: "unresolved", primarySummary: "Louisiana voted May 16. Cassidy missed the Republican runoff; Letlow and Fleming advanced. Davis advanced on the Democratic side, with Crockett treated as the second runoff candidate after Albares fell short." },
+  DEFAULT: { dem: "Democrat", rep: "Republican", demStatus: "unresolved", repStatus: "unresolved", primarySummary: "Primary not yet resolved or not entered in the manual candidate ledger." }
+};
+
+const COMPLETED_PRIMARY_RESULTS_BY_STATE = {
+  AR: [
+    { party: "R", winner: "Tom Cotton", date: "2026-03-03" },
+    { party: "D", winner: "Hallie Shoffner", date: "2026-03-03" }
+  ],
+  NC: [
+    { party: "D", winner: "Roy Cooper", date: "2026-03-03" },
+    { party: "R", winner: "Michael Whatley", date: "2026-03-03" }
+  ],
+  TX: [
+    { party: "D", winner: "James Talarico", date: "2026-03-03" },
+    { party: "R", winner: "Ken Paxton", date: "2026-05-26", contest: "Runoff" }
+  ],
+  MS: [
+    { party: "R", winner: "Cindy Hyde-Smith", date: "2026-03-10" },
+    { party: "D", winner: "Scott Colom", date: "2026-03-10" }
+  ],
+  IL: [
+    { party: "D", winner: "Juliana Stratton", date: "2026-03-17" },
+    { party: "R", winner: "Don Tracy", date: "2026-03-17" }
+  ],
+  OH: [
+    { party: "D", winner: "Sherrod Brown", date: "2026-05-05" },
+    { party: "R", winner: "Jon Husted", date: "2026-05-05" }
+  ],
+  NE: [
+    { party: "R", winner: "Pete Ricketts", date: "2026-05-12" },
+    { party: "D", winner: "Cindy Burbank", date: "2026-05-12", note: "Withdrawing to back Dan Osborn" }
+  ],
+  WV: [
+    { party: "R", winner: "Shelley Moore Capito", date: "2026-05-12" },
+    { party: "D", winner: "Rachel Fetty Anderson", date: "2026-05-12" }
+  ],
+  LA: [
+    { party: "R", winner: "NO WINNER-RUNOFF", date: "2026-05-16" }
+  ],
+  AL: [
+    { party: "R", winner: "NO WINNER-RUNOFF", date: "2026-05-19" },
+    { party: "D", winner: "NO WINNER-RUNOFF", date: "2026-05-19" }
+  ],
+  GA: [
+    { party: "D", winner: "Jon Ossoff", date: "2026-05-19" },
+    { party: "R", winner: "NO WINNER-RUNOFF", date: "2026-05-19" }
+  ],
+  ID: [
+    { party: "R", winner: "Jim Risch", date: "2026-05-19" },
+    { party: "D", winner: "David Roth", date: "2026-05-19" }
+  ],
+  KY: [
+    { party: "R", winner: "Andy Barr", date: "2026-05-19" },
+    { party: "D", winner: "Charles Booker", date: "2026-05-19" }
+  ],
+  OR: [
+    { party: "D", winner: "Jeff Merkley", date: "2026-05-19" },
+    { party: "R", winner: "David Brock Smith", date: "2026-05-19" }
+  ]
+};
+
+const RCP_CANDIDATE_SIDE = {
+  AK: { peltola: "D", sullivan: "R" },
+  FL: { nixon: "D", moody: "R" },
+  GA: { ossoff: "D", collins: "R", dooley: "R", carter: "R", coyne: "R" },
+  IA: { franken: "D", ernst: "R" },
+  ME: { mills: "D", platner: "D", collins: "R" },
+  MI: { elsayed: "D", "el-sayed": "D", stevens: "D", mcmorrow: "D", rogers: "R" },
+  MT: { bodnar: "D", alme: "R" },
+  NC: { cooper: "D", whatley: "R" },
+  NE: { osborn: "D", ricketts: "R" },
+  NH: { pappas: "D", manzur: "D", sullivan: "D", sununu: "R", brown: "R" },
+  OH: { brown: "D", husted: "R" },
+  RI: { reed: "D", mckay: "R" },
+  TX: { talarico: "D", cornyn: "R", paxton: "R" },
+  VA: { warner: "D" }
+};
+
+function candidateInfo(race) {
+  const entered = CANDIDATE_STATUS[race.state];
+  const primaryResults = COMPLETED_PRIMARY_RESULTS_BY_STATE[race.state] || [];
+  if (entered) return { ...entered, primaryResults };
+  const info = { ...CANDIDATE_STATUS.DEFAULT };
+  const openSeat = race.seat === "Open seat";
+  const incumbentName = !openSeat && race.incumbent && !["Open", "Open seat"].includes(race.incumbent) ? race.incumbent : null;
+  const settledPrimary = race.primary === "resolved" ? "Primary resolved." : "Primary not yet resolved.";
+  if (incumbentName && race.hold === "D") {
+    info.dem = incumbentName;
+    info.demStatus = "presumptive";
+    info.primarySummary = `${settledPrimary} The incumbent is treated as the presumptive Democratic nominee until the candidate ledger is updated.`;
+  }
+  if (incumbentName && race.hold === "R") {
+    info.rep = incumbentName;
+    info.repStatus = "presumptive";
+    info.primarySummary = `${settledPrimary} The incumbent is treated as the presumptive Republican nominee until the candidate ledger is updated.`;
+  }
+  return { ...info, primaryResults };
+}
+
+function forecastSummary(race) {
+  const side = race.winnerParty === "D" ? "Democratic" : "Republican";
+  const sidePlural = race.winnerParty === "D" ? "Democrats" : "Republicans";
+  const probability = Math.round(race.winnerProbability * 100);
+  const margin = race.margin >= 0 ? `D+${race.margin.toFixed(1)} pts` : `R+${Math.abs(race.margin).toFixed(1)} pts`;
+  const demLabel = race.demStatus === "unresolved" ? "Democrat" : race.dem;
+  const repLabel = race.repStatus === "unresolved" ? "Republican" : race.rep;
+  if (race.state === "LA") {
+    return `Both parties have runoffs; the Republican incumbent was eliminated before the second round.`;
+  }
+  if (race.modelRating === "Toss-up") {
+    return `${demLabel} and ${repLabel} start close to even; the current probability margin is ${margin}.`;
+  }
+  if (race.seat === "Open seat") {
+    return `Open-seat race with a ${side} edge in the current forecast.`;
+  }
+  if (race.seat === "Special election") {
+    return `Special election with ${sidePlural} at ${probability}% in the current forecast.`;
+  }
+  const incumbentParty = race.hold === "D" ? "Democratic" : "Republican";
+  return `${race.incumbent} is the ${incumbentParty} incumbent; the current forecast gives ${sidePlural} a ${probability}% chance.`;
+}
+
+const regionScale = { South: 1, West: .9, Northeast: .78, Midwest: 1, Plains: .9 };
+
+function hashString(value) {
+  let hash = 2166136261;
+  for (let i = 0; i < value.length; i += 1) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function mulberry32(seed) {
+  return function random() {
+    let t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function modelDateKey() {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(process.env.MODEL_DATE || "")) return process.env.MODEL_DATE;
+  const now = new Date();
+  const central = new Date(now.toLocaleString("en-US", { timeZone: SETTINGS.updateZone }));
+  if (central.getHours() < SETTINGS.updateHour || (central.getHours() === SETTINGS.updateHour && central.getMinutes() < SETTINGS.updateMinute)) {
+    central.setDate(central.getDate() - 1);
+  }
+  const year = central.getFullYear();
+  const month = String(central.getMonth() + 1).padStart(2, "0");
+  const day = String(central.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+const MODEL_DATE_KEY = modelDateKey();
+const random = mulberry32(hashString(MODEL_DATE_KEY));
+
+function normalRandom() {
+  const u1 = Math.max(random(), Number.EPSILON);
+  const u2 = Math.max(random(), Number.EPSILON);
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function signedMarginLabel(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return null;
+  if (Math.abs(number) < 0.05) return "Even";
+  return `${number > 0 ? "D" : "R"}+${Math.abs(number).toFixed(1)}`;
+}
+
+function senateMarginFields(projectedMargin, probabilityMargin, ratingMargin) {
+  return {
+    projectedResultMargin: {
+      value: Number.isFinite(Number(projectedMargin)) ? Number(Number(projectedMargin).toFixed(2)) : null,
+      display: signedMarginLabel(projectedMargin),
+      meaning: "Expected election result margin."
+    },
+    probabilityMargin: {
+      value: Number.isFinite(Number(probabilityMargin)) ? Number(Number(probabilityMargin).toFixed(2)) : null,
+      display: signedMarginLabel(probabilityMargin),
+      meaning: "Uncertainty-adjusted margin used for win-probability conversion."
+    },
+    ratingMargin: {
+      value: Number.isFinite(Number(ratingMargin)) ? Number(Number(ratingMargin).toFixed(2)) : null,
+      display: signedMarginLabel(ratingMargin),
+      meaning: "External-rating implied margin, when a ratings prior exists."
+    }
+  };
+}
+
+function senatePollingWeightDiagnostic(pollSignal, inputBalance, marginDecomposition) {
+  const usablePollCount = Number(pollSignal?.usablePollCount || 0);
+  const pollingInputShare = Number(inputBalance?.shares?.polling ?? inputBalance?.polling);
+  const pollingAdjustment = Number(marginDecomposition?.pollingAdjustment ?? marginDecomposition?.pollingEffect);
+  const flags = [];
+  if (usablePollCount >= 2 && (!Number.isFinite(pollingInputShare) || pollingInputShare < 0.08)) {
+    flags.push("POLLING_WEIGHT_TOO_LOW");
+  }
+  if (!usablePollCount && Number.isFinite(pollingAdjustment) && Math.abs(pollingAdjustment) >= 0.5) {
+    flags.push("POLLING_ADJUSTMENT_WITHOUT_USABLE_POLLS");
+  }
+  return {
+    usablePollCount,
+    pollAverageMargin: Number.isFinite(Number(pollSignal?.margin)) ? Number(Number(pollSignal.margin).toFixed(2)) : null,
+    pollingAdjustment: Number.isFinite(pollingAdjustment) ? Number(pollingAdjustment.toFixed(2)) : null,
+    pollingInputShare: Number.isFinite(pollingInputShare) ? Number(pollingInputShare.toFixed(3)) : null,
+    pollingStatus: pollSignal?.pollingStatus || "NO_RACE_POLLS",
+    flags
+  };
+}
+
+const SENATE_CANDIDATE_EXCEPTION_MODES = {
+  NE: {
+    type: "OSBORN_INDEPENDENT_OVERPERFORMANCE",
+    candidate: "Dan Osborn",
+    normalPartisanBaseline: "R+20 or stronger",
+    specialCandidateBaseline: "R+6 to R+10",
+    selectedBaseline: "SPECIAL_CANDIDATE",
+    warning: "Margin depends heavily on Osborn's independent-populist overperformance and limited public polling."
+  },
+  NC: {
+    type: "COOPER_STATEWIDE_OVERPERFORMANCE",
+    candidate: "Roy Cooper",
+    normalPartisanBaseline: "Narrow R to Toss-up",
+    specialCandidateBaseline: "Toss-up to D-leaning",
+    selectedBaseline: "SPECIAL_CANDIDATE",
+    warning: "Cooper's statewide profile is explicitly carrying part of the Democratic margin."
+  },
+  OH: {
+    type: "BROWN_STATEWIDE_OVERPERFORMANCE",
+    candidate: "Sherrod Brown",
+    normalPartisanBaseline: "R-leaning",
+    specialCandidateBaseline: "Competitive",
+    selectedBaseline: "SPECIAL_CANDIDATE",
+    warning: "Brown's personal brand keeps Ohio more competitive than a generic Senate race."
+  },
+  AK: {
+    type: "ALASKA_COALITION_DYNAMICS",
+    candidate: "Mary Peltola",
+    normalPartisanBaseline: "R-leaning",
+    specialCandidateBaseline: "Candidate/coalition adjusted",
+    selectedBaseline: "SPECIAL_CANDIDATE",
+    warning: "Alaska polling, coalition behavior, and candidate fit are reviewed separately from the normal partisan baseline."
+  },
+  TX: {
+    type: "TEXAS_NOMINEE_CONTEXT",
+    candidate: "James Talarico / Ken Paxton",
+    normalPartisanBaseline: "R-leaning",
+    specialCandidateBaseline: "Nominee-adjusted competitive race",
+    selectedBaseline: "CANDIDATE_CONTEXT",
+    warning: "Texas depends on nominee-specific assumptions and should be treated as low-confidence without robust general-election polling."
+  },
+  GA: {
+    type: "OSSOFF_INCUMBENCY_AND_GOP_NOMINEE",
+    candidate: "Jon Ossoff",
+    normalPartisanBaseline: "Toss-up",
+    specialCandidateBaseline: "Incumbency and nominee-adjusted",
+    selectedBaseline: "CANDIDATE_CONTEXT",
+    warning: "Georgia combines Ossoff incumbency, GOP nominee uncertainty, and polling quality checks."
+  },
+  ME: {
+    type: "MAINE_CANDIDATE_CROSSOVER",
+    candidate: "Susan Collins / Graham Platner",
+    normalPartisanBaseline: "D-leaning federal baseline",
+    specialCandidateBaseline: "Candidate crossover adjusted",
+    selectedBaseline: "CANDIDATE_CONTEXT",
+    warning: "Maine requires candidate-specific handling because prior statewide Senate results are not clean generic-party baselines."
+  }
+};
+
+function senateCandidateExceptionDiagnostic(race, pollSignal, projectedMargin) {
+  const exception = SENATE_CANDIDATE_EXCEPTION_MODES[race.state];
+  if (!exception) return null;
+  const usablePolls = Number(pollSignal?.usablePollCount || 0);
+  const confidence = usablePolls >= 4 ? "MEDIUM" : "LOW";
+  return {
+    enabled: true,
+    type: exception.type,
+    candidate: exception.candidate,
+    baselineComparison: {
+      normalPartisanBaseline: exception.normalPartisanBaseline,
+      specialCandidateBaseline: exception.specialCandidateBaseline,
+      selectedBaseline: exception.selectedBaseline
+    },
+    confidence,
+    projectedResultMargin: signedMarginLabel(projectedMargin),
+    usablePolls,
+    warning: exception.warning
+  };
+}
+
+function pct(value) {
+  if (Number.isFinite(value) && value === 1) return ">99%";
+  if (Number.isFinite(value) && value === 0) return "<1%";
+  return `${Math.round(value * 100)}%`;
+}
+
+function oneDecimal(value) {
+  if (Number.isFinite(value) && value === 1) return ">99%";
+  if (Number.isFinite(value) && value === 0) return "<1%";
+  return `${(value * 100).toFixed(1)}%`;
+}
+
+function daysUntil(dateText) {
+  return Math.ceil((new Date(`${dateText}T12:00:00`) - new Date()) / 86400000);
+}
+
+function logistic(margin, error) {
+  return 1 / (1 + Math.exp(-margin / Math.max(error, .1)));
+}
+
+function calibrateProbability(rawProbability) {
+  return Number(clamp(0.5 + (rawProbability - 0.5) * 1.055, 0.001, 0.999).toFixed(6));
+}
+
+function sourceQualityForPoll(poll) {
+  if (Array.isArray(poll)) return .42;
+  const source = String(poll.source || "").toLowerCase();
+  if (source.includes("legacy")) return .26;
+  if (source.includes("realclear")) return .92;
+  if (source.includes("270towin")) return .84;
+  if (source.includes("electoral-vote")) return .8;
+  if (source.includes("race to the wh")) return .78;
+  return .78;
+}
+
+function pollsterReliabilityForPoll(poll) {
+  const pollster = normalizedPollsterName(poll.pollster || poll.source);
+  if (/siena|marist|quinnipiac|yougov|ipsos|emerson|morning consult|university of|college|research center/.test(pollster)) return .94;
+  if (/surveyusa|public policy polling|ssrs|data for progress|echelon|quantus|coefficient/.test(pollster)) return .84;
+  if (/internal|campaign|party|pac|candidate/.test(pollster)) return .56;
+  return .74;
+}
+
+function pollingHalfLifeDays() {
+  const days = Math.max(0, daysUntil("2026-11-03"));
+  // Poll decay becomes materially steeper as Election Day approaches. This
+  // avoids treating a spring poll as a near-equal observation in November.
+  return clamp(28 + days * .18, 32, 85);
+}
+
+function normalizedPollsterName(value) {
+  return decodeHtml(String(value || ""))
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/[^a-z0-9 ]/gi, "")
+    .trim()
+    .toLowerCase() || "unknown";
+}
+
+function pollSourcePriority(poll) {
+  const source = String(poll?.source || "").toLowerCase();
+  if (source.includes("realclear")) return 5;
+  if (source.includes("270towin")) return 4;
+  if (source.includes("electoral-vote")) return 3;
+  if (source.includes("race to the wh")) return 2;
+  if (source.includes("legacy")) return 0;
+  return 1;
+}
+
+function normalizeRacePolls(polls = []) {
+  const deduped = new Map();
+  for (let index = 0; index < polls.length; index += 1) {
+    const raw = polls[index];
+    const poll = Array.isArray(raw)
+      ? { days: raw[0], margin: raw[1], source: "Legacy model input", pollster: "legacy model input", legacy: true }
+      : { ...raw };
+    if (!Number.isFinite(poll.margin) || Math.abs(poll.margin) > 50) continue;
+    const dateKey = poll.endDate || `day-${poll.days ?? "unknown"}`;
+    const key = `${normalizedPollsterName(poll.pollster)}|${dateKey}`;
+    const existing = deduped.get(key);
+    if (!existing || pollSourcePriority(poll) > pollSourcePriority(existing)) deduped.set(key, poll);
+  }
+  return [...deduped.values()];
+}
+
+function selectCurrentRacePolls(legacyPolls, fetchedPolls) {
+  const modelDate = new Date(`${MODEL_DATE_KEY}T12:00:00Z`);
+  const current = normalizeRacePolls(fetchedPolls).filter((poll) => {
+    if (!poll.endDate) return false;
+    const date = new Date(`${poll.endDate}T12:00:00Z`);
+    return !Number.isNaN(date.getTime()) && (modelDate - date) / 86400000 <= 210;
+  });
+  // The built-in arrays are a continuity fallback, never a second polling
+  // average beside live rows. Keeping both used to double-count stale polls.
+  return current.length ? current : normalizeRacePolls(legacyPolls);
+}
+
+function populationWeightForPoll(population) {
+  const value = String(population || "").toLowerCase();
+  if (value === "lv" || value.includes("likely")) return 1.08;
+  if (value === "rv" || value.includes("registered")) return 1;
+  if (value === "a" || value.includes("adult")) return .82;
+  return .9;
+}
+
+function sampleWeightForPoll(sampleSize) {
+  if (!Number.isFinite(sampleSize) || sampleSize <= 0) return .82;
+  return clamp(Math.sqrt(sampleSize) / 32, .65, 1.45);
+}
+
+function pollWeightMetrics(race) {
+  if (!race.polls.length) return null;
+  const pollsterWeights = {};
+  const halfLife = pollingHalfLifeDays();
+  const weighted = race.polls.reduce((sum, poll) => {
+    const days = Array.isArray(poll) ? poll[0] : poll.days;
+    const rawMargin = Array.isArray(poll) ? poll[1] : poll.margin;
+    const margin = Math.abs(rawMargin) > 20 ? (rawMargin - 50) / 2 : rawMargin;
+    if (!Number.isFinite(margin)) return sum;
+    const age = Math.max(0, -(days || 0));
+    const recency = Math.pow(.5, age / halfLife);
+    const providedWeight = Array.isArray(poll) ? 1 : clamp(poll.weight || 1, .35, 1.25);
+    const pollster = normalizedPollsterName(Array.isArray(poll) ? "legacy model input" : poll.pollster || poll.source || "unknown");
+    const repeatWeight = 1 / Math.sqrt(1 + (pollsterWeights[pollster] || 0));
+    const partisanPenalty = poll.partisan || poll.internal ? .72 : 1;
+    const quality = sourceQualityForPoll(poll) * pollsterReliabilityForPoll(poll) * populationWeightForPoll(poll.population) * sampleWeightForPoll(poll.sampleSize) * partisanPenalty;
+    const weight = recency * providedWeight * quality * repeatWeight;
+    pollsterWeights[pollster] = (pollsterWeights[pollster] || 0) + weight;
+    return {
+      value: sum.value + margin * weight,
+      square: sum.square + margin * margin * weight,
+      weight: sum.weight + weight,
+      count: sum.count + 1
+    };
+  }, { value: 0, square: 0, weight: 0, count: 0 });
+  if (!weighted.weight) return null;
+  const pollsters = Object.keys(pollsterWeights).length;
+  const pollingSummary = race.pollingSummary || classifyPollingInputs(race.polls, race.sourceStatus || {});
+  const normalBlendWeight = clamp(
+    MODEL_WEIGHTS.racePollsBase +
+      Math.log1p(weighted.weight) * MODEL_WEIGHTS.racePollsPerWeight +
+      pollsters * MODEL_WEIGHTS.racePollsPerPollster,
+    MODEL_WEIGHTS.racePollsBase,
+    MODEL_WEIGHTS.racePollsCap
+  );
+  // Legacy arrays are continuity priors only. They deliberately get a very
+  // small blend and never contribute to the public usable-poll count.
+  const blendWeight = pollingSummary.pollingStatus === "LEGACY_FALLBACK_ONLY"
+    ? Math.min(.055, normalBlendWeight)
+    : normalBlendWeight;
+  const margin = weighted.value / weighted.weight;
+  const disagreement = Math.sqrt(Math.max(0, weighted.square / weighted.weight - margin * margin));
+  return {
+    margin,
+    totalWeight: weighted.weight,
+    pollCount: weighted.count,
+    usablePollCount: pollingSummary.usablePollCount,
+    livePollCount: pollingSummary.livePollCount,
+    manualPollCount: pollingSummary.manualPollCount,
+    legacyFallbackPollCount: pollingSummary.legacyFallbackPollCount,
+    totalPollInputsUsed: pollingSummary.totalPollInputsUsed,
+    pollingStatus: pollingSummary.pollingStatus,
+    pollsters,
+    blendWeight,
+    disagreement: Number(disagreement.toFixed(2)),
+    recencyHalfLifeDays: Number(halfLife.toFixed(1))
+  };
+}
+
+function latestPollMargin(race) {
+  return pollWeightMetrics(race)?.margin ?? null;
+}
+
+function primaryRisk(race) {
+  if (race.primary === "resolved") return 0;
+  if (race.primary === "runoff") return 1.15;
+  const days = daysUntil(race.primaryDate);
+  return clamp(2.1 * race.nomination + Math.max(days, 0) / 220, .35, 2.6);
+}
+
+function caucusDiscount(race) {
+  if (!race.independent || race.independent === "none") return 0;
+  if (race.hold === race.caucusTarget) return 0;
+  if (race.independent.includes("uncertain")) return -1.1;
+  if (race.independent.includes("expected") || race.independent.includes("possible")) return -.45;
+  return 0;
+}
+
+function candidateHistoryAdjustment(race) {
+  return CANDIDATE_HISTORY[race.state] || 0;
+}
+
+function stateElasticity(race) {
+  return STATE_ELASTICITY[race.state] || clamp(1 + Math.abs(race.pvi) / 95, .82, 1.24);
+}
+
+function primaryScenarioAdjustment(race) {
+  const demStatus = race.demStatus || "unresolved";
+  const repStatus = race.repStatus || "unresolved";
+  let adjustment = 0;
+  if (demStatus === "unresolved" && repStatus !== "unresolved") adjustment -= .28;
+  if (repStatus === "unresolved" && demStatus !== "unresolved") adjustment += .28;
+  if (race.primary === "runoff") adjustment += race.hold === "D" ? -.18 : .18;
+  if (demStatus === "presumptive") adjustment += .12;
+  if (repStatus === "presumptive") adjustment -= .12;
+  return adjustment;
+}
+
+function primaryEventsForRace(race) {
+  const events = PRIMARY_EVENTS_BY_STATE[race.state] || [];
+  if (events.length) {
+    return events
+      .filter((event) => event.label !== "Runoff" || race.primary === "runoff" || event.actual)
+      .map((event) => ({ ...event }));
+  }
+  return race.primaryDate ? [{ date: race.primaryDate, label: race.primary === "runoff" ? "Runoff" : "Primary" }] : [];
+}
+
+function rcvBaselineAdjustment(race) {
+  const rcv = RCV_STATES[race.state];
+  if (!rcv) return 0;
+  const independentContext = race.independent !== "none" ? .35 : 0;
+  return rcv.transferMean + independentContext;
+}
+
+function inputQuality(race, pollSignal) {
+  let score = 42;
+  const reasons = [];
+  if (pollSignal?.usablePollCount) {
+    const pollScore = Math.min(24, 8 + pollSignal.usablePollCount * 2.4 + pollSignal.pollsters * 3);
+    score += pollScore;
+    reasons.push(`${pollSignal.usablePollCount} usable live/manual poll${pollSignal.usablePollCount === 1 ? "" : "s"}`);
+  } else if (pollSignal?.legacyFallbackPollCount) {
+    score -= 10;
+    reasons.push("legacy fallback poll inputs only");
+  } else {
+    reasons.push("no recent public race polling");
+  }
+  if (race.sourceInputs?.openFec) {
+    score += 9;
+    reasons.push("finance filing matched");
+  }
+  if (["nominee", "resolved", "presumptive"].includes(race.demStatus)) score += 6;
+  else score -= 7;
+  if (["nominee", "resolved", "presumptive"].includes(race.repStatus)) score += 6;
+  else score -= 7;
+  if (race.primary === "resolved") score += 8;
+  if (race.primary === "runoff") score -= 8;
+  if (race.independent && race.independent !== "none") score -= 4;
+  if (race.sourceInputs?.twoSeventyToWin || race.sourceInputs?.realClearPolling) {
+    score += 5;
+    reasons.push("race-poll page parsed");
+  }
+  const value = Math.round(clamp(score, 18, 94));
+  return {
+    score: value,
+    label: value >= 72 ? "High" : value >= 50 ? "Medium" : "Low",
+    level: race.sourceInputs?.sourceHealth?.degraded ? "DEGRADED" : value >= 72 ? "HIGH" : value >= 50 ? "MEDIUM" : "LOW",
+    reasons
+  };
+}
+
+function uncertaintyBadges(race, pollSignal) {
+  const badges = [];
+  if (!pollSignal || pollSignal.pollCount < 3) badges.push("thin polling");
+  if (race.primary !== "resolved") badges.push(race.primary === "runoff" ? "runoff pending" : "primary unresolved");
+  if (race.independent && race.independent !== "none") badges.push("independent factor");
+  if (RCV_STATES[race.state]) badges.push("ranked-choice");
+  if ((race.inputQuality?.score ?? 100) < 55) badges.push("low input confidence");
+  if (Math.abs(race.margin) < 2.5) badges.push("near toss-up");
+  if (!badges.length) badges.push("stable inputs");
+  return badges;
+}
+
+function raceTypeUncertainty(race, pollSignal, quality) {
+  let extra = 0;
+  const reasons = [];
+  const thinPolling = !pollSignal || pollSignal.usablePollCount < 3;
+  const structurallyCompetitive = Math.abs(race.pvi || 0) < 8 || Math.abs(race.pastSenate || 0) < 8;
+  if (thinPolling) {
+    extra += .55;
+    reasons.push("thin polling");
+  }
+  if (structurallyCompetitive && thinPolling) {
+    extra += .55;
+    reasons.push("competitive fundamentals with sparse polls");
+  }
+  if (race.independent && race.independent !== "none") {
+    extra += .85;
+    reasons.push("independent candidate environment");
+  }
+  if (RCV_STATES[race.state]) {
+    extra += .65;
+    reasons.push("ranked-choice transfer uncertainty");
+  }
+  if (race.primary !== "resolved") {
+    extra += race.primary === "runoff" ? .55 : .35;
+    reasons.push(race.primary === "runoff" ? "runoff pending" : "primary unresolved");
+  }
+  if ((quality?.score ?? 100) < 55) {
+    extra += .45;
+    reasons.push("low input confidence");
+  }
+  if (race.sourceInputs?.sourceHealth?.degraded && thinPolling) {
+    extra += .65;
+    reasons.push("race-poll source degraded");
+  }
+  return {
+    extraError: Number(extra.toFixed(2)),
+    reasons
+  };
+}
+
+function movementDrivers(race) {
+  const previousRace = previousForecast?.races?.find((item) => item.state === race.state);
+  if (!previousRace) return [{ label: "First saved run", detail: "No previous generated race file to compare." }];
+  const drivers = [];
+  const addDriver = (label, value, detail) => {
+    if (!Number.isFinite(value) || Math.abs(value) < .05) return;
+    drivers.push({ label, change: Number(value.toFixed(2)), detail });
+  };
+  addDriver("Polling", (race.pollMargin ?? 0) - (previousRace.pollMargin ?? 0), "Weighted race-poll margin changed.");
+  addDriver("Projected margin", race.margin - previousRace.margin, "Combined model margin changed.");
+  addDriver("Primary risk", (race.primaryRisk ?? 0) - (previousRace.primaryRisk ?? 0), "Primary or nomination uncertainty changed.");
+  addDriver("Finance", (race.sourceInputs?.openFec?.financeSignal ?? 0) - (previousRace.sourceInputs?.openFec?.financeSignal ?? 0), "OpenFEC finance signal changed.");
+  addDriver("Generic ballot", (race.sourceInputs?.genericPolling?.genericBallotMargin ?? 0) - (previousRace.sourceInputs?.genericPolling?.genericBallotMargin ?? 0), "National generic-ballot blend changed.");
+  addDriver("National finance", (race.sourceInputs?.nationalFinance?.nationalFinance ?? 0) - (previousRace.sourceInputs?.nationalFinance?.nationalFinance ?? 0), "National finance environment changed.");
+  addDriver("Demographic pull", (race.demographicPull?.adjustment ?? 0) - (previousRace.demographicPull?.adjustment ?? 0), "Candidate coalition profile changed.");
+  if (race.rating !== previousRace.rating) drivers.push({ label: "Rating", change: null, detail: `${previousRace.rating} to ${race.rating}` });
+  return drivers
+    .sort((a, b) => Math.abs(b.change || 0) - Math.abs(a.change || 0))
+    .slice(0, 5);
+}
+
+function incumbencyAdjustment(race) {
+  const base = race.seat === "Open seat" || race.seat === "Special election" ? -.25 : (race.hold === "D" ? .45 : -.45);
+  if (race.seat === "Open seat" || !race.hold) return base;
+  const discount = CHALLENGER_STRENGTH_DISCOUNTS[race.challengerStrength || "none"] || 0;
+  return base * (1 - discount);
+}
+
+function senateDemographicProfileKey(race, party) {
+  const isIndependentDem = race.demDisplayParty === "I" || /independent|Osborn|Bodnar/i.test(`${race.dem || ""} ${race.independent || ""}`);
+  if (party === "D" && isIndependentDem) return "independentLabor";
+  if (party === "D" && race.hold === "D" && race.seat !== "Open seat") return "incumbentDemocrat";
+  if (party === "D" && ["statewide", "majorOffice", "sameSeat"].includes(race.challengerStrength)) return "statewideDemocrat";
+  if (party === "R" && race.hold === "R" && race.seat !== "Open seat") return "incumbentRepublican";
+  if (party === "R" && ["statewide", "majorOffice", "sameSeat"].includes(race.challengerStrength)) return "statewideRepublican";
+  if (party === "R" && race.seat === "Open seat" && Math.abs(race.pvi || 0) < 8) return "weakRepublican";
+  return party === "D" ? "standardDemocrat" : "standardRepublican";
+}
+
+function candidateProfileKey(name) {
+  return String(name || "").toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function senateCandidateDemographicProfile(race, party) {
+  const name = party === "D" ? race.dem : race.rep;
+  const candidateProfile = SENATE_CANDIDATE_DEMOGRAPHIC_PROFILES[candidateProfileKey(name)];
+  if (candidateProfile) {
+    return {
+      key: candidateProfileKey(name),
+      label: name,
+      source: "candidate",
+      ...candidateProfile
+    };
+  }
+  const genericKey = senateDemographicProfileKey(race, party);
+  return {
+    key: genericKey,
+    label: genericKey.replace(/([A-Z])/g, " $1").replace(/^./, (letter) => letter.toUpperCase()),
+    source: "generic",
+    scores: SENATE_DEMOGRAPHIC_PROFILES[genericKey] || {},
+    strengths: [],
+    weaknesses: []
+  };
+}
+
+function stateCoalitionWeights(state) {
+  const traits = STATE_COALITION_TRAITS[state] || [];
+  const highCollege = traits.includes("college") || traits.includes("suburban");
+  const highNoncollege = traits.includes("rural") || traits.includes("working_class") || traits.includes("appalachian") || traits.includes("frontier");
+  const highBlack = traits.includes("black_belt") || ["GA", "NC", "SC", "MS", "LA", "AL", "MD", "VA"].includes(state);
+  const highLatino = traits.includes("latino") || ["AZ", "CA", "FL", "NV", "NM", "TX"].includes(state);
+  const highAsianOther = ["CA", "HI", "NJ", "NY", "WA", "VA", "MD", "NV"].includes(state);
+  return {
+    white_college: highCollege ? .27 : highNoncollege ? .14 : .2,
+    white_noncollege: highNoncollege ? .35 : highCollege ? .2 : .28,
+    black: highBlack ? .2 : .08,
+    latino: highLatino ? .18 : .06,
+    asian_other: highAsianOther ? .11 : .05,
+    youth: traits.includes("urban") || traits.includes("college") ? .11 : .08,
+    senior: traits.includes("senior") || highNoncollege ? .15 : .1
+  };
+}
+
+function normalizeShares(shares) {
+  const entries = Object.entries(shares).map(([key, value]) => [key, Math.max(0, Number(value) || 0)]);
+  const total = entries.reduce((sum, [, value]) => sum + value, 0) || 1;
+  return Object.fromEntries(entries.map(([key, value]) => [key, Number((value / total).toFixed(4))]));
+}
+
+function stateElectorateComposition(race) {
+  const state = race.state;
+  const traits = STATE_COALITION_TRAITS[state] || [];
+  const censusGrowth = race.sourceInputs?.census?.growth || 0;
+  const highCollege = traits.includes("college") || traits.includes("suburban");
+  const highNoncollege = traits.includes("rural") || traits.includes("working_class") || traits.includes("appalachian") || traits.includes("frontier");
+  const highBlack = traits.includes("black_belt") || ["GA", "NC", "SC", "MS", "LA", "AL", "MD", "VA"].includes(state);
+  const highLatino = traits.includes("latino") || ["AZ", "CA", "FL", "NV", "NM", "TX"].includes(state);
+  const highAsianOther = ["CA", "HI", "NJ", "NY", "WA", "VA", "MD", "NV"].includes(state);
+  const fastGrowth = censusGrowth > 4 || ["AZ", "FL", "GA", "NC", "NV", "TX"].includes(state);
+
+  const raceEducation = normalizeShares({
+    white_college: highCollege ? .27 : highNoncollege ? .14 : .2,
+    white_noncollege: highNoncollege ? .38 : highCollege ? .22 : .31,
+    black: highBlack ? .2 : .08,
+    latino: highLatino ? (fastGrowth ? .21 : .18) : .06,
+    asian_other: highAsianOther ? .12 : .05
+  });
+  const baseline = MIDTERM_LIKELY_VOTER_BASELINES[state];
+  const modeledAge = normalizeShares({
+    youth: traits.includes("urban") || traits.includes("college") || fastGrowth ? .13 : .09,
+    core_age: traits.includes("senior") || highNoncollege ? .7 : .75,
+    senior: traits.includes("senior") || highNoncollege ? .21 : .16
+  });
+  const ageBaseline = MIDTERM_AGE_BASELINES[state];
+  return {
+    source: baseline && ageBaseline
+      ? "Manual midterm likely-voter baseline; not fixed truth"
+      : baseline
+      ? "Manual midterm likely-voter baseline; not fixed truth"
+      : race.sourceInputs?.census ? "Modeled from Census population trend plus state turnout traits" : "Modeled from state turnout traits",
+    raceEducation: baseline ? normalizeShares(baseline) : raceEducation,
+    age: ageBaseline ? normalizeShares(ageBaseline) : modeledAge,
+    notes: [
+      "Race/education blocs are mutually exclusive expected-voter shares and sum to 100%.",
+      "Age shares are a separate turnout overlay and are not added to race/education shares."
+    ]
+  };
+}
+
+function demographicWeightsForRace(race) {
+  const composition = race.electorateComposition || stateElectorateComposition(race);
+  return {
+    ...composition.raceEducation,
+    youth: composition.age.youth,
+    senior: composition.age.senior
+  };
+}
+
+function demographicPullAdjustment(race) {
+  const weights = demographicWeightsForRace(race);
+  const demProfile = senateCandidateDemographicProfile(race, "D");
+  const repProfile = senateCandidateDemographicProfile(race, "R");
+  const groups = Object.keys(weights).map((group) => {
+    const effect = weights[group] * ((demProfile.scores[group] || 0) - (repProfile.scores[group] || 0)) * 1.75;
+    return { group, label: DEMOGRAPHIC_GROUP_LABELS[group] || group, weight: Number(weights[group].toFixed(2)), effect: Number(effect.toFixed(2)) };
+  });
+  const raw = groups.reduce((sum, item) => sum + item.effect, 0);
+  const saturation = Math.abs(race.pvi) > 18 ? .55 : Math.abs(race.pvi) > 10 ? .75 : 1;
+  return {
+    adjustment: Number(clamp(raw * saturation, -1.1, 1.1).toFixed(2)),
+    demProfile,
+    repProfile,
+    topGroups: groups
+      .filter((item) => Math.abs(item.effect) >= .03)
+      .sort((a, b) => Math.abs(b.effect) - Math.abs(a.effect))
+      .slice(0, 5)
+  };
+}
+
+function extraCandidateDemographicPulls(race) {
+  if (!race.extraCandidates?.length) return [];
+  const weights = demographicWeightsForRace(race);
+  const repProfile = senateCandidateDemographicProfile(race, "R");
+  return race.extraCandidates.map((candidate) => {
+    const profile = SENATE_CANDIDATE_DEMOGRAPHIC_PROFILES[candidateProfileKey(candidate.name)];
+    if (!profile) return null;
+    const groups = Object.keys(weights).map((group) => {
+      const effect = weights[group] * ((profile.scores[group] || 0) - (repProfile.scores[group] || 0)) * 1.75;
+      return { group, label: DEMOGRAPHIC_GROUP_LABELS[group] || group, weight: Number(weights[group].toFixed(2)), effect: Number(effect.toFixed(2)) };
+    });
+    const raw = groups.reduce((sum, item) => sum + item.effect, 0);
+    const saturation = Math.abs(race.pvi) > 18 ? .55 : Math.abs(race.pvi) > 10 ? .75 : 1;
+    return {
+      name: candidate.name,
+      adjustment: Number(clamp(raw * saturation, -1.1, 1.1).toFixed(2)),
+      profile: { key: candidateProfileKey(candidate.name), label: candidate.name, source: "candidate", ...profile },
+      topGroups: groups
+        .filter((item) => Math.abs(item.effect) >= .03)
+        .sort((a, b) => Math.abs(b.effect) - Math.abs(a.effect))
+        .slice(0, 5)
+    };
+  }).filter(Boolean);
+}
+
+function senateStructuralMargin(race) {
+  // PVI and the latest comparable Senate result are related but distinct
+  // structural signals. These weights retain their long-run information now
+  // that public ratings are no longer an input to the forecast.
+  return race.pvi * .30 + race.pastSenate * .26;
+}
+
+function historicalMarginComparison(race, projectedMargin, pollSignal) {
+  const shift = projectedMargin - race.pastSenate;
+  const hasMultiPollSignal = Boolean(
+    pollSignal && pollSignal.pollCount >= 3 && pollSignal.pollsters >= 2
+  );
+  const absoluteShift = Math.abs(shift);
+  const level = absoluteShift >= 12 ? "large" : absoluteShift >= 7 ? "notable" : "normal";
+  const expectedRegression = Math.sign(projectedMargin) === Math.sign(race.pastSenate) &&
+    Math.abs(race.pastSenate) >= 20 && Math.abs(projectedMargin) >= 12;
+
+  return {
+    priorComparableMargin: Number(race.pastSenate.toFixed(2)),
+    projectedMargin: Number(projectedMargin.toFixed(2)),
+    shift: Number(shift.toFixed(2)),
+    level,
+    expectedRegression,
+    needsReview: level === "large" && !hasMultiPollSignal && !expectedRegression,
+    basis: hasMultiPollSignal
+      ? "current multi-poll signal available"
+      : "structural and candidate inputs only"
+  };
+}
+
+function largeShiftWithoutPolls(comparison, pollSignal, state) {
+  if (!comparison || pollSignal?.usablePollCount || Math.abs(comparison.shift || 0) < 10) return null;
+  return {
+    triggered: true,
+    previousComparableMargin: comparison.priorComparableMargin,
+    projectedMargin: comparison.projectedMargin,
+    shift: comparison.shift,
+    usablePollCount: 0,
+    reason: "SHIFT_TOO_LARGE_WITHOUT_USABLE_GENERAL_ELECTION_POLLING",
+    message: `${state} Senate projected margin has a ${Math.abs(comparison.shift).toFixed(1)}-point shift from its comparable baseline without usable general-election polling.`
+  };
+}
+
+function softExpertRatingAdjustment(margin, rating, office = "senate") {
+  const interval = EXPERT_RATING_INTERVALS[rating];
+  if (!interval || !Number.isFinite(margin)) return { margin, adjustment: 0, weight: 0 };
+  const [lower, upper] = interval;
+  const boundary = margin < lower ? lower : margin > upper ? upper : margin;
+  const days = Math.max(0, daysUntil("2026-11-03"));
+  const progress = clamp(1 - days / 306, 0, 1);
+  const weight = (office === "governor" ? .14 : .10) + (office === "governor" ? .16 : .12) * progress;
+  const adjustment = (boundary - margin) * weight;
+  return { margin: margin + adjustment, adjustment: Number(adjustment.toFixed(3)), weight: Number(weight.toFixed(3)) };
+}
+
+function baselineMargin(race) {
+  const fundamentals = senateStructuralMargin(race);
+  const signals = race.money * .9 + race.candidate * 1.05 + race.approval * .75;
+  const pollSignal = pollWeightMetrics(race);
+  const elasticity = stateElasticity(race);
+  const pollBlend = pollSignal === null ? 0 : clamp(pollSignal.margin * pollSignal.blendWeight, -3.2 * elasticity, 3.2 * elasticity);
+  const fundamentalsBlend = pollSignal === null ? 1 : MODEL_WEIGHTS.fundamentalsWithPolls;
+  const incumbentPenalty = incumbencyAdjustment(race);
+  const nationalPolling = clamp((race.nationalPolling || 0) * clamp(elasticity, .76, 1.18), -1.25, 1.25);
+  const demographicPull = demographicPullAdjustment(race).adjustment;
+  const rawMargin = (fundamentals * fundamentalsBlend + signals + incumbentPenalty + caucusDiscount(race)) +
+    pollBlend + nationalPolling + demographicPull + candidateHistoryAdjustment(race) + primaryScenarioAdjustment(race) + rcvBaselineAdjustment(race);
+  return Number(rawMargin.toFixed(3));
+}
+
+function senateMarginGuardrail(race, rawMargin, pollSignal, fundamentals) {
+  const anchor = fundamentals;
+  const anchorWeight = pollSignal ? .08 : .16;
+  let margin = rawMargin * (1 - anchorWeight) + anchor * anchorWeight;
+  const partisanAnchor = senateStructuralMargin(race);
+  const partisanSide = Math.sign(partisanAnchor);
+  if (partisanSide && Math.sign(margin) !== partisanSide && Math.abs(partisanAnchor) >= 8 && (!pollSignal || Math.sign(pollSignal.margin) !== Math.sign(margin))) {
+    margin = partisanSide * Math.max(3.5, Math.abs(margin) * .55);
+  }
+  if (pollSignal?.pollCount) {
+    return { margin: Number(margin.toFixed(3)), adjustment: Number((margin - rawMargin).toFixed(2)), reason: "usable race polling available" };
+  }
+  const prior = Number(race.pastSenate);
+  const candidateEvidence = Math.abs(Number(race.candidate || 0)) + Math.abs(Number(race.money || 0)) + Math.abs(candidateHistoryAdjustment(race));
+  const exception = candidateEvidence >= 2.2 || race.seat === "Open seat" || race.primary === "runoff";
+  if (!Number.isFinite(prior) || exception) {
+    return { margin: Number(margin.toFixed(3)), adjustment: Number((margin - rawMargin).toFixed(2)), reason: exception ? "candidate or seat-change exception" : "no comparable prior result" };
+  }
+  const cap = Math.abs(prior) >= 18 ? 7 : Math.abs(prior) >= 12 ? 9 : 12;
+  const bounded = clamp(margin, prior - cap, prior + cap);
+  return {
+    margin: Number(bounded.toFixed(3)),
+    adjustment: Number((bounded - rawMargin).toFixed(2)),
+    reason: bounded === margin ? "within fundamentals-only shift cap" : `fundamentals-only shift capped at ${cap} points from comparable result`
+  };
+}
+
+function projectedSenateResultMargin(race, probabilityMargin, fundamentals, pollSignal) {
+  let projected = Number(probabilityMargin);
+  const prior = Number(race.pastSenate);
+  const partisan = senateStructuralMargin(race);
+  const anchorCandidates = [fundamentals, partisan, prior].filter(Number.isFinite);
+  const sameSideAnchors = anchorCandidates.filter((value) => Math.sign(value) === Math.sign(projected) || !projected);
+  const anchor = sameSideAnchors.length
+    ? sameSideAnchors.reduce((sum, value) => sum + value, 0) / sameSideAnchors.length
+    : projected;
+  if (!pollSignal?.usablePollCount && Number.isFinite(anchor) && Math.abs(anchor) >= 16 && Math.sign(anchor) === Math.sign(projected || anchor)) {
+    const floor = Math.min(42, Math.abs(anchor) * .78);
+    projected = Math.sign(anchor) * Math.max(Math.abs(projected), floor);
+  }
+  return Number(clamp(projected, -55, 55).toFixed(3));
+}
+
+function senateRaceError(race, fundamentals, pollSignal, uncertainty) {
+  const structuralCertainty = Math.min(2, Math.abs(fundamentals) * .12);
+  // pollWeightMetrics exposes totalWeight and blendWeight. Referencing the old
+  // `weight` property turned this into NaN for every race with polling, which
+  // then made the simulation classify every draw as a Republican win.
+  const pollingCertainty = pollSignal
+    ? Math.min(.75, (pollSignal.blendWeight || 0) * 2.35 + Math.log1p(pollSignal.pollCount || 0) * .08)
+    : 0;
+  const disagreementPenalty = pollSignal ? Math.min(1.4, (pollSignal.disagreement || 0) * .18) : 0;
+  const calendarUncertainty = clamp(daysUntil("2026-11-03") / 306, 0, 1) * .65;
+  return clamp(8.2 - structuralCertainty - pollingCertainty + disagreementPenalty + calendarUncertainty + primaryRisk(race) + uncertainty.extraError, 4.8, 12);
+}
+
+function ratingFromProbability(probability, margin) {
+  const side = probability >= .5 ? "D" : "R";
+  const certainty = Math.max(probability, 1 - probability);
+  const absoluteMargin = Math.abs(margin);
+  if (certainty >= .97 || absoluteMargin >= 15) return `Safe ${side}`;
+  if (certainty >= .84 || absoluteMargin >= 8) return `Likely ${side}`;
+  if (certainty >= .68 || absoluteMargin >= 4) return `Lean ${side}`;
+  if (certainty >= .56 || absoluteMargin >= 1.5) return `Tilt ${side}`;
+  return "Toss-up";
+}
+
+function runModel(sourceData) {
+  const adjustedRaces = applySourceInputs(races, sourceData);
+  const enriched = adjustedRaces.map((race) => {
+    const candidates = candidateInfo(race);
+    const withCandidates = { ...race, ...candidates };
+    const independentTreatment = withCandidates.independent && withCandidates.independent !== "none"
+      ? withCandidates.independent
+      : "none";
+    const caucusSpoilerAdjustment = caucusDiscount(withCandidates);
+    const rcvAdjustment = rcvBaselineAdjustment(withCandidates);
+    const expertRating = withCandidates.rating;
+    const sourceInputs = {
+      ...(withCandidates.sourceInputs || {}),
+      independentTreatment,
+      caucusSpoilerAdjustment,
+      rcvAdjustment,
+      expertRating
+    };
+    const electorateComposition = stateElectorateComposition(withCandidates);
+    const withComposition = { ...withCandidates, sourceInputs, electorateComposition };
+    const pollSignal = pollWeightMetrics(withComposition);
+    const structuralAndPollingMargin = baselineMargin(withComposition);
+    const fundamentals = senateStructuralMargin(withComposition);
+    const guardrail = senateMarginGuardrail(withComposition, structuralAndPollingMargin, pollSignal, fundamentals);
+    const rawProbabilityMargin = guardrail.margin;
+    const rawProjectedMargin = projectedSenateResultMargin(withComposition, rawProbabilityMargin, fundamentals, pollSignal);
+    const quality = inputQuality(withComposition, pollSignal);
+    const ratingsPrior = buildRatingPrior({
+      office: "senate",
+      raceId: `${withComposition.state}-SEN-2026`,
+      benchmark: benchmarkFor(`${withComposition.state}-SEN-2026`),
+      fallbackRating: expertRating,
+      fallbackSource: "Senate race configuration",
+      rawModelMargin: rawProbabilityMargin,
+      pollingSummary: pollSignal || withComposition.pollingSummary,
+      fundamentalsQuality: quality?.dataConfidence === "DEGRADED" ? "DEGRADED" : "MEDIUM",
+      sourceDegraded: Boolean(withComposition.sourceInputs?.sourceHealth?.degraded),
+      config: RATING_WEIGHT_CONFIG
+    });
+    const margin = applyRatingPrior(rawProbabilityMargin, ratingsPrior, ratingsPrior.probabilityPullStrength);
+    const projectedMargin = applyRatingPrior(rawProjectedMargin, ratingsPrior, ratingsPrior.projectedResultPullStrength);
+    const expertRatingAdjustment = { margin, adjustment: Number((projectedMargin - rawProjectedMargin).toFixed(2)), weight: ratingsPrior.weight };
+    const uncertainty = raceTypeUncertainty(withComposition, pollSignal, quality);
+    const calculatedError = senateRaceError(withComposition, fundamentals, pollSignal, uncertainty);
+    const error = Number.isFinite(calculatedError) ? calculatedError : 8.2;
+    const demProbability = logistic(margin, error);
+    const demographicPull = demographicPullAdjustment(withComposition);
+    const historicalComparison = historicalMarginComparison(withComposition, projectedMargin, pollSignal);
+    const largeShiftWarning = largeShiftWithoutPolls(historicalComparison, pollSignal, withComposition.state);
+    const matchupStatus = senateMatchupStatus(withComposition);
+    const marginDecomposition = senateMarginDecomposition(withComposition, pollSignal, ratingsPrior.ratingPull * ratingsPrior.projectedResultPullStrength, guardrail, projectedMargin);
+    const benchmarkComparison = senateBenchmarkComparison({ ...withComposition, historicalComparison }, projectedMargin, demProbability, pollSignal);
+    const inputBalance = buildInputBalance({
+      fundamentals: pollSignal?.usablePollCount ? 66 : 78,
+      polling: pollSignal?.usablePollCount ? 18 : 0,
+      nationalEnvironment: 7,
+      finance: 5,
+      ratings: ratingsPrior.inputWeight
+    });
+    const marginDiagnostics = senateMarginFields(projectedMargin, margin, ratingsPrior.impliedMargin ?? projectedMargin);
+    const marginConsistency = marginConsistencyCheck({
+      projectedResultMargin: projectedMargin,
+      probabilityEngineMargin: margin,
+      demProbability,
+      repProbability: 1 - demProbability
+    });
+    const pollingWeightDiagnostic = senatePollingWeightDiagnostic(pollSignal, inputBalance, marginDecomposition);
+    const candidateException = senateCandidateExceptionDiagnostic(withComposition, pollSignal, projectedMargin);
+    return {
+      ...withComposition,
+      rating: ratingFromProbability(demProbability, projectedMargin),
+      modelRating: ratingFromProbability(demProbability, projectedMargin),
+      margin,
+      projectedMargin,
+      probabilityEngineMargin: margin,
+      preRatingProbabilityMargin: Number(rawProbabilityMargin.toFixed(2)),
+      preRatingProjectedMargin: Number(rawProjectedMargin.toFixed(2)),
+      ratingsPrior,
+      marginConsistency,
+      margins: marginDiagnostics,
+      pollingWeightDiagnostic,
+      candidateException,
+      ...marginSplit(projectedMargin, margin, ratingsPrior.impliedMargin ?? projectedMargin),
+      inputBalance,
+      error,
+      demProbability,
+      pollMargin: pollSignal?.margin ?? null,
+      pollCount: pollSignal?.usablePollCount || 0,
+      usablePollCount: pollSignal?.usablePollCount || 0,
+      livePollCount: pollSignal?.livePollCount || 0,
+      manualPollCount: pollSignal?.manualPollCount || 0,
+      legacyFallbackPollCount: pollSignal?.legacyFallbackPollCount || 0,
+      totalPollInputsUsed: pollSignal?.totalPollInputsUsed || 0,
+      pollingStatus: pollSignal?.pollingStatus || "NO_RACE_POLLS",
+      pollSignal,
+      expertRating,
+      expertRatingAdjustment,
+      inputQuality: quality,
+      modelConfidence: quality,
+      confidence: {
+        winConfidence: Math.max(demProbability, 1 - demProbability) >= .85 ? "HIGH" : Math.max(demProbability, 1 - demProbability) >= .65 ? "MEDIUM" : "LOW",
+        marginConfidence: pollSignal?.usablePollCount ? (pollSignal.usablePollCount >= 2 ? "HIGH" : "MEDIUM") : "LOW",
+        dataConfidence: withComposition.sourceInputs?.sourceHealth?.degraded ? "DEGRADED" : pollSignal?.usablePollCount ? "MEDIUM" : "LOW",
+        reasons: pollSignal?.usablePollCount ? ["Usable race-level polling and structural inputs."] : ["No usable live/manual race polling; margin is fundamentals-led."]
+      },
+      matchupStatus,
+      sourceHealth: withComposition.sourceInputs?.sourceHealth || {},
+      forecastMode: pollSignal?.usablePollCount ? "POLL_INFORMED" : pollSignal?.legacyFallbackPollCount ? "LIMITED_DATA" : "FUNDAMENTALS_ONLY",
+      lastUpdated: new Date().toISOString(),
+      marginDecomposition,
+      benchmarkComparison,
+      dataQualityWarnings: [
+        ...benchmarkComparison.warnings,
+        ...(ratingsPrior.warnings || []),
+        largeShiftWarning?.message,
+        pollingStatusWarning(withComposition.pollingSummary),
+        ...marginConsistency.flags.map((flag) => ({
+          severity: "high",
+          type: flag.toLowerCase().replaceAll("_", "-"),
+          message: `${withComposition.state}: projected-result margin and probability-engine margin need review.`
+        }))
+      ].filter(Boolean),
+      dataQualityFlags: [
+        ...benchmarkComparison.warnings.map((warning) => warning.type || "benchmark-warning"),
+        ...(ratingsPrior.warnings || []).map((warning) => warning.type || "ratings-prior-warning"),
+        ...marginConsistency.flags
+      ],
+      pollSourceQuality: pollSignal || withComposition.pollingSummary,
+      baselineConfidence: quality?.dataConfidence || "UNKNOWN",
+      benchmarkOutlier: Boolean(benchmarkComparison.benchmarkOutlier || benchmarkComparison.warnings?.length),
+      candidateFreshness: {
+        status: matchupStatus === "PRIMARY_UNRESOLVED" && withComposition.primaryPassed ? "PLACEHOLDER_AFTER_PRIMARY" : "OK"
+      },
+      financeStatus: sourceData.fec[withComposition.state]?.financeStatus || (sourceData.fec[withComposition.state] ? "ACTIVE_RACE_LEVEL" : "UNAVAILABLE"),
+      ratingsPriorDistribution: ratingsPrior.priorDistribution || ratingsPrior.sourceRatings || null,
+      uncertaintyAdjustment: uncertainty,
+      primaryEvents: primaryEventsForRace(withCandidates),
+      primaryRisk: primaryRisk(race),
+      stateElasticity: stateElasticity(race),
+      incumbencyAdjustment: incumbencyAdjustment(withCandidates),
+      challengerStrength: withCandidates.challengerStrength || "none",
+      candidateHistoryAdjustment: candidateHistoryAdjustment(race),
+      primaryScenarioAdjustment: primaryScenarioAdjustment(withCandidates),
+      rcvAdjustment,
+      demographicPull,
+      historicalComparison,
+      largeShiftWarning,
+      extraCandidateDemographicPulls: extraCandidateDemographicPulls(withComposition)
+    };
+  });
+
+  const wins = Object.fromEntries(enriched.map((race) => [race.state, 0]));
+  const demControlPathWins = Object.fromEntries(enriched.map((race) => [race.state, 0]));
+  const repControlPathWins = Object.fromEntries(enriched.map((race) => [race.state, 0]));
+  const tipping = Object.fromEntries(enriched.map((race) => [race.state, { dem: 0, rep: 0, any: 0 }]));
+  const seatCounts = {};
+  let demControl = 0;
+  let repControl = 0;
+  const demSeatsAll = [];
+
+  for (let sim = 0; sim < SETTINGS.simulations; sim += 1) {
+    const nationalSwing = normalRandom() * 3.9;
+    const nationalPollingError = normalRandom() * 1.55;
+    const turnoutMiss = normalRandom() * 1.3;
+    const regionSwings = {};
+    const regionalPollingErrors = {};
+    let demSeats = SETTINGS.safeDemSeats;
+    const results = [];
+
+    for (const race of enriched) {
+      const region = race.region || REGION_BY_STATE[race.state] || "National";
+      if (!regionSwings[region]) {
+        regionSwings[region] = normalRandom() * 1.95 * (regionScale[region] || 1);
+      }
+      if (!regionalPollingErrors[region]) {
+        regionalPollingErrors[region] = nationalPollingError * .42 + normalRandom() * 1.25 * (regionScale[region] || 1);
+      }
+
+      const primaryShock = race.primaryRisk > 0 ? normalRandom() * race.primaryRisk : 0;
+      const independentShock = race.independent !== "none" ? normalRandom() * 1.45 : 0;
+      const rcv = RCV_STATES[race.state];
+      const rcvShock = rcv ? normalRandom() * rcv.transferSd + normalRandom() * rcv.exhaustedSd : 0;
+      const elasticNationalSwing = nationalSwing * race.stateElasticity;
+      const simulatedMargin = race.margin + elasticNationalSwing + turnoutMiss + regionSwings[region] + regionalPollingErrors[region] + primaryShock + independentShock + rcvShock + normalRandom() * race.error;
+      const demWin = simulatedMargin > 0;
+      results.push([race.state, demWin]);
+      if (demWin) {
+        demSeats += 1;
+        wins[race.state] += 1;
+      }
+    }
+
+    demSeatsAll.push(demSeats);
+    seatCounts[demSeats] = (seatCounts[demSeats] || 0) + 1;
+    const demControls = demSeats >= SETTINGS.demControlThreshold;
+    if (demControls) demControl += 1;
+    else repControl += 1;
+
+    for (const [state, demWin] of results) {
+      const race = enriched.find((item) => item.state === state);
+      const countsWithDem = race.caucusTarget === "D" ? demWin : !demWin;
+      if (demControls && countsWithDem) demControlPathWins[state] += 1;
+      if (!demControls && !countsWithDem) repControlPathWins[state] += 1;
+    }
+
+    for (const [state, demWin] of results) {
+      const race = enriched.find((item) => item.state === state);
+      const caucusSeat = race.caucusTarget === "D";
+      const seatHelpsD = demWin && caucusSeat;
+      const seatHurtsD = !demWin && caucusSeat;
+      if (seatHelpsD && demSeats >= SETTINGS.demControlThreshold && demSeats - 1 < SETTINGS.demControlThreshold) {
+        tipping[state].dem += 1;
+        tipping[state].any += 1;
+      }
+      if (seatHurtsD && demSeats < SETTINGS.demControlThreshold && demSeats + 1 >= SETTINGS.demControlThreshold) {
+        tipping[state].rep += 1;
+        tipping[state].any += 1;
+      }
+    }
+  }
+
+  const sortedSeats = [...demSeatsAll].sort((a, b) => a - b);
+
+  for (const race of enriched) {
+    race.demProbability = calibrateProbability(wins[race.state] / SETTINGS.simulations);
+    race.repProbability = Number((1 - race.demProbability).toFixed(6));
+    race.winnerParty = race.demProbability >= .5 ? "D" : "R";
+    race.winnerProbability = Math.max(race.demProbability, 1 - race.demProbability);
+    race.rating = ratingFromProbability(race.demProbability, race.margin);
+    race.modelRating = race.rating;
+    race.competitive = race.winnerProbability < .75;
+    race.displayName = `${STATE_NAMES[race.state]} Senate`;
+    race.summary = forecastSummary(race);
+    race.note = race.summary;
+    const exactControl = tipping[race.state].any / SETTINGS.simulations;
+    const competitiveness = Math.sqrt(race.demProbability * (1 - race.demProbability)) * 2;
+    const centrality = PATH_CENTRALITY[race.state] || (race.hold === "R" ? .28 : .45);
+    race.tippingPower = exactControl * competitiveness * centrality;
+    race.demTippingPower = tipping[race.state].dem / SETTINGS.simulations;
+    race.repTippingPower = tipping[race.state].rep / SETTINGS.simulations;
+    race.uncertaintyBadges = uncertaintyBadges(race, race.pollSignal);
+    race.movementDrivers = movementDrivers(race);
+    race.history = buildHistory(race);
+    race.movement = probabilityMovement(race.history);
+    race.extraHistory = buildExtraHistory(race);
+  }
+
+  return {
+    races: enriched,
+    demControlProbability: demControl / SETTINGS.simulations,
+    repControlProbability: 1 - demControl / SETTINGS.simulations,
+    medianSeats: sortedSeats[Math.floor(sortedSeats.length / 2)],
+    seatCounts,
+    controlPaths: buildControlPaths(enriched, demControlPathWins, repControlPathWins, demControl, repControl)
+  };
+}
+
+function buildControlPaths(races, demPathWins, repPathWins, demControl, repControl) {
+  const ranked = (wins, total, party) => [...races]
+    .map((race) => {
+      const probability = total ? wins[race.state] / total : 0;
+      return {
+        state: race.state,
+        displayName: race.displayName || `${STATE_NAMES[race.state]} Senate`,
+        probability: Number(probability.toFixed(4)),
+        overallProbability: Number((party === "D" ? race.demProbability : 1 - race.demProbability).toFixed(4)),
+        rating: race.rating,
+        tippingPower: Number((race.tippingPower || 0).toFixed(4))
+      };
+    })
+    .filter((item) => item.probability >= .35 || item.tippingPower > .04)
+    .filter((item) => item.rating !== "Safe D" && item.rating !== "Safe R")
+    .sort((a, b) => b.probability - a.probability || b.tippingPower - a.tippingPower)
+    .slice(0, 10);
+  return {
+    dem: {
+      controlSimulations: demControl,
+      commonWins: ranked(demPathWins, demControl, "D")
+    },
+    rep: {
+      controlSimulations: repControl,
+      commonWins: ranked(repPathWins, repControl, "R")
+    }
+  };
+}
+
+function extraCandidateProbability(race, candidate) {
+  if (candidate.name !== "Seth Bodnar") return candidate.probabilityShare ?? null;
+  const demVotePath = race.demProbability;
+  const independentPremium = .14;
+  const unresolvedDemPenalty = race.demStatus === "unresolved" ? .035 : 0;
+  const localPath = clamp(demVotePath + independentPremium + unresolvedDemPenalty, .18, .52);
+  const republicanCeilingPenalty = clamp((race.winnerProbability - .55) * .22, 0, .08);
+  return Number(clamp(localPath - republicanCeilingPenalty, .18, .52).toFixed(4));
+}
+
+function buildHistory(race) {
+  const current = { date: MODEL_DATE_KEY, dem: race.demProbability };
+  const previousRace = previousForecast?.races?.find((item) => item.state === race.state);
+  const stored = Array.isArray(previousRace?.history) ? previousRace.history : [];
+  const withoutToday = stored.filter((point) => point.date !== current.date && point.date <= MODEL_DATE_KEY);
+  return [...withoutToday, current].sort((a, b) => a.date.localeCompare(b.date)).slice(-180);
+}
+
+function probabilityMovement(history) {
+  if (!Array.isArray(history) || history.length < 2) {
+    return { sinceLastRun: 0, sinceWeek: 0, previousDate: null, weekDate: null };
+  }
+  const latest = history.at(-1);
+  const previous = history.at(-2);
+  const latestDate = new Date(`${latest.date}T00:00:00Z`);
+  const weekCutoff = new Date(latestDate);
+  weekCutoff.setUTCDate(weekCutoff.getUTCDate() - 7);
+  const weekPoint = [...history].reverse().find((point) => new Date(`${point.date}T00:00:00Z`) <= weekCutoff) || history[0];
+  return {
+    sinceLastRun: Number(((latest.dem - previous.dem) * 100).toFixed(1)),
+    sinceWeek: Number(((latest.dem - weekPoint.dem) * 100).toFixed(1)),
+    previousDate: previous.date,
+    weekDate: weekPoint.date
+  };
+}
+
+function buildExtraHistory(race) {
+  if (!race.extraCandidates?.length) return [];
+  const previousRace = previousForecast?.races?.find((item) => item.state === race.state);
+  const stored = Array.isArray(previousRace?.extraHistory) ? previousRace.extraHistory : [];
+  const currentValues = Object.fromEntries(race.extraCandidates.map((candidate) => [
+    candidate.name,
+    extraCandidateProbability(race, candidate)
+  ]).filter(([, value]) => Number.isFinite(value)));
+  if (!Object.keys(currentValues).length) return stored;
+  const current = { date: MODEL_DATE_KEY, ...currentValues };
+  return [...stored.filter((point) => point.date !== current.date && point.date <= MODEL_DATE_KEY), current]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-180);
+}
+
+function readPreviousForecast() {
+  try {
+    return JSON.parse(readFileSync(FORECAST_URL, "utf8"));
+  } catch (error) {
+    return null;
+  }
+}
+
+async function fetchText(url, label, status, options = {}) {
+  if (OFFLINE) {
+    status[label] = { health: "DISABLED", ok: true, status: "DISABLED", reason: "Offline generation mode" };
+    return null;
+  }
+  const startedAt = Date.now();
+  const remaining = GENERATION_BUDGET_MS - (startedAt - GENERATION_STARTED_AT);
+  if (remaining <= 0) {
+    status[label] = { health: "TIMEOUT", ok: false, status: "TIMEOUT", url, error: "Global generation time budget exhausted." };
+    return null;
+  }
+  const controller = new AbortController();
+  const timeoutMs = Math.min(options.timeoutMs || 15000, remaining);
+  console.log(`[forecast] fetching ${label} (timeout ${timeoutMs}ms)`);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      headers: options.headers || {},
+      signal: controller.signal
+    });
+    const text = await response.text();
+    const record = recordFetch(status, label, response, text, url, startedAt, options);
+    console.log(`[forecast] ${label}: ${record.status}`);
+    return record.ok ? text : null;
+  } catch (error) {
+    recordFetchError(status, label, error, url, startedAt);
+    console.warn(`[forecast] ${label}: ${status[label].status}`);
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let quoted = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i];
+    const next = text[i + 1];
+    if (quoted && char === "\"" && next === "\"") {
+      cell += "\"";
+      i += 1;
+    } else if (char === "\"") {
+      quoted = !quoted;
+    } else if (!quoted && char === ",") {
+      row.push(cell);
+      cell = "";
+    } else if (!quoted && (char === "\n" || char === "\r")) {
+      if (char === "\r" && next === "\n") i += 1;
+      row.push(cell);
+      if (row.some((value) => value !== "")) rows.push(row);
+      row = [];
+      cell = "";
+    } else {
+      cell += char;
+    }
+  }
+  if (cell || row.length) {
+    row.push(cell);
+    rows.push(row);
+  }
+  const headers = rows.shift() || [];
+  return rows.map((values) => Object.fromEntries(headers.map((header, index) => [header, values[index] ?? ""])));
+}
+
+function toNumber(value) {
+  const number = Number(String(value ?? "").replace(/[$,]/g, ""));
+  return Number.isFinite(number) ? number : 0;
+}
+
+function rowNumber(row, names) {
+  for (const name of names) {
+    if (row[name] !== undefined && row[name] !== "") return toNumber(row[name]);
+  }
+  return 0;
+}
+
+function decodeHtml(value) {
+  return String(value || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&quot;/g, "\"")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
+function htmlToLines(html) {
+  return decodeHtml(html)
+    .replace(/<script[\s\S]*?<\/script>/gi, "\n")
+    .replace(/<style[\s\S]*?<\/style>/gi, "\n")
+    .replace(/<(?:br|p|div|li|tr|td|th|h[1-6]|span|a)\b[^>]*>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .split(/\n+/)
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+}
+
+function stateFromRaceTitle(title) {
+  const normalized = String(title || "").toLowerCase();
+  for (const [state, name] of Object.entries(STATE_NAMES)) {
+    if (normalized.includes(`${name.toLowerCase()} senate`)) return state;
+  }
+  return null;
+}
+
+function pollDateFromLines(lines, startIndex) {
+  const datePattern = /^(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),\s+([A-Z][a-z]+)\s+(\d{1,2})$/;
+  for (let offset = 0; offset <= 14; offset += 1) {
+    for (const index of [startIndex - offset, startIndex + offset]) {
+      const match = lines[index]?.match(datePattern);
+      if (match) {
+        const parsed = new Date(`${match[1]} ${match[2]}, 2026 12:00:00`);
+        if (!Number.isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
+      }
+    }
+  }
+  return MODEL_DATE_KEY;
+}
+
+function normalizeCandidateKey(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z\s-]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function candidateTokensForRace(race, party) {
+  const text = party === "D" ? race.dem : race.rep;
+  return String(text || "")
+    .split(/\s*\/\s*|\s+or\s+|\s+and\s+/i)
+    .map(normalizeCandidateKey)
+    .flatMap((name) => {
+      const parts = name.split(" ").filter(Boolean);
+      return [name, parts[parts.length - 1]].filter(Boolean);
+    });
+}
+
+function sideForRcpCandidate(race, candidate) {
+  const key = normalizeCandidateKey(candidate);
+  const last = key.split(" ").filter(Boolean).at(-1) || key;
+  const overrides = RCP_CANDIDATE_SIDE[race.state] || {};
+  if (overrides[key]) return overrides[key];
+  if (overrides[last]) return overrides[last];
+  if (candidateTokensForRace(race, "D").includes(key) || candidateTokensForRace(race, "D").includes(last)) return "D";
+  if (candidateTokensForRace(race, "R").includes(key) || candidateTokensForRace(race, "R").includes(last)) return "R";
+  return null;
+}
+
+function parseRcpSpread(spread) {
+  const clean = String(spread || "").replace(/\*\*/g, "").trim();
+  if (/^tie$/i.test(clean)) return { candidate: "Tie", margin: 0 };
+  const match = clean.match(/^(.+?)\s+\+([0-9]+(?:\.[0-9]+)?)$/);
+  if (!match) return null;
+  return { candidate: match[1].trim(), margin: Number(match[2]) };
+}
+
+async function fetchRealClearPolling(status) {
+  const url = "https://www.realclearpolling.com/latest-polls/senate";
+  const text = await fetchText(url, "realClearPollingSenate", status, {
+    headers: { accept: "text/html", "user-agent": "CapitolForecastBot/1.0 (+https://github.com/)" }
+  });
+  const byState = {};
+  if (!text) return { byState, polls: 0, usablePolls: 0 };
+  const lines = htmlToLines(text);
+  const baseWithCandidates = races.map((race) => ({ ...race, ...candidateInfo(race) }));
+  const byStateRace = Object.fromEntries(baseWithCandidates.map((race) => [race.state, race]));
+  let polls = 0;
+  let usablePolls = 0;
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const title = lines[index];
+    if (!/^2026\b/i.test(title) || !/senate/i.test(title)) continue;
+    polls += 1;
+    if (/primary|runoff/i.test(title)) continue;
+    const state = stateFromRaceTitle(title);
+    const race = byStateRace[state];
+    if (!race) continue;
+    const spreadIndex = lines.findIndex((line, candidateIndex) => candidateIndex > index && candidateIndex < index + 14 && line === "Spread");
+    const resultIndex = lines.findIndex((line, candidateIndex) => candidateIndex > index && candidateIndex < index + 12 && line === "Results");
+    if (spreadIndex === -1 || !lines[spreadIndex + 1]) continue;
+    const parsed = parseRcpSpread(lines[spreadIndex + 1]);
+    if (!parsed) continue;
+    const side = parsed.margin === 0 ? "D" : sideForRcpCandidate(race, parsed.candidate);
+    if (!side) continue;
+    const date = pollDateFromLines(lines, index);
+    const days = Math.min(0, Math.round((new Date(`${date}T12:00:00Z`) - new Date(`${MODEL_DATE_KEY}T12:00:00Z`)) / 86400000));
+    const pollster = lines[index + 2] && lines[index + 1] === "Poll" ? lines[index + 2].replace(/\*\*/g, "") : "RealClearPolling";
+    const margin = parsed.margin === 0 ? 0 : (side === "D" ? parsed.margin : -parsed.margin);
+    byState[state] ||= [];
+    byState[state].push({
+      days,
+      margin,
+      source: "RealClearPolling",
+      pollster,
+      endDate: date,
+      title,
+      result: resultIndex !== -1 ? lines[resultIndex + 1] : "",
+      spread: lines[spreadIndex + 1],
+      weight: .95
+    });
+    usablePolls += 1;
+  }
+
+  status.realClearPollingSenate.rows = polls;
+  status.realClearPollingSenate.usablePolls = usablePolls;
+  status.realClearPollingSenate.states = Object.keys(byState).length;
+  return { byState, polls, usablePolls };
+}
+
+function stateSlug(state) {
+  return STATE_NAMES[state].toLowerCase().replace(/\s+/g, "-");
+}
+
+function parseSample(sampleText) {
+  const text = decodeHtml(sampleText);
+  const sampleSize = toNumber(text.match(/([\d,]+)/)?.[1]);
+  const population = /\bLV\b/i.test(text) ? "lv" : /\bRV\b/i.test(text) ? "rv" : "a";
+  return { sampleSize, population };
+}
+
+function parseTwoSeventyToWinStatePolls(state, html) {
+  const race = { ...races.find((item) => item.state === state), ...candidateInfo(races.find((item) => item.state === state) || {}) };
+  if (!race.state) return [];
+  const geStart = html.search(/<div id="GE"[\s\S]*?<h2[^>]*>[\s\S]*?General Election/i);
+  if (geStart === -1) return [];
+  const nextSubtype = html.slice(geStart + 1).search(/<div id="[A-Z_]+" class="polls-subtype-wrapper/i);
+  const geHtml = nextSubtype === -1 ? html.slice(geStart) : html.slice(geStart, geStart + 1 + nextSubtype);
+  const blocks = geHtml.split(/<h4[^>]*>/i).slice(1);
+  const polls = [];
+
+  for (const block of blocks) {
+    const title = decodeHtml((block.match(/([\s\S]*?)<\/h4>/i)?.[1] || "")).replace(/\s+/g, " ").trim();
+    if (!title || !/vs\./i.test(title)) continue;
+    const tableHtml = block.match(/<table id="polls"[\s\S]*?<\/table>/i)?.[0];
+    if (!tableHtml) continue;
+    const headers = [...tableHtml.matchAll(/<th candidate_id="([^"]+)" class="can_name[^"]*"[^>]*>([\s\S]*?)<\/th>/gi)]
+      .map((match) => ({
+        id: match[1],
+        name: decodeHtml(match[2]).replace(/\*/g, "").replace(/\s+/g, " ").trim()
+      }))
+      .filter((header) => header.name);
+    const demHeader = headers.find((header) => sideForRcpCandidate(race, header.name) === "D");
+    const repHeader = headers.find((header) => sideForRcpCandidate(race, header.name) === "R");
+    if (!demHeader || !repHeader) continue;
+
+    for (const rowMatch of tableHtml.matchAll(/<tr poll_id="([^"]+)" class="poll_row([^"]*)"[^>]*>([\s\S]*?)<\/tr>/gi)) {
+      const inAverage = /in_average_calculation/.test(rowMatch[2]);
+      const row = rowMatch[3];
+      const pollster = decodeHtml(row.match(/<td class="poll_src">([\s\S]*?)<\/td>/i)?.[1] || "")
+        .replace(/\s+/g, " ")
+        .trim();
+      const endDateRaw = decodeHtml(row.match(/<td class="poll_date[^"]*">([\s\S]*?)<\/td>/i)?.[1] || "").trim();
+      const sampleRaw = row.match(/<td class="poll_sample[^"]*">([\s\S]*?)<\/td>/i)?.[1] || "";
+      const { sampleSize, population } = parseSample(sampleRaw);
+      const values = Object.fromEntries([...row.matchAll(/<td candidate_id="([^"]+)" class="poll_data[\s\S]*?>([\s\S]*?)<\/td>/gi)]
+        .map((match) => [match[1], toNumber(decodeHtml(match[2]).replace(/%/g, ""))]));
+      const dem = values[demHeader.id];
+      const rep = values[repHeader.id];
+      const parsedDate = new Date(`${endDateRaw} 12:00:00`);
+      if (!Number.isFinite(dem) || !Number.isFinite(rep) || Number.isNaN(parsedDate.getTime())) continue;
+      const endDate = parsedDate.toISOString().slice(0, 10);
+      const days = Math.min(0, Math.round((new Date(`${endDate}T12:00:00Z`) - new Date(`${MODEL_DATE_KEY}T12:00:00Z`)) / 86400000));
+      polls.push({
+        days,
+        margin: dem - rep,
+        source: "270toWin",
+        pollster: pollster || "270toWin",
+        endDate,
+        title: `${STATE_NAMES[state]} Senate - ${title}`,
+        result: `${demHeader.name} ${dem} / ${repHeader.name} ${rep}`,
+        spread: dem >= rep ? `${demHeader.name} +${(dem - rep).toFixed(1)}` : `${repHeader.name} +${(rep - dem).toFixed(1)}`,
+        sampleSize,
+        population,
+        weight: inAverage ? 1.06 : .72
+      });
+    }
+  }
+  return polls;
+}
+
+async function fetchTwoSeventyToWinRacePolls(status) {
+  const byState = {};
+  const sourceStates = [...new Set(races.map((race) => race.state))];
+  const startedAt = Date.now();
+  let pages = 0;
+  let okPages = 0;
+  let usablePolls = 0;
+
+  // Keep source pressure bounded: a failed external site must not leave dozens of
+  // concurrent requests alive long enough to stall the complete forecast run.
+  const workers = Math.min(4, sourceStates.length);
+  let nextIndex = 0;
+  async function worker() {
+    while (nextIndex < sourceStates.length) {
+      const state = sourceStates[nextIndex++];
+    pages += 1;
+    const url = `https://www.270towin.com/2026-senate-polls/${stateSlug(state)}`;
+    const text = await fetchText(url, `twoSeventyToWinPolls${state}`, status, { timeoutMs: 15000 });
+      if (!text) continue;
+    okPages += 1;
+    const polls = parseTwoSeventyToWinStatePolls(state, text);
+    if (polls.length) {
+      byState[state] = polls;
+      usablePolls += polls.length;
+    }
+    }
+  }
+  await Promise.all(Array.from({ length: workers }, worker));
+
+  status.twoSeventyToWinRacePolls = {
+    ok: okPages > 0,
+    status: okPages > 0 ? 200 : "no-pages",
+    ms: Date.now() - startedAt,
+    url: "https://www.270towin.com/2026-senate-polls/{state}",
+    pages,
+    okPages,
+    usablePolls,
+    states: Object.keys(byState).length
+  };
+  return { byState, pages, okPages, usablePolls };
+}
+
+async function fetchVoteHub(status) {
+  const text = await fetchText("https://api.votehub.com/polls?poll_type=generic-ballot&subject=2026", "votehubGenericBallot", status, {
+    headers: { accept: "application/json" },
+    expected: "json"
+  });
+  if (!text) return { genericBallotPolls: 0, usableGenericBallotPolls: 0, genericBallotMargin: null };
+  try {
+    const data = JSON.parse(text);
+    const polls = Array.isArray(data) ? data : Array.isArray(data.polls) ? data.polls : [];
+    const rawUsablePolls = polls.map((poll) => {
+      const demAnswer = poll.answers?.find((answer) => /^dem/i.test(answer.choice || ""));
+      const repAnswer = poll.answers?.find((answer) => /^rep/i.test(answer.choice || ""));
+      const dem = toNumber(poll.democrat ?? poll.dem ?? poll.democratic ?? poll.dem_share ?? demAnswer?.pct);
+      const rep = toNumber(poll.republican ?? poll.rep ?? poll.gop ?? poll.rep_share ?? repAnswer?.pct);
+      return {
+        id: poll.id,
+        pollster: poll.pollster,
+        endDate: poll.end_date,
+        sampleSize: toNumber(poll.sample_size),
+        population: poll.population,
+        internal: Boolean(poll.internal),
+        partisan: poll.partisan,
+        sponsors: Array.isArray(poll.sponsors) ? poll.sponsors : [],
+        dem,
+        rep,
+        margin: dem - rep
+      };
+    }).filter((poll) => Number.isFinite(poll.margin) && (poll.dem || poll.rep) && poll.endDate);
+    const usablePolls = collapseSamePollsterDay(rawUsablePolls);
+    const modelDate = new Date(`${MODEL_DATE_KEY}T12:00:00Z`);
+    let weightSum = 0;
+    let weightedMargin = 0;
+    let weightedDem = 0;
+    let weightedRep = 0;
+    const pollsterTotals = {};
+    for (const poll of usablePolls) {
+      const age = Math.max(0, (modelDate - new Date(`${poll.endDate}T12:00:00Z`)) / 86400000);
+      const populationWeight = poll.population === "lv" ? 1.1 : poll.population === "rv" ? 1 : .85;
+      const sampleWeight = clamp(Math.sqrt(poll.sampleSize || 800) / 30, .55, 2.1);
+      const recencyWeight = Math.pow(.5, age / 45);
+      const internalWeight = poll.internal ? .65 : 1;
+      const partisanWeight = poll.partisan ? .78 : 1;
+      const repeatWeight = 1 / Math.sqrt(1 + (pollsterTotals[poll.pollster] || 0));
+      const weight = populationWeight * sampleWeight * recencyWeight * internalWeight * partisanWeight * repeatWeight;
+      poll.weight = weight;
+      poll.ageDays = age;
+      pollsterTotals[poll.pollster] = (pollsterTotals[poll.pollster] || 0) + weight;
+      weightSum += weight;
+      weightedMargin += poll.margin * weight;
+      weightedDem += poll.dem * weight;
+      weightedRep += poll.rep * weight;
+    }
+    const recent = [...usablePolls]
+      .sort((a, b) => new Date(b.endDate) - new Date(a.endDate))
+      .slice(0, 8)
+      .map(({ id, pollster, endDate, sampleSize, population, dem, rep, margin, weight }) => ({
+        id, pollster, endDate, sampleSize, population, dem, rep, margin, weight: Number(weight.toFixed(4))
+      }));
+    status.votehubGenericBallot.rows = polls.length;
+    status.votehubGenericBallot.usablePolls = usablePolls.length;
+    status.votehubGenericBallot.rawUsablePolls = rawUsablePolls.length;
+    return {
+      genericBallotPolls: polls.length,
+      usableGenericBallotPolls: usablePolls.length,
+      rawUsableGenericBallotPolls: rawUsablePolls.length,
+      genericBallotMargin: weightSum ? weightedMargin / weightSum : null,
+      genericBallotDem: weightSum ? weightedDem / weightSum : null,
+      genericBallotRep: weightSum ? weightedRep / weightSum : null,
+      totalWeight: weightSum,
+      weighting: {
+        recencyHalfLifeDays: 45,
+        sample: "sqrt(sample_size), capped 0.55x to 2.10x",
+        population: { lv: 1.1, rv: 1, adultOrOther: .85 },
+        internalPoll: .65,
+        partisanPoll: .78,
+        repeatedPollster: "1 / sqrt(1 + prior weighted pollster weight)"
+      },
+      recent
+    };
+  } catch (error) {
+    markParseFailed(status, "votehubGenericBallot", error);
+    return { genericBallotPolls: 0, usableGenericBallotPolls: 0, genericBallotMargin: null };
+  }
+}
+
+async function fetchDdhqGenericBallot(status) {
+  const url = "https://polls.decisiondeskhq.com/averages/generic-ballot/national/lv-rv-adults";
+  const text = await fetchText(url, "ddhqGenericBallot", status, { timeoutMs: 15000 });
+  if (!text) return { genericBallotMargin: null, polls: 0 };
+  if (/Vercel Security Checkpoint/i.test(text)) {
+    status.ddhqGenericBallot.ok = false;
+    status.ddhqGenericBallot.status = "security-checkpoint";
+    status.ddhqGenericBallot.error = "Vercel security checkpoint returned instead of polling data.";
+    return { genericBallotMargin: null, polls: 0 };
+  }
+  const flat = decodeHtml(text).replace(/\s+/g, " ");
+  const dem = Number(flat.match(/Democrat\s+([0-9]+(?:\.[0-9]+)?)%/i)?.[1]);
+  const rep = Number(flat.match(/Republican\s+([0-9]+(?:\.[0-9]+)?)%/i)?.[1]);
+  const polls = Number(flat.match(/([0-9,]+)\s+polls included in this average/i)?.[1]?.replace(/,/g, ""));
+  const result = Number.isFinite(dem) && Number.isFinite(rep)
+    ? { genericBallotMargin: dem - rep, genericBallotDem: dem, genericBallotRep: rep, polls: Number.isFinite(polls) ? polls : 0 }
+    : { genericBallotMargin: null, polls: 0 };
+  status.ddhqGenericBallot.polls = result.polls;
+  status.ddhqGenericBallot.margin = result.genericBallotMargin;
+  if (!Number.isFinite(result.genericBallotMargin)) markNoRows(status, "ddhqGenericBallot", { polls: result.polls, margin: null });
+  return result;
+}
+
+async function fetchPollfinityAverages(status) {
+  const url = "https://pollfinity.com/averages.json";
+  const text = await fetchText(url, "pollfinityAverages", status, {
+    headers: { accept: "application/json" },
+    timeoutMs: 15000,
+    expected: "json"
+  });
+  if (!text) return { genericBallotMargin: null, approvalNet: null };
+  try {
+    const data = JSON.parse(text);
+    const generic = data.tracks?.generic_ballot?.current;
+    const approval = data.tracks?.trump_approval?.current;
+    const dem = Number(generic?.democrat ?? generic?.dem ?? generic?.democratic);
+    const rep = Number(generic?.republican ?? generic?.rep ?? generic?.gop);
+    const margin = Number(generic?.dem_lead);
+    const genericBallotMargin = Number.isFinite(margin) ? margin : Number.isFinite(dem) && Number.isFinite(rep) ? dem - rep : null;
+    const approvalNet = Number.isFinite(Number(approval?.net))
+      ? Number(approval.net)
+      : Number.isFinite(Number(approval?.approve)) && Number.isFinite(Number(approval?.disapprove))
+        ? Number(approval.approve) - Number(approval.disapprove)
+        : null;
+    const result = {
+      generatedAt: data.generated_at,
+      genericBallotMargin,
+      genericBallotDem: Number.isFinite(dem) ? dem : null,
+      genericBallotRep: Number.isFinite(rep) ? rep : null,
+      genericBallotPolls: Number(data.tracks?.generic_ballot?.polls_in_average || 0),
+      approvalNet,
+      approvalPolls: Number(data.tracks?.trump_approval?.polls_in_average || 0)
+    };
+    status.pollfinityAverages.genericBallotPolls = result.genericBallotPolls;
+    status.pollfinityAverages.genericBallotMargin = result.genericBallotMargin;
+    status.pollfinityAverages.approvalPolls = result.approvalPolls;
+    status.pollfinityAverages.approvalNet = result.approvalNet;
+    return result;
+  } catch (error) {
+    markParseFailed(status, "pollfinityAverages", error);
+    return { genericBallotMargin: null, approvalNet: null };
+  }
+}
+
+async function fetchUsPollingDataGeneric(status) {
+  const url = "https://uspollingdata.com/polls/generic-ballot/";
+  const text = await fetchText(url, "usPollingDataGenericBallot", status, { timeoutMs: 15000 });
+  if (!text) return { genericBallotMargin: null };
+  const flat = decodeHtml(text).replace(/\s+/g, " ");
+  const match = flat.match(/Democrats lead Republicans \+?([0-9]+(?:\.[0-9]+)?) points \(([0-9]+(?:\.[0-9]+)?)% vs ([0-9]+(?:\.[0-9]+)?)%\)/i)
+    || flat.match(/Democrats lead D\+([0-9]+(?:\.[0-9]+)).*?Democrats\s+([0-9]+(?:\.[0-9]+)?)%.*?Republicans\s+([0-9]+(?:\.[0-9]+)?)%/i);
+  const genericBallotMargin = match ? Number(match[1]) : null;
+  const genericBallotDem = match ? Number(match[2]) : null;
+  const genericBallotRep = match ? Number(match[3]) : null;
+  status.usPollingDataGenericBallot.margin = genericBallotMargin;
+  return { genericBallotMargin, genericBallotDem, genericBallotRep };
+}
+
+function collapseSamePollsterDay(polls) {
+  const groups = new Map();
+  for (const poll of polls) {
+    const key = `${poll.pollster || "unknown"}|${poll.endDate}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(poll);
+  }
+  return [...groups.values()].map((group) => {
+    if (group.length === 1) return group[0];
+    const ranked = [...group].sort((a, b) => populationRank(b.population) - populationRank(a.population) || b.sampleSize - a.sampleSize);
+    const bestRank = populationRank(ranked[0].population);
+    const selected = ranked.filter((poll) => populationRank(poll.population) === bestRank);
+    const sampleTotal = selected.reduce((sum, poll) => sum + (poll.sampleSize || 800), 0);
+    return selected.reduce((merged, poll) => {
+      const weight = (poll.sampleSize || 800) / sampleTotal;
+      merged.dem += poll.dem * weight;
+      merged.rep += poll.rep * weight;
+      merged.margin += poll.margin * weight;
+      merged.sampleSize += poll.sampleSize || 0;
+      return merged;
+    }, {
+      id: selected.map((poll) => poll.id).filter(Boolean).join("+"),
+      pollster: selected[0].pollster,
+      endDate: selected[0].endDate,
+      sampleSize: 0,
+      population: selected[0].population,
+      internal: selected.some((poll) => poll.internal),
+      partisan: selected.find((poll) => poll.partisan)?.partisan || null,
+      sponsors: [...new Set(selected.flatMap((poll) => poll.sponsors))],
+      dem: 0,
+      rep: 0,
+      margin: 0
+    });
+  });
+}
+
+function populationRank(population) {
+  if (population === "lv") return 3;
+  if (population === "rv") return 2;
+  return 1;
+}
+
+async function fetchFec(status) {
+  const text = await fetchText("https://www.fec.gov/files/bulk-downloads/2026/candidate_summary_2026.csv", "openFecCandidateSummary", status);
+  const byState = {};
+  const national = {
+    demReceipts: 0, repReceipts: 0,
+    demCash: 0, repCash: 0,
+    demDebts: 0, repDebts: 0,
+    demCandidates: 0, repCandidates: 0
+  };
+  if (!text) return byState;
+  const rows = parseCsv(text);
+  for (const row of rows) {
+    if (row.Cand_Office !== "S") continue;
+    const state = row.Cand_Office_St;
+    if (!STATE_NAMES[state]) continue;
+    const party = String(row.Cand_Party_Affiliation || "").toUpperCase();
+    const side = party.startsWith("DEM") ? "dem" : party.startsWith("REP") ? "rep" : "other";
+    byState[state] ||= {
+      demReceipts: 0, repReceipts: 0, otherReceipts: 0,
+      demDisbursements: 0, repDisbursements: 0, otherDisbursements: 0,
+      demCash: 0, repCash: 0, otherCash: 0,
+      demDebts: 0, repDebts: 0, otherDebts: 0,
+      demIndividual: 0, repIndividual: 0, otherIndividual: 0,
+      candidates: 0, coverageEndDate: ""
+    };
+    byState[state].candidates += 1;
+    byState[state].coverageEndDate = row.Coverage_End_Date || byState[state].coverageEndDate;
+    const receipts = toNumber(row.Total_Receipt);
+    const disbursements = rowNumber(row, ["Total_Disbursement", "Total_Disbursements", "Total_Disb"]);
+    const cash = rowNumber(row, ["Cash_On_Hand_COP", "Cash_On_Hand", "COH_COP"]);
+    const debts = rowNumber(row, ["Debts_Owed_By_Committee", "Debts_Owed", "Debt_Owed_By_Committee"]);
+    const individual = rowNumber(row, ["Individual_Contribution", "Individual_Contributions", "Contrib_Indiv"]);
+    if (side === "dem") {
+      byState[state].demReceipts += receipts;
+      byState[state].demDisbursements += disbursements;
+      byState[state].demCash += cash;
+      byState[state].demDebts += debts;
+      byState[state].demIndividual += individual;
+      national.demReceipts += receipts;
+      national.demCash += cash;
+      national.demDebts += debts;
+      national.demCandidates += 1;
+    } else if (side === "rep") {
+      byState[state].repReceipts += receipts;
+      byState[state].repDisbursements += disbursements;
+      byState[state].repCash += cash;
+      byState[state].repDebts += debts;
+      byState[state].repIndividual += individual;
+      national.repReceipts += receipts;
+      national.repCash += cash;
+      national.repDebts += debts;
+      national.repCandidates += 1;
+    } else {
+      byState[state].otherReceipts += receipts;
+      byState[state].otherDisbursements += disbursements;
+      byState[state].otherCash += cash;
+      byState[state].otherDebts += debts;
+      byState[state].otherIndividual += individual;
+    }
+  }
+  national.financeSignal = nationalFinanceSignal(national);
+  byState.__national = national;
+  status.openFecCandidateSummary.rows = rows.length;
+  status.openFecCandidateSummary.senateStates = Object.keys(byState).filter((state) => STATE_NAMES[state]).length;
+  status.openFecCandidateSummary.nationalFinanceSignal = national.financeSignal;
+  return byState;
+}
+
+function financeSideForRace(fec, race) {
+  const independent = INDEPENDENT_CONTROL_FINANCE[race.state];
+  if (independent?.side === "dem" && fec.otherReceipts > fec.demReceipts) {
+    return {
+      ...fec,
+      demReceipts: fec.otherReceipts,
+      demDisbursements: fec.otherDisbursements,
+      demCash: fec.otherCash,
+      demDebts: fec.otherDebts,
+      demIndividual: fec.otherIndividual,
+      demFinanceLabel: independent.label,
+      demFinanceParty: "I",
+      financeTreatment: `${independent.label} is an independent who counts with Democrats for control, so independent-side FEC money is compared against Republican money.`
+    };
+  }
+  return { ...fec, demFinanceLabel: "Democratic side", repFinanceLabel: "Republican side" };
+}
+
+function nationalFinanceSignal(finance) {
+  const demScore = Math.log1p(Math.max(finance.demReceipts, 0) + Math.max(finance.demCash, 0) * 1.1) - Math.log1p(Math.max(finance.demDebts, 0) * 1.2);
+  const repScore = Math.log1p(Math.max(finance.repReceipts, 0) + Math.max(finance.repCash, 0) * 1.1) - Math.log1p(Math.max(finance.repDebts, 0) * 1.2);
+  return Number(clamp((demScore - repScore) / 5, -.8, .8).toFixed(3));
+}
+
+async function fetchMitSenate(status) {
+  const text = await fetchText("https://raw.githubusercontent.com/MEDSL/constituency-returns/master/1976-2018-senate.csv", "mitSenateReturns", status);
+  const byStateYear = {};
+  if (!text) return {};
+  const rows = parseCsv(text);
+  for (const row of rows) {
+    if (row.stage !== "gen" || row.mode !== "total") continue;
+    const state = row.state_po;
+    const year = Number(row.year);
+    if (!STATE_NAMES[state] || !Number.isFinite(year)) continue;
+    byStateYear[state] ||= {};
+    byStateYear[state][year] ||= { dem: 0, rep: 0, total: toNumber(row.totalvotes) };
+    const party = String(row.party || "").toLowerCase();
+    if (party === "democrat") byStateYear[state][year].dem += toNumber(row.candidatevotes);
+    if (party === "republican") byStateYear[state][year].rep += toNumber(row.candidatevotes);
+  }
+
+  const latestMargins = {};
+  for (const [state, years] of Object.entries(byStateYear)) {
+    const latestYear = Math.max(...Object.keys(years).map(Number));
+    const result = years[latestYear];
+    if (!result.total) continue;
+    latestMargins[state] = {
+      year: latestYear,
+      margin: ((result.dem - result.rep) / result.total) * 100
+    };
+  }
+  status.mitSenateReturns.rows = rows.length;
+  status.mitSenateReturns.states = Object.keys(latestMargins).length;
+  return latestMargins;
+}
+
+async function fetchCensus(status) {
+  const url = "https://www2.census.gov/programs-surveys/popest/datasets/2020-2024/state/totals/NST-EST2024-POPCHG2020-2024.csv";
+  const text = await fetchText(url, "censusPopulation", status);
+  if (!text) return {};
+  const rows = parseCsv(text);
+  const byState = {};
+  for (const row of rows) {
+    if (row.SUMLEV !== "040") continue;
+    const state = FIPS_TO_STATE[String(row.STATE).padStart(2, "0")];
+    if (!state) continue;
+    byState[state] = {
+      name: row.NAME,
+      pop2020: toNumber(row.POPESTIMATE2020),
+      pop2024: toNumber(row.POPESTIMATE2024),
+      pctChange2024: toNumber(row.PPOPCHG_2024)
+    };
+  }
+  status.censusPopulation.rows = rows.length;
+  status.censusPopulation.states = Object.keys(byState).length;
+  status.censusPopulation.source = "Census Bureau no-key CSV";
+  return byState;
+}
+
+async function fetchCivicApi(status) {
+  const docsText = await fetchText("https://www.civicapi.org/api-documentation", "civicApiDocs", status);
+  const endpointText = await fetchText("https://www.civicapi.org/api/v1/upcomingraces", "civicApiEndpoint", status);
+  return {
+    documentationReachable: Boolean(docsText),
+    endpointReachable: Boolean(endpointText),
+    note: endpointText
+      ? "Endpoint reachable, but no Senate forecast result feed is wired yet."
+      : "Docs are reachable, but tested no-key API endpoints currently return 404; using MIT/MEDSL historical results instead."
+  };
+}
+
+async function fetchPollingReferencePages(status) {
+  const [towinStatePage, towinLatestPage, raceToTheWhPage, raceToTheWhGeneric, electoralVoteCsv, usPollingDataSenate] = await Promise.all([
+    fetchText("https://www.270towin.com/content/2026-senate-polling", "twoSeventyToWinPollingIndex", status, { timeoutMs: 12000 }),
+    fetchText("https://www.270towin.com/polls/latest-2026-senate-election-polls/", "twoSeventyToWinLatestPolls", status, { timeoutMs: 12000 }),
+    fetchText("https://www.racetothewh.com/senate/26polls", "raceToTheWhSenatePolls", status, { timeoutMs: 12000 }),
+    fetchText("https://www.racetothewh.com/polls/genericballot", "raceToTheWhGenericBallot", status, { timeoutMs: 12000 }),
+    fetchText("https://electoral-vote.com/evp2026/Senate/senate_polls.csv", "electoralVoteSenatePolls", status, { timeoutMs: 12000 }),
+    fetchText("https://uspollingdata.com/polls/senate-polling/", "usPollingDataSenatePolling", status, { timeoutMs: 12000 })
+  ]);
+  const electoralVoteByState = parseElectoralVoteSenatePolls(electoralVoteCsv);
+  if (electoralVoteCsv && status.electoralVoteSenatePolls) {
+    const rows = parseCsv(electoralVoteCsv);
+    status.electoralVoteSenatePolls.rows = rows.length;
+    status.electoralVoteSenatePolls.usablePolls = Object.values(electoralVoteByState).reduce((sum, polls) => sum + polls.length, 0);
+    if (!status.electoralVoteSenatePolls.usablePolls) markNoRows(status, "electoralVoteSenatePolls", { rows: rows.length, usablePolls: 0 });
+  }
+  if (usPollingDataSenate && status.usPollingDataSenatePolling) {
+    status.usPollingDataSenatePolling.hasSenateTable = /Competitive Senate Races/i.test(usPollingDataSenate);
+    status.usPollingDataSenatePolling.note = "Reachable, but not blended because several listed races/candidates do not match this Senate cycle ledger.";
+  }
+  if (raceToTheWhPage && status.raceToTheWhSenatePolls) {
+    status.raceToTheWhSenatePolls.hasStaticRows = /<table|poll_row|candidate_id/i.test(raceToTheWhPage);
+    status.raceToTheWhSenatePolls.note = status.raceToTheWhSenatePolls.hasStaticRows
+      ? "Static poll rows detected."
+      : "Reachable, but no stable row-level poll data was present in the fetched HTML.";
+    if (!status.raceToTheWhSenatePolls.hasStaticRows) markNoRows(status, "raceToTheWhSenatePolls", { hasStaticRows: false });
+  }
+  return {
+    twoSeventyToWin: {
+      pollingIndexReachable: Boolean(towinStatePage),
+      latestPollsReachable: Boolean(towinLatestPage),
+      note: "Tracked as a polling reference page. No stable public row-level API was detected, so rows are not blended unless a structured endpoint is added."
+    },
+    raceToTheWh: {
+      senatePollsReachable: Boolean(raceToTheWhPage),
+      genericBallotReachable: Boolean(raceToTheWhGeneric),
+      note: "Tracked as a polling-average reference page. No stable public row-level API was detected, so rows are not blended unless a structured endpoint is added."
+    },
+    electoralVote: {
+      senatePollCsvReachable: Boolean(electoralVoteCsv),
+      usablePolls: Object.values(electoralVoteByState).reduce((sum, polls) => sum + polls.length, 0),
+      note: "Downloadable Senate polling CSV is normalized and blended only for current-cycle non-election rows that match the race ledger."
+    },
+    usPollingData: {
+      senatePollingReachable: Boolean(usPollingDataSenate),
+      note: "Tracked as a public polling reference. Senate table is not blended when race/candidate ledger conflicts are detected."
+    },
+    electoralVoteByState
+  };
+}
+
+function parseElectoralVoteSenatePolls(text) {
+  if (!text) return {};
+  const rows = parseCsv(text);
+  const byState = {};
+  for (const row of rows) {
+    const stateName = String(row.State || row.state || "").trim();
+    const state = Object.entries(STATE_NAMES).find(([, name]) => name.toLowerCase() === stateName.toLowerCase())?.[0];
+    const pollster = String(row.Pollster || row.pollster || "").trim();
+    const dem = toNumber(row.Dem || row.dem);
+    const rep = toNumber(row.GOP || row.Rep || row.rep);
+    const dateText = String(row.Date || row.date || "").trim();
+    const parsedDate = new Date(`${dateText} 2026`);
+    if (!state || /^election/i.test(pollster) || !Number.isFinite(dem) || !Number.isFinite(rep) || Number.isNaN(parsedDate.getTime())) continue;
+    const endDate = parsedDate.toISOString().slice(0, 10);
+    const days = Math.min(0, Math.round((new Date(`${endDate}T12:00:00Z`) - new Date(`${MODEL_DATE_KEY}T12:00:00Z`)) / 86400000));
+    byState[state] ||= [];
+    byState[state].push({
+      days,
+      margin: dem - rep,
+      source: "Electoral-Vote",
+      pollster,
+      endDate,
+      title: `${stateName} Senate`,
+      result: `${dem} / ${rep}`,
+      weight: .8
+    });
+  }
+  return byState;
+}
+
+function senateMatchupStatus(race) {
+  if (race.primary === "runoff" || race.demStatus === "unresolved" || race.repStatus === "unresolved") return "PRIMARY_UNRESOLVED";
+  if (/^Democrat$|^Republican$/i.test(race.dem || "") || /^Democrat$|^Republican$/i.test(race.rep || "")) return "GENERIC_MATCHUP";
+  if (race.demStatus === "nominee" && race.repStatus === "nominee") return "CONFIRMED_MATCHUP";
+  return "LIKELY_MATCHUP";
+}
+
+function senateMarginDecomposition(race, pollSignal, ratingsEffect, guardrail, finalMargin) {
+  const previousMargin = Number(race.pastSenate || 0);
+  const partisanBaselineEffect = Number((race.pvi * .30 + previousMargin * .26 - previousMargin).toFixed(2));
+  const nationalEnvironmentEffect = Number((race.nationalPolling || 0).toFixed(2));
+  const pollingEffect = pollSignal ? Number((pollSignal.margin * pollSignal.blendWeight).toFixed(2)) : 0;
+  const incumbencyEffect = Number(incumbencyAdjustment(race).toFixed(2));
+  const candidateQualityEffect = Number((race.candidate || 0).toFixed(2));
+  const fundraisingEffect = Number((race.money || 0).toFixed(2));
+  const candidateHistoryEffect = Number(candidateHistoryAdjustment(race).toFixed(2));
+  return {
+    previousMargin,
+    partisanBaselineEffect,
+    nationalEnvironmentEffect,
+    pollingEffect,
+    incumbencyEffect,
+    candidateQualityEffect,
+    fundraisingEffect,
+    candidateHistoryEffect,
+    ratingsAdjustment: Number((ratingsEffect || 0).toFixed(2)),
+    guardrailAdjustment: guardrail.adjustment,
+    guardrailReason: guardrail.reason,
+    finalProjectedMargin: Number(finalMargin.toFixed(2))
+  };
+}
+
+function senateBenchmarkComparison(race, margin, demProbability, pollSignal) {
+  const manual = benchmarkFor(`${race.state}-SEN-2026`);
+  const consensusRating = manual?.consensusRating || race.rating || null;
+  const warnings = [];
+  if (!pollSignal && Math.abs(margin) < 6) warnings.push("competitive-race-no-usable-polls");
+  if (race.sourceInputs?.sourceHealth?.degraded && Math.abs(margin) < 6) warnings.push("source-failure-affects-competitive-race");
+  if (race.historicalComparison?.needsReview) warnings.push("large-unpolled-shift-from-previous-result");
+  warnings.push(...benchmarkWarnings(manual, margin, demProbability));
+  return {
+    model: { projectedMargin: Number(margin.toFixed(2)), demProbability: Number(demProbability.toFixed(5)) },
+    previousResult: race.pastSenate,
+    external: {
+      cook: manual?.cook || null,
+      sabato: manual?.sabato || null,
+      insideElections: manual?.insideElections || race.rating || null,
+      splitTicket: manual?.splitTicket || null,
+      raceToWH: manual?.raceToWH || null,
+      voteHub: manual?.voteHub || null,
+      economist: manual?.economist || null,
+      market: manual?.market || null
+    },
+    consensusRating,
+    usablePolls: pollSignal?.pollCount || 0,
+    sourceHealth: race.sourceInputs?.sourceHealth || null,
+    warnings
+  };
+}
+
+function readDirectPollLedger() {
+  const byState = {};
+  let skipped = 0;
+  for (const state of Object.keys(STATE_NAMES)) {
+    const result = directPollLedger({ office: "senate", state });
+    skipped += result.skipped;
+    if (!result.polls.length) continue;
+    byState[state] = result.polls.map((poll) => ({
+      ...poll,
+      days: Math.min(0, Math.round((new Date(`${poll.endDate}T12:00:00Z`) - new Date(`${MODEL_DATE_KEY}T12:00:00Z`)) / 86400000)),
+      result: `${poll.candidates[0]?.pct} / ${poll.candidates[1]?.pct}`
+    }));
+  }
+  return {
+    byState,
+    polls: Object.values(byState).reduce((sum, rows) => sum + rows.length, 0),
+    skipped,
+    source: "Federal Elections Analysis direct poll-release ledger"
+  };
+}
+
+async function fetchAllSources() {
+  const status = { checkedAt: new Date().toISOString() };
+  const [votehub, ddhqGeneric, pollfinity, usPollingDataGeneric, realClearPolling, twoSeventyToWin, fec, mit, census, civic, pollingReferences] = await Promise.all([
+    fetchVoteHub(status),
+    fetchDdhqGenericBallot(status),
+    fetchPollfinityAverages(status),
+    fetchUsPollingDataGeneric(status),
+    fetchRealClearPolling(status),
+    fetchTwoSeventyToWinRacePolls(status),
+    fetchFec(status),
+    fetchMitSenate(status),
+    fetchCensus(status),
+    fetchCivicApi(status),
+    fetchPollingReferencePages(status)
+  ]);
+  const directPolls = readDirectPollLedger();
+  const wikipediaPolling = readWikipediaPollingCache("senate");
+  const wikipediaPollingByState = wikipediaPollRowsByState(wikipediaPolling);
+  const fiftyPlusOne = loadFiftyPlusOnePolls("senate", status);
+  const fiftyPlusOneByState = Object.groupBy(fiftyPlusOne.polls, (poll) => poll.state);
+  status.directPollLedger = {
+    health: directPolls.polls ? "OK_PARSED" : "OK_NO_ROWS",
+    ok: true,
+    status: directPolls.polls ? "OK_PARSED" : "OK_NO_ROWS",
+    rows: directPolls.polls,
+    skipped: directPolls.skipped,
+    url: "data/direct-poll-ledger.json"
+  };
+  const usableGenericSource = (source) => {
+    if (!Number.isFinite(source.margin)) return false;
+    if (source.polls > 0) return true;
+    const hasVoteShares = Number.isFinite(source.dem) && Number.isFinite(source.rep) && source.dem > 20 && source.rep > 20;
+    return hasVoteShares;
+  };
+  const genericPollingSources = [
+    { source: "VoteHub", margin: votehub.genericBallotMargin, dem: votehub.genericBallotDem, rep: votehub.genericBallotRep, polls: votehub.usableGenericBallotPolls, weight: 1 },
+    { source: "DDHQ", margin: ddhqGeneric.genericBallotMargin, dem: ddhqGeneric.genericBallotDem, rep: ddhqGeneric.genericBallotRep, polls: ddhqGeneric.polls, weight: .75 },
+    { source: "Pollfinity", margin: pollfinity.genericBallotMargin, dem: pollfinity.genericBallotDem, rep: pollfinity.genericBallotRep, polls: pollfinity.genericBallotPolls, weight: .55 },
+    { source: "USPollingData", margin: usPollingDataGeneric.genericBallotMargin, dem: usPollingDataGeneric.genericBallotDem, rep: usPollingDataGeneric.genericBallotRep, polls: 0, weight: .45 }
+  ].filter(usableGenericSource);
+  let canonicalGenericBallot = blendGenericBallotSources(genericPollingSources, { lastUpdated: status.checkedAt, sourceHealth: status });
+  if (canonicalGenericBallot.margin === null) {
+    const cachedGenericBallot = readCachedGenericBallot();
+    if (Number.isFinite(Number(cachedGenericBallot?.margin))) {
+      status.cachedGenericBallotFallback = {
+        health: "OK_PARSED",
+        ok: true,
+        status: "OK_PARSED",
+        margin: cachedGenericBallot.margin,
+        reason: "Live/offline generic-ballot sources did not produce a usable margin."
+      };
+      canonicalGenericBallot = {
+        ...cachedGenericBallot,
+        sourceHealth: status,
+        sources: (cachedGenericBallot.sources || []).map((source) => ({
+          ...source,
+          status: source.status || "CACHED"
+        }))
+      };
+    } else {
+      status.cachedGenericBallotFallback = {
+        health: "OK_NO_ROWS",
+        ok: true,
+        status: "OK_NO_ROWS",
+        margin: null,
+        reason: "No usable cached generic-ballot margin was found."
+      };
+    }
+  }
+  const genericPolling = {
+    ...canonicalGenericBallot,
+    // Legacy aliases keep the existing model and UI consumers stable.
+    genericBallotMargin: canonicalGenericBallot.margin,
+    genericBallotDem: canonicalGenericBallot.dem,
+    genericBallotRep: canonicalGenericBallot.rep
+  };
+  const stableStatus = stableSourceStatus(status);
+  const sourceHealth = sourceHealthSummary(stableStatus, {
+    critical: ["votehubGenericBallot", "pollfinityAverages", "twoSeventyToWinStatePolls"]
+  });
+  return { status: stableStatus, sourceHealth, votehub, ddhqGeneric, pollfinity, usPollingDataGeneric, genericPolling, canonicalGenericBallot, realClearPolling, twoSeventyToWin, directPolls, wikipediaPolling, wikipediaPollingByState, fiftyPlusOneByState, fec, mit, census, civic, pollingReferences };
+}
+
+function stableSourceStatus(status) {
+  const { checkedAt, ...sources } = status;
+  return {
+    checkedAt,
+    ...Object.fromEntries(Object.entries(sources).sort(([a], [b]) => a.localeCompare(b)))
+  };
+}
+
+function applySourceInputs(baseRaces, sourceData) {
+  return baseRaces.map((inputRace) => {
+    const race = applyPrimarySyncToRace(inputRace, "senate", PRIMARY_SYNC_MAP);
+    const fec = sourceData?.fec?.[race.state];
+    const mit = sourceData?.mit?.[race.state];
+    const census = sourceData?.census?.[race.state];
+    const sourceInputs = {};
+    let money = race.money;
+    let pastSenate = race.pastSenate;
+    let pvi = race.pvi;
+    const certifiedBaseline = certifiedSenateBaselines[race.state];
+    const baselineOverride = SENATE_BASELINE_OVERRIDES[race.state];
+    if (baselineOverride || certifiedBaseline) {
+      const selectedBaseline = baselineOverride || certifiedBaseline;
+      pastSenate = selectedBaseline.margin;
+      sourceInputs.comparableSenateBaseline = {
+        margin: selectedBaseline.margin,
+        year: selectedBaseline.year,
+        baselineRace: selectedBaseline.baselineRace,
+        source: baselineOverride ? "FEA certified runoff override" : "MIT Election Data and Science Lab statewide returns",
+        note: selectedBaseline.note || selectedBaseline.notes || null,
+        replacedConfiguredMargin: race.pastSenate
+      };
+    }
+    const fetchedPolls = [
+      ...(sourceData?.realClearPolling?.byState?.[race.state] || []),
+      ...(sourceData?.twoSeventyToWin?.byState?.[race.state] || []),
+      ...(sourceData?.fiftyPlusOneByState?.[race.state] || []),
+      ...(sourceData?.wikipediaPollingByState?.[race.state] || []),
+      ...(sourceData?.directPolls?.byState?.[race.state] || []),
+      ...(sourceData?.pollingReferences?.electoralVoteByState?.[race.state] || [])
+    ];
+    const livePolls = selectCurrentRacePolls([], fetchedPolls);
+    const legacyPolls = normalizeRacePolls(race.polls).map((poll) => ({
+      ...poll,
+      legacy: true,
+      source: poll.source || "Legacy model input",
+      weight: Math.min(Number(poll.weight || 1), .28)
+    }));
+    // Fall back only when current polls are absent. This preserves continuity
+    // without presenting stale built-in arrays as current polling.
+    const polls = livePolls.length ? livePolls : legacyPolls;
+    const pollingSummary = classifyPollingInputs(polls, sourceData?.status || {});
+    let nationalPolling = 0;
+
+    if (fec) {
+      const raceFec = financeSideForRace(fec, race);
+      const demEfficiency = (raceFec.demCash + raceFec.demIndividual * .45 - raceFec.demDebts * .7) / Math.sqrt(1 + Math.max(raceFec.demDisbursements, 1));
+      const repEfficiency = (raceFec.repCash + raceFec.repIndividual * .45 - raceFec.repDebts * .7) / Math.sqrt(1 + Math.max(raceFec.repDisbursements, 1));
+      const efficiencySignal = clamp((demEfficiency - repEfficiency) / 1800, -1.35, 1.35);
+      const rawReceiptSignal = clamp((raceFec.demReceipts - raceFec.repReceipts) / 8000000, -1, 1);
+      const financeSignal = efficiencySignal * .72 + rawReceiptSignal * .28;
+      money = clamp(race.money * .55 + financeSignal * .45, -1.5, 1.5);
+      sourceInputs.openFec = { ...raceFec, repFinanceLabel: raceFec.repFinanceLabel || "Republican side", demEfficiency, repEfficiency, efficiencySignal, rawReceiptSignal, financeSignal };
+    }
+    if (mit) {
+      // MEDSL's public Senate file currently ends in 2018. It is useful for
+      // historical validation, but it must not overwrite a 2026 comparable
+      // baseline - Minnesota's 2018 special-election result was doing exactly
+      // that. A stale result can be shown as provenance, not blended as news.
+      const age = Number(MODEL_DATE_KEY.slice(0, 4)) - mit.year;
+      sourceInputs.mitSenate = { ...mit, ageYears: age, usedInBaseline: age <= 6 };
+      if (age <= 6) pastSenate = race.pastSenate * .8 + mit.margin * .2;
+    }
+    if (census?.pop2020 && census?.pop2024) {
+      const growth = ((census.pop2024 - census.pop2020) / census.pop2020) * 100;
+      const growthSignal = clamp(growth / 12, -.35, .35);
+      pvi = race.pvi + growthSignal;
+      sourceInputs.census = { ...census, growth, growthSignal };
+    }
+    if (sourceData?.genericPolling?.genericBallotMargin !== null) {
+      nationalPolling = clamp(
+        sourceData.genericPolling.genericBallotMargin * MODEL_WEIGHTS.genericBallot,
+        -MODEL_WEIGHTS.genericBallotCap,
+        MODEL_WEIGHTS.genericBallotCap
+      );
+      sourceInputs.votehub = {
+        genericBallotPolls: sourceData.votehub.genericBallotPolls,
+        usableGenericBallotPolls: sourceData.votehub.usableGenericBallotPolls,
+        genericBallotMargin: sourceData.votehub.genericBallotMargin,
+        nationalPolling
+      };
+      sourceInputs.genericPolling = {
+        genericBallotMargin: sourceData.genericPolling.genericBallotMargin,
+        sources: sourceData.genericPolling.sources.map(({ source, margin, polls, weight }) => ({ source, margin, polls, weight }))
+      };
+    }
+
+    const nationalFinance = sourceData?.fec?.__national?.financeSignal
+      ? sourceData.fec.__national.financeSignal * MODEL_WEIGHTS.nationalFinance
+      : 0;
+    if (sourceData?.fec?.__national) {
+      sourceInputs.nationalFinance = {
+        ...sourceData.fec.__national,
+        nationalFinance
+      };
+    }
+
+    if (sourceData?.realClearPolling?.byState?.[race.state]?.length) {
+      const rcpPolls = sourceData.realClearPolling.byState[race.state];
+      sourceInputs.realClearPolling = {
+        polls: rcpPolls.length,
+        recent: rcpPolls.slice(0, 5).map(({ pollster, endDate, margin, title, result, spread }) => ({ pollster, endDate, margin, title, result, spread }))
+      };
+    }
+    if (sourceData?.twoSeventyToWin?.byState?.[race.state]?.length) {
+      const towinPolls = sourceData.twoSeventyToWin.byState[race.state];
+      sourceInputs.twoSeventyToWin = {
+        polls: towinPolls.length,
+        recent: towinPolls.slice(0, 5).map(({ pollster, endDate, margin, title, result, spread, sampleSize, population }) => ({ pollster, endDate, margin, title, result, spread, sampleSize, population }))
+      };
+    }
+
+    if (sourceData?.directPolls?.byState?.[race.state]?.length) {
+      const directPolls = sourceData.directPolls.byState[race.state];
+      sourceInputs.directPolls = {
+        polls: directPolls.length,
+        recent: directPolls.slice(0, 8).map(({ source, sourceUrl, pollster, endDate, margin, sampleSize, population, sponsor, partisan }) => ({ source, sourceUrl, pollster, endDate, margin, sampleSize, population, sponsor, partisan }))
+      };
+    }
+
+    if (sourceData?.pollingReferences?.electoralVoteByState?.[race.state]?.length) {
+      const electoralVotePolls = sourceData.pollingReferences.electoralVoteByState[race.state];
+      sourceInputs.electoralVote = {
+        polls: electoralVotePolls.length,
+        recent: electoralVotePolls.slice(0, 5).map(({ pollster, endDate, margin, title, result }) => ({ pollster, endDate, margin, title, result }))
+      };
+    }
+    sourceInputs.pollingLedger = {
+      ...pollingSummary,
+      usedPolls: polls.length,
+      legacyFallback: pollingSummary.legacyFallbackPollCount > 0,
+      sources: [...new Set(polls.map((poll) => poll.source || "unknown"))]
+    };
+    sourceInputs.sourceHealth = {
+      forecast: sourceData?.sourceHealth?.health || "UNKNOWN",
+      degraded: Boolean(sourceData?.sourceHealth?.degraded),
+      racePolling: pollingSummary.pollingStatus,
+      unavailableSources: sourceData?.sourceHealth?.unavailableSources || []
+    };
+
+    return { ...race, money, pastSenate, pvi, polls, pollingSummary, sourceStatus: sourceData?.status || {}, nationalPolling: nationalPolling + nationalFinance, sourceInputs };
+  });
+}
+
+function appendControlHistory(model) {
+  const current = { date: MODEL_DATE_KEY, dem: model.demControlProbability, rep: model.repControlProbability };
+  const stored = Array.isArray(previousForecast?.controlHistory) ? previousForecast.controlHistory : [];
+  return [...stored.filter((point) => point.date !== current.date && point.date <= MODEL_DATE_KEY), current]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-365);
+}
+
+function appendSeatHistory(model) {
+  const current = {
+    date: MODEL_DATE_KEY,
+    dem: model.medianSeats,
+    rep: 100 - model.medianSeats
+  };
+  const stored = Array.isArray(previousForecast?.seatHistory) ? previousForecast.seatHistory : [];
+  return [...stored.filter((point) => point.date !== current.date && point.date <= MODEL_DATE_KEY), current]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-365);
+}
+
+function buildCalibrationReport(sourceData, model) {
+  const rows = model.races
+    .map((race) => {
+      const historical = sourceData?.mit?.[race.state];
+      if (!historical) return null;
+      const predicted = logistic(race.margin, race.error);
+      const actual = historical.margin > 0 ? 1 : 0;
+      const brier = (predicted - actual) ** 2;
+      const absoluteMarginError = Math.abs(race.margin - historical.margin);
+      const tags = [
+        race.rating,
+        race.seat === "Open seat" ? "Open seat" : "Incumbent race",
+        RCV_STATES[race.state] ? "Ranked-choice" : "Normal voting",
+        race.independent && race.independent !== "none" ? "Independent factor" : "Major-party baseline",
+        race.primary === "resolved" ? "Primary resolved" : "Primary unresolved"
+      ];
+      return {
+        state: race.state,
+        latestHistoricalYear: historical.year,
+        predicted: Number(predicted.toFixed(4)),
+        actual,
+        brier: Number(brier.toFixed(4)),
+        absoluteMarginError: Number(absoluteMarginError.toFixed(2)),
+        tags,
+        explanation: calibrationMissExplanation(race, historical, predicted, absoluteMarginError)
+      };
+    })
+    .filter(Boolean);
+  const mean = (field) => rows.length ? rows.reduce((sum, row) => sum + row[field], 0) / rows.length : null;
+  const summarize = (label, filter) => {
+    const sample = rows.filter(filter);
+    return {
+      label,
+      sample: sample.length,
+      meanBrier: sample.length ? Number((sample.reduce((sum, row) => sum + row.brier, 0) / sample.length).toFixed(3)) : null,
+      meanAbsoluteMarginError: sample.length ? Number((sample.reduce((sum, row) => sum + row.absoluteMarginError, 0) / sample.length).toFixed(1)) : null
+    };
+  };
+  const buckets = bucketCalibrationRows(rows.map((row) => ({
+    probability: Math.max(row.predicted, 1 - row.predicted),
+    favoriteWon: row.predicted >= .5 ? row.actual === 1 : row.actual === 0
+  })));
+  const historicalBacktest = buildArchivedBacktestReport();
+  return {
+    sample: rows.length,
+    meanBrier: mean("brier"),
+    meanAbsoluteMarginError: mean("absoluteMarginError"),
+    note: "Current diagnostic only: compares the live model shape against each state's latest available MIT/MEDSL Senate result. The archived-input backtest is tracked separately below.",
+    buckets,
+    breakdowns: [
+      summarize("Toss-up / tilt races", (row) => row.tags.includes("Toss-up") || row.tags.includes("Tilt D") || row.tags.includes("Tilt R")),
+      summarize("Lean races", (row) => row.tags.includes("Lean D") || row.tags.includes("Lean R")),
+      summarize("Likely races", (row) => row.tags.includes("Likely D") || row.tags.includes("Likely R")),
+      summarize("Safe races", (row) => row.tags.includes("Safe D") || row.tags.includes("Safe R")),
+      summarize("Open seats", (row) => row.tags.includes("Open seat")),
+      summarize("Incumbent races", (row) => row.tags.includes("Incumbent race")),
+      summarize("Ranked-choice races", (row) => row.tags.includes("Ranked-choice")),
+      summarize("Independent-factor races", (row) => row.tags.includes("Independent factor"))
+    ],
+    historicalBacktest,
+    worstStates: [...rows].sort((a, b) => b.absoluteMarginError - a.absoluteMarginError).slice(0, 5)
+  };
+}
+
+function bucketCalibrationRows(items) {
+  return [
+    [0.5, 0.6, "50-60%"],
+    [0.6, 0.7, "60-70%"],
+    [0.7, 0.8, "70-80%"],
+    [0.8, 0.9, "80-90%"],
+    [0.9, 1.01, "90-100%"]
+  ].map(([min, max, label]) => {
+    const sample = items.filter((item) => item.probability >= min && item.probability < max);
+    const actualWins = sample.filter((item) => item.favoriteWon).length;
+    return {
+      label,
+      expectedWinRate: Number(((min + Math.min(max, 1)) / 2).toFixed(3)),
+      actualWinRate: sample.length ? Number((actualWins / sample.length).toFixed(3)) : null,
+      sample: sample.length
+    };
+  });
+}
+
+function calibrationMissExplanation(race, historical, predicted, absoluteMarginError) {
+  const notes = [];
+  if (historical.year !== 2024) notes.push(`comparison uses ${historical.year}, not a frozen 2026-like pre-election snapshot`);
+  if (!race.pollSignal || race.pollSignal.pollCount < 3) notes.push("little or no race polling");
+  if (race.independent && race.independent !== "none") notes.push("independent or caucus-treatment assumptions");
+  if (RCV_STATES[race.state]) notes.push("ranked-choice transfer uncertainty");
+  if (race.primary !== "resolved") notes.push("unresolved nomination effects");
+  if (Math.abs(race.margin - historical.margin) > 15) notes.push("state fundamentals differ sharply from latest historical Senate result");
+  if (race.sourceInputs?.genericPolling) notes.push("national environment is applied to the current cycle, not the historical race");
+  const favorite = predicted >= .5 ? "Democratic" : "Republican";
+  return {
+    favorite,
+    predictedMargin: Number(race.margin.toFixed(1)),
+    historicalMargin: Number(historical.margin.toFixed(1)),
+    miss: Number(absoluteMarginError.toFixed(1)),
+    notes: notes.slice(0, 4)
+  };
+}
+
+function buildArchivedBacktestReport() {
+  const races = ARCHIVED_SENATE_BACKTESTS.flatMap((cycle) => cycle.races.map((race) => {
+    const favoriteWon = race.favorite === "D" ? race.actualMargin > 0 : race.actualMargin < 0;
+    const predictedMargin = (race.favorite === "D" ? 1 : -1) * Math.max(0, (race.probability - .5) * 28);
+    const marginMiss = Math.abs(predictedMargin - race.actualMargin);
+    return {
+      ...race,
+      cycle: cycle.cycle,
+      freezeDate: cycle.freezeDate,
+      favoriteWon,
+      predictedMargin: Number(predictedMargin.toFixed(1)),
+      marginMiss: Number(marginMiss.toFixed(1)),
+      brier: Number(((race.probability - (favoriteWon ? 1 : 0)) ** 2).toFixed(3)),
+      explanation: archivedBacktestExplanation(race, favoriteWon, marginMiss)
+    };
+  }));
+  const mean = (field) => races.length ? races.reduce((sum, race) => sum + race[field], 0) / races.length : null;
+  const summarize = (label, filter) => {
+    const sample = races.filter(filter);
+    return {
+      label,
+      sample: sample.length,
+      meanBrier: sample.length ? Number((sample.reduce((sum, race) => sum + race.brier, 0) / sample.length).toFixed(3)) : null,
+      meanMarginMiss: sample.length ? Number((sample.reduce((sum, race) => sum + race.marginMiss, 0) / sample.length).toFixed(1)) : null
+    };
+  };
+  return {
+    status: races.length ? "partial" : "not-ready",
+    label: "Archived-input historical backtest",
+    cyclesTargeted: [2016, 2018, 2020, 2022, 2024],
+    availableCycles: [...new Set(ARCHIVED_SENATE_BACKTESTS.map((cycle) => cycle.cycle))],
+    sample: races.length,
+    meanBrier: mean("brier"),
+    meanMarginMiss: mean("marginMiss"),
+    note: races.length
+      ? "Partial frozen-input backtest started with a 2024 Senate seed. It is separate from the current-cycle MIT diagnostic and should expand before being treated as full historical validation."
+      : "A real backtest needs frozen pre-election ratings, polls, candidate fields, finance snapshots, and generic-ballot inputs for each cycle. Final election returns alone are not enough.",
+    buckets: bucketCalibrationRows(races.map((race) => ({ probability: race.probability, favoriteWon: race.favoriteWon }))),
+    breakdowns: [
+      summarize("Toss-up / tilt races", (race) => race.rating === "Toss-up" || /^Tilt/.test(race.rating)),
+      summarize("Lean races", (race) => /^Lean/.test(race.rating)),
+      summarize("Likely races", (race) => /^Likely/.test(race.rating)),
+      summarize("Open seats", (race) => race.tags.includes("Open seat")),
+      summarize("Incumbent races", (race) => race.tags.includes("Incumbent race")),
+      summarize("Independent-factor races", (race) => race.tags.includes("Independent factor"))
+    ],
+    worstRaces: [...races].sort((a, b) => b.marginMiss - a.marginMiss).slice(0, 8),
+    cycles: ARCHIVED_SENATE_BACKTESTS.map(({ cycle, freezeDate, status, note, races: cycleRaces, sources }) => ({
+      cycle,
+      freezeDate,
+      status,
+      sample: cycleRaces.length,
+      note,
+      sources
+    }))
+  };
+}
+
+function archivedBacktestExplanation(race, favoriteWon, marginMiss) {
+  const notes = [];
+  if (!favoriteWon) notes.push("favorite lost");
+  if (race.tags.includes("Independent factor")) notes.push("independent candidate environment");
+  if (race.tags.includes("Open seat")) notes.push("open-seat candidate uncertainty");
+  if (marginMiss > 6) notes.push("probability-implied margin missed by more than six points");
+  if (race.probability < .8) notes.push("competitive probability range");
+  return notes.length ? notes : ["within expected directional range"];
+}
+
+async function writeForecast() {
+  const sourceData = await fetchAllSources();
+  const model = runModel(sourceData);
+  const generatedAt = new Date().toISOString();
+  const toplineComparison = toplineBenchmark("senate", { demControlProbability: model.demControlProbability });
+  const cacheFreshness = forecastInputCacheFreshness({
+    genericBallot: "data/cache/polls/generic-ballot-2026.json",
+    polls: "data/cache/polls/senate-2026.json",
+    ratings: "data/cache/ratings/senate-2026.json",
+    fundamentals: "data/cache/fundamentals/state-baselines-2026.json",
+    finance: "data/cache/finance/senate-2026.json"
+  });
+  const historicalMarginWarnings = model.races
+    .filter((race) => race.historicalComparison?.needsReview)
+    .map((race) => ({
+      severity: "warning",
+      type: "historical-margin-discrepancy",
+      race: race.state,
+      message: `Projected ${race.margin >= 0 ? "D+" : "R+"}${Math.abs(race.margin).toFixed(1)} differs by ${Math.abs(race.historicalComparison.shift).toFixed(1)} points from the comparable Senate baseline without a multi-poll signal.`
+    }));
+  const output = {
+    modelVersion: "2026.06.reliability.1",
+    ...coreV2Metadata("senate"),
+    forecastStatus: sourceData.sourceHealth?.degraded ? "DEGRADED" : "NORMAL",
+    generatedAt,
+    lastUpdated: generatedAt,
+    modelDate: MODEL_DATE_KEY,
+    runDate: new Date(`${MODEL_DATE_KEY}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    updateTime: "around 7:20 AM Eastern",
+    settings: { ...SETTINGS, modelWeights: MODEL_WEIGHTS },
+    sourceStatus: sourceData.status,
+    sourceHealth: sourceData.sourceHealth,
+    generationMode: generationNetworkStatus(sourceData.status, OFFLINE).mode,
+    networkStatus: generationNetworkStatus(sourceData.status, OFFLINE),
+    ...cacheFreshness,
+    canonicalGenericBallot: sourceData.canonicalGenericBallot,
+    benchmarkComparison: toplineComparison,
+    benchmarkDiffSummary: {
+      status: toplineComparison.warning ? "REVIEW" : "OK",
+      toplineComparison,
+      raceBenchmarkStatus: benchmarkConfiguration()
+    },
+    raceBenchmarkStatus: benchmarkConfiguration(),
+    districtPollingCoverage: {
+      races: model.races.length,
+      usablePollRaces: model.races.filter((race) => race.usablePollCount > 0).length,
+      sourceFailureRaces: model.races.filter((race) => race.pollingStatus === "SOURCE_FAILURE").length
+    },
+    candidateFreshnessSummary: candidateFreshnessSummary(model.races),
+    baselineStalenessSummary: {
+      status: "STATEWIDE_BASELINES",
+      note: "Senate baselines use statewide prior-election and structural inputs rather than district map crosswalks."
+    },
+    quarantineSummary: {
+      wikipediaPolling: sourceData.wikipediaPolling?.pollingValidation || null
+    },
+    sourceSummary: {
+      votehub: sourceData.votehub,
+      genericPolling: sourceData.genericPolling,
+      ddhqGeneric: sourceData.ddhqGeneric,
+      pollfinity: sourceData.pollfinity,
+      usPollingDataGeneric: sourceData.usPollingDataGeneric,
+      realClearPolling: {
+        polls: sourceData.realClearPolling.polls,
+        usablePolls: sourceData.realClearPolling.usablePolls,
+        states: Object.keys(sourceData.realClearPolling.byState || {}).length
+      },
+      twoSeventyToWin: {
+        pages: sourceData.twoSeventyToWin.pages,
+        okPages: sourceData.twoSeventyToWin.okPages,
+        usablePolls: sourceData.twoSeventyToWin.usablePolls,
+        states: Object.keys(sourceData.twoSeventyToWin.byState || {}).length
+      },
+      fecStates: Object.keys(sourceData.fec).filter((state) => STATE_NAMES[state]).length,
+      nationalFinance: sourceData.fec.__national || null,
+      mitStates: Object.keys(sourceData.mit).length,
+      censusStates: Object.keys(sourceData.census).length,
+      civicApi: sourceData.civic,
+      wikipediaPolling: wikipediaPollingSummary(sourceData.wikipediaPolling),
+      pollingReferences: sourceData.pollingReferences
+    },
+    pollingValidation: {
+      wikipediaPolling: sourceData.wikipediaPolling?.pollingValidation || null
+    },
+    modelInputs: {
+      candidateDemographicPullModel: true,
+      candidateDemographicProfiles: Object.fromEntries(Object.entries(SENATE_CANDIDATE_DEMOGRAPHIC_PROFILES).map(([key, profile]) => [
+        key,
+        {
+          profile: profile.profile,
+          scores: profile.scores,
+          strengths: profile.strengths,
+          weaknesses: profile.weaknesses
+        }
+      ]))
+    },
+    calibration: buildCalibrationReport(sourceData, model),
+    modelWarnings: [
+      ...cacheFreshness.staleInputWarnings,
+      ...sourceHealthWarnings(sourceData.sourceHealth, "Senate"),
+      ...forecastSanityWarnings(model.races, {
+        model: "senate",
+        id: (race) => race.state,
+        name: (race) => race.displayName,
+        baseline: (race) => race.pvi * .24 + race.pastSenate * .20,
+        partisanship: (race) => race.pvi,
+        candidateAdjustment: (race) => race.candidate
+      }),
+      ...historicalMarginWarnings
+    ],
+    controlHistory: appendControlHistory(model),
+    seatHistory: appendSeatHistory(model),
+    ...model
+  };
+  if (toplineComparison.warning) output.modelWarnings.push({ severity: "warning", type: "public-model-topline-divergence", message: toplineComparison.warning });
+  output.modelWarnings.push({ severity: "info", type: "race-benchmark-not-configured", message: "External race benchmark file is empty; benchmark comparisons are schema-only." });
+  output.dataQualityWarnings = output.modelWarnings;
+
+  mkdirSync(new URL("../data/", import.meta.url), { recursive: true });
+  mkdirSync(new URL("../data/diagnostics/", import.meta.url), { recursive: true });
+  writeFileSync(FORECAST_URL, `${JSON.stringify(output, null, 2)}\n`);
+  writeFileSync(SENATE_RACE_REVIEW_URL, `${JSON.stringify(buildRaceReview({ model: "senate", races: output.races, generatedAt }), null, 2)}\n`);
+  console.log(`Wrote data/forecast.json for ${MODEL_DATE_KEY}`);
+}
+
+await writeForecast();

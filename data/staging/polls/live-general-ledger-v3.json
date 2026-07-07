@@ -1,0 +1,187 @@
+{
+  "schemaVersion": "v3",
+  "generatedAt": "2026-07-07T20:45:15.689Z",
+  "description": "Single source of truth for validated live/manual general-election polls allowed into v3 forecasts.",
+  "rules": [
+    "validationStatus must be VALID",
+    "usedInModel must not be false",
+    "rowType/tableType must be a general-election poll",
+    "forecast-derived, fallback, synthetic, rejected, and quarantined rows are excluded"
+  ],
+  "counts": {
+    "total": 3,
+    "byOffice": {
+      "governor": 3
+    }
+  },
+  "rows": [
+    {
+      "ledgerId": "upstream-canonical-2026:1",
+      "office": "governor",
+      "cycle": 2026,
+      "raceId": "IA-race-2026",
+      "state": "IA",
+      "district": null,
+      "sourceKind": "manual-upstream-cache",
+      "sourceTrust": null,
+      "sourceName": "NYT Iowa governor polling table / FEA manual aggregation",
+      "sourceUrl": "https://www.nytimes.com/interactive/polls/iowa-governor-election-polls-2026.html",
+      "pollster": "Global Strategy Group",
+      "sponsor": null,
+      "startDate": "2026-04-23",
+      "endDate": "2026-04-28",
+      "sampleSize": null,
+      "population": null,
+      "rowType": "INDIVIDUAL_GENERAL_ELECTION_POLL",
+      "tableType": "INDIVIDUAL_GENERAL_ELECTION_POLL",
+      "candidates": [
+        {
+          "name": "Rob Sand",
+          "party": "D",
+          "pct": 50
+        },
+        {
+          "name": "Zach Lahn",
+          "party": "R",
+          "pct": 41
+        }
+      ],
+      "candidateMap": [
+        {
+          "name": "Rob Sand",
+          "party": "D",
+          "pct": 50
+        },
+        {
+          "name": "Zach Lahn",
+          "party": "R",
+          "pct": 41
+        }
+      ],
+      "demShare": null,
+      "repShare": null,
+      "margin": 9,
+      "raw": null,
+      "rawSourcePath": "data/cache/polls/governor-2026.json",
+      "upstreamGeneratedAt": null,
+      "validationStatus": "VALID",
+      "rejectionReasons": [],
+      "usedInModel": true,
+      "canonicalRaceId": "IA-GOV-2026",
+      "ledgerSourcePath": "data/cache/polls/upstream-canonical-2026.json",
+      "countedAsLivePoll": true
+    },
+    {
+      "ledgerId": "upstream-canonical-2026:2",
+      "office": "governor",
+      "cycle": 2026,
+      "raceId": "IA-race-2026",
+      "state": "IA",
+      "district": null,
+      "sourceKind": "manual-upstream-cache",
+      "sourceTrust": null,
+      "sourceName": "NYT Iowa governor polling table / FEA manual aggregation",
+      "sourceUrl": "https://www.nytimes.com/interactive/polls/iowa-governor-election-polls-2026.html",
+      "pollster": "Echelon Insights",
+      "sponsor": null,
+      "startDate": "2026-04-03",
+      "endDate": "2026-04-09",
+      "sampleSize": 377,
+      "population": null,
+      "rowType": "INDIVIDUAL_GENERAL_ELECTION_POLL",
+      "tableType": "INDIVIDUAL_GENERAL_ELECTION_POLL",
+      "candidates": [
+        {
+          "name": "Rob Sand",
+          "party": "D",
+          "pct": 51
+        },
+        {
+          "name": "Randy Feenstra",
+          "party": "R",
+          "pct": 39
+        }
+      ],
+      "candidateMap": [
+        {
+          "name": "Rob Sand",
+          "party": "D",
+          "pct": 51
+        },
+        {
+          "name": "Randy Feenstra",
+          "party": "R",
+          "pct": 39
+        }
+      ],
+      "demShare": null,
+      "repShare": null,
+      "margin": 12,
+      "raw": null,
+      "rawSourcePath": "data/cache/polls/governor-2026.json",
+      "upstreamGeneratedAt": null,
+      "validationStatus": "VALID",
+      "rejectionReasons": [],
+      "usedInModel": true,
+      "canonicalRaceId": "IA-GOV-2026",
+      "ledgerSourcePath": "data/cache/polls/upstream-canonical-2026.json",
+      "countedAsLivePoll": true
+    },
+    {
+      "ledgerId": "upstream-canonical-2026:3",
+      "office": "governor",
+      "cycle": 2026,
+      "raceId": "IA-race-2026",
+      "state": "IA",
+      "district": null,
+      "sourceKind": "manual-upstream-cache",
+      "sourceTrust": null,
+      "sourceName": "NYT Iowa governor polling table / FEA manual aggregation",
+      "sourceUrl": "https://www.nytimes.com/interactive/polls/iowa-governor-election-polls-2026.html",
+      "pollster": "GBAO",
+      "sponsor": null,
+      "startDate": "2026-03-10",
+      "endDate": "2026-03-16",
+      "sampleSize": 1200,
+      "population": null,
+      "rowType": "INDIVIDUAL_GENERAL_ELECTION_POLL",
+      "tableType": "INDIVIDUAL_GENERAL_ELECTION_POLL",
+      "candidates": [
+        {
+          "name": "Rob Sand",
+          "party": "D",
+          "pct": 50
+        },
+        {
+          "name": "Randy Feenstra",
+          "party": "R",
+          "pct": 42
+        }
+      ],
+      "candidateMap": [
+        {
+          "name": "Rob Sand",
+          "party": "D",
+          "pct": 50
+        },
+        {
+          "name": "Randy Feenstra",
+          "party": "R",
+          "pct": 42
+        }
+      ],
+      "demShare": null,
+      "repShare": null,
+      "margin": 8,
+      "raw": null,
+      "rawSourcePath": "data/cache/polls/governor-2026.json",
+      "upstreamGeneratedAt": null,
+      "validationStatus": "VALID",
+      "rejectionReasons": [],
+      "usedInModel": true,
+      "canonicalRaceId": "IA-GOV-2026",
+      "ledgerSourcePath": "data/cache/polls/upstream-canonical-2026.json",
+      "countedAsLivePoll": true
+    }
+  ]
+}

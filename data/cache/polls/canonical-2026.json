@@ -1,57 +1,41 @@
 {
-  "schemaVersion": "2026.canonical-upstream-poll-ledger.1",
-  "generatedAt": "2026-07-07T04:22:04.239Z",
-  "description": "Canonical v2 poll ledger. Upstream-only rows; generated forecast outputs are prohibited.",
+  "schemaVersion": "2026.canonical-poll-ledger.1",
+  "generatedAt": "2026-07-07T20:26:20.554Z",
+  "description": "Canonical poll provenance ledger. Only upstream cache rows may be used by forecast models; forecast output rows are never ingested.",
   "counts": {
     "total": 3,
     "usedInModel": 3,
-    "byOffice": {
-      "governor": 3
+    "rawPollRows": 3,
+    "byValidationStatus": {
+      "VALID": 3
     }
   },
   "sourceSummaries": [
     {
-      "file": "data/staging/polls/validated/generic-ballot-2026.json",
-      "office": "generic-ballot",
-      "rowCount": 0,
-      "readError": null
-    },
-    {
-      "file": "data/staging/polls/validated/governor-2026.json",
-      "office": "governor",
+      "cachePath": "upstream-canonical-2026.json",
+      "office": null,
+      "status": "OK",
       "rowCount": 3,
-      "readError": null
-    },
-    {
-      "file": "data/staging/polls/validated/house-2026.json",
-      "office": "house",
-      "rowCount": 0,
-      "readError": null
-    },
-    {
-      "file": "data/staging/polls/validated/senate-2026.json",
-      "office": "senate",
-      "rowCount": 0,
       "readError": null
     }
   ],
   "rows": [
     {
-      "ledgerId": "upstream-canonical-2026:1",
+      "ledgerId": "canonical-2026:1",
       "office": "governor",
       "cycle": 2026,
       "raceId": "IA-race-2026",
       "state": "IA",
       "district": null,
-      "sourceKind": "manual-upstream-cache",
-      "sourceTrust": null,
-      "sourceName": "NYT Iowa governor polling table / FEA manual aggregation",
+      "sourceKind": "forecast-cache",
+      "sourceTrust": "CACHE_VALIDATED",
+      "sourceName": null,
       "sourceUrl": "https://www.nytimes.com/interactive/polls/iowa-governor-election-polls-2026.html",
       "pollster": "Global Strategy Group",
       "sponsor": null,
       "startDate": "2026-04-23",
       "endDate": "2026-04-28",
-      "sampleSize": null,
+      "sampleSize": 0,
       "population": null,
       "rowType": "INDIVIDUAL_GENERAL_ELECTION_POLL",
       "tableType": "INDIVIDUAL_GENERAL_ELECTION_POLL",
@@ -82,23 +66,26 @@
       "demShare": null,
       "repShare": null,
       "margin": 9,
-      "raw": null,
-      "rawSourcePath": "data/cache/polls/governor-2026.json",
-      "upstreamGeneratedAt": null,
+      "rawValidationStatus": "VALID",
       "validationStatus": "VALID",
-      "rejectionReasons": [],
-      "usedInModel": true
+      "usedInModel": true,
+      "usedBy": [
+        "governor-forecast"
+      ],
+      "excludedReason": null,
+      "cachePath": "upstream-canonical-2026.json",
+      "cacheGeneratedAt": "2026-07-07T20:26:20.420Z"
     },
     {
-      "ledgerId": "upstream-canonical-2026:2",
+      "ledgerId": "canonical-2026:2",
       "office": "governor",
       "cycle": 2026,
       "raceId": "IA-race-2026",
       "state": "IA",
       "district": null,
-      "sourceKind": "manual-upstream-cache",
-      "sourceTrust": null,
-      "sourceName": "NYT Iowa governor polling table / FEA manual aggregation",
+      "sourceKind": "forecast-cache",
+      "sourceTrust": "CACHE_VALIDATED",
+      "sourceName": null,
       "sourceUrl": "https://www.nytimes.com/interactive/polls/iowa-governor-election-polls-2026.html",
       "pollster": "Echelon Insights",
       "sponsor": null,
@@ -135,23 +122,26 @@
       "demShare": null,
       "repShare": null,
       "margin": 12,
-      "raw": null,
-      "rawSourcePath": "data/cache/polls/governor-2026.json",
-      "upstreamGeneratedAt": null,
+      "rawValidationStatus": "VALID",
       "validationStatus": "VALID",
-      "rejectionReasons": [],
-      "usedInModel": true
+      "usedInModel": true,
+      "usedBy": [
+        "governor-forecast"
+      ],
+      "excludedReason": null,
+      "cachePath": "upstream-canonical-2026.json",
+      "cacheGeneratedAt": "2026-07-07T20:26:20.420Z"
     },
     {
-      "ledgerId": "upstream-canonical-2026:3",
+      "ledgerId": "canonical-2026:3",
       "office": "governor",
       "cycle": 2026,
       "raceId": "IA-race-2026",
       "state": "IA",
       "district": null,
-      "sourceKind": "manual-upstream-cache",
-      "sourceTrust": null,
-      "sourceName": "NYT Iowa governor polling table / FEA manual aggregation",
+      "sourceKind": "forecast-cache",
+      "sourceTrust": "CACHE_VALIDATED",
+      "sourceName": null,
       "sourceUrl": "https://www.nytimes.com/interactive/polls/iowa-governor-election-polls-2026.html",
       "pollster": "GBAO",
       "sponsor": null,
@@ -188,12 +178,15 @@
       "demShare": null,
       "repShare": null,
       "margin": 8,
-      "raw": null,
-      "rawSourcePath": "data/cache/polls/governor-2026.json",
-      "upstreamGeneratedAt": null,
+      "rawValidationStatus": "VALID",
       "validationStatus": "VALID",
-      "rejectionReasons": [],
-      "usedInModel": true
+      "usedInModel": true,
+      "usedBy": [
+        "governor-forecast"
+      ],
+      "excludedReason": null,
+      "cachePath": "upstream-canonical-2026.json",
+      "cacheGeneratedAt": "2026-07-07T20:26:20.420Z"
     }
   ]
 }
