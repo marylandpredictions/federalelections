@@ -1,0 +1,41 @@
+{
+  "runId": "2026-07-07T23:28:53.143Z-v4",
+  "generatedAt": "2026-07-07T23:28:53.143Z",
+  "schemaVersion": "v4",
+  "coreVersion": "v4",
+  "inputPipeline": "upstream-ingest-normalize-validate-ledger-v4",
+  "strictReleaseGates": true,
+  "runManifest": "data/v4/run-manifests/latest-run.json",
+  "artifactType": "diagnostics-summary",
+  "chamberSummary": {
+    "house": {
+      "raceCount": 435,
+      "validatedPollingRows": 0,
+      "verifiedBaselineRows": 0,
+      "activeFinanceRows": 0,
+      "ratingsRows": 435
+    },
+    "senate": {
+      "raceCount": 35,
+      "validatedPollingRows": 0,
+      "verifiedBaselineRows": 0,
+      "activeFinanceRows": 0,
+      "ratingsRows": 35
+    },
+    "governor": {
+      "raceCount": 36,
+      "validatedPollingRows": 0,
+      "verifiedBaselineRows": 0,
+      "activeFinanceRows": 0,
+      "ratingsRows": 36
+    }
+  },
+  "diagnosticsArtifacts": {
+    "house": "data/v4/diagnostics/house-diagnostics.json",
+    "senate": "data/v4/diagnostics/senate-diagnostics.json",
+    "governor": "data/v4/diagnostics/governor-diagnostics.json",
+    "houseReview": "data/v4/diagnostics/house-review.json",
+    "senateReview": "data/v4/diagnostics/senate-review.json",
+    "governorReview": "data/v4/diagnostics/governor-review.json"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fedelectionsanalysis.local/schemas/v4/chamber-forecast-base.schema.json",
+  "type": "object",
+  "required": [
+    "runId",
+    "generatedAt",
+    "schemaVersion",
+    "coreVersion",
+    "inputPipeline",
+    "strictReleaseGates",
+    "runManifest",
+    "office",
+    "topline",
+    "races"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "v4" },
+    "coreVersion": { "const": "v4" },
+    "strictReleaseGates": { "const": true },
+    "topline": {
+      "type": "object",
+      "required": ["controlProbability", "expectedSeatsOrWins", "medianSeatsOrWins"],
+      "properties": {
+        "controlProbability": {
+          "type": "object",
+          "required": ["D", "R", "other"],
+          "properties": {
+            "D": { "type": "number" },
+            "R": { "type": "number" },
+            "other": { "type": "number" }
+          }
+        },
+        "expectedSeatsOrWins": {
+          "type": "object",
+          "required": ["D", "R", "other"]
+        },
+        "medianSeatsOrWins": {
+          "type": "object",
+          "required": ["D", "R", "other"]
+        }
+      }
+    },
+    "races": {
+      "type": "array",
+      "items": { "$ref": "race-row.schema.json" }
+    }
+  },
+  "additionalProperties": true
+}

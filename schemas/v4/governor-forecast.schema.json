@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fedelectionsanalysis.local/schemas/v4/governor-forecast.schema.json",
+  "allOf": [
+    { "$ref": "chamber-forecast-base.schema.json" },
+    {
+      "type": "object",
+      "properties": {
+        "office": { "const": "governor" }
+      }
+    }
+  ]
+}

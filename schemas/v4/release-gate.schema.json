@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fedelectionsanalysis.local/schemas/v4/release-gate.schema.json",
+  "type": "object",
+  "required": [
+    "runId",
+    "generatedAt",
+    "schemaVersion",
+    "coreVersion",
+    "strictReleaseGates",
+    "publishStatus",
+    "blockingReasons",
+    "detailedProblems"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "v4" },
+    "coreVersion": { "const": "v4" },
+    "strictReleaseGates": { "const": true },
+    "publishStatus": {
+      "enum": ["PASS", "BLOCK_PUBLISH", "INTERNAL_QA_ONLY"]
+    },
+    "blockingReasons": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "detailedProblems": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

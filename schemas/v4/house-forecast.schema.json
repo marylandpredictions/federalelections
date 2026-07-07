@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fedelectionsanalysis.local/schemas/v4/house-forecast.schema.json",
+  "allOf": [
+    { "$ref": "chamber-forecast-base.schema.json" },
+    {
+      "type": "object",
+      "properties": {
+        "office": { "const": "house" },
+        "houseMode": {
+          "enum": [
+            "CURRENT_MAP_HOUSE_BASELINE",
+            "CURRENT_MAP_PRES_LEAN_WITH_RATINGS_PRIOR",
+            "RATINGS_FIRST_NO_CURRENT_MAP_BASELINES",
+            "POLLING_AUGMENTED",
+            "INTERNAL_QA_ONLY"
+          ]
+        }
+      }
+    }
+  ]
+}

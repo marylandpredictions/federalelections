@@ -1,0 +1,87 @@
+{
+  "runId": "2026-07-07T23:28:53.143Z-v4",
+  "generatedAt": "2026-07-07T23:28:53.143Z",
+  "schemaVersion": "v4",
+  "coreVersion": "v4",
+  "inputPipeline": "upstream-ingest-normalize-validate-ledger-v4",
+  "strictReleaseGates": true,
+  "runManifest": "data/v4/run-manifests/latest-run.json",
+  "artifactType": "forecast-ui-adapter",
+  "canonicalOnly": true,
+  "publishStatus": "BLOCK_PUBLISH",
+  "blockingReasons": [
+    "HOUSE_NO_CURRENT_MAP_BASELINES",
+    "BENCHMARK_FIELD_MISSING"
+  ],
+  "chambers": {
+    "house": {
+      "sourceCanonicalPath": "data/v4/house-forecast.json",
+      "office": "house",
+      "status": "BLOCK_PUBLISH",
+      "topline": {
+        "controlProbability": {
+          "D": 0.391721,
+          "R": 0.608279,
+          "other": 0
+        },
+        "expectedSeatsOrWins": {
+          "D": 213.1,
+          "R": 221.9,
+          "other": 0
+        },
+        "medianSeatsOrWins": {
+          "D": 231,
+          "R": 204,
+          "other": 0
+        }
+      },
+      "raceCount": 435
+    },
+    "senate": {
+      "sourceCanonicalPath": "data/v4/senate-forecast.json",
+      "office": "senate",
+      "status": "BLOCK_PUBLISH",
+      "topline": {
+        "controlProbability": {
+          "D": 0.000003,
+          "R": 0.999997,
+          "other": 0
+        },
+        "expectedSeatsOrWins": {
+          "D": 14.85,
+          "R": 20.15,
+          "other": 0
+        },
+        "medianSeatsOrWins": {
+          "D": 15,
+          "R": 20,
+          "other": 0
+        }
+      },
+      "raceCount": 35
+    },
+    "governor": {
+      "sourceCanonicalPath": "data/v4/governor-forecast.json",
+      "office": "governor",
+      "status": "BLOCK_PUBLISH",
+      "topline": {
+        "controlProbability": {
+          "D": 0.433107,
+          "R": 0.566893,
+          "other": 0
+        },
+        "expectedSeatsOrWins": {
+          "D": 17.76,
+          "R": 18.24,
+          "other": 0
+        },
+        "medianSeatsOrWins": {
+          "D": 17,
+          "R": 19,
+          "other": 0
+        }
+      },
+      "raceCount": 36
+    }
+  }
+}

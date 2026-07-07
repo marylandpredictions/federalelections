@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fedelectionsanalysis.local/schemas/v4/race-row.schema.json",
+  "type": "object",
+  "required": [
+    "raceId",
+    "office",
+    "state",
+    "evidence",
+    "ratingsPrior",
+    "projectedResultMargin",
+    "probabilityMargin",
+    "probabilities",
+    "expectedWinner",
+    "rowHash",
+    "evidenceHash"
+  ],
+  "properties": {
+    "raceId": { "type": "string" },
+    "office": { "enum": ["house", "senate", "governor"] },
+    "state": { "type": ["string", "null"] },
+    "district": { "type": ["string", "null"] },
+    "displayName": { "type": ["string", "null"] },
+    "candidates": { "type": "object" },
+    "evidence": {
+      "type": "object",
+      "required": ["polling", "baseline", "ratings", "finance", "candidate"]
+    },
+    "ratingsPrior": { "type": "object" },
+    "projectedResultMargin": { "type": "object" },
+    "probabilityMargin": { "type": "object" },
+    "probabilities": {
+      "type": "object",
+      "required": ["D", "R", "other"],
+      "properties": {
+        "D": { "type": "number" },
+        "R": { "type": "number" },
+        "other": { "type": "number" }
+      }
+    },
+    "expectedWinner": { "enum": ["D", "R", "TIE"] },
+    "rowHash": { "type": "string" },
+    "evidenceHash": { "type": "string" }
+  },
+  "additionalProperties": true
+}
