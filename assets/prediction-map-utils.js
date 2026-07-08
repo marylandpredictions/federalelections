@@ -200,7 +200,25 @@
     return bounds;
   }
 
-  function projector(features, width = 980, height = 580, pad = 26) {
+  function projector(features, width = 980, height = 580, pad = 26, mode = "local") {
+    if (window.d3?.geoPath) {
+      const collection = { type: "FeatureCollection", features: features || [] };
+      const projection = (mode === "national" && window.d3.geoAlbersUsa)
+        ? window.d3.geoAlbersUsa()
+        : window.d3.geoMercator();
+      projection.fitExtent([[pad, pad], [width - pad, height - pad]], collection);
+      const path = window.d3.geoPath(projection);
+      return {
+        width,
+        height,
+        pathForFeature(feature) {
+          return path(feature) || "";
+        },
+        project(point) {
+          return projection(point);
+        }
+      };
+    }
     const bounds = featureBounds(features);
     const spanX = Math.max(0.0001, bounds.maxX - bounds.minX);
     const spanY = Math.max(0.0001, bounds.maxY - bounds.minY);
@@ -217,6 +235,11 @@
         ];
       }
     };
+  }
+
+  function pathForFeature(feature, projectionTools) {
+    if (projectionTools?.pathForFeature) return projectionTools.pathForFeature(feature);
+    return pathForGeometry(feature?.geometry, projectionTools.project);
   }
 
   function pathForGeometry(geometry, project) {
@@ -308,7 +331,8 @@
     const office = data.office || "";
     const features = await loadRaceFeatures(office);
     const raceByKey = new Map((data.races || []).map((race) => [raceKey(race, office), race]));
-    const { width, height, project } = projector(features, 1020, office === "house" ? 650 : 600, 24);
+    const projectionTools = projector(features, 1160, office === "house" ? 760 : 700, 18, "national");
+    const { width, height } = projectionTools;
     const paths = features.map((feature) => {
       const key = featureKey(feature, office);
       const race = raceByKey.get(key);
@@ -318,7 +342,7 @@
         race ? "has-race" : "is-muted",
         race?.raceId === selectedRaceId ? "is-selected" : ""
       ].filter(Boolean).join(" ");
-      return `<path class="${classes}" d="${pathForGeometry(feature.geometry, project)}" fill="${fill}" data-race-id="${escapeHtml(race?.raceId || "")}" data-feature-label="${escapeHtml(featureName(feature, office))}"></path>`;
+      return `<path class="${classes}" d="${pathForFeature(feature, projectionTools)}" fill="${fill}" data-race-id="${escapeHtml(race?.raceId || "")}" data-feature-label="${escapeHtml(featureName(feature, office))}"></path>`;
     }).join("");
     container.classList.add("prediction-shape-map");
     container.innerHTML = `
@@ -346,14 +370,15 @@
       container.innerHTML = `<p class="prediction-note">County-level geometry is not available for this race yet.</p>`;
       return;
     }
-    const { width, height, project } = projector(features, 900, 520, 24);
+    const projectionTools = projector(features, 900, 520, 24, "local");
+    const { width, height } = projectionTools;
     const paths = features.map((feature) => {
       const key = countyKey(feature);
       const override = countyValues[key] || {};
       const score = Number.isFinite(Number(override.mapValue)) ? Number(override.mapValue) : 0;
       const fill = Number.isFinite(Number(override.mapValue)) ? colorForScore(score) : "#2a344a";
       const classes = ["prediction-shape-feature", "has-race", key === selectedCountyKey ? "is-selected" : ""].filter(Boolean).join(" ");
-      return `<path class="${classes}" d="${pathForGeometry(feature.geometry, project)}" fill="${fill}" data-county-key="${escapeHtml(key)}" data-county-name="${escapeHtml(countyName(feature))}"></path>`;
+      return `<path class="${classes}" d="${pathForFeature(feature, projectionTools)}" fill="${fill}" data-county-key="${escapeHtml(key)}" data-county-name="${escapeHtml(countyName(feature))}"></path>`;
     }).join("");
     container.classList.add("prediction-shape-map", "prediction-county-map");
     container.innerHTML = `

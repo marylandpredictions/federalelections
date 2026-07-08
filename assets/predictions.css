@@ -27,6 +27,10 @@ body.admin-prediction-page {
   padding: 28px 0 72px;
 }
 
+body.prediction-page .prediction-shell {
+  width: min(1580px, calc(100% - 28px));
+}
+
 .prediction-hero,
 .prediction-panel,
 .prediction-card,
@@ -145,9 +149,25 @@ body.admin-prediction-page {
   align-items: start;
 }
 
+body.prediction-page .prediction-layout {
+  grid-template-columns: 1fr;
+}
+
 .prediction-panel {
   border-radius: 14px;
   padding: 18px;
+}
+
+body.prediction-page .prediction-map-panel {
+  padding: clamp(16px, 2vw, 28px);
+}
+
+body.prediction-page .prediction-map-panel h2 {
+  margin-bottom: 18px;
+}
+
+body.prediction-page .prediction-map-panel .prediction-map {
+  width: 100%;
 }
 
 .prediction-panel h2 {
@@ -571,6 +591,15 @@ body.prediction-page:not([data-prediction-key]) .prediction-topline {
   height: auto;
 }
 
+body.prediction-page .prediction-map.prediction-shape-map {
+  min-height: clamp(640px, 72vh, 880px);
+}
+
+body.prediction-page .prediction-shape-svg {
+  min-height: clamp(640px, 72vh, 880px);
+  height: clamp(640px, 72vh, 880px);
+}
+
 .prediction-county-map .prediction-shape-svg {
   min-height: 360px;
 }
@@ -616,6 +645,14 @@ body.prediction-page:not([data-prediction-key]) .prediction-topline {
   font-weight: 900;
   text-transform: uppercase;
   pointer-events: none;
+}
+
+body.prediction-page .prediction-shape-scale {
+  right: auto;
+  left: 16px;
+  bottom: 16px;
+  grid-template-columns: auto minmax(76px, 96px) auto minmax(76px, 96px) auto;
+  border-radius: 12px;
 }
 
 .prediction-shape-scale i {
