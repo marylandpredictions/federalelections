@@ -93,6 +93,62 @@
     return `${winner}+${margin.toFixed(1)}`;
   }
 
+  function displayPercentages(race) {
+    return window.FeaPredictionMaps?.displayPercentagesForRace?.(race) || { D: null, R: null, I: null };
+  }
+
+  function formatPercentValue(value) {
+    if (value === null || value === undefined || value === "") return "--";
+    const number = Number(value);
+    if (!Number.isFinite(number)) return "--";
+    return `${number.toFixed(1)}%`;
+  }
+
+  function normalizeProbabilityPercent(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return null;
+    return number <= 1 ? number * 100 : number;
+  }
+
+  function diagnosticReference(race) {
+    const ref = race?.modelReference || {};
+    const signal = String(race?.notes?.modelSignal || "");
+    const ratingMatch = signal.match(/model rating\s+([^;]+)/i);
+    const marginMatch = signal.match(/model margin\s+([^;]+)/i);
+    const probabilityMatch = signal.match(/model probability\s+D\s+([\d.]+)\s*\/\s*R\s+([\d.]+)/i);
+    const modelMargin = ref.projectedResultMargin?.display
+      || ref.probabilityMargin?.display
+      || marginMatch?.[1]
+      || formatMargin(race);
+    const hasReferenceProbabilities = ref.probabilities && (ref.probabilities.D !== undefined || ref.probabilities.R !== undefined);
+    const dProbability = hasReferenceProbabilities
+      ? normalizeProbabilityPercent(ref.probabilities?.D)
+      : (probabilityMatch ? Number(probabilityMatch[1]) : null);
+    const rProbability = hasReferenceProbabilities
+      ? normalizeProbabilityPercent(ref.probabilities?.R)
+      : (probabilityMatch ? Number(probabilityMatch[2]) : null);
+    return {
+      rating: ref.evidence?.ratings?.consensusRating || ratingMatch?.[1] || race?.prediction?.rating || "--",
+      margin: modelMargin || "--",
+      percentages: Number.isFinite(dProbability) || Number.isFinite(rProbability)
+        ? `D ${formatPercentValue(dProbability)} / R ${formatPercentValue(rProbability)}`
+        : "--",
+      confidence: ref.projectedResultMargin?.confidence || ref.probabilityMargin?.confidence || race?.prediction?.confidence || "--"
+    };
+  }
+
+  function renderDiagnosticReference(race) {
+    const diagnostic = diagnosticReference(race);
+    return `
+      <div class="prediction-diagnostic-grid">
+        <div><span>Rating</span><strong>${escapeHtml(diagnostic.rating)}</strong></div>
+        <div><span>Margin</span><strong>${escapeHtml(diagnostic.margin)}</strong></div>
+        <div><span>Percentage</span><strong>${escapeHtml(diagnostic.percentages)}</strong></div>
+        <div><span>Confidence</span><strong>${escapeHtml(diagnostic.confidence)}</strong></div>
+      </div>
+    `;
+  }
+
   function candidateName(race, party) {
     return race?.candidates?.[party]?.name || (party === "D" ? "Democrat" : party === "R" ? "Republican" : "Independent");
   }
@@ -290,6 +346,7 @@
     }
     const winner = race.prediction?.winner || "Toss-up";
     const winnerName = ["D", "R", "I"].includes(winner) ? candidateName(race, winner) : winner;
+    const percentages = displayPercentages(race);
     const rows = winnerRows(race).map(({ party, candidate }) => {
       const isWinner = winner === party;
       return `
@@ -299,8 +356,8 @@
             <strong>${escapeHtml(candidate?.name || partyName(party))}${candidate?.incumbent ? "*" : ""}</strong>
             <small>${escapeHtml(partyName(candidate?.party || party))}${candidate?.status ? ` / ${escapeHtml(candidate.status)}` : ""}</small>
           </td>
-          <td>${escapeHtml(isWinner ? winner : "--")}</td>
-          <td>${escapeHtml(isWinner ? formatMargin(race) : "Awaiting")}</td>
+          <td>${escapeHtml(formatPercentValue(percentages[party]))}</td>
+          <td>${escapeHtml(isWinner ? formatMargin(race) : "--")}</td>
         </tr>
       `;
     }).join("");
@@ -322,16 +379,20 @@
           <span class="race-meta-chip">${escapeHtml(race.prediction?.confidence || "medium")} confidence</span>
         </div>
         <table class="selected-race-table">
-          <thead><tr><th>Candidate</th><th>Projection</th><th>Margin</th></tr></thead>
+          <thead><tr><th>Candidate</th><th>Percentage</th><th>Margin</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
+        <section class="prediction-focus-note prediction-county-section">
+          <span class="prediction-kicker">County-level prediction</span>
+          <div id="prediction-detail-county-map" class="prediction-detail-county-map"></div>
+        </section>
         <section class="prediction-focus-note">
           <span class="prediction-kicker">Why we rate it this way</span>
           <p>${escapeHtml(race.notes?.whyWeRateItThisWay || race.notes?.short || "Team reasoning has not been added yet.")}</p>
         </section>
         <section class="prediction-focus-note">
           <span class="prediction-kicker">Model diagnostic reference</span>
-          <p>${escapeHtml(race.notes?.modelSignal || "No model diagnostic summary attached.")}</p>
+          ${renderDiagnosticReference(race)}
         </section>
         <div class="selected-race-foot">
           <span>${escapeHtml(state.data?.office || "Prediction")}</span>
@@ -344,6 +405,17 @@
       document.querySelectorAll("[data-race-id]").forEach((node) => node.classList.remove("is-selected"));
       renderDetail(null);
     });
+    const countyMap = panel.querySelector("#prediction-detail-county-map");
+    if (countyMap && window.FeaPredictionMaps?.renderCountyShapeMap) {
+      countyMap.innerHTML = `<p class="prediction-note">Loading county-level prediction map...</p>`;
+      window.FeaPredictionMaps.renderCountyShapeMap({
+        container: countyMap,
+        race,
+        countyValues: race.countyPredictions || {}
+      }).catch((error) => {
+        countyMap.innerHTML = `<p class="prediction-note">${escapeHtml(error.message || "County-level prediction map unavailable.")}</p>`;
+      });
+    }
     return;
     /*
     panel.innerHTML = `

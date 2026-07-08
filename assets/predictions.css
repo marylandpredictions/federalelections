@@ -1127,3 +1127,181 @@ body.prediction-page .selected-race-foot {
     text-align: left;
   }
 }
+
+body.prediction-page .prediction-detail.election-focus-overlay {
+  width: min(640px, 52%, calc(100% - 36px));
+  max-width: 640px;
+}
+
+body.prediction-page .selected-race-table th,
+body.prediction-page .selected-race-table td {
+  vertical-align: top;
+}
+
+body.prediction-page .selected-race-table th:nth-child(2),
+body.prediction-page .selected-race-table th:nth-child(3),
+body.prediction-page .selected-race-table td:nth-child(2),
+body.prediction-page .selected-race-table td:nth-child(3) {
+  width: 110px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.prediction-diagnostic-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.prediction-diagnostic-grid div,
+.admin-reference-grid div {
+  border: 1px solid rgba(198,210,255,0.34);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(3, 9, 27, 0.56);
+}
+
+.prediction-diagnostic-grid span,
+.admin-reference-grid span {
+  display: block;
+  color: var(--prediction-muted);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.prediction-diagnostic-grid strong,
+.admin-reference-grid strong {
+  display: block;
+  margin-top: 4px;
+  color: #fff;
+  font-size: 0.95rem;
+  line-height: 1.05;
+}
+
+.prediction-detail-county-map {
+  overflow: hidden;
+  min-height: 260px;
+  border: 1px solid rgba(198,210,255,0.32);
+  border-radius: 12px;
+  background: rgba(2, 8, 25, 0.62);
+}
+
+.prediction-detail-county-map .prediction-map {
+  max-height: none;
+  overflow: hidden;
+}
+
+.prediction-detail-county-map .prediction-shape-svg {
+  height: 260px;
+  min-height: 260px;
+}
+
+body.admin-prediction-page .admin-prediction-shell {
+  width: min(1680px, calc(100% - 32px));
+}
+
+body.admin-prediction-page .admin-prediction-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(390px, 430px);
+  gap: 18px;
+}
+
+body.admin-prediction-page .admin-prediction-grid > aside.admin-prediction-panel {
+  position: sticky;
+  top: 86px;
+  max-height: calc(100vh - 108px);
+  overflow: auto;
+}
+
+.admin-editor-section {
+  border: 1px solid rgba(198,210,255,0.46);
+  border-radius: 14px;
+  padding: 14px;
+  background:
+    linear-gradient(135deg, rgba(10, 30, 80, 0.82), rgba(21, 15, 50, 0.78)),
+    rgba(3, 9, 27, 0.8);
+}
+
+.admin-editor-section + .admin-editor-section {
+  margin-top: 12px;
+}
+
+.admin-editor-section-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 12px;
+}
+
+.admin-editor-section-head p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--prediction-muted);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.admin-topline-editor {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-topline-copy {
+  display: grid;
+  gap: 4px;
+  color: var(--prediction-muted);
+}
+
+.admin-topline-copy strong {
+  color: #fff;
+  font-size: 1.15rem;
+}
+
+.admin-map-editor-fields.admin-topline-fields {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.admin-reference-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+#admin-model-reference small {
+  display: block;
+  margin-top: 10px;
+  color: var(--prediction-muted);
+  line-height: 1.35;
+}
+
+body.admin-prediction-page .admin-wide-map {
+  min-height: 680px;
+}
+
+body.admin-prediction-page .admin-county-editor-map {
+  min-height: 430px;
+}
+
+body.admin-prediction-page .prediction-map-editor {
+  background: rgba(2, 8, 25, 0.58);
+}
+
+@media (max-width: 1100px) {
+  body.admin-prediction-page .admin-prediction-grid,
+  .admin-map-edit-grid,
+  .admin-map-editor-fields.admin-topline-fields {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-prediction-page .admin-prediction-grid > aside.admin-prediction-panel {
+    position: static;
+    max-height: none;
+  }
+
+  body.prediction-page .prediction-detail.election-focus-overlay {
+    width: auto;
+    max-width: none;
+  }
+}

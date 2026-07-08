@@ -90,7 +90,7 @@
         modelRating: ref.evidence?.ratings?.consensusRating || "",
         modelWinner: ref.expectedWinner || "",
         modelMargin: marginSource.signedValue ?? marginSource.value ?? "",
-        modelProbability: ref.probabilities ? `D ${Number(ref.probabilities.D || 0).toFixed(3)} / R ${Number(ref.probabilities.R || 0).toFixed(3)}` : "",
+        modelProbability: ref.probabilities ? `D ${(Number(ref.probabilities.D || 0) * 100).toFixed(1)}% / R ${(Number(ref.probabilities.R || 0) * 100).toFixed(1)}%` : "",
         modelSignal: selected.notes?.modelSignal || ""
       };
     }
@@ -147,6 +147,92 @@
     if (value === "" || value === null || value === undefined) return null;
     const number = Number(value);
     return Number.isFinite(number) ? number : null;
+  }
+
+  function ensureSummary() {
+    state.data.summary = state.data.summary || {};
+    state.data.summary.counts = state.data.summary.counts || {};
+    state.data.summary.topline = state.data.summary.topline || {};
+    state.data.summary.topline.controlProbability = state.data.summary.topline.controlProbability || {};
+    state.data.summary.topline.expectedSeatsOrWins = state.data.summary.topline.expectedSeatsOrWins || {};
+    state.data.summary.topline.medianSeatsOrWins = state.data.summary.topline.medianSeatsOrWins || {};
+    return state.data.summary;
+  }
+
+  function probabilityPercent(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return "";
+    return (number * 100).toFixed(1);
+  }
+
+  function inputNumberValue(value, digits = 1) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return "";
+    return number.toFixed(digits).replace(/\.0$/, "");
+  }
+
+  function setOptionalNumber(target, key, value) {
+    const number = Number(value);
+    if (value === "" || value === null || value === undefined || !Number.isFinite(number)) delete target[key];
+    else target[key] = number;
+  }
+
+  function applyToplineEdits() {
+    if (!state.data) return;
+    const summary = ensureSummary();
+    setOptionalNumber(summary.counts, "D", $("topline-count-d")?.value);
+    setOptionalNumber(summary.counts, "R", $("topline-count-r")?.value);
+    setOptionalNumber(summary.counts, "I", $("topline-count-i")?.value);
+    setOptionalNumber(summary.counts, "Toss-up", $("topline-count-toss")?.value);
+    setOptionalNumber(summary.counts, "Uncalled", $("topline-count-uncalled")?.value);
+    const dChance = valueOrNull("topline-chance-d");
+    const rChance = valueOrNull("topline-chance-r");
+    if (Number.isFinite(dChance)) summary.topline.controlProbability.D = Math.max(0, Math.min(100, dChance)) / 100;
+    else delete summary.topline.controlProbability.D;
+    if (Number.isFinite(rChance)) summary.topline.controlProbability.R = Math.max(0, Math.min(100, rChance)) / 100;
+    else delete summary.topline.controlProbability.R;
+    setOptionalNumber(summary.topline.expectedSeatsOrWins, "D", $("topline-expected-d")?.value);
+    setOptionalNumber(summary.topline.expectedSeatsOrWins, "R", $("topline-expected-r")?.value);
+    setOptionalNumber(summary.topline.medianSeatsOrWins, "D", $("topline-median-d")?.value);
+    setOptionalNumber(summary.topline.medianSeatsOrWins, "R", $("topline-median-r")?.value);
+    state.data.lastEdited = new Date().toISOString();
+    state.data.lastEditedBy = "FEA admin";
+  }
+
+  function renderAdminToplineEditor() {
+    const node = $("admin-topline-editor");
+    if (!node || !state.data) return;
+    const summary = ensureSummary();
+    const counts = summary.counts;
+    const topline = summary.topline;
+    const officeLabel = state.data.office === "house" ? "seats" : state.data.office === "senate" ? "races" : "races";
+    node.innerHTML = `
+      <div class="admin-topline-editor">
+        <div class="admin-topline-copy">
+          <strong>Overall board</strong>
+          <span>Edit the public chamber/control numbers shown above the prediction map. Chances are entered as 0-100 percentages.</span>
+        </div>
+        <div class="admin-map-editor-fields admin-topline-fields">
+          <label>D ${officeLabel}<input id="topline-count-d" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts.D))}"></label>
+          <label>R ${officeLabel}<input id="topline-count-r" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts.R))}"></label>
+          <label>I/Other<input id="topline-count-i" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts.I))}"></label>
+          <label>Toss-up<input id="topline-count-toss" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts["Toss-up"]))}"></label>
+          <label>Uncalled<input id="topline-count-uncalled" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts.Uncalled))}"></label>
+          <label>D chance %<input id="topline-chance-d" type="number" min="0" max="100" step="0.1" value="${escapeHtml(probabilityPercent(topline.controlProbability?.D))}"></label>
+          <label>R chance %<input id="topline-chance-r" type="number" min="0" max="100" step="0.1" value="${escapeHtml(probabilityPercent(topline.controlProbability?.R))}"></label>
+          <label>Expected D<input id="topline-expected-d" type="number" step="0.1" value="${escapeHtml(inputNumberValue(topline.expectedSeatsOrWins?.D))}"></label>
+          <label>Expected R<input id="topline-expected-r" type="number" step="0.1" value="${escapeHtml(inputNumberValue(topline.expectedSeatsOrWins?.R))}"></label>
+          <label>Median D<input id="topline-median-d" type="number" step="0.1" value="${escapeHtml(inputNumberValue(topline.medianSeatsOrWins?.D, 0))}"></label>
+          <label>Median R<input id="topline-median-r" type="number" step="0.1" value="${escapeHtml(inputNumberValue(topline.medianSeatsOrWins?.R, 0))}"></label>
+        </div>
+        <button id="admin-apply-topline" class="prediction-button" type="button">Apply overall board</button>
+      </div>
+    `;
+    $("admin-apply-topline")?.addEventListener("click", () => {
+      applyToplineEdits();
+      setStatus("Overall board updated in preview. Save draft or publish when ready.");
+      render();
+    });
   }
 
   function applyDisplayPercentages(target, dValue, rValue) {
@@ -285,22 +371,39 @@
   function renderVisual() {
     const race = selectedRace();
     $("admin-preview").innerHTML = `
-      <div class="admin-map-instructions">
-        <strong>Manual color control:</strong> map value is -100 for strongest Democrat/blue, 0 for toss-up, and 100 for strongest Republican/red. Public maps and admin previews read this same value.
-      </div>
-      <div id="admin-race-map" class="prediction-map admin-wide-map"></div>
+      <section class="admin-editor-section">
+        <div class="admin-editor-section-head">
+          <span class="prediction-kicker">Topline</span>
+          <p>Use this for chamber odds, projected seats/races, and median outcomes.</p>
+        </div>
+        <div id="admin-topline-editor"></div>
+      </section>
+      <section class="admin-editor-section">
+        <div class="admin-editor-section-head">
+          <span class="prediction-kicker">Map editor</span>
+          <p>Map value is -100 for strongest Democrat/blue, 0 for toss-up, and 100 for strongest Republican/red.</p>
+        </div>
+        <div id="admin-race-map" class="prediction-map admin-wide-map"></div>
+      </section>
       <section class="admin-map-edit-grid">
-        <article>
-          <span class="prediction-kicker">Selected state/district</span>
+        <article class="admin-editor-section">
+          <div class="admin-editor-section-head">
+            <span class="prediction-kicker">Selected race</span>
+            <p>These values drive the state or district color and displayed D/R percentages.</p>
+          </div>
           <div id="admin-map-race-editor" class="prediction-map-editor"></div>
         </article>
-        <article>
-          <span class="prediction-kicker">County-level override</span>
+        <article class="admin-editor-section">
+          <div class="admin-editor-section-head">
+            <span class="prediction-kicker">County-level prediction</span>
+            <p>Select a county or district-county piece, then override its local color and D/R percentages.</p>
+          </div>
           <div id="admin-county-map" class="prediction-map admin-county-editor-map"></div>
           <div id="admin-map-county-editor" class="prediction-map-editor"></div>
         </article>
       </section>
     `;
+    renderAdminToplineEditor();
     renderAdminRaceMap();
     renderAdminMapRaceEditor(race);
     renderAdminCountyMap(race);
@@ -371,11 +474,13 @@
     $("edit-note-why").value = race.notes?.whyWeRateItThisWay || "";
     const ref = modelReferenceFor(race.raceId);
     $("admin-model-reference").innerHTML = ref ? `
-      <p><b>Model rating:</b> ${escapeHtml(ref.modelRating || "--")}</p>
-      <p><b>Model winner:</b> ${escapeHtml(ref.modelWinner || "--")}</p>
-      <p><b>Model margin:</b> ${escapeHtml(ref.modelMargin ?? "--")}</p>
-      <p><b>Model probability:</b> ${escapeHtml(ref.modelProbability ?? "--")}</p>
-      <p>${escapeHtml(ref.modelSignal || "")}</p>
+      <div class="admin-reference-grid">
+        <div><span>Rating</span><strong>${escapeHtml(ref.modelRating || "--")}</strong></div>
+        <div><span>Winner</span><strong>${escapeHtml(ref.modelWinner || "--")}</strong></div>
+        <div><span>Margin</span><strong>${escapeHtml(ref.modelMargin ?? "--")}</strong></div>
+        <div><span>Percentage</span><strong>${escapeHtml(ref.modelProbability ?? "--")}</strong></div>
+      </div>
+      ${ref.modelSignal ? `<small>${escapeHtml(ref.modelSignal)}</small>` : ""}
     ` : "No model reference found for this race.";
   }
 
@@ -416,6 +521,7 @@
 
   async function save(mode) {
     if (!state.data || !state.file) throw new Error("Load a prediction file before saving.");
+    if ($("topline-count-d")) applyToplineEdits();
     applyRaceEdits();
     const result = await api("/api/admin/predictions/save", {
       method: "POST",
