@@ -112,7 +112,6 @@ async function scanPublicStrings() {
     "predictions/2026/senate.html",
     "predictions/2026/house.html",
     "predictions/2026/governor.html",
-    "predictions/2028/president.html",
     "model-lab.html",
     "model-lab/2026/senate.html",
     "model-lab/2026/house.html",

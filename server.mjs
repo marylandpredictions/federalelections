@@ -872,8 +872,10 @@ async function serveStatic(request, response) {
     ["/house.html", "/predictions/2026/house"],
     ["/governor", "/predictions/2026/governor"],
     ["/governor.html", "/predictions/2026/governor"],
-    ["/president", "/predictions/2028/president"],
-    ["/president.html", "/predictions/2028/president"],
+    ["/president", "/predictions"],
+    ["/president.html", "/predictions"],
+    ["/predictions/2028/president", "/predictions"],
+    ["/predictions/2028/president.html", "/predictions"],
     ["/methodology", "/predictions/methodology"],
     ["/methodology.html", "/predictions/methodology"]
   ]);

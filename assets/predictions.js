@@ -2,8 +2,7 @@
   const validFiles = new Map([
     ["senate", "data/predictions/2026-senate-predictions.json"],
     ["house", "data/predictions/2026-house-predictions.json"],
-    ["governor", "data/predictions/2026-governor-predictions.json"],
-    ["president", "data/predictions/2028-presidential-predictions.json"]
+    ["governor", "data/predictions/2026-governor-predictions.json"]
   ]);
 
   const state = {
@@ -12,6 +11,7 @@
   };
 
   const $ = (id) => document.getElementById(id);
+  const ratingOrder = ["Safe D", "Likely D", "Lean D", "Tilt D", "Toss-up", "Tilt R", "Lean R", "Likely R", "Safe R", "Safe I", "Likely I", "Lean I", "Tilt I"];
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -20,6 +20,28 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+
+  function numberValue(value, fallback = 0) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : fallback;
+  }
+
+  function formatNumber(value, digits = 0) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return "--";
+    return number.toLocaleString("en-US", {
+      maximumFractionDigits: digits,
+      minimumFractionDigits: digits
+    });
+  }
+
+  function formatProbability(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return "--";
+    if (number === 1) return ">99%";
+    if (number === 0) return "<1%";
+    return `${(number * 100).toFixed(number > 0.995 || number < 0.005 ? 1 : 0)}%`;
   }
 
   function ratingClass(rating) {
@@ -32,6 +54,22 @@
     if (normalized === "R") return "prediction-party-r";
     if (normalized === "I") return "prediction-party-i";
     return "";
+  }
+
+  function partyName(party) {
+    const normalized = String(party || "").toUpperCase();
+    if (normalized === "D") return "Democrat";
+    if (normalized === "R") return "Republican";
+    if (normalized === "I") return "Independent";
+    return normalized || "Other";
+  }
+
+  function ratingParty(rating) {
+    const text = String(rating || "");
+    if (/\bD\b/.test(text)) return "D";
+    if (/\bR\b/.test(text)) return "R";
+    if (/\bI\b/.test(text)) return "I";
+    return "T";
   }
 
   function formatDate(value) {
@@ -60,18 +98,10 @@
   }
 
   function sortedRaces(races = []) {
-    const ratingOrder = {
-      "Toss-up": 0,
-      "Tilt D": 1, "Tilt R": 1,
-      "Lean D": 2, "Lean R": 2,
-      "Likely D": 3, "Likely R": 3,
-      "Safe D": 4, "Safe R": 4,
-      "Tilt I": 1, "Lean I": 2, "Likely I": 3, "Safe I": 4
-    };
     return [...races].sort((a, b) => {
-      const ar = ratingOrder[a.prediction?.rating] ?? 9;
-      const br = ratingOrder[b.prediction?.rating] ?? 9;
-      return ar - br
+      const ar = ratingOrder.indexOf(a.prediction?.rating);
+      const br = ratingOrder.indexOf(b.prediction?.rating);
+      return (ar < 0 ? 99 : ar) - (br < 0 ? 99 : br)
         || String(a.state || "").localeCompare(String(b.state || ""))
         || String(a.district || "").localeCompare(String(b.district || ""), undefined, { numeric: true })
         || String(a.displayName || "").localeCompare(String(b.displayName || ""));
@@ -81,55 +111,130 @@
   function projectedCounts(data) {
     const counts = data?.summary?.counts || {};
     return {
-      D: Number(counts.D || 0),
-      R: Number(counts.R || 0),
-      I: Number(counts.I || 0),
-      toss: Number(counts["Toss-up"] || 0)
+      D: numberValue(counts.D),
+      R: numberValue(counts.R),
+      I: numberValue(counts.I),
+      toss: numberValue(counts["Toss-up"]),
+      uncalled: numberValue(counts.Uncalled)
     };
+  }
+
+  function winnerRows(race) {
+    const rows = ["D", "R", "I"]
+      .filter((party) => race?.candidates?.[party])
+      .map((party) => ({ party, candidate: race.candidates[party] }));
+    if (!rows.length) {
+      rows.push({ party: "D", candidate: { name: "Democrat" } }, { party: "R", candidate: { name: "Republican" } });
+    }
+    return rows;
+  }
+
+  function toplineCounts(data) {
+    const counts = projectedCounts(data);
+    const expected = data?.summary?.topline?.expectedSeatsOrWins || {};
+    const median = data?.summary?.topline?.medianSeatsOrWins || {};
+    return { counts, expected, median };
+  }
+
+  function renderSeatBar(data) {
+    const { counts } = toplineCounts(data);
+    const total = Math.max(1, counts.D + counts.R + counts.I + counts.toss + counts.uncalled);
+    const dWidth = Math.max(0, (counts.D / total) * 100);
+    const rWidth = Math.max(0, (counts.R / total) * 100);
+    const iWidth = Math.max(0, (counts.I / total) * 100);
+    const tossWidth = Math.max(0, ((counts.toss + counts.uncalled) / total) * 100);
+    const majority = data?.office === "house" ? 218 : null;
+    const majorityPct = majority ? Math.min(100, Math.max(0, (majority / total) * 100)) : 50;
+    return `
+      <div class="prediction-seatbar" aria-label="Projected result bar">
+        <span class="prediction-seatbar-segment prediction-seatbar-d" style="width:${dWidth}%"></span>
+        <span class="prediction-seatbar-segment prediction-seatbar-i" style="width:${iWidth}%"></span>
+        <span class="prediction-seatbar-segment prediction-seatbar-toss" style="width:${tossWidth}%"></span>
+        <span class="prediction-seatbar-segment prediction-seatbar-r" style="width:${rWidth}%"></span>
+        ${majority ? `<i class="prediction-seatbar-marker" style="left:${majorityPct}%"></i>` : ""}
+      </div>
+    `;
+  }
+
+  function renderRatingDistribution(data) {
+    const ratings = data?.summary?.ratings || {};
+    const total = Math.max(1, Object.values(ratings).reduce((sum, value) => sum + numberValue(value), 0));
+    const rows = ratingOrder
+      .filter((rating) => ratings[rating])
+      .map((rating) => {
+        const count = numberValue(ratings[rating]);
+        const width = Math.max(2, (count / total) * 100);
+        return `
+          <div class="prediction-rating-row">
+            <span class="prediction-pill ${ratingClass(rating)}">${escapeHtml(rating)}</span>
+            <div class="prediction-rating-track"><i class="${ratingClass(rating)}" style="width:${width}%"></i></div>
+            <b>${count}</b>
+          </div>
+        `;
+      }).join("");
+    return rows || `<p class="prediction-note">No rating distribution available.</p>`;
   }
 
   function renderTopline(data) {
     const container = $("prediction-topline");
     if (!container) return;
-    const counts = projectedCounts(data);
-    const raceCount = Number(data?.summary?.raceCount || data?.races?.length || 0);
+    const { counts, expected, median } = toplineCounts(data);
+    const raceCount = numberValue(data?.summary?.raceCount || data?.races?.length);
     const competitive = (data?.races || []).filter((race) => /Toss-up|Tilt|Lean/.test(race.prediction?.rating || "")).length;
+    const control = data?.summary?.topline?.controlProbability || {};
     const leader = counts.D === counts.R ? "No clear edge" : counts.D > counts.R ? "Democratic edge" : "Republican edge";
-    const modelStatus = data?.sourceModelRunId ? "Model reference loaded" : "Manual only";
+    const leftLabel = data?.office === "house" ? "projected seats" : "projected race wins";
+    const status = data?.pageStatus || "Published";
     container.innerHTML = `
-      <article class="prediction-card">
-        <span>Team edge</span>
-        <strong class="${counts.D >= counts.R ? "prediction-party-d" : "prediction-party-r"}">${escapeHtml(leader)}</strong>
-        <small>${counts.D} D / ${counts.R} R${counts.I ? ` / ${counts.I} I` : ""}</small>
-      </article>
-      <article class="prediction-card">
-        <span>Tracked races</span>
-        <strong>${raceCount}</strong>
-        <small>${competitive} competitive or near-competitive</small>
-      </article>
-      <article class="prediction-card">
-        <span>Toss-ups</span>
-        <strong>${counts.toss}</strong>
-        <small>Editable team calls, not model release gates</small>
-      </article>
-      <article class="prediction-card">
-        <span>Status</span>
-        <strong>${escapeHtml(data?.pageStatus || "Published")}</strong>
-        <small>${escapeHtml(modelStatus)}</small>
-      </article>
+      <section class="prediction-command-board">
+        <div class="prediction-command-left">
+          <span>Democratic ${leftLabel}</span>
+          <strong class="prediction-party-d">${formatNumber(counts.D)}</strong>
+          <small>${formatProbability(control.D)} control / lead chance</small>
+        </div>
+        <div class="prediction-command-center">
+          <span class="prediction-kicker">${escapeHtml(data?.office || "prediction")} board</span>
+          <b>${escapeHtml(leader)}</b>
+          ${renderSeatBar(data)}
+          <small>Median: ${formatNumber(median.D, 0)} D / ${formatNumber(median.R, 0)} R · Expected: ${formatNumber(expected.D, 1)} D / ${formatNumber(expected.R, 1)} R</small>
+        </div>
+        <div class="prediction-command-right">
+          <span>Republican ${leftLabel}</span>
+          <strong class="prediction-party-r">${formatNumber(counts.R)}</strong>
+          <small>${formatProbability(control.R)} control / lead chance</small>
+        </div>
+      </section>
+      <section class="prediction-stat-grid">
+        <article class="prediction-card"><span>Published status</span><strong>${escapeHtml(status)}</strong><small>${escapeHtml(data?.sourceModelRunId ? "Model diagnostic attached" : "Manual team board")}</small></article>
+        <article class="prediction-card"><span>Races rated</span><strong>${formatNumber(raceCount)}</strong><small>${formatNumber(competitive)} competitive or near-competitive</small></article>
+        <article class="prediction-card"><span>Toss-ups</span><strong>${formatNumber(counts.toss)}</strong><small>${formatNumber(counts.uncalled)} uncalled / unresolved ratings</small></article>
+        <article class="prediction-card"><span>Latest publish</span><strong>${escapeHtml(formatDate(data.lastPublishedAt || data.generatedAt))}</strong><small>Team prediction release</small></article>
+      </section>
+      <section class="prediction-chart-panel">
+        <div>
+          <span class="prediction-kicker">Rating spectrum</span>
+          <h2 class="prediction-gradient-title">Where the map stands.</h2>
+        </div>
+        <div class="prediction-rating-list">${renderRatingDistribution(data)}</div>
+      </section>
     `;
   }
 
   function renderMap(data) {
     const container = $("prediction-map");
     if (!container) return;
-    container.innerHTML = sortedRaces(data?.races || []).map((race) => `
-      <button class="prediction-map-tile ${ratingClass(race.prediction?.rating)}" type="button" data-race-id="${escapeHtml(race.raceId)}">
-        <b>${escapeHtml(race.district ? `${race.state}-${race.district}` : race.state)}</b>
-        <small>${escapeHtml(race.prediction?.rating || "--")}</small>
-        <small>${escapeHtml(formatMargin(race))}</small>
-      </button>
-    `).join("");
+    container.innerHTML = sortedRaces(data?.races || []).map((race) => {
+      const winner = race.prediction?.winner || "Toss-up";
+      const winnerName = ["D", "R", "I"].includes(winner) ? candidateName(race, winner) : winner;
+      return `
+        <button class="prediction-map-tile prediction-race-tile ${ratingClass(race.prediction?.rating)}" type="button" data-race-id="${escapeHtml(race.raceId)}">
+          <span class="prediction-tile-code">${escapeHtml(race.district ? `${race.state}-${race.district}` : race.state)}</span>
+          <strong>${escapeHtml(race.displayName || race.raceId)}</strong>
+          <small>${escapeHtml(race.prediction?.rating || "--")}</small>
+          <span class="prediction-tile-line"><b>${escapeHtml(winnerName)}</b><em>${escapeHtml(formatMargin(race))}</em></span>
+        </button>
+      `;
+    }).join("");
     container.querySelectorAll("[data-race-id]").forEach((button) => {
       button.addEventListener("click", () => selectRace(button.dataset.raceId));
     });
@@ -167,24 +272,38 @@
             <h3>Select a race</h3>
           </div>
           <div class="prediction-detail-body">
-            <p class="prediction-note">Choose a state, district, or row to view the FEA Team Prediction and model reference notes.</p>
+            <p class="prediction-note">Choose a race tile or table row to view the FEA Team Prediction and model reference notes.</p>
           </div>
         </div>`;
       return;
     }
+    const winner = race.prediction?.winner || "Toss-up";
+    const winnerName = ["D", "R", "I"].includes(winner) ? candidateName(race, winner) : winner;
+    const rows = winnerRows(race).map(({ party, candidate }) => {
+      const isWinner = winner === party;
+      return `
+        <div class="prediction-candidate-row ${isWinner ? "is-projected" : ""}">
+          <span class="prediction-candidate-party ${partyClass(party)}">${escapeHtml(party)}</span>
+          <strong>${escapeHtml(candidate?.name || partyName(party))}</strong>
+          <small>${escapeHtml(partyName(candidate?.party || party))}${candidate?.incumbent ? " · incumbent" : ""}${candidate?.status ? ` · ${escapeHtml(candidate.status)}` : ""}</small>
+        </div>
+      `;
+    }).join("");
     panel.innerHTML = `
       <div class="prediction-detail-card">
-        <div class="prediction-detail-head">
+        <div class="prediction-detail-head ${ratingClass(race.prediction?.rating)}">
           <span class="prediction-pill ${ratingClass(race.prediction?.rating)}">${escapeHtml(race.prediction?.rating || "--")}</span>
           <h3>${escapeHtml(race.displayName || race.raceId)}</h3>
+          <p>${escapeHtml(winnerName)} · ${escapeHtml(formatMargin(race))}</p>
         </div>
         <div class="prediction-detail-body">
           <div class="prediction-mini-grid">
-            <div><span class="prediction-kicker">Winner</span><strong class="${partyClass(race.prediction?.winner)}">${escapeHtml(race.prediction?.winner || "--")}</strong></div>
-            <div><span class="prediction-kicker">Margin</span><strong>${escapeHtml(formatMargin(race))}</strong></div>
+            <div><span class="prediction-kicker">Projected side</span><strong class="${partyClass(winner)}">${escapeHtml(winner)}</strong></div>
             <div><span class="prediction-kicker">Confidence</span><strong>${escapeHtml(race.prediction?.confidence || "--")}</strong></div>
             <div><span class="prediction-kicker">Status</span><strong>${escapeHtml(race.prediction?.status || "published")}</strong></div>
+            <div><span class="prediction-kicker">Margin</span><strong>${escapeHtml(formatMargin(race))}</strong></div>
           </div>
+          <section class="prediction-candidate-list">${rows}</section>
           <div class="prediction-admin-note">
             <span class="prediction-kicker">Why we rate it this way</span>
             <p>${escapeHtml(race.notes?.whyWeRateItThisWay || race.notes?.short || "Team reasoning has not been added yet.")}</p>
@@ -192,12 +311,6 @@
           <div class="prediction-admin-note">
             <span class="prediction-kicker">Model diagnostic reference</span>
             <p>${escapeHtml(race.notes?.modelSignal || "No model diagnostic summary attached.")}</p>
-          </div>
-          <div class="prediction-admin-note">
-            <span class="prediction-kicker">Candidates</span>
-            <p><b class="prediction-party-d">D:</b> ${escapeHtml(candidateName(race, "D"))}</p>
-            <p><b class="prediction-party-r">R:</b> ${escapeHtml(candidateName(race, "R"))}</p>
-            ${race.candidates?.I ? `<p><b class="prediction-party-i">I:</b> ${escapeHtml(candidateName(race, "I"))}</p>` : ""}
           </div>
         </div>
       </div>
@@ -234,8 +347,9 @@
       renderTopline(data);
       renderMap(data);
       renderTable(data);
-      renderDetail(sortedRaces(data.races || [])[0]);
-      selectRace(sortedRaces(data.races || [])[0]?.raceId || "");
+      const firstRace = sortedRaces(data.races || [])[0];
+      renderDetail(firstRace);
+      selectRace(firstRace?.raceId || "");
       if (root) root.dataset.loaded = "true";
     } catch (error) {
       if (root) {

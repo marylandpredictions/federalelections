@@ -728,22 +728,78 @@ function bindPanelTooltipFor(root, selector, getHtml) {
   });
 }
 
+function firstFiniteNumber(...values) {
+  for (const value of values) {
+    if (value === null || value === undefined || value === "") continue;
+    const number = Number(value);
+    if (Number.isFinite(number)) return number;
+  }
+  return null;
+}
+
+function forecastControlProbability(source, party) {
+  const partyKey = String(party || "").toUpperCase();
+  const legacyKey = partyKey === "D" ? "demControlProbability" : "repControlProbability";
+  return firstFiniteNumber(
+    source?.[legacyKey],
+    source?.topline?.controlProbability?.[partyKey],
+    source?.summary?.topline?.controlProbability?.[partyKey],
+    source?.national?.[partyKey === "D" ? "demWinProbability" : "repWinProbability"]
+  );
+}
+
+function forecastSeatPair(source, totalSeats) {
+  const median = source?.medianSeats;
+  const toplineMedian = source?.topline?.medianSeatsOrWins || source?.summary?.topline?.medianSeatsOrWins;
+  let dem = null;
+  let rep = null;
+  if (median && typeof median === "object") {
+    dem = firstFiniteNumber(median.D, median.dem, median.democratic);
+    rep = firstFiniteNumber(median.R, median.rep, median.republican);
+  } else {
+    dem = firstFiniteNumber(median);
+  }
+  dem = dem ?? firstFiniteNumber(toplineMedian?.D, toplineMedian?.dem, toplineMedian?.democratic);
+  rep = rep ?? firstFiniteNumber(toplineMedian?.R, toplineMedian?.rep, toplineMedian?.republican);
+  if (dem === null && rep !== null && Number.isFinite(totalSeats)) dem = totalSeats - rep;
+  if (rep === null && dem !== null && Number.isFinite(totalSeats)) rep = totalSeats - dem;
+  return {
+    D: dem === null ? null : Math.round(dem),
+    R: rep === null ? null : Math.round(rep),
+    valid: dem !== null || rep !== null
+  };
+}
+
+function formatSeatPair(pair, fallback = "--") {
+  if (!pair?.valid) return fallback;
+  return `${pair.D ?? "--"} D / ${pair.R ?? "--"} R`;
+}
+
+function forecastRunDate(source) {
+  return source?.runDate || source?.modelDate || source?.generatedAt || source?.lastPublishedAt || "--";
+}
+
 function updateSummary() {
   if (!forecast) return;
   const settings = forecast.settings || {};
+  const senateRaces = forecast.races || [];
+  const demControl = forecastControlProbability(forecast, "D") ?? 0;
+  const repControl = forecastControlProbability(forecast, "R") ?? 0;
+  const senateSeats = forecastSeatPair(forecast, 100);
+  const senateSeatText = formatSeatPair(senateSeats);
+  const senateSeatLine = senateSeats.valid ? `${senateSeatText} projected seats` : "-- projected seats";
+  const senateDemSeats = senateSeats.D ?? 0;
+  const senateRepSeats = senateSeats.R ?? 0;
   setText("run-date", forecast.runDate || forecast.modelDate || "--");
   setText("sim-count", Number(settings.simulations || 0).toLocaleString("en-US"));
-  setText("watch-count", forecast.races.filter((race) => race.competitive).length);
-  setText("dem-control", oneDecimal(forecast.demControlProbability));
-  setText("rep-control", oneDecimal(forecast.repControlProbability));
-  setText("median-seats", `${forecast.medianSeats} D`);
-  const favoredIsDem = forecast.demControlProbability >= forecast.repControlProbability;
+  setText("watch-count", senateRaces.filter((race) => race.competitive).length);
+  setText("dem-control", oneDecimal(demControl));
+  setText("rep-control", oneDecimal(repControl));
+  setText("median-seats", senateSeats.D === null ? "--" : `${senateSeats.D} D`);
+  const favoredIsDem = demControl >= repControl;
   setText("control-headline", favoredIsDem ? "Democrats narrowly favored" : "Republicans narrowly favored");
-  const favoredSide = forecast.demControlProbability >= forecast.repControlProbability ? "Democrats" : "Republicans";
-  const favoredProbability = Math.max(forecast.demControlProbability, forecast.repControlProbability);
-  const senateSeatLine = `${forecast.medianSeats} D / ${100 - forecast.medianSeats} R projected seats`;
-  const senateDemSeats = Number(forecast.medianSeats || 0);
-  const senateRepSeats = Math.max(0, 100 - senateDemSeats);
+  const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
+  const favoredProbability = Math.max(demControl, repControl);
   setText("seat-count-headline", senateSeatLine);
   const senateSeatbarLabel = document.getElementById("senate-map-seatbar-label");
   if (senateSeatbarLabel) {
@@ -759,18 +815,18 @@ function updateSummary() {
     mapSeatbarRep.style.width = `${senateRepSeats}%`;
     mapSeatbarRep.style.setProperty("--seat-units", Math.max(1, senateRepSeats));
   }
-  setMapProbBar("senate", forecast.demControlProbability, forecast.repControlProbability, "Control");
+  setMapProbBar("senate", demControl, repControl, "Control");
   const oddsNode = document.getElementById("odds-phrase");
   if (oddsNode) {
     oddsNode.innerHTML = `<span>${favoredSide} favored</span><strong>${pct(favoredProbability)}</strong>`;
   }
   setText("home-senate-favored", `${favoredSide} ${pct(favoredProbability)}`);
   setText("home-senate-seats", senateSeatLine);
-  setText("home-senate-dem", oneDecimal(forecast.demControlProbability));
-  setText("home-senate-rep", oneDecimal(forecast.repControlProbability));
-  setText("home-senate-run", forecast.runDate || forecast.modelDate || "--");
-  setText("home-senate-median", `${forecast.medianSeats} D / ${100 - forecast.medianSeats} R`);
-  setText("home-senate-note", `${forecast.races.filter((race) => race.competitive).length} competitive races`);
+  setText("home-senate-dem", oneDecimal(demControl));
+  setText("home-senate-rep", oneDecimal(repControl));
+  setText("home-senate-run", forecastRunDate(forecast));
+  setText("home-senate-median", senateSeatText);
+  setText("home-senate-note", `${senateRaces.filter((race) => race.competitive).length} competitive races`);
   const senateCard = document.getElementById("home-senate-card");
   if (senateCard) {
     senateCard.classList.toggle("control-dem", favoredIsDem);
@@ -785,8 +841,8 @@ function updateSummary() {
   const demBar = document.getElementById("dem-control-bar");
   const repBar = document.getElementById("rep-control-bar");
   if (demBar && repBar) {
-    demBar.style.width = `${forecast.demControlProbability * 100}%`;
-    repBar.style.width = `${forecast.repControlProbability * 100}%`;
+    demBar.style.width = `${demControl * 100}%`;
+    repBar.style.width = `${repControl * 100}%`;
   }
 }
 
@@ -796,18 +852,23 @@ function updateHomeHouseSummary() {
     console.log("[wiki.js] houseForecast is null, skipping update");
     return;
   }
-  const favoredIsDem = houseForecast.demControlProbability >= houseForecast.repControlProbability;
+  const demControl = forecastControlProbability(houseForecast, "D") ?? 0;
+  const repControl = forecastControlProbability(houseForecast, "R") ?? 0;
+  const houseSeats = forecastSeatPair(houseForecast, 435);
+  const houseSeatText = formatSeatPair(houseSeats);
+  const houseSeatLine = houseSeats.valid ? `${houseSeatText} projected seats` : "-- projected seats";
+  const houseRows = houseForecast.districts || houseForecast.races || [];
+  const favoredIsDem = demControl >= repControl;
   const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
-  const favoredProbability = Math.max(houseForecast.demControlProbability, houseForecast.repControlProbability);
-  const houseSeatLine = `${houseForecast.medianSeats} D / ${435 - houseForecast.medianSeats} R projected seats`;
+  const favoredProbability = Math.max(demControl, repControl);
   setText("home-house-status", "Live");
   setText("home-house-favored", `${favoredSide} ${houseProbability(favoredProbability)}`);
   setText("home-house-seats", houseSeatLine);
-  setText("home-house-dem", houseProbability(houseForecast.demControlProbability));
-  setText("home-house-rep", houseProbability(houseForecast.repControlProbability));
-  setText("home-house-run", houseForecast.runDate || houseForecast.modelDate || "--");
-  setText("home-house-median", `${houseForecast.medianSeats} D / ${435 - houseForecast.medianSeats} R`);
-  setText("home-house-note", `${houseForecast.districts?.filter((district) => district.competitive).length ?? "--"} competitive districts`);
+  setText("home-house-dem", houseProbability(demControl));
+  setText("home-house-rep", houseProbability(repControl));
+  setText("home-house-run", forecastRunDate(houseForecast));
+  setText("home-house-median", houseSeatText);
+  setText("home-house-note", `${houseRows.filter((district) => district.competitive).length ?? "--"} competitive districts`);
   const houseCard = document.getElementById("home-house-card");
   if (houseCard) {
     houseCard.classList.toggle("control-dem", favoredIsDem);
@@ -1529,7 +1590,8 @@ function renderControlHistory() {
 function renderSeatHistory() {
   const chart = document.getElementById("seat-history-chart");
   if (!chart || !forecast) return;
-  const points = forecast.seatHistory?.length ? forecast.seatHistory : [{ date: forecast.modelDate, dem: forecast.medianSeats, rep: 100 - forecast.medianSeats }];
+  const fallbackSeats = forecastSeatPair(forecast, 100);
+  const points = forecast.seatHistory?.length ? forecast.seatHistory : [{ date: forecast.modelDate, dem: fallbackSeats.D ?? 50, rep: fallbackSeats.R ?? 50 }];
   renderLineChart(chart, points, {
     label: "Projected Senate seats history",
     domain: [30, 70],
@@ -2477,8 +2539,9 @@ function renderHouseSummary() {
   panel?.classList.toggle("control-rep", !favoredIsDem);
   const odds = document.getElementById("house-odds-phrase");
   if (odds) odds.innerHTML = `<span>${favoredSide} favored</span><strong>${houseProbability(favoredProbability)}</strong>`;
-  const houseDemSeats = Number(houseForecast.medianSeats || 0);
-  const houseRepSeats = Math.max(0, 435 - houseDemSeats);
+  const houseSeats = forecastSeatPair(houseForecast, 435);
+  const houseDemSeats = houseSeats.D ?? 0;
+  const houseRepSeats = houseSeats.R ?? Math.max(0, 435 - houseDemSeats);
   setText("house-seat-count-headline", `${houseDemSeats} D / ${houseRepSeats} R projected seats`);
   setText("house-control-headline", `${favoredSide} ${controlProbabilityPhrase(favoredProbability)}`);
   setText("house-dem-control", houseProbability(houseForecast.demControlProbability));
@@ -2512,7 +2575,7 @@ function renderHouseSeatHistogram() {
   const container = document.getElementById("house-seat-histogram");
   if (!container || !houseForecast) return;
   const seats = Object.keys(houseForecast.seatCounts || {}).map(Number);
-  const center = houseForecast.medianSeats || 218;
+  const center = forecastSeatPair(houseForecast, 435).D ?? 218;
   const minSeat = Math.max(200, center - 7);
   const maxSeat = Math.min(235, center + 7);
   renderSeatHistogramInto(container, houseForecast, { minSeat, maxSeat });
@@ -2535,7 +2598,8 @@ function renderHouseControlHistory() {
 function renderHouseSeatHistory() {
   const chart = document.getElementById("house-seat-history-chart");
   if (!chart || !houseForecast) return;
-  const points = houseForecast.seatHistory?.length ? houseForecast.seatHistory : [{ date: houseForecast.modelDate, dem: houseForecast.medianSeats, rep: 435 - houseForecast.medianSeats }];
+  const fallbackSeats = forecastSeatPair(houseForecast, 435);
+  const points = houseForecast.seatHistory?.length ? houseForecast.seatHistory : [{ date: houseForecast.modelDate, dem: fallbackSeats.D ?? 218, rep: fallbackSeats.R ?? 217 }];
   const values = points.flatMap((point) => [point.dem, point.rep ?? 435 - point.dem]);
   const min = Math.max(190, Math.floor((Math.min(...values) - 5) / 5) * 5);
   const max = Math.min(245, Math.ceil((Math.max(...values) + 5) / 5) * 5);
@@ -3330,7 +3394,7 @@ function renderEmbed(target, embed) {
       return;
     }
     const seats = Object.keys(houseForecast.seatCounts || {}).map(Number);
-    const center = houseForecast.medianSeats || 218;
+    const center = forecastSeatPair(houseForecast, 435).D ?? 218;
     renderSeatHistogramInto(target, houseForecast, {
       minSeat: Math.max(180, Math.min(...seats, center - 16)),
       maxSeat: Math.min(255, Math.max(...seats, center + 16))
