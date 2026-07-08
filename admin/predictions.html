@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Prediction Admin | Federal Elections Analysis</title>
+  <link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
+  <script src="/assets/theme.js"></script>
+  <link rel="stylesheet" href="/assets/wiki.css?v=20260618-dark">
+  <link rel="stylesheet" href="/assets/predictions.css">
+</head>
+<body class="admin-prediction-page">
+  <header class="site-header">
+    <a class="brand" href="/"><img class="brand-mark" src="/assets/img/FEA_Icon.webp" alt="Federal Elections Analysis"><span><strong>Federal Elections Analysis</strong><small>Prediction admin</small></span></a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="/predictions">Public predictions</a>
+      <a href="/model-lab">Model Lab</a>
+    </nav>
+  </header>
+  <main class="admin-prediction-shell">
+    <section class="prediction-hero">
+      <span class="prediction-kicker">Admin</span>
+      <h1>FEA Team Predictions.</h1>
+      <p>Edit the public prediction JSON without touching the automated Model Lab output. Draft saves stay unpublished until the Publish button is used.</p>
+    </section>
+    <section id="admin-login" class="admin-prediction-panel">
+      <form id="admin-login-form" class="admin-prediction-form">
+        <label>Admin secret <input id="admin-secret" type="password" autocomplete="current-password" placeholder="ADMIN_SECRET"></label>
+        <div class="admin-prediction-actions">
+          <button type="submit">Load prediction editor</button>
+        </div>
+      </form>
+      <p class="prediction-note">This page is unlisted, but saves still require the configured server admin secret.</p>
+    </section>
+    <section id="admin-editor" class="admin-prediction-grid" hidden>
+      <article class="admin-prediction-panel">
+        <div class="admin-prediction-actions">
+          <label class="admin-inline-label">Prediction file <select id="admin-file"></select></label>
+          <button id="admin-load-published" type="button">Load published</button>
+          <button id="admin-load-draft" type="button">Load draft</button>
+          <button id="admin-visual-mode" type="button" class="active">Visual edit</button>
+          <button id="admin-bulk-mode" type="button">Bulk/table</button>
+        </div>
+        <div id="admin-status" class="prediction-note" role="status"></div>
+        <div id="admin-preview" class="admin-prediction-preview"></div>
+      </article>
+      <aside class="admin-prediction-panel">
+        <form id="admin-edit-form" class="admin-prediction-form">
+          <span class="prediction-kicker">Selected race</span>
+          <h2 id="admin-selected-title">Select a race</h2>
+          <label>Rating <select id="edit-rating"></select></label>
+          <label>Winner <select id="edit-winner"></select></label>
+          <label>Projected margin <input id="edit-margin" type="number" step="0.1"></label>
+          <label>Confidence <select id="edit-confidence"><option>low</option><option>medium</option><option>high</option></select></label>
+          <label>Status <select id="edit-status"><option>draft</option><option>reviewed</option><option>published</option><option>needs-review</option><option>updating</option></select></label>
+          <label>Democrat <input id="edit-candidate-d" type="text"></label>
+          <label>Republican <input id="edit-candidate-r" type="text"></label>
+          <label>Short note <textarea id="edit-note-short"></textarea></label>
+          <label>Why we rate it this way <textarea id="edit-note-why"></textarea></label>
+          <label>Change summary <input id="admin-change-summary" type="text" placeholder="What changed?"></label>
+          <div class="prediction-admin-note">
+            <span class="prediction-kicker">Model reference</span>
+            <div id="admin-model-reference" class="prediction-note">Select a race to view model diagnostics.</div>
+            <div class="admin-prediction-actions">
+              <button id="copy-model-rating" type="button">Copy model rating</button>
+              <button id="copy-model-margin" type="button">Copy model margin</button>
+              <button id="copy-model-winner" type="button">Copy model winner</button>
+            </div>
+          </div>
+          <div class="admin-prediction-actions">
+            <button id="admin-apply-race" type="submit">Apply to preview</button>
+            <button id="admin-save-draft" type="button">Save draft</button>
+            <button id="admin-publish" type="button">Publish</button>
+          </div>
+        </form>
+      </aside>
+    </section>
+  </main>
+  <script src="/assets/admin-predictions.js"></script>
+</body>
+</html>

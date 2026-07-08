@@ -1,7 +1,8 @@
 import { createServer } from "node:http";
 import { createWriteStream } from "node:fs";
 import { mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
-import { extname, join, resolve } from "node:path";
+import { dirname, extname, join, resolve } from "node:path";
+import { createHash } from "node:crypto";
 import tls from "node:tls";
 import { createGzip, createBrotliCompress } from "node:zlib";
 import { pipeline } from "node:stream/promises";
@@ -32,9 +33,12 @@ const submissionsPath = resolve(root, "data", "contact-submissions.jsonl");
 const callsPath = resolve(root, "data", "result-calls.json");
 const analysisNotesPath = resolve(root, "data", "result-analysis-notes.json");
 const overlayConfigPath = resolve(root, "data", "overlay-config.json");
+const predictionsPath = resolve(root, "data", "predictions");
+const predictionDraftsPath = resolve(predictionsPath, "drafts");
+const predictionHistoryPath = resolve(predictionsPath, "history");
 const adminPath = `/${String(process.env.ADMIN_PATH || "1234ab").replace(/^\/+/, "")}`;
 const adminSecret = process.env.ADMIN_SECRET || process.env.ADMIN_PASSWORD || "";
-const maxBodyBytes = 24 * 1024;
+const maxBodyBytes = 8 * 1024 * 1024;
 const rateLimitMs = 60_000;
 const rateLimit = new Map();
 let liveResultsCache = null;
@@ -471,6 +475,89 @@ async function raceListFromDetailFiles(latestRaceIds = new Set()) {
   return races.sort((a, b) => a.state.localeCompare(b.state) || a.label.localeCompare(b.label));
 }
 
+function jsonHash(payload) {
+  return createHash("sha256").update(`${JSON.stringify(payload) || ""}\n`).digest("hex");
+}
+
+function predictionFileInfo(value, mode = "publish") {
+  const file = String(value || "").replace(/\\/g, "/").replace(/^\/+/, "");
+  if (/^[0-9]{4}-[a-z0-9-]+-predictions\.json$/i.test(file)) {
+    if (mode === "draft") {
+      return {
+        file,
+        absolutePath: resolve(predictionDraftsPath, file),
+        relativePath: `data/predictions/drafts/${file}`,
+        publicPath: resolve(predictionsPath, file)
+      };
+    }
+    return {
+      file,
+      absolutePath: resolve(predictionsPath, file),
+      relativePath: `data/predictions/${file}`,
+      publicPath: resolve(predictionsPath, file)
+    };
+  }
+  if (/^county-predictions\/[A-Za-z0-9_.-]+\.json$/.test(file)) {
+    const baseName = file.split("/").pop();
+    if (mode === "draft") {
+      return {
+        file,
+        absolutePath: resolve(predictionDraftsPath, "county-predictions", baseName),
+        relativePath: `data/predictions/drafts/county-predictions/${baseName}`,
+        publicPath: resolve(predictionsPath, file)
+      };
+    }
+    return {
+      file,
+      absolutePath: resolve(predictionsPath, file),
+      relativePath: `data/predictions/${file}`,
+      publicPath: resolve(predictionsPath, file)
+    };
+  }
+  return null;
+}
+
+async function listJsonFiles(dirPath, prefix = "") {
+  let files = [];
+  try {
+    files = await readdir(dirPath);
+  } catch {
+    return [];
+  }
+  return files.filter((file) => file.endsWith(".json")).map((file) => `${prefix}${file}`).sort();
+}
+
+async function readPredictionPayload(file) {
+  const info = predictionFileInfo(file, "publish");
+  if (!info) return null;
+  const published = await readJsonFile(info.publicPath, null);
+  const draftInfo = predictionFileInfo(file, "draft");
+  const draft = draftInfo ? await readJsonFile(draftInfo.absolutePath, null) : null;
+  return {
+    file,
+    published,
+    draft,
+    publishedHash: published ? jsonHash(published) : "",
+    draftHash: draft ? jsonHash(draft) : ""
+  };
+}
+
+function validatePredictionPayload(payload) {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) return "Prediction payload must be an object.";
+  if (payload.races !== undefined && !Array.isArray(payload.races)) return "Prediction races must be an array.";
+  if (Array.isArray(payload.races)) {
+    for (const race of payload.races) {
+      if (!race?.raceId) return "Every race needs a raceId.";
+      const prediction = race.prediction || {};
+      const margin = prediction.projectedMargin;
+      if (margin !== null && margin !== undefined && margin !== "" && !Number.isFinite(Number(margin))) {
+        return `Projected margin is not finite for ${race.raceId}.`;
+      }
+    }
+  }
+  return "";
+}
+
 async function handleAdmin(request, response, url) {
   if (!adminEnabled()) {
     sendJson(response, 503, { ok: false, error: "Admin is disabled. Set ADMIN_SECRET in the server environment." });
@@ -478,6 +565,96 @@ async function handleAdmin(request, response, url) {
   }
   if (!isAdminRequest(request, url)) {
     sendJson(response, 401, { ok: false, error: "Admin secret required." });
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/admin/predictions/bootstrap") {
+    const [publishedFiles, countyFiles] = await Promise.all([
+      listJsonFiles(predictionsPath),
+      listJsonFiles(resolve(predictionsPath, "county-predictions"), "county-predictions/")
+    ]);
+    const predictionFiles = publishedFiles.filter((file) => /-predictions\.json$/i.test(file));
+    const files = await Promise.all(predictionFiles.map(readPredictionPayload));
+    const counties = await Promise.all(countyFiles.map(readPredictionPayload));
+    const modelAdapter = await readJsonFile(resolve(predictionsPath, "prediction-adapter.json"), null);
+    sendJson(response, 200, {
+      ok: true,
+      files: files.filter(Boolean),
+      countyFiles: counties.filter(Boolean),
+      modelAdapter
+    });
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/admin/predictions/save") {
+    let payload;
+    try {
+      payload = await readJsonBody(request);
+    } catch {
+      sendJson(response, 400, { ok: false, error: "Invalid prediction payload." });
+      return;
+    }
+    const mode = payload.mode === "publish" ? "publish" : "draft";
+    const info = predictionFileInfo(payload.file, mode);
+    if (!info) {
+      sendJson(response, 400, { ok: false, error: "Prediction file is not allowed." });
+      return;
+    }
+    const data = payload.data;
+    const validationError = validatePredictionPayload(data);
+    if (validationError) {
+      sendJson(response, 400, { ok: false, error: validationError });
+      return;
+    }
+    const now = new Date().toISOString();
+    const editedBy = String(payload.editedBy || "FEA admin").trim().slice(0, 80) || "FEA admin";
+    const changeSummary = String(payload.changeSummary || (mode === "publish" ? "Publish team prediction edits" : "Save prediction draft")).trim().slice(0, 500);
+    data.lastEdited = now;
+    data.lastEditedBy = editedBy;
+    if (mode === "publish") data.lastPublishedAt = now;
+
+    await mkdir(dirname(info.absolutePath), { recursive: true });
+    const previous = await readJsonFile(info.publicPath, null);
+    const previousHash = previous ? jsonHash(previous) : "";
+    const newHash = jsonHash(data);
+    let history = null;
+    if (mode === "publish") {
+      await mkdir(predictionHistoryPath, { recursive: true });
+      const historyFile = `${info.file.replace(/[\/\\]/g, "__").replace(/\.json$/i, "")}-${now.replace(/[:.]/g, "-")}.json`;
+      history = {
+        versionId: historyFile.replace(/\.json$/i, ""),
+        timestamp: now,
+        editedBy,
+        changeSummary,
+        file: info.file,
+        previousHash,
+        newHash,
+        snapshot: data
+      };
+      await persistAdminJsonFile(
+        resolve(predictionHistoryPath, historyFile),
+        `data/predictions/history/${historyFile}`,
+        history,
+        `Add prediction history for ${info.file}`
+      );
+    }
+    const persistence = await persistAdminJsonFile(
+      info.absolutePath,
+      info.relativePath,
+      data,
+      mode === "publish" ? `Publish team predictions for ${info.file}` : `Save team prediction draft for ${info.file}`
+    );
+    sendJson(response, 200, {
+      ok: true,
+      mode,
+      file: info.file,
+      data,
+      previousHash,
+      newHash,
+      history,
+      persistence,
+      persistedFiles: [info.relativePath, ...(history ? [`data/predictions/history/${history.versionId}.json`] : [])]
+    });
     return;
   }
 
@@ -688,6 +865,26 @@ async function handleAdmin(request, response, url) {
 async function serveStatic(request, response) {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
   let requestedPath = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
+  const predictionRedirects = new Map([
+    ["/senate", "/predictions/2026/senate"],
+    ["/senate.html", "/predictions/2026/senate"],
+    ["/house", "/predictions/2026/house"],
+    ["/house.html", "/predictions/2026/house"],
+    ["/governor", "/predictions/2026/governor"],
+    ["/governor.html", "/predictions/2026/governor"],
+    ["/president", "/predictions/2028/president"],
+    ["/president.html", "/predictions/2028/president"],
+    ["/methodology", "/predictions/methodology"],
+    ["/methodology.html", "/predictions/methodology"]
+  ]);
+  if (predictionRedirects.has(url.pathname)) {
+    response.writeHead(302, {
+      "Location": predictionRedirects.get(url.pathname),
+      "Cache-Control": "no-store"
+    });
+    response.end();
+    return;
+  }
   const hiddenResultPaths = new Set(["/result", "/result.html"]);
   if (hiddenResultPaths.has(url.pathname)) {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" });
@@ -699,10 +896,16 @@ async function serveStatic(request, response) {
     requestedPath = "/admin.html";
   } else if (requestedPath === "/fea-results-lab-26") {
     requestedPath = "/election-night.html";
+  } else if (requestedPath === "/predictions/methodology") {
+    requestedPath = "/predictions-methodology.html";
   } else if (requestedPath === "/admin.html") {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     response.end("Not found");
     return;
+  }
+
+  if (requestedPath.endsWith("/")) {
+    requestedPath += "index.html";
   }
   
   // If the path doesn't have an extension, try adding .html

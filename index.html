@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Federal Elections Analysis - Forecasts, Videos, Streams, Articles, and More! </title>
-  <meta name="description" content="Federal Elections Analysis is a hub for electoral insight, top-tier data, and a deep dive into the elections that decide the future of this country. Find our latest forecasts, uploads, predictions, articles, and much more right here!">
+  <title>Federal Elections Analysis - Predictions, Videos, Streams, Articles, and More! </title>
+  <meta name="description" content="Federal Elections Analysis is a hub for electoral insight, top-tier data, and a deep dive into the elections that decide the future of this country. Find our latest team predictions, uploads, articles, and much more right here!">
   <meta property="og:image" content="https://media.discordapp.net/attachments/1382924914482348064/1509778504353447998/FEA_40.png?ex=6a1a6a4d&is=6a1918cd&hm=6b77c0e3215672cbf44ea62d2fc2c9e4d907031812e13de98aeedc34dd23b5e1&=&format=webp&quality=lossless&width=2452&height=1380">
   <link rel="icon" href="assets/img/FEA_Icon.webp" type="image/webp">
   <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
@@ -24,12 +24,12 @@
       <a href="/results">Results</a>
       <a href="/articles">Articles</a>
       <details class="nav-dropdown">
-        <summary>Forecasts</summary>
+        <summary>Predictions</summary>
         <div class="nav-dropdown-menu">
-          <a href="/senate">Senate</a>
-          <a href="/house">House</a>
-          <a href="/governor">Governors</a>
-          <a href="/president">2028 Pres</a>
+          <a href="/predictions/2026/senate">Senate</a>
+          <a href="/predictions/2026/house">House</a>
+          <a href="/predictions/2026/governor">Governors</a>
+          <a href="/predictions/2028/president">2028 Pres</a>
         </div>
       </details>
     </nav>
@@ -47,12 +47,13 @@
       <div class="hero-main home-hero">
         <p class="kicker">Federal Elections Analysis</p>
         <h1 id="page-title">Analysis on your screen.</h1>
-        <p class="lede">Content, forecasts, and more, all in one place.</p>
+        <p class="lede">Content, team predictions, and more, all in one place.</p>
         <div class="hero-actions">
-          <a class="button-link" href="senate.html">Senate</a>
-          <a class="button-link" href="house.html">House</a>
-          <a class="button-link" href="governor.html">Governors</a>
-          <a class="button-link" href="president.html">2028 President</a>
+          <a class="button-link" href="/predictions/2026/senate">Senate</a>
+          <a class="button-link" href="/predictions/2026/house">House</a>
+          <a class="button-link" href="/predictions/2026/governor">Governors</a>
+          <a class="button-link" href="/predictions/2028/president">2028 President</a>
+          <a class="button-link" href="/predictions">Predictions</a>
           <a class="button-link" href="articles.html">Articles</a>
           <a class="button-link" href="videos.html">Videos</a>
           <a class="button-link" href="about.html">About</a>
@@ -60,27 +61,27 @@
         </div>
       </div>
       <aside class="home-run-panel status-rail">
-        <p class="kicker">Daily forecast</p>
+        <p class="kicker">Prediction desk</p>
         <dl>
           <div><dt>Senate</dt><dd id="home-senate-run">--</dd></div>
           <div><dt>House</dt><dd id="home-house-run">--</dd></div>
           <div><dt>Governors</dt><dd id="home-governor-run">--</dd></div>
           <div><dt>President</dt><dd id="home-president-run">--</dd></div>
-          <div><dt>Senate forecast</dt><dd id="home-senate-median">--</dd></div>
-          <div><dt>House forecast</dt><dd id="home-house-median">--</dd></div>
-          <div><dt>Presidential forecast EV</dt><dd id="home-president-ev">--</dd></div>
+          <div><dt>Senate median</dt><dd id="home-senate-median">--</dd></div>
+          <div><dt>House median</dt><dd id="home-house-median">--</dd></div>
+          <div><dt>Presidential EV</dt><dd id="home-president-ev">--</dd></div>
         </dl>
-        <p class="forecast-disclaimer">Forecasts are automated estimates, not guarantees. Daily generation can take up to 20 minutes because the system separately builds 60+ matchup and race files before publishing updated data.</p>
+        <p class="forecast-disclaimer">FEA Team Predictions are manual team ratings informed by polling, race context, and internal model diagnostics. Automated model output is maintained separately in Model Lab.</p>
       </aside>
     </section>
 
     <div class="home-section-head">
-      <span>Forecast desk</span>
-      <h2>Core models</h2>
+      <span>Prediction desk</span>
+      <h2>Core predictions</h2>
     </div>
-    <p class="model-credit">Models built and maintained by gamerdoglover.</p>
+    <p class="model-credit">Prediction infrastructure and model diagnostics built and maintained by gamerdoglover.</p>
     <section class="model-strip" aria-label="Forecast overviews">
-      <a class="forecast-overview-card active" id="home-senate-card" href="senate.html">
+      <a class="forecast-overview-card active" id="home-senate-card" href="/predictions/2026/senate">
         <span>Live</span>
         <strong>Senate</strong>
         <b id="home-senate-favored">--</b>
@@ -88,7 +89,7 @@
         <small><i id="home-senate-dem">--</i> D / <i id="home-senate-rep">--</i> R</small>
         <small id="home-senate-note">--</small>
       </a>
-      <a class="forecast-overview-card" id="home-house-card" href="house.html">
+      <a class="forecast-overview-card" id="home-house-card" href="/predictions/2026/house">
         <span id="home-house-status">Live</span>
         <strong>House</strong>
         <b id="home-house-favored">--</b>
@@ -96,14 +97,14 @@
         <small><i id="home-house-dem">--</i> D / <i id="home-house-rep">--</i> R</small>
         <small id="home-house-note">--</small>
       </a>
-      <a class="forecast-overview-card" id="home-president-card" href="president.html">
+      <a class="forecast-overview-card" id="home-president-card" href="/predictions/2028/president">
         <span>Live</span>
         <strong>2028 President</strong>
         <b id="home-president-favored">--</b>
         <small><i id="home-president-dem">--</i> D / <i id="home-president-rep">--</i> R</small>
         <small id="home-president-note">--</small>
       </a>
-      <a class="forecast-overview-card" id="home-governor-card" href="governor.html">
+      <a class="forecast-overview-card" id="home-governor-card" href="/predictions/2026/governor">
         <span>Live</span>
         <strong>Governors</strong>
         <b id="home-governor-favored">--</b>
@@ -195,11 +196,12 @@
         <a href="/articles">Articles</a>
       </section>
       <section class="footer-link-group" aria-label="Forecast links">
-        <strong>Forecasts</strong>
-        <a href="/senate">Senate</a>
-        <a href="/house">House</a>
-        <a href="/governor">Governors</a>
-        <a href="/president">2028 Pres</a>
+        <strong>Predictions</strong>
+        <a href="/predictions/2026/senate">Senate</a>
+        <a href="/predictions/2026/house">House</a>
+        <a href="/predictions/2026/governor">Governors</a>
+        <a href="/predictions/2028/president">2028 Pres</a>
+        <a href="/predictions/methodology">Methodology</a>
         <a href="/calibration">Calibration</a>
       </section>
       <section class="footer-link-group" aria-label="Other links">
