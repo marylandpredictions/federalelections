@@ -220,23 +220,19 @@
     `;
   }
 
-  function renderMap(data) {
+  async function renderMap(data) {
     const container = $("prediction-map");
     if (!container) return;
-    container.innerHTML = sortedRaces(data?.races || []).map((race) => {
-      const winner = race.prediction?.winner || "Toss-up";
-      const winnerName = ["D", "R", "I"].includes(winner) ? candidateName(race, winner) : winner;
-      return `
-        <button class="prediction-map-tile prediction-race-tile ${ratingClass(race.prediction?.rating)}" type="button" data-race-id="${escapeHtml(race.raceId)}">
-          <span class="prediction-tile-code">${escapeHtml(race.district ? `${race.state}-${race.district}` : race.state)}</span>
-          <strong>${escapeHtml(race.displayName || race.raceId)}</strong>
-          <small>${escapeHtml(race.prediction?.rating || "--")}</small>
-          <span class="prediction-tile-line"><b>${escapeHtml(winnerName)}</b><em>${escapeHtml(formatMargin(race))}</em></span>
-        </button>
-      `;
-    }).join("");
-    container.querySelectorAll("[data-race-id]").forEach((button) => {
-      button.addEventListener("click", () => selectRace(button.dataset.raceId));
+    if (!window.FeaPredictionMaps?.renderRaceShapeMap) {
+      container.innerHTML = `<p class="prediction-note">Prediction map tools could not load.</p>`;
+      return;
+    }
+    container.innerHTML = `<p class="prediction-note">Loading shape map...</p>`;
+    await window.FeaPredictionMaps.renderRaceShapeMap({
+      container,
+      data,
+      selectedRaceId: state.selectedRaceId,
+      onSelect: (raceId) => selectRace(raceId)
     });
   }
 
@@ -345,11 +341,11 @@
       if ($("prediction-subtitle")) $("prediction-subtitle").textContent = data.notes?.publicSummary || "";
       if ($("prediction-updated")) $("prediction-updated").textContent = formatDate(data.lastPublishedAt || data.generatedAt);
       renderTopline(data);
-      renderMap(data);
       renderTable(data);
       const firstRace = sortedRaces(data.races || [])[0];
       renderDetail(firstRace);
       selectRace(firstRace?.raceId || "");
+      await renderMap(data);
       if (root) root.dataset.loaded = "true";
     } catch (error) {
       if (root) {

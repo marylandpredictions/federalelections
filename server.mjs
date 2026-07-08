@@ -545,6 +545,25 @@ async function readPredictionPayload(file) {
 function validatePredictionPayload(payload) {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) return "Prediction payload must be an object.";
   if (payload.races !== undefined && !Array.isArray(payload.races)) return "Prediction races must be an array.";
+  const validateDisplay = (id, target) => {
+    const display = target?.displayPercentages;
+    if (display === undefined || display === null) return "";
+    if (typeof display !== "object" || Array.isArray(display)) return `Display percentages must be an object for ${id}.`;
+    for (const party of ["D", "R"]) {
+      if (display[party] === undefined || display[party] === null || display[party] === "") continue;
+      const value = Number(display[party]);
+      if (!Number.isFinite(value) || value < 0 || value > 100) return `Display percentage ${party} must be between 0 and 100 for ${id}.`;
+    }
+    return "";
+  };
+  const validateMap = (id, target) => {
+    if (!target) return "";
+    if (target.mapValue !== undefined && target.mapValue !== null && target.mapValue !== "") {
+      const value = Number(target.mapValue);
+      if (!Number.isFinite(value) || value < -100 || value > 100) return `Map value must be between -100 and 100 for ${id}.`;
+    }
+    return validateDisplay(id, target);
+  };
   if (Array.isArray(payload.races)) {
     for (const race of payload.races) {
       if (!race?.raceId) return "Every race needs a raceId.";
@@ -552,6 +571,18 @@ function validatePredictionPayload(payload) {
       const margin = prediction.projectedMargin;
       if (margin !== null && margin !== undefined && margin !== "" && !Number.isFinite(Number(margin))) {
         return `Projected margin is not finite for ${race.raceId}.`;
+      }
+      const predictionError = validateMap(race.raceId, prediction);
+      if (predictionError) return predictionError;
+      if (race.countyPredictions !== undefined) {
+        if (!race.countyPredictions || typeof race.countyPredictions !== "object" || Array.isArray(race.countyPredictions)) {
+          return `County predictions must be an object for ${race.raceId}.`;
+        }
+        for (const [countyFips, countyPrediction] of Object.entries(race.countyPredictions)) {
+          if (!/^\d{5}$/.test(String(countyFips))) return `County override key ${countyFips} is invalid for ${race.raceId}.`;
+          const countyError = validateMap(`${race.raceId} ${countyFips}`, countyPrediction);
+          if (countyError) return countyError;
+        }
       }
     }
   }

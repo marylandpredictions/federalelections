@@ -30,6 +30,33 @@ function isFiniteOrNull(value) {
   return value === null || value === undefined || Number.isFinite(Number(value));
 }
 
+function validateDisplayPercentages(file, id, target) {
+  const display = target?.displayPercentages;
+  if (display === undefined || display === null) return;
+  if (typeof display !== "object" || Array.isArray(display)) {
+    fail(`${file}: ${id} displayPercentages must be an object`);
+    return;
+  }
+  for (const party of ["D", "R"]) {
+    if (display[party] === undefined || display[party] === null || display[party] === "") continue;
+    const number = Number(display[party]);
+    if (!Number.isFinite(number) || number < 0 || number > 100) {
+      fail(`${file}: ${id} displayPercentages.${party} must be between 0 and 100`);
+    }
+  }
+}
+
+function validateMapFields(file, id, target) {
+  if (!target) return;
+  if (target.mapValue !== undefined && target.mapValue !== null && target.mapValue !== "") {
+    const value = Number(target.mapValue);
+    if (!Number.isFinite(value) || value < -100 || value > 100) {
+      fail(`${file}: ${id} mapValue must be between -100 and 100`);
+    }
+  }
+  validateDisplayPercentages(file, id, target);
+}
+
 function validateRace(file, race) {
   const id = race.raceId || "(missing raceId)";
   if (!race.raceId) fail(`${file}: race missing raceId`);
@@ -41,6 +68,17 @@ function validateRace(file, race) {
   if (!isFiniteOrNull(prediction.projectedMargin)) fail(`${file}: ${id} invalid projectedMargin ${prediction.projectedMargin}`);
   if (!validConfidence.has(prediction.confidence)) fail(`${file}: ${id} invalid confidence ${prediction.confidence}`);
   if (!validStatus.has(prediction.status || "published")) fail(`${file}: ${id} invalid status ${prediction.status}`);
+  validateMapFields(file, id, prediction);
+  if (race.countyPredictions !== undefined) {
+    if (!race.countyPredictions || typeof race.countyPredictions !== "object" || Array.isArray(race.countyPredictions)) {
+      fail(`${file}: ${id} countyPredictions must be an object keyed by county FIPS`);
+    } else {
+      for (const [countyFips, countyPrediction] of Object.entries(race.countyPredictions)) {
+        if (!/^\d{5}$/.test(String(countyFips))) fail(`${file}: ${id} invalid county override key ${countyFips}`);
+        validateMapFields(file, `${id} county ${countyFips}`, countyPrediction);
+      }
+    }
+  }
   for (const party of ["D", "R"]) {
     if (!race.candidates?.[party]?.name) fail(`${file}: ${id} missing ${party} candidate name`);
   }
@@ -104,6 +142,7 @@ async function scanPublicStrings() {
     "predictions-methodology.html",
     "predictions/methodology/index.html",
     "assets/predictions.js",
+    "assets/prediction-map-utils.js",
     "assets/predictions.css",
     "assets/model-lab.js",
     "assets/admin-predictions.js"
