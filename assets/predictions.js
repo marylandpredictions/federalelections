@@ -306,7 +306,23 @@
       container.innerHTML = `<p class="prediction-note">Prediction map tools could not load.</p>`;
       return;
     }
+    const selectedRace = (data?.races || []).find((item) => item.raceId === state.selectedRaceId);
     container.innerHTML = `<p class="prediction-note">Loading shape map...</p>`;
+    container.classList.remove("is-detail-map");
+    if (selectedRace && window.FeaPredictionMaps?.renderCountyShapeMap) {
+      try {
+        container.classList.add("is-detail-map");
+        await window.FeaPredictionMaps.renderCountyShapeMap({
+          container,
+          race: selectedRace,
+          countyValues: selectedRace.countyPredictions || {}
+        });
+        return;
+      } catch (error) {
+        container.classList.remove("is-detail-map");
+        container.innerHTML = `<p class="prediction-note">${escapeHtml(error.message || "County-level prediction map unavailable. Showing full board instead.")}</p>`;
+      }
+    }
     await window.FeaPredictionMaps.renderRaceShapeMap({
       container,
       data,
@@ -382,10 +398,6 @@
           <thead><tr><th>Candidate</th><th>Percentage</th><th>Margin</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
-        <section class="prediction-focus-note prediction-county-section">
-          <span class="prediction-kicker">County-level prediction</span>
-          <div id="prediction-detail-county-map" class="prediction-detail-county-map"></div>
-        </section>
         <section class="prediction-focus-note">
           <span class="prediction-kicker">Why we rate it this way</span>
           <p>${escapeHtml(race.notes?.whyWeRateItThisWay || race.notes?.short || "Team reasoning has not been added yet.")}</p>
@@ -404,18 +416,8 @@
       state.selectedRaceId = "";
       document.querySelectorAll("[data-race-id]").forEach((node) => node.classList.remove("is-selected"));
       renderDetail(null);
+      renderMap(state.data);
     });
-    const countyMap = panel.querySelector("#prediction-detail-county-map");
-    if (countyMap && window.FeaPredictionMaps?.renderCountyShapeMap) {
-      countyMap.innerHTML = `<p class="prediction-note">Loading county-level prediction map...</p>`;
-      window.FeaPredictionMaps.renderCountyShapeMap({
-        container: countyMap,
-        race,
-        countyValues: race.countyPredictions || {}
-      }).catch((error) => {
-        countyMap.innerHTML = `<p class="prediction-note">${escapeHtml(error.message || "County-level prediction map unavailable.")}</p>`;
-      });
-    }
     return;
     /*
     panel.innerHTML = `
@@ -454,6 +456,7 @@
     });
     const race = (state.data?.races || []).find((item) => item.raceId === raceId);
     renderDetail(race);
+    renderMap(state.data);
   }
 
   async function loadPrediction() {

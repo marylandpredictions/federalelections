@@ -135,7 +135,7 @@
     const payload = useDraft && record.draft ? record.draft : record.published;
     if (!payload) throw new Error(useDraft ? "No draft exists for this file." : "Published file is missing.");
     state.data = clone(payload);
-    state.selectedRaceId = state.data.races?.[0]?.raceId || "";
+    state.selectedRaceId = "";
     state.selectedCountyKey = "";
     state.selectedCountyName = "";
     renderPublishedMeta(useDraft ? "draft" : "published");
@@ -251,6 +251,21 @@
     const container = $("admin-race-map");
     if (!container || !window.FeaPredictionMaps?.renderRaceShapeMap) return;
     try {
+      const race = selectedRace();
+      if (race && window.FeaPredictionMaps?.renderCountyShapeMap) {
+        await window.FeaPredictionMaps.renderCountyShapeMap({
+          container,
+          race,
+          countyValues: race.countyPredictions || {},
+          selectedCountyKey: state.selectedCountyKey,
+          onSelect: (countyKey, countyName) => {
+            state.selectedCountyKey = countyKey;
+            state.selectedCountyName = countyName;
+            renderAdminMapCountyEditor(race);
+          }
+        });
+        return;
+      }
       await window.FeaPredictionMaps.renderRaceShapeMap({
         container,
         data: state.data,
@@ -358,13 +373,13 @@
       else race.countyPredictions[state.selectedCountyKey] = row;
       race.lastEdited = new Date().toISOString();
       race.lastEditedBy = "FEA admin";
-      renderAdminCountyMap(race);
+      render();
     });
     $("clear-map-county-editor")?.addEventListener("click", () => {
       delete race.countyPredictions[state.selectedCountyKey];
       state.selectedCountyKey = "";
       state.selectedCountyName = "";
-      renderAdminCountyMap(race);
+      render();
     });
   }
 
@@ -381,8 +396,9 @@
       <section class="admin-editor-section">
         <div class="admin-editor-section-head">
           <span class="prediction-kicker">Map editor</span>
-          <p>Map value is -100 for strongest Democrat/blue, 0 for toss-up, and 100 for strongest Republican/red.</p>
+          <p>${race ? "Focused county map. Select a county or district-county piece to edit local prediction values." : "Select a state or district to open the focused county map. Map value is -100 for strongest Democrat/blue, 0 for toss-up, and 100 for strongest Republican/red."}</p>
         </div>
+        ${race ? `<button id="admin-back-to-full-map" class="prediction-button admin-map-back" type="button">Back to full prediction map</button>` : ""}
         <div id="admin-race-map" class="prediction-map admin-wide-map"></div>
       </section>
       <section class="admin-map-edit-grid">
@@ -398,7 +414,6 @@
             <span class="prediction-kicker">County-level prediction</span>
             <p>Select a county or district-county piece, then override its local color and D/R percentages.</p>
           </div>
-          <div id="admin-county-map" class="prediction-map admin-county-editor-map"></div>
           <div id="admin-map-county-editor" class="prediction-map-editor"></div>
         </article>
       </section>
@@ -406,7 +421,13 @@
     renderAdminToplineEditor();
     renderAdminRaceMap();
     renderAdminMapRaceEditor(race);
-    renderAdminCountyMap(race);
+    renderAdminMapCountyEditor(race);
+    $("admin-back-to-full-map")?.addEventListener("click", () => {
+      state.selectedRaceId = "";
+      state.selectedCountyKey = "";
+      state.selectedCountyName = "";
+      render();
+    });
   }
 
   function renderBulk() {

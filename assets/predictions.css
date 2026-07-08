@@ -1007,6 +1007,10 @@ body.prediction-page .prediction-map.election-map-canvas.prediction-shape-map {
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04), 0 24px 54px rgba(0,0,0,0.32);
 }
 
+body.prediction-page .prediction-map.election-map-canvas.prediction-county-map {
+  min-height: clamp(680px, 78vh, 940px);
+}
+
 body.prediction-page .prediction-map.election-map-canvas.prediction-shape-map::before {
   content: "";
   position: absolute;
@@ -1277,6 +1281,22 @@ body.admin-prediction-page .admin-prediction-grid > aside.admin-prediction-panel
 }
 
 body.admin-prediction-page .admin-wide-map {
+  min-height: 680px;
+}
+
+body.admin-prediction-page .admin-wide-map.prediction-shape-map,
+body.admin-prediction-page .admin-wide-map.prediction-county-map {
+  position: relative;
+  display: block;
+  min-height: 680px;
+  max-height: none;
+  overflow: hidden;
+  padding: 0;
+}
+
+body.admin-prediction-page .admin-wide-map.prediction-shape-map .prediction-shape-svg,
+body.admin-prediction-page .admin-wide-map.prediction-county-map .prediction-shape-svg {
+  height: 680px;
   min-height: 680px;
 }
 

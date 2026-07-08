@@ -373,6 +373,7 @@
       return `<path class="${classes}" d="${pathForFeature(feature, projectionTools)}" fill="${fill}" data-race-id="${escapeHtml(race?.raceId || "")}" data-feature-key="${escapeHtml(key)}" data-feature-label="${escapeHtml(featureName(feature, office))}" tabindex="${race ? "0" : "-1"}"></path>`;
     }).join("");
 
+    container.classList.remove("prediction-county-map");
     container.classList.add("prediction-shape-map", "prediction-election-map");
     container.innerHTML = `
       <div class="prediction-map-controls election-map-controls" aria-label="Map controls">
@@ -458,7 +459,8 @@
       container.innerHTML = `<p class="prediction-note">County-level geometry is not available for this race yet.</p>`;
       return;
     }
-    const projectionTools = projector(features, 900, 520, 24, "local");
+    const isFullCanvas = container.classList.contains("election-map-canvas") || container.classList.contains("admin-wide-map");
+    const projectionTools = projector(features, isFullCanvas ? 1160 : 900, isFullCanvas ? 720 : 520, isFullCanvas ? 34 : 24, "local");
     const { width, height } = projectionTools;
     const paths = features.map((feature) => {
       const key = countyKey(feature);
@@ -468,10 +470,35 @@
       const classes = ["prediction-shape-feature", "has-race", key === selectedCountyKey ? "is-selected" : ""].filter(Boolean).join(" ");
       return `<path class="${classes}" d="${pathForFeature(feature, projectionTools)}" fill="${fill}" data-county-key="${escapeHtml(key)}" data-county-name="${escapeHtml(countyName(feature))}"></path>`;
     }).join("");
+    container.classList.remove("prediction-election-map");
     container.classList.add("prediction-shape-map", "prediction-county-map");
     container.innerHTML = `
-      <svg class="prediction-shape-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.displayName || race.raceId)} county prediction map">${paths}</svg>
+      <div class="prediction-map-controls election-map-controls" aria-label="Map controls">
+        <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
+        <button type="button" data-zoom="out" aria-label="Zoom out">-</button>
+        <button type="button" data-zoom="reset">Reset</button>
+      </div>
+      <div class="prediction-shape-scale">
+        <span>Strong D</span><i class="is-d"></i><b>Toss-up</b><i class="is-r"></i><span>Strong R</span>
+      </div>
+      <svg class="prediction-shape-svg prediction-election-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.displayName || race.raceId)} county prediction map">
+        <g class="prediction-map-viewport election-map-viewport">${paths}</g>
+      </svg>
     `;
+    const svgNode = container.querySelector("svg");
+    const viewportNode = container.querySelector(".prediction-map-viewport");
+    const svg = window.d3?.select ? window.d3.select(svgNode) : null;
+    const viewport = window.d3?.select ? window.d3.select(viewportNode) : null;
+    let zoom = null;
+    if (svg && viewport) {
+      zoom = window.d3.zoom()
+        .scaleExtent([0.9, 90])
+        .on("zoom", (event) => viewport.attr("transform", event.transform));
+      svg.call(zoom);
+      container.querySelector('[data-zoom="in"]')?.addEventListener("click", () => svg.transition().duration(180).call(zoom.scaleBy, 1.35));
+      container.querySelector('[data-zoom="out"]')?.addEventListener("click", () => svg.transition().duration(180).call(zoom.scaleBy, 0.74));
+      container.querySelector('[data-zoom="reset"]')?.addEventListener("click", () => svg.transition().duration(220).call(zoom.transform, window.d3.zoomIdentity));
+    }
     container.querySelectorAll(".prediction-shape-feature").forEach((path) => {
       path.addEventListener("click", () => {
         if (path.dataset.countyKey && onSelect) onSelect(path.dataset.countyKey, path.dataset.countyName);
