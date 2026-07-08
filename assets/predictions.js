@@ -156,6 +156,29 @@
     `;
   }
 
+  function renderPredictionBoard(data) {
+    const { counts } = toplineCounts(data);
+    const total = Math.max(1, counts.D + counts.R + counts.I + counts.toss + counts.uncalled);
+    const demLabel = $("prediction-dem-count");
+    const repLabel = $("prediction-rep-count");
+    const majorityLabel = $("prediction-majority-label");
+    const demBar = $("prediction-bar-dem");
+    const repBar = $("prediction-bar-rep");
+    const tossBar = $("prediction-bar-toss");
+    const majorityLine = $("prediction-majority-line");
+    const majority = data?.office === "house" ? 218 : data?.office === "senate" ? 50 : null;
+    if (demLabel) demLabel.textContent = `${formatNumber(counts.D)} D`;
+    if (repLabel) repLabel.textContent = `${formatNumber(counts.R)} R`;
+    if (majorityLabel) majorityLabel.textContent = majority ? `${majority} for majority` : "Projected race wins";
+    if (demBar) demBar.style.width = `${Math.max(0, (counts.D / total) * 100)}%`;
+    if (repBar) repBar.style.width = `${Math.max(0, (counts.R / total) * 100)}%`;
+    if (tossBar) tossBar.style.width = `${Math.max(0, ((counts.toss + counts.uncalled + counts.I) / total) * 100)}%`;
+    if (majorityLine) {
+      majorityLine.hidden = !majority;
+      majorityLine.style.left = majority ? `${Math.max(0, Math.min(100, (majority / total) * 100))}%` : "50%";
+    }
+  }
+
   function renderRatingDistribution(data) {
     const ratings = data?.summary?.ratings || {};
     const total = Math.max(1, Object.values(ratings).reduce((sum, value) => sum + numberValue(value), 0));
@@ -261,16 +284,8 @@
     const panel = $("prediction-detail");
     if (!panel) return;
     if (!race) {
-      panel.innerHTML = `
-        <div class="prediction-detail-card">
-          <div class="prediction-detail-head">
-            <span class="prediction-kicker">Race detail</span>
-            <h3>Select a race</h3>
-          </div>
-          <div class="prediction-detail-body">
-            <p class="prediction-note">Choose a race tile or table row to view the FEA Team Prediction and model reference notes.</p>
-          </div>
-        </div>`;
+      panel.hidden = true;
+      panel.innerHTML = "";
       return;
     }
     const winner = race.prediction?.winner || "Toss-up";
@@ -278,13 +293,59 @@
     const rows = winnerRows(race).map(({ party, candidate }) => {
       const isWinner = winner === party;
       return `
-        <div class="prediction-candidate-row ${isWinner ? "is-projected" : ""}">
-          <span class="prediction-candidate-party ${partyClass(party)}">${escapeHtml(party)}</span>
-          <strong>${escapeHtml(candidate?.name || partyName(party))}</strong>
-          <small>${escapeHtml(partyName(candidate?.party || party))}${candidate?.incumbent ? " · incumbent" : ""}${candidate?.status ? ` · ${escapeHtml(candidate.status)}` : ""}</small>
-        </div>
+        <tr class="${isWinner ? "leading" : ""}">
+          <td>
+            <span class="selected-party-rail" style="background:${party === "R" ? "#ff3b45" : party === "D" ? "#2d7cff" : "#48d38a"}"></span>
+            <strong>${escapeHtml(candidate?.name || partyName(party))}${candidate?.incumbent ? "*" : ""}</strong>
+            <small>${escapeHtml(partyName(candidate?.party || party))}${candidate?.status ? ` / ${escapeHtml(candidate.status)}` : ""}</small>
+          </td>
+          <td>${escapeHtml(isWinner ? winner : "--")}</td>
+          <td>${escapeHtml(isWinner ? formatMargin(race) : "Awaiting")}</td>
+        </tr>
       `;
     }).join("");
+    panel.hidden = false;
+    panel.classList.toggle("party-dem", winner === "D");
+    panel.classList.toggle("party-rep", winner === "R");
+    panel.style.setProperty("--focus-color", winner === "R" ? "#ff3b45" : winner === "D" ? "#2d7cff" : "#48d38a");
+    panel.innerHTML = `
+      <div class="focused-card-head">
+        <span class="focused-pill">${escapeHtml(race.prediction?.rating || "Unrated")}</span>
+        <span class="focused-pill focused-pill-light">${escapeHtml(race.prediction?.status || "Published")}</span>
+        <button class="focused-close" type="button" data-close-prediction-detail aria-label="Close selected race">x</button>
+      </div>
+      <h3 id="focused-race-title">${escapeHtml(race.displayName || race.raceId)}</h3>
+      <div id="focused-race-content">
+        <div class="selected-race-meta">
+          <span class="race-meta-chip is-status">${escapeHtml(winnerName)}</span>
+          <span class="race-meta-chip">${escapeHtml(formatMargin(race))}</span>
+          <span class="race-meta-chip">${escapeHtml(race.prediction?.confidence || "medium")} confidence</span>
+        </div>
+        <table class="selected-race-table">
+          <thead><tr><th>Candidate</th><th>Projection</th><th>Margin</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <section class="prediction-focus-note">
+          <span class="prediction-kicker">Why we rate it this way</span>
+          <p>${escapeHtml(race.notes?.whyWeRateItThisWay || race.notes?.short || "Team reasoning has not been added yet.")}</p>
+        </section>
+        <section class="prediction-focus-note">
+          <span class="prediction-kicker">Model diagnostic reference</span>
+          <p>${escapeHtml(race.notes?.modelSignal || "No model diagnostic summary attached.")}</p>
+        </section>
+        <div class="selected-race-foot">
+          <span>${escapeHtml(state.data?.office || "Prediction")}</span>
+          <span>${escapeHtml(race.state || "")}${race.district ? `-${escapeHtml(race.district)}` : ""}</span>
+        </div>
+      </div>
+    `;
+    panel.querySelector("[data-close-prediction-detail]")?.addEventListener("click", () => {
+      state.selectedRaceId = "";
+      document.querySelectorAll("[data-race-id]").forEach((node) => node.classList.remove("is-selected"));
+      renderDetail(null);
+    });
+    return;
+    /*
     panel.innerHTML = `
       <div class="prediction-detail-card">
         <div class="prediction-detail-head ${ratingClass(race.prediction?.rating)}">
@@ -311,6 +372,7 @@
         </div>
       </div>
     `;
+    */
   }
 
   function selectRace(raceId) {
@@ -341,10 +403,8 @@
       if ($("prediction-subtitle")) $("prediction-subtitle").textContent = data.notes?.publicSummary || "";
       if ($("prediction-updated")) $("prediction-updated").textContent = formatDate(data.lastPublishedAt || data.generatedAt);
       renderTopline(data);
-      renderTable(data);
-      const firstRace = sortedRaces(data.races || [])[0];
-      renderDetail(firstRace);
-      selectRace(firstRace?.raceId || "");
+      renderPredictionBoard(data);
+      renderDetail(null);
       await renderMap(data);
       if (root) root.dataset.loaded = "true";
     } catch (error) {

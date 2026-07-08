@@ -26,11 +26,25 @@
       <div class="prediction-actions"><a class="prediction-button" href="/predictions">All predictions</a><a class="prediction-button" href="/predictions/methodology">Methodology</a></div>
     </section>
     <section id="prediction-topline" class="prediction-topline"></section>
-    <section class="prediction-layout">
-      <article class="prediction-panel prediction-map-panel"><h2 class="prediction-gradient-title">Prediction map.</h2><div id="prediction-map" class="prediction-map"></div></article>
-      <aside id="prediction-detail" class="prediction-detail"></aside>
+    <section class="map-panel election-map-panel prediction-map-panel" aria-label="Senate prediction map">
+      <section class="election-chamber-board prediction-board" aria-label="Senate prediction board">
+        <div class="election-chamber-counts">
+          <strong id="prediction-dem-count" class="prediction-party-d">-- D</strong>
+          <span id="prediction-majority-label">50 for majority</span>
+          <strong id="prediction-rep-count" class="prediction-party-r">-- R</strong>
+        </div>
+        <div class="election-chamber-bar" aria-hidden="true">
+          <span id="prediction-bar-dem" class="chamber-bar-dem"></span>
+          <span id="prediction-bar-toss" class="chamber-bar-uncalled"></span>
+          <span id="prediction-bar-rep" class="chamber-bar-rep"></span>
+          <i id="prediction-majority-line" class="chamber-majority-line"></i>
+        </div>
+      </section>
+      <div class="election-map-shell prediction-map-shell">
+        <div id="prediction-map" class="election-map-canvas prediction-map" aria-live="polite"></div>
+        <aside id="prediction-detail" class="election-focus-panel election-focus-overlay prediction-detail" hidden></aside>
+      </div>
     </section>
-    <section class="prediction-panel" style="margin-top:16px"><h2 class="prediction-gradient-title">Race table.</h2><div class="prediction-table-wrap"><table class="prediction-table"><thead><tr><th>Race</th><th>Democrat</th><th>Republican</th><th>FEA rating</th><th>Projected winner</th><th>Margin</th><th>Confidence</th></tr></thead><tbody id="prediction-table-body"></tbody></table></div></section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script src="/assets/prediction-map-utils.js"></script>

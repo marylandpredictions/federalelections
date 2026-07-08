@@ -200,6 +200,24 @@
     return bounds;
   }
 
+  function projectedRingPath(ring, projection) {
+    const points = ring
+      .map((point) => projection(point))
+      .filter(Boolean);
+    if (points.length < 3) return "";
+    return `${points.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`).join("")}Z`;
+  }
+
+  function projectedFeaturePath(feature, projection) {
+    const geometry = feature?.geometry;
+    if (!geometry) return "";
+    const polygons = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates || [];
+    return polygons
+      .flatMap((polygon) => polygon.map((ring) => projectedRingPath(ring, projection)))
+      .filter(Boolean)
+      .join("");
+  }
+
   function projector(features, width = 980, height = 580, pad = 26, mode = "local") {
     if (window.d3?.geoPath) {
       const collection = { type: "FeatureCollection", features: features || [] };
@@ -212,7 +230,10 @@
         width,
         height,
         pathForFeature(feature) {
-          return path(feature) || "";
+          return projectedFeaturePath(feature, projection) || path(feature) || "";
+        },
+        boundsForFeature(feature) {
+          return path.bounds(feature);
         },
         project(point) {
           return projection(point);
@@ -228,6 +249,9 @@
     return {
       width,
       height,
+      boundsForFeature(feature) {
+        return [[0, 0], [width, height]];
+      },
       project(lon, lat) {
         return [
           offsetX + ((lon - bounds.minX) * scale),
@@ -331,29 +355,88 @@
     const office = data.office || "";
     const features = await loadRaceFeatures(office);
     const raceByKey = new Map((data.races || []).map((race) => [raceKey(race, office), race]));
-    const projectionTools = projector(features, 1160, office === "house" ? 760 : 700, 18, "national");
-    const { width, height } = projectionTools;
-    const paths = features.map((feature) => {
+    const width = 1160;
+    const height = 720;
+    const projectionTools = projector(features, width, height, office === "house" ? 16 : 24, "national");
+    const featureByRaceId = new Map();
+    const pathRows = features.map((feature) => {
       const key = featureKey(feature, office);
       const race = raceByKey.get(key);
-      const fill = race ? colorForScore(scoreFromRace(race)) : "#28334a";
+      if (race?.raceId) featureByRaceId.set(race.raceId, feature);
+      const fill = race ? colorForScore(scoreFromRace(race)) : "#334054";
       const classes = [
         "prediction-shape-feature",
+        "election-map-shape",
         race ? "has-race" : "is-muted",
         race?.raceId === selectedRaceId ? "is-selected" : ""
       ].filter(Boolean).join(" ");
-      return `<path class="${classes}" d="${pathForFeature(feature, projectionTools)}" fill="${fill}" data-race-id="${escapeHtml(race?.raceId || "")}" data-feature-label="${escapeHtml(featureName(feature, office))}"></path>`;
+      return `<path class="${classes}" d="${pathForFeature(feature, projectionTools)}" fill="${fill}" data-race-id="${escapeHtml(race?.raceId || "")}" data-feature-key="${escapeHtml(key)}" data-feature-label="${escapeHtml(featureName(feature, office))}" tabindex="${race ? "0" : "-1"}"></path>`;
     }).join("");
-    container.classList.add("prediction-shape-map");
+
+    container.classList.add("prediction-shape-map", "prediction-election-map");
     container.innerHTML = `
+      <div class="prediction-map-controls election-map-controls" aria-label="Map controls">
+        <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
+        <button type="button" data-zoom="out" aria-label="Zoom out">-</button>
+        <button type="button" data-zoom="reset">Reset</button>
+      </div>
       <div class="prediction-shape-scale">
         <span>Strong D</span><i class="is-d"></i><b>Toss-up</b><i class="is-r"></i><span>Strong R</span>
       </div>
-      <svg class="prediction-shape-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(data.title || "Prediction map")}">${paths}</svg>
+      <svg class="prediction-shape-svg prediction-election-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(data.title || "Prediction map")}">
+        <g class="prediction-map-viewport election-map-viewport">${pathRows}</g>
+      </svg>
     `;
+
+    const svgNode = container.querySelector("svg");
+    const viewportNode = container.querySelector(".prediction-map-viewport");
+    const svg = window.d3?.select ? window.d3.select(svgNode) : null;
+    const viewport = window.d3?.select ? window.d3.select(viewportNode) : null;
+    let zoom = null;
+
+    function setSelected(raceId) {
+      container.querySelectorAll(".prediction-shape-feature").forEach((path) => {
+        path.classList.toggle("is-selected", path.dataset.raceId === raceId);
+      });
+    }
+
+    function zoomToFeature(feature, duration = 460) {
+      if (!svg || !zoom || !feature || !projectionTools.boundsForFeature) return;
+      const [[x0, y0], [x1, y1]] = projectionTools.boundsForFeature(feature);
+      const dx = Math.max(1, x1 - x0);
+      const dy = Math.max(1, y1 - y0);
+      const scale = Math.min(18, Math.max(1.35, 0.76 / Math.max(dx / width, dy / height)));
+      const tx = width / 2 - scale * (x0 + x1) / 2;
+      const ty = height / 2 - scale * (y0 + y1) / 2;
+      const transform = window.d3.zoomIdentity.translate(tx, ty).scale(scale);
+      if (duration > 0) svg.transition().duration(duration).call(zoom.transform, transform);
+      else svg.call(zoom.transform, transform);
+    }
+
+    if (svg && viewport) {
+      zoom = window.d3.zoom()
+        .scaleExtent([0.85, 80])
+        .on("zoom", (event) => viewport.attr("transform", event.transform));
+      svg.call(zoom);
+      container.querySelector('[data-zoom="in"]')?.addEventListener("click", () => svg.transition().duration(180).call(zoom.scaleBy, 1.35));
+      container.querySelector('[data-zoom="out"]')?.addEventListener("click", () => svg.transition().duration(180).call(zoom.scaleBy, 0.74));
+      container.querySelector('[data-zoom="reset"]')?.addEventListener("click", () => svg.transition().duration(220).call(zoom.transform, window.d3.zoomIdentity));
+    }
+
     container.querySelectorAll(".prediction-shape-feature").forEach((path) => {
-      path.addEventListener("click", () => {
-        if (path.dataset.raceId && onSelect) onSelect(path.dataset.raceId);
+      const activate = () => {
+        if (!path.dataset.raceId) return;
+        setSelected(path.dataset.raceId);
+        const feature = featureByRaceId.get(path.dataset.raceId);
+        zoomToFeature(feature);
+        if (onSelect) onSelect(path.dataset.raceId, feature);
+      };
+      path.addEventListener("click", activate);
+      path.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          activate();
+        }
       });
       path.addEventListener("mousemove", (event) => {
         const race = (data.races || []).find((item) => item.raceId === path.dataset.raceId);
@@ -361,6 +444,11 @@
       });
       path.addEventListener("mouseleave", () => hideTooltip(container));
     });
+
+    if (selectedRaceId && featureByRaceId.has(selectedRaceId)) {
+      setSelected(selectedRaceId);
+      window.requestAnimationFrame(() => zoomToFeature(featureByRaceId.get(selectedRaceId), 0));
+    }
   }
 
   async function renderCountyShapeMap({ container, race, countyValues = {}, selectedCountyKey = "", onSelect = null }) {
