@@ -205,25 +205,33 @@
     const summary = ensureSummary();
     const counts = summary.counts;
     const topline = summary.topline;
-    const officeLabel = state.data.office === "house" ? "seats" : state.data.office === "senate" ? "races" : "races";
     node.innerHTML = `
-      <div class="admin-topline-editor">
+      <div class="admin-topline-editor admin-topline-editor-compact">
         <div class="admin-topline-copy">
           <strong>Overall board</strong>
-          <span>Edit the public chamber/control numbers shown above the prediction map. Chances are entered as 0-100 percentages.</span>
+          <span>Controls the public board above the map. Chances are 0-100.</span>
         </div>
-        <div class="admin-map-editor-fields admin-topline-fields">
-          <label>D ${officeLabel}<input id="topline-count-d" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts.D))}"></label>
-          <label>R ${officeLabel}<input id="topline-count-r" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts.R))}"></label>
-          <label>I/Other<input id="topline-count-i" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts.I))}"></label>
-          <label>Toss-up<input id="topline-count-toss" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts["Toss-up"]))}"></label>
-          <label>Uncalled<input id="topline-count-uncalled" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts.Uncalled))}"></label>
-          <label>D chance %<input id="topline-chance-d" type="number" min="0" max="100" step="0.1" value="${escapeHtml(probabilityPercent(topline.controlProbability?.D))}"></label>
-          <label>R chance %<input id="topline-chance-r" type="number" min="0" max="100" step="0.1" value="${escapeHtml(probabilityPercent(topline.controlProbability?.R))}"></label>
-          <label>Expected D<input id="topline-expected-d" type="number" step="0.1" value="${escapeHtml(inputNumberValue(topline.expectedSeatsOrWins?.D))}"></label>
-          <label>Expected R<input id="topline-expected-r" type="number" step="0.1" value="${escapeHtml(inputNumberValue(topline.expectedSeatsOrWins?.R))}"></label>
-          <label>Median D<input id="topline-median-d" type="number" step="0.1" value="${escapeHtml(inputNumberValue(topline.medianSeatsOrWins?.D, 0))}"></label>
-          <label>Median R<input id="topline-median-r" type="number" step="0.1" value="${escapeHtml(inputNumberValue(topline.medianSeatsOrWins?.R, 0))}"></label>
+        <div class="admin-topline-groups">
+          <fieldset>
+            <legend>Board counts</legend>
+            <label><span>D</span><input id="topline-count-d" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts.D))}"></label>
+            <label><span>R</span><input id="topline-count-r" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts.R))}"></label>
+            <label><span>I/Other</span><input id="topline-count-i" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts.I))}"></label>
+            <label><span>Toss-up</span><input id="topline-count-toss" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts["Toss-up"]))}"></label>
+            <label><span>Uncalled</span><input id="topline-count-uncalled" type="number" step="0.1" value="${escapeHtml(inputNumberValue(counts.Uncalled))}"></label>
+          </fieldset>
+          <fieldset>
+            <legend>Control odds</legend>
+            <label><span>D chance %</span><input id="topline-chance-d" type="number" min="0" max="100" step="0.1" value="${escapeHtml(probabilityPercent(topline.controlProbability?.D))}"></label>
+            <label><span>R chance %</span><input id="topline-chance-r" type="number" min="0" max="100" step="0.1" value="${escapeHtml(probabilityPercent(topline.controlProbability?.R))}"></label>
+          </fieldset>
+          <fieldset>
+            <legend>Expected outcome</legend>
+            <label><span>Expected D</span><input id="topline-expected-d" type="number" step="0.1" value="${escapeHtml(inputNumberValue(topline.expectedSeatsOrWins?.D))}"></label>
+            <label><span>Expected R</span><input id="topline-expected-r" type="number" step="0.1" value="${escapeHtml(inputNumberValue(topline.expectedSeatsOrWins?.R))}"></label>
+            <label><span>Median D</span><input id="topline-median-d" type="number" step="0.1" value="${escapeHtml(inputNumberValue(topline.medianSeatsOrWins?.D, 0))}"></label>
+            <label><span>Median R</span><input id="topline-median-r" type="number" step="0.1" value="${escapeHtml(inputNumberValue(topline.medianSeatsOrWins?.R, 0))}"></label>
+          </fieldset>
         </div>
         <button id="admin-apply-topline" class="prediction-button" type="button">Apply overall board</button>
       </div>
@@ -258,6 +266,13 @@
           race,
           countyValues: race.countyPredictions || {},
           selectedCountyKey: state.selectedCountyKey,
+          allRaces: state.data?.races || [],
+          onRaceSelect: (raceId) => {
+            state.selectedRaceId = raceId;
+            state.selectedCountyKey = "";
+            state.selectedCountyName = "";
+            render();
+          },
           onSelect: (countyKey, countyName) => {
             state.selectedCountyKey = countyKey;
             state.selectedCountyName = countyName;
@@ -291,6 +306,13 @@
         race,
         countyValues: race.countyPredictions || {},
         selectedCountyKey: state.selectedCountyKey,
+        allRaces: state.data?.races || [],
+        onRaceSelect: (raceId) => {
+          state.selectedRaceId = raceId;
+          state.selectedCountyKey = "";
+          state.selectedCountyName = "";
+          render();
+        },
         onSelect: (countyKey, countyName) => {
           state.selectedCountyKey = countyKey;
           state.selectedCountyName = countyName;
@@ -389,14 +411,14 @@
       <section class="admin-editor-section">
         <div class="admin-editor-section-head">
           <span class="prediction-kicker">Topline</span>
-          <p>Use this for chamber odds, projected seats/races, and median outcomes.</p>
+          <p>Compact board totals and control chances.</p>
         </div>
         <div id="admin-topline-editor"></div>
       </section>
       <section class="admin-editor-section">
         <div class="admin-editor-section-head">
           <span class="prediction-kicker">Map editor</span>
-          <p>${race ? "Focused county map. Select a county or district-county piece to edit local prediction values." : "Select a state or district to open the focused county map. Map value is -100 for strongest Democrat/blue, 0 for toss-up, and 100 for strongest Republican/red."}</p>
+          <p>${race ? "Focused map: click county pieces for local values, or click nearby race geometry to switch focus." : "Click a state or district. Map value: -100 strong D, 0 toss-up, 100 strong R."}</p>
         </div>
         ${race ? `<button id="admin-back-to-full-map" class="prediction-button admin-map-back" type="button">Back to full prediction map</button>` : ""}
         <div id="admin-race-map" class="prediction-map admin-wide-map"></div>

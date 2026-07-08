@@ -264,8 +264,9 @@
     const leader = counts.D === counts.R ? "No clear edge" : counts.D > counts.R ? "Democratic edge" : "Republican edge";
     const leftLabel = data?.office === "house" ? "projected seats" : "projected race wins";
     const status = data?.pageStatus || "Published";
+    const diagnosticLabel = data?.sourceModelRunId ? "Diagnostic attached" : "Manual team board";
     container.innerHTML = `
-      <section class="prediction-command-board">
+      <section class="prediction-command-board prediction-command-board-compact">
         <div class="prediction-command-left">
           <span>Democratic ${leftLabel}</span>
           <strong class="prediction-party-d">${formatNumber(counts.D)}</strong>
@@ -283,14 +284,14 @@
           <small>${formatProbability(control.R)} control / lead chance</small>
         </div>
       </section>
-      <section class="prediction-stat-grid">
-        <article class="prediction-card"><span>Published status</span><strong>${escapeHtml(status)}</strong><small>${escapeHtml(data?.sourceModelRunId ? "Model diagnostic attached" : "Manual team board")}</small></article>
-        <article class="prediction-card"><span>Races rated</span><strong>${formatNumber(raceCount)}</strong><small>${formatNumber(competitive)} competitive or near-competitive</small></article>
-        <article class="prediction-card"><span>Toss-ups</span><strong>${formatNumber(counts.toss)}</strong><small>${formatNumber(counts.uncalled)} uncalled / unresolved ratings</small></article>
-        <article class="prediction-card"><span>Latest publish</span><strong>${escapeHtml(formatDate(data.lastPublishedAt || data.generatedAt))}</strong><small>Team prediction release</small></article>
+      <section class="prediction-summary-strip prediction-summary-strip-compact">
+        <span><b>${escapeHtml(status)}</b> ${escapeHtml(diagnosticLabel)}</span>
+        <span><b>${formatNumber(raceCount)}</b> rated / <b>${formatNumber(competitive)}</b> competitive</span>
+        <span><b>${formatNumber(counts.toss)}</b> toss-up / <b>${formatNumber(counts.uncalled)}</b> unresolved</span>
+        <span>Published <b>${escapeHtml(formatDate(data.lastPublishedAt || data.generatedAt))}</b></span>
       </section>
-      <section class="prediction-chart-panel">
-        <div>
+      <section class="prediction-chart-panel prediction-chart-panel-compact">
+        <div class="prediction-rating-heading">
           <span class="prediction-kicker">Rating spectrum</span>
           <h2 class="prediction-gradient-title">Where the map stands.</h2>
         </div>
@@ -315,7 +316,9 @@
         await window.FeaPredictionMaps.renderCountyShapeMap({
           container,
           race: selectedRace,
-          countyValues: selectedRace.countyPredictions || {}
+          countyValues: selectedRace.countyPredictions || {},
+          allRaces: data?.races || [],
+          onRaceSelect: (raceId) => selectRace(raceId)
         });
         return;
       } catch (error) {

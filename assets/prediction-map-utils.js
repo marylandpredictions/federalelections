@@ -173,6 +173,15 @@
     return (geo.features || []).filter((feature) => String(feature.properties?.STATEFP || feature.properties?.STATE) === stateFips);
   }
 
+  async function loadContextFeatures(race) {
+    const office = race?.office || (race?.district ? "house" : "");
+    try {
+      return await loadRaceFeatures(office);
+    } catch {
+      return [];
+    }
+  }
+
   function eachCoordinate(geometry, callback) {
     if (!geometry) return;
     const walk = (value) => {
@@ -218,13 +227,13 @@
       .join("");
   }
 
-  function projector(features, width = 980, height = 580, pad = 26, mode = "local") {
+  function projector(features, width = 980, height = 580, pad = 26, mode = "local", fitExtent = null) {
     if (window.d3?.geoPath) {
       const collection = { type: "FeatureCollection", features: features || [] };
       const projection = (mode === "national" && window.d3.geoAlbersUsa)
         ? window.d3.geoAlbersUsa()
         : window.d3.geoMercator();
-      projection.fitExtent([[pad, pad], [width - pad, height - pad]], collection);
+      projection.fitExtent(fitExtent || [[pad, pad], [width - pad, height - pad]], collection);
       const path = window.d3.geoPath(projection);
       return {
         width,
@@ -452,16 +461,160 @@
     }
   }
 
-  async function renderCountyShapeMap({ container, race, countyValues = {}, selectedCountyKey = "", onSelect = null }) {
+  function transformWithPanelClearance({ transform, bounds, svgNode, panel, pad = 42 }) {
+    if (!transform || !bounds || !svgNode || !panel || panel.hidden) return transform;
+    const panelRect = panel.getBoundingClientRect();
+    const svgRect = svgNode.getBoundingClientRect();
+    if (!panelRect.width || !panelRect.height || !svgRect.width || !svgRect.height) return transform;
+
+    const viewBox = svgNode.viewBox.baseVal;
+    const scaleX = viewBox.width / svgRect.width;
+    const scaleY = viewBox.height / svgRect.height;
+    const panelBox = {
+      left: (panelRect.left - svgRect.left) * scaleX,
+      right: (panelRect.right - svgRect.left) * scaleX,
+      top: (panelRect.top - svgRect.top) * scaleY,
+      bottom: (panelRect.bottom - svgRect.top) * scaleY
+    };
+    const raceBox = {
+      left: bounds.x0 * transform.k + transform.x,
+      right: bounds.x1 * transform.k + transform.x,
+      top: bounds.y0 * transform.k + transform.y,
+      bottom: bounds.y1 * transform.k + transform.y
+    };
+    const overlapX = Math.min(raceBox.right, panelBox.right) - Math.max(raceBox.left, panelBox.left);
+    const overlapY = Math.min(raceBox.bottom, panelBox.bottom) - Math.max(raceBox.top, panelBox.top);
+    const meaningfulOverlap = overlapX > 12 && overlapY > 12;
+    const clearance = 34;
+    let dx = 0;
+    let dy = 0;
+
+    const panelOnRight = (panelBox.left + panelBox.right) / 2 >= viewBox.width / 2;
+    const panelOnBottom = (panelBox.top + panelBox.bottom) / 2 >= viewBox.height / 2;
+    const protectedRight = panelOnRight ? panelBox.left - clearance : viewBox.width - pad;
+    const protectedLeft = panelOnRight ? pad : panelBox.right + clearance;
+    const protectedBottom = panelOnBottom ? panelBox.top - clearance : viewBox.height - pad;
+    const protectedTop = panelOnBottom ? pad : panelBox.bottom + clearance;
+    const raceWidth = raceBox.right - raceBox.left;
+    const raceHeight = raceBox.bottom - raceBox.top;
+
+    if ((meaningfulOverlap || raceBox.right > protectedRight || raceBox.left < protectedLeft) && raceWidth < Math.max(120, protectedRight - protectedLeft)) {
+      if (panelOnRight && raceBox.right > protectedRight) dx = protectedRight - raceBox.right;
+      if (!panelOnRight && raceBox.left < protectedLeft) dx = protectedLeft - raceBox.left;
+    }
+    if (meaningfulOverlap && raceHeight < Math.max(120, protectedBottom - protectedTop)) {
+      if (panelOnBottom && raceBox.bottom > protectedBottom) dy = protectedBottom - raceBox.bottom;
+      if (!panelOnBottom && raceBox.top < protectedTop) dy = protectedTop - raceBox.top;
+    }
+    if (meaningfulOverlap && Math.abs(dx) < 1 && Math.abs(dy) < 1) {
+      const raceCenterX = (raceBox.left + raceBox.right) / 2;
+      const raceCenterY = (raceBox.top + raceBox.bottom) / 2;
+      const panelCenterX = (panelBox.left + panelBox.right) / 2;
+      const panelCenterY = (panelBox.top + panelBox.bottom) / 2;
+      if (overlapX >= overlapY * 0.75 || panelRect.width > panelRect.height) {
+        dx = panelCenterX >= raceCenterX
+          ? panelBox.left - raceBox.right - clearance
+          : panelBox.right - raceBox.left + clearance;
+      } else {
+        dy = panelCenterY >= raceCenterY
+          ? panelBox.top - raceBox.bottom - clearance
+          : panelBox.bottom - raceBox.top + clearance;
+      }
+    }
+
+    return window.d3.zoomIdentity.translate(transform.x + dx, transform.y + dy).scale(transform.k);
+  }
+
+  function focusRenderedSelection({ container, svg, viewport, zoom, selector, panel = null, maxScale = 58, pad = 48 }) {
+    if (!container || !svg?.node || !viewport?.node || !zoom) return;
+    const nodes = viewport.selectAll(selector).nodes()
+      .filter((node) => node?.getBBox && node.getAttribute("d"));
+    if (!nodes.length) return;
+    const boxes = [];
+    for (const node of nodes) {
+      try {
+        const box = node.getBBox();
+        if (box.width > 0 && box.height > 0) boxes.push(box);
+      } catch {
+        // SVG geometry can be unavailable for one frame after rerender.
+      }
+    }
+    if (!boxes.length) return;
+    const x0 = Math.min(...boxes.map((box) => box.x));
+    const y0 = Math.min(...boxes.map((box) => box.y));
+    const x1 = Math.max(...boxes.map((box) => box.x + box.width));
+    const y1 = Math.max(...boxes.map((box) => box.y + box.height));
+    const viewBox = svg.node().viewBox.baseVal;
+    const dx = Math.max(1, x1 - x0);
+    const dy = Math.max(1, y1 - y0);
+    const scale = Math.min(maxScale, Math.max(1, Math.min((viewBox.width - pad * 2) / dx, (viewBox.height - pad * 2) / dy)));
+    const baseTransform = window.d3.zoomIdentity
+      .translate((viewBox.width - scale * (x0 + x1)) / 2, (viewBox.height - scale * (y0 + y1)) / 2)
+      .scale(scale);
+    const transform = transformWithPanelClearance({
+      transform: baseTransform,
+      bounds: { x0, y0, x1, y1 },
+      svgNode: svg.node(),
+      panel,
+      pad
+    });
+    svg.call(zoom.transform, transform);
+  }
+
+  async function renderCountyShapeMap({
+    container,
+    race,
+    countyValues = {},
+    selectedCountyKey = "",
+    onSelect = null,
+    allRaces = [],
+    onRaceSelect = null
+  }) {
     if (!container || !race) return;
     const features = await loadCountyFeatures(race);
     if (!features.length) {
       container.innerHTML = `<p class="prediction-note">County-level geometry is not available for this race yet.</p>`;
       return;
     }
+    const office = race.office || (race.district ? "house" : "");
+    const contextFeatures = await loadContextFeatures({ ...race, office });
+    const selectedRaceKey = raceKey({ ...race, office }, office);
+    const selectedContextFeature = contextFeatures.find((feature) => featureKey(feature, office) === selectedRaceKey);
+    const raceByKey = new Map((allRaces || []).map((item) => [raceKey(item, office), item]));
+    const raceById = new Map((allRaces || []).map((item) => [item.raceId, item]));
     const isFullCanvas = container.classList.contains("election-map-canvas") || container.classList.contains("admin-wide-map");
-    const projectionTools = projector(features, isFullCanvas ? 1160 : 900, isFullCanvas ? 720 : 520, isFullCanvas ? 34 : 24, "local");
-    const { width, height } = projectionTools;
+    const floatingPanel = document.getElementById("prediction-detail");
+    const panelOpen = isFullCanvas && floatingPanel && !floatingPanel.hidden && container.id === "prediction-map";
+    const width = isFullCanvas ? 1160 : 900;
+    const height = isFullCanvas ? 720 : 520;
+    const pad = isFullCanvas ? 34 : 24;
+    const baseFeatures = contextFeatures.length ? contextFeatures : features;
+    const projectionTools = projector(
+      baseFeatures,
+      width,
+      height,
+      pad,
+      "national"
+    );
+    const mapWidth = projectionTools.width;
+    const mapHeight = projectionTools.height;
+    const contextPaths = contextFeatures.map((feature) => {
+      const key = featureKey(feature, office);
+      const contextRace = raceByKey.get(key);
+      const isSelected = key === selectedRaceKey;
+      const fill = isSelected
+        ? "rgba(198, 210, 255, 0.18)"
+        : contextRace
+          ? colorForScore(scoreFromRace(contextRace))
+          : "#182338";
+      const classes = [
+        "prediction-context-feature",
+        isSelected ? "is-selected-context" : "is-dimmed-context",
+        contextRace ? "has-race" : "",
+        selectedContextFeature && feature === selectedContextFeature ? "is-focused-outline" : ""
+      ].filter(Boolean).join(" ");
+      return `<path class="${classes}" d="${pathForFeature(feature, projectionTools)}" fill="${fill}" data-race-id="${escapeHtml(contextRace?.raceId || "")}" data-feature-key="${escapeHtml(key)}" data-feature-label="${escapeHtml(featureName(feature, office))}" tabindex="${contextRace ? "0" : "-1"}"></path>`;
+    }).join("");
     const paths = features.map((feature) => {
       const key = countyKey(feature);
       const override = countyValues[key] || {};
@@ -481,8 +634,11 @@
       <div class="prediction-shape-scale">
         <span>Strong D</span><i class="is-d"></i><b>Toss-up</b><i class="is-r"></i><span>Strong R</span>
       </div>
-      <svg class="prediction-shape-svg prediction-election-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(race.displayName || race.raceId)} county prediction map">
-        <g class="prediction-map-viewport election-map-viewport">${paths}</g>
+      <svg class="prediction-shape-svg prediction-election-svg" viewBox="0 0 ${mapWidth} ${mapHeight}" role="img" aria-label="${escapeHtml(race.displayName || race.raceId)} county prediction map">
+        <g class="prediction-map-viewport election-map-viewport">
+          <g class="prediction-map-context-layer">${contextPaths}</g>
+          <g class="prediction-map-focused-layer">${paths}</g>
+        </g>
       </svg>
     `;
     const svgNode = container.querySelector("svg");
@@ -498,7 +654,36 @@
       container.querySelector('[data-zoom="in"]')?.addEventListener("click", () => svg.transition().duration(180).call(zoom.scaleBy, 1.35));
       container.querySelector('[data-zoom="out"]')?.addEventListener("click", () => svg.transition().duration(180).call(zoom.scaleBy, 0.74));
       container.querySelector('[data-zoom="reset"]')?.addEventListener("click", () => svg.transition().duration(220).call(zoom.transform, window.d3.zoomIdentity));
+      window.requestAnimationFrame(() => {
+        focusRenderedSelection({
+          container,
+          svg,
+          viewport,
+          zoom,
+          selector: ".prediction-map-focused-layer .prediction-shape-feature",
+          panel: panelOpen ? floatingPanel : null,
+          maxScale: office === "house" ? 120 : 58,
+          pad: office === "house" ? 30 : 48
+        });
+      });
     }
+    container.querySelectorAll(".prediction-context-feature.has-race").forEach((path) => {
+      const activate = () => {
+        if (!path.dataset.raceId || path.dataset.raceId === race.raceId) return;
+        if (onRaceSelect) onRaceSelect(path.dataset.raceId);
+      };
+      path.addEventListener("click", activate);
+      path.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          activate();
+        }
+      });
+      path.addEventListener("mousemove", (event) => {
+        showTooltip(container, event, raceTooltip(raceById.get(path.dataset.raceId), path.dataset.featureLabel));
+      });
+      path.addEventListener("mouseleave", () => hideTooltip(container));
+    });
     container.querySelectorAll(".prediction-shape-feature").forEach((path) => {
       path.addEventListener("click", () => {
         if (path.dataset.countyKey && onSelect) onSelect(path.dataset.countyKey, path.dataset.countyName);
