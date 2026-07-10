@@ -583,7 +583,9 @@
     const contextFeatures = await loadContextFeatures(raceWithOffice);
     if (isCurrent && !isCurrent()) return;
     const selectedRaceKey = raceKey(raceWithOffice, office);
-    const selectedContextFeature = contextFeatures.find((feature) => featureKey(feature, office) === selectedRaceKey);
+    const shouldDrawContext = office === "house";
+    const drawableContextFeatures = shouldDrawContext ? contextFeatures : [];
+    const selectedContextFeature = drawableContextFeatures.find((feature) => featureKey(feature, office) === selectedRaceKey);
     const normalizedAllRaces = (allRaces || []).map((item) => ({ ...item, office: item.office || office }));
     const raceByKey = new Map(normalizedAllRaces.map((item) => [raceKey(item, office), item]));
     const raceById = new Map(normalizedAllRaces.map((item) => [item.raceId, item]));
@@ -593,7 +595,7 @@
     const width = isFullCanvas ? 1160 : 900;
     const height = isFullCanvas ? 720 : 520;
     const pad = isFullCanvas ? 34 : 24;
-    const baseFeatures = contextFeatures.length ? contextFeatures : features;
+    const baseFeatures = drawableContextFeatures.length ? drawableContextFeatures : features;
     const projectionTools = projector(
       baseFeatures,
       width,
@@ -603,7 +605,7 @@
     );
     const mapWidth = projectionTools.width;
     const mapHeight = projectionTools.height;
-    const contextPaths = contextFeatures.map((feature) => {
+    const contextPaths = drawableContextFeatures.map((feature) => {
       const key = featureKey(feature, office);
       const contextRace = raceByKey.get(key);
       const isSelected = key === selectedRaceKey;
