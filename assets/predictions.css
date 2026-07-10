@@ -1273,6 +1273,84 @@ body.admin-prediction-page .admin-prediction-grid > aside.admin-prediction-panel
   gap: 8px;
 }
 
+.admin-candidate-editor {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(198,210,255,0.28);
+}
+
+.admin-candidate-editor-head {
+  display: grid;
+  gap: 3px;
+}
+
+.admin-candidate-editor-head strong {
+  color: #fff;
+  font-size: 0.98rem;
+}
+
+.admin-candidate-editor-head span {
+  color: var(--prediction-muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.admin-candidate-list {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-candidate-row {
+  display: grid;
+  grid-template-columns: 64px minmax(160px, 1fr) 82px minmax(110px, 0.7fr) auto auto;
+  gap: 8px;
+  align-items: end;
+  padding: 8px;
+  border: 1px solid rgba(198,210,255,0.3);
+  border-radius: 12px;
+  background: rgba(3, 9, 27, 0.5);
+}
+
+.admin-candidate-row label {
+  display: grid;
+  gap: 4px;
+  color: var(--prediction-muted);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-candidate-row input,
+.admin-candidate-row select {
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-candidate-check {
+  align-self: center;
+  display: inline-flex !important;
+  grid-auto-flow: column;
+  gap: 6px !important;
+  align-items: center;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.admin-candidate-check input {
+  width: auto;
+}
+
+.admin-candidate-row [data-remove-candidate] {
+  min-height: 34px;
+  padding: 0 10px;
+  border-color: rgba(255,59,69,0.5);
+  color: #ffd6dc;
+}
+
 #admin-model-reference small {
   display: block;
   margin-top: 10px;
@@ -1323,6 +1401,10 @@ body.admin-prediction-page .prediction-map-editor {
   body.prediction-page .prediction-detail.election-focus-overlay {
     width: auto;
     max-width: none;
+  }
+
+  .admin-candidate-row {
+    grid-template-columns: 1fr 1fr;
   }
 }
 

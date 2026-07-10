@@ -7,7 +7,8 @@
 
   const state = {
     data: null,
-    selectedRaceId: ""
+    selectedRaceId: "",
+    mapRenderToken: 0
   };
 
   const $ = (id) => document.getElementById(id);
@@ -93,6 +94,24 @@
     return `${winner}+${margin.toFixed(1)}`;
   }
 
+  function raceTitle(race) {
+    if (!race) return "Selected race";
+    const office = String(race.office || state.data?.office || "").toLowerCase();
+    if (office === "house") {
+      const district = String(race.district || "").toUpperCase();
+      return `${race.state || ""} House ${district}`.trim();
+    }
+    if (office === "senate") return `${race.state || ""} Senate`.trim();
+    if (office === "governor") return `${race.state || ""} Governor`.trim();
+    return race.displayName || race.raceId || "Selected race";
+  }
+
+  function normalizedConfidence(value) {
+    const text = String(value || "").trim();
+    if (!text || /^model[_ -]?derived$/i.test(text)) return "Model-informed";
+    return text.replace(/[_-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+  }
+
   function displayPercentages(race) {
     return window.FeaPredictionMaps?.displayPercentagesForRace?.(race) || { D: null, R: null, I: null };
   }
@@ -133,7 +152,7 @@
       percentages: Number.isFinite(dProbability) || Number.isFinite(rProbability)
         ? `D ${formatPercentValue(dProbability)} / R ${formatPercentValue(rProbability)}`
         : "--",
-      confidence: ref.projectedResultMargin?.confidence || ref.probabilityMargin?.confidence || race?.prediction?.confidence || "--"
+      confidence: normalizedConfidence(ref.projectedResultMargin?.confidence || ref.probabilityMargin?.confidence || race?.prediction?.confidence || "")
     };
   }
 
@@ -176,13 +195,49 @@
   }
 
   function winnerRows(race) {
-    const rows = ["D", "R", "I"]
-      .filter((party) => race?.candidates?.[party])
-      .map((party) => ({ party, candidate: race.candidates[party] }));
+    const order = ["D", "R", "I"];
+    const candidates = race?.candidates || {};
+    const rows = Object.entries(candidates)
+      .sort(([a], [b]) => {
+        const ai = order.indexOf(a);
+        const bi = order.indexOf(b);
+        return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi) || a.localeCompare(b);
+      })
+      .map(([party, candidate]) => ({ party, candidate }));
     if (!rows.length) {
       rows.push({ party: "D", candidate: { name: "Democrat" } }, { party: "R", candidate: { name: "Republican" } });
     }
     return rows;
+  }
+
+  function voteEstimateTotal(race) {
+    const explicit = Number(race?.prediction?.estimatedTotalVotes || race?.prediction?.voteEstimateTotal);
+    if (Number.isFinite(explicit) && explicit > 0) return explicit;
+    const office = String(race?.office || state.data?.office || "").toLowerCase();
+    if (office === "house") return 320000;
+    if (office === "senate") return 2200000;
+    if (office === "governor") return 1800000;
+    return 1000000;
+  }
+
+  function voteEstimate(race, party, percentage) {
+    const direct = Number(race?.candidates?.[party]?.voteEstimate || race?.candidates?.[party]?.estimatedVotes);
+    if (Number.isFinite(direct) && direct >= 0) return direct;
+    const pct = Number(percentage);
+    if (!Number.isFinite(pct)) return null;
+    return Math.round(voteEstimateTotal(race) * (pct / 100));
+  }
+
+  function displayCounts(data) {
+    const counts = projectedCounts(data);
+    if (data?.office !== "senate") return counts;
+    const notUp = data?.summary?.notUpSeats || data?.summary?.incumbentsNotUp || { D: 33, R: 32, I: 0 };
+    return {
+      ...counts,
+      D: counts.D + numberValue(notUp.D),
+      R: counts.R + numberValue(notUp.R),
+      I: counts.I + numberValue(notUp.I)
+    };
   }
 
   function toplineCounts(data) {
@@ -193,13 +248,13 @@
   }
 
   function renderSeatBar(data) {
-    const { counts } = toplineCounts(data);
+    const counts = displayCounts(data);
     const total = Math.max(1, counts.D + counts.R + counts.I + counts.toss + counts.uncalled);
     const dWidth = Math.max(0, (counts.D / total) * 100);
     const rWidth = Math.max(0, (counts.R / total) * 100);
     const iWidth = Math.max(0, (counts.I / total) * 100);
     const tossWidth = Math.max(0, ((counts.toss + counts.uncalled) / total) * 100);
-    const majority = data?.office === "house" ? 218 : null;
+    const majority = data?.office === "house" ? 218 : data?.office === "senate" ? 50 : null;
     const majorityPct = majority ? Math.min(100, Math.max(0, (majority / total) * 100)) : 50;
     return `
       <div class="prediction-seatbar" aria-label="Projected result bar">
@@ -213,7 +268,7 @@
   }
 
   function renderPredictionBoard(data) {
-    const { counts } = toplineCounts(data);
+    const counts = displayCounts(data);
     const total = Math.max(1, counts.D + counts.R + counts.I + counts.toss + counts.uncalled);
     const demLabel = $("prediction-dem-count");
     const repLabel = $("prediction-rep-count");
@@ -257,7 +312,8 @@
   function renderTopline(data) {
     const container = $("prediction-topline");
     if (!container) return;
-    const { counts, expected, median } = toplineCounts(data);
+    const { counts: rawCounts, expected, median } = toplineCounts(data);
+    const counts = displayCounts(data);
     const raceCount = numberValue(data?.summary?.raceCount || data?.races?.length);
     const competitive = (data?.races || []).filter((race) => /Toss-up|Tilt|Lean/.test(race.prediction?.rating || "")).length;
     const control = data?.summary?.topline?.controlProbability || {};
@@ -276,7 +332,7 @@
           <span class="prediction-kicker">${escapeHtml(data?.office || "prediction")} board</span>
           <b>${escapeHtml(leader)}</b>
           ${renderSeatBar(data)}
-          <small>Median: ${formatNumber(median.D, 0)} D / ${formatNumber(median.R, 0)} R · Expected: ${formatNumber(expected.D, 1)} D / ${formatNumber(expected.R, 1)} R</small>
+          <small>Median: ${formatNumber(median.D, 0)} D / ${formatNumber(median.R, 0)} R &middot; Expected: ${formatNumber(expected.D, 1)} D / ${formatNumber(expected.R, 1)} R${data?.office === "senate" ? ` &middot; Includes ${formatNumber(counts.D - rawCounts.D)} D / ${formatNumber(counts.R - rawCounts.R)} R not up` : ""}</small>
         </div>
         <div class="prediction-command-right">
           <span>Republican ${leftLabel}</span>
@@ -303,6 +359,7 @@
   async function renderMap(data) {
     const container = $("prediction-map");
     if (!container) return;
+    const token = ++state.mapRenderToken;
     if (!window.FeaPredictionMaps?.renderRaceShapeMap) {
       container.innerHTML = `<p class="prediction-note">Prediction map tools could not load.</p>`;
       return;
@@ -315,17 +372,20 @@
         container.classList.add("is-detail-map");
         await window.FeaPredictionMaps.renderCountyShapeMap({
           container,
-          race: selectedRace,
+          race: { ...selectedRace, office: data?.office || selectedRace.office },
           countyValues: selectedRace.countyPredictions || {},
-          allRaces: data?.races || [],
-          onRaceSelect: (raceId) => selectRace(raceId)
+          allRaces: (data?.races || []).map((race) => ({ ...race, office: data?.office || race.office })),
+          onRaceSelect: (raceId) => selectRace(raceId),
+          isCurrent: () => token === state.mapRenderToken && state.selectedRaceId === selectedRace.raceId
         });
         return;
       } catch (error) {
+        if (token !== state.mapRenderToken) return;
         container.classList.remove("is-detail-map");
         container.innerHTML = `<p class="prediction-note">${escapeHtml(error.message || "County-level prediction map unavailable. Showing full board instead.")}</p>`;
       }
     }
+    if (token !== state.mapRenderToken) return;
     await window.FeaPredictionMaps.renderRaceShapeMap({
       container,
       data,
@@ -342,13 +402,13 @@
       const winnerName = ["D", "R", "I"].includes(winner) ? candidateName(race, winner) : winner;
       return `
         <tr data-race-id="${escapeHtml(race.raceId)}">
-          <td><strong>${escapeHtml(race.displayName || race.raceId)}</strong><br><small>${escapeHtml(race.state)}${race.district ? `-${escapeHtml(race.district)}` : ""}</small></td>
+          <td><strong>${escapeHtml(raceTitle(race))}</strong><br><small>${escapeHtml(race.state)}${race.district ? `-${escapeHtml(race.district)}` : ""}</small></td>
           <td>${escapeHtml(candidateName(race, "D"))}</td>
           <td>${escapeHtml(candidateName(race, "R"))}</td>
           <td><span class="prediction-pill ${ratingClass(race.prediction?.rating)}">${escapeHtml(race.prediction?.rating || "--")}</span></td>
           <td class="${partyClass(winner)}"><strong>${escapeHtml(winnerName)}</strong></td>
           <td>${escapeHtml(formatMargin(race))}</td>
-          <td>${escapeHtml(race.prediction?.confidence || "--")}</td>
+          <td>${escapeHtml(normalizedConfidence(race.prediction?.confidence))}</td>
         </tr>
       `;
     }).join("");
@@ -368,6 +428,8 @@
     const percentages = displayPercentages(race);
     const rows = winnerRows(race).map(({ party, candidate }) => {
       const isWinner = winner === party;
+      const pct = percentages[party];
+      const votes = voteEstimate(race, party, pct);
       return `
         <tr class="${isWinner ? "leading" : ""}">
           <td>
@@ -375,8 +437,8 @@
             <strong>${escapeHtml(candidate?.name || partyName(party))}${candidate?.incumbent ? "*" : ""}</strong>
             <small>${escapeHtml(partyName(candidate?.party || party))}${candidate?.status ? ` / ${escapeHtml(candidate.status)}` : ""}</small>
           </td>
-          <td>${escapeHtml(formatPercentValue(percentages[party]))}</td>
-          <td>${escapeHtml(isWinner ? formatMargin(race) : "--")}</td>
+          <td>${votes === null ? "--" : escapeHtml(formatNumber(votes))}</td>
+          <td>${escapeHtml(formatPercentValue(pct))}</td>
         </tr>
       `;
     }).join("");
@@ -390,15 +452,15 @@
         <span class="focused-pill focused-pill-light">${escapeHtml(race.prediction?.status || "Published")}</span>
         <button class="focused-close" type="button" data-close-prediction-detail aria-label="Close selected race">x</button>
       </div>
-      <h3 id="focused-race-title">${escapeHtml(race.displayName || race.raceId)}</h3>
+      <h3 id="focused-race-title">${escapeHtml(raceTitle(race))}</h3>
       <div id="focused-race-content">
         <div class="selected-race-meta">
           <span class="race-meta-chip is-status">${escapeHtml(winnerName)}</span>
           <span class="race-meta-chip">${escapeHtml(formatMargin(race))}</span>
-          <span class="race-meta-chip">${escapeHtml(race.prediction?.confidence || "medium")} confidence</span>
+          <span class="race-meta-chip">${escapeHtml(normalizedConfidence(race.prediction?.confidence))} confidence</span>
         </div>
         <table class="selected-race-table">
-          <thead><tr><th>Candidate</th><th>Percentage</th><th>Margin</th></tr></thead>
+          <thead><tr><th>Candidate</th><th>Vote estimate</th><th>Percentage</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
         <section class="prediction-focus-note">
@@ -416,6 +478,7 @@
       </div>
     `;
     panel.querySelector("[data-close-prediction-detail]")?.addEventListener("click", () => {
+      state.mapRenderToken += 1;
       state.selectedRaceId = "";
       document.querySelectorAll("[data-race-id]").forEach((node) => node.classList.remove("is-selected"));
       renderDetail(null);

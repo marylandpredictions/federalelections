@@ -9,6 +9,7 @@
     selectedRaceId: "",
     selectedCountyKey: "",
     selectedCountyName: "",
+    mapRenderToken: 0,
     mode: "visual"
   };
 
@@ -25,6 +26,24 @@
 
   function ratingClass(rating) {
     return `rating-${String(rating || "toss-up").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+  }
+
+  function raceTitle(race) {
+    if (!race) return "Selected race";
+    const office = String(race.office || state.data?.office || "").toLowerCase();
+    if (office === "house") {
+      const district = String(race.district || "").toUpperCase();
+      return `${race.state || ""} House ${district}`.trim();
+    }
+    if (office === "senate") return `${race.state || ""} Senate`.trim();
+    if (office === "governor") return `${race.state || ""} Governor`.trim();
+    return race.displayName || race.raceId || "Selected race";
+  }
+
+  function normalizedConfidence(value) {
+    const text = String(value || "").trim();
+    if (!text || /^model[_ -]?derived$/i.test(text)) return "Model-informed";
+    return text.replace(/[_-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
   }
 
   function formatDate(value) {
@@ -138,6 +157,7 @@
     state.selectedRaceId = "";
     state.selectedCountyKey = "";
     state.selectedCountyName = "";
+    state.mapRenderToken += 1;
     renderPublishedMeta(useDraft ? "draft" : "published");
     render();
   }
@@ -255,18 +275,107 @@
     if (hasR) target.displayPercentages.R = rValue;
   }
 
+  function candidateEntries(race) {
+    const order = ["D", "R", "I"];
+    return Object.entries(race?.candidates || {})
+      .sort(([a], [b]) => {
+        const ai = order.indexOf(a);
+        const bi = order.indexOf(b);
+        return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi) || a.localeCompare(b);
+      });
+  }
+
+  function nextCandidateKey(race) {
+    const existing = new Set(Object.keys(race?.candidates || {}));
+    for (const key of ["D", "R", "I"]) {
+      if (!existing.has(key)) return key;
+    }
+    for (let index = 1; index < 100; index += 1) {
+      const key = `C${index}`;
+      if (!existing.has(key)) return key;
+    }
+    return `C${Date.now()}`;
+  }
+
+  function renderCandidateEditor(race) {
+    const rows = candidateEntries(race).map(([key, candidate]) => `
+      <div class="admin-candidate-row" data-candidate-row>
+        <label><span>Key</span><input data-candidate-key value="${escapeHtml(key)}" maxlength="12"></label>
+        <label><span>Name</span><input data-candidate-name value="${escapeHtml(candidate?.name || "")}"></label>
+        <label><span>Party</span>
+          <select data-candidate-party>
+            ${["D", "R", "I", "O"].map((party) => `<option value="${party}" ${String(candidate?.party || key).toUpperCase() === party ? "selected" : ""}>${party}</option>`).join("")}
+          </select>
+        </label>
+        <label class="admin-candidate-check"><input data-candidate-incumbent type="checkbox" ${candidate?.incumbent ? "checked" : ""}> Inc.</label>
+        <label><span>Status</span><input data-candidate-status value="${escapeHtml(candidate?.status || "")}" placeholder="presumptive, nominee"></label>
+        <button type="button" data-remove-candidate aria-label="Remove candidate">Remove</button>
+      </div>
+    `).join("");
+    return `
+      <section class="admin-candidate-editor">
+        <div class="admin-candidate-editor-head">
+          <strong>Candidates</strong>
+          <span>Keys are used by winner and percentage fields. Use D/R/I for main candidates when possible.</span>
+        </div>
+        <div class="admin-candidate-list">${rows || `<p class="prediction-note">No candidates added yet.</p>`}</div>
+        <button id="admin-add-candidate" class="prediction-button" type="button">Add candidate</button>
+      </section>
+    `;
+  }
+
+  function collectCandidateEditor(race) {
+    const rows = Array.from(document.querySelectorAll("[data-candidate-row]"));
+    if (!race || !rows.length) return false;
+    const next = {};
+    rows.forEach((row, index) => {
+      const key = row.querySelector("[data-candidate-key]")?.value.trim().toUpperCase() || `C${index + 1}`;
+      const name = row.querySelector("[data-candidate-name]")?.value.trim();
+      if (!key || !name) return;
+      next[key] = {
+        name,
+        party: row.querySelector("[data-candidate-party]")?.value || key,
+        incumbent: Boolean(row.querySelector("[data-candidate-incumbent]")?.checked)
+      };
+      const status = row.querySelector("[data-candidate-status]")?.value.trim();
+      if (status) next[key].status = status;
+    });
+    race.candidates = next;
+    return true;
+  }
+
+  function bindCandidateEditor(race) {
+    $("admin-add-candidate")?.addEventListener("click", () => {
+      collectCandidateEditor(race);
+      const key = nextCandidateKey(race);
+      race.candidates = race.candidates || {};
+      race.candidates[key] = { name: key === "D" ? "Democrat" : key === "R" ? "Republican" : "", party: key };
+      render();
+    });
+    document.querySelectorAll("[data-remove-candidate]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const row = button.closest("[data-candidate-row]");
+        if (row) row.remove();
+        collectCandidateEditor(race);
+        render();
+      });
+    });
+  }
+
   async function renderAdminRaceMap() {
     const container = $("admin-race-map");
     if (!container || !window.FeaPredictionMaps?.renderRaceShapeMap) return;
+    const token = ++state.mapRenderToken;
     try {
       const race = selectedRace();
       if (race && window.FeaPredictionMaps?.renderCountyShapeMap) {
+        const focusedRaceId = race.raceId;
         await window.FeaPredictionMaps.renderCountyShapeMap({
           container,
-          race,
+          race: { ...race, office: state.data?.office || race.office },
           countyValues: race.countyPredictions || {},
           selectedCountyKey: state.selectedCountyKey,
-          allRaces: state.data?.races || [],
+          allRaces: (state.data?.races || []).map((item) => ({ ...item, office: state.data?.office || item.office })),
           onRaceSelect: (raceId) => {
             state.selectedRaceId = raceId;
             state.selectedCountyKey = "";
@@ -277,10 +386,12 @@
             state.selectedCountyKey = countyKey;
             state.selectedCountyName = countyName;
             renderAdminMapCountyEditor(race);
-          }
+          },
+          isCurrent: () => token === state.mapRenderToken && selectedRace()?.raceId === focusedRaceId
         });
         return;
       }
+      if (token !== state.mapRenderToken) return;
       await window.FeaPredictionMaps.renderRaceShapeMap({
         container,
         data: state.data,
@@ -293,6 +404,7 @@
         }
       });
     } catch (error) {
+      if (token !== state.mapRenderToken) return;
       container.innerHTML = `<p class="prediction-note">${escapeHtml(error.message || String(error))}</p>`;
     }
   }
@@ -300,13 +412,14 @@
   async function renderAdminCountyMap(race) {
     const container = $("admin-county-map");
     if (!container || !race || !window.FeaPredictionMaps?.renderCountyShapeMap) return;
+    const token = state.mapRenderToken;
     try {
       await window.FeaPredictionMaps.renderCountyShapeMap({
         container,
-        race,
+        race: { ...race, office: state.data?.office || race.office },
         countyValues: race.countyPredictions || {},
         selectedCountyKey: state.selectedCountyKey,
-        allRaces: state.data?.races || [],
+        allRaces: (state.data?.races || []).map((item) => ({ ...item, office: state.data?.office || item.office })),
         onRaceSelect: (raceId) => {
           state.selectedRaceId = raceId;
           state.selectedCountyKey = "";
@@ -317,9 +430,11 @@
           state.selectedCountyKey = countyKey;
           state.selectedCountyName = countyName;
           renderAdminMapCountyEditor(race);
-        }
+        },
+        isCurrent: () => token === state.mapRenderToken && selectedRace()?.raceId === race.raceId
       });
     } catch (error) {
+      if (token !== state.mapRenderToken) return;
       container.innerHTML = `<p class="prediction-note">${escapeHtml(error.message || String(error))}</p>`;
     }
     renderAdminMapCountyEditor(race);
@@ -335,7 +450,7 @@
     const pct = window.FeaPredictionMaps?.displayPercentagesForRace?.(race) || { D: null, R: null };
     const score = Math.round(window.FeaPredictionMaps?.scoreFromRace?.(race) || 0);
     node.innerHTML = `
-      <h3>${escapeHtml(race.displayName || race.raceId)}</h3>
+      <h3>${escapeHtml(raceTitle(race))}</h3>
       <div class="admin-map-editor-fields">
         <label>Map value <input id="map-race-value" type="number" min="-100" max="100" step="1" value="${escapeHtml(race.prediction?.mapValue ?? score)}"></label>
         <label>Dem % <input id="map-race-d" type="number" min="0" max="100" step="0.1" value="${pct.D === null ? "" : escapeHtml(pct.D.toFixed(1))}"></label>
@@ -345,9 +460,11 @@
         <button id="apply-map-race-editor" type="button">Apply state/district values</button>
         <button id="clear-map-race-editor" type="button">Clear manual values</button>
       </div>
+      ${renderCandidateEditor(race)}
     `;
     $("apply-map-race-editor")?.addEventListener("click", () => {
       race.prediction = race.prediction || {};
+      collectCandidateEditor(race);
       const mapValue = valueOrNull("map-race-value");
       if (Number.isFinite(mapValue)) race.prediction.mapValue = Math.max(-100, Math.min(100, mapValue));
       else delete race.prediction.mapValue;
@@ -362,6 +479,7 @@
       delete race.prediction.displayPercentages;
       render();
     });
+    bindCandidateEditor(race);
   }
 
   function renderAdminMapCountyEditor(race) {
@@ -455,12 +573,12 @@
   function renderBulk() {
     const rows = sortedRaces().map((race) => `
       <tr data-race-id="${escapeHtml(race.raceId)}" class="${race.raceId === state.selectedRaceId ? "is-selected" : ""}">
-        <td><strong>${escapeHtml(race.displayName || race.raceId)}</strong><br><small>${escapeHtml(race.raceId)}</small></td>
+        <td><strong>${escapeHtml(raceTitle(race))}</strong><br><small>${escapeHtml(race.raceId)}</small></td>
         <td>${escapeHtml(race.prediction?.rating || "--")}</td>
         <td>${escapeHtml(race.prediction?.winner || "--")}</td>
         <td>${escapeHtml(race.prediction?.projectedMargin ?? "--")}</td>
         <td>${escapeHtml(race.prediction?.mapValue ?? Math.round(window.FeaPredictionMaps?.scoreFromRace?.(race) || 0))}</td>
-        <td>${escapeHtml(race.prediction?.confidence || "--")}</td>
+        <td>${escapeHtml(normalizedConfidence(race.prediction?.confidence))}</td>
         <td>${escapeHtml(race.prediction?.status || "--")}</td>
       </tr>
     `).join("");
@@ -498,10 +616,10 @@
 
   function renderEditor() {
     const race = selectedRace();
-    $("admin-selected-title").textContent = race ? (race.displayName || race.raceId) : "Select a race";
+    $("admin-selected-title").textContent = race ? raceTitle(race) : "Select a race";
     if (!race) return;
     setSelectOptions($("edit-rating"), ratings);
-    setSelectOptions($("edit-winner"), winners);
+    setSelectOptions($("edit-winner"), Array.from(new Set([...winners, ...Object.keys(race.candidates || {})])));
     const pct = window.FeaPredictionMaps?.displayPercentagesForRace?.(race) || { D: null, R: null };
     $("edit-rating").value = race.prediction?.rating || "Toss-up";
     $("edit-winner").value = race.prediction?.winner || "Uncalled";
@@ -547,6 +665,7 @@
     race.prediction.status = $("edit-status").value;
     race.candidates.D.name = $("edit-candidate-d").value.trim();
     race.candidates.R.name = $("edit-candidate-r").value.trim();
+    collectCandidateEditor(race);
     race.notes.short = $("edit-note-short").value.trim();
     race.notes.whyWeRateItThisWay = $("edit-note-why").value.trim();
     race.lastEdited = new Date().toISOString();

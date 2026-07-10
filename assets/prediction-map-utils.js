@@ -141,7 +141,7 @@
 
   async function loadJson(path) {
     if (!jsonCache.has(path)) {
-      jsonCache.set(path, fetch(path, { cache: "no-store" }).then((response) => {
+      jsonCache.set(path, fetch(path, { cache: "force-cache" }).then((response) => {
         if (!response.ok) throw new Error(`${path} returned ${response.status}`);
         return response.json();
       }));
@@ -568,20 +568,25 @@
     selectedCountyKey = "",
     onSelect = null,
     allRaces = [],
-    onRaceSelect = null
+    onRaceSelect = null,
+    isCurrent = null
   }) {
     if (!container || !race) return;
-    const features = await loadCountyFeatures(race);
+    const office = race.office || (race.district ? "house" : "");
+    const raceWithOffice = { ...race, office };
+    const features = await loadCountyFeatures(raceWithOffice);
+    if (isCurrent && !isCurrent()) return;
     if (!features.length) {
       container.innerHTML = `<p class="prediction-note">County-level geometry is not available for this race yet.</p>`;
       return;
     }
-    const office = race.office || (race.district ? "house" : "");
-    const contextFeatures = await loadContextFeatures({ ...race, office });
-    const selectedRaceKey = raceKey({ ...race, office }, office);
+    const contextFeatures = await loadContextFeatures(raceWithOffice);
+    if (isCurrent && !isCurrent()) return;
+    const selectedRaceKey = raceKey(raceWithOffice, office);
     const selectedContextFeature = contextFeatures.find((feature) => featureKey(feature, office) === selectedRaceKey);
-    const raceByKey = new Map((allRaces || []).map((item) => [raceKey(item, office), item]));
-    const raceById = new Map((allRaces || []).map((item) => [item.raceId, item]));
+    const normalizedAllRaces = (allRaces || []).map((item) => ({ ...item, office: item.office || office }));
+    const raceByKey = new Map(normalizedAllRaces.map((item) => [raceKey(item, office), item]));
+    const raceById = new Map(normalizedAllRaces.map((item) => [item.raceId, item]));
     const isFullCanvas = container.classList.contains("election-map-canvas") || container.classList.contains("admin-wide-map");
     const floatingPanel = document.getElementById("prediction-detail");
     const panelOpen = isFullCanvas && floatingPanel && !floatingPanel.hidden && container.id === "prediction-map";
@@ -623,8 +628,10 @@
       const classes = ["prediction-shape-feature", "has-race", key === selectedCountyKey ? "is-selected" : ""].filter(Boolean).join(" ");
       return `<path class="${classes}" d="${pathForFeature(feature, projectionTools)}" fill="${fill}" data-county-key="${escapeHtml(key)}" data-county-name="${escapeHtml(countyName(feature))}"></path>`;
     }).join("");
+    if (isCurrent && !isCurrent()) return;
     container.classList.remove("prediction-election-map");
     container.classList.add("prediction-shape-map", "prediction-county-map");
+    container.dataset.predictionOffice = office;
     container.innerHTML = `
       <div class="prediction-map-controls election-map-controls" aria-label="Map controls">
         <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
@@ -654,7 +661,8 @@
       container.querySelector('[data-zoom="in"]')?.addEventListener("click", () => svg.transition().duration(180).call(zoom.scaleBy, 1.35));
       container.querySelector('[data-zoom="out"]')?.addEventListener("click", () => svg.transition().duration(180).call(zoom.scaleBy, 0.74));
       container.querySelector('[data-zoom="reset"]')?.addEventListener("click", () => svg.transition().duration(220).call(zoom.transform, window.d3.zoomIdentity));
-      window.requestAnimationFrame(() => {
+      const focusSelection = () => {
+        if (isCurrent && !isCurrent()) return;
         focusRenderedSelection({
           container,
           svg,
@@ -665,6 +673,10 @@
           maxScale: office === "house" ? 120 : 58,
           pad: office === "house" ? 30 : 48
         });
+      };
+      window.requestAnimationFrame(() => {
+        focusSelection();
+        window.requestAnimationFrame(focusSelection);
       });
     }
     container.querySelectorAll(".prediction-context-feature.has-race").forEach((path) => {

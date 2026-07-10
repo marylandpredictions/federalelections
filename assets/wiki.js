@@ -898,6 +898,89 @@ function updateHomeGovernorSummary() {
   }
 }
 
+const HOME_PREDICTION_FILES = {
+  senate: "data/predictions/2026-senate-predictions.json",
+  house: "data/predictions/2026-house-predictions.json",
+  governor: "data/predictions/2026-governor-predictions.json"
+};
+
+function homePredictionProbability(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "--";
+  if (number === 1) return ">99%";
+  if (number === 0) return "<1%";
+  return `${(number * 100).toFixed(1)}%`;
+}
+
+function homePredictionCounts(data) {
+  const counts = data?.summary?.counts || {};
+  const result = {
+    D: Math.round(firstFiniteNumber(counts.D, counts.dem, counts.democratic) ?? 0),
+    R: Math.round(firstFiniteNumber(counts.R, counts.rep, counts.republican) ?? 0),
+    I: Math.round(firstFiniteNumber(counts.I, counts.ind, counts.independent) ?? 0)
+  };
+  if (data?.office === "senate") {
+    const notUp = data?.summary?.notUpSeats || data?.summary?.incumbentsNotUp || { D: 33, R: 32, I: 0 };
+    result.D += Math.round(firstFiniteNumber(notUp.D, notUp.dem, notUp.democratic) ?? 0);
+    result.R += Math.round(firstFiniteNumber(notUp.R, notUp.rep, notUp.republican) ?? 0);
+    result.I += Math.round(firstFiniteNumber(notUp.I, notUp.ind, notUp.independent) ?? 0);
+  }
+  return result;
+}
+
+function homePredictionCompetitiveCount(data) {
+  return (data?.races || []).filter((race) => {
+    const rating = String(race?.prediction?.rating || "").toLowerCase();
+    return rating.includes("toss") || rating.includes("tilt") || rating.includes("lean");
+  }).length;
+}
+
+function applyHomePredictionCard(key, data) {
+  if (!data) return;
+  const counts = homePredictionCounts(data);
+  const control = data?.summary?.topline?.controlProbability || {};
+  const demChance = firstFiniteNumber(control.D, control.dem, control.democratic) ?? 0;
+  const repChance = firstFiniteNumber(control.R, control.rep, control.republican) ?? 0;
+  const favoredIsDem = data.office === "governor" ? counts.D >= counts.R : demChance >= repChance;
+  const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
+  const favoredChance = Math.max(demChance, repChance);
+  const raceWord = data.office === "house" ? "districts" : "races";
+
+  setText(`home-${key}-status`, "Live");
+  if (data.office === "governor") {
+    setText(`home-${key}-favored`, `${favoredSide} lead`);
+    setText(`home-${key}-seats`, `${counts.D} D races / ${counts.R} R races`);
+  } else {
+    setText(`home-${key}-favored`, `${favoredSide} ${homePredictionProbability(favoredChance)}`);
+    setText(`home-${key}-seats`, `${counts.D} D / ${counts.R} R projected seats`);
+  }
+  setText(`home-${key}-dem`, homePredictionProbability(demChance));
+  setText(`home-${key}-rep`, homePredictionProbability(repChance));
+  setText(`home-${key}-run`, forecastRunDate(data));
+  setText(`home-${key}-median`, data.office === "governor" ? `${counts.D} D / ${counts.R} R` : `${counts.D} D / ${counts.R} R`);
+  setText(`home-${key}-note`, `${homePredictionCompetitiveCount(data)} competitive ${raceWord}`);
+
+  const card = document.getElementById(`home-${key}-card`);
+  if (card) {
+    card.classList.toggle("control-dem", favoredIsDem);
+    card.classList.toggle("control-rep", !favoredIsDem);
+  }
+}
+
+async function loadHomePredictionCards() {
+  const needed = Object.keys(HOME_PREDICTION_FILES).some((key) => document.getElementById(`home-${key}-card`));
+  if (!needed) return;
+  await Promise.all(Object.entries(HOME_PREDICTION_FILES).map(async ([key, file]) => {
+    try {
+      const response = await fetch(file, { cache: "no-store" });
+      const data = await readJsonResponse(response, file);
+      applyHomePredictionCard(key, data);
+    } catch (error) {
+      console.warn(`[wiki.js] Could not load ${file}`, error);
+    }
+  }));
+}
+
 function presidentCandidateShortName(name) {
   if (!name) return "--";
   if (String(name).includes("Ocasio-Cortez")) return "AOC";
@@ -3739,6 +3822,7 @@ async function init() {
   updateHomeHouseSummary();
   updateHomeGovernorSummary();
   updateHomePresidentSummary();
+  await loadHomePredictionCards();
   renderHousePage();
   renderGovernorPage();
   try {
@@ -3757,12 +3841,14 @@ async function init() {
     renderArticlesList();
     renderArticlePage();
     updateHomePresidentSummary();
+    await loadHomePredictionCards();
     return;
   }
   updateSummary();
   updateHomeHouseSummary();
   updateHomeGovernorSummary();
   updateHomePresidentSummary();
+  await loadHomePredictionCards();
   renderMapColorControls();
   renderStateMap();
   renderLegend();
