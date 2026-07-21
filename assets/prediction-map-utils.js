@@ -67,6 +67,23 @@
     return "";
   }
 
+  function partyName(party) {
+    const normalized = String(party || "").toUpperCase();
+    if (normalized === "D") return "Democrat";
+    if (normalized === "R") return "Republican";
+    if (normalized === "I") return "Independent";
+    return normalized || "Other";
+  }
+
+  function scoreFromRating(rating) {
+    const party = ratingParty(rating);
+    const strength = ratingStrength(rating);
+    if (party === "D") return -strength;
+    if (party === "R") return strength;
+    if (party === "I") return 0;
+    return null;
+  }
+
   function partyFromRace(race) {
     const winner = String(race?.prediction?.winner || "").toUpperCase();
     if (winner === "D" || winner === "R" || winner === "I") return winner;
@@ -74,14 +91,10 @@
   }
 
   function scoreFromRace(race) {
-    const explicit = Number(race?.prediction?.mapValue);
-    if (Number.isFinite(explicit)) return clamp(explicit, -100, 100);
+    const ratingScore = scoreFromRating(race?.prediction?.rating);
+    if (Number.isFinite(ratingScore)) return ratingScore;
     const party = partyFromRace(race);
-    const margin = Math.abs(Number(race?.prediction?.projectedMargin));
-    const strength = Math.max(
-      ratingStrength(race?.prediction?.rating),
-      Number.isFinite(margin) ? Math.min(100, margin * 4.6) : 0
-    );
+    const strength = ratingStrength(race?.prediction?.rating);
     if (party === "D") return -strength;
     if (party === "R") return strength;
     return 0;
@@ -307,28 +320,27 @@
 
   function raceTooltip(race, label) {
     if (!race) return `<strong>${escapeHtml(label)}</strong>`;
-    const pct = displayPercentagesForRace(race);
-    const dName = race.candidates?.D?.name || "Democrat";
-    const rName = race.candidates?.R?.name || "Republican";
+    const winner = partyFromRace(race);
+    const winnerName = winner ? (race.candidates?.[winner]?.name || partyName(winner)) : "No side";
     return `
       <strong>${escapeHtml(race.displayName || label)}</strong>
-      <div class="prediction-map-tooltip-row"><span class="is-d">${escapeHtml(dName)}</span><b>${pct.D === null ? "--" : `${pct.D.toFixed(1)}%`}</b></div>
-      <div class="prediction-map-tooltip-row"><span class="is-r">${escapeHtml(rName)}</span><b>${pct.R === null ? "--" : `${pct.R.toFixed(1)}%`}</b></div>
-      <small>${escapeHtml(race.prediction?.rating || "Unrated")} / ${escapeHtml(race.prediction?.winner || "--")}</small>
+      <div class="prediction-map-tooltip-row"><span>FEA rating</span><b>${escapeHtml(race.prediction?.rating || "Unrated")}</b></div>
+      <div class="prediction-map-tooltip-row"><span>Rated edge</span><b>${escapeHtml(winnerName)}</b></div>
+      <small>Click to view rating details</small>
     `;
   }
 
   function countyTooltip(feature, race, countyValues = {}) {
     const key = countyKey(feature);
     const override = countyValues[key] || {};
-    const score = Number.isFinite(Number(override.mapValue)) ? Number(override.mapValue) : null;
-    const d = override.displayPercentages?.D;
-    const r = override.displayPercentages?.R;
+    const rating = override.rating || override.feaRating || race?.prediction?.rating || "Unrated";
+    const party = ratingParty(rating) || partyFromRace(race);
+    const candidate = party ? (race?.candidates?.[party]?.name || partyName(party)) : "No side";
     return `
       <strong>${escapeHtml(countyName(feature))}</strong>
-      <div class="prediction-map-tooltip-row"><span class="is-d">${escapeHtml(race?.candidates?.D?.name || "Democrat")}</span><b>${Number.isFinite(Number(d)) ? `${Number(d).toFixed(1)}%` : "--"}</b></div>
-      <div class="prediction-map-tooltip-row"><span class="is-r">${escapeHtml(race?.candidates?.R?.name || "Republican")}</span><b>${Number.isFinite(Number(r)) ? `${Number(r).toFixed(1)}%` : "--"}</b></div>
-      <small>${score === null ? "No county map value set" : `${score < 0 ? "D" : score > 0 ? "R" : "Even"} ${Math.abs(score).toFixed(0)}`}</small>
+      <div class="prediction-map-tooltip-row"><span>FEA rating</span><b>${escapeHtml(rating)}</b></div>
+      <div class="prediction-map-tooltip-row"><span>Rated edge</span><b>${escapeHtml(candidate)}</b></div>
+      <small>${escapeHtml(override.note || "County rating uses the selected snapshot.")}</small>
     `;
   }
 
@@ -625,8 +637,10 @@
     const paths = features.map((feature) => {
       const key = countyKey(feature);
       const override = countyValues[key] || {};
-      const score = Number.isFinite(Number(override.mapValue)) ? Number(override.mapValue) : 0;
-      const fill = Number.isFinite(Number(override.mapValue)) ? colorForScore(score) : "#2a344a";
+      const rating = override.rating || override.feaRating || raceWithOffice.prediction?.rating || "";
+      const ratingScore = scoreFromRating(rating);
+      const score = Number.isFinite(ratingScore) ? ratingScore : scoreFromRace(raceWithOffice);
+      const fill = rating ? colorForScore(score) : "#2a344a";
       const classes = ["prediction-shape-feature", "has-race", key === selectedCountyKey ? "is-selected" : ""].filter(Boolean).join(" ");
       return `<path class="${classes}" d="${pathForFeature(feature, projectionTools)}" fill="${fill}" data-county-key="${escapeHtml(key)}" data-county-name="${escapeHtml(countyName(feature))}"></path>`;
     }).join("");
@@ -716,6 +730,7 @@
     escapeHtml,
     clamp,
     colorForScore,
+    scoreFromRating,
     scoreFromRace,
     displayPercentagesForRace,
     normalizeDistrict,

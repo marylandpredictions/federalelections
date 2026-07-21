@@ -1,0 +1,46 @@
+name: Weekly FEA rating snapshots
+
+on:
+  schedule:
+    - cron: "17 13 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-rating-snapshots-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out site
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Sync branch before snapshot
+        run: git pull --rebase origin "$GITHUB_REF_NAME"
+
+      - name: Save weekly FEA Ratings snapshot
+        run: npm run snapshot:prediction-ratings
+
+      - name: Commit weekly rating snapshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/predictions/rating-snapshots
+          if git diff --cached --quiet; then
+            echo "No new rating snapshot to commit."
+            exit 0
+          fi
+          git commit -m "Add weekly FEA rating snapshot"
+          git push origin "HEAD:$GITHUB_REF_NAME"

@@ -986,6 +986,88 @@ body.prediction-page .prediction-board .chamber-majority-line {
   transform: translateX(-1px);
 }
 
+body.prediction-page .prediction-rating-timeline {
+  margin: 0 auto 16px;
+  padding: 14px;
+  border: 1px solid var(--prediction-line);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(10, 28, 76, 0.82), rgba(32, 17, 52, 0.78)),
+    rgba(6, 12, 32, 0.84);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
+}
+
+body.prediction-page .prediction-rating-timeline-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+body.prediction-page .prediction-rating-timeline-header span {
+  color: var(--prediction-muted);
+  font-size: 0.76rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.prediction-page .prediction-rating-timeline-header strong {
+  color: #fff;
+  font-weight: 950;
+}
+
+body.prediction-page .prediction-rating-slider-wrap input[type="range"] {
+  width: 100%;
+  accent-color: #c6d2ff;
+  cursor: pointer;
+}
+
+body.prediction-page .prediction-rating-ticks {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+body.prediction-page .prediction-rating-tick {
+  display: grid;
+  grid-template-rows: 12px auto;
+  justify-items: center;
+  gap: 4px;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  color: #cfd6ff;
+  background: transparent;
+  font: 850 0.68rem/1.1 "Telegraf", "Inter", "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+body.prediction-page .prediction-rating-tick i {
+  width: 9px;
+  height: 9px;
+  border: 1px solid rgba(255,255,255,0.72);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.15);
+  transition: transform 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+body.prediction-page .prediction-rating-tick span {
+  max-width: 92px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.prediction-page .prediction-rating-tick:hover i,
+body.prediction-page .prediction-rating-tick.is-active i {
+  background: #ff4f63;
+  box-shadow: 0 0 14px rgba(255, 79, 99, 0.58);
+  transform: scale(1.16);
+}
+
 body.prediction-page .prediction-map-shell {
   position: relative;
   min-height: clamp(680px, 78vh, 940px);
@@ -1129,6 +1211,21 @@ body.prediction-page .selected-race-foot {
 
   body.prediction-page .prediction-board .election-chamber-counts span {
     text-align: left;
+  }
+
+  body.prediction-page .prediction-rating-timeline-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  body.prediction-page .prediction-rating-ticks {
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 4px;
+  }
+
+  body.prediction-page .prediction-rating-tick {
+    min-width: 86px;
   }
 }
 
