@@ -8,7 +8,9 @@ const validRatings = new Set([
   "Safe Democratic",
   "Likely Democratic",
   "Lean Democratic",
+  "Tilt Democratic",
   "Tossup",
+  "Tilt Republican",
   "Lean Republican",
   "Likely Republican",
   "Safe Republican"

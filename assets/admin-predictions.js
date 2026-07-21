@@ -10,8 +10,8 @@
     governor: "Governors"
   };
   const cycles = {
-    D: ["Lean Democratic", "Likely Democratic", "Safe Democratic"],
-    R: ["Lean Republican", "Likely Republican", "Safe Republican"]
+    D: ["Tilt Democratic", "Lean Democratic", "Likely Democratic", "Safe Democratic"],
+    R: ["Tilt Republican", "Lean Republican", "Likely Republican", "Safe Republican"]
   };
 
   const state = {
@@ -32,7 +32,9 @@
     "Safe Democratic",
     "Likely Democratic",
     "Lean Democratic",
+    "Tilt Democratic",
     "Tossup",
+    "Tilt Republican",
     "Lean Republican",
     "Likely Republican",
     "Safe Republican"
@@ -68,6 +70,11 @@
 
   function ratingClass(rating) {
     return `rating-${normalizeRating(rating).toLowerCase().replace(/\s+/g, "-")}`;
+  }
+
+  function isCompetitiveRating(rating) {
+    const normalized = normalizeRating(rating);
+    return normalized === "Tossup" || normalized.startsWith("Tilt") || normalized.startsWith("Lean");
   }
 
   function setStatus(message, isError = false) {
@@ -143,8 +150,7 @@
       },
       ratingCounts: summary.ratings,
       competitiveCount: (state.data.races || []).filter((race) => {
-        const rating = normalizeRating(race?.prediction?.rating);
-        return rating === "Tossup" || rating.startsWith("Lean");
+        return isCompetitiveRating(race?.prediction?.rating);
       }).length
     };
   }
@@ -179,7 +185,11 @@
         nextRating = cycle[0];
       }
     }
-    if (nextRating === current) return;
+    if (nextRating === current) {
+      state.selectedRaceId = race.raceId;
+      render();
+      return;
+    }
     pushUndo();
     race.prediction = {
       ...(race.prediction || {}),
@@ -311,7 +321,12 @@
     document.querySelectorAll("[data-mode]").forEach((button) => {
       button.addEventListener("click", () => {
         state.editMode = button.dataset.mode;
-        render();
+        const race = selectedRace();
+        if (race) {
+          cycleRaceRating(race);
+        } else {
+          render();
+        }
       });
     });
     $("admin-load-published")?.addEventListener("click", () => loadOffice(state.office, false).catch((error) => setStatus(error.message, true)));
@@ -382,7 +397,7 @@
       </section>
       <section class="admin-rating-legend-panel">
         <span class="prediction-kicker">Rating click behavior</span>
-        <p>D cycles Lean Democratic to Likely Democratic to Safe Democratic. R cycles Lean Republican to Likely Republican to Safe Republican. Tossup assigns Tossup.</p>
+        <p>D cycles Tilt Democratic to Lean Democratic to Likely Democratic to Safe Democratic. R cycles Tilt Republican to Lean Republican to Likely Republican to Safe Republican. Tossup assigns Tossup.</p>
         <button id="admin-clear-rating" type="button">Set selected race to Tossup</button>
       </section>
     `;

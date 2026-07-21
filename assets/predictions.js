@@ -160,7 +160,7 @@
       <article class="prediction-card is-compact">
         <span>Democratic ratings</span>
         <strong class="prediction-party-d">${summary.counts.D}</strong>
-        <small>Safe, Likely, and Lean Democratic.</small>
+        <small>Safe, Likely, Lean, and Tilt Democratic.</small>
       </article>
       <article class="prediction-card is-compact">
         <span>Tossups</span>
@@ -170,7 +170,7 @@
       <article class="prediction-card is-compact">
         <span>Republican ratings</span>
         <strong class="prediction-party-r">${summary.counts.R}</strong>
-        <small>Safe, Likely, and Lean Republican.</small>
+        <small>Safe, Likely, Lean, and Tilt Republican.</small>
       </article>
     `;
   }

@@ -23,13 +23,15 @@
   };
 
   const colors = {
-    "Safe Democratic": "#0b5c8a",
-    "Likely Democratic": "#1879bd",
-    "Lean Democratic": "#77c5df",
-    Tossup: "#f4df86",
-    "Lean Republican": "#f3a0a0",
-    "Likely Republican": "#db3b3e",
-    "Safe Republican": "#a9151b",
+    "Safe Democratic": "#2c54bc",
+    "Likely Democratic": "#4f73d1",
+    "Lean Democratic": "#7694e2",
+    "Tilt Democratic": "#a0b6ef",
+    Tossup: "#cbcacd",
+    "Tilt Republican": "#eba3a2",
+    "Lean Republican": "#dd7a78",
+    "Likely Republican": "#cb5452",
+    "Safe Republican": "#b5312f",
     neutral: "#677589",
     background: "#0b1d46"
   };
@@ -38,7 +40,9 @@
     "Safe Democratic",
     "Likely Democratic",
     "Lean Democratic",
+    "Tilt Democratic",
     "Tossup",
+    "Tilt Republican",
     "Lean Republican",
     "Likely Republican",
     "Safe Republican"
@@ -47,9 +51,11 @@
   const aliases = new Map([
     ["safe d", "Safe Democratic"], ["safe dem", "Safe Democratic"], ["safe democratic", "Safe Democratic"], ["solid d", "Safe Democratic"],
     ["likely d", "Likely Democratic"], ["likely dem", "Likely Democratic"], ["likely democratic", "Likely Democratic"],
-    ["lean d", "Lean Democratic"], ["lean dem", "Lean Democratic"], ["lean democratic", "Lean Democratic"], ["tilt d", "Lean Democratic"],
+    ["lean d", "Lean Democratic"], ["lean dem", "Lean Democratic"], ["lean democratic", "Lean Democratic"],
+    ["tilt d", "Tilt Democratic"], ["tilt dem", "Tilt Democratic"], ["tilt democratic", "Tilt Democratic"],
     ["toss-up", "Tossup"], ["toss up", "Tossup"], ["tossup", "Tossup"], ["tie", "Tossup"],
-    ["lean r", "Lean Republican"], ["lean rep", "Lean Republican"], ["lean republican", "Lean Republican"], ["tilt r", "Lean Republican"],
+    ["tilt r", "Tilt Republican"], ["tilt rep", "Tilt Republican"], ["tilt republican", "Tilt Republican"],
+    ["lean r", "Lean Republican"], ["lean rep", "Lean Republican"], ["lean republican", "Lean Republican"],
     ["likely r", "Likely Republican"], ["likely rep", "Likely Republican"], ["likely republican", "Likely Republican"],
     ["safe r", "Safe Republican"], ["safe rep", "Safe Republican"], ["safe republican", "Safe Republican"], ["solid r", "Safe Republican"]
   ]);
@@ -72,11 +78,13 @@
   function ratingScore(rating) {
     switch (normalizeRating(rating)) {
       case "Safe Democratic": return -100;
-      case "Likely Democratic": return -66;
-      case "Lean Democratic": return -33;
+      case "Likely Democratic": return -75;
+      case "Lean Democratic": return -50;
+      case "Tilt Democratic": return -25;
       case "Tossup": return 0;
-      case "Lean Republican": return 33;
-      case "Likely Republican": return 66;
+      case "Tilt Republican": return 25;
+      case "Lean Republican": return 50;
+      case "Likely Republican": return 75;
       case "Safe Republican": return 100;
       default: return 0;
     }

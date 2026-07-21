@@ -103,14 +103,26 @@ function getRaceColor(demProbability, projectedDemMargin) {
 
 const RATING_SCORES = {
   "Safe D": 100,
-  "Likely D": 66,
-  "Lean D": 40,
-  "Tilt D": 18,
+  "Likely D": 75,
+  "Lean D": 50,
+  "Tilt D": 25,
   "Toss-up": 0,
-  "Tilt R": -18,
-  "Lean R": -40,
-  "Likely R": -66,
+  "Tilt R": -25,
+  "Lean R": -50,
+  "Likely R": -75,
   "Safe R": -100
+};
+
+const FEA_RATING_COLORS = {
+  "Safe D": "#2c54bc",
+  "Likely D": "#4f73d1",
+  "Lean D": "#7694e2",
+  "Tilt D": "#a0b6ef",
+  "Toss-up": "#cbcacd",
+  "Tilt R": "#eba3a2",
+  "Lean R": "#dd7a78",
+  "Likely R": "#cb5452",
+  "Safe R": "#b5312f"
 };
 
 const HOUSE_VIEW_MODES = {
@@ -120,6 +132,7 @@ const HOUSE_VIEW_MODES = {
 };
 
 function colorForRating(rating) {
+  if (FEA_RATING_COLORS[rating]) return FEA_RATING_COLORS[rating];
   return scoreToHex(RATING_SCORES[rating] ?? 0);
 }
 
@@ -907,6 +920,8 @@ const HOME_PREDICTION_FILES = {
 
 const HOME_RATING_ORDER = [
   "Tossup",
+  "Tilt Democratic",
+  "Tilt Republican",
   "Lean Democratic",
   "Lean Republican",
   "Likely Democratic",
@@ -925,9 +940,15 @@ const HOME_RATING_ALIASES = {
   "lean d": "Lean Democratic",
   "lean dem": "Lean Democratic",
   "lean democratic": "Lean Democratic",
+  "tilt d": "Tilt Democratic",
+  "tilt dem": "Tilt Democratic",
+  "tilt democratic": "Tilt Democratic",
   tossup: "Tossup",
   "toss-up": "Tossup",
   "toss up": "Tossup",
+  "tilt r": "Tilt Republican",
+  "tilt rep": "Tilt Republican",
+  "tilt republican": "Tilt Republican",
   "lean r": "Lean Republican",
   "lean rep": "Lean Republican",
   "lean republican": "Lean Republican",
@@ -1013,7 +1034,7 @@ function homePredictionRaceTitle(race, office) {
 function homePredictionCompetitiveCount(data) {
   return (data?.races || []).filter((race) => {
     const rating = homeNormalizeRating(race?.prediction?.rating);
-    return rating === "Tossup" || rating.startsWith("Lean");
+    return rating === "Tossup" || rating.startsWith("Tilt") || rating.startsWith("Lean");
   }).length;
 }
 
