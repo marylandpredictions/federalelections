@@ -5,18 +5,36 @@ import { join, resolve } from "node:path";
 const root = process.cwd();
 const predictionDir = resolve(root, "data/predictions");
 const validRatings = new Set([
-  "Safe D", "Likely D", "Lean D", "Tilt D", "Toss-up",
-  "Tilt R", "Lean R", "Likely R", "Safe R",
-  "Safe I", "Likely I", "Lean I", "Tilt I"
+  "Safe Democratic",
+  "Likely Democratic",
+  "Lean Democratic",
+  "Tossup",
+  "Lean Republican",
+  "Likely Republican",
+  "Safe Republican"
 ]);
-const validWinners = new Set(["D", "R", "I", "Toss-up", "Uncalled"]);
-const validConfidence = new Set(["low", "medium", "high"]);
 const validStatus = new Set(["draft", "reviewed", "published", "needs-review", "updating"]);
+const removedPredictionKeys = [
+  "winner",
+  "projectedMargin",
+  "probability",
+  "confidence",
+  "mapValue",
+  "displayPercentages",
+  "countyPredictions",
+  "modelReference",
+  "modelSignal"
+];
+const requiredPredictionFiles = new Set([
+  "2026-senate-predictions.json",
+  "2026-house-predictions.json",
+  "2026-governor-predictions.json"
+]);
 const errors = [];
 
 async function readJson(filePath) {
   const text = await readFile(filePath, "utf8");
-  if (/[<]{5,}|[>]{5,}|[=]{5,}/.test(text)) {
+  if (/^\s*(<<<<<<<|=======|>>>>>>>)/m.test(text)) {
     throw new Error(`${filePath} contains Git conflict markers.`);
   }
   return JSON.parse(text);
@@ -26,35 +44,15 @@ function fail(message) {
   errors.push(message);
 }
 
-function isFiniteOrNull(value) {
-  return value === null || value === undefined || Number.isFinite(Number(value));
-}
-
-function validateDisplayPercentages(file, id, target) {
-  const display = target?.displayPercentages;
-  if (display === undefined || display === null) return;
-  if (typeof display !== "object" || Array.isArray(display)) {
-    fail(`${file}: ${id} displayPercentages must be an object`);
-    return;
+async function walk(dir) {
+  const entries = await readdir(dir, { withFileTypes: true }).catch(() => []);
+  const files = [];
+  for (const entry of entries) {
+    const entryPath = join(dir, entry.name);
+    if (entry.isDirectory()) files.push(...await walk(entryPath));
+    else files.push(entryPath);
   }
-  for (const party of ["D", "R"]) {
-    if (display[party] === undefined || display[party] === null || display[party] === "") continue;
-    const number = Number(display[party]);
-    if (!Number.isFinite(number) || number < 0 || number > 100) {
-      fail(`${file}: ${id} displayPercentages.${party} must be between 0 and 100`);
-    }
-  }
-}
-
-function validateMapFields(file, id, target) {
-  if (!target) return;
-  if (target.mapValue !== undefined && target.mapValue !== null && target.mapValue !== "") {
-    const value = Number(target.mapValue);
-    if (!Number.isFinite(value) || value < -100 || value > 100) {
-      fail(`${file}: ${id} mapValue must be between -100 and 100`);
-    }
-  }
-  validateDisplayPercentages(file, id, target);
+  return files;
 }
 
 function validateRace(file, race) {
@@ -64,103 +62,54 @@ function validateRace(file, race) {
   if (!race.state) fail(`${file}: ${id} missing state`);
   const prediction = race.prediction || {};
   if (!validRatings.has(prediction.rating)) fail(`${file}: ${id} invalid rating ${prediction.rating}`);
-  if (!validWinners.has(prediction.winner)) fail(`${file}: ${id} invalid winner ${prediction.winner}`);
-  if (!isFiniteOrNull(prediction.projectedMargin)) fail(`${file}: ${id} invalid projectedMargin ${prediction.projectedMargin}`);
-  if (!validConfidence.has(prediction.confidence)) fail(`${file}: ${id} invalid confidence ${prediction.confidence}`);
   if (!validStatus.has(prediction.status || "published")) fail(`${file}: ${id} invalid status ${prediction.status}`);
-  validateMapFields(file, id, prediction);
-  if (race.countyPredictions !== undefined) {
-    if (!race.countyPredictions || typeof race.countyPredictions !== "object" || Array.isArray(race.countyPredictions)) {
-      fail(`${file}: ${id} countyPredictions must be an object keyed by county FIPS`);
-    } else {
-      for (const [countyFips, countyPrediction] of Object.entries(race.countyPredictions)) {
-        if (!/^\d{5}$/.test(String(countyFips))) fail(`${file}: ${id} invalid county override key ${countyFips}`);
-        validateMapFields(file, `${id} county ${countyFips}`, countyPrediction);
-      }
+  for (const key of removedPredictionKeys) {
+    if (key in prediction || key in race) {
+      fail(`${file}: ${id} contains retired numeric prediction field ${key}`);
     }
   }
-  for (const party of ["D", "R"]) {
-    if (!race.candidates?.[party]?.name) fail(`${file}: ${id} missing ${party} candidate name`);
-  }
-}
-
-function validateCounty(file, row) {
-  const id = row.countyFips || row.county || "(missing county)";
-  if (!/^\d{5}$/.test(String(row.countyFips || ""))) fail(`${file}: ${id} invalid countyFips`);
-  if (!row.state) fail(`${file}: ${id} missing state`);
-  if (!row.county) fail(`${file}: ${id} missing county`);
-  const prediction = row.prediction || {};
-  if (!validRatings.has(prediction.rating)) fail(`${file}: ${id} invalid county rating ${prediction.rating}`);
-  if (!validWinners.has(prediction.winner)) fail(`${file}: ${id} invalid county winner ${prediction.winner}`);
-  if (!isFiniteOrNull(prediction.projectedMargin)) fail(`${file}: ${id} invalid county projectedMargin`);
-  if (!validConfidence.has(prediction.confidence)) fail(`${file}: ${id} invalid county confidence ${prediction.confidence}`);
-}
-
-async function walk(dir) {
-  const entries = await readdir(dir, { withFileTypes: true }).catch(() => []);
-  const files = [];
-  for (const entry of entries) {
-    const path = join(dir, entry.name);
-    if (entry.isDirectory()) files.push(...await walk(path));
-    else files.push(path);
-  }
-  return files;
 }
 
 async function validatePredictionFiles() {
   const files = (await readdir(predictionDir).catch(() => []))
-    .filter((file) => file.endsWith("-predictions.json"))
-    .map((file) => join(predictionDir, file));
-  if (!files.length) fail("No published prediction files found. Run npm run build:prediction-adapter.");
-  for (const filePath of files) {
+    .filter((file) => file.endsWith("-predictions.json"));
+  for (const required of requiredPredictionFiles) {
+    if (!files.includes(required)) fail(`Missing published FEA Ratings file ${required}. Run npm run normalize:ratings.`);
+  }
+  for (const file of files) {
+    if (!requiredPredictionFiles.has(file)) fail(`Unexpected prediction file remains: data/predictions/${file}`);
+    const filePath = join(predictionDir, file);
     const data = await readJson(filePath);
-    const file = filePath.replace(`${root}\\`, "").replaceAll("\\", "/");
-    if (data.schemaVersion !== "team-predictions-v1") fail(`${file}: invalid schemaVersion`);
-    if (!Array.isArray(data.races) || !data.races.length) fail(`${file}: races must be a non-empty array`);
-    for (const race of data.races || []) validateRace(file, race);
+    const displayFile = filePath.replace(`${root}\\`, "").replaceAll("\\", "/");
+    if (data.schemaVersion !== "fea-ratings-v1") fail(`${displayFile}: invalid schemaVersion`);
+    if (!Array.isArray(data.races) || !data.races.length) fail(`${displayFile}: races must be a non-empty array`);
+    for (const race of data.races || []) validateRace(displayFile, race);
   }
 }
 
-async function validateCountyFiles() {
+async function validateRetiredCountyPredictions() {
   const countyRoot = join(predictionDir, "county-predictions");
   const files = (await walk(countyRoot)).filter((file) => file.endsWith(".json"));
   for (const filePath of files) {
-    const data = await readJson(filePath);
-    const rows = Array.isArray(data) ? data : data.counties;
-    const file = filePath.replace(`${root}\\`, "").replaceAll("\\", "/");
-    if (!Array.isArray(rows)) {
-      fail(`${file}: county prediction file must be an array or contain counties[]`);
-      continue;
-    }
-    rows.forEach((row) => validateCounty(file, row));
+    fail(`${filePath.replace(`${root}\\`, "").replaceAll("\\", "/")}: county-level prediction files are retired from the FEA Ratings system`);
   }
 }
 
 async function scanPublicStrings() {
   const files = [
     "predictions.html",
-    "predictions-methodology.html",
-    "predictions/methodology/index.html",
     "assets/predictions.js",
     "assets/prediction-map-utils.js",
     "assets/predictions.css",
-    "assets/model-lab.js",
-    "assets/admin-predictions.js"
-  ].map((file) => resolve(root, file));
-  const htmlRoots = [
+    "assets/admin-predictions.js",
     "predictions/2026/senate.html",
     "predictions/2026/house.html",
     "predictions/2026/governor.html",
-    "model-lab.html",
-    "model-lab/2026/senate.html",
-    "model-lab/2026/house.html",
-    "model-lab/2026/governor.html",
-    "model-lab/2028/president.html",
     "admin/predictions.html"
   ].map((file) => resolve(root, file));
-  for (const filePath of [...files, ...htmlRoots]) {
+  for (const filePath of files) {
     if (!existsSync(filePath)) {
-      fail(`${filePath.replace(`${root}\\`, "")}: required prediction page asset missing`);
+      fail(`${filePath.replace(`${root}\\`, "")}: required ratings page asset missing`);
       continue;
     }
     const text = await readFile(filePath, "utf8");
@@ -171,13 +120,13 @@ async function scanPublicStrings() {
 
 async function main() {
   await validatePredictionFiles();
-  await validateCountyFiles();
+  await validateRetiredCountyPredictions();
   await scanPublicStrings();
   if (errors.length) {
     console.error(errors.map((error) => `- ${error}`).join("\n"));
     process.exit(1);
   }
-  console.log("Prediction verification passed.");
+  console.log("FEA Ratings verification passed.");
 }
 
 main().catch((error) => {

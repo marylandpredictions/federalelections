@@ -1,56 +1,32 @@
 {
-  "schemaVersion": "team-predictions-v1",
-  "pageStatus": "Published",
-  "key": "2026-governor",
+  "schemaVersion": "fea-ratings-v1",
+  "key": "governor",
   "office": "governor",
   "cycle": "2026",
-  "title": "2026 Governor Predictions",
+  "title": "2026 Governor FEA Ratings",
+  "pageStatus": "Published",
   "generatedAt": "2026-07-08T01:51:31.283Z",
   "lastPublishedAt": "2026-07-08T01:51:31.283Z",
-  "sourceModelRunId": "2026-07-07T23:28:53.143Z-v4",
-  "modelLabPath": "/model-lab/2026/governor",
-  "publicMethodologyPath": "/predictions/methodology",
   "summary": {
     "counts": {
-      "D": 17,
-      "R": 19,
-      "I": 0,
-      "Toss-up": 0,
+      "D": 15,
+      "R": 14,
+      "Tossup": 7,
       "Uncalled": 0
     },
     "ratings": {
-      "Safe R": 7,
-      "Tilt R": 1,
-      "Toss-up": 7,
-      "Safe D": 5,
-      "Likely D": 6,
-      "Lean R": 2,
-      "Lean D": 2,
-      "Tilt D": 2,
-      "Likely R": 4
+      "Safe Democratic": 5,
+      "Likely Democratic": 6,
+      "Lean Democratic": 4,
+      "Tossup": 7,
+      "Lean Republican": 3,
+      "Likely Republican": 4,
+      "Safe Republican": 7
     },
-    "raceCount": 36,
-    "topline": {
-      "controlProbability": {
-        "D": 0.433107,
-        "R": 0.566893,
-        "other": 0
-      },
-      "expectedSeatsOrWins": {
-        "D": 17.76,
-        "R": 18.24,
-        "other": 0
-      },
-      "medianSeatsOrWins": {
-        "D": 17,
-        "R": 19,
-        "other": 0
-      }
-    }
+    "raceCount": 36
   },
   "notes": {
-    "publicSummary": "FEA Team Predictions are manually editable race ratings informed by public evidence and internal model diagnostics.",
-    "methodologyNote": "The automated model is used as a diagnostic reference, not as the final public prediction authority."
+    "publicSummary": "FEA Ratings are categorical team ratings informed by polling, race context, public evidence, and model diagnostics."
   },
   "races": [
     {
@@ -61,87 +37,30 @@
       "district": null,
       "displayName": "Alabama Governor",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 15.1,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Doug Jones",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Tommy Tuberville",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+15.1; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 15.1,
-          "signedValue": -15.1,
-          "display": "R+15.1",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.001142,
-          "R": 0.998858,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "AL"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "543b78ca33699e04a845c78e1ef2576af1c83198c48c23667edcbba6db682413"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "AK-GOVERNOR-2026",
@@ -151,87 +70,30 @@
       "district": null,
       "displayName": "Alaska Governor",
       "prediction": {
-        "rating": "Tilt R",
-        "winner": "R",
-        "projectedMargin": 2,
-        "confidence": "medium",
+        "rating": "Lean Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Tilt R; model margin R+2.1; model probability D 40.1 / R 59.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 2.05,
-          "signedValue": -2.05,
-          "display": "R+2.1",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.400539,
-          "R": 0.599461,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Tilt R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "AK"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "6281bb76af675bbbc82e7be1d0fb5528a399ced56310b28d247cc36cdf821a0f"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "AZ-GOVERNOR-2026",
@@ -241,87 +103,30 @@
       "district": null,
       "displayName": "Arizona Governor",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "D",
-        "projectedMargin": 0.5,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Katie Hobbs",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin D+0.5; model probability D 52.2 / R 47.8",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 0.5,
-          "signedValue": 0.5,
-          "display": "D+0.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.522195,
-          "R": 0.477805,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "AZ"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "c579b16f81b5326e621f1aca56ee00df7e16e77b7ce60d457977a1a44e7ab472"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "AR-GOVERNOR-2026",
@@ -331,87 +136,30 @@
       "district": null,
       "displayName": "Arkansas Governor",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 17.6,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Fredrick Love",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Sarah Huckabee Sanders",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+17.6; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 17.57,
-          "signedValue": -17.57,
-          "display": "R+17.6",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.001,
-          "R": 0.999,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "AR"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "27783fbdabd243f08c8c60f3aa5d557ca942ec080499c4c41057ff7fedae0c32"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "CA-GOVERNOR-2026",
@@ -421,87 +169,30 @@
       "district": null,
       "displayName": "California Governor",
       "prediction": {
-        "rating": "Safe D",
-        "winner": "D",
-        "projectedMargin": 14,
-        "confidence": "medium",
+        "rating": "Safe Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Xavier Becerra",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Steve Hilton",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe D; model margin D+14; model probability D 99.8 / R 0.2",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 14,
-          "signedValue": 14,
-          "display": "D+14",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.99766,
-          "R": 0.00234,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "CA"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "6d9d0e286603e96fc335a24ccfc5cc7e0fc24c0791ca3566eacf494a2e5d38d2"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "CO-GOVERNOR-2026",
@@ -511,87 +202,30 @@
       "district": null,
       "displayName": "Colorado Governor",
       "prediction": {
-        "rating": "Likely D",
-        "winner": "D",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Phil Weiser",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely D; model margin D+7.5; model probability D 88.9 / R 11.1",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 7.5,
-          "signedValue": 7.5,
-          "display": "D+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.888675,
-          "R": 0.111325,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "CO"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "2297591831df263e004f0a380f1b9baf34969a7df14ed6829376e0693943069f"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "CT-GOVERNOR-2026",
@@ -601,87 +235,30 @@
       "district": null,
       "displayName": "Connecticut Governor",
       "prediction": {
-        "rating": "Likely D",
-        "winner": "D",
-        "projectedMargin": 9.2,
-        "confidence": "medium",
+        "rating": "Likely Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Ned Lamont",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Ryan Fazio",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely D; model margin D+9.2; model probability D 93.3 / R 6.7",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 9.22,
-          "signedValue": 9.22,
-          "display": "D+9.2",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.933085,
-          "R": 0.066915,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "CT"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "eefedb13f2a4adce75f23c9945e806b658728961f48b0ab714242aedac0976d7"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "FL-GOVERNOR-2026",
@@ -691,87 +268,30 @@
       "district": null,
       "displayName": "Florida Governor",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "R",
-        "projectedMargin": 1.6,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin R+1.7; model probability D 42.7 / R 57.3",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 1.65,
-          "signedValue": -1.65,
-          "display": "R+1.7",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.426927,
-          "R": 0.573073,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "FL"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "7d59d959f8286388e917828a8ccf27223c0f5cdc631ed878fa49580a158d7ae4"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "GA-GOVERNOR-2026",
@@ -781,87 +301,30 @@
       "district": null,
       "displayName": "Georgia Governor",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "R",
-        "projectedMargin": 0.2,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Keisha Lance Bottoms",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Rick Jackson",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin R+0.2; model probability D 49.0 / R 51.0",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 0.22,
-          "signedValue": -0.22,
-          "display": "R+0.2",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.490234,
-          "R": 0.509766,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "GA"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "9ff843d3332f8a6174e8a30239ac3c5fb2e9151f109828c2520941b33255ad57"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "HI-GOVERNOR-2026",
@@ -871,87 +334,30 @@
       "district": null,
       "displayName": "Hawaii Governor",
       "prediction": {
-        "rating": "Safe D",
-        "winner": "D",
-        "projectedMargin": 17.3,
-        "confidence": "medium",
+        "rating": "Safe Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Josh Green",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Gary Cordery",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe D; model margin D+17.3; model probability D 99.9 / R 0.1",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 17.33,
-          "signedValue": 17.33,
-          "display": "D+17.3",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.999,
-          "R": 0.001,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "HI"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "1b2195edb6d260c0a9f5179569873be13111944e512f3ee996277d0190e3b178"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "ID-GOVERNOR-2026",
@@ -961,87 +367,30 @@
       "district": null,
       "displayName": "Idaho Governor",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 17.5,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Terri Pickens",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Brad Little",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+17.5; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 17.49,
-          "signedValue": -17.49,
-          "display": "R+17.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.001,
-          "R": 0.999,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "ID"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "c3574500c193156d9beb89f369078fe2e6f4e02534ea422e6ed156bd1e175605"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "IL-GOVERNOR-2026",
@@ -1051,87 +400,30 @@
       "district": null,
       "displayName": "Illinois Governor",
       "prediction": {
-        "rating": "Likely D",
-        "winner": "D",
-        "projectedMargin": 9,
-        "confidence": "medium",
+        "rating": "Likely Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "JB Pritzker",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Darren Bailey",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely D; model margin D+9; model probability D 92.7 / R 7.3",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 8.96,
-          "signedValue": 8.96,
-          "display": "D+9",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.927458,
-          "R": 0.072542,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "IL"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "79ebeaa3efaf1d1028ddf1a6d288357a60b7db070192ede002f699562a4216ce"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "IA-GOVERNOR-2026",
@@ -1141,87 +433,30 @@
       "district": null,
       "displayName": "Iowa Governor",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "D",
-        "projectedMargin": 3,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Rob Sand",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Zach Lahn",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin D+3; model probability D 64.8 / R 35.2",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 2.99,
-          "signedValue": 2.99,
-          "display": "D+3",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.648192,
-          "R": 0.351808,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "IA"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "70976b6c31c422cdb3eb0b0804fcf6d45e0ec95d6bcf40a61357edee097c7b1e"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "KS-GOVERNOR-2026",
@@ -1231,87 +466,30 @@
       "district": null,
       "displayName": "Kansas Governor",
       "prediction": {
-        "rating": "Lean R",
-        "winner": "R",
-        "projectedMargin": 4.3,
-        "confidence": "medium",
+        "rating": "Lean Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Lean R; model margin R+4.3; model probability D 27.5 / R 72.5",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 4.27,
-          "signedValue": -4.27,
-          "display": "R+4.3",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.275204,
-          "R": 0.724796,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Lean R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "KS"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "3872d6def8b20f399eab69695c8f265e4885abfd99e0171335c8422e5ebfebfc"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "ME-GOVERNOR-2026",
@@ -1321,87 +499,30 @@
       "district": null,
       "displayName": "Maine Governor",
       "prediction": {
-        "rating": "Lean D",
-        "winner": "D",
-        "projectedMargin": 4,
-        "confidence": "medium",
+        "rating": "Lean Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Lean D; model margin D+4; model probability D 71.0 / R 29.0",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 3.96,
-          "signedValue": 3.96,
-          "display": "D+4",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.710176,
-          "R": 0.289824,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Lean D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "ME"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "f9795a780d7153785cd65e9931bee40b2493ad9b6f669daf5d8f218908ffdd47"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "MD-GOVERNOR-2026",
@@ -1411,87 +532,30 @@
       "district": null,
       "displayName": "Maryland Governor",
       "prediction": {
-        "rating": "Safe D",
-        "winner": "D",
-        "projectedMargin": 18.1,
-        "confidence": "medium",
+        "rating": "Safe Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Wes Moore",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe D; model margin D+18.1; model probability D 99.9 / R 0.1",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 18.14,
-          "signedValue": 18.14,
-          "display": "D+18.1",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.999,
-          "R": 0.001,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "MD"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "0e7fc83d22050f71d7d98323b2abe47f19ec3a749ae66768e9a935d918391081"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "MA-GOVERNOR-2026",
@@ -1501,87 +565,30 @@
       "district": null,
       "displayName": "Massachusetts Governor",
       "prediction": {
-        "rating": "Safe D",
-        "winner": "D",
-        "projectedMargin": 17.9,
-        "confidence": "medium",
+        "rating": "Safe Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Maura Healey",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe D; model margin D+17.9; model probability D 99.9 / R 0.1",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 17.85,
-          "signedValue": 17.85,
-          "display": "D+17.9",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.999,
-          "R": 0.001,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "MA"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "7b8c3396ca887a3c2235c1d9c42c3725198d27a5e701f53f00e9ee481b1d4456"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "MI-GOVERNOR-2026",
@@ -1591,87 +598,30 @@
       "district": null,
       "displayName": "Michigan Governor",
       "prediction": {
-        "rating": "Tilt D",
-        "winner": "D",
-        "projectedMargin": 1.4,
-        "confidence": "medium",
+        "rating": "Lean Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Jocelyn Benson",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Tilt D; model margin D+1.4; model probability D 56.9 / R 43.1",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 1.41,
-          "signedValue": 1.41,
-          "display": "D+1.4",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.568864,
-          "R": 0.431136,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Tilt D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "MI"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "2c1f2c09e0e549d5ee3b817f00952ec7910518e2ee985b2e946114ec2841718e"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "MN-GOVERNOR-2026",
@@ -1681,87 +631,30 @@
       "district": null,
       "displayName": "Minnesota Governor",
       "prediction": {
-        "rating": "Tilt D",
-        "winner": "D",
-        "projectedMargin": 1.8,
-        "confidence": "medium",
+        "rating": "Lean Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Tilt D; model margin D+1.8; model probability D 58.5 / R 41.5",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 1.76,
-          "signedValue": 1.76,
-          "display": "D+1.8",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.585405,
-          "R": 0.414595,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Tilt D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "MN"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "704c0fb8e7a5da95d49e4a6798da52b33bb11c26d86194e57feab489507c0323"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "NE-GOVERNOR-2026",
@@ -1771,87 +664,30 @@
       "district": null,
       "displayName": "Nebraska Governor",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 16.4,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Lynne Walz",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Jim Pillen",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+16.4; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 16.41,
-          "signedValue": -16.41,
-          "display": "R+16.4",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.001,
-          "R": 0.999,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "NE"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "411d1ed764294f532362a9dcf0c04ec9d59fd1683025635f7af64076357120b3"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "NV-GOVERNOR-2026",
@@ -1861,87 +697,30 @@
       "district": null,
       "displayName": "Nevada Governor",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "R",
-        "projectedMargin": 1.3,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Joe Lombardo",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin R+1.3; model probability D 44.4 / R 55.6",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 1.25,
-          "signedValue": -1.25,
-          "display": "R+1.3",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.44432,
-          "R": 0.55568,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "NV"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "PRESUMPTIVE",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "cf96c653643d8da8233e61414ffb125cf3611af9a153628047141f32af360cb1"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "NH-GOVERNOR-2026",
@@ -1951,87 +730,30 @@
       "district": null,
       "displayName": "New Hampshire Governor",
       "prediction": {
-        "rating": "Lean R",
-        "winner": "R",
-        "projectedMargin": 4.3,
-        "confidence": "medium",
+        "rating": "Lean Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Kelly Ayotte",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Lean R; model margin R+4.4; model probability D 27.1 / R 72.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 4.35,
-          "signedValue": -4.35,
-          "display": "R+4.4",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.271477,
-          "R": 0.728523,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Lean R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "NH"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "PRESUMPTIVE",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "c7fd09f056b872342e801c8dad5bb0e7887da102d17a67d58bdc20639eadc17b"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "NM-GOVERNOR-2026",
@@ -2041,87 +763,30 @@
       "district": null,
       "displayName": "New Mexico Governor",
       "prediction": {
-        "rating": "Lean D",
-        "winner": "D",
-        "projectedMargin": 3.6,
-        "confidence": "medium",
+        "rating": "Lean Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Deb Haaland",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Lean D; model margin D+3.6; model probability D 69.5 / R 30.5",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 3.64,
-          "signedValue": 3.64,
-          "display": "D+3.6",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.694581,
-          "R": 0.305419,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Lean D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "NM"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "2b84e61c8751ab12e2ff36ac083494c6bce0f3406d04aed117cb4bf41535e75c"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "NY-GOVERNOR-2026",
@@ -2131,87 +796,30 @@
       "district": null,
       "displayName": "New York Governor",
       "prediction": {
-        "rating": "Likely D",
-        "winner": "D",
-        "projectedMargin": 8.6,
-        "confidence": "medium",
+        "rating": "Likely Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Kathy Hochul",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely D; model margin D+8.6; model probability D 91.8 / R 8.2",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 8.55,
-          "signedValue": 8.55,
-          "display": "D+8.6",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.917676,
-          "R": 0.082324,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "NY"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "0a47d9762c4ce40532a59fe8de213076102324ee11349b64026739e4276fd5ea"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "OH-GOVERNOR-2026",
@@ -2221,87 +829,30 @@
       "district": null,
       "displayName": "Ohio Governor",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "R",
-        "projectedMargin": 2,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Amy Acton",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Vivek Ramaswamy",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin R+2; model probability D 41.2 / R 58.8",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 1.98,
-          "signedValue": -1.98,
-          "display": "R+2",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.412309,
-          "R": 0.587691,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "OH"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "8b3609cad0e5b7f9dcb3fe10564b6c84e2b3c6559144fc68452ebfd5f5ce16ee"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "OK-GOVERNOR-2026",
@@ -2311,87 +862,30 @@
       "district": null,
       "displayName": "Oklahoma Governor",
       "prediction": {
-        "rating": "Likely R",
-        "winner": "R",
-        "projectedMargin": 9.1,
-        "confidence": "medium",
+        "rating": "Likely Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Gentner Drummond / Mike Mazzei runoff",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely R; model margin R+9.1; model probability D 7.1 / R 92.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 9.05,
-          "signedValue": -9.05,
-          "display": "R+9.1",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.070598,
-          "R": 0.929402,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "OK"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "GENERIC",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "b5bcac6e6499ef30f675371d0d85d1c0336cb58cce86abb5500697acd36712d7"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "OR-GOVERNOR-2026",
@@ -2401,87 +895,30 @@
       "district": null,
       "displayName": "Oregon Governor",
       "prediction": {
-        "rating": "Likely D",
-        "winner": "D",
-        "projectedMargin": 8.2,
-        "confidence": "medium",
+        "rating": "Likely Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Tina Kotek",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Christine Drazan",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely D; model margin D+8.2; model probability D 90.9 / R 9.1",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 8.19,
-          "signedValue": 8.19,
-          "display": "D+8.2",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.908537,
-          "R": 0.091463,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "OR"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "ca4e47f1e9f1596567bd411c028adaeb50c6fe660915779ce9ac7ab26ee6dcc1"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "PA-GOVERNOR-2026",
@@ -2491,87 +928,30 @@
       "district": null,
       "displayName": "Pennsylvania Governor",
       "prediction": {
-        "rating": "Likely D",
-        "winner": "D",
-        "projectedMargin": 8.1,
-        "confidence": "medium",
+        "rating": "Likely Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Josh Shapiro",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Stacy Garrity",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely D; model margin D+8.1; model probability D 90.5 / R 9.5",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 8.05,
-          "signedValue": 8.05,
-          "display": "D+8.1",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.904827,
-          "R": 0.095173,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "PA"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "700266a7a240ffe9a3bb56d4fb9d8eda78eadeb004339c707aed1887402e6ed5"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "RI-GOVERNOR-2026",
@@ -2581,87 +961,30 @@
       "district": null,
       "displayName": "Rhode Island Governor",
       "prediction": {
-        "rating": "Safe D",
-        "winner": "D",
-        "projectedMargin": 15.6,
-        "confidence": "medium",
+        "rating": "Safe Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Dan McKee",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe D; model margin D+15.6; model probability D 99.9 / R 0.1",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 15.56,
-          "signedValue": 15.56,
-          "display": "D+15.6",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.999,
-          "R": 0.001,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "RI"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "cc08119ab62003b8262ef29551019573e3cc6c1c558b5420662333d88c28d626"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "SC-GOVERNOR-2026",
@@ -2671,87 +994,30 @@
       "district": null,
       "displayName": "South Carolina Governor",
       "prediction": {
-        "rating": "Likely R",
-        "winner": "R",
-        "projectedMargin": 7.7,
-        "confidence": "medium",
+        "rating": "Likely Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Alan Wilson",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely R; model margin R+7.7; model probability D 10.7 / R 89.3",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 7.66,
-          "signedValue": -7.66,
-          "display": "R+7.7",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.1066,
-          "R": 0.8934,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "SC"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "GENERIC",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "205727cdf73cbed261e5286bd1828ee86466fefd819f8bdc40e31c905b33dda9"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "SD-GOVERNOR-2026",
@@ -2761,87 +1027,30 @@
       "district": null,
       "displayName": "South Dakota Governor",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 17.3,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Daniel Ahlers",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Larry Rhoden",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+17.3; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 17.32,
-          "signedValue": -17.32,
-          "display": "R+17.3",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.001,
-          "R": 0.999,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "SD"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "PRESUMPTIVE",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "d8ab36d8dbc6bf4e31397d3098e67365490ab9355f9f6e144f1b183dff50521c"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "TN-GOVERNOR-2026",
@@ -2851,87 +1060,30 @@
       "district": null,
       "displayName": "Tennessee Governor",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 15.1,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Andy Ogles",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+15.1; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 15.06,
-          "signedValue": -15.06,
-          "display": "R+15.1",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.001176,
-          "R": 0.998824,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "TN"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "GENERIC",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "86c75b5db9598ef5060a4a98b46933c6cf45c148d2f71195f0c0988e14229e8c"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "TX-GOVERNOR-2026",
@@ -2941,87 +1093,30 @@
       "district": null,
       "displayName": "Texas Governor",
       "prediction": {
-        "rating": "Likely R",
-        "winner": "R",
-        "projectedMargin": 8.8,
-        "confidence": "medium",
+        "rating": "Likely Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Gina Hinojosa",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Greg Abbott",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely R; model margin R+8.8; model probability D 7.7 / R 92.3",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 8.76,
-          "signedValue": -8.76,
-          "display": "R+8.8",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.077197,
-          "R": 0.922803,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "TX"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "VERIFIED",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "7e7c2219653dfa843791ea1f6fa10cd21d437f6a86846cdc5568729484eaed64"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "VT-GOVERNOR-2026",
@@ -3031,87 +1126,30 @@
       "district": null,
       "displayName": "Vermont Governor",
       "prediction": {
-        "rating": "Likely R",
-        "winner": "R",
-        "projectedMargin": 8.9,
-        "confidence": "medium",
+        "rating": "Likely Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Phil Scott",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely R; model margin R+8.9; model probability D 7.4 / R 92.6",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 8.9,
-          "signedValue": -8.9,
-          "display": "R+8.9",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.073906,
-          "R": 0.926094,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "VT"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "PRESUMPTIVE",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "3a3a19139f6da44ab699f9cfa1474155d680a5ba0efbabff8b9f2d63c338f537"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "WI-GOVERNOR-2026",
@@ -3121,87 +1159,30 @@
       "district": null,
       "displayName": "Wisconsin Governor",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "R",
-        "projectedMargin": 0,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Sara Rodriguez",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Tom Tiffany",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin Even; model probability D 50.0 / R 50.0",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "TIE",
-          "value": 0,
-          "signedValue": 0,
-          "display": "Even",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.499781,
-          "R": 0.500219,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "WI"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "PRESUMPTIVE",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "3893f1b19acb0931166177d074091ff803b6afb5a398bcaebcb1588ec97a3d5a"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "WY-GOVERNOR-2026",
@@ -3211,87 +1192,30 @@
       "district": null,
       "displayName": "Wyoming Governor",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 17.8,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Gabriel Green",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+17.8; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/governor",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 17.79,
-          "signedValue": -17.79,
-          "display": "R+17.8",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.001,
-          "R": 0.999,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "WY"
-          },
-          "candidate": {
-            "status": "VERIFIED",
-            "demStatus": "VERIFIED",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "f41d4231aeb0e86ab975ee85285f203fa361ba69318e32ea548de20fa8b23850"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     }
   ]
 }

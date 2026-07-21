@@ -905,34 +905,100 @@ const HOME_PREDICTION_FILES = {
   governor: "data/predictions/2026-governor-predictions.json"
 };
 
-const HOME_RATING_ORDER = ["Toss-up", "Tilt D", "Tilt R", "Lean D", "Lean R", "Likely D", "Likely R", "Safe D", "Safe R", "Tilt I", "Lean I", "Likely I", "Safe I"];
+const HOME_RATING_ORDER = [
+  "Tossup",
+  "Lean Democratic",
+  "Lean Republican",
+  "Likely Democratic",
+  "Likely Republican",
+  "Safe Democratic",
+  "Safe Republican"
+];
+
+const HOME_RATING_ALIASES = {
+  "safe d": "Safe Democratic",
+  "safe dem": "Safe Democratic",
+  "safe democratic": "Safe Democratic",
+  "likely d": "Likely Democratic",
+  "likely dem": "Likely Democratic",
+  "likely democratic": "Likely Democratic",
+  "lean d": "Lean Democratic",
+  "lean dem": "Lean Democratic",
+  "lean democratic": "Lean Democratic",
+  tossup: "Tossup",
+  "toss-up": "Tossup",
+  "toss up": "Tossup",
+  "lean r": "Lean Republican",
+  "lean rep": "Lean Republican",
+  "lean republican": "Lean Republican",
+  "likely r": "Likely Republican",
+  "likely rep": "Likely Republican",
+  "likely republican": "Likely Republican",
+  "safe r": "Safe Republican",
+  "safe rep": "Safe Republican",
+  "safe republican": "Safe Republican"
+};
+
+function homeNormalizeRating(rating) {
+  const key = String(rating || "").trim().toLowerCase();
+  return HOME_RATING_ALIASES[key] || "Tossup";
+}
 
 function homePredictionCounts(data) {
-  const counts = data?.summary?.counts || {};
-  const result = {
-    D: Math.round(firstFiniteNumber(counts.D, counts.dem, counts.democratic) ?? 0),
-    R: Math.round(firstFiniteNumber(counts.R, counts.rep, counts.republican) ?? 0),
-    I: Math.round(firstFiniteNumber(counts.I, counts.ind, counts.independent) ?? 0)
-  };
-  if (data?.office === "senate") {
-    const notUp = data?.summary?.notUpSeats || data?.summary?.incumbentsNotUp || { D: 33, R: 32, I: 0 };
-    result.D += Math.round(firstFiniteNumber(notUp.D, notUp.dem, notUp.democratic) ?? 0);
-    result.R += Math.round(firstFiniteNumber(notUp.R, notUp.rep, notUp.republican) ?? 0);
-    result.I += Math.round(firstFiniteNumber(notUp.I, notUp.ind, notUp.independent) ?? 0);
+  const result = { D: 0, R: 0, Tossup: 0 };
+  for (const race of data?.races || []) {
+    const party = homePredictionRatingParty(race?.prediction?.rating);
+    if (party === "D") result.D += 1;
+    else if (party === "R") result.R += 1;
+    else result.Tossup += 1;
+  }
+  if (!data?.races?.length) {
+    const counts = data?.summary?.counts || {};
+    result.D = Math.round(firstFiniteNumber(counts.D, counts.dem, counts.democratic) ?? 0);
+    result.R = Math.round(firstFiniteNumber(counts.R, counts.rep, counts.republican) ?? 0);
+    result.Tossup = Math.round(firstFiniteNumber(counts.Tossup, counts.tossup, counts.tossups, counts.T) ?? 0);
   }
   return result;
 }
 
+function homeRatingsDate(data) {
+  const raw = data?.selectedSnapshotDate || data?.lastPublishedAt || data?.lastEdited || data?.generatedAt;
+  const date = new Date(raw);
+  if (!raw || Number.isNaN(date.getTime())) return "--";
+  return `Updated ${date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`;
+}
+
+function homeRatingsCountLabel(counts, office) {
+  const total = counts.D + counts.R + counts.Tossup;
+  if (office === "house") return `${total} districts rated`;
+  return `${total} races rated`;
+}
+
+function homeRatingsBalanceLabel(counts) {
+  const parts = [`${counts.D} D`, `${counts.R} R`];
+  if (counts.Tossup) parts.push(`${counts.Tossup} Tossup`);
+  return parts.join(" / ");
+}
+
+function homePredictionLeader(counts) {
+  if (counts.D === counts.R) {
+    return { label: "Even ratings", party: "T" };
+  }
+  if (counts.D > counts.R) {
+    return { label: "Democratic edge", party: "D" };
+  }
+  return { label: "Republican edge", party: "R" };
+}
+
 function homePredictionRatingParty(rating) {
-  const text = String(rating || "");
-  if (/\bD\b/i.test(text)) return "D";
-  if (/\bR\b/i.test(text)) return "R";
-  if (/\bI\b/i.test(text)) return "I";
+  const normalized = homeNormalizeRating(rating);
+  if (normalized.endsWith("Democratic")) return "D";
+  if (normalized.endsWith("Republican")) return "R";
   return "T";
 }
 
 function homePredictionRatingRank(rating) {
-  const idx = HOME_RATING_ORDER.findIndex((item) => item.toLowerCase() === String(rating || "").toLowerCase());
+  const idx = HOME_RATING_ORDER.findIndex((item) => item === homeNormalizeRating(rating));
   return idx === -1 ? 99 : idx;
 }
 
@@ -941,51 +1007,36 @@ function homePredictionRaceTitle(race, office) {
     const district = String(race?.district || race?.id || race?.raceId || "").replace(/^.*-/, "");
     return `${race?.state || "--"}-${district || "--"}`.toUpperCase();
   }
-  return race?.state || race?.displayName || race?.raceId || "--";
-}
-
-function homePredictionEdgeLabel(rating) {
-  const party = homePredictionRatingParty(rating);
-  if (party === "D") return "Dem edge";
-  if (party === "R") return "GOP edge";
-  if (party === "I") return "Ind edge";
-  return "No clear edge";
+  return race?.displayName || race?.state || race?.raceId || "--";
 }
 
 function homePredictionCompetitiveCount(data) {
   return (data?.races || []).filter((race) => {
-    const rating = String(race?.prediction?.rating || "").toLowerCase();
-    return rating.includes("toss") || rating.includes("tilt") || rating.includes("lean");
+    const rating = homeNormalizeRating(race?.prediction?.rating);
+    return rating === "Tossup" || rating.startsWith("Lean");
   }).length;
 }
 
 function applyHomePredictionCard(key, data) {
   if (!data) return;
   const counts = homePredictionCounts(data);
-  const favoredIsDem = counts.D >= counts.R;
-  const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
+  const leader = homePredictionLeader(counts);
   const raceWord = data.office === "house" ? "districts" : "races";
-  const unitWord = data.office === "house" || data.office === "senate" ? "seats" : "races";
-  const isTie = counts.D === counts.R;
+  const competitive = homePredictionCompetitiveCount(data);
 
   setText(`home-${key}-status`, "Live");
-  if (data.office === "governor") {
-    setText(`home-${key}-favored`, isTie ? "Even ratings" : `${favoredSide} lead`);
-    setText(`home-${key}-seats`, `${counts.D} D races / ${counts.R} R races`);
-  } else {
-    setText(`home-${key}-favored`, isTie ? "Even ratings" : `${favoredSide} edge`);
-    setText(`home-${key}-seats`, `${counts.D} D / ${counts.R} R rated ${unitWord}`);
-  }
+  setText(`home-${key}-favored`, leader.label);
+  setText(`home-${key}-seats`, homeRatingsCountLabel(counts, data.office));
   setText(`home-${key}-dem`, counts.D);
   setText(`home-${key}-rep`, counts.R);
-  setText(`home-${key}-run`, forecastRunDate(data));
-  setText(`home-${key}-median`, data.office === "governor" ? `${counts.D} D / ${counts.R} R` : `${counts.D} D / ${counts.R} R`);
-  setText(`home-${key}-note`, `${homePredictionCompetitiveCount(data)} competitive ${raceWord}`);
+  setText(`home-${key}-run`, homeRatingsDate(data));
+  setText(`home-${key}-median`, homeRatingsBalanceLabel(counts));
+  setText(`home-${key}-note`, `${competitive} tossup or lean ${raceWord}`);
 
   const card = document.getElementById(`home-${key}-card`);
   if (card) {
-    card.classList.toggle("control-dem", favoredIsDem);
-    card.classList.toggle("control-rep", !favoredIsDem);
+    card.classList.toggle("control-dem", leader.party === "D");
+    card.classList.toggle("control-rep", leader.party === "R");
   }
 }
 
@@ -1002,8 +1053,9 @@ async function loadHomePredictionCards() {
       console.warn(`[wiki.js] Could not load ${file}`, error);
     }
   }));
-  renderHomeRadar();
 }
+
+function renderHomeRadar() {}
 
 function presidentCandidateShortName(name) {
   if (!name) return "--";
@@ -1013,95 +1065,10 @@ function presidentCandidateShortName(name) {
 }
 
 function presidentSummary() {
-  if (!presidentForecasts?.length) return null;
-  const count = presidentForecasts.length;
-  const demWin = presidentForecasts.reduce((sum, item) => sum + (item.national?.demWinProbability || 0), 0) / count;
-  const repWin = presidentForecasts.reduce((sum, item) => sum + (item.national?.repWinProbability || 0), 0) / count;
-  const demEv = presidentForecasts.reduce((sum, item) => sum + (item.electoralCollege?.demExpectedEV || 0), 0) / count;
-  const repEv = presidentForecasts.reduce((sum, item) => sum + (item.electoralCollege?.repExpectedEV || 0), 0) / count;
-  const sortedDem = [...presidentForecasts].sort((a, b) => (b.national?.demWinProbability || 0) - (a.national?.demWinProbability || 0));
-  const sortedRep = [...presidentForecasts].sort((a, b) => (b.national?.repWinProbability || 0) - (a.national?.repWinProbability || 0));
-  const runDate = presidentForecasts.map((item) => item.date).filter(Boolean).sort().at(-1);
-  return { count, demWin, repWin, demEv, repEv, sortedDem, sortedRep, runDate };
+  return null;
 }
 
-function updateHomePresidentSummary() {
-  console.log("[wiki.js] updateHomePresidentSummary called, presidentForecasts:", presidentForecasts);
-  const summary = presidentSummary();
-  console.log("[wiki.js] presidentSummary:", summary);
-  if (!summary) {
-    console.log("[wiki.js] presidentSummary is null, skipping update");
-    return;
-  }
-  const favoredIsDem = summary.demWin >= summary.repWin;
-  const favoredSide = favoredIsDem ? "Democrats" : "Republicans";
-  const favoredProbability = Math.max(summary.demWin, summary.repWin);
-  setText("home-president-favored", `${favoredSide} ${pct(favoredProbability)}`);
-  setText("home-president-dem", oneDecimal(summary.demWin));
-  setText("home-president-rep", oneDecimal(summary.repWin));
-  setText("home-president-run", summary.runDate || "--");
-  setText("home-president-ev", `${Math.round(summary.demEv)} D / ${Math.round(summary.repEv)} R`);
-  setText("home-president-note", `${summary.count} tested matchups`);
-  const card = document.getElementById("home-president-card");
-  if (card) {
-    card.classList.toggle("control-dem", favoredIsDem);
-    card.classList.toggle("control-rep", !favoredIsDem);
-  }
-}
-
-function metricTone(partyOrValue) {
-  if (partyOrValue === "D" || Number(partyOrValue) > 0) return "metric-dem";
-  if (partyOrValue === "R" || Number(partyOrValue) < 0) return "metric-rep";
-  return "metric-toss";
-}
-
-function radarRow({ className, href, id, probability, probabilityParty, margin, marginParty }) {
-  return `
-    <a class="home-radar-row ${className || ""}" href="${escapeHtml(href)}">
-      <strong>${escapeHtml(id)}</strong>
-      <b class="${metricTone(probabilityParty)}">${escapeHtml(probability)}</b>
-      <i class="${metricTone(marginParty)}">${escapeHtml(margin)}</i>
-    </a>
-  `;
-}
-
-function renderHomeRadar() {
-  const rowLimit = 5;
-  const configs = [
-    { key: "senate", elementId: "home-senate-radar", href: "/predictions/2026/senate" },
-    { key: "house", elementId: "home-house-radar", href: "/predictions/2026/house" },
-    { key: "governor", elementId: "home-governor-radar", href: "/predictions/2026/governor" }
-  ];
-
-  configs.forEach(({ key, elementId, href }) => {
-    const container = document.getElementById(elementId);
-    const data = homePredictionData[key];
-    if (!container || !data) return;
-    const rows = [...(data.races || [])]
-      .filter((race) => race?.prediction?.rating)
-      .sort((a, b) => {
-        const ratingSort = homePredictionRatingRank(a.prediction.rating) - homePredictionRatingRank(b.prediction.rating);
-        if (ratingSort) return ratingSort;
-        return homePredictionRaceTitle(a, data.office).localeCompare(homePredictionRaceTitle(b, data.office));
-      })
-      .slice(0, rowLimit);
-
-    container.innerHTML = rows.map((race) => {
-      const rating = race.prediction.rating || "Unrated";
-      const party = homePredictionRatingParty(rating);
-      return radarRow({
-        className: party === "D" ? "leads-dem" : party === "R" ? "leads-rep" : "leads-tossup",
-        href,
-        id: homePredictionRaceTitle(race, data.office),
-        probability: rating,
-        probabilityParty: party,
-        margin: homePredictionEdgeLabel(rating),
-        marginParty: party
-      });
-    }).join("");
-  });
-}
-
+function updateHomePresidentSummary() {}
 async function renderHomeLatestVideo() {
   const container = document.getElementById("home-latest-video");
   if (!container) return;

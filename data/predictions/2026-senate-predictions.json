@@ -1,54 +1,32 @@
 {
-  "schemaVersion": "team-predictions-v1",
-  "pageStatus": "Published",
-  "key": "2026-senate",
+  "schemaVersion": "fea-ratings-v1",
+  "key": "senate",
   "office": "senate",
   "cycle": "2026",
-  "title": "2026 Senate Predictions",
+  "title": "2026 Senate FEA Ratings",
+  "pageStatus": "Published",
   "generatedAt": "2026-07-08T01:51:31.283Z",
   "lastPublishedAt": "2026-07-08T01:51:31.283Z",
-  "sourceModelRunId": "2026-07-07T23:28:53.143Z-v4",
-  "modelLabPath": "/model-lab/2026/senate",
-  "publicMethodologyPath": "/predictions/methodology",
   "summary": {
     "counts": {
-      "D": 15,
-      "R": 20,
-      "I": 0,
-      "Toss-up": 0,
+      "D": 11,
+      "R": 17,
+      "Tossup": 7,
       "Uncalled": 0
     },
     "ratings": {
-      "Likely R": 7,
-      "Toss-up": 7,
-      "Safe R": 8,
-      "Likely D": 7,
-      "Safe D": 3,
-      "Lean R": 2,
-      "Lean D": 1
+      "Safe Democratic": 3,
+      "Likely Democratic": 7,
+      "Lean Democratic": 1,
+      "Tossup": 7,
+      "Lean Republican": 2,
+      "Likely Republican": 7,
+      "Safe Republican": 8
     },
-    "raceCount": 35,
-    "topline": {
-      "controlProbability": {
-        "D": 0.000003,
-        "R": 0.999997,
-        "other": 0
-      },
-      "expectedSeatsOrWins": {
-        "D": 14.85,
-        "R": 20.15,
-        "other": 0
-      },
-      "medianSeatsOrWins": {
-        "D": 15,
-        "R": 20,
-        "other": 0
-      }
-    }
+    "raceCount": 35
   },
   "notes": {
-    "publicSummary": "FEA Team Predictions are manually editable race ratings informed by public evidence and internal model diagnostics.",
-    "methodologyNote": "The automated model is used as a diagnostic reference, not as the final public prediction authority."
+    "publicSummary": "FEA Ratings are categorical team ratings informed by polling, race context, public evidence, and model diagnostics."
   },
   "races": [
     {
@@ -59,87 +37,30 @@
       "district": null,
       "displayName": "Alabama Senate",
       "prediction": {
-        "rating": "Likely R",
-        "winner": "R",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Dakarai Larriett / Everett Wess runoff",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Barry Moore",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely R; model margin R+7.5; model probability D 11.3 / R 88.7",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 7.5,
-          "signedValue": -7.5,
-          "display": "R+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.113201,
-          "R": 0.886799,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "AL"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "f33280ae2186920dbf1280b393156c602b2333aec402a3c4ad6673c35682887c"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "AK-SENATE-2026",
@@ -149,87 +70,30 @@
       "district": null,
       "displayName": "Alaska Senate",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "R",
-        "projectedMargin": 0.3,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Mary Peltola",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Dan Sullivan",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin R+0.3; model probability D 48.9 / R 51.1",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 0.26,
-          "signedValue": -0.26,
-          "display": "R+0.3",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.488827,
-          "R": 0.511173,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "AK"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "PRESUMPTIVE",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "394020a2d746976b900be50de8db4810e9c4114935677775b499883490947d88"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "AR-SENATE-2026",
@@ -239,87 +103,30 @@
       "district": null,
       "displayName": "Arkansas Senate",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 15,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Hallie Shoffner",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Tom Cotton",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+15; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 15,
-          "signedValue": -15,
-          "display": "R+15",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.00135,
-          "R": 0.99865,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "AR"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "fa535cbc085db87acd8e54635666bfc1252a2589fbc022d96aeb24e01668ca5d"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "CO-SENATE-2026",
@@ -329,87 +136,30 @@
       "district": null,
       "displayName": "Colorado Senate",
       "prediction": {
-        "rating": "Likely D",
-        "winner": "D",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "John Hickenlooper",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely D; model margin D+7.5; model probability D 88.7 / R 11.3",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 7.5,
-          "signedValue": 7.5,
-          "display": "D+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.886799,
-          "R": 0.113201,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "CO"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "b1e93c1665db8ad925282e854e6b68f1ebfad987e4f97a1dd5e3954acb065eab"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "DE-SENATE-2026",
@@ -419,87 +169,30 @@
       "district": null,
       "displayName": "Delaware Senate",
       "prediction": {
-        "rating": "Safe D",
-        "winner": "D",
-        "projectedMargin": 15,
-        "confidence": "medium",
+        "rating": "Safe Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Chris Coons",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe D; model margin D+15; model probability D 99.9 / R 0.1",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 15,
-          "signedValue": 15,
-          "display": "D+15",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.99865,
-          "R": 0.00135,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "DE"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "d8d1eb8c434c0e75416fb317574e1f29d0a0e71a39dddefb6fa4285e7b19de9f"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "FL-SENATE-2026",
@@ -509,87 +202,30 @@
       "district": null,
       "displayName": "Florida Senate",
       "prediction": {
-        "rating": "Likely R",
-        "winner": "R",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Ashley Moody",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely R; model margin R+7.5; model probability D 11.3 / R 88.7",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 7.5,
-          "signedValue": -7.5,
-          "display": "R+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.113201,
-          "R": 0.886799,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "FL"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "PRESUMPTIVE",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "ddebfebe0832f97f0825481621e29f943b12873eee0212cb9d1173ae786bfa40"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "GA-SENATE-2026",
@@ -599,87 +235,30 @@
       "district": null,
       "displayName": "Georgia Senate",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "D",
-        "projectedMargin": 0.3,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Jon Ossoff",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Mike Collins",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin D+0.3; model probability D 51.2 / R 48.8",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 0.29,
-          "signedValue": 0.29,
-          "display": "D+0.3",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.512227,
-          "R": 0.487773,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "GA"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "0270c8aebe979f3befa3aea9365e944ee7f65b2dc16ea043c8d0d90861cfb5dc"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "ID-SENATE-2026",
@@ -689,93 +268,35 @@
       "district": null,
       "displayName": "Idaho Senate",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 15,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "David Roth",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Jim Risch",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "I": {
           "name": "independent longshot, no assumed caucus",
           "party": "I",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+15; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 15,
-          "signedValue": -15,
-          "display": "R+15",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.00135,
-          "R": 0.99865,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "ID"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "6207f4d93288257bc6ea43705c1d582b51468effa8ca6b83833a52540e4e424f"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "IL-SENATE-2026",
@@ -785,87 +306,30 @@
       "district": null,
       "displayName": "Illinois Senate",
       "prediction": {
-        "rating": "Likely D",
-        "winner": "D",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Juliana Stratton",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Don Tracy",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely D; model margin D+7.5; model probability D 88.7 / R 11.3",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 7.5,
-          "signedValue": 7.5,
-          "display": "D+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.886799,
-          "R": 0.113201,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "IL"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "5cb12de1c480810ad0855151cb50ec069c48e843c5273fc168d074897a8a3ab7"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "IA-SENATE-2026",
@@ -875,87 +339,30 @@
       "district": null,
       "displayName": "Iowa Senate",
       "prediction": {
-        "rating": "Lean R",
-        "winner": "R",
-        "projectedMargin": 3.3,
-        "confidence": "medium",
+        "rating": "Lean Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Josh Turek",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Ashley Hinson",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Lean R; model margin R+3.3; model probability D 32.3 / R 67.7",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 3.3,
-          "signedValue": -3.3,
-          "display": "R+3.3",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.323382,
-          "R": 0.676618,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Lean R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "IA"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "9dbde43d190320d2feb9e24555c8c5aba5115f1571bebb63a1ddd89374b892e5"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "KS-SENATE-2026",
@@ -965,87 +372,30 @@
       "district": null,
       "displayName": "Kansas Senate",
       "prediction": {
-        "rating": "Likely R",
-        "winner": "R",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Roger Marshall",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely R; model margin R+7.5; model probability D 11.3 / R 88.7",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 7.5,
-          "signedValue": -7.5,
-          "display": "R+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.113201,
-          "R": 0.886799,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "KS"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "PRESUMPTIVE",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "c439e9a0fe5500c428920bc6c205b2dd7285ad4ab785cb42959fc7bd0ae66316"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "KY-SENATE-2026",
@@ -1055,87 +405,30 @@
       "district": null,
       "displayName": "Kentucky Senate",
       "prediction": {
-        "rating": "Likely R",
-        "winner": "R",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Charles Booker",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Andy Barr",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely R; model margin R+7.5; model probability D 11.3 / R 88.7",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 7.5,
-          "signedValue": -7.5,
-          "display": "R+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.113201,
-          "R": 0.886799,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "KY"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "8d37f8879ac57faf7ab9503632ad6ae02ba877f27d5f10cd0083df8c695e9c98"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "LA-SENATE-2026",
@@ -1145,87 +438,30 @@
       "district": null,
       "displayName": "Louisiana Senate",
       "prediction": {
-        "rating": "Likely R",
-        "winner": "R",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Jamie Davis / Gary Crockett runoff",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Julia Letlow / John Fleming runoff",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely R; model margin R+7.5; model probability D 11.3 / R 88.7",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 7.5,
-          "signedValue": -7.5,
-          "display": "R+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.113201,
-          "R": 0.886799,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "LA"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "d1ac7aabfcf68c8f3ee46e1d38314d060a8c757fd7ecf9927166c25c79652ac2"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "ME-SENATE-2026",
@@ -1235,93 +471,35 @@
       "district": null,
       "displayName": "Maine Senate",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "D",
-        "projectedMargin": 0.2,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Graham Platner",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Susan Collins",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "I": {
           "name": "possible independent spoiler risk",
           "party": "I",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin D+0.2; model probability D 50.8 / R 49.2",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 0.18,
-          "signedValue": 0.18,
-          "display": "D+0.2",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.507796,
-          "R": 0.492204,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "ME"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "PRESUMPTIVE",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "d73f71a369d63ca91eee57416d5b724a025dab8cdc7240421f0fdd94e2ba6cc5"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "MA-SENATE-2026",
@@ -1331,87 +509,30 @@
       "district": null,
       "displayName": "Massachusetts Senate",
       "prediction": {
-        "rating": "Safe D",
-        "winner": "D",
-        "projectedMargin": 15,
-        "confidence": "medium",
+        "rating": "Safe Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Ed Markey",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe D; model margin D+15; model probability D 99.9 / R 0.1",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 15,
-          "signedValue": 15,
-          "display": "D+15",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.99865,
-          "R": 0.00135,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "MA"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "c3a18e74a3ac458cdc4d7518dae6baf856c65b893dda59d8c404e7344c0daa10"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "MI-SENATE-2026",
@@ -1421,87 +542,30 @@
       "district": null,
       "displayName": "Michigan Senate",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "D",
-        "projectedMargin": 0.2,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Mike Rogers",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin D+0.2; model probability D 50.8 / R 49.2",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 0.18,
-          "signedValue": 0.18,
-          "display": "D+0.2",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.508099,
-          "R": 0.491901,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "MI"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "PRESUMPTIVE",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "445736f95ee9ad6d720518465f38816432b080447b064c95ef7ec247bfe3e2ae"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "MN-SENATE-2026",
@@ -1511,87 +575,30 @@
       "district": null,
       "displayName": "Minnesota Senate",
       "prediction": {
-        "rating": "Lean D",
-        "winner": "D",
-        "projectedMargin": 3.4,
-        "confidence": "medium",
+        "rating": "Lean Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Lean D; model margin D+3.4; model probability D 68.1 / R 31.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 3.38,
-          "signedValue": 3.38,
-          "display": "D+3.4",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.680825,
-          "R": 0.319175,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Lean D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "MN"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "f79518f200226bac061274751cd737978277b32d565c55d563a1654075d9a36c"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "MS-SENATE-2026",
@@ -1601,87 +608,30 @@
       "district": null,
       "displayName": "Mississippi Senate",
       "prediction": {
-        "rating": "Likely R",
-        "winner": "R",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Scott Colom",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Cindy Hyde-Smith",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely R; model margin R+7.5; model probability D 11.3 / R 88.7",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 7.5,
-          "signedValue": -7.5,
-          "display": "R+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.113201,
-          "R": 0.886799,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "MS"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "0c59595543a80fe9bf5c17114f6f3627539dd1e7dbdccc466e374ea6b6af8dd3"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "MT-SENATE-2026",
@@ -1691,93 +641,35 @@
       "district": null,
       "displayName": "Montana Senate",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 15,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Alani Bankhead",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Kurt Alme",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "I": {
           "name": "Seth Bodnar independent path, caucus assumption uncertain",
           "party": "I",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+15; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 15,
-          "signedValue": -15,
-          "display": "R+15",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.00135,
-          "R": 0.99865,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "MT"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "ac35be78a85e2dcac072ced09481c9001a64299bb29a0ce2920665515b015940"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "NC-SENATE-2026",
@@ -1787,87 +679,30 @@
       "district": null,
       "displayName": "North Carolina Senate",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "D",
-        "projectedMargin": 0.2,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Roy Cooper",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Michael Whatley",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin D+0.2; model probability D 50.7 / R 49.3",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 0.16,
-          "signedValue": 0.16,
-          "display": "D+0.2",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.506904,
-          "R": 0.493096,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "NC"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "baeb9944dd9eef33387edf7dff6fcee9d2b68b1f8a55e2e62e0591a6b868fa55"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "NE-SENATE-2026",
@@ -1877,93 +712,35 @@
       "district": null,
       "displayName": "Nebraska Senate",
       "prediction": {
-        "rating": "Likely R",
-        "winner": "R",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Dan Osborn",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Pete Ricketts",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "I": {
           "name": "Democratic nominee has said they will withdraw for Dan Osborn",
           "party": "I",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely R; model margin R+7.5; model probability D 13.0 / R 87.0",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 7.5,
-          "signedValue": -7.5,
-          "display": "R+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.129698,
-          "R": 0.870302,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "NE"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "5f2429155302b3e5916281b86916ad92e551ce66cfcb049a8b82945554b0898b"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "NH-SENATE-2026",
@@ -1973,87 +750,30 @@
       "district": null,
       "displayName": "New Hampshire Senate",
       "prediction": {
-        "rating": "Likely D",
-        "winner": "D",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely D; model margin D+7.5; model probability D 88.7 / R 11.3",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 7.5,
-          "signedValue": 7.5,
-          "display": "D+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.886799,
-          "R": 0.113201,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "NH"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "386d19b503e5a5304a41e6d50a747f7196e99bb4d063e180c7913bfb4114ca5d"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "NJ-SENATE-2026",
@@ -2063,87 +783,30 @@
       "district": null,
       "displayName": "New Jersey Senate",
       "prediction": {
-        "rating": "Likely D",
-        "winner": "D",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Cory Booker",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Justin Murphy",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely D; model margin D+7.5; model probability D 88.7 / R 11.3",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 7.5,
-          "signedValue": 7.5,
-          "display": "D+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.886799,
-          "R": 0.113201,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "NJ"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "5f727847c57318cde92fb4052a96baf80fd1292aaa09e02b7b18d586cb806fed"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "NM-SENATE-2026",
@@ -2153,87 +816,30 @@
       "district": null,
       "displayName": "New Mexico Senate",
       "prediction": {
-        "rating": "Likely D",
-        "winner": "D",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Ben Ray Lujan",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely D; model margin D+7.5; model probability D 88.7 / R 11.3",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 7.5,
-          "signedValue": 7.5,
-          "display": "D+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.886799,
-          "R": 0.113201,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "NM"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "d2cba11f15bb3dc7836d20cec31903b250dcd459579f8d2e793a84d080358612"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "OH-SENATE-2026",
@@ -2243,87 +849,30 @@
       "district": null,
       "displayName": "Ohio Senate",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "R",
-        "projectedMargin": 0.1,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Sherrod Brown",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Jon Husted",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin R+0.1; model probability D 49.6 / R 50.4",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 0.1,
-          "signedValue": -0.1,
-          "display": "R+0.1",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.495781,
-          "R": 0.504219,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "OH"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "105f33144b3d8caa05f15e0fb5d4af5919aaf0451b9efc47918cf3b368987915"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "OK-SENATE-2026",
@@ -2333,87 +882,30 @@
       "district": null,
       "displayName": "Oklahoma Senate",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 15,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+15; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 15,
-          "signedValue": -15,
-          "display": "R+15",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.00135,
-          "R": 0.99865,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "OK"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "d1a9577f50d436be78c80f651a8204003a7ad2dc571add2b1f4b4576bf4719ac"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "OR-SENATE-2026",
@@ -2423,87 +915,30 @@
       "district": null,
       "displayName": "Oregon Senate",
       "prediction": {
-        "rating": "Likely D",
-        "winner": "D",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Jeff Merkley",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "David Brock Smith",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely D; model margin D+7.5; model probability D 88.7 / R 11.3",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 7.5,
-          "signedValue": 7.5,
-          "display": "D+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.886799,
-          "R": 0.113201,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "OR"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "b1bb09225aa4e5e80fa9bca0109fbe683a5fd84beaf622734aa23011d968b448"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "RI-SENATE-2026",
@@ -2513,87 +948,30 @@
       "district": null,
       "displayName": "Rhode Island Senate",
       "prediction": {
-        "rating": "Safe D",
-        "winner": "D",
-        "projectedMargin": 15,
-        "confidence": "medium",
+        "rating": "Safe Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Jack Reed",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe D; model margin D+15; model probability D 99.9 / R 0.1",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 15,
-          "signedValue": 15,
-          "display": "D+15",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.99865,
-          "R": 0.00135,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "RI"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "d36fdf1b04a2146c08de9f1e20184a919ed43f1a695030a73967405f057f4fea"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "SC-SENATE-2026",
@@ -2603,87 +981,30 @@
       "district": null,
       "displayName": "South Carolina Senate",
       "prediction": {
-        "rating": "Lean R",
-        "winner": "R",
-        "projectedMargin": 3.4,
-        "confidence": "medium",
+        "rating": "Lean Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Lindsey Graham",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Lean R; model margin R+3.4; model probability D 32.0 / R 68.0",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 3.37,
-          "signedValue": -3.37,
-          "display": "R+3.4",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.31987,
-          "R": 0.68013,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Lean R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "SC"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "PRESUMPTIVE",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "a7a99a0e1ff310509fc3756b361860ace51e4851bbd34f03fbd1879e9d215a1b"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "SD-SENATE-2026",
@@ -2693,93 +1014,35 @@
       "district": null,
       "displayName": "South Dakota Senate",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 15,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Mike Rounds",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "I": {
           "name": "independent longshot, caucus not credited",
           "party": "I",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+15; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 15,
-          "signedValue": -15,
-          "display": "R+15",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.00135,
-          "R": 0.99865,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "SD"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "85db600794643d2e42392a0aa23a9a47bf7bf8ed1085c6512add26482584fa26"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "TN-SENATE-2026",
@@ -2789,87 +1052,30 @@
       "district": null,
       "displayName": "Tennessee Senate",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 15,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Bill Hagerty",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+15; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 15,
-          "signedValue": -15,
-          "display": "R+15",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.00135,
-          "R": 0.99865,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "TN"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "PRESUMPTIVE",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "b3d89cb6f1ae3fb299f83346b9f4ca0f627ce4fd25425a1d6f9e0fdfceabb41e"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "TX-SENATE-2026",
@@ -2879,87 +1085,30 @@
       "district": null,
       "displayName": "Texas Senate",
       "prediction": {
-        "rating": "Toss-up",
-        "winner": "R",
-        "projectedMargin": 0.4,
-        "confidence": "medium",
+        "rating": "Tossup",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "James Talarico",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Ken Paxton",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Toss-up; model margin R+0.4; model probability D 48.4 / R 51.6",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 0.37,
-          "signedValue": -0.37,
-          "display": "R+0.4",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.484416,
-          "R": 0.515584,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Toss-up",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "TX"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "887aae0d3522f4249fba23c54581077ed3baec057e54cf7c2eccf0a64b40cc47"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "VA-SENATE-2026",
@@ -2969,87 +1118,30 @@
       "district": null,
       "displayName": "Virginia Senate",
       "prediction": {
-        "rating": "Likely D",
-        "winner": "D",
-        "projectedMargin": 7.5,
-        "confidence": "medium",
+        "rating": "Likely Democratic",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Mark Warner",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Likely D; model margin D+7.5; model probability D 88.7 / R 11.3",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "D",
-        "projectedResultMargin": {
-          "party": "D",
-          "value": 7.5,
-          "signedValue": 7.5,
-          "display": "D+7.5",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.886799,
-          "R": 0.113201,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Likely D",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "VA"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "PRESUMPTIVE",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "8ec48dcb38eeebfdb6e6bcabce972d292752760cf688f26eb086c09a336268d4"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "WV-SENATE-2026",
@@ -3059,87 +1151,30 @@
       "district": null,
       "displayName": "West Virginia Senate",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 15,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Rachel Fetty Anderson",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Shelley Moore Capito",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+15; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 15,
-          "signedValue": -15,
-          "display": "R+15",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.00135,
-          "R": 0.99865,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "WV"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "7c9e88a7a5359d226567415a7fa1661d352b111545e08ff4b292225b8fd65ad4"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     },
     {
       "raceId": "WY-SENATE-2026",
@@ -3149,87 +1184,30 @@
       "district": null,
       "displayName": "Wyoming Senate",
       "prediction": {
-        "rating": "Safe R",
-        "winner": "R",
-        "projectedMargin": 15,
-        "confidence": "medium",
+        "rating": "Safe Republican",
         "status": "published"
       },
       "candidates": {
         "D": {
           "name": "Democrat",
           "party": "D",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         },
         "R": {
           "name": "Republican",
           "party": "R",
-          "incumbent": false,
-          "status": ""
+          "incumbent": false
         }
       },
       "notes": {
         "short": "",
         "long": "",
         "whyWeRateItThisWay": "",
-        "modelSignal": "model rating Safe R; model margin R+15; model probability D 0.1 / R 99.9",
         "benchmarkComparison": ""
       },
       "sources": [],
       "lastEdited": "2026-07-08T01:51:31.283Z",
-      "lastEditedBy": "Prediction adapter seed",
-      "modelReference": {
-        "sourceRunId": "2026-07-07T23:28:53.143Z-v4",
-        "modelLabPath": "/model-lab/2026/senate",
-        "expectedWinner": "R",
-        "projectedResultMargin": {
-          "party": "R",
-          "value": 15,
-          "signedValue": -15,
-          "display": "R+15",
-          "confidence": "MODEL_DERIVED"
-        },
-        "probabilities": {
-          "D": 0.00135,
-          "R": 0.99865,
-          "other": 0
-        },
-        "evidence": {
-          "polling": {
-            "validatedRows": 0,
-            "usedInModel": false,
-            "status": "NO_VALIDATED_POLLING",
-            "sourceRaceId": null
-          },
-          "baseline": {
-            "status": "NO_VERIFIED_CURRENT_MAP_BASELINE",
-            "anchorType": null,
-            "usedInModel": false,
-            "confidence": "LOW",
-            "sourceRaceId": null
-          },
-          "ratings": {
-            "status": "AVAILABLE",
-            "usedInModel": true,
-            "consensusRating": "Safe R",
-            "sourceCount": 0
-          },
-          "finance": {
-            "activeRows": 0,
-            "usedInModel": false,
-            "status": "NO_ACTIVE_RACE_LEVEL_FINANCE",
-            "sourceRaceId": "WY"
-          },
-          "candidate": {
-            "status": "GENERIC",
-            "demStatus": "GENERIC",
-            "repStatus": "GENERIC",
-            "usedInCandidateEffects": false
-          }
-        },
-        "rowHash": "d6170178eb99d7a4309214209b7e65f0db5a9ef2951c5c38ea43594b8324a122"
-      }
+      "lastEditedBy": "Prediction adapter seed"
     }
   ]
 }

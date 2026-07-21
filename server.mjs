@@ -479,42 +479,75 @@ function jsonHash(payload) {
   return createHash("sha256").update(`${JSON.stringify(payload) || ""}\n`).digest("hex");
 }
 
+const allowedPredictionFiles = new Set([
+  "2026-senate-predictions.json",
+  "2026-house-predictions.json",
+  "2026-governor-predictions.json"
+]);
+
+const allowedFeaRatings = new Set([
+  "Safe Democratic",
+  "Likely Democratic",
+  "Lean Democratic",
+  "Tossup",
+  "Lean Republican",
+  "Likely Republican",
+  "Safe Republican"
+]);
+
+const removedPredictionKeys = new Set([
+  "mapValue",
+  "displayPercentages",
+  "projectedMargin",
+  "countyPredictions",
+  "countyPrediction",
+  "countyRatings",
+  "winner",
+  "projectedWinner",
+  "probability",
+  "probabilities",
+  "projectedVotes",
+  "projectedVoteShare",
+  "voteShare",
+  "percentage",
+  "modelReference",
+  "modelSignal"
+]);
+
+function findRemovedPredictionKey(value, pathLabel = "payload") {
+  if (!value || typeof value !== "object") return "";
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const issue = findRemovedPredictionKey(value[index], `${pathLabel}[${index}]`);
+      if (issue) return issue;
+    }
+    return "";
+  }
+  for (const [key, child] of Object.entries(value)) {
+    if (removedPredictionKeys.has(key)) return `${pathLabel}.${key}`;
+    const issue = findRemovedPredictionKey(child, `${pathLabel}.${key}`);
+    if (issue) return issue;
+  }
+  return "";
+}
+
 function predictionFileInfo(value, mode = "publish") {
   const file = String(value || "").replace(/\\/g, "/").replace(/^\/+/, "");
-  if (/^[0-9]{4}-[a-z0-9-]+-predictions\.json$/i.test(file)) {
-    if (mode === "draft") {
-      return {
-        file,
-        absolutePath: resolve(predictionDraftsPath, file),
-        relativePath: `data/predictions/drafts/${file}`,
-        publicPath: resolve(predictionsPath, file)
-      };
-    }
+  if (!allowedPredictionFiles.has(file)) return null;
+  if (mode === "draft") {
     return {
       file,
-      absolutePath: resolve(predictionsPath, file),
-      relativePath: `data/predictions/${file}`,
+      absolutePath: resolve(predictionDraftsPath, file),
+      relativePath: `data/predictions/drafts/${file}`,
       publicPath: resolve(predictionsPath, file)
     };
   }
-  if (/^county-predictions\/[A-Za-z0-9_.-]+\.json$/.test(file)) {
-    const baseName = file.split("/").pop();
-    if (mode === "draft") {
-      return {
-        file,
-        absolutePath: resolve(predictionDraftsPath, "county-predictions", baseName),
-        relativePath: `data/predictions/drafts/county-predictions/${baseName}`,
-        publicPath: resolve(predictionsPath, file)
-      };
-    }
-    return {
-      file,
-      absolutePath: resolve(predictionsPath, file),
-      relativePath: `data/predictions/${file}`,
-      publicPath: resolve(predictionsPath, file)
-    };
-  }
-  return null;
+  return {
+    file,
+    absolutePath: resolve(predictionsPath, file),
+    relativePath: `data/predictions/${file}`,
+    publicPath: resolve(predictionsPath, file)
+  };
 }
 
 async function listJsonFiles(dirPath, prefix = "") {
@@ -543,47 +576,20 @@ async function readPredictionPayload(file) {
 }
 
 function validatePredictionPayload(payload) {
-  if (!payload || typeof payload !== "object" || Array.isArray(payload)) return "Prediction payload must be an object.";
-  if (payload.races !== undefined && !Array.isArray(payload.races)) return "Prediction races must be an array.";
-  const validateDisplay = (id, target) => {
-    const display = target?.displayPercentages;
-    if (display === undefined || display === null) return "";
-    if (typeof display !== "object" || Array.isArray(display)) return `Display percentages must be an object for ${id}.`;
-    for (const party of ["D", "R"]) {
-      if (display[party] === undefined || display[party] === null || display[party] === "") continue;
-      const value = Number(display[party]);
-      if (!Number.isFinite(value) || value < 0 || value > 100) return `Display percentage ${party} must be between 0 and 100 for ${id}.`;
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) return "Ratings payload must be an object.";
+  if (payload.schemaVersion && payload.schemaVersion !== "fea-ratings-v1") return "Ratings payload must use schemaVersion fea-ratings-v1.";
+  const removedKey = findRemovedPredictionKey(payload);
+  if (removedKey) return `Removed numerical prediction field is not allowed: ${removedKey}.`;
+  if (!Array.isArray(payload.races)) return "Ratings payload must include a races array.";
+  for (const race of payload.races) {
+    if (!race?.raceId) return "Every race needs a raceId.";
+    if (!race.prediction || typeof race.prediction !== "object" || Array.isArray(race.prediction)) {
+      return `Every race needs a prediction object for ${race.raceId}.`;
     }
-    return "";
-  };
-  const validateMap = (id, target) => {
-    if (!target) return "";
-    if (target.mapValue !== undefined && target.mapValue !== null && target.mapValue !== "") {
-      const value = Number(target.mapValue);
-      if (!Number.isFinite(value) || value < -100 || value > 100) return `Map value must be between -100 and 100 for ${id}.`;
-    }
-    return validateDisplay(id, target);
-  };
-  if (Array.isArray(payload.races)) {
-    for (const race of payload.races) {
-      if (!race?.raceId) return "Every race needs a raceId.";
-      const prediction = race.prediction || {};
-      const margin = prediction.projectedMargin;
-      if (margin !== null && margin !== undefined && margin !== "" && !Number.isFinite(Number(margin))) {
-        return `Projected margin is not finite for ${race.raceId}.`;
-      }
-      const predictionError = validateMap(race.raceId, prediction);
-      if (predictionError) return predictionError;
-      if (race.countyPredictions !== undefined) {
-        if (!race.countyPredictions || typeof race.countyPredictions !== "object" || Array.isArray(race.countyPredictions)) {
-          return `County predictions must be an object for ${race.raceId}.`;
-        }
-        for (const [countyFips, countyPrediction] of Object.entries(race.countyPredictions)) {
-          if (!/^\d{5}$/.test(String(countyFips))) return `County override key ${countyFips} is invalid for ${race.raceId}.`;
-          const countyError = validateMap(`${race.raceId} ${countyFips}`, countyPrediction);
-          if (countyError) return countyError;
-        }
-      }
+    const rating = race.prediction.rating;
+    if (!allowedFeaRatings.has(rating)) return `Invalid FEA Rating for ${race.raceId}: ${rating || "missing"}.`;
+    if (race.candidates !== undefined && (!race.candidates || typeof race.candidates !== "object" || Array.isArray(race.candidates))) {
+      return `Candidates must be an object for ${race.raceId}.`;
     }
   }
   return "";
@@ -600,19 +606,12 @@ async function handleAdmin(request, response, url) {
   }
 
   if (request.method === "GET" && url.pathname === "/api/admin/predictions/bootstrap") {
-    const [publishedFiles, countyFiles] = await Promise.all([
-      listJsonFiles(predictionsPath),
-      listJsonFiles(resolve(predictionsPath, "county-predictions"), "county-predictions/")
-    ]);
-    const predictionFiles = publishedFiles.filter((file) => /-predictions\.json$/i.test(file));
+    const publishedFiles = await listJsonFiles(predictionsPath);
+    const predictionFiles = publishedFiles.filter((file) => allowedPredictionFiles.has(file));
     const files = await Promise.all(predictionFiles.map(readPredictionPayload));
-    const counties = await Promise.all(countyFiles.map(readPredictionPayload));
-    const modelAdapter = await readJsonFile(resolve(predictionsPath, "prediction-adapter.json"), null);
     sendJson(response, 200, {
       ok: true,
-      files: files.filter(Boolean),
-      countyFiles: counties.filter(Boolean),
-      modelAdapter
+      files: files.filter(Boolean)
     });
     return;
   }
@@ -639,7 +638,7 @@ async function handleAdmin(request, response, url) {
     }
     const now = new Date().toISOString();
     const editedBy = String(payload.editedBy || "FEA admin").trim().slice(0, 80) || "FEA admin";
-    const changeSummary = String(payload.changeSummary || (mode === "publish" ? "Publish team prediction edits" : "Save prediction draft")).trim().slice(0, 500);
+    const changeSummary = String(payload.changeSummary || (mode === "publish" ? "Publish FEA Ratings edits" : "Save FEA Ratings draft")).trim().slice(0, 500);
     data.lastEdited = now;
     data.lastEditedBy = editedBy;
     if (mode === "publish") data.lastPublishedAt = now;
@@ -673,7 +672,7 @@ async function handleAdmin(request, response, url) {
       info.absolutePath,
       info.relativePath,
       data,
-      mode === "publish" ? `Publish team predictions for ${info.file}` : `Save team prediction draft for ${info.file}`
+      mode === "publish" ? `Publish FEA Ratings for ${info.file}` : `Save FEA Ratings draft for ${info.file}`
     );
     sendJson(response, 200, {
       ok: true,
@@ -907,8 +906,11 @@ async function serveStatic(request, response) {
     ["/president.html", "/predictions"],
     ["/predictions/2028/president", "/predictions"],
     ["/predictions/2028/president.html", "/predictions"],
-    ["/methodology", "/predictions/methodology"],
-    ["/methodology.html", "/predictions/methodology"]
+    ["/methodology", "/predictions"],
+    ["/methodology.html", "/predictions"],
+    ["/predictions/methodology", "/predictions"],
+    ["/predictions-methodology", "/predictions"],
+    ["/predictions-methodology.html", "/predictions"]
   ]);
   if (predictionRedirects.has(url.pathname)) {
     response.writeHead(302, {
@@ -929,8 +931,6 @@ async function serveStatic(request, response) {
     requestedPath = "/admin.html";
   } else if (requestedPath === "/fea-results-lab-26") {
     requestedPath = "/election-night.html";
-  } else if (requestedPath === "/predictions/methodology") {
-    requestedPath = "/predictions-methodology.html";
   } else if (requestedPath === "/admin.html") {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     response.end("Not found");

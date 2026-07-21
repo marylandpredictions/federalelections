@@ -218,15 +218,22 @@ body.prediction-page .prediction-map-panel .prediction-map {
   margin-top: 5px;
 }
 
-.rating-safe-d { background: linear-gradient(135deg, #1030b2, #005a8c); }
-.rating-likely-d { background: linear-gradient(135deg, #1f64db, #3f8bd3); }
-.rating-lean-d { background: linear-gradient(135deg, #5aa6d6, #91c7df); color: #061025; }
+.rating-safe-d,
+.rating-safe-democratic { background: linear-gradient(135deg, #1030b2, #005a8c); }
+.rating-likely-d,
+.rating-likely-democratic { background: linear-gradient(135deg, #1f64db, #3f8bd3); }
+.rating-lean-d,
+.rating-lean-democratic { background: linear-gradient(135deg, #5aa6d6, #91c7df); color: #061025; }
 .rating-tilt-d { background: linear-gradient(135deg, #a7d8ec, #d9edf5); color: #061025; }
-.rating-toss-up { background: linear-gradient(135deg, #eee2bd, #fffdf4); color: #061025; }
+.rating-toss-up,
+.rating-tossup { background: linear-gradient(135deg, #eee2bd, #fffdf4); color: #061025; }
 .rating-tilt-r { background: linear-gradient(135deg, #f2c7c8, #f6e2e2); color: #061025; }
-.rating-lean-r { background: linear-gradient(135deg, #e47478, #f0a2a5); color: #061025; }
-.rating-likely-r { background: linear-gradient(135deg, #d92930, #b41c22); }
-.rating-safe-r { background: linear-gradient(135deg, #811116, #bd2027); }
+.rating-lean-r,
+.rating-lean-republican { background: linear-gradient(135deg, #e47478, #f0a2a5); color: #061025; }
+.rating-likely-r,
+.rating-likely-republican { background: linear-gradient(135deg, #d92930, #b41c22); }
+.rating-safe-r,
+.rating-safe-republican { background: linear-gradient(135deg, #811116, #bd2027); }
 .rating-safe-i,
 .rating-likely-i,
 .rating-lean-i,
@@ -1659,6 +1666,200 @@ body.prediction-page .prediction-command-board-compact .prediction-seatbar {
   filter: brightness(1.18) saturate(1.1) drop-shadow(0 0 14px rgba(255, 255, 255, 0.24));
 }
 
+.admin-ratings-shell {
+  width: min(1480px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.admin-ratings-toolbar,
+.admin-rating-summary,
+.admin-rating-legend-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 14px 0;
+  padding: 12px;
+  border: 1px solid rgba(198, 210, 255, 0.34);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(10, 27, 70, 0.82), rgba(30, 15, 47, 0.72)),
+    rgba(4, 9, 24, 0.74);
+}
+
+.admin-rating-tabs,
+.admin-rating-modes,
+.admin-rating-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-rating-actions {
+  margin-left: auto;
+}
+
+.admin-rating-tab,
+.admin-rating-mode,
+.admin-rating-actions button,
+.admin-rating-legend-panel button {
+  min-height: 38px;
+  border: 1px solid rgba(198, 210, 255, 0.52);
+  border-radius: 999px;
+  padding: 0 14px;
+  background: rgba(4, 9, 24, 0.82);
+  color: #fff;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+
+.admin-rating-tab:hover,
+.admin-rating-mode:hover,
+.admin-rating-actions button:hover,
+.admin-rating-legend-panel button:hover {
+  transform: translateY(-1px);
+  border-color: #fff;
+}
+
+.admin-rating-tab.active,
+.admin-rating-mode.active {
+  border-color: #fff;
+  background: linear-gradient(135deg, rgba(40, 112, 255, 0.92), rgba(255, 64, 97, 0.42));
+  box-shadow: 0 14px 34px rgba(36, 87, 190, 0.2);
+}
+
+.admin-rating-mode.mode-d.active {
+  background: linear-gradient(135deg, #1030b2, #1c93d0);
+}
+
+.admin-rating-mode.mode-r.active {
+  background: linear-gradient(135deg, #b81421, #ff3d4b);
+}
+
+.admin-rating-mode.mode-tossup.active {
+  background: linear-gradient(135deg, #f4df86, #fffdf4);
+  color: #061025;
+}
+
+.admin-rating-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.44;
+  transform: none;
+}
+
+.admin-rating-summary span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 7px 10px;
+  border: 1px solid rgba(198, 210, 255, 0.25);
+  border-radius: 999px;
+  color: var(--prediction-muted);
+  font-size: 0.84rem;
+  font-weight: 850;
+}
+
+.admin-rating-summary b {
+  color: #fff;
+}
+
+.admin-save-status {
+  min-height: 1.2em;
+}
+
+.admin-save-status.is-error {
+  color: #ff8792;
+}
+
+.admin-rating-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.admin-rating-map.prediction-map.prediction-shape-map {
+  min-height: clamp(580px, 72vh, 860px);
+}
+
+.admin-rating-map .prediction-shape-svg {
+  min-height: clamp(580px, 72vh, 860px);
+  height: clamp(580px, 72vh, 860px);
+}
+
+.admin-rating-side {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-height: 240px;
+  padding: 16px;
+  border: 1px solid rgba(198, 210, 255, 0.38);
+  border-radius: 14px;
+  background:
+    linear-gradient(145deg, rgba(12, 31, 78, 0.88), rgba(31, 17, 54, 0.78)),
+    rgba(4, 9, 24, 0.78);
+}
+
+.admin-rating-side h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.35rem, 2.4vw, 2.2rem);
+  line-height: 1;
+}
+
+.admin-selected-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.admin-selected-meta span,
+.admin-selected-candidates div {
+  border: 1px solid rgba(198, 210, 255, 0.22);
+  border-radius: 10px;
+  background: rgba(4, 9, 24, 0.46);
+}
+
+.admin-selected-meta span {
+  padding: 5px 8px;
+  color: var(--prediction-muted);
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.admin-selected-candidates {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-selected-candidates div {
+  display: grid;
+  gap: 3px;
+  padding: 9px;
+}
+
+.admin-selected-candidates b {
+  color: #fff;
+}
+
+.admin-selected-candidates small {
+  color: var(--prediction-muted);
+  font-weight: 800;
+}
+
+.admin-rating-legend-panel {
+  justify-content: space-between;
+}
+
+.admin-rating-legend-panel p {
+  flex: 1 1 460px;
+  margin: 0;
+  color: var(--prediction-muted);
+}
+
 .admin-topline-editor-compact {
   gap: 10px;
 }
@@ -1730,9 +1931,14 @@ body.admin-prediction-page .admin-editor-section-head p {
 @media (max-width: 920px) {
   .prediction-summary-strip,
   .prediction-chart-panel.prediction-chart-panel-compact,
+  .admin-rating-workspace,
   .admin-topline-groups,
   .admin-topline-groups fieldset,
   .admin-topline-groups fieldset:first-child {
     grid-template-columns: 1fr;
+  }
+
+  .admin-rating-actions {
+    margin-left: 0;
   }
 }
