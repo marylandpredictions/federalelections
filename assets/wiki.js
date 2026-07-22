@@ -122,7 +122,16 @@ const FEA_RATING_COLORS = {
   "Tilt R": "#eba3a2",
   "Lean R": "#dd7a78",
   "Likely R": "#cb5452",
-  "Safe R": "#b5312f"
+  "Safe R": "#b5312f",
+  "Safe Democratic": "#2c54bc",
+  "Likely Democratic": "#4f73d1",
+  "Lean Democratic": "#7694e2",
+  "Tilt Democratic": "#a0b6ef",
+  "Tossup": "#cbcacd",
+  "Tilt Republican": "#eba3a2",
+  "Lean Republican": "#dd7a78",
+  "Likely Republican": "#cb5452",
+  "Safe Republican": "#b5312f"
 };
 
 const HOUSE_VIEW_MODES = {

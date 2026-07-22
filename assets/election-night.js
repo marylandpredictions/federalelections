@@ -411,6 +411,60 @@ function raceWinnerParty(race) {
   return normalizedPartyCode(winner || raceLeader(race) || {});
 }
 
+const FEA_RESULT_RATING_COLORS = {
+  "Safe Democratic": "#2c54bc",
+  "Likely Democratic": "#4f73d1",
+  "Lean Democratic": "#7694e2",
+  "Tilt Democratic": "#a0b6ef",
+  Tossup: "#cbcacd",
+  "Tilt Republican": "#eba3a2",
+  "Lean Republican": "#dd7a78",
+  "Likely Republican": "#cb5452",
+  "Safe Republican": "#b5312f"
+};
+
+const FEA_RESULT_RATING_ALIASES = new Map([
+  ["safe d", "Safe Democratic"], ["safe dem", "Safe Democratic"], ["safe democratic", "Safe Democratic"], ["solid d", "Safe Democratic"],
+  ["likely d", "Likely Democratic"], ["likely dem", "Likely Democratic"], ["likely democratic", "Likely Democratic"],
+  ["lean d", "Lean Democratic"], ["lean dem", "Lean Democratic"], ["lean democratic", "Lean Democratic"],
+  ["tilt d", "Tilt Democratic"], ["tilt dem", "Tilt Democratic"], ["tilt democratic", "Tilt Democratic"],
+  ["toss-up", "Tossup"], ["toss up", "Tossup"], ["tossup", "Tossup"],
+  ["tilt r", "Tilt Republican"], ["tilt rep", "Tilt Republican"], ["tilt republican", "Tilt Republican"],
+  ["lean r", "Lean Republican"], ["lean rep", "Lean Republican"], ["lean republican", "Lean Republican"],
+  ["likely r", "Likely Republican"], ["likely rep", "Likely Republican"], ["likely republican", "Likely Republican"],
+  ["safe r", "Safe Republican"], ["safe rep", "Safe Republican"], ["safe republican", "Safe Republican"], ["solid r", "Safe Republican"]
+]);
+
+function normalizeFeaResultRating(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  if (FEA_RESULT_RATING_COLORS[raw]) return raw;
+  return FEA_RESULT_RATING_ALIASES.get(raw.toLowerCase()) || "";
+}
+
+function feaRatingFromObject(item) {
+  if (!item || typeof item !== "object") return "";
+  const values = [
+    item.prediction?.rating,
+    item.modelRating,
+    item.rating,
+    item.baselineRating,
+    item.sourceRating,
+    item.forecastRating,
+    item.raceRating
+  ];
+  for (const value of values) {
+    const rating = normalizeFeaResultRating(value);
+    if (rating) return rating;
+  }
+  return "";
+}
+
+function feaRatingColorForObject(item) {
+  const rating = feaRatingFromObject(item);
+  return rating ? FEA_RESULT_RATING_COLORS[rating] : "";
+}
+
 function raceColor(race) {
   if (!race || !hasActiveResults(race)) return "#5f6b80";
   const candidates = topCandidates(race, 2);
@@ -1372,11 +1426,17 @@ class ElectionNightPage {
   }
 
   comparisonColorForRace(race) {
-    if (!this.isComparisonActive()) return raceColor(race);
+    if (!this.isComparisonActive()) {
+      return hasActiveResults(race) ? raceColor(race) : this.ratingColorForRace(race) || raceColor(race);
+    }
     const source = this.comparisonSource();
     if (!source) return "#5f6b80";
     const shift = this.comparisonRaceShift(race);
     return Number.isFinite(shift) ? marginColor(shift) : "#3c4658";
+  }
+
+  ratingColorForRace(race) {
+    return feaRatingColorForObject(race) || feaRatingColorForObject(this.findForecastRace(race));
   }
 
   comparisonColorForCounty(feature, race, lookup) {

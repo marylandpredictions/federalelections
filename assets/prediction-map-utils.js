@@ -196,6 +196,7 @@
       interactive = true
     } = options || {};
     if (!container) return null;
+    container.classList.add("prediction-shape-map");
     if (!window.d3) {
       container.innerHTML = `<p class="prediction-map-error">Ratings map library could not load.</p>`;
       return null;
@@ -283,7 +284,15 @@
         const race = raceByKey.get(featureKey(feature, office));
         return race ? colorForRating(race?.prediction?.rating) : colors.neutral;
       })
+      .attr("data-rating", (feature) => {
+        const race = raceByKey.get(featureKey(feature, office));
+        return race ? normalizeRating(race?.prediction?.rating) : "";
+      })
       .attr("data-race-id", (feature) => raceByKey.get(featureKey(feature, office))?.raceId || "")
+      .attr("aria-label", (feature) => {
+        const race = raceByKey.get(featureKey(feature, office));
+        return race ? `${raceTitle(race, office)}: ${normalizeRating(race?.prediction?.rating)}` : featureKey(feature, office);
+      })
       .attr("tabindex", interactive ? 0 : -1)
       .on("mouseenter focus", function (event, feature) {
         const race = raceByKey.get(featureKey(feature, office));
@@ -303,13 +312,18 @@
       })
       .on("click", (event, feature) => {
         const race = raceByKey.get(featureKey(feature, office));
-        if (race && typeof onSelect === "function") onSelect(race);
+        if (!race || typeof onSelect !== "function") return;
+        event.stopPropagation();
+        setSelected(race.raceId);
+        onSelect(race);
       })
       .on("keydown", (event, feature) => {
         if (event.key !== "Enter" && event.key !== " ") return;
         event.preventDefault();
         const race = raceByKey.get(featureKey(feature, office));
-        if (race && typeof onSelect === "function") onSelect(race);
+        if (!race || typeof onSelect !== "function") return;
+        setSelected(race.raceId);
+        onSelect(race);
       });
 
     setSelected(selectedRaceId);

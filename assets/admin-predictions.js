@@ -24,7 +24,8 @@
     undoStack: [],
     redoStack: [],
     dirty: false,
-    mapController: null
+    mapController: null,
+    mapRenderId: 0
   };
 
   const mapUtils = window.FeaPredictionMaps || {};
@@ -201,6 +202,14 @@
     state.data.lastEditedBy = "FEA admin";
     rebuildSummary();
     render();
+    setStatus(`${raceTitle(race)} changed to ${nextRating}.`);
+  }
+
+  function selectRace(race) {
+    if (!race) return;
+    state.selectedRaceId = race.raceId;
+    render();
+    setStatus(`${raceTitle(race)} selected. Use Democratic, Tossup, or Republican to change its rating.`);
   }
 
   async function loadOffice(office = state.office, useDraft = false) {
@@ -250,12 +259,14 @@
   }
 
   function renderModeButtons() {
+    const selected = selectedRace();
+    const current = normalizeRating(selected?.prediction?.rating);
     return [
       ["D", "Democratic"],
       ["Tossup", "Tossup"],
       ["R", "Republican"]
     ].map(([key, label]) =>
-      `<button type="button" class="admin-rating-mode ${state.editMode === key ? "active" : ""} mode-${key.toLowerCase()}" data-mode="${key}">${escapeHtml(label)}</button>`
+      `<button type="button" class="admin-rating-mode ${state.editMode === key ? "active" : ""} mode-${key.toLowerCase()}" data-mode="${key}" aria-pressed="${state.editMode === key ? "true" : "false"}"><span>${state.editMode === key ? "Selected " : ""}${escapeHtml(label)}</span>${selected ? `<small>${key === "Tossup" ? (current === "Tossup" ? "Already tossup" : "Set tossup") : `Cycle ${key}`}</small>` : ""}</button>`
     ).join("");
   }
 
@@ -279,7 +290,7 @@
         <aside class="admin-rating-side">
           <span class="prediction-kicker">Selected race</span>
           <h2>No race selected</h2>
-          <p class="prediction-note">Choose D, Tossup, or R, then click a state or district on the map.</p>
+          <p class="prediction-note">Click a state or district on the map first. Then use Democratic, Tossup, or Republican to change its FEA Rating.</p>
         </aside>
       `;
     }
@@ -290,6 +301,7 @@
         <span class="prediction-kicker">Selected race</span>
         <h2>${escapeHtml(raceTitle(race))}</h2>
         <span class="rating-pill ${ratingClass(rating)}">${escapeHtml(rating)}</span>
+        <p class="prediction-note">Current mode: <b>${escapeHtml(state.editMode)}</b>. Press the active party button again to move through Tilt, Lean, Likely, and Safe.</p>
         <div class="admin-selected-meta">
           <span>${escapeHtml(race.raceId)}</span>
           <span>${escapeHtml(race.office || officeLabels[state.office])}</span>
@@ -326,6 +338,7 @@
           cycleRaceRating(race);
         } else {
           render();
+          setStatus(`${button.textContent.trim()} mode selected. Click a race on the map to choose what to edit.`);
         }
       });
     });
@@ -360,16 +373,26 @@
   async function renderMap() {
     const container = $("admin-rating-map");
     if (!container || !state.data || !mapUtils.renderRaceShapeMap) return;
+    const renderId = ++state.mapRenderId;
     state.mapController?.destroy?.();
-    state.mapController = await mapUtils.renderRaceShapeMap({
+    const controller = await mapUtils.renderRaceShapeMap({
       container,
       data: state.data,
       office: state.office,
       selectedRaceId: state.selectedRaceId,
       onSelect(race) {
-        cycleRaceRating(race);
+        selectRace(race);
       }
     });
+    if (renderId !== state.mapRenderId) {
+      controller?.destroy?.();
+      return;
+    }
+    state.mapController = controller;
+    if (state.selectedRaceId) {
+      state.mapController?.setSelected?.(state.selectedRaceId);
+      setTimeout(() => state.mapController?.focusRace?.(state.selectedRaceId), 30);
+    }
   }
 
   function render() {
