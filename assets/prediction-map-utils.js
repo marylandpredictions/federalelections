@@ -167,6 +167,28 @@
     return office === "house" ? "/data/house-districts-119.geojson" : "/data/result-us-states.geojson";
   }
 
+  function projectedRingPath(ring, projection) {
+    const points = (ring || [])
+      .map((point) => projection(point))
+      .filter(Boolean);
+    if (points.length < 3) return "";
+    return `${points.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`).join("")}Z`;
+  }
+
+  function projectedFeaturePath(feature, projection) {
+    const geometry = feature?.geometry;
+    if (!geometry || geometry.type === "Sphere" || geometry.type === "GeometryCollection") return "";
+    const polygons = geometry.type === "Polygon"
+      ? [geometry.coordinates]
+      : geometry.type === "MultiPolygon"
+        ? geometry.coordinates
+        : [];
+    return polygons
+      .flatMap((polygon) => (polygon || []).map((ring) => projectedRingPath(ring, projection)))
+      .filter(Boolean)
+      .join("");
+  }
+
   async function loadGeometry(office) {
     const url = geometryPathForOffice(office);
     if (geometryCache.has(url)) return geometryCache.get(url);
@@ -275,7 +297,7 @@
     g.selectAll("path")
       .data(features)
       .join("path")
-      .attr("d", path)
+      .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("class", (feature) => {
         const race = raceByKey.get(featureKey(feature, office));
         return `prediction-shape-feature prediction-feature ${race ? "has-race" : "is-muted"}`;
