@@ -617,6 +617,7 @@ body.prediction-page .prediction-shape-svg {
   stroke: rgba(255, 255, 255, 0.38);
   stroke-width: 0.85;
   vector-effect: non-scaling-stroke;
+  fill-rule: evenodd;
   transition: filter 140ms ease, opacity 140ms ease, stroke 140ms ease;
 }
 
@@ -1140,6 +1141,15 @@ body.prediction-page .prediction-map.election-map-canvas.prediction-shape-map::b
     linear-gradient(90deg, rgba(45,124,255,0.08), transparent 36%, rgba(255,59,69,0.08)),
     radial-gradient(circle at 50% 45%, rgba(255,255,255,0.05), transparent 44%);
   z-index: 0;
+}
+
+body.prediction-page .prediction-map.election-map-canvas.prediction-shape-map,
+body.admin-prediction-page .admin-wide-map.prediction-shape-map,
+body.admin-prediction-page .admin-rating-map.prediction-shape-map {
+  background:
+    radial-gradient(circle at 28% 18%, rgba(45, 124, 255, 0.18), transparent 30%),
+    radial-gradient(circle at 78% 72%, rgba(255, 59, 69, 0.12), transparent 34%),
+    linear-gradient(135deg, rgba(4, 16, 40, 0.98), rgba(20, 14, 38, 0.98));
 }
 
 body.prediction-page .prediction-shape-svg {

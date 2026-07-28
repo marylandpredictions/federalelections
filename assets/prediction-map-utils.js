@@ -167,15 +167,161 @@
     return office === "house" ? "/data/house-districts-119.geojson" : "/data/result-us-states.geojson";
   }
 
-  function projectedRingPath(ring, projection) {
-    const points = (ring || [])
-      .map((point) => projection(point))
-      .filter(Boolean);
-    if (points.length < 3) return "";
-    return `${points.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`).join("")}Z`;
+  function ringBounds(ring) {
+    const points = (ring || []).filter((point) => (
+      Array.isArray(point)
+      && Number.isFinite(point[0])
+      && Number.isFinite(point[1])
+    ));
+    if (!points.length) return null;
+    const xs = points.map((point) => point[0]);
+    const ys = points.map((point) => point[1]);
+    return {
+      minX: Math.min(...xs),
+      maxX: Math.max(...xs),
+      minY: Math.min(...ys),
+      maxY: Math.max(...ys),
+      spanX: Math.max(...xs) - Math.min(...xs),
+      spanY: Math.max(...ys) - Math.min(...ys),
+      hasOutOfRangeLongitude: xs.some((x) => x < -180 || x > 180),
+      hasPositiveLongitude: xs.some((x) => x > 0),
+      crossesAntimeridian: xs.some((x) => x > 0) && xs.some((x) => x < -120)
+    };
   }
 
-  function projectedFeaturePath(feature, projection) {
+  function ringLooksWrapped(ring) {
+    const bounds = ringBounds(ring);
+    if (!bounds || (ring || []).length < 4) return true;
+    return bounds.hasOutOfRangeLongitude || bounds.hasPositiveLongitude || bounds.crossesAntimeridian || bounds.spanX > 120;
+  }
+
+  function sanitizePolygon(polygon) {
+    const rings = polygon || [];
+    if (!rings.length || ringLooksWrapped(rings[0])) return null;
+    const cleanRings = rings.filter((ring) => !ringLooksWrapped(ring));
+    return cleanRings.length ? cleanRings : null;
+  }
+
+  function sanitizeGeometryForMap(geometry) {
+    if (!geometry || geometry.type === "Sphere" || geometry.type === "GeometryCollection") return null;
+    if (geometry.type === "Polygon") {
+      const polygon = sanitizePolygon(geometry.coordinates);
+      return polygon ? { type: "Polygon", coordinates: polygon } : null;
+    }
+    if (geometry.type === "MultiPolygon") {
+      const polygons = (geometry.coordinates || []).map(sanitizePolygon).filter(Boolean);
+      return polygons.length ? { type: "MultiPolygon", coordinates: polygons } : null;
+    }
+    return geometry;
+  }
+
+  function sanitizeFeatureForMap(feature) {
+    const geometry = sanitizeGeometryForMap(feature?.geometry);
+    if (!geometry) return null;
+    return {
+      type: "Feature",
+      properties: { ...(feature?.properties || {}) },
+      geometry
+    };
+  }
+
+  function sanitizeFeatureCollectionForMap(geo) {
+    return {
+      type: "FeatureCollection",
+      features: (geo?.features || []).map(sanitizeFeatureForMap).filter(Boolean)
+    };
+  }
+
+  function stateFeatureByAbbr(statesGeo) {
+    const byAbbr = new Map();
+    (statesGeo?.features || []).forEach((feature) => {
+      const abbr = stateAbbrFromFeature(feature);
+      if (abbr) byAbbr.set(abbr, feature);
+    });
+    return byAbbr;
+  }
+
+  function normalizedHouseFeature(feature, statesByAbbr) {
+    const key = featureKey(feature, "house");
+    const state = key.split("-")[0];
+    const district = key.split("-")[1];
+    const stateFeature = district === "AL" ? statesByAbbr.get(state) : null;
+    if (!stateFeature) return feature;
+    return {
+      type: "Feature",
+      properties: { ...(stateFeature.properties || {}), ...(feature.properties || {}) },
+      geometry: stateFeature.geometry
+    };
+  }
+
+  function projectedRingSegments(ring, projection, width, height) {
+    const maxJump = Math.max(width, height) * 0.38;
+    const segments = [];
+    let current = [];
+
+    (ring || []).forEach((point) => {
+      const projected = projection(point);
+      if (!projected || !Number.isFinite(projected[0]) || !Number.isFinite(projected[1])) {
+        if (current.length >= 3) segments.push(current);
+        current = [];
+        return;
+      }
+      const previous = current[current.length - 1];
+      if (previous) {
+        const jump = Math.hypot(projected[0] - previous[0], projected[1] - previous[1]);
+        if (jump > maxJump) {
+          if (current.length >= 3) segments.push(current);
+          current = [];
+        }
+      }
+      current.push(projected);
+    });
+
+    if (current.length >= 3) segments.push(current);
+
+    return segments.filter((points) => {
+      const first = points[0];
+      const last = points[points.length - 1];
+      const closingJump = Math.hypot(last[0] - first[0], last[1] - first[1]);
+      const xs = points.map(([x]) => x);
+      const ys = points.map(([, y]) => y);
+      const boxWidth = Math.max(...xs) - Math.min(...xs);
+      const boxHeight = Math.max(...ys) - Math.min(...ys);
+      // Census Alaska/Aleutian rings can wrap across the antimeridian and become
+      // page-sized rectangles after projection. Treat any segment that consumes
+      // a map-panel-sized slab as invalid, because no real state or district
+      // feature should project to a near-rectangular block at national scale.
+      return closingJump <= maxJump && !projectedFallbackSegmentLooksLikeSlab(boxWidth, boxHeight, width, height);
+    });
+  }
+
+  function projectedFallbackSegmentLooksLikeSlab(boxWidth, boxHeight, width, height) {
+    const canvasArea = width * height;
+    const boxArea = boxWidth * boxHeight;
+    return (
+      boxArea > canvasArea * 0.72 ||
+      (boxWidth > width * 0.88 && boxHeight > height * 0.5) ||
+      (boxWidth > width * 0.7 && boxHeight > height * 0.74)
+    );
+  }
+
+  function projectedBoxLooksLikeSlab(boxWidth, boxHeight, width, height) {
+    const canvasArea = width * height;
+    const boxArea = boxWidth * boxHeight;
+    return (
+      boxArea > canvasArea * 0.42 ||
+      (boxWidth > width * 0.86 && boxHeight > height * 0.48) ||
+      (boxWidth > width * 0.68 && boxHeight > height * 0.72)
+    );
+  }
+
+  function projectedRingPath(ring, projection, width, height) {
+    return projectedRingSegments(ring, projection, width, height)
+      .map((points) => `${points.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`).join("")}Z`)
+      .join("");
+  }
+
+  function projectedFeaturePath(feature, projection, width, height) {
     const geometry = feature?.geometry;
     if (!geometry || geometry.type === "Sphere" || geometry.type === "GeometryCollection") return "";
     const polygons = geometry.type === "Polygon"
@@ -184,9 +330,93 @@
         ? geometry.coordinates
         : [];
     return polygons
-      .flatMap((polygon) => (polygon || []).map((ring) => projectedRingPath(ring, projection)))
+      .flatMap((polygon) => (polygon || []).map((ring) => projectedRingPath(ring, projection, width, height)))
       .filter(Boolean)
       .join("");
+  }
+
+  function featureNeedsSegmentedPath(feature) {
+    const geometry = feature?.geometry;
+    if (!geometry || geometry.type === "Sphere" || geometry.type === "GeometryCollection") return false;
+    const polygons = geometry.type === "Polygon"
+      ? [geometry.coordinates]
+      : geometry.type === "MultiPolygon"
+        ? geometry.coordinates
+        : [];
+    return polygons.some((polygon) => {
+      const bounds = ringBounds(polygon?.[0] || []);
+      return bounds && (
+        bounds.hasOutOfRangeLongitude ||
+        bounds.hasPositiveLongitude ||
+        bounds.crossesAntimeridian ||
+        bounds.spanX > 25
+      );
+    });
+  }
+
+  function renderedFeaturePath(feature, path, projection, width, height) {
+    // Build rating maps from screened projected segments instead of D3's
+    // generated closed path. A few Alaska/at-large geometries wrap near the
+    // antimeridian; when D3 closes those rings normally they can become a
+    // full-panel rectangle and hide the rest of the map.
+    if (!projectedFeatureBounds(feature, projection, width, height)) return "";
+    return safeFeaturePath(feature, projection, width, height) || "";
+  }
+
+  function projectedFeatureBounds(feature, projection, width, height) {
+    const geometry = feature?.geometry;
+    if (!geometry || geometry.type === "Sphere" || geometry.type === "GeometryCollection") return null;
+    const polygons = geometry.type === "Polygon"
+      ? [geometry.coordinates]
+      : geometry.type === "MultiPolygon"
+        ? geometry.coordinates
+        : [];
+    const points = [];
+    polygons.forEach((polygon) => {
+      (polygon || []).forEach((ring) => {
+        projectedRingSegments(ring, projection, width, height).forEach((segment) => {
+          segment.forEach((point) => points.push(point));
+        });
+      });
+    });
+    if (!points.length) return null;
+    const xs = points.map(([x]) => x);
+    const ys = points.map(([, y]) => y);
+    const bounds = [[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]];
+    if (projectedBoxLooksLikeSlab(bounds[1][0] - bounds[0][0], bounds[1][1] - bounds[0][1], width, height)) return null;
+    return bounds;
+  }
+
+  function projectedCollectionBounds(features, projection, width, height) {
+    const boxes = (features || [])
+      .map((feature) => projectedFeatureBounds(feature, projection, width, height))
+      .filter(Boolean);
+    if (!boxes.length) return null;
+    return [
+      [Math.min(...boxes.map((box) => box[0][0])), Math.min(...boxes.map((box) => box[0][1]))],
+      [Math.max(...boxes.map((box) => box[1][0])), Math.max(...boxes.map((box) => box[1][1]))]
+    ];
+  }
+
+  function renderedBoxLooksBroken(box, width, height) {
+    if (!box || !Number.isFinite(box.width) || !Number.isFinite(box.height) || box.width <= 0 || box.height <= 0) {
+      return true;
+    }
+    return projectedBoxLooksLikeSlab(box.width, box.height, width, height);
+  }
+
+  function safeFeaturePath(feature, projection, width, height) {
+    return projectedFeaturePath(feature, projection, width, height) || "";
+  }
+
+  function repairBrokenRenderedPath(element, feature, projection, width, height) {
+    try {
+      if (!renderedBoxLooksBroken(element.getBBox(), width, height)) return;
+      element.setAttribute("d", projectedFeaturePath(feature, projection, width, height));
+      if (renderedBoxLooksBroken(element.getBBox(), width, height)) element.setAttribute("d", "");
+    } catch {
+      element.setAttribute("d", "");
+    }
   }
 
   async function loadGeometry(office) {
@@ -194,6 +424,17 @@
     if (geometryCache.has(url)) return geometryCache.get(url);
     const promise = fetch(url, { cache: "force-cache" }).then((response) => {
       if (!response.ok) throw new Error(`Map geometry failed to load: ${response.status}`);
+      return response.json();
+    });
+    geometryCache.set(url, promise);
+    return promise;
+  }
+
+  async function loadStatesGeometry() {
+    const url = "/data/result-us-states.geojson";
+    if (geometryCache.has(url)) return geometryCache.get(url);
+    const promise = fetch(url, { cache: "force-cache" }).then((response) => {
+      if (!response.ok) throw new Error(`State map geometry failed to load: ${response.status}`);
       return response.json();
     });
     geometryCache.set(url, promise);
@@ -225,7 +466,11 @@
     }
 
     container.innerHTML = `<div class="prediction-map-loading">Loading ratings map...</div>`;
-    const geo = await loadGeometry(office);
+    const rawGeo = await loadGeometry(office);
+    const statesGeo = sanitizeFeatureCollectionForMap(await loadStatesGeometry());
+    const geo = sanitizeFeatureCollectionForMap(rawGeo);
+    const fitGeo = office === "house" ? statesGeo : geo;
+    const statesByAbbr = office === "house" ? stateFeatureByAbbr(statesGeo) : new Map();
     const races = Array.isArray(data?.races) ? data.races : [];
     const raceByKey = new Map();
     const raceById = new Map();
@@ -235,7 +480,9 @@
       if (race.raceId) raceById.set(race.raceId, race);
     });
 
-    const features = (geo.features || []).filter((feature) => {
+    const features = (geo.features || []).map((feature) => {
+      return office === "house" ? normalizedHouseFeature(feature, statesByAbbr) : feature;
+    }).filter((feature) => {
       if (office !== "house") return Boolean(featureKey(feature, office));
       const key = featureKey(feature, office);
       return key && raceByKey.has(key);
@@ -252,14 +499,14 @@
           <button type="button" data-map-action="reset">Reset</button>
         </div>
         <div class="prediction-map-tooltip" hidden></div>
-        <svg class="prediction-shape-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${office} FEA Ratings map"></svg>
+        <svg class="prediction-shape-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${office} FEA Ratings map" data-map-build="ratings-mapfix14"></svg>
       </div>
       ${makeLegend()}
     `;
 
     const svg = window.d3.select(container).select("svg");
     const g = svg.append("g").attr("class", "prediction-shape-layer");
-    const projection = window.d3.geoAlbersUsa().fitExtent([[24, 24], [width - 24, height - 24]], drawGeo);
+    const projection = window.d3.geoAlbersUsa().fitExtent([[24, 24], [width - 24, height - 24]], fitGeo);
     const path = window.d3.geoPath(projection);
     const tooltip = container.querySelector(".prediction-map-tooltip");
     let currentTransform = window.d3.zoomIdentity;
@@ -297,7 +544,7 @@
     g.selectAll("path")
       .data(features)
       .join("path")
-      .attr("d", (feature) => projectedFeaturePath(feature, projection))
+      .attr("d", (feature) => renderedFeaturePath(feature, path, projection, width, height))
       .attr("class", (feature) => {
         const race = raceByKey.get(featureKey(feature, office));
         return `prediction-shape-feature prediction-feature ${race ? "has-race" : "is-muted"}`;
@@ -314,6 +561,9 @@
       .attr("aria-label", (feature) => {
         const race = raceByKey.get(featureKey(feature, office));
         return race ? `${raceTitle(race, office)}: ${normalizeRating(race?.prediction?.rating)}` : featureKey(feature, office);
+      })
+      .each(function (feature) {
+        repairBrokenRenderedPath(this, feature, projection, width, height);
       })
       .attr("tabindex", interactive ? 0 : -1)
       .on("mouseenter focus", function (event, feature) {
@@ -364,8 +614,16 @@
       const keys = new Set([raceKey(race, office)]);
       const selectedFeatures = features.filter((feature) => keys.has(featureKey(feature, office)));
       if (!selectedFeatures.length) return;
-      const selectedGeo = { type: "FeatureCollection", features: selectedFeatures };
-      const bounds = path.bounds(selectedGeo);
+      let bounds = null;
+      try {
+        bounds = path.bounds({ type: "FeatureCollection", features: selectedFeatures });
+      } catch {
+        bounds = null;
+      }
+      if (!bounds || !Number.isFinite(bounds[0]?.[0]) || !Number.isFinite(bounds[1]?.[0])) {
+        bounds = projectedCollectionBounds(selectedFeatures, projection, width, height);
+      }
+      if (!bounds) return;
       const dx = Math.max(1, bounds[1][0] - bounds[0][0]);
       const dy = Math.max(1, bounds[1][1] - bounds[0][1]);
       const scale = Math.min(10, Math.max(1.45, 0.82 / Math.max(dx / width, dy / height)));

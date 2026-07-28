@@ -266,7 +266,7 @@
       ["Tossup", "Tossup"],
       ["R", "Republican"]
     ].map(([key, label]) =>
-      `<button type="button" class="admin-rating-mode ${state.editMode === key ? "active" : ""} mode-${key.toLowerCase()}" data-mode="${key}" aria-pressed="${state.editMode === key ? "true" : "false"}"><span>${state.editMode === key ? "Selected " : ""}${escapeHtml(label)}</span>${selected ? `<small>${key === "Tossup" ? (current === "Tossup" ? "Already tossup" : "Set tossup") : `Cycle ${key}`}</small>` : ""}</button>`
+      `<button type="button" class="admin-rating-mode ${state.editMode === key ? "active" : ""} mode-${key.toLowerCase()}" data-mode="${key}" aria-pressed="${state.editMode === key ? "true" : "false"}"><span>${state.editMode === key ? "Selected " : ""}${escapeHtml(label)}</span>${selected ? `<small>${key === "Tossup" ? (current === "Tossup" ? "Already tossup" : "Click race to set") : `Click race to cycle ${key}`}</small>` : "<small>Click race to apply</small>"}</button>`
     ).join("");
   }
 
@@ -333,13 +333,8 @@
     document.querySelectorAll("[data-mode]").forEach((button) => {
       button.addEventListener("click", () => {
         state.editMode = button.dataset.mode;
-        const race = selectedRace();
-        if (race) {
-          cycleRaceRating(race);
-        } else {
-          render();
-          setStatus(`${button.textContent.trim()} mode selected. Click a race on the map to choose what to edit.`);
-        }
+        render();
+        setStatus(`${button.dataset.mode} mode selected. Click a race on the map to apply it.`);
       });
     });
     $("admin-load-published")?.addEventListener("click", () => loadOffice(state.office, false).catch((error) => setStatus(error.message, true)));
@@ -381,7 +376,7 @@
       office: state.office,
       selectedRaceId: state.selectedRaceId,
       onSelect(race) {
-        selectRace(race);
+        cycleRaceRating(race);
       }
     });
     if (renderId !== state.mapRenderId) {
