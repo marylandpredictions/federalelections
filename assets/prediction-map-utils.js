@@ -97,7 +97,10 @@
 
   function displayDate(value) {
     if (!value) return "No date";
-    const date = new Date(value);
+    const normalized = /^\d{4}-\d{2}-\d{2}$/.test(String(value))
+      ? `${value}T12:00:00`
+      : value;
+    const date = new Date(normalized);
     if (Number.isNaN(date.getTime())) return String(value);
     return date.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
   }
@@ -164,7 +167,16 @@
 
   function candidateRows(race) {
     const candidates = Object.values(race?.candidates || {})
-      .filter((candidate) => candidate && candidate.name);
+      .filter((candidate) => candidate && candidate.name)
+      .sort((a, b) => {
+        const aOrder = Number(a.order);
+        const bOrder = Number(b.order);
+        const aValue = Number.isFinite(aOrder) ? aOrder : Number.POSITIVE_INFINITY;
+        const bValue = Number.isFinite(bOrder) ? bOrder : Number.POSITIVE_INFINITY;
+        return aValue - bValue
+          || Number(Boolean(b.incumbent)) - Number(Boolean(a.incumbent))
+          || String(a.name || "").localeCompare(String(b.name || ""));
+      });
     const partyCodeFor = (candidate) => {
       const party = String(candidate.party || candidate.partyCode || "I").trim().toUpperCase();
       if (party.startsWith("D")) return "D";
@@ -209,7 +221,7 @@
         const partyCode = partyCodeFor(candidate);
         return `
           <span class="prediction-tooltip-candidate">
-            <b>${escapeHtml(candidate.name)}${candidate.incumbent ? "*" : ""}</b>
+            <b>${escapeHtml(candidate.name)}${candidate.incumbent ? "*" : ""}${candidate.presumptiveNominee ? ' <em class="candidate-presumptive">P</em>' : ""}</b>
             <i class="party-badge is-${partyCode.toLowerCase()}">${partyCode}</i>
           </span>
         `;

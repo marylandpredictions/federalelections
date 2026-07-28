@@ -105,12 +105,15 @@ function cleanCandidate(candidate) {
     name: candidate.name || "",
     party: candidate.party || "",
     incumbent: Boolean(candidate.incumbent),
+    presumptiveNominee: Boolean(candidate.presumptiveNominee),
+    order: Number.isFinite(Number(candidate.order)) ? Number(candidate.order) : undefined,
     status: candidate.status || "",
     headshotUrl: candidate.headshotUrl || candidate.photo || candidate.image || "",
-    color: candidate.color || candidate.accentColor || ""
+    color: candidate.color || candidate.accentColor || "",
+    major: Boolean(candidate.major || candidate.majorCandidate || candidate.majorIndependent)
   };
   Object.keys(kept).forEach((key) => {
-    if (kept[key] === "" || kept[key] === null || kept[key] === undefined) delete kept[key];
+    if (kept[key] === "" || kept[key] === false || kept[key] === null || kept[key] === undefined) delete kept[key];
   });
   return kept.name ? kept : null;
 }

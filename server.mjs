@@ -593,6 +593,20 @@ function validatePredictionPayload(payload) {
     if (race.candidates !== undefined && (!race.candidates || typeof race.candidates !== "object" || Array.isArray(race.candidates))) {
       return `Candidates must be an object for ${race.raceId}.`;
     }
+    for (const [key, candidate] of Object.entries(race.candidates || {})) {
+      if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) {
+        return `Candidate ${key} must be an object for ${race.raceId}.`;
+      }
+      if (typeof candidate.name !== "string" || !candidate.name.trim()) {
+        return `Candidate ${key} needs a name for ${race.raceId}.`;
+      }
+      if (typeof candidate.party !== "string" || !candidate.party.trim()) {
+        return `Candidate ${key} needs a party for ${race.raceId}.`;
+      }
+      if (candidate.order !== undefined && !Number.isFinite(Number(candidate.order))) {
+        return `Candidate ${key} has an invalid custom order for ${race.raceId}.`;
+      }
+    }
   }
   return "";
 }
@@ -649,7 +663,14 @@ async function handleAdmin(request, response, url) {
     const previous = await readJsonFile(info.publicPath, null);
     const previousHash = previous ? jsonHash(previous) : "";
     const newHash = jsonHash(data);
+    const persistence = await persistAdminJsonFile(
+      info.absolutePath,
+      info.relativePath,
+      data,
+      mode === "publish" ? `Publish FEA Ratings for ${info.file}` : `Save FEA Ratings draft for ${info.file}`
+    );
     let history = null;
+    let historyPersistence = null;
     if (mode === "publish") {
       await mkdir(predictionHistoryPath, { recursive: true });
       const historyFile = `${info.file.replace(/[\/\\]/g, "__").replace(/\.json$/i, "")}-${now.replace(/[:.]/g, "-")}.json`;
@@ -663,19 +684,13 @@ async function handleAdmin(request, response, url) {
         newHash,
         snapshot: data
       };
-      await persistAdminJsonFile(
+      historyPersistence = await persistAdminJsonFile(
         resolve(predictionHistoryPath, historyFile),
         `data/predictions/history/${historyFile}`,
         history,
         `Add prediction history for ${info.file}`
       );
     }
-    const persistence = await persistAdminJsonFile(
-      info.absolutePath,
-      info.relativePath,
-      data,
-      mode === "publish" ? `Publish FEA Ratings for ${info.file}` : `Save FEA Ratings draft for ${info.file}`
-    );
     sendJson(response, 200, {
       ok: true,
       mode,
@@ -685,6 +700,7 @@ async function handleAdmin(request, response, url) {
       newHash,
       history,
       persistence,
+      historyPersistence,
       persistedFiles: [info.relativePath, ...(history ? [`data/predictions/history/${history.versionId}.json`] : [])]
     });
     return;

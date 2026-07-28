@@ -2124,3 +2124,152 @@ body.admin-prediction-page .admin-editor-section-head p {
     margin-left: 0;
   }
 }
+
+/* Ratings pages use the map as the primary surface. */
+.prediction-topline[hidden] {
+  display: none !important;
+}
+
+body.prediction-page #prediction-majority-label {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+}
+
+body.prediction-page #prediction-majority-label > span {
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+body.prediction-page .prediction-board-snapshot {
+  display: block;
+  color: rgba(207, 214, 255, 0.72);
+  font: 800 0.66rem/1.2 "Telegraf", "Inter", "Segoe UI", sans-serif;
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+
+body.prediction-page .prediction-rating-timeline {
+  margin: 10px auto 16px;
+  padding: 9px 12px 8px;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+body.prediction-page .prediction-rating-timeline-header {
+  margin-bottom: 5px;
+}
+
+body.prediction-page .prediction-rating-timeline-header span {
+  font-size: 0.67rem;
+}
+
+body.prediction-page .prediction-rating-timeline-header strong {
+  font-size: 0.8rem;
+}
+
+body.prediction-page .prediction-rating-slider-wrap input[type="range"] {
+  display: block;
+  height: 18px;
+  margin: 0;
+}
+
+body.prediction-page .prediction-rating-ticks {
+  margin-top: 2px;
+}
+
+body.prediction-page .prediction-rating-tick {
+  grid-template-rows: 8px auto;
+  gap: 2px;
+  font-size: 0.59rem;
+}
+
+body.prediction-page .prediction-rating-tick i {
+  width: 7px;
+  height: 7px;
+}
+
+body.prediction-page .prediction-shape-feature.has-race {
+  cursor: default;
+}
+
+.candidate-presumptive {
+  display: inline-grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  margin-left: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  font: 950 0.63rem/1 "Telegraf", "Inter", "Segoe UI", sans-serif;
+  vertical-align: 1px;
+}
+
+.admin-candidate-order-actions {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.admin-candidate-order-actions button {
+  min-height: 32px;
+  padding: 0 9px;
+}
+
+.admin-rating-side .admin-candidate-row {
+  grid-template-columns: minmax(72px, 0.7fr) minmax(120px, 1.35fr) 72px;
+  gap: 7px;
+}
+
+.admin-rating-side .admin-candidate-key,
+.admin-rating-side .admin-candidate-party,
+.admin-rating-side .admin-candidate-order {
+  grid-column: auto;
+}
+
+.admin-rating-side .admin-candidate-name {
+  grid-column: span 2;
+}
+
+.admin-rating-side .admin-candidate-status {
+  grid-column: 1 / -1;
+}
+
+.admin-rating-side .admin-candidate-check {
+  grid-column: auto;
+  min-height: 32px;
+}
+
+.admin-rating-side .admin-candidate-order-actions {
+  grid-column: span 2;
+}
+
+.admin-rating-side .admin-candidate-row [data-remove-candidate] {
+  justify-self: stretch;
+}
+
+@media (max-width: 720px) {
+  body.prediction-page #prediction-majority-label {
+    justify-items: start;
+  }
+
+  body.prediction-page .prediction-rating-timeline-header {
+    gap: 2px;
+  }
+
+  body.prediction-page .prediction-rating-tick span {
+    display: none;
+  }
+
+  .admin-rating-side .admin-candidate-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-rating-side .admin-candidate-name,
+  .admin-rating-side .admin-candidate-status,
+  .admin-rating-side .admin-candidate-order-actions {
+    grid-column: 1 / -1;
+  }
+}

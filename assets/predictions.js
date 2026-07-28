@@ -82,8 +82,19 @@
     return `${race.state} ${configs[state.key].label}`;
   }
 
+  function candidateOrder(candidate) {
+    const value = Number(candidate?.order);
+    return Number.isFinite(value) ? value : Number.POSITIVE_INFINITY;
+  }
+
   function candidatesForRace(race) {
-    return Object.values(race?.candidates || {}).filter((candidate) => candidate && candidate.name);
+    return Object.values(race?.candidates || {})
+      .filter((candidate) => candidate && candidate.name)
+      .sort((a, b) =>
+        candidateOrder(a) - candidateOrder(b)
+        || Number(Boolean(b.incumbent)) - Number(Boolean(a.incumbent))
+        || String(a.name || "").localeCompare(String(b.name || ""))
+      );
   }
 
   function summarize(data) {
@@ -149,30 +160,8 @@
   function renderTopline() {
     const target = $("prediction-topline");
     if (!target) return;
-    const summary = summarize(state.viewData);
-    const updated = state.viewData?.selectedSnapshotDate || state.viewData?.lastPublishedAt || state.viewData?.generatedAt;
-    target.innerHTML = `
-      <article class="prediction-card is-compact">
-        <span>Snapshot</span>
-        <strong>${escapeHtml(displayDate(updated))}</strong>
-        <small>Newest snapshot loads by default.</small>
-      </article>
-      <article class="prediction-card is-compact">
-        <span>Democratic ratings</span>
-        <strong class="prediction-party-d">${summary.counts.D}</strong>
-        <small>Safe, Likely, Lean, and Tilt Democratic.</small>
-      </article>
-      <article class="prediction-card is-compact">
-        <span>Tossups</span>
-        <strong>${summary.counts.Tossup}</strong>
-        <small>Neutral FEA rating.</small>
-      </article>
-      <article class="prediction-card is-compact">
-        <span>Republican ratings</span>
-        <strong class="prediction-party-r">${summary.counts.R}</strong>
-        <small>Safe, Likely, Lean, and Tilt Republican.</small>
-      </article>
-    `;
+    target.innerHTML = "";
+    target.hidden = true;
   }
 
   function renderBoard() {
@@ -190,10 +179,11 @@
     if (demCount) demCount.textContent = `${dTotal} D`;
     if (repCount) repCount.textContent = `${rTotal} R`;
     if (majority) {
+      const snapshot = state.viewData?.selectedSnapshotDate || state.viewData?.lastPublishedAt || state.viewData?.generatedAt;
       if (state.key === "governor") {
-        majority.textContent = `${summary.raceCount} races rated`;
+        majority.innerHTML = `<span>${summary.raceCount} races rated</span><small class="prediction-board-snapshot">Snapshot: ${escapeHtml(displayDate(snapshot))}</small>`;
       } else {
-        majority.textContent = `${config.majority} for majority${state.key === "senate" ? " - D need 51 if GOP controls VP" : ""}`;
+        majority.innerHTML = `<span>${config.majority} for majority${state.key === "senate" ? " - D need 51 if GOP controls VP" : ""}</span><small class="prediction-board-snapshot">Snapshot: ${escapeHtml(displayDate(snapshot))}</small>`;
       }
     }
 
@@ -221,7 +211,7 @@
       ? candidates.map((candidate) => `
           <div class="prediction-detail-row">
             <span class="candidate-party-dot">${escapeHtml((candidate.party || "?").slice(0, 1).toUpperCase())}</span>
-            <span><b>${escapeHtml(candidate.name)}${candidate.incumbent ? "*" : ""}</b><small>${escapeHtml(candidate.party || "")}${candidate.status ? ` - ${escapeHtml(candidate.status)}` : ""}</small></span>
+            <span><b>${escapeHtml(candidate.name)}${candidate.incumbent ? "*" : ""}${candidate.presumptiveNominee ? ' <i class="candidate-presumptive">P</i>' : ""}</b><small>${escapeHtml(candidate.party || "")}${candidate.status ? ` - ${escapeHtml(candidate.status)}` : ""}</small></span>
           </div>
         `).join("")
       : `<p class="prediction-note">Candidate details have not been added yet.</p>`;
@@ -254,19 +244,10 @@
       container: target,
       data: state.viewData,
       office: state.key,
-      selectedRaceId: state.selectedRaceId,
-      onSelect(race) {
-        state.selectedRaceId = race.raceId;
-        renderDetail(race);
-        state.mapController?.focusRace?.(race.raceId);
-        history.replaceState(null, "", `#${encodeURIComponent(race.raceId)}`);
-      }
+      selectedRaceId: "",
+      interactive: false
     });
-    if (state.selectedRaceId) {
-      const race = (state.viewData.races || []).find((item) => item.raceId === state.selectedRaceId);
-      renderDetail(race);
-      setTimeout(() => state.mapController?.focusRace?.(state.selectedRaceId), 30);
-    }
+    renderDetail(null);
   }
 
   function renderTimeline() {
@@ -282,20 +263,37 @@
     renderTimeline();
     const timeline = $("prediction-rating-timeline");
     if (!timeline) return;
+    const timelineItems = [
+      ...state.snapshots,
+      {
+        isCurrent: true,
+        snapshotDate: state.activeData?.lastPublishedAt || state.activeData?.generatedAt || new Date().toISOString(),
+        file: null
+      }
+    ];
     if (!state.snapshots.length) {
-      timeline.innerHTML = `<span class="prediction-kicker">Ratings History</span><p class="prediction-note">Weekly snapshots will appear here after the first ratings archive is saved.</p>`;
+      timeline.innerHTML = `<div class="prediction-rating-timeline-header"><span>Ratings history</span><strong>Current map</strong></div><p class="prediction-note">Weekly snapshots will appear here after the first ratings archive is saved.</p>`;
       return;
     }
-    const selected = state.viewData?.selectedSnapshotDate || state.snapshots.at(-1)?.snapshotDate;
-    const selectedIndex = Math.max(0, state.snapshots.findIndex((item) => item.snapshotDate === selected));
+    const isCurrent = !state.viewData?.selectedSnapshotDate;
+    const selected = isCurrent ? "Current map" : state.viewData.selectedSnapshotDate;
+    const selectedIndex = isCurrent
+      ? timelineItems.length - 1
+      : Math.max(0, timelineItems.findIndex((item) => item.snapshotDate === selected));
     timeline.innerHTML = `
-      <div class="prediction-timeline-head">
-        <span class="prediction-kicker">Ratings History</span>
-        <strong id="prediction-snapshot-date">${escapeHtml(displayDate(selected))}</strong>
+      <div class="prediction-rating-timeline-header">
+        <span>Ratings history</span>
+        <strong id="prediction-snapshot-date">${escapeHtml(isCurrent ? selected : displayDate(selected))}</strong>
       </div>
-      <input id="prediction-snapshot-slider" type="range" min="0" max="${state.snapshots.length - 1}" value="${selectedIndex}" step="1" aria-label="Ratings snapshot week">
-      <div class="prediction-snapshot-points">
-        ${state.snapshots.map((item, index) => `<button type="button" data-snapshot-index="${index}" class="${index === selectedIndex ? "active" : ""}" title="${escapeHtml(displayDate(item.snapshotDate))}"></button>`).join("")}
+      <div class="prediction-rating-slider-wrap">
+        <input id="prediction-snapshot-slider" type="range" min="0" max="${timelineItems.length - 1}" value="${selectedIndex}" step="1" aria-label="Ratings snapshot week">
+        <div class="prediction-rating-ticks">
+          ${timelineItems.map((item, index) => `
+            <button type="button" data-snapshot-index="${index}" class="prediction-rating-tick ${index === selectedIndex ? "is-active" : ""}" title="${escapeHtml(item.isCurrent ? "Current published ratings" : displayDate(item.snapshotDate))}">
+              <i></i><span>${escapeHtml(item.isCurrent ? "Current" : displayDate(item.snapshotDate))}</span>
+            </button>
+          `).join("")}
+        </div>
       </div>
     `;
     timeline.querySelector("#prediction-snapshot-slider")?.addEventListener("input", async (event) => {
@@ -309,8 +307,16 @@
   }
 
   async function loadSnapshotAt(index) {
-    const item = state.snapshots[index];
+    const item = index === state.snapshots.length
+      ? { isCurrent: true }
+      : state.snapshots[index];
     if (!item) return;
+    if (item.isCurrent) {
+      state.viewData = state.activeData;
+      state.selectedRaceId = "";
+      renderAll(false);
+      return;
+    }
     const snapshot = await fetchJson(`/${item.file.replace(/^\/+/, "")}`, null);
     state.viewData = mergeSnapshot(state.activeData, snapshot);
     state.selectedRaceId = "";
@@ -321,13 +327,7 @@
     const index = await fetchJson("/data/predictions/rating-snapshots/index.json", { snapshots: {} });
     const list = (index?.snapshots?.[state.key] || []).slice().sort((a, b) => String(a.snapshotDate).localeCompare(String(b.snapshotDate)));
     state.snapshots = list;
-    if (list.length) {
-      const newest = list.at(-1);
-      const snapshot = await fetchJson(`/${newest.file.replace(/^\/+/, "")}`, null);
-      state.viewData = mergeSnapshot(state.activeData, snapshot);
-    } else {
-      state.viewData = state.activeData;
-    }
+    state.viewData = state.activeData;
   }
 
   function renderAll(rebuildMap = true) {
@@ -335,8 +335,7 @@
     renderTopline();
     renderBoard();
     updateTimeline();
-    if (rebuildMap) renderMap();
-    else renderMap();
+    renderMap();
   }
 
   async function init() {
@@ -347,7 +346,8 @@
       if (root) root.innerHTML = `<section class="prediction-error"><h1>FEA Ratings could not load.</h1><p>Saved ratings data is unavailable.</p></section>`;
       return;
     }
-    state.selectedRaceId = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+    state.selectedRaceId = "";
+    if (window.location.hash) history.replaceState(null, "", window.location.pathname);
     await loadSnapshots();
     renderAll();
   }

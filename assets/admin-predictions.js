@@ -124,8 +124,19 @@
     return (state.data?.races || []).find((race) => race.raceId === state.selectedRaceId) || null;
   }
 
+  function candidateOrder(candidate) {
+    const value = Number(candidate?.order);
+    return Number.isFinite(value) ? value : Number.POSITIVE_INFINITY;
+  }
+
   function candidateEntries(race) {
-    return Object.entries(race?.candidates || {}).filter(([, candidate]) => candidate && typeof candidate === "object");
+    return Object.entries(race?.candidates || {})
+      .filter(([, candidate]) => candidate && typeof candidate === "object")
+      .sort(([, a], [, b]) =>
+        candidateOrder(a) - candidateOrder(b)
+        || Number(Boolean(b.incumbent)) - Number(Boolean(a.incumbent))
+        || String(a.name || "").localeCompare(String(b.name || ""))
+      );
   }
 
   function candidateKey(race, preferredParty = "I") {
@@ -141,10 +152,58 @@
     const race = (state.data?.races || []).find((entry) => entry.raceId === raceId);
     if (!race?.candidates?.[key]) return;
     if (!state.dirty) pushUndo();
-    race.candidates[key][field] = field === "incumbent" ? Boolean(value) : String(value ?? "");
+    if (field === "incumbent" || field === "presumptiveNominee") {
+      race.candidates[key][field] = Boolean(value);
+    } else if (field === "order") {
+      const order = Number(value);
+      if (String(value).trim() === "" || !Number.isFinite(order)) delete race.candidates[key].order;
+      else race.candidates[key].order = order;
+    } else {
+      race.candidates[key][field] = String(value ?? "");
+    }
     state.data.lastEdited = new Date().toISOString();
     state.data.lastEditedBy = "FEA admin";
     state.dirty = true;
+  }
+
+  function renameCandidateKey(raceId, oldKey, requestedKey) {
+    const race = (state.data?.races || []).find((entry) => entry.raceId === raceId);
+    if (!race?.candidates?.[oldKey]) return oldKey;
+    const nextKey = String(requestedKey || "")
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9_-]/g, "")
+      .slice(0, 12);
+    if (!nextKey) throw new Error("Candidate key cannot be blank.");
+    if (nextKey !== oldKey && race.candidates[nextKey]) throw new Error(`Candidate key ${nextKey} is already used in this race.`);
+    if (nextKey === oldKey) return oldKey;
+    pushUndo();
+    const entries = Object.entries(race.candidates).map(([key, candidate]) => (
+      key === oldKey ? [nextKey, candidate] : [key, candidate]
+    ));
+    race.candidates = Object.fromEntries(entries);
+    state.data.lastEdited = new Date().toISOString();
+    state.data.lastEditedBy = "FEA admin";
+    state.dirty = true;
+    return nextKey;
+  }
+
+  function moveCandidate(raceId, key, direction) {
+    const race = (state.data?.races || []).find((entry) => entry.raceId === raceId);
+    if (!race?.candidates?.[key]) return;
+    const entries = candidateEntries(race);
+    const index = entries.findIndex(([candidateKey]) => candidateKey === key);
+    const target = index + direction;
+    if (index < 0 || target < 0 || target >= entries.length) return;
+    pushUndo();
+    [entries[index], entries[target]] = [entries[target], entries[index]];
+    entries.forEach(([candidateKey], order) => {
+      race.candidates[candidateKey].order = order + 1;
+    });
+    state.data.lastEdited = new Date().toISOString();
+    state.data.lastEditedBy = "FEA admin";
+    state.dirty = true;
+    render();
   }
 
   function addCandidate(raceId) {
@@ -156,7 +215,9 @@
     race.candidates[key] = {
       name: "",
       party: "I",
-      incumbent: false
+      incumbent: false,
+      presumptiveNominee: false,
+      order: candidateEntries(race).length + 1
     };
     state.data.lastEdited = new Date().toISOString();
     state.data.lastEditedBy = "FEA admin";
@@ -300,8 +361,29 @@
     }
     state.data = clone(result.data);
     state.dirty = false;
-    setStatus(mode === "publish" ? "Published ratings saved." : "Draft ratings saved.");
     render();
+    const persistence = result.persistence || {};
+    const historyPersistence = result.historyPersistence || {};
+    let message;
+    let isError = false;
+    if (persistence.committed) {
+      message = mode === "publish"
+        ? "Published to the live ratings file and committed to GitHub."
+        : "Draft saved and committed to GitHub.";
+      if (mode === "publish" && historyPersistence.committed === false && !historyPersistence.skipped) {
+        message += " The live file is published, but its history copy could not be committed.";
+      }
+    } else if (persistence.skipped) {
+      message = mode === "publish"
+        ? "Published on this server. GitHub publishing is not configured, so the repository was not changed."
+        : "Draft saved on this server. GitHub publishing is not configured.";
+    } else if (persistence.committed === false) {
+      message = `Saved on this server, but the GitHub update failed: ${persistence.reason || persistence.error || "unknown error"}`;
+      isError = true;
+    } else {
+      message = mode === "publish" ? "Published ratings saved." : "Draft ratings saved.";
+    }
+    setStatus(message, isError);
   }
 
   function renderOfficeTabs() {
@@ -364,10 +446,10 @@
             <span>These names appear in the public map hover card. Publish to update the live ratings pages.</span>
           </div>
           <div class="admin-candidate-list">
-            ${candidates.map(([key, candidate]) => `
+            ${candidates.map(([key, candidate], index) => `
               <div class="admin-candidate-row" data-candidate-key="${escapeHtml(key)}">
                 <label class="admin-candidate-key">Key
-                  <input value="${escapeHtml(key)}" disabled aria-label="Candidate key">
+                  <input value="${escapeHtml(key)}" data-candidate-key-input aria-label="Candidate key">
                 </label>
                 <label class="admin-candidate-name">Name
                   <input value="${escapeHtml(candidate.name || "")}" data-candidate-field="name" aria-label="Candidate name">
@@ -380,17 +462,28 @@
                 <label class="admin-candidate-status">Status
                   <input value="${escapeHtml(candidate.status || "")}" data-candidate-field="status" placeholder="Optional" aria-label="Candidate status">
                 </label>
+                <label class="admin-candidate-order">Order
+                  <input type="number" min="1" step="1" value="${Number.isFinite(Number(candidate.order)) ? escapeHtml(candidate.order) : ""}" data-candidate-field="order" placeholder="Auto" aria-label="Candidate custom order">
+                </label>
                 <label class="admin-candidate-check">
                   <input type="checkbox" data-candidate-field="incumbent" ${candidate.incumbent ? "checked" : ""}>
                   Incumbent
                 </label>
+                <label class="admin-candidate-check">
+                  <input type="checkbox" data-candidate-field="presumptiveNominee" ${candidate.presumptiveNominee ? "checked" : ""}>
+                  Presumptive (P)
+                </label>
+                <div class="admin-candidate-order-actions" aria-label="Candidate ordering">
+                  <button type="button" data-move-candidate="${escapeHtml(key)}" data-direction="-1" ${index === 0 ? "disabled" : ""} aria-label="Move ${escapeHtml(candidate.name || "candidate")} up">Up</button>
+                  <button type="button" data-move-candidate="${escapeHtml(key)}" data-direction="1" ${index === candidates.length - 1 ? "disabled" : ""} aria-label="Move ${escapeHtml(candidate.name || "candidate")} down">Down</button>
+                </div>
                 <button type="button" data-remove-candidate="${escapeHtml(key)}" aria-label="Remove ${escapeHtml(candidate.name || "candidate")}">Remove</button>
               </div>
             `).join("") || `<p class="prediction-note">No candidates are configured for this race.</p>`}
           </div>
           <button type="button" id="admin-add-candidate">Add candidate</button>
         </div>
-        <a class="prediction-button is-small" href="/predictions/2026/${state.office}#${encodeURIComponent(race.raceId)}" target="_blank" rel="noopener">Open public race</a>
+        <a class="prediction-button is-small" href="/predictions/2026/${state.office}" target="_blank" rel="noopener">Open public map</a>
       </aside>
     `;
   }
@@ -441,6 +534,20 @@
     });
     const activeRace = selectedRace();
     if (activeRace) {
+      document.querySelectorAll("[data-candidate-key-input]").forEach((input) => {
+        input.addEventListener("change", () => {
+          const row = input.closest("[data-candidate-key]");
+          const oldKey = row?.dataset.candidateKey;
+          try {
+            const nextKey = renameCandidateKey(activeRace.raceId, oldKey, input.value);
+            render();
+            setStatus(`${raceTitle(activeRace)} candidate key changed to ${nextKey}. Save draft or publish when ready.`);
+          } catch (error) {
+            input.value = oldKey;
+            setStatus(error.message, true);
+          }
+        });
+      });
       document.querySelectorAll("[data-candidate-field]").forEach((input) => {
         const row = input.closest("[data-candidate-key]");
         const key = row?.dataset.candidateKey;
@@ -453,6 +560,11 @@
       });
       document.querySelectorAll("[data-remove-candidate]").forEach((button) => {
         button.addEventListener("click", () => removeCandidate(activeRace.raceId, button.dataset.removeCandidate));
+      });
+      document.querySelectorAll("[data-move-candidate]").forEach((button) => {
+        button.addEventListener("click", () => {
+          moveCandidate(activeRace.raceId, button.dataset.moveCandidate, Number(button.dataset.direction));
+        });
       });
       $("admin-add-candidate")?.addEventListener("click", () => addCandidate(activeRace.raceId));
     }
