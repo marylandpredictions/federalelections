@@ -21,6 +21,7 @@
     44: "RI", 45: "SC", 46: "SD", 47: "TN", 48: "TX", 49: "UT", 50: "VT", 51: "VA",
     53: "WA", 54: "WV", 55: "WI", 56: "WY"
   };
+  const stateAbbrToName = Object.fromEntries(Object.entries(stateNameToAbbr).map(([name, abbr]) => [abbr, name]));
 
   const colors = {
     "Safe Democratic": "#2c54bc",
@@ -149,17 +150,70 @@
 
   function raceTitle(race, office) {
     if (!race) return "";
+    if (office === "house") {
+      const state = String(race.state || "").toUpperCase();
+      const district = padDistrict(race.district);
+      const districtLabel = district === "AL" ? "At-Large" : String(Number(district) || district);
+      return `${stateAbbrToName[state] || state} US House ${districtLabel}`.trim();
+    }
     if (race.displayName) return race.displayName;
-    if (office === "house") return `${race.state}-${padDistrict(race.district)} House`;
     const officeName = office === "governor" ? "Governor" : "Senate";
-    return `${race.state} ${officeName}`;
+    const state = String(race.state || "").toUpperCase();
+    return `${stateAbbrToName[state] || state} ${officeName}`;
   }
 
   function candidateRows(race) {
-    return Object.values(race?.candidates || {})
-      .filter((candidate) => candidate && candidate.name)
-      .slice(0, 4)
-      .map((candidate) => `<span><b>${escapeHtml(candidate.name)}</b><small>${escapeHtml(candidate.party || "")}${candidate.incumbent ? " *" : ""}</small></span>`)
+    const candidates = Object.values(race?.candidates || {})
+      .filter((candidate) => candidate && candidate.name);
+    const partyCodeFor = (candidate) => {
+      const party = String(candidate.party || candidate.partyCode || "I").trim().toUpperCase();
+      if (party.startsWith("D")) return "D";
+      if (party.startsWith("R")) return "R";
+      if (party.startsWith("L")) return "L";
+      if (party.startsWith("G")) return "G";
+      if (party.startsWith("NP") || party.startsWith("N")) return "NP";
+      return "I";
+    };
+    const looksLikeModelNote = (candidate) => (
+      /longshot|spoiler risk|caucus assumption|nominee has said|path,|path$|uncertain/i
+        .test(String(candidate.name || ""))
+    );
+    const isMajorOther = (candidate) => {
+      const party = partyCodeFor(candidate);
+      if (party === "D" || party === "R") return false;
+      return Boolean(
+        candidate.major
+        || candidate.majorCandidate
+        || candidate.majorIndependent
+        || /\bmajor\b/i.test(String(candidate.status || ""))
+        || !looksLikeModelNote(candidate)
+      );
+    };
+    const democrat = candidates.find((candidate) => partyCodeFor(candidate) === "D");
+    const republican = candidates.find((candidate) => partyCodeFor(candidate) === "R");
+    const majorOther = candidates.find(isMajorOther);
+    const prioritized = [democrat, republican, majorOther].filter(Boolean);
+    for (const candidate of candidates) {
+      if (
+        prioritized.length >= 2
+        || prioritized.includes(candidate)
+        || isMajorOther(candidate)
+        || looksLikeModelNote(candidate)
+      ) continue;
+      prioritized.push(candidate);
+    }
+
+    return prioritized
+      .slice(0, majorOther ? 3 : 2)
+      .map((candidate) => {
+        const partyCode = partyCodeFor(candidate);
+        return `
+          <span class="prediction-tooltip-candidate">
+            <b>${escapeHtml(candidate.name)}${candidate.incumbent ? "*" : ""}</b>
+            <i class="party-badge is-${partyCode.toLowerCase()}">${partyCode}</i>
+          </span>
+        `;
+      })
       .join("");
   }
 
@@ -499,7 +553,7 @@
           <button type="button" data-map-action="reset">Reset</button>
         </div>
         <div class="prediction-map-tooltip" hidden></div>
-        <svg class="prediction-shape-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${office} FEA Ratings map" data-map-build="ratings-mapfix14"></svg>
+        <svg class="prediction-shape-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${office} FEA Ratings map" data-map-build="ratings-adminmap15"></svg>
       </div>
       ${makeLegend()}
     `;
@@ -530,15 +584,29 @@
     function tooltipHtml(race, feature) {
       if (!race) {
         const name = feature?.properties?.name || feature?.properties?.NAME || featureKey(feature, office);
-        return `<strong>${escapeHtml(name)}</strong>`;
+        return `<strong class="prediction-tooltip-title">${escapeHtml(name)}</strong>`;
       }
       const rating = normalizeRating(race?.prediction?.rating);
       const candidates = candidateRows(race);
       return `
-        <strong>${escapeHtml(raceTitle(race, office))}</strong>
-        <b class="rating-pill rating-${rating.toLowerCase().replace(/\s+/g, "-")}">${escapeHtml(rating)}</b>
-        ${candidates ? `<div class="prediction-tooltip-candidates">${candidates}</div>` : ""}
+        <strong class="prediction-tooltip-title">${escapeHtml(raceTitle(race, office))}</strong>
+        <div class="prediction-tooltip-rating">
+          <span>FEA rating</span>
+          <b class="rating-pill rating-${rating.toLowerCase().replace(/\s+/g, "-")}">${escapeHtml(rating)}</b>
+        </div>
+        ${candidates ? `
+          <div class="prediction-tooltip-label">Candidates</div>
+          <div class="prediction-tooltip-candidates">${candidates}</div>
+        ` : ""}
       `;
+    }
+
+    function positionTooltip(event) {
+      const rect = container.getBoundingClientRect();
+      const tooltipWidth = tooltip.offsetWidth || 300;
+      const tooltipHeight = tooltip.offsetHeight || 180;
+      tooltip.style.left = `${Math.min(rect.width - tooltipWidth - 10, Math.max(10, event.clientX - rect.left + 14))}px`;
+      tooltip.style.top = `${Math.min(rect.height - tooltipHeight - 10, Math.max(10, event.clientY - rect.top + 14))}px`;
     }
 
     g.selectAll("path")
@@ -570,15 +638,9 @@
         const race = raceByKey.get(featureKey(feature, office));
         tooltip.innerHTML = tooltipHtml(race, feature);
         tooltip.hidden = false;
-        const rect = container.getBoundingClientRect();
-        tooltip.style.left = `${Math.min(rect.width - 260, Math.max(12, event.clientX - rect.left + 14))}px`;
-        tooltip.style.top = `${Math.min(rect.height - 120, Math.max(12, event.clientY - rect.top + 14))}px`;
+        positionTooltip(event);
       })
-      .on("mousemove", function (event) {
-        const rect = container.getBoundingClientRect();
-        tooltip.style.left = `${Math.min(rect.width - 260, Math.max(12, event.clientX - rect.left + 14))}px`;
-        tooltip.style.top = `${Math.min(rect.height - 120, Math.max(12, event.clientY - rect.top + 14))}px`;
-      })
+      .on("mousemove", positionTooltip)
       .on("mouseleave blur", () => {
         tooltip.hidden = true;
       })

@@ -124,6 +124,58 @@
     return (state.data?.races || []).find((race) => race.raceId === state.selectedRaceId) || null;
   }
 
+  function candidateEntries(race) {
+    return Object.entries(race?.candidates || {}).filter(([, candidate]) => candidate && typeof candidate === "object");
+  }
+
+  function candidateKey(race, preferredParty = "I") {
+    const candidates = race.candidates || {};
+    const base = String(preferredParty || "I").trim().toUpperCase().slice(0, 1) || "I";
+    if (!candidates[base]) return base;
+    let index = 2;
+    while (candidates[`${base}${index}`]) index += 1;
+    return `${base}${index}`;
+  }
+
+  function updateCandidate(raceId, key, field, value) {
+    const race = (state.data?.races || []).find((entry) => entry.raceId === raceId);
+    if (!race?.candidates?.[key]) return;
+    if (!state.dirty) pushUndo();
+    race.candidates[key][field] = field === "incumbent" ? Boolean(value) : String(value ?? "");
+    state.data.lastEdited = new Date().toISOString();
+    state.data.lastEditedBy = "FEA admin";
+    state.dirty = true;
+  }
+
+  function addCandidate(raceId) {
+    const race = (state.data?.races || []).find((entry) => entry.raceId === raceId);
+    if (!race) return;
+    pushUndo();
+    race.candidates = race.candidates || {};
+    const key = candidateKey(race, "I");
+    race.candidates[key] = {
+      name: "",
+      party: "I",
+      incumbent: false
+    };
+    state.data.lastEdited = new Date().toISOString();
+    state.data.lastEditedBy = "FEA admin";
+    render();
+    requestAnimationFrame(() => {
+      document.querySelector(`[data-candidate-key="${key}"] input[data-candidate-field="name"]`)?.focus();
+    });
+  }
+
+  function removeCandidate(raceId, key) {
+    const race = (state.data?.races || []).find((entry) => entry.raceId === raceId);
+    if (!race?.candidates?.[key]) return;
+    pushUndo();
+    delete race.candidates[key];
+    state.data.lastEdited = new Date().toISOString();
+    state.data.lastEditedBy = "FEA admin";
+    render();
+  }
+
   function summarize(data = state.data) {
     const counts = { D: 0, R: 0, Tossup: 0 };
     const ratings = Object.fromEntries(allowedRatings.map((rating) => [rating, 0]));
@@ -295,7 +347,7 @@
       `;
     }
     const rating = normalizeRating(race?.prediction?.rating);
-    const candidates = Object.values(race.candidates || {}).filter((candidate) => candidate?.name);
+    const candidates = candidateEntries(race);
     return `
       <aside class="admin-rating-side">
         <span class="prediction-kicker">Selected race</span>
@@ -306,13 +358,37 @@
           <span>${escapeHtml(race.raceId)}</span>
           <span>${escapeHtml(race.office || officeLabels[state.office])}</span>
         </div>
-        <div class="admin-selected-candidates">
-          ${candidates.length ? candidates.map((candidate) => `
-            <div>
-              <b>${escapeHtml(candidate.name)}${candidate.incumbent ? "*" : ""}</b>
-              <small>${escapeHtml(candidate.party || "")}${candidate.status ? ` - ${escapeHtml(candidate.status)}` : ""}</small>
-            </div>
-          `).join("") : `<p class="prediction-note">Candidate details have not been added yet.</p>`}
+        <div class="admin-candidate-editor">
+          <div class="admin-candidate-editor-head">
+            <strong>Candidates</strong>
+            <span>These names appear in the public map hover card. Publish to update the live ratings pages.</span>
+          </div>
+          <div class="admin-candidate-list">
+            ${candidates.map(([key, candidate]) => `
+              <div class="admin-candidate-row" data-candidate-key="${escapeHtml(key)}">
+                <label class="admin-candidate-key">Key
+                  <input value="${escapeHtml(key)}" disabled aria-label="Candidate key">
+                </label>
+                <label class="admin-candidate-name">Name
+                  <input value="${escapeHtml(candidate.name || "")}" data-candidate-field="name" aria-label="Candidate name">
+                </label>
+                <label class="admin-candidate-party">Party
+                  <select data-candidate-field="party" aria-label="Candidate party">
+                    ${["D", "R", "I", "L", "G", "NP"].map((party) => `<option value="${party}" ${String(candidate.party || "I").toUpperCase() === party ? "selected" : ""}>${party}</option>`).join("")}
+                  </select>
+                </label>
+                <label class="admin-candidate-status">Status
+                  <input value="${escapeHtml(candidate.status || "")}" data-candidate-field="status" placeholder="Optional" aria-label="Candidate status">
+                </label>
+                <label class="admin-candidate-check">
+                  <input type="checkbox" data-candidate-field="incumbent" ${candidate.incumbent ? "checked" : ""}>
+                  Incumbent
+                </label>
+                <button type="button" data-remove-candidate="${escapeHtml(key)}" aria-label="Remove ${escapeHtml(candidate.name || "candidate")}">Remove</button>
+              </div>
+            `).join("") || `<p class="prediction-note">No candidates are configured for this race.</p>`}
+          </div>
+          <button type="button" id="admin-add-candidate">Add candidate</button>
         </div>
         <a class="prediction-button is-small" href="/predictions/2026/${state.office}#${encodeURIComponent(race.raceId)}" target="_blank" rel="noopener">Open public race</a>
       </aside>
@@ -363,6 +439,23 @@
       rebuildSummary();
       render();
     });
+    const activeRace = selectedRace();
+    if (activeRace) {
+      document.querySelectorAll("[data-candidate-field]").forEach((input) => {
+        const row = input.closest("[data-candidate-key]");
+        const key = row?.dataset.candidateKey;
+        const field = input.dataset.candidateField;
+        const eventName = input.type === "checkbox" || input.tagName === "SELECT" ? "change" : "input";
+        input.addEventListener(eventName, () => {
+          updateCandidate(activeRace.raceId, key, field, input.type === "checkbox" ? input.checked : input.value);
+          setStatus(`${raceTitle(activeRace)} candidate details updated. Save draft or publish when ready.`);
+        });
+      });
+      document.querySelectorAll("[data-remove-candidate]").forEach((button) => {
+        button.addEventListener("click", () => removeCandidate(activeRace.raceId, button.dataset.removeCandidate));
+      });
+      $("admin-add-candidate")?.addEventListener("click", () => addCandidate(activeRace.raceId));
+    }
   }
 
   async function renderMap() {
@@ -374,7 +467,7 @@
       container,
       data: state.data,
       office: state.office,
-      selectedRaceId: state.selectedRaceId,
+      selectedRaceId: "",
       onSelect(race) {
         cycleRaceRating(race);
       }
@@ -384,10 +477,6 @@
       return;
     }
     state.mapController = controller;
-    if (state.selectedRaceId) {
-      state.mapController?.setSelected?.(state.selectedRaceId);
-      setTimeout(() => state.mapController?.focusRace?.(state.selectedRaceId), 30);
-    }
   }
 
   function render() {
