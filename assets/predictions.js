@@ -32,7 +32,9 @@
     viewData: null,
     snapshots: [],
     selectedRaceId: "",
-    mapController: null
+    mapController: null,
+    timelineTimer: null,
+    timelineRequestId: 0
   };
 
   const mapUtils = window.FeaPredictionMaps || {};
@@ -98,7 +100,7 @@
   }
 
   function summarize(data) {
-    const counts = { D: 0, R: 0, Tossup: 0, Uncalled: 0 };
+    const counts = { D: 0, R: 0, I: 0, Tossup: 0, Uncalled: 0 };
     const ratings = Object.fromEntries(allowedRatings.map((rating) => [rating, 0]));
     for (const race of data?.races || []) {
       const rating = normalizeRating(race?.prediction?.rating);
@@ -106,6 +108,7 @@
       const party = ratingParty(rating);
       if (party === "D") counts.D += 1;
       else if (party === "R") counts.R += 1;
+      else if (party === "I") counts.I += 1;
       else counts.Tossup += 1;
     }
     return { counts, ratings, raceCount: (data?.races || []).length };
@@ -170,7 +173,7 @@
     const notUp = getNotUpSeats(state.viewData);
     const dTotal = summary.counts.D + notUp.D + notUp.I;
     const rTotal = summary.counts.R + notUp.R;
-    const tossTotal = summary.counts.Tossup;
+    const tossTotal = summary.counts.Tossup + summary.counts.I;
     const total = Math.max(1, config.totalSeats || summary.raceCount || 1);
 
     const demCount = $("prediction-dem-count");
@@ -272,7 +275,14 @@
       }
     ];
     if (!state.snapshots.length) {
-      timeline.innerHTML = `<div class="prediction-rating-timeline-header"><span>Ratings history</span><strong>Current map</strong></div><p class="prediction-note">Weekly snapshots will appear here after the first ratings archive is saved.</p>`;
+      const currentDate = state.activeData?.lastPublishedAt || state.activeData?.generatedAt;
+      timeline.innerHTML = `
+        <div class="prediction-rating-timeline-header">
+          <div class="prediction-rating-timeline-title"><strong>Ratings history</strong><span>Weekly map archive</span></div>
+          <div class="prediction-rating-current"><span>Viewing</span><strong>${escapeHtml(displayDate(currentDate))}</strong><small>Latest published</small></div>
+        </div>
+        <p class="prediction-note">The current published map is selected. Earlier weekly snapshots will appear here after the first archive is saved.</p>
+      `;
       return;
     }
     const isCurrent = !state.viewData?.selectedSnapshotDate;
@@ -282,22 +292,32 @@
       : Math.max(0, timelineItems.findIndex((item) => item.snapshotDate === selected));
     timeline.innerHTML = `
       <div class="prediction-rating-timeline-header">
-        <span>Ratings history</span>
-        <strong id="prediction-snapshot-date">${escapeHtml(isCurrent ? selected : displayDate(selected))}</strong>
+        <div class="prediction-rating-timeline-title"><strong>Ratings history</strong><span>Drag the slider or choose a dated point</span></div>
+        <div id="prediction-snapshot-date" class="prediction-rating-current"><span>Viewing</span><strong>${escapeHtml(isCurrent ? displayDate(timelineItems.at(-1).snapshotDate) : displayDate(selected))}</strong><small>${isCurrent ? "Latest published" : "Archived week"}</small></div>
       </div>
       <div class="prediction-rating-slider-wrap">
-        <input id="prediction-snapshot-slider" type="range" min="0" max="${timelineItems.length - 1}" value="${selectedIndex}" step="1" aria-label="Ratings snapshot week">
-        <div class="prediction-rating-ticks">
-          ${timelineItems.map((item, index) => `
-            <button type="button" data-snapshot-index="${index}" class="prediction-rating-tick ${index === selectedIndex ? "is-active" : ""}" title="${escapeHtml(item.isCurrent ? "Current published ratings" : displayDate(item.snapshotDate))}">
-              <i></i><span>${escapeHtml(item.isCurrent ? "Current" : displayDate(item.snapshotDate))}</span>
-            </button>
-          `).join("")}
+        <span>${escapeHtml(displayDate(timelineItems[0].snapshotDate))}</span>
+        <div class="prediction-rating-track">
+          <input id="prediction-snapshot-slider" type="range" min="0" max="${timelineItems.length - 1}" value="${selectedIndex}" step="1" aria-label="Ratings snapshot week" style="--snapshot-progress:${timelineItems.length > 1 ? (selectedIndex / (timelineItems.length - 1)) * 100 : 100}%">
+          <div class="prediction-rating-ticks">
+            ${timelineItems.map((item, index) => `
+              <button type="button" data-snapshot-index="${index}" class="prediction-rating-tick ${index === selectedIndex ? "is-active" : ""}" title="${escapeHtml(item.isCurrent ? "Current published ratings" : displayDate(item.snapshotDate))}">
+                <i></i><span>${escapeHtml(item.isCurrent ? "Current" : displayDate(item.snapshotDate))}</span>
+              </button>
+            `).join("")}
+          </div>
         </div>
+        <span>${escapeHtml(displayDate(timelineItems.at(-1).snapshotDate))}</span>
       </div>
     `;
-    timeline.querySelector("#prediction-snapshot-slider")?.addEventListener("input", async (event) => {
-      await loadSnapshotAt(Number(event.target.value));
+    timeline.querySelector("#prediction-snapshot-slider")?.addEventListener("input", (event) => {
+      const index = Number(event.target.value);
+      const item = timelineItems[index];
+      event.target.style.setProperty("--snapshot-progress", `${timelineItems.length > 1 ? (index / (timelineItems.length - 1)) * 100 : 100}%`);
+      const dateNode = $("prediction-snapshot-date");
+      if (dateNode && item) dateNode.innerHTML = `<span>Viewing</span><strong>${escapeHtml(displayDate(item.snapshotDate))}</strong><small>${item.isCurrent ? "Latest published" : "Archived week"}</small>`;
+      window.clearTimeout(state.timelineTimer);
+      state.timelineTimer = window.setTimeout(() => loadSnapshotAt(index), 120);
     });
     timeline.querySelectorAll("[data-snapshot-index]").forEach((button) => {
       button.addEventListener("click", async () => {
@@ -307,6 +327,7 @@
   }
 
   async function loadSnapshotAt(index) {
+    const requestId = ++state.timelineRequestId;
     const item = index === state.snapshots.length
       ? { isCurrent: true }
       : state.snapshots[index];
@@ -318,6 +339,7 @@
       return;
     }
     const snapshot = await fetchJson(`/${item.file.replace(/^\/+/, "")}`, null);
+    if (requestId !== state.timelineRequestId || !snapshot) return;
     state.viewData = mergeSnapshot(state.activeData, snapshot);
     state.selectedRaceId = "";
     renderAll(false);

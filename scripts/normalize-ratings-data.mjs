@@ -18,6 +18,10 @@ export const allowedRatings = [
   "Lean Democratic",
   "Tilt Democratic",
   "Tossup",
+  "Tilt Independent",
+  "Lean Independent",
+  "Likely Independent",
+  "Safe Independent",
   "Tilt Republican",
   "Lean Republican",
   "Likely Republican",
@@ -44,6 +48,19 @@ const ratingAliases = new Map([
   ["toss up", "Tossup"],
   ["tossup", "Tossup"],
   ["tie", "Tossup"],
+  ["tilt i", "Tilt Independent"],
+  ["tilt ind", "Tilt Independent"],
+  ["tilt independent", "Tilt Independent"],
+  ["lean i", "Lean Independent"],
+  ["lean ind", "Lean Independent"],
+  ["lean independent", "Lean Independent"],
+  ["likely i", "Likely Independent"],
+  ["likely ind", "Likely Independent"],
+  ["likely independent", "Likely Independent"],
+  ["safe i", "Safe Independent"],
+  ["safe ind", "Safe Independent"],
+  ["safe independent", "Safe Independent"],
+  ["solid i", "Safe Independent"],
   ["safe r", "Safe Republican"],
   ["safe rep", "Safe Republican"],
   ["safe republican", "Safe Republican"],
@@ -58,11 +75,7 @@ const ratingAliases = new Map([
   ["lean republican", "Lean Republican"],
   ["tilt r", "Tilt Republican"],
   ["tilt rep", "Tilt Republican"],
-  ["tilt republican", "Tilt Republican"],
-  ["safe i", "Tossup"],
-  ["likely i", "Tossup"],
-  ["lean i", "Tossup"],
-  ["tilt i", "Tossup"]
+  ["tilt republican", "Tilt Republican"]
 ]);
 
 function readJson(filePath) {
@@ -84,6 +97,7 @@ export function normalizeRating(value) {
 function partyFromRating(rating) {
   if (rating.includes("Democratic")) return "D";
   if (rating.includes("Republican")) return "R";
+  if (rating.includes("Independent")) return "I";
   return "Tossup";
 }
 
@@ -155,7 +169,7 @@ function cleanRace(race, fallbackOffice) {
 }
 
 export function summarizeRatings(races, existingSummary = {}) {
-  const counts = { D: 0, R: 0, Tossup: 0, Uncalled: 0 };
+  const counts = { D: 0, R: 0, I: 0, Tossup: 0, Uncalled: 0 };
   const ratings = Object.fromEntries(allowedRatings.map((rating) => [rating, 0]));
   for (const race of races) {
     const rating = normalizeRating(race?.prediction?.rating);
@@ -163,6 +177,7 @@ export function summarizeRatings(races, existingSummary = {}) {
     const party = partyFromRating(rating);
     if (party === "D") counts.D += 1;
     else if (party === "R") counts.R += 1;
+    else if (party === "I") counts.I += 1;
     else counts.Tossup += 1;
   }
   const summary = {

@@ -2273,3 +2273,432 @@ body.prediction-page .prediction-shape-feature.has-race {
     grid-column: 1 / -1;
   }
 }
+
+/* Independent ratings use a distinct violet range without changing the D/R palette. */
+.rating-tilt-independent {
+  color: #11172b;
+  background: #c0a5e6;
+}
+
+.rating-lean-independent {
+  color: #10152b;
+  background: #a17bd6;
+}
+
+.rating-likely-independent {
+  color: #fff;
+  background: #865cc6;
+}
+
+.rating-safe-independent {
+  color: #fff;
+  background: #6f3db4;
+}
+
+.admin-rating-mode.mode-i.active {
+  color: #fff;
+  background: linear-gradient(135deg, #c0a5e6, #6f3db4);
+}
+
+.admin-rating-palette {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(84px, 1fr));
+  gap: 6px;
+  flex: 1 1 100%;
+  order: 2;
+  width: 100%;
+  padding-top: 10px;
+  border-top: 1px solid rgba(198, 210, 255, 0.2);
+}
+
+.admin-rating-choice {
+  position: relative;
+  display: grid;
+  grid-template-columns: 12px 1fr;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  border: 1px solid rgba(198, 210, 255, 0.35);
+  border-radius: 7px;
+  padding: 6px 8px;
+  color: #fff;
+  background: rgba(4, 9, 24, 0.8);
+  font: 900 0.68rem/1.1 "Telegraf", "Inter", "Segoe UI", sans-serif;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.admin-rating-choice i {
+  width: 12px;
+  height: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 3px;
+  background: var(--rating-color);
+}
+
+.admin-rating-choice:hover {
+  border-color: #fff;
+  transform: translateY(-1px);
+}
+
+.admin-rating-choice.is-selected {
+  border-color: #fff;
+  background: color-mix(in srgb, var(--rating-color) 34%, #071026);
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.82),
+    0 0 0 5px color-mix(in srgb, var(--rating-color) 50%, transparent);
+}
+
+.admin-rating-choice.is-selected::after {
+  content: "SELECTED";
+  position: absolute;
+  right: 5px;
+  top: -8px;
+  border-radius: 3px;
+  padding: 2px 4px;
+  color: #071026;
+  background: #fff;
+  font-size: 0.48rem;
+  letter-spacing: 0.04em;
+}
+
+.admin-candidate-flags {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 7px;
+  border: 1px solid rgba(198, 210, 255, 0.22);
+  border-radius: 7px;
+  background: rgba(3, 8, 23, 0.52);
+}
+
+.admin-candidate-flags .admin-candidate-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  margin: 0;
+  padding: 0 9px;
+  border: 1px solid rgba(198, 210, 255, 0.28);
+  border-radius: 5px;
+  color: #fff;
+  background: rgba(15, 30, 72, 0.74);
+  font-size: 0.73rem;
+  font-weight: 900;
+}
+
+.admin-candidate-flags input {
+  width: 17px;
+  height: 17px;
+  accent-color: #c6d2ff;
+}
+
+body.is-rating-brush-ready .admin-rating-map .prediction-shape-feature.has-race {
+  cursor: crosshair;
+}
+
+body.is-rating-painting,
+body.is-rating-painting .admin-rating-map {
+  user-select: none;
+}
+
+body.is-rating-painting .admin-rating-map {
+  cursor: crosshair;
+}
+
+kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  min-height: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 0 5px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.34);
+  font: 900 0.72rem/1 "Telegraf", "Inter", "Segoe UI", sans-serif;
+}
+
+.admin-yapms-import {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.85fr) minmax(220px, 0.7fr) minmax(320px, 1.4fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin: 14px 0 32px;
+  padding: 16px;
+  border: 1px solid rgba(198, 210, 255, 0.42);
+  border-radius: 10px;
+  background:
+    linear-gradient(120deg, rgba(13, 37, 91, 0.94), rgba(38, 22, 56, 0.9)),
+    #071026;
+}
+
+.admin-yapms-import h2 {
+  margin: 3px 0 6px;
+  font-size: 1.1rem;
+}
+
+.admin-yapms-import p {
+  margin: 0;
+  color: var(--prediction-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.admin-yapms-file,
+.admin-yapms-paste {
+  display: grid;
+  gap: 6px;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.admin-yapms-file input,
+.admin-yapms-paste textarea {
+  width: 100%;
+  border: 1px solid rgba(198, 210, 255, 0.4);
+  border-radius: 6px;
+  padding: 9px;
+  color: #fff;
+  background: rgba(3, 8, 23, 0.82);
+  font: inherit;
+}
+
+.admin-yapms-import > button {
+  min-height: 40px;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  padding: 0 14px;
+  color: #071026;
+  background: #c6d2ff;
+  font: 900 0.75rem/1 "Telegraf", "Inter", "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+.admin-import-report {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  border-top: 1px solid rgba(198, 210, 255, 0.22);
+  padding-top: 10px;
+  color: var(--prediction-muted);
+  font-size: 0.75rem;
+}
+
+.admin-import-report strong {
+  color: #48d38a;
+}
+
+.admin-import-report small {
+  flex-basis: 100%;
+}
+
+body.prediction-page .prediction-rating-timeline {
+  display: grid;
+  gap: 9px;
+  margin: 10px auto 18px;
+  padding: 12px 14px;
+  border: 1px solid rgba(198, 210, 255, 0.42);
+  border-radius: 8px;
+  background:
+    linear-gradient(110deg, rgba(10, 34, 84, 0.94), rgba(38, 22, 55, 0.9)),
+    #071026;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.24);
+}
+
+body.prediction-page .prediction-rating-timeline-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  margin: 0;
+}
+
+body.prediction-page .prediction-rating-timeline-title {
+  display: grid;
+  gap: 1px;
+}
+
+body.prediction-page .prediction-rating-timeline-title strong {
+  color: #fff;
+  font-size: 0.88rem;
+}
+
+body.prediction-page .prediction-rating-timeline-title span {
+  color: var(--prediction-muted);
+  font-size: 0.61rem;
+}
+
+body.prediction-page .prediction-rating-current {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 3px 8px;
+  align-items: center;
+  border: 1px solid rgba(198, 210, 255, 0.38);
+  border-radius: 6px;
+  padding: 6px 9px;
+  background: rgba(4, 9, 24, 0.7);
+}
+
+body.prediction-page .prediction-rating-current span {
+  grid-row: 1 / span 2;
+  color: #ff7785;
+  font-size: 0.57rem;
+}
+
+body.prediction-page .prediction-rating-current strong {
+  font-size: 0.79rem;
+}
+
+body.prediction-page .prediction-rating-current small {
+  color: var(--prediction-muted);
+  font-size: 0.58rem;
+  font-weight: 850;
+}
+
+body.prediction-page .prediction-rating-slider-wrap {
+  display: grid;
+  grid-template-columns: minmax(86px, auto) 1fr minmax(86px, auto);
+  gap: 10px;
+  align-items: center;
+}
+
+body.prediction-page .prediction-rating-slider-wrap > span {
+  color: var(--prediction-muted);
+  font-size: 0.63rem;
+  font-weight: 850;
+}
+
+body.prediction-page .prediction-rating-slider-wrap > span:last-child {
+  text-align: right;
+}
+
+body.prediction-page .prediction-rating-track {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+body.prediction-page .prediction-rating-track input[type="range"] {
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+body.prediction-page .prediction-rating-track input[type="range"]::-webkit-slider-runnable-track {
+  height: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 99px;
+  background: linear-gradient(
+    90deg,
+    #4f73d1 0,
+    #4f73d1 var(--snapshot-progress, 100%),
+    rgba(203, 202, 205, 0.28) var(--snapshot-progress, 100%),
+    rgba(203, 202, 205, 0.28) 100%
+  );
+}
+
+body.prediction-page .prediction-rating-track input[type="range"]::-webkit-slider-thumb {
+  width: 17px;
+  height: 17px;
+  margin-top: -7px;
+  appearance: none;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #ff5368;
+  box-shadow: 0 0 0 3px rgba(255, 83, 104, 0.24);
+}
+
+body.prediction-page .prediction-rating-track input[type="range"]::-moz-range-track {
+  height: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 99px;
+  background: rgba(203, 202, 205, 0.28);
+}
+
+body.prediction-page .prediction-rating-track input[type="range"]::-moz-range-progress {
+  height: 5px;
+  border-radius: 99px;
+  background: #4f73d1;
+}
+
+body.prediction-page .prediction-rating-track input[type="range"]::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #ff5368;
+  box-shadow: 0 0 0 3px rgba(255, 83, 104, 0.24);
+}
+
+body.prediction-page .prediction-rating-ticks {
+  margin: 0;
+}
+
+body.prediction-page .prediction-rating-tick.is-active i {
+  background: #ff5368;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 5px rgba(255, 83, 104, 0.24);
+}
+
+@media (max-width: 1080px) {
+  .admin-rating-palette {
+    grid-template-columns: repeat(5, minmax(92px, 1fr));
+  }
+
+  .admin-yapms-import {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-yapms-import > div,
+  .admin-import-report {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .admin-rating-palette {
+    grid-template-columns: repeat(3, minmax(82px, 1fr));
+  }
+
+  .admin-yapms-import {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-yapms-import > div,
+  .admin-yapms-import > label,
+  .admin-yapms-import > button,
+  .admin-import-report {
+    grid-column: 1;
+  }
+
+  body.prediction-page .prediction-rating-timeline-header {
+    grid-template-columns: 1fr;
+  }
+
+  body.prediction-page .prediction-rating-current {
+    justify-self: stretch;
+  }
+
+  body.prediction-page .prediction-rating-slider-wrap {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  body.prediction-page .prediction-rating-track {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  body.prediction-page .prediction-rating-ticks {
+    margin: 0;
+  }
+}

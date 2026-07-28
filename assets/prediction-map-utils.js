@@ -29,6 +29,10 @@
     "Lean Democratic": "#7694e2",
     "Tilt Democratic": "#a0b6ef",
     Tossup: "#cbcacd",
+    "Tilt Independent": "#c0a5e6",
+    "Lean Independent": "#a17bd6",
+    "Likely Independent": "#865cc6",
+    "Safe Independent": "#6f3db4",
     "Tilt Republican": "#eba3a2",
     "Lean Republican": "#dd7a78",
     "Likely Republican": "#cb5452",
@@ -43,6 +47,10 @@
     "Lean Democratic",
     "Tilt Democratic",
     "Tossup",
+    "Tilt Independent",
+    "Lean Independent",
+    "Likely Independent",
+    "Safe Independent",
     "Tilt Republican",
     "Lean Republican",
     "Likely Republican",
@@ -55,6 +63,10 @@
     ["lean d", "Lean Democratic"], ["lean dem", "Lean Democratic"], ["lean democratic", "Lean Democratic"],
     ["tilt d", "Tilt Democratic"], ["tilt dem", "Tilt Democratic"], ["tilt democratic", "Tilt Democratic"],
     ["toss-up", "Tossup"], ["toss up", "Tossup"], ["tossup", "Tossup"], ["tie", "Tossup"],
+    ["tilt i", "Tilt Independent"], ["tilt ind", "Tilt Independent"], ["tilt independent", "Tilt Independent"],
+    ["lean i", "Lean Independent"], ["lean ind", "Lean Independent"], ["lean independent", "Lean Independent"],
+    ["likely i", "Likely Independent"], ["likely ind", "Likely Independent"], ["likely independent", "Likely Independent"],
+    ["safe i", "Safe Independent"], ["safe ind", "Safe Independent"], ["safe independent", "Safe Independent"], ["solid i", "Safe Independent"],
     ["tilt r", "Tilt Republican"], ["tilt rep", "Tilt Republican"], ["tilt republican", "Tilt Republican"],
     ["lean r", "Lean Republican"], ["lean rep", "Lean Republican"], ["lean republican", "Lean Republican"],
     ["likely r", "Likely Republican"], ["likely rep", "Likely Republican"], ["likely republican", "Likely Republican"],
@@ -73,6 +85,7 @@
     const normalized = normalizeRating(rating);
     if (normalized.includes("Democratic")) return "D";
     if (normalized.includes("Republican")) return "R";
+    if (normalized.includes("Independent")) return "I";
     return "Tossup";
   }
 
@@ -83,6 +96,10 @@
       case "Lean Democratic": return -50;
       case "Tilt Democratic": return -25;
       case "Tossup": return 0;
+      case "Tilt Independent":
+      case "Lean Independent":
+      case "Likely Independent":
+      case "Safe Independent": return 0;
       case "Tilt Republican": return 25;
       case "Lean Republican": return 50;
       case "Likely Republican": return 75;
@@ -510,7 +527,7 @@
   function makeLegend() {
     return `
       <div class="prediction-rating-legend" aria-label="Rating color legend">
-        ${allowedRatings.map((rating) => `<span><i style="background:${colors[rating]}"></i>${escapeHtml(rating.replace(" Democratic", " D").replace(" Republican", " R"))}</span>`).join("")}
+        ${allowedRatings.map((rating) => `<span><i style="background:${colors[rating]}"></i>${escapeHtml(rating.replace(" Democratic", " D").replace(" Republican", " R").replace(" Independent", " I"))}</span>`).join("")}
       </div>
     `;
   }
@@ -522,6 +539,10 @@
       office,
       selectedRaceId = "",
       onSelect,
+      onPaintStart,
+      onPaintRace,
+      onPaintEnd,
+      isPaintEnabled,
       interactive = true
     } = options || {};
     if (!container) return null;
@@ -576,6 +597,8 @@
     const path = window.d3.geoPath(projection);
     const tooltip = container.querySelector(".prediction-map-tooltip");
     let currentTransform = window.d3.zoomIdentity;
+    let painting = false;
+    let suppressClick = false;
 
     const zoom = window.d3.zoom()
       .scaleExtent([1, 12])
@@ -646,17 +669,44 @@
         repairBrokenRenderedPath(this, feature, projection, width, height);
       })
       .attr("tabindex", interactive ? 0 : -1)
+      .on("pointerdown", function (event, feature) {
+        const race = raceByKey.get(featureKey(feature, office));
+        if (event.button !== 0 || !race || !isPaintEnabled?.()) return;
+        event.preventDefault();
+        event.stopPropagation();
+        painting = true;
+        suppressClick = true;
+        tooltip.hidden = true;
+        onPaintStart?.(race);
+        onPaintRace?.(race);
+        window.d3.select(this)
+          .attr("fill", colorForRating(race?.prediction?.rating))
+          .attr("data-rating", normalizeRating(race?.prediction?.rating));
+      })
       .on("mouseenter focus", function (event, feature) {
         const race = raceByKey.get(featureKey(feature, office));
+        if (painting && race && (event.buttons & 1)) {
+          onPaintRace?.(race);
+          window.d3.select(this)
+            .attr("fill", colorForRating(race?.prediction?.rating))
+            .attr("data-rating", normalizeRating(race?.prediction?.rating));
+          return;
+        }
         tooltip.innerHTML = tooltipHtml(race, feature);
         tooltip.hidden = false;
         positionTooltip(event);
       })
-      .on("mousemove", positionTooltip)
+      .on("mousemove", (event) => {
+        if (!painting) positionTooltip(event);
+      })
       .on("mouseleave blur", () => {
         tooltip.hidden = true;
       })
       .on("click", (event, feature) => {
+        if (suppressClick) {
+          suppressClick = false;
+          return;
+        }
         const race = raceByKey.get(featureKey(feature, office));
         if (!race || typeof onSelect !== "function") return;
         event.stopPropagation();
@@ -671,6 +721,17 @@
         setSelected(race.raceId);
         onSelect(race);
       });
+
+    function finishPaint() {
+      if (!painting) return;
+      painting = false;
+      onPaintEnd?.();
+      window.setTimeout(() => {
+        suppressClick = false;
+      }, 0);
+    }
+    window.addEventListener("pointerup", finishPaint);
+    window.addEventListener("blur", finishPaint);
 
     setSelected(selectedRaceId);
 
@@ -718,6 +779,8 @@
       setSelected,
       destroy() {
         svg.on(".zoom", null);
+        window.removeEventListener("pointerup", finishPaint);
+        window.removeEventListener("blur", finishPaint);
       },
       getTransform() {
         return currentTransform;
