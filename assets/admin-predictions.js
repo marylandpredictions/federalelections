@@ -9,6 +9,11 @@
     house: "House",
     governor: "Governors"
   };
+  const officePublicPaths = {
+    senate: "/predictions/2026/senate",
+    house: "/predictions/2026/house",
+    governor: "/predictions/2026/governor"
+  };
   const cycles = {
     D: ["Tilt Democratic", "Lean Democratic", "Likely Democratic", "Safe Democratic"],
     I: ["Tilt Independent", "Lean Independent", "Likely Independent", "Safe Independent"],
@@ -691,6 +696,24 @@
     `;
   }
 
+  function renderToolbarMeta() {
+    const record = fileRecord();
+    const hasDraft = Boolean(record?.draft);
+    const publishedAt = state.data?.lastPublishedAt || state.data?.generatedAt;
+    return `
+      <div class="admin-rating-meta">
+        <div class="admin-rating-badges">
+          ${state.dirty ? `<span class="admin-rating-badge is-dirty">Unsaved changes</span>` : `<span class="admin-rating-badge is-clean">Saved</span>`}
+          ${hasDraft ? `<span class="admin-rating-badge is-draft">Draft on server</span>` : `<span class="admin-rating-badge is-live">Published only</span>`}
+        </div>
+        <div class="admin-rating-meta-links">
+          <a class="admin-rating-public-link" href="${escapeHtml(officePublicPaths[state.office])}" target="_blank" rel="noopener">View public ${escapeHtml(officeLabels[state.office])} page</a>
+          ${publishedAt ? `<span>Last published <b>${escapeHtml(displayDate(publishedAt))}</b></span>` : ""}
+        </div>
+      </div>
+    `;
+  }
+
   function renderSummary() {
     const summary = summarize();
     return `
@@ -962,6 +985,7 @@
     root.innerHTML = `
       <section class="admin-ratings-toolbar">
         <div class="admin-rating-tabs">${renderOfficeTabs()}</div>
+        ${renderToolbarMeta()}
         <div class="admin-rating-modes" aria-label="Rating mode">${renderModeButtons()}</div>
         ${renderRatingPalette()}
         <div class="admin-rating-actions">
@@ -972,6 +996,7 @@
           <button id="admin-save-draft" type="button">Save draft</button>
           <button id="admin-publish" type="button">Publish</button>
         </div>
+        <p class="admin-rating-shortcuts prediction-note">Shortcuts: hold <kbd>F</kbd> to paint across the map. <kbd>Ctrl/Cmd+Z</kbd> undo, <kbd>Ctrl/Cmd+Shift+Z</kbd> redo.</p>
       </section>
       <div id="admin-status" class="prediction-note admin-save-status" role="status"></div>
       ${renderSummary()}
@@ -1012,7 +1037,14 @@
     });
     window.addEventListener("keydown", (event) => {
       const target = event.target;
-      if (event.key.toLowerCase() !== "f" || event.repeat || target?.matches?.("input, textarea, select, [contenteditable='true']")) return;
+      const inField = target?.matches?.("input, textarea, select, [contenteditable='true']");
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z" && !inField) {
+        event.preventDefault();
+        if (event.shiftKey) $("admin-redo")?.click();
+        else $("admin-undo")?.click();
+        return;
+      }
+      if (event.key.toLowerCase() !== "f" || event.repeat || inField) return;
       state.paintKeyDown = true;
       document.body.classList.add("is-rating-brush-ready");
       setStatus(`Paint brush ready: ${state.selectedRating}. Drag across the map while holding F.`);

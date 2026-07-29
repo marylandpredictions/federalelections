@@ -182,11 +182,11 @@
     if (demCount) demCount.textContent = `${dTotal} D`;
     if (repCount) repCount.textContent = `${rTotal} R`;
     if (majority) {
-      const snapshot = state.viewData?.selectedSnapshotDate || state.viewData?.lastPublishedAt || state.viewData?.generatedAt;
+      const snapshotLabel = snapshotBoardLabel();
       if (state.key === "governor") {
-        majority.innerHTML = `<span>${summary.raceCount} races rated</span><small class="prediction-board-snapshot">Snapshot: ${escapeHtml(displayDate(snapshot))}</small>`;
+        majority.innerHTML = `<span>${summary.raceCount} races rated</span><small class="prediction-board-snapshot">${escapeHtml(snapshotLabel)}</small>`;
       } else {
-        majority.innerHTML = `<span>${config.majority} for majority${state.key === "senate" ? " - D need 51 if GOP controls VP" : ""}</span><small class="prediction-board-snapshot">Snapshot: ${escapeHtml(displayDate(snapshot))}</small>`;
+        majority.innerHTML = `<span>${config.majority} for majority${state.key === "senate" ? " - D need 51 if GOP controls VP" : ""}</span><small class="prediction-board-snapshot">${escapeHtml(snapshotLabel)}</small>`;
       }
     }
 
@@ -253,20 +253,8 @@
     renderDetail(null);
   }
 
-  function renderTimeline() {
-    const mapPanel = document.querySelector(".prediction-map-panel");
-    if (!mapPanel || document.getElementById("prediction-rating-timeline")) return;
-    const timeline = document.createElement("section");
-    timeline.id = "prediction-rating-timeline";
-    timeline.className = "prediction-rating-timeline";
-    mapPanel.insertAdjacentElement("afterend", timeline);
-  }
-
-  function updateTimeline() {
-    renderTimeline();
-    const timeline = $("prediction-rating-timeline");
-    if (!timeline) return;
-    const timelineItems = [
+  function buildTimelineItems() {
+    return [
       ...state.snapshots,
       {
         isCurrent: true,
@@ -274,21 +262,129 @@
         file: null
       }
     ];
+  }
+
+  function timelineWeekLabel(index, total, item) {
+    if (item?.isCurrent) return "Latest";
+    if (total <= 2) return "Earlier";
+    return `Week ${index + 1}`;
+  }
+
+  function timelineStatusLabel(item) {
+    return item?.isCurrent ? "Current ratings" : "Archived week";
+  }
+
+  function snapshotBoardLabel() {
+    if (!state.viewData?.selectedSnapshotDate) return "Current release";
+    const items = buildTimelineItems();
+    const index = items.findIndex((item) => item.snapshotDate === state.viewData.selectedSnapshotDate);
+    if (index >= 0) return timelineWeekLabel(index, items.length, items[index]);
+    return "Archived week";
+  }
+
+  function getTimelineSelection() {
+    const timelineItems = buildTimelineItems();
     const isCurrent = !state.viewData?.selectedSnapshotDate;
-    const selected = isCurrent ? "Current map" : state.viewData.selectedSnapshotDate;
     const selectedIndex = isCurrent
       ? timelineItems.length - 1
-      : Math.max(0, timelineItems.findIndex((item) => item.snapshotDate === selected));
-    const selectedItem = timelineItems[selectedIndex] || timelineItems.at(-1);
+      : Math.max(0, timelineItems.findIndex((item) => item.snapshotDate === state.viewData.selectedSnapshotDate));
+    return {
+      timelineItems,
+      selectedIndex,
+      selectedItem: timelineItems[selectedIndex] || timelineItems.at(-1)
+    };
+  }
+
+  function renderTimelineCurrentPanel(selectedItem, selectedIndex, timelineItems) {
+    const panel = $("prediction-snapshot-date");
+    if (!panel || !selectedItem) return;
+    panel.innerHTML = `
+      <span>Viewing</span>
+      <strong>${escapeHtml(timelineWeekLabel(selectedIndex, timelineItems.length, selectedItem))}</strong>
+      <small>${escapeHtml(timelineStatusLabel(selectedItem))}</small>
+    `;
+  }
+
+  function renderTimelineTicks(timeline, timelineItems, selectedIndex) {
+    const ticks = timeline.querySelector(".prediction-rating-ticks");
+    if (!ticks) return;
+    ticks.innerHTML = timelineItems.map((item, index) => `
+      <i class="${index === selectedIndex ? "is-active" : ""}" style="left:${timelineItems.length > 1 ? (index / (timelineItems.length - 1)) * 100 : 100}%"></i>
+    `).join("");
+  }
+
+  function renderTimelineEndpoints(timeline, timelineItems) {
+    const endpoints = timeline.querySelector(".prediction-rating-endpoints");
+    if (!endpoints || !timelineItems.length) return;
+    endpoints.innerHTML = `
+      <span>${escapeHtml(timelineWeekLabel(0, timelineItems.length, timelineItems[0]))}</span>
+      <span>${escapeHtml(timelineWeekLabel(timelineItems.length - 1, timelineItems.length, timelineItems.at(-1)))}</span>
+    `;
+  }
+
+  function syncTimelineControls(timeline, timelineItems, selectedIndex, selectedItem) {
+    const slider = timeline.querySelector("#prediction-snapshot-slider");
+    if (slider) {
+      slider.max = String(Math.max(0, timelineItems.length - 1));
+      slider.value = String(selectedIndex);
+      slider.disabled = timelineItems.length < 2;
+    }
+    renderTimelineTicks(timeline, timelineItems, selectedIndex);
+    renderTimelineEndpoints(timeline, timelineItems);
+    renderTimelineCurrentPanel(selectedItem, selectedIndex, timelineItems);
+  }
+
+  function renderTimeline() {
+    const mapPanel = document.querySelector(".prediction-map-panel");
+    if (!mapPanel) return;
+    let timeline = $("prediction-rating-timeline");
+    if (!timeline) {
+      timeline = document.createElement("section");
+      timeline.id = "prediction-rating-timeline";
+      timeline.className = "prediction-rating-timeline";
+      mapPanel.insertAdjacentElement("afterend", timeline);
+      timeline.addEventListener("input", (event) => {
+        if (event.target.id !== "prediction-snapshot-slider") return;
+        const index = Number(event.target.value);
+        const items = buildTimelineItems();
+        const item = items[index];
+        if (!item) return;
+        syncTimelineControls(timeline, items, index, item);
+        window.clearTimeout(state.timelineTimer);
+        state.timelineTimer = window.setTimeout(() => loadSnapshotAt(index), 120);
+      });
+    }
+  }
+
+  function updateTimeline() {
+    renderTimeline();
+    const timeline = $("prediction-rating-timeline");
+    if (!timeline) return;
+    const { timelineItems, selectedIndex, selectedItem } = getTimelineSelection();
     const hasArchive = state.snapshots.length > 0;
+    const existingSlider = timeline.querySelector("#prediction-snapshot-slider");
+    const expectedMax = Math.max(0, timelineItems.length - 1);
+
+    if (existingSlider && Number(existingSlider.max) === expectedMax) {
+      syncTimelineControls(timeline, timelineItems, selectedIndex, selectedItem);
+      const subtitle = timeline.querySelector(".prediction-rating-timeline-title span");
+      if (subtitle) {
+        subtitle.textContent = hasArchive ? "Scrub through each weekly FEA map" : "Weekly snapshots will build from this release";
+      }
+      return;
+    }
+
     timeline.innerHTML = `
       <div class="prediction-rating-timeline-header">
-        <div class="prediction-rating-timeline-title"><strong>Ratings history</strong><span>${hasArchive ? "Move through each weekly FEA map" : "Weekly snapshots will build from this release"}</span></div>
+        <div class="prediction-rating-timeline-title">
+          <strong>Ratings history</strong>
+          <span>${hasArchive ? "Scrub through each weekly FEA map" : "Weekly snapshots will build from this release"}</span>
+        </div>
       </div>
       <div class="prediction-rating-slider-wrap">
         <div class="prediction-rating-track">
           <div class="prediction-rating-rail">
-            <input id="prediction-snapshot-slider" type="range" min="0" max="${Math.max(0, timelineItems.length - 1)}" value="${selectedIndex}" step="1" aria-label="Ratings snapshot week" ${timelineItems.length < 2 ? "disabled" : ""}>
+            <input id="prediction-snapshot-slider" type="range" min="0" max="${expectedMax}" value="${selectedIndex}" step="1" aria-label="Ratings snapshot week" ${timelineItems.length < 2 ? "disabled" : ""}>
             <div class="prediction-rating-ticks" aria-hidden="true">
               ${timelineItems.map((item, index) => `
                 <i class="${index === selectedIndex ? "is-active" : ""}" style="left:${timelineItems.length > 1 ? (index / (timelineItems.length - 1)) * 100 : 100}%"></i>
@@ -296,30 +392,14 @@
             </div>
           </div>
           <div class="prediction-rating-endpoints">
-            <span>${escapeHtml(displayDate(timelineItems[0]?.snapshotDate))}</span>
-            <span>${escapeHtml(displayDate(timelineItems.at(-1)?.snapshotDate))}</span>
+            <span>${escapeHtml(timelineWeekLabel(0, timelineItems.length, timelineItems[0]))}</span>
+            <span>${escapeHtml(timelineWeekLabel(timelineItems.length - 1, timelineItems.length, timelineItems.at(-1)))}</span>
           </div>
         </div>
-        <div id="prediction-snapshot-date" class="prediction-rating-current">
-          <span>Selected week</span>
-          <strong>${escapeHtml(displayDate(selectedItem?.snapshotDate))}</strong>
-          <small>${selectedItem?.isCurrent ? "Latest ratings" : "Archived ratings"}</small>
-        </div>
+        <div id="prediction-snapshot-date" class="prediction-rating-current"></div>
       </div>
     `;
-    timeline.querySelector("#prediction-snapshot-slider")?.addEventListener("input", (event) => {
-      const index = Number(event.target.value);
-      const item = timelineItems[index];
-      const dateNode = $("prediction-snapshot-date");
-      if (dateNode && item) {
-        dateNode.innerHTML = `<span>Selected week</span><strong>${escapeHtml(displayDate(item.snapshotDate))}</strong><small>${item.isCurrent ? "Latest ratings" : "Archived ratings"}</small>`;
-      }
-      timeline.querySelectorAll(".prediction-rating-ticks i").forEach((tick, tickIndex) => {
-        tick.classList.toggle("is-active", tickIndex === index);
-      });
-      window.clearTimeout(state.timelineTimer);
-      state.timelineTimer = window.setTimeout(() => loadSnapshotAt(index), 120);
-    });
+    renderTimelineCurrentPanel(selectedItem, selectedIndex, timelineItems);
   }
 
   async function loadSnapshotAt(index) {
@@ -336,7 +416,10 @@
     }
     const snapshot = await fetchJson(`/${item.file.replace(/^\/+/, "")}`, null);
     if (requestId !== state.timelineRequestId || !snapshot) return;
-    state.viewData = mergeSnapshot(state.activeData, snapshot);
+    state.viewData = mergeSnapshot(state.activeData, {
+      ...snapshot,
+      snapshotDate: item.snapshotDate || snapshot.snapshotDate
+    });
     state.selectedRaceId = "";
     renderAll(false);
   }

@@ -1097,85 +1097,184 @@ body.prediction-page .prediction-board .chamber-majority-line {
 }
 
 body.prediction-page .prediction-rating-timeline {
-  margin: 0 auto 16px;
-  padding: 14px;
-  border: 1px solid var(--prediction-line);
-  border-radius: 14px;
+  display: grid;
+  gap: 10px;
+  margin: 12px auto 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(198, 210, 255, 0.34);
+  border-radius: 10px;
   background:
-    linear-gradient(135deg, rgba(10, 28, 76, 0.82), rgba(32, 17, 52, 0.78)),
-    rgba(6, 12, 32, 0.84);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
+    linear-gradient(115deg, rgba(8, 28, 68, 0.95), rgba(34, 18, 52, 0.92)),
+    #060c1e;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
 }
 
 body.prediction-page .prediction-rating-timeline-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 10px;
+  display: block;
+  margin: 0;
 }
 
-body.prediction-page .prediction-rating-timeline-header span {
-  color: var(--prediction-muted);
-  font-size: 0.76rem;
+body.prediction-page .prediction-rating-timeline-title {
+  display: grid;
+  gap: 2px;
+}
+
+body.prediction-page .prediction-rating-timeline-title strong {
+  color: #fff;
+  font-size: 0.9rem;
   font-weight: 950;
+  letter-spacing: 0.02em;
+}
+
+body.prediction-page .prediction-rating-timeline-title span {
+  color: var(--prediction-muted);
+  font-size: 0.64rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+}
+
+body.prediction-page .prediction-rating-current {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 2px 10px;
+  align-items: center;
+  min-width: 118px;
+  border: 1px solid rgba(198, 210, 255, 0.36);
+  border-radius: 8px;
+  padding: 8px 11px;
+  background: rgba(4, 9, 24, 0.78);
+}
+
+body.prediction-page .prediction-rating-current span {
+  grid-row: 1 / span 2;
+  color: #ff7a88;
+  font-size: 0.58rem;
+  font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-body.prediction-page .prediction-rating-timeline-header strong {
+body.prediction-page .prediction-rating-current strong {
   color: #fff;
+  font-size: 0.84rem;
   font-weight: 950;
 }
 
-body.prediction-page .prediction-rating-slider-wrap input[type="range"] {
+body.prediction-page .prediction-rating-current small {
+  color: var(--prediction-muted);
+  font-size: 0.6rem;
+  font-weight: 850;
+}
+
+body.prediction-page .prediction-rating-slider-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  gap: 16px;
+  align-items: center;
+}
+
+body.prediction-page .prediction-rating-track {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+body.prediction-page .prediction-rating-rail {
+  position: relative;
+  height: 32px;
+}
+
+body.prediction-page .prediction-rating-rail input[type="range"] {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
   width: 100%;
-  accent-color: #c6d2ff;
+  height: 32px;
+  margin: 0;
+  appearance: none;
+  background: transparent;
   cursor: pointer;
+}
+
+body.prediction-page .prediction-rating-rail input[type="range"]:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+body.prediction-page .prediction-rating-rail input[type="range"]::-webkit-slider-runnable-track {
+  height: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 5px;
+  background: linear-gradient(180deg, #7a7d84 0%, #5d6068 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.38);
+}
+
+body.prediction-page .prediction-rating-rail input[type="range"]::-webkit-slider-thumb {
+  width: 28px;
+  height: 28px;
+  margin-top: -5px;
+  appearance: none;
+  border: 2px solid #fff;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #f3f4f6 0%, #d5d8de 100%);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+body.prediction-page .prediction-rating-rail input[type="range"]:not(:disabled):active::-webkit-slider-thumb {
+  transform: scale(1.04);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.52);
+}
+
+body.prediction-page .prediction-rating-rail input[type="range"]::-moz-range-track {
+  height: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 5px;
+  background: linear-gradient(180deg, #7a7d84 0%, #5d6068 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.38);
+}
+
+body.prediction-page .prediction-rating-rail input[type="range"]::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border: 2px solid #fff;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #f3f4f6 0%, #d5d8de 100%);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
 }
 
 body.prediction-page .prediction-rating-ticks {
+  position: absolute;
+  z-index: 3;
+  inset: 6px 14px;
+  pointer-events: none;
+}
+
+body.prediction-page .prediction-rating-ticks > i {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.35);
+}
+
+body.prediction-page .prediction-rating-ticks > i.is-active {
+  opacity: 0;
+}
+
+body.prediction-page .prediction-rating-endpoints {
   display: flex;
   justify-content: space-between;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-body.prediction-page .prediction-rating-tick {
-  display: grid;
-  grid-template-rows: 12px auto;
-  justify-items: center;
-  gap: 4px;
-  min-width: 0;
-  border: 0;
-  padding: 0;
-  color: #cfd6ff;
-  background: transparent;
-  font: 850 0.68rem/1.1 "Telegraf", "Inter", "Segoe UI", sans-serif;
-  cursor: pointer;
-}
-
-body.prediction-page .prediction-rating-tick i {
-  width: 9px;
-  height: 9px;
-  border: 1px solid rgba(255,255,255,0.72);
-  border-radius: 999px;
-  background: rgba(255,255,255,0.15);
-  transition: transform 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
-}
-
-body.prediction-page .prediction-rating-tick span {
-  max-width: 92px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-body.prediction-page .prediction-rating-tick:hover i,
-body.prediction-page .prediction-rating-tick.is-active i {
-  background: #ff4f63;
-  box-shadow: 0 0 14px rgba(255, 79, 99, 0.58);
-  transform: scale(1.16);
+  gap: 12px;
+  padding: 0 2px;
+  color: rgba(207, 214, 255, 0.82);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 body.prediction-page .prediction-map-shell {
@@ -1337,14 +1436,17 @@ body.prediction-page .selected-race-foot {
     flex-direction: column;
   }
 
-  body.prediction-page .prediction-rating-ticks {
-    overflow-x: auto;
-    justify-content: flex-start;
-    padding-bottom: 4px;
+  body.prediction-page .prediction-rating-slider-wrap {
+    grid-template-columns: 1fr;
   }
 
-  body.prediction-page .prediction-rating-tick {
-    min-width: 86px;
+  body.prediction-page .prediction-rating-current {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  body.prediction-page .prediction-rating-ticks {
+    inset-inline: 14px;
   }
 }
 
@@ -1812,6 +1914,88 @@ body.prediction-page .prediction-command-board-compact .prediction-seatbar {
   margin-left: auto;
 }
 
+.admin-rating-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.admin-rating-badges,
+.admin-rating-meta-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-rating-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border: 1px solid rgba(198, 210, 255, 0.34);
+  border-radius: 999px;
+  padding: 0 10px;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-rating-badge.is-dirty {
+  border-color: rgba(255, 122, 136, 0.58);
+  background: rgba(255, 79, 99, 0.14);
+  color: #ffb3bc;
+}
+
+.admin-rating-badge.is-clean {
+  border-color: rgba(72, 211, 138, 0.42);
+  background: rgba(72, 211, 138, 0.12);
+  color: #9ef0c0;
+}
+
+.admin-rating-badge.is-draft {
+  border-color: rgba(255, 196, 92, 0.48);
+  background: rgba(255, 196, 92, 0.12);
+  color: #ffd98a;
+}
+
+.admin-rating-badge.is-live {
+  border-color: rgba(198, 210, 255, 0.34);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(207, 214, 255, 0.88);
+}
+
+.admin-rating-public-link {
+  color: #9db0ff;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.admin-rating-public-link:hover {
+  color: #c6d2ff;
+  text-decoration: underline;
+}
+
+.admin-rating-meta-links span {
+  color: var(--prediction-muted);
+  font-size: 0.72rem;
+}
+
+.admin-rating-meta-links b {
+  color: #fff;
+}
+
+.admin-rating-shortcuts {
+  width: 100%;
+  margin: 0;
+  color: var(--prediction-muted);
+  font-size: 0.72rem;
+}
+
 .admin-rating-tab,
 .admin-rating-mode,
 .admin-rating-actions button,
@@ -2150,46 +2334,6 @@ body.prediction-page .prediction-board-snapshot {
   text-transform: none;
 }
 
-body.prediction-page .prediction-rating-timeline {
-  margin: 10px auto 16px;
-  padding: 9px 12px 8px;
-  border-radius: 10px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
-}
-
-body.prediction-page .prediction-rating-timeline-header {
-  margin-bottom: 5px;
-}
-
-body.prediction-page .prediction-rating-timeline-header span {
-  font-size: 0.67rem;
-}
-
-body.prediction-page .prediction-rating-timeline-header strong {
-  font-size: 0.8rem;
-}
-
-body.prediction-page .prediction-rating-slider-wrap input[type="range"] {
-  display: block;
-  height: 18px;
-  margin: 0;
-}
-
-body.prediction-page .prediction-rating-ticks {
-  margin-top: 2px;
-}
-
-body.prediction-page .prediction-rating-tick {
-  grid-template-rows: 8px auto;
-  gap: 2px;
-  font-size: 0.59rem;
-}
-
-body.prediction-page .prediction-rating-tick i {
-  width: 7px;
-  height: 7px;
-}
-
 body.prediction-page .prediction-shape-feature.has-race {
   cursor: default;
 }
@@ -2257,10 +2401,6 @@ body.prediction-page .prediction-shape-feature.has-race {
 
   body.prediction-page .prediction-rating-timeline-header {
     gap: 2px;
-  }
-
-  body.prediction-page .prediction-rating-tick span {
-    display: none;
   }
 
   .admin-rating-side .admin-candidate-row {
@@ -2499,166 +2639,6 @@ kbd {
   flex-basis: 100%;
 }
 
-body.prediction-page .prediction-rating-timeline {
-  display: grid;
-  gap: 9px;
-  margin: 10px auto 18px;
-  padding: 12px 14px;
-  border: 1px solid rgba(198, 210, 255, 0.42);
-  border-radius: 8px;
-  background:
-    linear-gradient(110deg, rgba(10, 34, 84, 0.94), rgba(38, 22, 55, 0.9)),
-    #071026;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.24);
-}
-
-body.prediction-page .prediction-rating-timeline-header {
-  display: block;
-  margin: 0;
-}
-
-body.prediction-page .prediction-rating-timeline-title {
-  display: grid;
-  gap: 1px;
-}
-
-body.prediction-page .prediction-rating-timeline-title strong {
-  color: #fff;
-  font-size: 0.88rem;
-}
-
-body.prediction-page .prediction-rating-timeline-title span {
-  color: var(--prediction-muted);
-  font-size: 0.61rem;
-}
-
-body.prediction-page .prediction-rating-current {
-  display: grid;
-  grid-template-columns: auto auto;
-  gap: 3px 8px;
-  align-items: center;
-  border: 1px solid rgba(198, 210, 255, 0.38);
-  border-radius: 6px;
-  padding: 6px 9px;
-  background: rgba(4, 9, 24, 0.7);
-}
-
-body.prediction-page .prediction-rating-current span {
-  grid-row: 1 / span 2;
-  color: #ff7785;
-  font-size: 0.57rem;
-}
-
-body.prediction-page .prediction-rating-current strong {
-  font-size: 0.79rem;
-}
-
-body.prediction-page .prediction-rating-current small {
-  color: var(--prediction-muted);
-  font-size: 0.58rem;
-  font-weight: 850;
-}
-
-body.prediction-page .prediction-rating-slider-wrap {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) max-content;
-  gap: 14px;
-  align-items: center;
-}
-
-body.prediction-page .prediction-rating-track {
-  display: grid;
-  gap: 6px;
-  min-width: 0;
-}
-
-body.prediction-page .prediction-rating-rail {
-  position: relative;
-  height: 28px;
-}
-
-body.prediction-page .prediction-rating-rail input[type="range"] {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  width: 100%;
-  height: 28px;
-  margin: 0;
-  appearance: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-body.prediction-page .prediction-rating-rail input[type="range"]:disabled {
-  cursor: default;
-  opacity: 1;
-}
-
-body.prediction-page .prediction-rating-rail input[type="range"]::-webkit-slider-runnable-track {
-  height: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 4px;
-  background: #676a70;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.42);
-}
-
-body.prediction-page .prediction-rating-rail input[type="range"]::-webkit-slider-thumb {
-  width: 26px;
-  height: 26px;
-  margin-top: -5px;
-  appearance: none;
-  border: 1px solid #fff;
-  border-radius: 5px;
-  background: #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.48);
-}
-
-body.prediction-page .prediction-rating-rail input[type="range"]::-moz-range-track {
-  height: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 4px;
-  background: #676a70;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.42);
-}
-
-body.prediction-page .prediction-rating-rail input[type="range"]::-moz-range-thumb {
-  width: 24px;
-  height: 24px;
-  border: 1px solid #fff;
-  border-radius: 5px;
-  background: #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.48);
-}
-
-body.prediction-page .prediction-rating-ticks {
-  position: absolute;
-  z-index: 3;
-  inset: 5px 13px;
-  pointer-events: none;
-}
-
-body.prediction-page .prediction-rating-ticks > i {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  margin-left: -1px;
-  background: rgba(255, 255, 255, 0.82);
-}
-
-body.prediction-page .prediction-rating-ticks > i.is-active {
-  opacity: 0;
-}
-
-body.prediction-page .prediction-rating-endpoints {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  color: var(--prediction-muted);
-  font-size: 0.61rem;
-  font-weight: 850;
-}
-
 @media (max-width: 1080px) {
   .admin-rating-palette {
     grid-template-columns: repeat(5, minmax(92px, 1fr));
@@ -2688,26 +2668,5 @@ body.prediction-page .prediction-rating-endpoints {
   .admin-yapms-import > button,
   .admin-import-report {
     grid-column: 1;
-  }
-
-  body.prediction-page .prediction-rating-timeline-header {
-    grid-template-columns: 1fr;
-  }
-
-  body.prediction-page .prediction-rating-current {
-    width: 100%;
-    justify-self: stretch;
-  }
-
-  body.prediction-page .prediction-rating-slider-wrap {
-    grid-template-columns: 1fr;
-  }
-
-  body.prediction-page .prediction-rating-track {
-    width: 100%;
-  }
-
-  body.prediction-page .prediction-rating-ticks {
-    inset-inline: 13px;
   }
 }
