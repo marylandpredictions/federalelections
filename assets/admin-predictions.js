@@ -362,13 +362,19 @@
   };
 
   function canonicalRaceToken(value) {
-    return String(value || "")
+    const token = String(value || "")
       .toUpperCase()
       .replace(/\b20\d{2}\b/g, " ")
       .replace(/\b(U\.?S\.?|CONGRESSIONAL|CONGRESS|DISTRICT|HOUSE|SENATE|GOVERNOR|GOVERNORS|ELECTION|GENERAL|PRIMARY|SPECIAL|RACE)\b/g, " ")
       .replace(/[^A-Z0-9]+/g, " ")
       .trim()
       .replace(/\s+/g, "-");
+    const districtMatch = token.match(/^([A-Z]{2}|\d{2})-(\d{1,2}|AL|AT-LARGE)$/);
+    if (!districtMatch) return token;
+    const district = /^(0|00|AL|AT-LARGE)$/.test(districtMatch[2])
+      ? "AL"
+      : String(Number(districtMatch[2])).padStart(2, "0");
+    return `${districtMatch[1]}-${district}`;
   }
 
   function raceAliasMap() {
@@ -426,8 +432,8 @@
           : /\btilt\b/.test(combined) ? "Tilt"
             : "";
     if (!strength) return "";
-    const party = /\b(democrat(?:ic)?|dem|blue)\b/.test(combined) || /\bd\b/.test(String(partyHint).toLowerCase()) ? "Democratic"
-      : /\b(republican|gop|rep|red)\b/.test(combined) || /\br\b/.test(String(partyHint).toLowerCase()) ? "Republican"
+    const party = /\b(democrat(?:s|ic|ics)?|dems?|blue)\b/.test(combined) || /\bd\b/.test(String(partyHint).toLowerCase()) ? "Democratic"
+      : /\b(republicans?|gop|reps?|red)\b/.test(combined) || /\br\b/.test(String(partyHint).toLowerCase()) ? "Republican"
         : /\b(independent|ind|other|purple)\b/.test(combined) || /\bi\b/.test(String(partyHint).toLowerCase()) ? "Independent"
           : "";
     return party ? `${strength} ${party}` : "";
@@ -437,6 +443,7 @@
     const aliases = raceAliasMap();
     const matches = new Map();
     const unmatched = new Set();
+    const officialNodes = new WeakSet();
     let ignored = 0;
 
     function resolveRace(values) {
@@ -449,9 +456,10 @@
 
     function yapmsParty(candidate) {
       const name = String(candidate?.name || "").trim().toLowerCase();
-      if (/^(democrat|democratic|dem|d)$/.test(name)) return "Democratic";
-      if (/^(republican|gop|rep|r)$/.test(name)) return "Republican";
-      if (/^(independent|ind|unaffiliated|i)$/.test(name)) return "Independent";
+      if (/^(democrat(?:s|ic|ics)?|dems?|d)$/.test(name)) return "Democratic";
+      if (/^(republicans?|gop|reps?|r)$/.test(name)) return "Republican";
+      if (/^(independents?|ind|unaffiliated|i)$/.test(name)) return "Independent";
+      if (/^(toss[\s-]?ups?|tie|even)$/.test(name)) return "Tossup";
 
       for (const margin of candidate?.margins || []) {
         const rating = importedRating(margin?.color);
@@ -465,6 +473,7 @@
 
     function extractOfficialYapmsSave(node) {
       if (!Array.isArray(node?.regions) || !Array.isArray(node?.candidates)) return false;
+      officialNodes.add(node);
       const candidates = new Map(node.candidates.map((candidate) => [String(candidate?.id || ""), candidate]));
       const tossupId = String(node?.tossup?.id || "");
 
@@ -486,6 +495,10 @@
 
         const candidate = candidates.get(candidateId);
         const party = yapmsParty(candidate);
+        if (party === "Tossup") {
+          matches.set(race.raceId, "Tossup");
+          continue;
+        }
         if (!candidate || !party) {
           ignored += 1;
           continue;
@@ -498,7 +511,18 @@
       return true;
     }
 
-    const officialSave = extractOfficialYapmsSave(payload);
+    function findOfficialSaves(node, seen = new WeakSet()) {
+      if (!node || typeof node !== "object" || seen.has(node)) return;
+      seen.add(node);
+      if (extractOfficialYapmsSave(node)) return;
+      if (Array.isArray(node)) {
+        node.forEach((child) => findOfficialSaves(child, seen));
+        return;
+      }
+      Object.values(node).forEach((child) => findOfficialSaves(child, seen));
+    }
+
+    findOfficialSaves(payload);
 
     function walk(node, path = [], inheritedRace = null) {
       if (node == null) return;
@@ -512,6 +536,7 @@
         node.forEach((item, index) => walk(item, [...path, index], inheritedRace));
         return;
       }
+      if (officialNodes.has(node)) return;
 
       const race = resolveRace([
         node.raceId, node.race, node.region, node.state, node.postal, node.abbr,
@@ -538,7 +563,7 @@
       }
     }
 
-    if (!officialSave) walk(payload);
+    walk(payload);
     return { matches, unmatched: [...unmatched], ignored };
   }
 
@@ -551,18 +576,23 @@
       return;
     }
     pushUndo();
-    let applied = 0;
-    for (const [raceId, rating] of result.matches) {
-      const race = (state.data?.races || []).find((entry) => entry.raceId === raceId);
-      if (!race || normalizeRating(race?.prediction?.rating) === rating) continue;
-      race.prediction = { ...(race.prediction || {}), rating, status: race.prediction?.status || "published" };
-      applied += 1;
-    }
+    const applied = applyImportedRatings(result.matches);
     touchEditedData();
     rebuildSummary();
     state.importReport = { applied, unmatched: result.unmatched, ignored: result.ignored };
     render();
     setStatus(`Imported ${applied} FEA Rating${applied === 1 ? "" : "s"} from the YAPms data. Candidate data was not changed.`);
+  }
+
+  function applyImportedRatings(matches) {
+    let applied = 0;
+    for (const [raceId, rating] of matches) {
+      const race = (state.data?.races || []).find((entry) => entry.raceId === raceId);
+      if (!race || normalizeRating(race?.prediction?.rating) === rating) continue;
+      race.prediction = { ...(race.prediction || {}), rating, status: race.prediction?.status || "published" };
+      applied += 1;
+    }
+    return applied;
   }
 
   async function loadOffice(office = state.office, useDraft = false) {

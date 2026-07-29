@@ -74,6 +74,13 @@
   ]);
 
   const geometryCache = new Map();
+  const houseMapSource = {
+    url: "/data/maps/yapms/usa-house-2026153-blank.svg",
+    viewBox: "0 0 800 501",
+    scale: 0.85,
+    translateX: 117.825,
+    translateY: 67.6945
+  };
 
   function normalizeRating(value) {
     const raw = String(value || "").trim();
@@ -532,6 +539,283 @@
     `;
   }
 
+  function normalizeYapmsHouseKey(value) {
+    const match = String(value || "").trim().toUpperCase().match(/^([A-Z]{2})-(AL|\d{1,2})$/);
+    if (!match) return "";
+    return `${match[1]}-${padDistrict(match[2])}`;
+  }
+
+  async function loadYapmsHousePaths() {
+    const cacheKey = houseMapSource.url;
+    if (geometryCache.has(cacheKey)) return geometryCache.get(cacheKey);
+    const promise = fetch(cacheKey, { cache: "force-cache" })
+      .then((response) => {
+        if (!response.ok) throw new Error(`House map geometry failed to load: ${response.status}`);
+        return response.text();
+      })
+      .then((source) => {
+        const documentNode = new DOMParser().parseFromString(source, "image/svg+xml");
+        if (documentNode.querySelector("parsererror")) throw new Error("House map geometry is not valid SVG.");
+        const paths = [...documentNode.querySelectorAll('g[map-type="regions"] > path[region]')]
+          .map((pathNode) => {
+            const shortName = pathNode.getAttribute("short-name") || "";
+            const region = pathNode.getAttribute("region") || "";
+            const sourceKey = normalizeYapmsHouseKey(shortName) ? shortName : region;
+            return {
+              key: normalizeYapmsHouseKey(sourceKey),
+              sourceKey,
+              name: pathNode.getAttribute("long-name") || pathNode.getAttribute("name") || sourceKey,
+              d: pathNode.getAttribute("d") || "",
+              disabled: pathNode.getAttribute("disabled") === "true"
+            };
+          })
+          .filter((entry) => entry.key && entry.d && !entry.disabled);
+        const uniqueKeys = new Set(paths.map((entry) => entry.key));
+        if (paths.length !== 435 || uniqueKeys.size !== 435) {
+          throw new Error(`House map geometry is incomplete (${uniqueKeys.size} of 435 voting districts).`);
+        }
+        return paths;
+      });
+    geometryCache.set(cacheKey, promise);
+    return promise;
+  }
+
+  async function renderYapmsHouseMap(options) {
+    const {
+      container,
+      data,
+      selectedRaceId = "",
+      onSelect,
+      onPaintStart,
+      onPaintRace,
+      onPaintEnd,
+      isPaintEnabled,
+      interactive = true
+    } = options || {};
+    if (!container) return null;
+    container.classList.add("prediction-shape-map", "prediction-yapms-house-map");
+    if (!window.d3) {
+      container.innerHTML = `<p class="prediction-map-error">Ratings map library could not load.</p>`;
+      return null;
+    }
+
+    container.innerHTML = `<div class="prediction-map-loading">Loading current House districts...</div>`;
+    const paths = await loadYapmsHousePaths();
+    const races = Array.isArray(data?.races) ? data.races : [];
+    const raceByKey = new Map();
+    const raceById = new Map();
+    races.forEach((race) => {
+      const key = raceKey(race, "house");
+      if (key) raceByKey.set(key, race);
+      if (race.raceId) raceById.set(race.raceId, race);
+    });
+
+    container.innerHTML = `
+      <div class="prediction-map-stage">
+        <div class="prediction-map-controls" aria-label="Map controls">
+          <button type="button" data-map-action="zoom-in" aria-label="Zoom in">+</button>
+          <button type="button" data-map-action="zoom-out" aria-label="Zoom out">-</button>
+          <button type="button" data-map-action="reset">Reset</button>
+        </div>
+        <div class="prediction-map-tooltip" hidden></div>
+        <svg class="prediction-shape-svg prediction-yapms-house-svg" viewBox="${houseMapSource.viewBox}" role="img" aria-label="House FEA Ratings map" data-map-build="yapms-2026153-fea1"></svg>
+      </div>
+      ${makeLegend()}
+    `;
+
+    const svg = window.d3.select(container).select("svg");
+    const zoomLayer = svg.append("g").attr("class", "prediction-shape-layer prediction-yapms-zoom-layer");
+    const districtLayer = zoomLayer.append("g")
+      .attr("class", "prediction-yapms-district-layer")
+      .attr(
+        "transform",
+        `matrix(${houseMapSource.scale} 0 0 ${houseMapSource.scale} ${houseMapSource.translateX} ${houseMapSource.translateY})`
+      );
+    const tooltip = container.querySelector(".prediction-map-tooltip");
+    let currentTransform = window.d3.zoomIdentity;
+    let painting = false;
+    let suppressClick = false;
+
+    const zoom = window.d3.zoom()
+      .scaleExtent([1, 14])
+      .on("zoom", (event) => {
+        currentTransform = event.transform;
+        zoomLayer.attr("transform", currentTransform);
+      });
+    svg.call(zoom);
+
+    function setSelected(id) {
+      districtLayer.selectAll("path").classed("is-selected", (entry) => {
+        const race = raceByKey.get(entry.key);
+        return Boolean(id && race?.raceId === id);
+      });
+    }
+
+    function tooltipHtml(race, entry) {
+      if (!race) {
+        return `<strong class="prediction-tooltip-title">${escapeHtml(entry?.name || entry?.sourceKey || entry?.key)}</strong>`;
+      }
+      const rating = normalizeRating(race?.prediction?.rating);
+      const candidates = candidateRows(race);
+      return `
+        <strong class="prediction-tooltip-title">${escapeHtml(raceTitle(race, "house"))}</strong>
+        <div class="prediction-tooltip-rating">
+          <span>FEA rating</span>
+          <b class="rating-pill rating-${rating.toLowerCase().replace(/\s+/g, "-")}">${escapeHtml(rating)}</b>
+        </div>
+        ${candidates ? `
+          <div class="prediction-tooltip-label">Candidates</div>
+          <div class="prediction-tooltip-candidates">${candidates}</div>
+        ` : ""}
+      `;
+    }
+
+    function positionTooltip(event) {
+      const rect = container.getBoundingClientRect();
+      const tooltipWidth = tooltip.offsetWidth || 300;
+      const tooltipHeight = tooltip.offsetHeight || 180;
+      tooltip.style.left = `${Math.min(rect.width - tooltipWidth - 10, Math.max(10, event.clientX - rect.left + 14))}px`;
+      tooltip.style.top = `${Math.min(rect.height - tooltipHeight - 10, Math.max(10, event.clientY - rect.top + 14))}px`;
+    }
+
+    districtLayer.selectAll("path")
+      .data(paths)
+      .join("path")
+      .attr("d", (entry) => entry.d)
+      .attr("class", (entry) => {
+        const race = raceByKey.get(entry.key);
+        return `prediction-shape-feature prediction-feature ${race ? "has-race" : "is-muted"}`;
+      })
+      .attr("fill", (entry) => {
+        const race = raceByKey.get(entry.key);
+        return race ? colorForRating(race?.prediction?.rating) : colors.neutral;
+      })
+      .attr("data-rating", (entry) => {
+        const race = raceByKey.get(entry.key);
+        return race ? normalizeRating(race?.prediction?.rating) : "";
+      })
+      .attr("data-race-id", (entry) => raceByKey.get(entry.key)?.raceId || "")
+      .attr("data-district", (entry) => entry.key)
+      .attr("aria-label", (entry) => {
+        const race = raceByKey.get(entry.key);
+        return race ? `${raceTitle(race, "house")}: ${normalizeRating(race?.prediction?.rating)}` : entry.name;
+      })
+      .attr("tabindex", interactive ? 0 : -1)
+      .on("pointerdown", function (event, entry) {
+        const race = raceByKey.get(entry.key);
+        if (event.button !== 0 || !race || !isPaintEnabled?.()) return;
+        event.preventDefault();
+        event.stopPropagation();
+        painting = true;
+        suppressClick = true;
+        tooltip.hidden = true;
+        onPaintStart?.(race);
+        onPaintRace?.(race);
+        window.d3.select(this)
+          .attr("fill", colorForRating(race?.prediction?.rating))
+          .attr("data-rating", normalizeRating(race?.prediction?.rating));
+      })
+      .on("mouseenter focus", function (event, entry) {
+        const race = raceByKey.get(entry.key);
+        if (painting && race && (event.buttons & 1)) {
+          onPaintRace?.(race);
+          window.d3.select(this)
+            .attr("fill", colorForRating(race?.prediction?.rating))
+            .attr("data-rating", normalizeRating(race?.prediction?.rating));
+          return;
+        }
+        tooltip.innerHTML = tooltipHtml(race, entry);
+        tooltip.hidden = false;
+        positionTooltip(event);
+      })
+      .on("mousemove", (event) => {
+        if (!painting) positionTooltip(event);
+      })
+      .on("mouseleave blur", () => {
+        tooltip.hidden = true;
+      })
+      .on("click", (event, entry) => {
+        if (suppressClick) {
+          suppressClick = false;
+          return;
+        }
+        const race = raceByKey.get(entry.key);
+        if (!race || typeof onSelect !== "function") return;
+        event.stopPropagation();
+        setSelected(race.raceId);
+        onSelect(race);
+      })
+      .on("keydown", (event, entry) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        const race = raceByKey.get(entry.key);
+        if (!race || typeof onSelect !== "function") return;
+        setSelected(race.raceId);
+        onSelect(race);
+      });
+
+    function finishPaint() {
+      if (!painting) return;
+      painting = false;
+      onPaintEnd?.();
+      window.setTimeout(() => {
+        suppressClick = false;
+      }, 0);
+    }
+    window.addEventListener("pointerup", finishPaint);
+    window.addEventListener("blur", finishPaint);
+
+    setSelected(selectedRaceId);
+
+    function reset() {
+      svg.transition().duration(260).call(zoom.transform, window.d3.zoomIdentity);
+    }
+
+    function zoomBy(factor) {
+      svg.transition().duration(180).call(zoom.scaleBy, factor);
+    }
+
+    function focusRace(raceId) {
+      const race = raceById.get(raceId);
+      if (!race) return;
+      const key = raceKey(race, "house");
+      const pathNode = districtLayer.selectAll("path").filter((entry) => entry.key === key).node();
+      if (!pathNode) return;
+      const bounds = pathNode.getBBox();
+      const x = houseMapSource.translateX + houseMapSource.scale * (bounds.x + bounds.width / 2);
+      const y = houseMapSource.translateY + houseMapSource.scale * (bounds.y + bounds.height / 2);
+      const width = 800;
+      const height = 501;
+      const dx = Math.max(1, houseMapSource.scale * bounds.width);
+      const dy = Math.max(1, houseMapSource.scale * bounds.height);
+      const scale = Math.min(12, Math.max(1.45, 0.72 / Math.max(dx / width, dy / height)));
+      const translate = [width / 2 - scale * x, height / 2 - scale * y];
+      svg.transition().duration(320).call(
+        zoom.transform,
+        window.d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
+      );
+      setSelected(raceId);
+    }
+
+    container.querySelector('[data-map-action="zoom-in"]')?.addEventListener("click", () => zoomBy(1.35));
+    container.querySelector('[data-map-action="zoom-out"]')?.addEventListener("click", () => zoomBy(0.74));
+    container.querySelector('[data-map-action="reset"]')?.addEventListener("click", reset);
+
+    return {
+      focusRace,
+      reset,
+      setSelected,
+      destroy() {
+        svg.on(".zoom", null);
+        window.removeEventListener("pointerup", finishPaint);
+        window.removeEventListener("blur", finishPaint);
+      },
+      getTransform() {
+        return currentTransform;
+      }
+    };
+  }
+
   async function renderRaceShapeMap(options) {
     const {
       container,
@@ -546,6 +830,7 @@
       interactive = true
     } = options || {};
     if (!container) return null;
+    if (office === "house") return renderYapmsHouseMap(options);
     container.classList.add("prediction-shape-map");
     if (!window.d3) {
       container.innerHTML = `<p class="prediction-map-error">Ratings map library could not load.</p>`;
