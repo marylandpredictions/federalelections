@@ -78,7 +78,6 @@
     url: "/data/maps/yapms/usa-house-2026153-blank.svg",
     viewBox: "0 0 800 501",
     scale: 0.85,
-    translateX: 117.825,
     translateY: 67.6945
   };
 
@@ -625,11 +624,12 @@
 
     const svg = window.d3.select(container).select("svg");
     const zoomLayer = svg.append("g").attr("class", "prediction-shape-layer prediction-yapms-zoom-layer");
+    let houseTranslateX = 0;
     const districtLayer = zoomLayer.append("g")
       .attr("class", "prediction-yapms-district-layer")
       .attr(
         "transform",
-        `matrix(${houseMapSource.scale} 0 0 ${houseMapSource.scale} ${houseMapSource.translateX} ${houseMapSource.translateY})`
+        `matrix(${houseMapSource.scale} 0 0 ${houseMapSource.scale} ${houseTranslateX} ${houseMapSource.translateY})`
       );
     const tooltip = container.querySelector(".prediction-map-tooltip");
     let currentTransform = window.d3.zoomIdentity;
@@ -754,6 +754,16 @@
         onSelect(race);
       });
 
+    const houseBounds = districtLayer.node()?.getBBox();
+    if (houseBounds && Number.isFinite(houseBounds.x) && houseBounds.width > 0) {
+      houseTranslateX = (800 - houseMapSource.scale * houseBounds.width) / 2
+        - houseMapSource.scale * houseBounds.x;
+      districtLayer.attr(
+        "transform",
+        `matrix(${houseMapSource.scale} 0 0 ${houseMapSource.scale} ${houseTranslateX} ${houseMapSource.translateY})`
+      );
+    }
+
     function finishPaint() {
       if (!painting) return;
       painting = false;
@@ -782,7 +792,7 @@
       const pathNode = districtLayer.selectAll("path").filter((entry) => entry.key === key).node();
       if (!pathNode) return;
       const bounds = pathNode.getBBox();
-      const x = houseMapSource.translateX + houseMapSource.scale * (bounds.x + bounds.width / 2);
+      const x = houseTranslateX + houseMapSource.scale * (bounds.x + bounds.width / 2);
       const y = houseMapSource.translateY + houseMapSource.scale * (bounds.y + bounds.height / 2);
       const width = 800;
       const height = 501;

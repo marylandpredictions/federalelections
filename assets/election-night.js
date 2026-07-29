@@ -1320,6 +1320,7 @@ class ElectionNightPage {
     const mode = String(this.selectedMode || "").toLowerCase();
     return (this.comparisonManifest?.sources || [])
       .filter((source) => {
+        if (source.id === "fea-forecast") return false;
         const appliesTo = Array.isArray(source.appliesTo) ? source.appliesTo.map((item) => String(item).toLowerCase()) : [];
         return !appliesTo.length || appliesTo.includes(mode) || source.id === "live";
       });
@@ -2274,22 +2275,14 @@ class ElectionNightPage {
 
   renderProjectionContext(forecastRace, race) {
     if (!forecastRace) {
-      return `<div class="race-context-empty">No FEA forecast projection is available for this race.</div>`;
+      return `<div class="race-context-empty">No published FEA rating is available for this race.</div>`;
     }
-    const margin = this.formatForecastMargin(forecastRace.margin ?? forecastRace.projectedMargin);
-    const demProb = this.formatForecastProbability(forecastRace.demProbability);
-    const repProb = this.formatForecastProbability(forecastRace.repProbability);
-    const demShare = margin && Number.isFinite(Number(forecastRace.margin)) ? Math.max(0, Math.min(100, 50 + Number(forecastRace.margin) / 2)) : null;
-    const repShare = demShare == null ? null : 100 - demShare;
     const rows = [
       ["FEA rating", forecastRace.modelRating || forecastRace.rating || forecastRace.baselineRating || forecastRace.sourceRating],
-      ["Projected margin", margin],
-      ["Projected vote share", demShare == null ? null : `D ${demShare.toFixed(1)} / R ${repShare.toFixed(1)}`],
-      ["Win probability", demProb || repProb ? `Democrat ${demProb || "--"} / Republican ${repProb || "--"}` : null],
       ["Last updated", this.forecastGeneratedAt(race)]
     ].filter(([, value]) => value);
     if (!rows.length) {
-      return `<div class="race-context-empty">This race is tracked by the forecast, but projection details are not available.</div>`;
+      return `<div class="race-context-empty">This race does not have a published FEA rating yet.</div>`;
     }
     return `<dl class="race-context-list">${rows.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(value))}</dd></div>`).join("")}</dl>`;
   }
@@ -2348,7 +2341,7 @@ class ElectionNightPage {
     return `
       <div class="race-context-grid">
         <section class="race-context-section">
-          <h4>Forecast Projection</h4>
+          <h4>FEA Rating</h4>
           ${this.renderProjectionContext(forecastRace, race)}
         </section>
         <section class="race-context-section">
