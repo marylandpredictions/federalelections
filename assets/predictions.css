@@ -1135,20 +1135,16 @@ body.prediction-page .prediction-rating-timeline-title span {
 
 body.prediction-page .prediction-rating-current {
   display: grid;
-  grid-template-columns: auto auto;
-  gap: 2px 10px;
-  align-items: center;
-  min-width: 118px;
-  border: 1px solid rgba(198, 210, 255, 0.36);
-  border-radius: 8px;
-  padding: 8px 11px;
-  background: rgba(4, 9, 24, 0.78);
+  gap: 1px;
+  align-content: center;
+  min-width: 142px;
+  padding: 0 2px;
+  background: transparent;
 }
 
 body.prediction-page .prediction-rating-current span {
-  grid-row: 1 / span 2;
   color: #ff7a88;
-  font-size: 0.58rem;
+  font-size: 0.56rem;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1156,13 +1152,15 @@ body.prediction-page .prediction-rating-current span {
 
 body.prediction-page .prediction-rating-current strong {
   color: #fff;
-  font-size: 0.84rem;
+  font-size: 0.94rem;
   font-weight: 950;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 body.prediction-page .prediction-rating-current small {
   color: var(--prediction-muted);
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 850;
 }
 
@@ -1181,15 +1179,15 @@ body.prediction-page .prediction-rating-track {
 
 body.prediction-page .prediction-rating-rail {
   position: relative;
-  height: 32px;
+  height: 30px;
 }
 
 body.prediction-page .prediction-rating-rail input[type="range"] {
   position: absolute;
   z-index: 2;
-  inset: 0;
-  width: 100%;
-  height: 32px;
+  inset: 0 15px;
+  width: auto;
+  height: 30px;
   margin: 0;
   appearance: none;
   background: transparent;
@@ -1202,21 +1200,21 @@ body.prediction-page .prediction-rating-rail input[type="range"]:disabled {
 }
 
 body.prediction-page .prediction-rating-rail input[type="range"]::-webkit-slider-runnable-track {
-  height: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.78);
-  border-radius: 5px;
-  background: linear-gradient(180deg, #7a7d84 0%, #5d6068 100%);
+  height: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 4px;
+  background: #686a70;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.38);
 }
 
 body.prediction-page .prediction-rating-rail input[type="range"]::-webkit-slider-thumb {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   margin-top: -5px;
   appearance: none;
-  border: 2px solid #fff;
-  border-radius: 6px;
-  background: linear-gradient(180deg, #f3f4f6 0%, #d5d8de 100%);
+  border: 1px solid #f2f3f5;
+  border-radius: 5px;
+  background: #d8dade;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
@@ -1227,38 +1225,36 @@ body.prediction-page .prediction-rating-rail input[type="range"]:not(:disabled):
 }
 
 body.prediction-page .prediction-rating-rail input[type="range"]::-moz-range-track {
-  height: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.78);
-  border-radius: 5px;
-  background: linear-gradient(180deg, #7a7d84 0%, #5d6068 100%);
+  height: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 4px;
+  background: #686a70;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.38);
 }
 
 body.prediction-page .prediction-rating-rail input[type="range"]::-moz-range-thumb {
-  width: 26px;
-  height: 26px;
-  border: 2px solid #fff;
-  border-radius: 6px;
-  background: linear-gradient(180deg, #f3f4f6 0%, #d5d8de 100%);
+  width: 28px;
+  height: 28px;
+  border: 1px solid #f2f3f5;
+  border-radius: 5px;
+  background: #d8dade;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
 }
 
 body.prediction-page .prediction-rating-ticks {
   position: absolute;
   z-index: 3;
-  inset: 6px 14px;
+  inset: 6px 15px;
   pointer-events: none;
 }
 
 body.prediction-page .prediction-rating-ticks > i {
   position: absolute;
-  top: 1px;
-  bottom: 1px;
+  top: 0;
+  bottom: 0;
   width: 2px;
   margin-left: -1px;
-  border-radius: 1px;
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 body.prediction-page .prediction-rating-ticks > i.is-active {
@@ -1443,10 +1439,12 @@ body.prediction-page .selected-race-foot {
   body.prediction-page .prediction-rating-current {
     width: 100%;
     justify-self: stretch;
+    min-width: 0;
+    padding-top: 3px;
   }
 
   body.prediction-page .prediction-rating-ticks {
-    inset-inline: 14px;
+    inset-inline: 15px;
   }
 }
 

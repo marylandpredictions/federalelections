@@ -39,6 +39,8 @@
 
   const mapUtils = window.FeaPredictionMaps || {};
   const allowedRatings = mapUtils.allowedRatings || [];
+  // The July 20 files were the experimental Week 1 and are retained only as source history.
+  const retiredSnapshotDates = new Set(["2026-07-20"]);
 
   function $(id) {
     return document.getElementById(id);
@@ -266,8 +268,11 @@
 
   function timelineWeekLabel(index, total, item) {
     if (item?.isCurrent) return "Latest";
-    if (total <= 2) return "Earlier";
     return `Week ${index + 1}`;
+  }
+
+  function timelineSliderMax(timelineItems) {
+    return Math.max(1, timelineItems.length - 1);
   }
 
   function timelineStatusLabel(item) {
@@ -299,8 +304,8 @@
     const panel = $("prediction-snapshot-date");
     if (!panel || !selectedItem) return;
     panel.innerHTML = `
-      <span>Viewing</span>
-      <strong>${escapeHtml(timelineWeekLabel(selectedIndex, timelineItems.length, selectedItem))}</strong>
+      <span>${escapeHtml(timelineWeekLabel(selectedIndex, timelineItems.length, selectedItem))}</span>
+      <strong>${escapeHtml(displayDate(selectedItem.snapshotDate))}</strong>
       <small>${escapeHtml(timelineStatusLabel(selectedItem))}</small>
     `;
   }
@@ -316,6 +321,10 @@
   function renderTimelineEndpoints(timeline, timelineItems) {
     const endpoints = timeline.querySelector(".prediction-rating-endpoints");
     if (!endpoints || !timelineItems.length) return;
+    if (timelineItems.length === 1) {
+      endpoints.innerHTML = "<span></span><span>Latest</span>";
+      return;
+    }
     endpoints.innerHTML = `
       <span>${escapeHtml(timelineWeekLabel(0, timelineItems.length, timelineItems[0]))}</span>
       <span>${escapeHtml(timelineWeekLabel(timelineItems.length - 1, timelineItems.length, timelineItems.at(-1)))}</span>
@@ -325,8 +334,8 @@
   function syncTimelineControls(timeline, timelineItems, selectedIndex, selectedItem) {
     const slider = timeline.querySelector("#prediction-snapshot-slider");
     if (slider) {
-      slider.max = String(Math.max(0, timelineItems.length - 1));
-      slider.value = String(selectedIndex);
+      slider.max = String(timelineSliderMax(timelineItems));
+      slider.value = String(timelineItems.length < 2 ? 1 : selectedIndex);
       slider.disabled = timelineItems.length < 2;
     }
     renderTimelineTicks(timeline, timelineItems, selectedIndex);
@@ -363,7 +372,8 @@
     const { timelineItems, selectedIndex, selectedItem } = getTimelineSelection();
     const hasArchive = state.snapshots.length > 0;
     const existingSlider = timeline.querySelector("#prediction-snapshot-slider");
-    const expectedMax = Math.max(0, timelineItems.length - 1);
+    const expectedMax = timelineSliderMax(timelineItems);
+    const sliderValue = timelineItems.length < 2 ? 1 : selectedIndex;
 
     if (existingSlider && Number(existingSlider.max) === expectedMax) {
       syncTimelineControls(timeline, timelineItems, selectedIndex, selectedItem);
@@ -384,7 +394,7 @@
       <div class="prediction-rating-slider-wrap">
         <div class="prediction-rating-track">
           <div class="prediction-rating-rail">
-            <input id="prediction-snapshot-slider" type="range" min="0" max="${expectedMax}" value="${selectedIndex}" step="1" aria-label="Ratings snapshot week" ${timelineItems.length < 2 ? "disabled" : ""}>
+            <input id="prediction-snapshot-slider" type="range" min="0" max="${expectedMax}" value="${sliderValue}" step="1" aria-label="Ratings snapshot week" ${timelineItems.length < 2 ? "disabled" : ""}>
             <div class="prediction-rating-ticks" aria-hidden="true">
               ${timelineItems.map((item, index) => `
                 <i class="${index === selectedIndex ? "is-active" : ""}" style="left:${timelineItems.length > 1 ? (index / (timelineItems.length - 1)) * 100 : 100}%"></i>
@@ -392,8 +402,12 @@
             </div>
           </div>
           <div class="prediction-rating-endpoints">
-            <span>${escapeHtml(timelineWeekLabel(0, timelineItems.length, timelineItems[0]))}</span>
-            <span>${escapeHtml(timelineWeekLabel(timelineItems.length - 1, timelineItems.length, timelineItems.at(-1)))}</span>
+            ${timelineItems.length === 1
+              ? "<span></span><span>Latest</span>"
+              : `
+                <span>${escapeHtml(timelineWeekLabel(0, timelineItems.length, timelineItems[0]))}</span>
+                <span>${escapeHtml(timelineWeekLabel(timelineItems.length - 1, timelineItems.length, timelineItems.at(-1)))}</span>
+              `}
           </div>
         </div>
         <div id="prediction-snapshot-date" class="prediction-rating-current"></div>
@@ -426,7 +440,10 @@
 
   async function loadSnapshots() {
     const index = await fetchJson("/data/predictions/rating-snapshots/index.json", { snapshots: {} });
-    const list = (index?.snapshots?.[state.key] || []).slice().sort((a, b) => String(a.snapshotDate).localeCompare(String(b.snapshotDate)));
+    const list = (index?.snapshots?.[state.key] || [])
+      .filter((item) => !retiredSnapshotDates.has(String(item?.snapshotDate || "").slice(0, 10)))
+      .slice()
+      .sort((a, b) => String(a.snapshotDate).localeCompare(String(b.snapshotDate)));
     state.snapshots = list;
     state.viewData = state.activeData;
   }
