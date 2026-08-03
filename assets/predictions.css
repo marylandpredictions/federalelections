@@ -1167,84 +1167,84 @@ body.prediction-page .prediction-rating-current small {
 body.prediction-page .prediction-rating-slider-wrap {
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content;
-  gap: 16px;
+  gap: 20px;
   align-items: center;
 }
 
 body.prediction-page .prediction-rating-track {
   display: grid;
-  gap: 7px;
+  gap: 6px;
   min-width: 0;
 }
 
 body.prediction-page .prediction-rating-rail {
   position: relative;
-  height: 30px;
+  height: 34px;
+  min-width: 0;
+  user-select: none;
+}
+
+body.prediction-page .prediction-rating-rail-surface {
+  position: absolute;
+  z-index: 1;
+  inset: 2px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  border-radius: 5px;
+  background: #6b6d72;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.42),
+    0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 body.prediction-page .prediction-rating-rail input[type="range"] {
   position: absolute;
-  z-index: 2;
+  z-index: 5;
   inset: 0 15px;
   width: auto;
-  height: 30px;
+  height: 34px;
   margin: 0;
   appearance: none;
+  opacity: 0;
   background: transparent;
   cursor: pointer;
 }
 
 body.prediction-page .prediction-rating-rail input[type="range"]:disabled {
   cursor: default;
-  opacity: 0.72;
+  opacity: 0;
 }
 
 body.prediction-page .prediction-rating-rail input[type="range"]::-webkit-slider-runnable-track {
-  height: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 4px;
-  background: #686a70;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.38);
+  height: 30px;
+  background: transparent;
 }
 
 body.prediction-page .prediction-rating-rail input[type="range"]::-webkit-slider-thumb {
   width: 30px;
   height: 30px;
-  margin-top: -5px;
+  margin-top: 0;
   appearance: none;
-  border: 1px solid #f2f3f5;
-  border-radius: 5px;
-  background: #d8dade;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-}
-
-body.prediction-page .prediction-rating-rail input[type="range"]:not(:disabled):active::-webkit-slider-thumb {
-  transform: scale(1.04);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.52);
+  border: 0;
+  background: transparent;
 }
 
 body.prediction-page .prediction-rating-rail input[type="range"]::-moz-range-track {
-  height: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 4px;
-  background: #686a70;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.38);
+  height: 30px;
+  border: 0;
+  background: transparent;
 }
 
 body.prediction-page .prediction-rating-rail input[type="range"]::-moz-range-thumb {
-  width: 28px;
-  height: 28px;
-  border: 1px solid #f2f3f5;
-  border-radius: 5px;
-  background: #d8dade;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: transparent;
 }
 
 body.prediction-page .prediction-rating-ticks {
   position: absolute;
-  z-index: 3;
-  inset: 6px 15px;
+  z-index: 2;
+  inset: 3px 15px;
   pointer-events: none;
 }
 
@@ -1252,13 +1252,38 @@ body.prediction-page .prediction-rating-ticks > i {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 2px;
-  margin-left: -1px;
-  background: rgba(255, 255, 255, 0.8);
+  width: 4px;
+  margin-left: -2px;
+  background: rgba(255, 255, 255, 0.84);
 }
 
 body.prediction-page .prediction-rating-ticks > i.is-active {
-  opacity: 0;
+  opacity: 0.95;
+}
+
+body.prediction-page .prediction-rating-thumb-zone {
+  position: absolute;
+  z-index: 4;
+  inset: 2px 15px;
+  pointer-events: none;
+}
+
+body.prediction-page .prediction-rating-thumb {
+  position: absolute;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #f2f3f5;
+  border-radius: 5px;
+  background: #d8dade;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
+  transform: translateX(-50%);
+  transition: left 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+body.prediction-page .prediction-rating-rail:has(input:not(:disabled):active) .prediction-rating-thumb {
+  transform: translateX(-50%) scale(1.04);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.52);
 }
 
 body.prediction-page .prediction-rating-endpoints {

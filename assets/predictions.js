@@ -256,18 +256,27 @@
   }
 
   function buildTimelineItems() {
-    return [
-      ...state.snapshots,
-      {
-        isCurrent: true,
-        snapshotDate: state.activeData?.lastPublishedAt || state.activeData?.generatedAt || new Date().toISOString(),
-        file: null
-      }
-    ];
+    const itemsByDate = new Map();
+    state.snapshots.forEach((item) => {
+      const date = String(item?.snapshotDate || "").slice(0, 10);
+      if (date) itemsByDate.set(date, { ...item, snapshotDate: date });
+    });
+    const currentDate = String(
+      state.activeData?.lastPublishedAt
+      || state.activeData?.generatedAt
+      || new Date().toISOString()
+    ).slice(0, 10);
+    itemsByDate.set(currentDate, {
+      isCurrent: true,
+      snapshotDate: currentDate,
+      file: null
+    });
+    return [...itemsByDate.values()]
+      .sort((a, b) => String(a.snapshotDate).localeCompare(String(b.snapshotDate)));
   }
 
-  function timelineWeekLabel(index, total, item) {
-    if (item?.isCurrent) return "Latest";
+  function timelineWeekLabel(index, total) {
+    if (index === total - 1) return "Latest";
     return `Week ${index + 1}`;
   }
 
@@ -275,24 +284,24 @@
     return Math.max(1, timelineItems.length - 1);
   }
 
-  function timelineStatusLabel(item) {
-    return item?.isCurrent ? "Current ratings" : "Archived week";
+  function timelineStatusLabel(item, index, total) {
+    if (index === total - 1) return "Current ratings";
+    return item?.isCurrent ? "Previous live release" : "Archived week";
   }
 
   function snapshotBoardLabel() {
     if (!state.viewData?.selectedSnapshotDate) return "Current release";
     const items = buildTimelineItems();
     const index = items.findIndex((item) => item.snapshotDate === state.viewData.selectedSnapshotDate);
-    if (index >= 0) return timelineWeekLabel(index, items.length, items[index]);
+    if (index >= 0) return timelineWeekLabel(index, items.length);
     return "Archived week";
   }
 
   function getTimelineSelection() {
     const timelineItems = buildTimelineItems();
-    const isCurrent = !state.viewData?.selectedSnapshotDate;
-    const selectedIndex = isCurrent
-      ? timelineItems.length - 1
-      : Math.max(0, timelineItems.findIndex((item) => item.snapshotDate === state.viewData.selectedSnapshotDate));
+    const selectedIndex = state.viewData === state.activeData
+      ? Math.max(0, timelineItems.findIndex((item) => item.isCurrent))
+      : Math.max(0, timelineItems.findIndex((item) => item.snapshotDate === state.viewData?.selectedSnapshotDate));
     return {
       timelineItems,
       selectedIndex,
@@ -304,9 +313,9 @@
     const panel = $("prediction-snapshot-date");
     if (!panel || !selectedItem) return;
     panel.innerHTML = `
-      <span>${escapeHtml(timelineWeekLabel(selectedIndex, timelineItems.length, selectedItem))}</span>
+      <span>${escapeHtml(timelineWeekLabel(selectedIndex, timelineItems.length))}</span>
       <strong>${escapeHtml(displayDate(selectedItem.snapshotDate))}</strong>
-      <small>${escapeHtml(timelineStatusLabel(selectedItem))}</small>
+      <small>${escapeHtml(timelineStatusLabel(selectedItem, selectedIndex, timelineItems.length))}</small>
     `;
   }
 
@@ -314,7 +323,7 @@
     const ticks = timeline.querySelector(".prediction-rating-ticks");
     if (!ticks) return;
     ticks.innerHTML = timelineItems.map((item, index) => `
-      <i class="${index === selectedIndex ? "is-active" : ""}" style="left:${timelineItems.length > 1 ? (index / (timelineItems.length - 1)) * 100 : 100}%"></i>
+      <i class="${index === selectedIndex ? "is-active" : ""}" style="left:${timelineItems.length > 1 ? (index / (timelineItems.length - 1)) * 100 : 100}%" title="${escapeHtml(displayDate(item.snapshotDate))}"></i>
     `).join("");
   }
 
@@ -326,18 +335,23 @@
       return;
     }
     endpoints.innerHTML = `
-      <span>${escapeHtml(timelineWeekLabel(0, timelineItems.length, timelineItems[0]))}</span>
-      <span>${escapeHtml(timelineWeekLabel(timelineItems.length - 1, timelineItems.length, timelineItems.at(-1)))}</span>
+      <span>${escapeHtml(timelineWeekLabel(0, timelineItems.length))}</span>
+      <span>${escapeHtml(timelineWeekLabel(timelineItems.length - 1, timelineItems.length))}</span>
     `;
   }
 
   function syncTimelineControls(timeline, timelineItems, selectedIndex, selectedItem) {
     const slider = timeline.querySelector("#prediction-snapshot-slider");
+    const thumb = timeline.querySelector(".prediction-rating-thumb");
+    const progress = timelineItems.length > 1
+      ? selectedIndex / (timelineItems.length - 1)
+      : 1;
     if (slider) {
       slider.max = String(timelineSliderMax(timelineItems));
       slider.value = String(timelineItems.length < 2 ? 1 : selectedIndex);
       slider.disabled = timelineItems.length < 2;
     }
+    if (thumb) thumb.style.left = `${progress * 100}%`;
     renderTimelineTicks(timeline, timelineItems, selectedIndex);
     renderTimelineEndpoints(timeline, timelineItems);
     renderTimelineCurrentPanel(selectedItem, selectedIndex, timelineItems);
@@ -394,19 +408,23 @@
       <div class="prediction-rating-slider-wrap">
         <div class="prediction-rating-track">
           <div class="prediction-rating-rail">
+            <div class="prediction-rating-rail-surface" aria-hidden="true"></div>
             <input id="prediction-snapshot-slider" type="range" min="0" max="${expectedMax}" value="${sliderValue}" step="1" aria-label="Ratings snapshot week" ${timelineItems.length < 2 ? "disabled" : ""}>
             <div class="prediction-rating-ticks" aria-hidden="true">
               ${timelineItems.map((item, index) => `
-                <i class="${index === selectedIndex ? "is-active" : ""}" style="left:${timelineItems.length > 1 ? (index / (timelineItems.length - 1)) * 100 : 100}%"></i>
+                <i class="${index === selectedIndex ? "is-active" : ""}" style="left:${timelineItems.length > 1 ? (index / (timelineItems.length - 1)) * 100 : 100}%" title="${escapeHtml(displayDate(item.snapshotDate))}"></i>
               `).join("")}
+            </div>
+            <div class="prediction-rating-thumb-zone" aria-hidden="true">
+              <b class="prediction-rating-thumb" style="left:${timelineItems.length > 1 ? (selectedIndex / (timelineItems.length - 1)) * 100 : 100}%"></b>
             </div>
           </div>
           <div class="prediction-rating-endpoints">
             ${timelineItems.length === 1
               ? "<span></span><span>Latest</span>"
               : `
-                <span>${escapeHtml(timelineWeekLabel(0, timelineItems.length, timelineItems[0]))}</span>
-                <span>${escapeHtml(timelineWeekLabel(timelineItems.length - 1, timelineItems.length, timelineItems.at(-1)))}</span>
+                <span>${escapeHtml(timelineWeekLabel(0, timelineItems.length))}</span>
+                <span>${escapeHtml(timelineWeekLabel(timelineItems.length - 1, timelineItems.length))}</span>
               `}
           </div>
         </div>
@@ -418,9 +436,7 @@
 
   async function loadSnapshotAt(index) {
     const requestId = ++state.timelineRequestId;
-    const item = index === state.snapshots.length
-      ? { isCurrent: true }
-      : state.snapshots[index];
+    const item = buildTimelineItems()[index];
     if (!item) return;
     if (item.isCurrent) {
       state.viewData = state.activeData;
@@ -445,7 +461,18 @@
       .slice()
       .sort((a, b) => String(a.snapshotDate).localeCompare(String(b.snapshotDate)));
     state.snapshots = list;
-    state.viewData = state.activeData;
+    const latest = buildTimelineItems().at(-1);
+    if (!latest || latest.isCurrent) {
+      state.viewData = state.activeData;
+      return;
+    }
+    const snapshot = await fetchJson(`/${latest.file.replace(/^\/+/, "")}`, null);
+    state.viewData = snapshot
+      ? mergeSnapshot(state.activeData, {
+        ...snapshot,
+        snapshotDate: latest.snapshotDate || snapshot.snapshotDate
+      })
+      : state.activeData;
   }
 
   function renderAll(rebuildMap = true) {
