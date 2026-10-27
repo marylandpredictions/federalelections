@@ -32,6 +32,92 @@
   const openElectionNightTest = $("openElectionNightTest");
   const testModeStatus = $("testModeStatus");
 
+  let controlSnapshot = null, controlTimer = null, dirty = false, noteDirty = false, overlayDirty = false, refreshingControl = false;
+  const stateNames = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming"};
+  async function confirmAction(message) {
+    const dialog = $("control-confirm"); if (dialog.open) return false;
+    $("confirm-message").textContent = message;
+    dialog.returnValue = "cancel";
+    return new Promise(resolve => { dialog.addEventListener("close", () => resolve(dialog.returnValue === "confirm"), {once:true}); dialog.showModal(); });
+  }
+  async function runButton(button, work) {
+    if(button.disabled) return; button.disabled = true; button.setAttribute("aria-busy","true");
+    try { await work(); } catch(e) { setStatus($("control-status"),e.message,true); }
+    finally { button.disabled = false; button.removeAttribute("aria-busy"); }
+  }
+  function showWorkspace(name) {
+    document.querySelectorAll("[data-view]").forEach(node => node.hidden = node.dataset.view !== name);
+    document.querySelectorAll("[data-workspace]").forEach(button => { if(button.dataset.workspace === name) button.setAttribute("aria-current","page"); else button.removeAttribute("aria-current"); });
+  }
+  async function controlAction(action, raceId) {
+    if (!await confirmAction(`${action.replaceAll("-"," ").toUpperCase()}${raceId ? ` • ${state.allRaces.find(r=>r.id===raceId)?.label || raceId}` : " • all eligible races"}?`)) return;
+    const payload = await adminFetch("/api/admin/results-control", {method:"POST",body:JSON.stringify({action,raceId})});
+    controlSnapshot = payload; state.calls.races = payload.states; state.allRaces = payload.races.map(r=>({...r,label:r.electionName})); renderControl(); if(currentRace())renderRaceMeta(currentRace());
+    setStatus($("control-status"), payload.persistence?.warning ? `Saved locally. ${payload.persistence.warning}` : "Action saved.");
+  }
+  function callCard(id,s,actions=false) {
+    const race=controlSnapshot.races.find(r=>r.id===id); const candidate=s.providerCall?.candidate || s.calls?.[0]?.candidate || ""; const party=race?.candidates.find(c=>c.name === candidate)?.party || "";
+    return `<article class="queue-card"><button class="queue-race" type="button" data-open-race="${escapeHtml(id)}">${escapeHtml(race?.electionName || id)}</button><strong>${escapeHtml(candidate)} ${escapeHtml(party ? `(${party})` : "")}</strong>${s.attentionReason ? `<p>${escapeHtml(s.attentionReason)}</p>` : ""}<p>${escapeHtml(s.callState || "FEA call")} • ${s.providerCall ? "NBC projection" : "FEA manual"}</p>${s.providerCall ? `<p>Detected <span data-detected="${escapeHtml(s.providerCall.detectedAt)}"></span> ago</p>` : ""}${s.callState === "NBC_PENDING" ? `<p data-deadline="${escapeHtml(s.publishAt)}"></p>` : ""}${actions ? `<div class="admin-actions">${[["publish","Publish now"],["hold","Hold"],["override","Override"],["ignore","Ignore NBC call"]].map(([a,label])=>`<button class="admin-button secondary" type="button" data-call-action="${a}" data-race-id="${escapeHtml(id)}">${label}</button>`).join("")}</div>` : ""}${s.manualOverride || ["NBC_HELD","NBC_IGNORED"].includes(s.callState) ? `<button class="admin-button secondary" data-call-action="auto" data-race-id="${escapeHtml(id)}">Return to NBC auto</button>` : ""}</article>`;
+  }
+  function updateQueueClocks() {
+    const skew=controlSnapshot ? Date.parse(controlSnapshot.serverTime)-controlSnapshot.receivedAt : 0;
+    const now=Date.now()+skew;
+    document.querySelectorAll("[data-deadline]").forEach(node=>node.textContent = controlSnapshot?.health.automation === "ACTIVE" ? `Auto-publishes in ${Math.max(0,Math.ceil((Date.parse(node.dataset.deadline)-now)/1000))}s` : `Auto-publish suspended • ${controlSnapshot?.health.automation || "unavailable"}`);
+    document.querySelectorAll("[data-detected]").forEach(node=>node.textContent=`${Math.max(0,Math.floor((now-Date.parse(node.dataset.detected))/1000))}s`);
+  }
+  function renderControl() {
+    if(!controlSnapshot) return;
+    controlSnapshot.receivedAt ||= Date.now();
+    const signature = JSON.stringify([controlSnapshot.health,controlSnapshot.states,controlSnapshot.audit,controlSnapshot.races]);
+    if(renderControl.signature === signature) {updateQueueClocks();return;}
+    renderControl.signature = signature;
+    const h=controlSnapshot.health, entries=Object.entries(controlSnapshot.states);
+    const pending=entries.filter(([,s])=>["NBC_PENDING","NBC_HELD"].includes(s.callState) && !s.manualOverride);
+    $("control-top-status").textContent=`NBC: ${h.status} • Auto-calls: ${h.automation} • Pending: ${h.pending} • Overrides: ${h.overrides}`;
+    $("queue-count").textContent=h.pending;
+    $("automation-status").textContent=`NBC automation ${h.automation} • Grace period ${h.graceSeconds}s`;
+    $("control-summary").innerHTML=[["NBC status",h.status],["Pending calls",h.pending],["Overrides",h.overrides],["Result feed",h.lastChangedResult || "Awaiting first result"],["FEA calls",["house","senate","governor"].map(t=>`${t}: ${controlSnapshot.races.filter(r=>r.type===t&&r.calls?.length).length}`).join(" / ")],["System",h.error || (h.stale?"Warning: upstream data stale or unavailable":"Healthy • no new votes is normal")]].map(([label,value])=>`<article><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></article>`).join("");
+    $("pending-calls").innerHTML=pending.map(([id,s])=>callCard(id,s,true)).join("")||"No calls waiting.";
+    $("dashboard-pending").innerHTML=pending.slice(0,4).map(([id,s])=>callCard(id,s,true)).join("")||"No calls need attention.";
+    $("published-calls").innerHTML=entries.filter(([,s])=>s.calls?.length&&!s.manualOverride).sort((a,b)=>String(b[1].calls[0]?.calledAt).localeCompare(String(a[1].calls[0]?.calledAt))).slice(0,15).map(([id,s])=>callCard(id,s)).join("")||"No published NBC calls.";
+    $("override-calls").innerHTML=entries.filter(([,s])=>s.manualOverride||s.callState==='NBC_IGNORED').map(([id,s])=>callCard(id,s)).join("")||"No overrides or ignored projections.";
+    $("provider-health").innerHTML=Object.entries({"NBC status":h.status,"Sources":h.sources.map(s=>s.url).join("; ")||"No confirmed general-election endpoint configured","Last attempt":h.lastAttempt,"Last success":h.lastSuccess,"Last upstream timestamp":h.lastUpstreamUpdate,"Last changed result":h.lastChangedResult,"Poll interval":`${h.pollSeconds}s`,"Next attempt":h.nextAttemptAt,"House / Senate / Governor":Object.values(h.counts).join(" / "),"Pending / overrides":`${h.pending} / ${h.overrides}`,"Data stale":h.stale?"Yes":"No","Latest provider error":h.error||"None"}).map(([label,value])=>`<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value || "Not yet available")}</dd></div>`).join("");
+    $("control-audit").innerHTML=controlSnapshot.audit.slice(0,100).map(e=>`<p>${escapeHtml(e.timestamp)} • ${escapeHtml(e.race)} • ${escapeHtml(e.candidate)} • ${escapeHtml(e.action)} • ${escapeHtml(e.actor)} • ${escapeHtml(e.previousState)} → ${escapeHtml(e.newState)}</p>`).join("")||"No call actions recorded.";
+    updateQueueClocks();
+  }
+  async function refreshControl() {
+    if(refreshingControl) return; refreshingControl=true;
+    try { const payload=await adminFetch("/api/admin/results-control"); controlSnapshot={...payload,receivedAt:Date.now()}; state.allRaces=payload.races.map(r=>({...r,label:r.electionName})); state.latestRaces=state.allRaces; state.calls.races=payload.states; renderControl(); if(currentRace())renderRaceMeta(currentRace()); }
+    catch(e) { setStatus($("control-status"),`Control refresh failed: ${e.message}. Your edits are preserved.`,true); }
+    finally { refreshingControl=false; }
+  }
+  document.addEventListener("click", event=>{
+    const nav=event.target.closest("[data-workspace]"); if(nav) showWorkspace(nav.dataset.workspace);
+    const global=event.target.closest("[data-global]"); if(global) runButton(global,()=>controlAction(global.dataset.global));
+    const action=event.target.closest("[data-call-action]");
+    const open=event.target.closest("[data-open-race]");
+    if(open || action?.dataset.callAction === "override") {
+      if(dirty || noteDirty) {setStatus($("control-status"),"Save your current race edits before selecting another race.",true);return;}
+      $("raceSearch").value="";$("raceOffice").value="";$("raceFilter").value=""; renderApp();raceSelect.value=open?.dataset.openRace || action.dataset.raceId;renderRace();showWorkspace("races");$("candidateList").querySelector("button")?.focus();
+    } else if(action) runButton(action,()=>controlAction(action.dataset.callAction,action.dataset.raceId));
+  });
+  for(const id of ["raceSearch","raceOffice","raceFilter"]) $(id).addEventListener(id === "raceSearch" ? "input" : "change",()=>{if(dirty || noteDirty){setStatus($("control-status"),"Save current race edits before filtering.",true);return;}renderApp();});
+  $("returnRaceAuto").addEventListener("click",()=>runButton($("returnRaceAuto"),()=>controlAction("auto",currentRace()?.id)));
+  $("lockAdmin").addEventListener("click",async()=>{if((dirty||noteDirty||overlayDirty)&&!await confirmAction("Lock and discard unsaved edits?"))return;sessionStorage.removeItem("feaAdminSecret");state.secret="";secretInput.value="";dirty=false;noteDirty=false;overlayDirty=false;adminApp.hidden=true;loginPanel.hidden=false;clearInterval(controlTimer);controlTimer=null;});
+  document.addEventListener("keydown", event=>{
+    if(["INPUT","TEXTAREA","SELECT"].includes(event.target.tagName)||$("control-confirm").open||event.ctrlKey||event.metaKey||event.altKey) return;
+    if(event.key === "/"){event.preventDefault();showWorkspace("races");$("raceSearch").focus();}
+    if(["p","h"].includes(event.key.toLowerCase())&&currentRace()) {
+      const action=event.key.toLowerCase()==="p"?"publish":"hold";
+      controlAction(action,currentRace().id).catch(e=>setStatus($("control-status"),e.message,true));
+    }
+  });
+  callRows.addEventListener("change",()=>dirty=true);
+  for (const id of ["noteText","noteAuthor","noteRole","noteDate","noteImage","noteEmbed"]) $(id).addEventListener("input",()=>noteDirty=true);
+  for (const id of ["tickerText","producerNote"]) $(id).addEventListener("input",()=>overlayDirty=true);
+  window.addEventListener("beforeunload",e=>{if(dirty || noteDirty || overlayDirty){e.preventDefault();e.returnValue="";}});
+  setInterval(updateQueueClocks,1000);
+
   const PHOTO_FOLDERS = {
     "79777": "california-governor",
     "79779": "california-lieutenant-governor",
@@ -51,7 +137,7 @@
   }
 
   function escapeHtml(value) {
-    return String(value || "")
+    return String(value ?? "")
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
@@ -60,16 +146,25 @@
   }
 
   function currentRace() {
-    const races = activeRaces();
-    return races.find((race) => race.id === raceSelect.value) || races[0] || null;
+    return state.allRaces.find((race) => race.id === raceSelect.value) || null;
   }
 
   function activeRaces() {
-    return state.showAllRaces ? state.allRaces : state.latestRaces;
+    const term = ($("raceSearch")?.value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const office = $("raceOffice")?.value; const filter = $("raceFilter")?.value;
+    return state.allRaces.filter(race => {
+      const status = controlSnapshot?.states?.[race.id] || {};
+      const officeName = race.type === "governor" ? "Governor" : race.type === "senate" ? "Senate" : "House";
+      const district = race.district === "AL" ? "AL" : String(race.district || "").padStart(2,"0");
+      const alias = `${race.state}-${race.type === "senate" ? "SEN" : race.type === "governor" ? "GOV" : district}`;
+      const haystack = `${race.id} ${race.label} ${alias} ${stateNames[race.state] || race.state} ${race.district || ""} ${officeName} ${(race.candidates || []).map(c=>c.name).join(" ")}`.toLowerCase().replace(/[^a-z0-9]/g, "");
+      return (!term || haystack.includes(term)) && (!office || race.type === office) &&
+        (!filter || (filter === "called" && !!status.calls?.length) || (filter === "uncalled" && !status.calls?.length) || (filter === "pending" && status.callState === "NBC_PENDING") || (filter === "override" && status.manualOverride) || (filter === "key" && race.keyRace));
+    });
   }
 
   function slugify(value) {
-    return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    return String(value ?? "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   }
 
   function initials(name) {
@@ -148,7 +243,7 @@
     const candidates = currentRace()?.candidates || [];
     return `
       <div class="admin-call-row">
-        <select class="admin-select call-candidate">
+        <select aria-label="Call candidate" class="admin-select call-candidate">
           <option value="">Choose candidate</option>
           ${candidates.map((candidate) => `
             <option value="${escapeHtml(candidate.name)}" ${candidate.name === call.candidate ? "selected" : ""}>
@@ -156,7 +251,7 @@
             </option>
           `).join("")}
         </select>
-        <select class="admin-select call-status">
+        <select aria-label="Call type" class="admin-select call-status">
           ${[
             ["projected", "Projected winner"],
             ["winner", "Winner"],
@@ -231,13 +326,18 @@
     $("saveNote").textContent = "Save selected note";
   }
 
+  function renderRaceMeta(race) {
+    $("race-control-meta").textContent = `${race.label} • ${race.calls?.[0]?.provider === "NBC" ? "NBC projects" : race.calls?.length ? "FEA manual call" : "Uncalled"} • Expected vote: ${race.expectedVotePercent ?? "unavailable"} • Precinct reporting: ${race.reportingPercent ?? "unavailable"} • Updated: ${race.lastUpdated || "Awaiting results"} • Counties: ${race.countyCount || race.counties?.length || 0} • ${controlSnapshot?.states?.[race.id]?.manualOverride ? "NBC automation paused for this race" : "NBC auto enabled"} • NBC: ${controlSnapshot?.states?.[race.id]?.providerCall?.candidate || "No explicit projection"}`;
+  }
+
   function renderRace() {
     const race = currentRace();
-    if (!race) return;
+    if (!race) { candidateList.innerHTML = "No matching races."; callRows.innerHTML = ""; return; }
+    renderRaceMeta(race);
     candidateList.innerHTML = (race.candidates || []).map((candidate) => `
       <button class="admin-candidate" type="button" data-candidate="${escapeHtml(candidate.name)}">
         <strong>${escapeHtml(candidate.name)}</strong>
-        <span>${escapeHtml(candidate.party || candidate.partyCode || "")}</span>
+        <span>${escapeHtml(candidate.party || candidate.partyCode || "")} • ${(candidate.votes || 0).toLocaleString()} votes • ${Number(candidate.percent || 0).toFixed(1)}%</span>
       </button>
     `).join("");
     renderCalls();
@@ -322,7 +422,7 @@
         <div>
           <p class="admin-preview-label">${escapeHtml(label)}</p>
           <h3>${escapeHtml(text)}</h3>
-          <small>Race called by Federal Elections Analysis.</small>
+          <small>${calls.some(c=>c.provider === "NBC") ? "NBC projects • FEA results via NBC" : "FEA manual call"}</small>
         </div>
         <div class="admin-preview-avatars">${avatars}</div>
       </div>
@@ -331,8 +431,11 @@
 
   async function unlock() {
     state.secret = secretInput.value.trim();
-    if (!state.secret) return;
-    const payload = await adminFetch("/api/admin/bootstrap");
+    if (!state.secret || state.unlocking) return;
+    state.unlocking = true;
+    let payload;
+    try { payload = await adminFetch("/api/admin/bootstrap"); } finally { state.unlocking = false; }
+    // bootstrap succeeded
     sessionStorage.setItem("feaAdminSecret", state.secret);
     state.latestRaces = payload.latestRaces || payload.races || [];
     state.allRaces = payload.allRaces || state.latestRaces;
@@ -341,6 +444,10 @@
     state.overlay = payload.overlay || { tickerItems: [], producerNote: "" };
     loginPanel.hidden = true;
     adminApp.hidden = false;
+    await refreshControl();
+    showWorkspace("dashboard");
+    if (!controlTimer) controlTimer = setInterval(refreshControl, 5000);
+    renderControl.signature = null; renderControl();
     renderOverlayForm();
     renderApp();
   }
@@ -357,6 +464,8 @@
   async function saveCalls() {
     const race = currentRace();
     if (!race) return;
+    const calls = collectCalls();
+    if (!await confirmAction(calls.length ? `Call ${race.label} for ${calls.map(c=>c.candidate).join(" and ")}? This pauses NBC automation for this race.` : `Clear the FEA call for ${race.label} and keep NBC automation overridden?`)) return;
     setStatus(callStatus, "Saving...");
     try {
       const payload = await adminFetch("/api/admin/calls", {
@@ -364,8 +473,11 @@
         body: JSON.stringify({ raceId: race.id, calls: collectCalls() })
       });
       state.calls.races[race.id] = { calls: payload.calls || [] };
+      dirty = false;
+      await refreshControl();
       renderCalls();
       const files = (payload.persistedFiles || []).join(", ");
+      if(payload.persistence?.warning || payload.persistence?.error) setStatus($("control-status"), `Saved locally; GitHub persistence needs attention: ${payload.persistence.warning || payload.persistence.error}`, true);
       setStatus(callStatus, files
         ? `Calls saved to repo data files: ${files}.`
         : "Calls saved. The site will pick this up on its next refresh.");
@@ -385,7 +497,9 @@
         })
       });
       state.overlay = payload.overlay || state.overlay;
+      overlayDirty = false;
       const files = (payload.persistedFiles || []).join(", ");
+      if(payload.persistence?.warning || payload.persistence?.error) setStatus($("control-status"), `Saved locally; GitHub persistence needs attention: ${payload.persistence.warning || payload.persistence.error}`, true);
       setStatus(overlayStatus, files
         ? `Overlay ticker saved to repo data files: ${files}.`
         : "Overlay ticker saved. The OBS overlay will pick this up on its next refresh.");
@@ -414,6 +528,7 @@
         })
       });
       state.notes.races[race.id] = payload.notes || [];
+      noteDirty = false;
       state.noteIndex = null;
       $("noteText").value = "";
       $("noteImage").value = "";
@@ -421,6 +536,7 @@
       renderNoteSelect();
       $("saveNote").textContent = "Add newest note";
       const files = (payload.persistedFiles || []).join(", ");
+      if(payload.persistence?.warning || payload.persistence?.error) setStatus($("control-status"), `Saved locally; GitHub persistence needs attention: ${payload.persistence.warning || payload.persistence.error}`, true);
       const message = wasEditing ? "Analyst note updated" : "Analyst note added as newest note";
       setStatus(noteStatus, files ? `${message} in repo data files: ${files}.` : `${message}.`);
     } catch (error) {
@@ -432,30 +548,41 @@
     const status = document.createElement("p");
     status.className = "admin-status error";
     status.textContent = error.message;
+    loginPanel.querySelector(".admin-status")?.remove();
+    status.setAttribute("role","alert");
     loginPanel.append(status);
   }));
   secretInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") unlock().catch((error) => alert(error.message));
+    if (event.key === "Enter") $("unlockAdmin").click();
   });
-  raceSelect.addEventListener("change", renderRace);
+  let previousRace = "";
+  raceSelect.addEventListener("focus", () => { previousRace = raceSelect.value; });
+  raceSelect.addEventListener("change", async () => {
+    if ((dirty || noteDirty) && !await confirmAction("Discard unsaved race call or analysis edits?")) { raceSelect.value = previousRace; return; }
+    dirty = false; noteDirty = false; previousRace = raceSelect.value; renderRace();
+  });
   showAllRaces?.addEventListener("change", () => {
     state.showAllRaces = Boolean(showAllRaces.checked);
     renderApp();
   });
   $("addCallRow").addEventListener("click", () => {
     callRows.insertAdjacentHTML("beforeend", callRowMarkup());
+    dirty = true;
   });
-  $("saveCalls").addEventListener("click", saveCalls);
-  $("saveOverlay").addEventListener("click", saveOverlay);
-  $("saveNote").addEventListener("click", saveNote);
-  $("loadNote")?.addEventListener("click", loadSelectedNote);
-  $("newNote")?.addEventListener("click", clearNoteForm);
-  noteSelect?.addEventListener("change", () => {
+  $("saveCalls").addEventListener("click", () => runButton($("saveCalls"), saveCalls));
+  $("saveOverlay").addEventListener("click", () => runButton($("saveOverlay"), saveOverlay));
+  $("saveNote").addEventListener("click", () => runButton($("saveNote"), saveNote));
+  $("loadNote")?.addEventListener("click", async()=>{if(noteDirty && !await confirmAction("Discard unsaved analysis edits?"))return;noteDirty=false;loadSelectedNote();});
+  $("newNote")?.addEventListener("click", async()=>{if(noteDirty && !await confirmAction("Discard unsaved analysis edits?"))return;noteDirty=false;clearNoteForm();});
+  noteSelect?.addEventListener("change", async () => {
+    if(noteDirty && !await confirmAction("Discard unsaved analysis edits?"))return;
+    noteDirty=false;
     if (noteSelect.value === "") clearNoteForm();
     else loadSelectedNote();
   });
   callRows.addEventListener("click", (event) => {
     if (event.target.closest(".remove-call")) {
+      dirty = true;
       event.target.closest(".admin-call-row")?.remove();
       if (!callRows.querySelector(".admin-call-row")) callRows.innerHTML = callRowMarkup();
     }
@@ -463,12 +590,13 @@
   candidateList.addEventListener("click", (event) => {
     const button = event.target.closest("[data-candidate]");
     if (!button) return;
-    const emptySelect = [...callRows.querySelectorAll(".call-candidate")].find((select) => !select.value);
+    const emptySelect = callRows.querySelector(".call-candidate");
     const target = emptySelect || (() => {
       callRows.insertAdjacentHTML("beforeend", callRowMarkup());
       return [...callRows.querySelectorAll(".call-candidate")].at(-1);
     })();
     target.value = button.dataset.candidate;
+    dirty = true;
   });
 
   // Election Night Testing Panel
@@ -482,12 +610,14 @@
     // Keep the public results URL out of testing. This unlisted route serves the
     // same page so staff can try calls/maps without sharing the lab address.
     let testUrl = "/fea-results-lab-26";
-    if (selectedMode === "mock") {
+    if (selectedMode === "live") {
+      testUrl += "?live=true";
+    } else if (selectedMode === "mock") {
       testUrl += "?mock=true";
     } else if (selectedMode === "simulation") {
       testUrl += `?simulation=true&phase=${encodeURIComponent(selectedState)}&speed=fast`;
     } else {
-      testUrl += "?preview=true";
+      testUrl += "?phase=pre_election";
     }
     openElectionNightTest.href = testUrl;
     

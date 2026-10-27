@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Federal Elections Analysis - Ratings, Videos, Streams, Articles, and More! </title>
-  <meta name="description" content="Federal Elections Analysis is a hub for electoral insight, top-tier data, and a deep dive into the elections that decide the future of this country. Find our latest team ratings, uploads, articles, and much more right here!">
+  <title>Federal Elections Analysis — 2026 Election Coverage </title>
+  <meta name="description" content="Federal Elections Analysis is a hub for electoral insight, top-tier data, and a deep dive into the elections that decide the future of this country. Follow our election-night results, videos, and articles.">
   <meta property="og:image" content="https://media.discordapp.net/attachments/1382924914482348064/1509778504353447998/FEA_40.png?ex=6a1a6a4d&is=6a1918cd&hm=6b77c0e3215672cbf44ea62d2fc2c9e4d907031812e13de98aeedc34dd23b5e1&=&format=webp&quality=lossless&width=2452&height=1380">
   <link rel="icon" href="assets/img/FEA_Icon.webp" type="image/webp">
   <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
-  <script src="assets/theme.js"></script>
-  <link rel="stylesheet" href="assets/wiki.css?v=20260618-dark">
+  <script src="assets/theme.js?v=20261027-night-final"></script>
+  <link rel="stylesheet" href="assets/wiki.css?v=20261027-night-final2">
 </head>
 <body>
       <header class="site-header">
@@ -18,20 +18,7 @@
       <img class="brand-mark" src="assets/img/FEA_Icon.webp" alt="Federal Elections Analysis">
       <span><strong>Federal Elections Analysis</strong><small style="font-weight: 700;">Election analysis</small></span>
     </a>
-    <nav class="site-nav" aria-label="Primary navigation">
-      <a class="active" href="/">Home</a>
-      <a href="/videos">Videos</a>
-      <a href="/results">Results</a>
-      <a href="/articles">Articles</a>
-      <details class="nav-dropdown">
-        <summary>Ratings</summary>
-        <div class="nav-dropdown-menu">
-          <a href="/predictions/2026/senate">Senate</a>
-          <a href="/predictions/2026/house">House</a>
-          <a href="/predictions/2026/governor">Governors</a>
-        </div>
-      </details>
-    </nav>
+    <nav class="site-nav" aria-label="Primary navigation"><a class="active" href="/">Home</a><a href="/results">Results</a><a href="/videos">Videos</a><a href="/articles">Articles</a></nav>
     <div class="site-nav-right">
       <a href="https://gofund.me/50724cf21" target="_blank" rel="noopener" class="donate-button">$ Donate</a>
       <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
@@ -46,60 +33,15 @@
       <div class="hero-main home-hero">
         <p class="kicker">Federal Elections Analysis</p>
         <h1 id="page-title">Analysis on your screen.</h1>
-        <p class="lede">Content, team ratings, and more, all in one place.</p>
-        <div class="hero-actions">
-          <a class="button-link" href="/predictions/2026/senate">Senate</a>
-          <a class="button-link" href="/predictions/2026/house">House</a>
-          <a class="button-link" href="/predictions/2026/governor">Governors</a>
-          <a class="button-link" href="/predictions">Ratings</a>
-          <a class="button-link" href="articles.html">Articles</a>
-          <a class="button-link" href="videos.html">Videos</a>
-          <a class="button-link" href="about.html">About</a>
-          <a class="button-link" href="contact.html">Contact</a>
-        </div>
+        <p class="lede">Election coverage, reporting, and analysis from the FEA team.</p>
+        <div class="hero-actions"><a class="button-link" href="/results">2026 election results →</a><a class="button-link" href="/videos">Watch our coverage</a></div>
       </div>
-      <aside class="home-run-panel status-rail">
-        <p class="kicker">FEA ratings</p>
-        <dl>
-          <div><dt>Senate</dt><dd id="home-senate-run">--</dd></div>
-          <div><dt>House</dt><dd id="home-house-run">--</dd></div>
-          <div><dt>Governors</dt><dd id="home-governor-run">--</dd></div>
-          <div><dt>Senate ratings</dt><dd id="home-senate-median">--</dd></div>
-          <div><dt>House ratings</dt><dd id="home-house-median">--</dd></div>
-        </dl>
-        <p class="forecast-disclaimer">FEA Ratings are manual team ratings informed by polling, race context, and internal model diagnostics. Automated model output is maintained separately in Model Lab.</p>
+      <aside class="election-countdown" aria-labelledby="countdown-title">
+        <p class="kicker" id="countdown-title">2026 General Election</p>
+        <div class="countdown-digits" id="countdown-digits"><div><strong id="countdown-days">—</strong><span>Days</span></div><div><strong id="countdown-hours">—</strong><span>Hours</span></div><div><strong id="countdown-minutes">—</strong><span>Minutes</span></div></div>
+        <p id="countdown-message">Election Day • November 3, 2026</p>
+        <a class="button-link" href="/results">View results →</a>
       </aside>
-    </section>
-
-    <div class="home-section-head">
-      <span>FEA ratings</span>
-      <h2>Core ratings</h2>
-    </div>
-    <p class="model-credit">Ratings infrastructure and model diagnostics built and maintained by gamerdoglover.</p>
-    <section class="model-strip" aria-label="Forecast overviews">
-      <a class="forecast-overview-card active" id="home-senate-card" href="/predictions/2026/senate">
-        <span>Live</span>
-        <strong>Senate</strong>
-        <b id="home-senate-favored">--</b>
-        <small id="home-senate-seats">--</small>
-        <small><i id="home-senate-dem">--</i> D / <i id="home-senate-rep">--</i> R</small>
-        <small id="home-senate-note">--</small>
-      </a>
-      <a class="forecast-overview-card" id="home-house-card" href="/predictions/2026/house">
-        <span id="home-house-status">Live</span>
-        <strong>House</strong>
-        <b id="home-house-favored">--</b>
-        <small id="home-house-seats">--</small>
-        <small><i id="home-house-dem">--</i> D / <i id="home-house-rep">--</i> R</small>
-        <small id="home-house-note">--</small>
-      </a>
-      <a class="forecast-overview-card" id="home-governor-card" href="/predictions/2026/governor">
-        <span>Live</span>
-        <strong>Governors</strong>
-        <b id="home-governor-favored">--</b>
-        <small><i id="home-governor-dem">--</i> D races / <i id="home-governor-rep">--</i> R races</small>
-        <small id="home-governor-note">--</small>
-      </a>
     </section>
 
     <div class="home-section-head">
@@ -112,6 +54,20 @@
       </div>
     </section>
 
+    <div class="home-section-head">
+      <span>Articles</span>
+      <h2>Latest writing</h2>
+    </div>
+    <section class="dashboard-grid home-news-grid" aria-label="Latest articles">
+      <article class="chart-panel article-teaser" id="top-article" aria-labelledby="top-article-title">
+        <p class="meta">No articles yet.</p>
+      </article>
+      <aside class="chart-panel">
+        <span class="chart-label">More articles</span>
+        <div id="home-article-list" class="home-article-list"></div>
+        <p><a class="button-link" href="articles.html">See all articles</a></p>
+      </aside>
+    </section>
     <div class="home-section-head">
       <span>Federal Elections Analysis</span>
       <h2>Team hub</h2>
@@ -131,26 +87,12 @@
       </a>
     </section>
 
-    <div class="home-section-head">
-      <span>Articles</span>
-      <h2>Latest writing</h2>
-    </div>
-    <section class="dashboard-grid home-news-grid" aria-label="Latest articles">
-      <article class="chart-panel article-teaser" id="top-article" aria-labelledby="top-article-title">
-        <p class="meta">No articles yet.</p>
-      </article>
-      <aside class="chart-panel">
-        <span class="chart-label">More articles</span>
-        <div id="home-article-list" class="home-article-list"></div>
-        <p><a class="button-link" href="articles.html">See all articles</a></p>
-      </aside>
-    </section>
   </main>
 
   <footer class="site-footer">
     <div>
       <strong>Federal Elections Analysis</strong>
-      <p>Election modeling, public analysis, and team updates.</p>
+      <p>Election coverage, public analysis, and team updates.</p>
     </div>
     <nav class="footer-columns" aria-label="Footer navigation">
       <section class="footer-link-group" aria-label="Site links">
@@ -176,6 +118,7 @@
     </nav>
   </footer>
 
+  <script src="assets/countdown.js?v=20261027-night-final"></script>
   <script src="assets/wiki.js?v=20260721-ratings"></script>
 </body>
 </html>

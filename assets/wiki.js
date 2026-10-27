@@ -3784,6 +3784,10 @@ function renderLoadError(error) {
 async function init() {
   installInteractionDismiss();
   articles = await loadArticles();
+  if (document.getElementById("countdown-title")) {
+    renderHomeLatestVideo(); renderTopArticle(); renderHomeArticleList();
+    return;
+  }
   houseForecast = await loadHouseForecast();
   governorForecast = await loadGovernorForecast();
   if (document.getElementById("home-president-card") || document.getElementById("article-page")) {

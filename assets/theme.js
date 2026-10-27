@@ -1,10 +1,21 @@
 (function () {
   const root = document.documentElement;
 
-  function applyTheme() {
-    root.dataset.theme = "dark";
-    root.style.colorScheme = "dark";
+  let selected;
+  try { selected = localStorage.getItem("feaTheme"); } catch {}
+  const preference = window.matchMedia("(prefers-color-scheme: dark)");
+  function applyTheme(theme = selected || (preference.matches ? "dark" : "light")) {
+    root.dataset.theme = theme;
+    root.style.colorScheme = theme;
+    document.querySelectorAll("[data-theme-toggle]").forEach(button => button.setAttribute("aria-label", `Switch to ${theme === "dark" ? "light" : "dark"} theme`));
   }
+  document.addEventListener("click", event => {
+    if (!event.target.closest("[data-theme-toggle]")) return;
+    selected = root.dataset.theme === "dark" ? "light" : "dark";
+    try { localStorage.setItem("feaTheme", selected); } catch {}
+    applyTheme(selected);
+  });
+  preference.addEventListener("change", () => { if (!selected) applyTheme(); });
 
   applyTheme();
 

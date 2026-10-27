@@ -4,13 +4,21 @@
       "id": "live",
       "label": "Live results",
       "description": "Current reported results.",
-      "appliesTo": ["house", "senate", "governor"]
+      "appliesTo": [
+        "house",
+        "senate",
+        "governor"
+      ]
     },
     {
       "id": "pres-2024",
       "label": "2024 presidential margin",
       "description": "Results minus the 2024 presidential Democratic margin. County files are compatible with statewide race detail maps.",
-      "appliesTo": ["house", "senate", "governor"],
+      "appliesTo": [
+        "house",
+        "senate",
+        "governor"
+      ],
       "countyCompatible": true,
       "status": "available",
       "countyFile": "data/baselines/pres-2024-counties.json",
@@ -28,7 +36,11 @@
       "id": "pres-2020",
       "label": "2020 presidential margin",
       "description": "Results minus the 2020 presidential Democratic margin. County files are compatible with statewide race detail maps.",
-      "appliesTo": ["house", "senate", "governor"],
+      "appliesTo": [
+        "house",
+        "senate",
+        "governor"
+      ],
       "countyCompatible": true,
       "status": "available",
       "countyFile": "data/baselines/pres-2020-counties.json",
@@ -46,7 +58,9 @@
       "id": "house-2024",
       "label": "2024 House margin",
       "description": "Results minus the 2024 House district Democratic margin. House baselines are district-level only unless split-county returns are added later.",
-      "appliesTo": ["house"],
+      "appliesTo": [
+        "house"
+      ],
       "countyCompatible": false,
       "status": "available",
       "districtFile": "data/baselines/house-2024-districts.json",
@@ -59,7 +73,9 @@
       "id": "senate-last",
       "label": "Last Senate margin",
       "description": "Results minus the most comparable recent Senate general-election margin for the seat cycle where available, instead of blindly using the latest Senate race in the state.",
-      "appliesTo": ["senate"],
+      "appliesTo": [
+        "senate"
+      ],
       "countyCompatible": false,
       "status": "available",
       "stateFile": "data/baselines/senate-last-states.json",
@@ -75,7 +91,9 @@
       "id": "governor-last",
       "label": "Last governor margin",
       "description": "Results minus the most recent comparable governor general-election margin in that state.",
-      "appliesTo": ["governor"],
+      "appliesTo": [
+        "governor"
+      ],
       "countyCompatible": false,
       "status": "available",
       "stateFile": "data/baselines/governor-last-states.json",

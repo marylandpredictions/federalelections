@@ -6,254 +6,15 @@
   <meta name="robots" content="noindex,nofollow">
   <title>FEA Admin</title>
   <link rel="icon" href="assets/img/FEA_Icon.webp" type="image/webp">
-  <link rel="stylesheet" href="assets/wiki.css?v=20260618-dark">
-  <style>
-    body.admin-page {
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(16, 48, 178, 0.34), transparent 34rem),
-        linear-gradient(135deg, #050b1c 0%, #071641 56%, #1b1026 100%);
-      color: #fff;
-    }
-    .admin-shell {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 32px 0 64px;
-    }
-    .admin-hero,
-    .admin-panel {
-      border: 1px solid #d6d9e2;
-      background: linear-gradient(135deg, rgba(13, 38, 104, 0.96), rgba(28, 23, 74, 0.94));
-      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.35);
-    }
-    .admin-hero {
-      border-radius: 18px;
-      padding: 28px;
-      margin-bottom: 18px;
-    }
-    .admin-hero h1 {
-      margin: 0;
-      font-size: clamp(2rem, 6vw, 4.8rem);
-      line-height: 0.95;
-      background: linear-gradient(90deg, #2d7cff, #f3536a);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .admin-hero p,
-    .admin-muted {
-      color: #c6d2ff;
-    }
-    .admin-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-      gap: 18px;
-    }
-    .admin-panel {
-      border-radius: 14px;
-      padding: 18px;
-    }
-    .admin-panel h2 {
-      margin: 0 0 14px;
-      font-size: 1.25rem;
-    }
-    .admin-field {
-      display: grid;
-      gap: 7px;
-      margin-bottom: 12px;
-    }
-    .admin-field label {
-      color: #c6d2ff;
-      font-size: 0.78rem;
-      font-weight: 900;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .admin-input,
-    .admin-select,
-    .admin-textarea {
-      width: 100%;
-      border: 1px solid #d6d9e2;
-      border-radius: 10px;
-      background: #07143b;
-      color: #fff;
-      font: inherit;
-      padding: 11px 12px;
-    }
-    .admin-textarea {
-      min-height: 170px;
-      resize: vertical;
-    }
-    .admin-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 14px;
-    }
-    .admin-button {
-      border: 1px solid #d6d9e2;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #1236b8, #651c44);
-      color: #fff;
-      cursor: pointer;
-      font-weight: 900;
-      padding: 11px 14px;
-      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
-    }
-    .admin-button:hover {
-      border-color: #fff;
-      box-shadow: 0 0 0 3px rgba(198, 210, 255, 0.14);
-      transform: translateY(-1px);
-    }
-    .admin-button.secondary {
-      background: #07143b;
-    }
-    .admin-call-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 150px 44px;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .admin-call-row button {
-      min-height: 42px;
-      padding: 0;
-    }
-    .admin-candidate-list {
-      display: grid;
-      gap: 6px;
-      margin: 10px 0 14px;
-      max-height: 260px;
-      overflow: auto;
-    }
-    .admin-candidate {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      border: 1px solid rgba(214, 217, 226, 0.35);
-      border-radius: 9px;
-      padding: 8px 10px;
-      background: rgba(255, 255, 255, 0.04);
-    }
-    .admin-status {
-      min-height: 22px;
-      color: #48d38a;
-      font-weight: 800;
-    }
-    .admin-status.error {
-      color: #ff6b76;
-    }
-    .admin-toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    .admin-toggle-row label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: #c6d2ff;
-      font-weight: 900;
-      font-size: 0.86rem;
-    }
-    .admin-preview-card {
-      --candidate-color: #2f74ff;
-      border: 1px solid #d6d9e2;
-      border-radius: 16px;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 92% 10%, rgba(255, 255, 255, .14), transparent 24%),
-        linear-gradient(135deg, rgba(16, 48, 178, .98), rgba(6, 15, 42, .98) 54%, color-mix(in srgb, var(--candidate-color) 48%, #e03a3e));
-      box-shadow: 0 18px 48px rgba(0, 0, 0, .34);
-    }
-    .admin-preview-card::before {
-      content: "";
-      display: block;
-      height: 6px;
-      background: linear-gradient(90deg, var(--candidate-color), #fff, #e03a3e);
-    }
-    .admin-preview-card-inner {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 18px;
-      align-items: center;
-      padding: 18px;
-    }
-    .admin-preview-label {
-      margin: 0 0 8px;
-      color: #ffccd1;
-      font-size: .76rem;
-      font-weight: 950;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-    }
-    .admin-preview-card h3 {
-      margin: 0 0 8px;
-      font-size: clamp(1.55rem, 4vw, 2.55rem);
-      line-height: .98;
-    }
-    .admin-preview-card small {
-      color: #c6d2ff;
-      font-weight: 850;
-    }
-    .admin-preview-avatars {
-      display: flex;
-      flex-direction: row-reverse;
-      align-items: center;
-      padding-left: 18px;
-    }
-    .admin-preview-avatar {
-      width: 82px;
-      height: 82px;
-      margin-left: -16px;
-      border: 2px solid rgba(255, 255, 255, .9);
-      border-radius: 999px;
-      overflow: hidden;
-      display: grid;
-      place-items: center;
-      background: var(--candidate-color);
-      color: #fff;
-      font-weight: 950;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, .32);
-      position: relative;
-    }
-    .admin-preview-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      position: relative;
-      z-index: 1;
-    }
-    .admin-preview-avatar span {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-    }
-    .admin-preview-empty {
-      color: #c6d2ff;
-      font-weight: 800;
-    }
-    @media (max-width: 850px) {
-      .admin-grid,
-      .admin-call-row {
-        grid-template-columns: 1fr;
-      }
-      .admin-preview-card-inner {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+  <script src="assets/theme.js?v=20261027-night-final"></script><link rel="stylesheet" href="assets/wiki.css?v=20261027-night-final2"><link rel="stylesheet" href="assets/admin-control.css?v=20261027-night-final">
 </head>
 <body class="admin-page">
   <main class="admin-shell">
     <section class="admin-hero">
       <p class="kicker">Federal Elections Analysis</p>
-      <h1>Broadcast admin.</h1>
-      <p>Control the OBS overlay ticker, race calls, and analyst notes. Public results pages are hidden, but the overlay and data feeds still update.</p>
-    </section>
+      <h1>FEA Election Control</h1>
+      <p>Results, calls, and broadcast control. <span id="control-top-status">Staff sign-in required</span></p>
+    <div class="admin-actions"><a class="admin-button secondary" href="/results" target="_blank" rel="noopener">Open Results</a><a class="admin-button secondary" href="/fea-results-lab-26" target="_blank" rel="noopener">Open Lab</a><a class="admin-button secondary" href="/call-overlay.html" target="_blank" rel="noopener">Open OBS</a><button class="admin-button secondary" type="button" data-theme-toggle>Switch theme</button><button class="admin-button secondary" id="lockAdmin" type="button">Lock</button></div></section>
 
     <section class="admin-panel" id="loginPanel">
       <h2>Staff access</h2>
@@ -267,10 +28,18 @@
       <p class="admin-muted">Set this with the server environment variable <code>ADMIN_SECRET</code>. The hidden URL alone is not enough security.</p>
     </section>
 
-    <section class="admin-grid" id="adminApp" hidden>
-      <aside class="admin-panel">
+    <section class="control-layout" id="adminApp" hidden>
+      <nav class="control-nav" aria-label="Control center">
+        <button type="button" data-workspace="dashboard" aria-current="page">Dashboard</button><button type="button" data-workspace="calls">Calls <span id="queue-count">0</span></button><button type="button" data-workspace="races">Races</button><button type="button" data-workspace="ticker">Ticker</button><button type="button" data-workspace="analysis">Analysis</button><button type="button" data-workspace="testing">Testing</button><button type="button" data-workspace="system">System</button>
+        <small>/ Search races<br>P Publish selected<br>H Hold selected<br>Esc Close confirmation<br>Calls require confirmation.</small>
+      </nav>
+      <div class="control-workspaces">
+        <section class="admin-panel" data-view="dashboard"><h2>Election-night overview</h2><div id="control-summary" class="control-metrics"></div><h3>Needs attention</h3><div id="dashboard-pending"></div></section>
+        <section class="admin-panel" data-view="calls" hidden><h2>Call queue</h2><p id="automation-status" role="status"></p><div class="admin-actions"><button class="admin-button" data-global="pause">Pause NBC auto-calls</button><button class="admin-button" data-global="resume">Resume NBC auto-calls</button><button class="admin-button secondary" data-global="hold-all">Hold all pending</button><button class="admin-button secondary" data-global="return-all">Return non-overridden races to auto</button></div><h3>Needs action</h3><div id="pending-calls"></div><h3>Recently published</h3><div id="published-calls"></div><h3>Manual overrides</h3><div id="override-calls"></div></section>
+        <section class="admin-panel" data-view="system" hidden><h2>Provider health</h2><dl id="provider-health" class="control-health"></dl><h3>Call audit log</h3><div id="control-audit"></div></section>
+      <aside class="admin-panel" data-view="races" hidden>
         <h2>Race</h2>
-        <div class="admin-toggle-row">
+        <div class="admin-toggle-row" hidden>
           <span class="admin-muted" id="raceModeLabel">Latest result races only</span>
           <label for="showAllRaces">
             <input id="showAllRaces" type="checkbox">
@@ -278,25 +47,25 @@
           </label>
         </div>
         <div class="admin-field">
-          <label for="raceSelect">Select race</label>
+          <label for="raceSearch">Search races</label><input class="admin-input" id="raceSearch" type="search" placeholder="CO-04, Colorado 4, Illinois Senate, surname"><details class="race-filters"><summary>Filter by office or status</summary><label for="raceOffice">Office</label><select class="admin-select" id="raceOffice"><option value="">All offices</option><option value="house">House</option><option value="senate">Senate</option><option value="governor">Governor</option></select><label for="raceFilter">Status</label><select class="admin-select" id="raceFilter"><option value="">All races</option><option value="called">Called</option><option value="uncalled">Uncalled</option><option value="pending">NBC pending</option><option value="override">Override</option><option value="key">Key races</option></select></details><label for="raceSelect">Select race</label>
           <select class="admin-select" id="raceSelect"></select>
         </div>
-        <div class="admin-candidate-list" id="candidateList"></div>
-        <p class="admin-muted" id="raceHelp">Candidate names must match exactly. Use the buttons below to copy names into call rows.</p>
+        <p id="race-control-meta"></p><div class="admin-candidate-list" id="candidateList"></div><div class="admin-actions"><button class="admin-button secondary" id="returnRaceAuto">Return to NBC auto</button></div>
+        <p class="admin-muted" id="raceHelp">Choose a candidate below, then confirm the FEA call. A manual call pauses NBC automation for this race. Provisional rosters must be verified before calling.</p>
       </aside>
 
-      <section class="admin-panel">
+      <section class="admin-panel" data-view="races" hidden>
         <h2>Race calls</h2>
         <p class="admin-muted">Single-winner races usually use Projected or Winner. Top-two/open primaries usually use Advances or Advanced.</p>
         <div id="callRows"></div>
         <div class="admin-actions">
-          <button class="admin-button secondary" id="addCallRow" type="button">Add call row</button>
+          <button class="admin-button secondary" id="addCallRow" type="button" hidden>Add call row</button>
           <button class="admin-button" id="saveCalls" type="button">Save calls</button>
         </div>
-        <p class="admin-status" id="callStatus"></p>
+        <p role="status" class="admin-status" id="callStatus"></p>
       </section>
 
-      <section class="admin-panel">
+      <section class="admin-panel" data-view="ticker" hidden>
         <h2>OBS ticker</h2>
         <p class="admin-muted">Add one bottom-bar message per line. Optional format: TAG: message. The overlay also adds called and uncalled race status automatically.</p>
         <div class="admin-field">
@@ -311,16 +80,16 @@
           <button class="admin-button" id="saveOverlay" type="button">Save overlay ticker</button>
           <a class="admin-button secondary" href="call-overlay.html" target="_blank" rel="noopener">Open OBS overlay</a>
         </div>
-        <p class="admin-status" id="overlayStatus"></p>
+        <p role="status" class="admin-status" id="overlayStatus"></p>
       </section>
 
-      <section class="admin-panel">
+      <section class="admin-panel" data-view="ticker" hidden>
         <h2>Call graphic preview</h2>
         <p class="admin-muted">Select a called race to show the graphic that will spawn on the OBS overlay. This panel is useful for screenshots.</p>
         <div id="callPreview" class="admin-preview-empty">No call selected yet.</div>
       </section>
 
-      <section class="admin-panel">
+      <section class="admin-panel" data-view="testing" hidden>
         <h2>Election night lab</h2>
         <p class="admin-muted">Open an unlisted duplicate of the 2026 Election Night page for map, call, and display testing before the public board is used.</p>
         <div class="admin-field">
@@ -328,7 +97,7 @@
           <select class="admin-select" id="testMode">
             <option value="pre_election">Pre-election preview</option>
             <option value="mock">Mock data mode</option>
-            <option value="simulation">Simulation mode</option>
+            <option value="simulation">Simulation mode</option><option value="live">Live provider test (read only)</option>
           </select>
         </div>
         <div class="admin-field">
@@ -336,7 +105,7 @@
           <select class="admin-select" id="simulationState">
             <option value="pre_election">Pre-election</option>
             <option value="polls_closed_no_votes">Polls closed, no votes</option>
-            <option value="reporting">Votes reporting</option>
+            <option value="polls_open">Polls open</option><option value="early_reporting">Early reporting</option><option value="reporting">Active reporting</option><option value="nbc_pending">NBC call pending</option><option value="nbc_accepted">NBC call accepted</option><option value="manual_override">Manual override</option><option value="provider_outage">Provider outage</option><option value="near_complete">Near complete</option><option value="completed">Completed</option>
             <option value="called">Races called</option>
           </select>
         </div>
@@ -344,10 +113,10 @@
           <button class="admin-button" id="applyTestMode" type="button">Prepare lab link</button>
           <a class="admin-button secondary" id="openElectionNightTest" href="/fea-results-lab-26?mock=true" target="_blank" rel="noopener">Open lab page</a>
         </div>
-        <p class="admin-status" id="testModeStatus"></p>
+        <p role="status" class="admin-status" id="testModeStatus"></p>
       </section>
 
-      <section class="admin-panel" style="grid-column: 1 / -1;">
+      <section class="admin-panel" style="grid-column: 1 / -1;" data-view="analysis" hidden>
         <h2>Analyst note</h2>
         <div class="admin-field">
           <label for="noteSelect">Edit existing note</label>
@@ -390,10 +159,12 @@
         <div class="admin-actions">
           <button class="admin-button" id="saveNote" type="button">Add newest note</button>
         </div>
-        <p class="admin-status" id="noteStatus"></p>
+        <p role="status" class="admin-status" id="noteStatus"></p>
       </section>
-    </section>
+    </div></section>
+    <p id="control-status" class="admin-status" role="status"></p>
+    <dialog id="control-confirm"><form method="dialog"><h2>Confirm election call action</h2><p id="confirm-message"></p><div class="admin-actions"><button class="admin-button secondary" value="cancel">Cancel</button><button class="admin-button" value="confirm">Confirm</button></div></form></dialog>
   </main>
-  <script src="assets/admin.js"></script>
+  <script src="assets/admin.js?v=20261027-night-final"></script>
 </body>
 </html>

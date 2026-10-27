@@ -59,12 +59,6 @@
   --ease-out: cubic-bezier(.2, .8, .2, 1);
 }
 
-/* Keep election-night results URLs public while hiding visible site entry points. */
-a[href="/results"],
-a[href="/results.html"],
-a[href="results.html"] {
-  display: none !important;
-}
 
 .gradient-republican {
   background: linear-gradient(135deg, #e03137 0%, #ff6b6b 100%);
@@ -1780,7 +1774,7 @@ button {
   position: relative;
   width: 36px;
   height: 34px;
-  display: none;
+  display: grid;
   place-items: center;
   margin-left: 14px;
   padding: 0;
@@ -1824,8 +1818,8 @@ button {
   stroke-linejoin: round;
 }
 
-:root[data-theme="dark"] .theme-icon-sun,
-:root:not([data-theme="dark"]) .theme-icon-moon {
+:root[data-theme="dark"] .theme-icon-moon,
+:root:not([data-theme="dark"]) .theme-icon-sun {
   display: none;
 }
 
@@ -9633,3 +9627,19 @@ body {
   background: color-mix(in srgb, var(--institute-cream-2) 46%, var(--paper));
   border: 1px solid color-mix(in srgb, var(--line) 62%, transparent);
 }
+
+/* Election-night entry point */
+.election-countdown{padding:clamp(24px,4vw,48px);border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,#273b75,#000e38);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px}
+.election-countdown .kicker,.election-countdown p{color:#beccf7;margin:0}
+.countdown-digits{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center;font-variant-numeric:tabular-nums}
+.countdown-digits strong{display:block;font-size:clamp(2.6rem,5vw,5rem);line-height:1.2;color:white}.countdown-digits span{font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;color:#beccf7}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid #849eed;outline-offset:4px}
+#results-provider-status{font-size:.85rem;color:var(--muted)}
+@media(max-width:650px){.home-hero-shell{grid-template-columns:1fr}.election-countdown{margin:0 0 20px}.countdown-digits{gap:10px}}
+
+:root[data-theme="light"]{color-scheme:light;--bg:#beccf7;--chrome:#849eed;--paper:#f8faff;--paper-2:#e6edff;--ink:#000e38;--muted:#34456e;--line:#7488bb;--institute-cream:#f8faff;--institute-cream-2:#e6edff;--chart-bg:#f8faff;--chart-runway:#e6edff;--chart-axis:#273b75;--chart-hover-bg:#f8faff}
+:root[data-theme="light"] body{background:var(--bg)}
+:root[data-theme="light"] .site-header,:root[data-theme="light"] .site-footer{background:#849eed;color:#000e38}
+:root[data-theme="light"] .hero-main h1{background:none;color:#000e38;-webkit-text-fill-color:#000e38}
+.election-countdown{container-type:inline-size}.countdown-digits{gap:clamp(8px,4cqw,18px)}.countdown-digits strong{font-size:clamp(2rem,20cqw,4.25rem)}

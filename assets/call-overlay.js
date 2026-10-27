@@ -405,6 +405,7 @@
       })
       .filter((entry) => {
         if (!entry.race || !entry.calls.length) return false;
+        if (entry.race.electionScope === "General") return true;
         const electionDate = new Date(entry.race.electionDate || entry.race.pollsClose || entry.race.pollCloseAt);
         const latestCallTime = Math.max(...entry.calls.map((call) => Date.parse(call.calledAt || "") || 0), 0);
         const electionDateMidnight = new Date(electionDate);
@@ -417,12 +418,13 @@
       .filter((race) => !raceFilter || String(race.id) === String(raceFilter))
       .filter((race) => !manuallyCalledRaceIds.has(String(race.id)))
       .filter((race) => {
+        if (race.electionScope === "General") return true;
         const electionDate = new Date(race.electionDate || race.pollsClose || race.pollCloseAt);
         const electionDateMidnight = new Date(electionDate);
         electionDateMidnight.setHours(0, 0, 0, 0);
         return electionDateMidnight.getTime() === today.getTime();
       })
-      .map((race) => ({ raceId: String(race.id), race, calls: automaticUncontestedCalls(race), automatic: true }))
+      .map((race) => ({ raceId: String(race.id), race, calls: race.electionScope === "General" ? (race.calls || []) : automaticUncontestedCalls(race), automatic: true }))
       .filter((entry) => entry.calls.length);
 
     return [...entries, ...autoEntries].map((entry) => {
@@ -660,7 +662,7 @@
           <div class="broadcast-call-copy">
             <p>${escapeHtml(raceName)}</p>
             <h1>${escapeHtml(callEvent.text)}</h1>
-            <small>Race called by Federal Elections Analysis${calledAt ? ` at ${escapeHtml(calledAt)}` : ""}.</small>
+            <small>${callEvent.calls?.some(call => call.provider === "NBC") ? "NBC projects • FEA results via NBC" : "Race called by Federal Elections Analysis"}${calledAt ? ` at ${escapeHtml(calledAt)}` : ""}.</small>
           </div>
           <div class="broadcast-call-avatars">${avatars}</div>
         </div>

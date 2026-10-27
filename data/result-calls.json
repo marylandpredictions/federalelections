@@ -1,5 +1,5 @@
 {
-  "description": "Manual Federal Elections Analysis race calls. The live results API never makes calls for us. Edit this file, push it, and the site will show the call on the results board, race detail views, and OBS overlay.",
+  "description": "Federal Elections Analysis published race calls and persistent election-night control state. NBC projections publish only through the configured grace/override workflow; manual FEA calls remain authoritative.",
   "_howToUse": {
     "fileToEdit": "data/result-calls.json",
     "candidateNameRule": "Candidate names must match the candidate name in data/live-results.json exactly. Use raceIdGuide below to find the race, then copy the candidate name exactly.",
@@ -38,7 +38,8 @@
     "optionalLabel": "You can add a custom label field to any call if exact wording is needed.",
     "optionalCalledAt": "Add calledAt in ISO format. The OBS overlay uses this to decide which call is newest.",
     "obsOverlay": "For livestreams, add call-overlay.html as an OBS Browser Source. Suggested size: 1920x300, transparent background enabled. It checks this file automatically.",
-    "important": "The races object is intentionally empty before calls are made. Do not add a candidate unless FEA is calling that race."
+    "important": "Use the authenticated election-night admin for calls, holds and overrides. Do not manually add a candidate unless FEA is intentionally calling that race. Historical primary calls remain archived in this file; general-election automation uses the current catalogue.",
+    "automaticCalls": "NBC source, callState, publishAt and manualOverride are managed by the control service. Return to NBC auto through the admin to clear an override."
   },
   "raceIdGuide": {
     "al-sen-r-runoff-2026": "Alabama Senate Republican Runoff",
@@ -56,7 +57,7 @@
         {
           "candidate": "Barry Moore",
           "status": "projected",
-          "calledAt": "2026-06-17T01:20:00.000Z"
+          "calledAt": "2026-06-17T02:07:49.585Z"
         }
       ]
     },
@@ -112,15 +113,6 @@
           "candidate": "Jackson Lahmeyer",
           "status": "projected",
           "calledAt": "2026-06-17T01:58:30.596Z"
-        }
-      ]
-    },
-    "al-sen-r-runoff-2026": {
-      "calls": [
-        {
-          "candidate": "Barry Moore",
-          "status": "projected",
-          "calledAt": "2026-06-17T02:07:49.585Z"
         }
       ]
     },

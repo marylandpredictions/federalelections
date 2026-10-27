@@ -1,4 +1,5 @@
 import { createServer } from "node:http";
+import { getResultsControl } from "./scripts/results/control.mjs";
 import { createWriteStream } from "node:fs";
 import { mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
 import { dirname, extname, join, resolve } from "node:path";
@@ -84,7 +85,7 @@ const cacheableExtensions = [".js", ".css", ".svg", ".png", ".jpg", ".jpeg", ".w
 
 function sendJson(response, status, payload, pathname = "") {
   const jsonString = JSON.stringify(payload);
-  response.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
+  response.writeHead(status, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
   response.end(jsonString);
 }
 
@@ -173,6 +174,11 @@ async function commitJsonFileToGitHub(relativePath, payload, message) {
     throw new Error(data.message || `GitHub write for ${relativePath} returned ${update.status}`);
   }
   return { committed: true, path: relativePath, branch: config.branch, sha: data.commit?.sha || "" };
+}
+
+async function persistControlToGitHub(payload, message) {
+  try { return await commitJsonFileToGitHub("data/result-calls.json", payload, message); }
+  catch(error) { return { committed:false, warning:`Local save succeeded; GitHub persistence failed: ${error.message}` }; }
 }
 
 async function persistAdminJsonFile(filePath, relativePath, payload, message) {
@@ -363,7 +369,7 @@ async function handleLiveResults(request, response) {
   const currentETag = liveResultsCache ? `"${liveResultsCacheAt}"` : null;
   
   // Check if client has current version
-  if (ifNoneMatch && currentETag && ifNoneMatch === currentETag) {
+  if (liveResultsCache && now - liveResultsCacheAt < liveResultsCacheMs && ifNoneMatch && currentETag && ifNoneMatch === currentETag) {
     response.writeHead(304, {
       "ETag": currentETag,
       "Cache-Control": "public, max-age=10"
@@ -429,16 +435,18 @@ async function refreshPersistedLiveResults(raceId = "") {
     }
   } catch (error) {
     console.warn(`Could not refresh persisted live results after admin save: ${error.message}`);
-    liveResultsCache = null;
+    // Keep the last valid response available on regeneration failure.
   }
 }
 
 function raceListFromLiveResults(data) {
   return (data.groups || []).flatMap((group) => (group.races || []).map((race) => ({
+    ...race,
     id: String(race.id),
     label: race.electionName || race.name || `Race ${race.id}`,
     state: race.state || group.state || "",
     candidates: (race.candidates || []).map((candidate) => ({
+      ...candidate,
       name: candidate.name,
       party: candidate.party || "",
       partyCode: candidate.partyCode || ""
@@ -710,9 +718,25 @@ async function handleAdmin(request, response, url) {
     return;
   }
 
+  if (url.pathname === "/api/admin/results-control") {
+    const control = await getResultsControl();
+    try {
+      if (request.method === "GET") { sendJson(response, 200, { ok: true, ...control.adminSnapshot() }); return; }
+      if (request.method !== "POST") { sendJson(response, 405, { ok: false, error: "Method not allowed" }); return; }
+      const payload = await readJsonBody(request);
+      const snapshot = await control.action(payload);
+      reloadManualResultConfig();
+      await refreshPersistedLiveResults(payload.raceId || "");
+      const persisted = await readJsonFile(callsPath, { races: {} });
+      const persistence = await persistControlToGitHub(persisted, `Election control: ${payload.action}`);
+      sendJson(response, 200, { ok: true, ...snapshot, persistence });
+    } catch (error) { sendJson(response, 400, { ok: false, error: error.code ? "Save failed. Your previous result state is retained. Check server storage and retry." : error.message }); }
+    return;
+  }
+
   if (request.method === "GET" && url.pathname === "/api/admin/bootstrap") {
     const [liveResults, calls, notes, overlay] = await Promise.all([
-      readJsonFile(resolve(root, "data", "live-results.json"), { groups: [] }),
+      buildLiveResults(),
       readJsonFile(callsPath, { races: {}, raceIdGuide: {} }),
       readJsonFile(analysisNotesPath, { races: {}, raceKey: {} }),
       readJsonFile(overlayConfigPath, { tickerItems: [], producerNote: "" })
@@ -789,6 +813,17 @@ async function handleAdmin(request, response, url) {
     const raceId = String(payload.raceId || "").trim();
     if (!isValidRaceId(raceId)) {
       sendJson(response, 400, { ok: false, error: "Choose a valid race." });
+      return;
+    }
+    if (process.env.RESULTS_MODE !== "legacy-primary") {
+      try {
+        const control = await getResultsControl();
+        await control.action({ action: "manual", raceId, calls: payload.calls });
+        await refreshPersistedLiveResults(raceId);
+        const persisted = await readJsonFile(callsPath, { races: {} });
+        const persistence = await persistControlToGitHub(persisted, `Manual call for ${raceId}`);
+        sendJson(response, 200, { ok: true, calls: control.calls.races[raceId]?.calls || [], persistence, persistedFiles: ["data/result-calls.json", "data/live-results.json", `data/live-results-races/${raceId}.json`] });
+      } catch (error) { sendJson(response, 400, { ok: false, error: error.code ? "Save failed. Your previous result state is retained. Check server storage and retry." : error.message }); }
       return;
     }
     const calls = Array.isArray(payload.calls) ? payload.calls : [];
@@ -942,6 +977,10 @@ async function serveStatic(request, response) {
     response.end();
     return;
   }
+  const decodedPath = decodeURIComponent(url.pathname);
+  if (decodedPath.split(/[\\/]/).some(part => part.startsWith(".")) || /^\/(?:scripts|tests|docs|node_modules|work)(?:\/|$)/.test(decodedPath) || /\.(?:mjs|jsonl|toml)$/i.test(decodedPath)) {
+    response.writeHead(404, { "Content-Type": "text/plain" }); response.end("Not found"); return;
+  }
   const hiddenResultPaths = new Set(["/result", "/result.html"]);
   if (hiddenResultPaths.has(url.pathname)) {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" });
@@ -970,7 +1009,7 @@ async function serveStatic(request, response) {
   
   const filePath = resolve(join(root, requestedPath));
 
-  if (!filePath.startsWith(root)) {
+  if (!filePath.startsWith(`${root}\\`) && !filePath.startsWith(`${root}/`)) {
     response.writeHead(403, { "Content-Type": "text/plain; charset=utf-8" });
     response.end("Forbidden");
     return;
@@ -1005,7 +1044,38 @@ async function serveStatic(request, response) {
   }
 }
 
+if (process.env.RESULTS_MODE !== "legacy-primary") {
+  const control = await getResultsControl();
+  let publishedSignature = "";
+  const publishedCalls = new Map();
+  let refreshRunning = false;
+  const refresh = async () => {
+    if (refreshRunning) return; refreshRunning = true;
+    try {
+      await control.poll(); await control.tick();
+      const data = control.results();
+      const signature = JSON.stringify([data.groups, data.provider]);
+      if (signature !== publishedSignature) {
+        liveResultsCache = data; liveResultsCacheAt = Date.now();
+        await writeLiveResultsSnapshot(data, { details: false });
+        for (const race of data.groups.flatMap(g => g.races)) {
+          const callsSignature = JSON.stringify(race.calls || []);
+          if (callsSignature !== publishedCalls.get(race.id) && (race.calls?.length || publishedCalls.has(race.id))) {
+            await buildRaceResultDetailWithHistory(race.id, {persist:true});
+          }
+          publishedCalls.set(race.id,callsSignature);
+        }
+        publishedSignature = signature;
+      }
+    } catch (error) { console.error(`Result refresh failed: ${error.message}`); }
+    finally { refreshRunning = false; }
+  };
+  await refresh();
+  setInterval(refresh, 1000).unref();
+}
+
 createServer(async (request, response) => {
+  try {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
   
   if (url.pathname === "/api/contact") {
@@ -1025,6 +1095,11 @@ createServer(async (request, response) => {
     return;
   }
   await serveStatic(request, response);
+  } catch (error) {
+    console.error(`Request failed: ${error.message}`);
+    if (!response.headersSent) sendJson(response, 500, {ok:false,error:"Request failed. Please retry."});
+    else response.end();
+  }
 }).listen(port, () => {
   console.log(`Federal Elections Analysis server running on port ${port}`);
 });

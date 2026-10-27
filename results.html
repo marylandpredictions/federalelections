@@ -9,8 +9,8 @@
   <link rel="icon" href="assets/img/FEA_Icon.webp" type="image/webp">
   <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
-  <script src="assets/theme.js"></script>
-  <link rel="stylesheet" href="assets/wiki.css?v=20260618-dark">
+  <script src="assets/theme.js?v=20261027-night-final"></script>
+  <link rel="stylesheet" href="assets/wiki.css?v=20261027-night-final2">
 </head>
 <body>
   <header class="site-header">
@@ -20,18 +20,9 @@
     </a>
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="/">Home</a>
-      <a href="/videos">Videos</a>
       <a class="active" href="/results">Results</a>
+      <a href="/videos">Videos</a>
       <a href="/articles">Articles</a>
-      <details class="nav-dropdown">
-        <summary>Forecasts</summary>
-        <div class="nav-dropdown-menu">
-          <a href="/senate">Senate</a>
-          <a href="/house">House</a>
-          <a href="/governor">Governors</a>
-
-        </div>
-      </details>
     </nav>
     <div class="site-nav-right">
       <a href="https://gofund.me/50724cf21" target="_blank" rel="noopener" class="donate-button">$ Donate</a>
@@ -47,7 +38,7 @@
       <div>
         <p class="kicker">Federal Elections Analysis</p>
         <h1 id="page-title">2026 Election Night.</h1>
-        <p class="lede">Election night race board for House, Senate, and gubernatorial contests.</p>
+        <p class="lede">House, Senate, and governor results. NBC projections and FEA manual calls are labeled separately.</p><p id="results-provider-status" role="status">Checking result feed…</p>
       </div>
       <div class="hero-actions election-mode-toggle" role="tablist" aria-label="Election results mode">
         <button class="button-link" type="button" data-mode="house">House</button>
@@ -95,7 +86,7 @@
   <footer class="site-footer">
     <div>
       <strong>Federal Elections Analysis</strong>
-      <p>Election modeling, public analysis, and team updates.</p>
+      <p>Election coverage, public analysis, and team updates.</p>
     </div>
     <nav class="footer-columns" aria-label="Footer navigation">
       <section class="footer-link-group" aria-label="Site links">
@@ -105,13 +96,7 @@
         <a class="active" href="/results">Results</a>
         <a href="/articles">Articles</a>
       </section>
-      <section class="footer-link-group" aria-label="Forecast links">
-        <strong>Forecasts</strong>
-        <a href="/senate">Senate</a>
-        <a href="/house">House</a>
-        <a href="/governor">Governors</a>
 
-      </section>
       <section class="footer-link-group" aria-label="Other links">
         <strong>Other</strong>
         <a href="/about">About</a>
@@ -124,6 +109,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
-  <script src="assets/election-night.js?v=20260721-ratings"></script>
+  <script src="assets/election-night.js?v=20261027-night-final"></script>
 </body>
 </html>

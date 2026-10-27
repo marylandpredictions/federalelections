@@ -1,5 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
+import { getResultsControl } from "./results/control.mjs";
 
 const OUTPUT_URL = new URL("../data/live-results.json", import.meta.url);
 const DETAIL_DIR_URL = new URL("../data/live-results-races/", import.meta.url);
@@ -1202,6 +1203,7 @@ async function fetchGroup(group) {
 }
 
 export async function buildLiveResults() {
+  if (process.env.RESULTS_MODE !== "legacy-primary") return (await getResultsControl()).results();
   const groups = [];
   const errors = [];
 
@@ -1237,6 +1239,11 @@ export async function buildLiveResults() {
 }
 
 export async function buildRaceResultDetail(id) {
+  if (process.env.RESULTS_MODE !== "legacy-primary") {
+    const race = (await getResultsControl()).results({details:true}).groups.flatMap(g => g.races).find(r => r.id === String(id));
+    if (!race) throw new Error("Unknown general-election race");
+    return race;
+  }
   const detail = await fetchRaceDetail(id);
   const externalEstimate = await fetchBestExternalEstimate(detail);
   return applyExternalEstimateToDetail(detail, externalEstimate);
@@ -1277,6 +1284,7 @@ export async function writeLiveResultsSnapshot(data, options = {}) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  if (process.env.RESULTS_MODE !== "legacy-primary") await (await getResultsControl()).poll();
   const data = await buildLiveResults();
   const detailCount = await writeLiveResultsSnapshot(data, { details: true });
   console.log(`Wrote live results for ${data.groups.reduce((sum, group) => sum + group.races.length, 0)} featured races and ${detailCount} detail files`);
