@@ -1,6 +1,8 @@
 import fs from "node:fs";
+import { parseDelimited } from "./results/csv.mjs";
+import { writePresidentialBaselines } from "./results/build-presidential-comparisons.mjs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SOURCE_DIR = path.join(ROOT, "data", "baselines", "source");
@@ -45,47 +47,6 @@ function readArg(name) {
 
 function firstExisting(paths) {
   return paths.find((file) => fs.existsSync(file)) || "";
-}
-
-function parseDelimited(text, delimiter = ",") {
-  const rows = [];
-  let row = [];
-  let field = "";
-  let quoted = false;
-  for (let index = 0; index < text.length; index += 1) {
-    const char = text[index];
-    const next = text[index + 1];
-    if (quoted) {
-      if (char === "\"" && next === "\"") {
-        field += "\"";
-        index += 1;
-      } else if (char === "\"") {
-        quoted = false;
-      } else {
-        field += char;
-      }
-    } else if (char === "\"") {
-      quoted = true;
-    } else if (char === delimiter) {
-      row.push(field);
-      field = "";
-    } else if (char === "\n") {
-      row.push(field);
-      rows.push(row);
-      row = [];
-      field = "";
-    } else if (char !== "\r") {
-      field += char;
-    }
-  }
-  if (field || row.length) {
-    row.push(field);
-    rows.push(row);
-  }
-  const headers = (rows.shift() || []).map((header) => header.trim());
-  return rows
-    .filter((values) => values.some((value) => String(value || "").trim()))
-    .map((values) => Object.fromEntries(headers.map((header, index) => [header, values[index] ?? ""])));
 }
 
 function parseCsv(text, file = "") {
@@ -164,71 +125,8 @@ function writeJson(relative, payload) {
 }
 
 function buildPresidentialBaselines(file) {
-  if (!file) {
-    console.warn("No county presidential returns file found. Put countypres_2000-2024.tab in data/baselines/source or pass --pres=path.");
-    return;
-  }
-  const rows = parseCsv(fs.readFileSync(file, "utf8"), file);
-  const byCounty = new Map();
-  for (const row of rows) {
-    const year = yearOf(row);
-    if (![2020, 2024].includes(year)) continue;
-    const state = stateAbbr(row);
-    const fips = countyFips(row);
-    const party = partyOf(row);
-    if (!state || !fips || !party) continue;
-    const key = `${year}:${fips}`;
-    if (!byCounty.has(key)) {
-      byCounty.set(key, {
-        year,
-        fips,
-        state,
-        county: String(column(row, ["county_name", "county", "countyname"])).trim(),
-        demVotes: 0,
-        repVotes: 0,
-        totalVotes: 0
-      });
-    }
-    const entry = byCounty.get(key);
-    const votes = number(column(row, ["candidatevotes", "candidate_votes", "votes"]));
-    if (party === "D") entry.demVotes += votes;
-    if (party === "R") entry.repVotes += votes;
-    entry.totalVotes = Math.max(entry.totalVotes, number(column(row, ["totalvotes", "total_votes", "total"])));
-  }
-
-  for (const year of [2020, 2024]) {
-    const counties = [...byCounty.values()]
-      .filter((entry) => entry.year === year)
-      .map(finalizeVotes)
-      .map(({ year: _year, ...entry }) => entry)
-      .sort((a, b) => a.fips.localeCompare(b.fips));
-    if (!counties.length) {
-      console.warn(`No ${year} presidential county rows found in ${path.relative(ROOT, file)}.`);
-      continue;
-    }
-    const stateMap = new Map();
-    for (const county of counties) {
-      if (!stateMap.has(county.state)) {
-        stateMap.set(county.state, { state: county.state, demVotes: 0, repVotes: 0, totalVotes: 0 });
-      }
-      const state = stateMap.get(county.state);
-      state.demVotes += county.demVotes;
-      state.repVotes += county.repVotes;
-      state.totalVotes += county.totalVotes;
-    }
-    writeJson(`data/baselines/pres-${year}-counties.json`, {
-      source: "MIT Election Data and Science Lab county presidential returns / official certified returns",
-      sourceFile: path.relative(ROOT, file).replaceAll("\\", "/"),
-      updatedAt: TODAY,
-      rows: counties
-    });
-    writeJson(`data/baselines/pres-${year}-states.json`, {
-      source: "MIT Election Data and Science Lab county presidential returns / official certified returns",
-      sourceFile: path.relative(ROOT, file).replaceAll("\\", "/"),
-      updatedAt: TODAY,
-      states: [...stateMap.values()].map(finalizeVotes).sort((a, b) => a.state.localeCompare(b.state))
-    });
-  }
+  if (!file) { console.warn("No presidential return source found."); return; }
+  writePresidentialBaselines(file,ROOT);
 }
 
 function buildHouseBaseline(file) {
@@ -412,6 +310,7 @@ function buildGovernorBaselineFromForecast(file) {
   });
 }
 
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
 const presPath = readArg("pres") || firstExisting([
   path.join(SOURCE_DIR, "countypres_2000-2024.tab"),
   path.join(SOURCE_DIR, "countypres_2000-2024.csv"),
@@ -441,3 +340,5 @@ buildPresidentialBaselines(presPath);
 buildHouseBaseline(housePath);
 buildSenateBaseline(senatePath);
 buildGovernorBaselineFromForecast(governorPath);
+
+}

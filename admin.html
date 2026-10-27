@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <title>FEA Admin</title>
   <link rel="icon" href="assets/img/FEA_Icon.webp" type="image/webp">
-  <script src="assets/theme.js?v=20261027-night-final"></script><link rel="stylesheet" href="assets/wiki.css?v=20261027-night-final2"><link rel="stylesheet" href="assets/admin-control.css?v=20261027-night-final">
+  <script src="assets/theme.js?v=20261027-night-final"></script><link rel="stylesheet" href="assets/wiki.css?v=20261027-night-final2"><link rel="stylesheet" href="assets/admin-control.css?v=20261027-board5">
 </head>
 <body class="admin-page">
   <main class="admin-shell">
@@ -19,26 +19,26 @@
     <section class="admin-panel" id="loginPanel">
       <h2>Staff access</h2>
       <div class="admin-field">
-        <label for="adminSecret">Admin secret</label>
+        <label for="adminSecret">Staff password</label>
         <input class="admin-input" id="adminSecret" type="password" autocomplete="current-password" placeholder="Enter staff secret">
       </div>
       <div class="admin-actions">
-        <button class="admin-button" id="unlockAdmin" type="button">Unlock admin</button>
+        <button class="admin-button" id="unlockAdmin" type="button">Sign in</button>
       </div>
-      <p class="admin-muted">Set this with the server environment variable <code>ADMIN_SECRET</code>. The hidden URL alone is not enough security.</p>
+      <p class="admin-muted">Use your staff password to sign in. Keep this window private.</p>
     </section>
 
     <section class="control-layout" id="adminApp" hidden>
       <nav class="control-nav" aria-label="Control center">
-        <button type="button" data-workspace="dashboard" aria-current="page">Dashboard</button><button type="button" data-workspace="calls">Calls <span id="queue-count">0</span></button><button type="button" data-workspace="races">Races</button><button type="button" data-workspace="ticker">Ticker</button><button type="button" data-workspace="analysis">Analysis</button><button type="button" data-workspace="testing">Testing</button><button type="button" data-workspace="system">System</button>
+        <button type="button" data-workspace="dashboard" aria-current="page">Overview</button><button type="button" data-workspace="calls">Calls <span id="queue-count">0</span></button><button type="button" data-workspace="races">Races</button><button type="button" data-workspace="ticker">Broadcast</button><button type="button" data-workspace="testing">Testing</button><button type="button" data-workspace="system" class="advanced-nav">Advanced</button>
         <small>/ Search races<br>P Publish selected<br>H Hold selected<br>Esc Close confirmation<br>Calls require confirmation.</small>
       </nav>
       <div class="control-workspaces">
-        <section class="admin-panel" data-view="dashboard"><h2>Election-night overview</h2><div id="control-summary" class="control-metrics"></div><h3>Needs attention</h3><div id="dashboard-pending"></div></section>
-        <section class="admin-panel" data-view="calls" hidden><h2>Call queue</h2><p id="automation-status" role="status"></p><div class="admin-actions"><button class="admin-button" data-global="pause">Pause NBC auto-calls</button><button class="admin-button" data-global="resume">Resume NBC auto-calls</button><button class="admin-button secondary" data-global="hold-all">Hold all pending</button><button class="admin-button secondary" data-global="return-all">Return non-overridden races to auto</button></div><h3>Needs action</h3><div id="pending-calls"></div><h3>Recently published</h3><div id="published-calls"></div><h3>Manual overrides</h3><div id="override-calls"></div></section>
-        <section class="admin-panel" data-view="system" hidden><h2>Provider health</h2><dl id="provider-health" class="control-health"></dl><h3>Call audit log</h3><div id="control-audit"></div></section>
+        <section class="admin-panel" data-view="dashboard"><h2>Overview</h2><div id="control-summary" class="control-metrics"></div><h3>Needs attention</h3><div id="dashboard-pending"></div></section>
+        <section class="admin-panel" data-view="calls" hidden><h2>Call queue</h2><p id="automation-status" role="status"></p><div class="admin-actions"><button class="admin-button" data-global="pause">Pause automatic calls</button><button class="admin-button" data-global="resume">Resume automatic calls</button><details class="call-tools"><summary>More call controls</summary><button class="admin-button secondary" data-global="hold-all">Hold all pending</button><button class="admin-button secondary" data-global="return-all">Return eligible races to NBC</button></details></div><h3>Needs action</h3><div id="pending-calls"></div><h3>Recently published</h3><div id="published-calls"></div><h3>Manual overrides</h3><div id="override-calls"></div></section>
+        <section class="admin-panel" data-view="system" hidden><h2>Advanced details</h2><details id="backup-details" hidden><summary>Backup sync details</summary><pre id="backup-error"></pre></details><dl id="provider-health" class="control-health"></dl><h3>Call audit log</h3><div id="control-audit"></div></section>
       <aside class="admin-panel" data-view="races" hidden>
-        <h2>Race</h2>
+        <h2 id="admin-race-title">Choose a race</h2>
         <div class="admin-toggle-row" hidden>
           <span class="admin-muted" id="raceModeLabel">Latest result races only</span>
           <label for="showAllRaces">
@@ -47,26 +47,26 @@
           </label>
         </div>
         <div class="admin-field">
-          <label for="raceSearch">Search races</label><input class="admin-input" id="raceSearch" type="search" placeholder="CO-04, Colorado 4, Illinois Senate, surname"><details class="race-filters"><summary>Filter by office or status</summary><label for="raceOffice">Office</label><select class="admin-select" id="raceOffice"><option value="">All offices</option><option value="house">House</option><option value="senate">Senate</option><option value="governor">Governor</option></select><label for="raceFilter">Status</label><select class="admin-select" id="raceFilter"><option value="">All races</option><option value="called">Called</option><option value="uncalled">Uncalled</option><option value="pending">NBC pending</option><option value="override">Override</option><option value="key">Key races</option></select></details><label for="raceSelect">Select race</label>
+          <label for="raceSearch">Search races</label><input class="admin-input" id="raceSearch" type="search" placeholder="CO-04, Colorado 4, Illinois Senate, surname"><details class="race-filters"><summary>Filter by office or status</summary><label for="raceOffice">Office</label><select class="admin-select" id="raceOffice"><option value="">All offices</option><option value="house">House</option><option value="senate">Senate</option><option value="governor">Governor</option></select><label for="raceFilter">Status</label><select class="admin-select" id="raceFilter"><option value="">All races</option><option value="called">Called</option><option value="uncalled">Uncalled</option><option value="pending">NBC pending</option><option value="override">Override</option><option value="key">Watch races</option></select></details><label for="raceSelect">Select race</label>
           <select class="admin-select" id="raceSelect"></select>
         </div>
-        <p id="race-control-meta"></p><div class="admin-candidate-list" id="candidateList"></div><div class="admin-actions"><button class="admin-button secondary" id="returnRaceAuto">Return to NBC auto</button></div>
-        <p class="admin-muted" id="raceHelp">Choose a candidate below, then confirm the FEA call. A manual call pauses NBC automation for this race. Provisional rosters must be verified before calling.</p>
+        <div class="admin-candidate-list" id="candidateList"></div><div id="race-control-meta"></div><div class="admin-actions"><button class="admin-button secondary" id="returnRaceAuto">Use NBC calls again</button></div>
+        <p class="admin-muted" id="raceHelp">Choose a candidate, then confirm your call. Your choice stays in place until you return this race to NBC.</p>
       </aside>
 
       <section class="admin-panel" data-view="races" hidden>
         <h2>Race calls</h2>
-        <p class="admin-muted">Single-winner races usually use Projected or Winner. Top-two/open primaries usually use Advances or Advanced.</p>
+        <p class="admin-muted">A manual call takes priority over NBC.</p>
         <div id="callRows"></div>
         <div class="admin-actions">
           <button class="admin-button secondary" id="addCallRow" type="button" hidden>Add call row</button>
-          <button class="admin-button" id="saveCalls" type="button">Save calls</button>
+          <button class="admin-button" id="saveCalls" type="button">Publish FEA call</button>
         </div>
         <p role="status" class="admin-status" id="callStatus"></p>
       </section>
 
       <section class="admin-panel" data-view="ticker" hidden>
-        <h2>OBS ticker</h2>
+        <h2>Broadcast ticker</h2>
         <p class="admin-muted">Add one bottom-bar message per line. Optional format: TAG: message. The overlay also adds called and uncalled race status automatically.</p>
         <div class="admin-field">
           <label for="tickerText">Scrolling text</label>
@@ -84,20 +84,20 @@
       </section>
 
       <section class="admin-panel" data-view="ticker" hidden>
-        <h2>Call graphic preview</h2>
+        <h2>Call preview</h2>
         <p class="admin-muted">Select a called race to show the graphic that will spawn on the OBS overlay. This panel is useful for screenshots.</p>
         <div id="callPreview" class="admin-preview-empty">No call selected yet.</div>
       </section>
 
       <section class="admin-panel" data-view="testing" hidden>
         <h2>Election night lab</h2>
-        <p class="admin-muted">Open an unlisted duplicate of the 2026 Election Night page for map, call, and display testing before the public board is used.</p>
+        <p class="admin-muted">Try practice results here. Test changes do not affect the public board.</p>
         <div class="admin-field">
           <label for="testMode">Test mode</label>
           <select class="admin-select" id="testMode">
             <option value="pre_election">Pre-election preview</option>
             <option value="mock">Mock data mode</option>
-            <option value="simulation">Simulation mode</option><option value="live">Live provider test (read only)</option>
+            <option value="simulation">Simulation mode</option><option value="live">View current results (read only)</option>
           </select>
         </div>
         <div class="admin-field">
@@ -110,14 +110,14 @@
           </select>
         </div>
         <div class="admin-actions">
-          <button class="admin-button" id="applyTestMode" type="button">Prepare lab link</button>
-          <a class="admin-button secondary" id="openElectionNightTest" href="/fea-results-lab-26?mock=true" target="_blank" rel="noopener">Open lab page</a>
+          <button class="admin-button" id="applyTestMode" type="button">Prepare test board</button>
+          <a class="admin-button secondary" id="openElectionNightTest" href="/fea-results-lab-26?mock=true" target="_blank" rel="noopener">Open test board</a>
         </div>
         <p role="status" class="admin-status" id="testModeStatus"></p>
       </section>
 
-      <section class="admin-panel" style="grid-column: 1 / -1;" data-view="analysis" hidden>
-        <h2>Analyst note</h2>
+      <details class="admin-panel analyst-tools" data-view="races" hidden>
+        <summary>Analyst notes</summary>
         <div class="admin-field">
           <label for="noteSelect">Edit existing note</label>
           <select class="admin-select" id="noteSelect">
@@ -160,11 +160,12 @@
           <button class="admin-button" id="saveNote" type="button">Add newest note</button>
         </div>
         <p role="status" class="admin-status" id="noteStatus"></p>
-      </section>
+      </details>
     </div></section>
     <p id="control-status" class="admin-status" role="status"></p>
     <dialog id="control-confirm"><form method="dialog"><h2>Confirm election call action</h2><p id="confirm-message"></p><div class="admin-actions"><button class="admin-button secondary" value="cancel">Cancel</button><button class="admin-button" value="confirm">Confirm</button></div></form></dialog>
   </main>
-  <script src="assets/admin.js?v=20261027-night-final"></script>
+  <script src="assets/results-ui.js?v=20261027-board5"></script>
+  <script src="assets/admin.js?v=20261027-board5"></script>
 </body>
 </html>

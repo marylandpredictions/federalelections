@@ -12,10 +12,9 @@
     },
     {
       "id": "pres-2024",
-      "label": "2024 presidential margin",
+      "label": "2024 presidential shift",
       "description": "Results minus the 2024 presidential Democratic margin. County files are compatible with statewide race detail maps.",
       "appliesTo": [
-        "house",
         "senate",
         "governor"
       ],
@@ -24,35 +23,37 @@
       "countyFile": "data/baselines/pres-2024-counties.json",
       "stateFile": "data/baselines/pres-2024-states.json",
       "sourceNotes": [
-        "Use certified county returns or MEDSL-style county presidential returns.",
-        "Normalize by county FIPS with demVotes, repVotes, totalVotes, demShare, repShare, margin."
+        "Statewide margins use official FEC state returns. County margins use MEDSL county returns without duplicate TOTAL/component modes. No House district fallback is allowed."
       ],
       "sourceUrls": [
-        "https://electionlab.mit.edu/data",
-        "https://github.com/MEDSL"
-      ]
+        "https://www.fec.gov/resources/cms-content/documents/2024presgeresults.pdf",
+        "https://doi.org/10.7910/DVN/VOQCHQ"
+      ],
+      "marginBasis": "all-votes",
+      "districtUnavailableReason": "No verified current-geography presidential district baseline."
     },
     {
       "id": "pres-2020",
-      "label": "2020 presidential margin",
+      "label": "2020 presidential shift",
       "description": "Results minus the 2020 presidential Democratic margin. County files are compatible with statewide race detail maps.",
       "appliesTo": [
-        "house",
         "senate",
         "governor"
       ],
       "countyCompatible": true,
-      "status": "available",
+      "status": "unavailable",
       "countyFile": "data/baselines/pres-2020-counties.json",
       "stateFile": "data/baselines/pres-2020-states.json",
       "sourceNotes": [
-        "Use certified county returns or MEDSL-style county presidential returns.",
-        "Normalize by county FIPS with demVotes, repVotes, totalVotes, demShare, repShare, margin."
+        "Rebuilt from the local MEDSL source; TOTAL rows are never added to component modes. House requires a verified current-geography district tabulation, currently unavailable."
       ],
       "sourceUrls": [
         "https://electionlab.mit.edu/data",
         "https://github.com/MEDSL"
-      ]
+      ],
+      "marginBasis": "all-votes",
+      "districtUnavailableReason": "No verified current-geography presidential district baseline.",
+      "unavailableReason": "County-derived statewide totals require reconciliation against official statewide controls."
     },
     {
       "id": "house-2024",
@@ -62,12 +63,13 @@
         "house"
       ],
       "countyCompatible": false,
-      "status": "available",
+      "status": "unavailable",
       "districtFile": "data/baselines/house-2024-districts.json",
       "sourceNotes": [
         "Use official state returns or MIT/MEDSL-style district House returns.",
         "County pieces stay dim because this baseline is district-level, not split-county."
-      ]
+      ],
+      "unavailableReason": "Historical source/geography not verified for this election-night comparison."
     },
     {
       "id": "senate-last",
@@ -77,7 +79,7 @@
         "senate"
       ],
       "countyCompatible": false,
-      "status": "available",
+      "status": "unavailable",
       "stateFile": "data/baselines/senate-last-states.json",
       "sourceNotes": [
         "For current 2026 coverage, use the same-seat-cycle baseline where available, such as Collins 2020 instead of King 2024 in Maine.",
@@ -85,7 +87,8 @@
       ],
       "sourceUrls": [
         "https://doi.org/10.7910/DVN/PEJ5QU"
-      ]
+      ],
+      "unavailableReason": "Historical source/geography not verified for this election-night comparison."
     },
     {
       "id": "governor-last",
@@ -95,12 +98,13 @@
         "governor"
       ],
       "countyCompatible": false,
-      "status": "available",
+      "status": "unavailable",
       "stateFile": "data/baselines/governor-last-states.json",
       "sourceNotes": [
         "Uses previous gubernatorial general-election margins from the FEA governor forecast input file.",
         "This is state-level only. Replace with certified governor returns when a complete statewide governor returns source is added."
-      ]
+      ],
+      "unavailableReason": "Historical source/geography not verified for this election-night comparison."
     }
   ]
 }

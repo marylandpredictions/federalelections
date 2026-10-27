@@ -50,19 +50,34 @@
     document.querySelectorAll("[data-workspace]").forEach(button => { if(button.dataset.workspace === name) button.setAttribute("aria-current","page"); else button.removeAttribute("aria-current"); });
   }
   async function controlAction(action, raceId) {
-    if (!await confirmAction(`${action.replaceAll("-"," ").toUpperCase()}${raceId ? ` • ${state.allRaces.find(r=>r.id===raceId)?.label || raceId}` : " • all eligible races"}?`)) return;
+    const verbs={publish:"Publish this NBC call",hold:"Hold this call for review",ignore:"Ignore this NBC call",auto:"Clear your call and use NBC calls again",pause:"Pause automatic publishing",resume:"Resume automatic publishing","hold-all":"Hold all waiting NBC calls","return-all":"Use NBC calls again for eligible races; keep manual overrides"};
+    const race=state.allRaces.find(r=>r.id===raceId);
+    if (!await confirmAction(`${verbs[action] || action}${race?` — ${race.label}`:""}?`)) return;
     const payload = await adminFetch("/api/admin/results-control", {method:"POST",body:JSON.stringify({action,raceId})});
-    controlSnapshot = payload; state.calls.races = payload.states; state.allRaces = payload.races.map(r=>({...r,label:r.electionName})); renderControl(); if(currentRace())renderRaceMeta(currentRace());
-    setStatus($("control-status"), payload.persistence?.warning ? `Saved locally. ${payload.persistence.warning}` : "Action saved.");
+    controlSnapshot = payload; state.calls.races = payload.states; state.allRaces = payload.races.map(r=>({...r,label:FEAResultsUI.raceLabel({...r,stateName:stateNames[r.state]}),watch:state.watchlist?.get(r.id)})); renderControl(); if(currentRace()){renderRaceMeta(currentRace());renderCandidateList(currentRace());}
+    setStatus($("control-status"), "Saved.");backupStatus(payload);
+  }
+  function relativeTime(value) {
+    if(!value || !Number.isFinite(Date.parse(value)))return "Awaiting results";
+    const seconds=Math.max(0,Math.floor((Date.now()-Date.parse(value))/1000));
+    return seconds<60?`${seconds} sec ago`:seconds<3600?`${Math.floor(seconds/60)} min ago`:new Date(value).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+  }
+  function backupStatus(payload) {
+    const problem=payload.persistence?.warning || payload.persistence?.error;
+    if(!problem)return;
+    setStatus($("control-status"),"Saved on this server. Backup sync failed.",true);
+    $("backup-details").hidden=false;$("backup-error").textContent=String(problem);
   }
   function callCard(id,s,actions=false) {
-    const race=controlSnapshot.races.find(r=>r.id===id); const candidate=s.providerCall?.candidate || s.calls?.[0]?.candidate || ""; const party=race?.candidates.find(c=>c.name === candidate)?.party || "";
-    return `<article class="queue-card"><button class="queue-race" type="button" data-open-race="${escapeHtml(id)}">${escapeHtml(race?.electionName || id)}</button><strong>${escapeHtml(candidate)} ${escapeHtml(party ? `(${party})` : "")}</strong>${s.attentionReason ? `<p>${escapeHtml(s.attentionReason)}</p>` : ""}<p>${escapeHtml(s.callState || "FEA call")} • ${s.providerCall ? "NBC projection" : "FEA manual"}</p>${s.providerCall ? `<p>Detected <span data-detected="${escapeHtml(s.providerCall.detectedAt)}"></span> ago</p>` : ""}${s.callState === "NBC_PENDING" ? `<p data-deadline="${escapeHtml(s.publishAt)}"></p>` : ""}${actions ? `<div class="admin-actions">${[["publish","Publish now"],["hold","Hold"],["override","Override"],["ignore","Ignore NBC call"]].map(([a,label])=>`<button class="admin-button secondary" type="button" data-call-action="${a}" data-race-id="${escapeHtml(id)}">${label}</button>`).join("")}</div>` : ""}${s.manualOverride || ["NBC_HELD","NBC_IGNORED"].includes(s.callState) ? `<button class="admin-button secondary" data-call-action="auto" data-race-id="${escapeHtml(id)}">Return to NBC auto</button>` : ""}</article>`;
+    const race=controlSnapshot.races.find(r=>r.id===id),name=race?FEAResultsUI.raceLabel({...race,stateName:stateNames[race.state]}):"Race";
+    const presentation=FEAResultsUI.callPresentation(s),candidate=presentation.candidate;
+    const party=race?.candidates.find(c=>c.name===candidate)?.party || "";
+    return `<article class="queue-card" data-call-state="${escapeHtml(s.callState || "UNCALLED")}"><span class="queue-eyebrow">${presentation.label}</span><button class="queue-race" type="button" data-open-race="${escapeHtml(id)}">${escapeHtml(name)}</button><strong>${escapeHtml(candidate)}${party?` (${escapeHtml(party)})`:""}</strong><p>${FEAResultsUI.stateLabel(s.callState)}</p>${presentation.nbcCandidate?`<p>NBC projects ${escapeHtml(presentation.nbcCandidate)}</p>`:""}${s.attentionReason?'<p>Please review NBC’s latest projection.</p>':""}${s.callState==="NBC_PENDING"?`<p class="queue-clock" data-deadline="${escapeHtml(s.publishAt)}"></p>`:s.calls?.[0]?.calledAt?`<p>Published ${relativeTime(s.calls[0].calledAt)}</p>`:""}${actions?`<div class="admin-actions">${[["publish","Publish"],["hold","Hold"],["override","Override"]].map(([action,label])=>`<button class="admin-button ${action==="publish"?"":"secondary"}" type="button" data-call-action="${action}" data-race-id="${escapeHtml(id)}">${label}</button>`).join("")}<details class="queue-more"><summary>More</summary><button class="admin-button secondary" type="button" data-call-action="ignore" data-race-id="${escapeHtml(id)}">Ignore NBC call</button></details></div>`:""}${s.manualOverride||["NBC_HELD","NBC_IGNORED"].includes(s.callState)?`<button class="admin-button secondary" data-call-action="auto" data-race-id="${escapeHtml(id)}">Use NBC calls again</button>`:""}</article>`;
   }
   function updateQueueClocks() {
     const skew=controlSnapshot ? Date.parse(controlSnapshot.serverTime)-controlSnapshot.receivedAt : 0;
     const now=Date.now()+skew;
-    document.querySelectorAll("[data-deadline]").forEach(node=>node.textContent = controlSnapshot?.health.automation === "ACTIVE" ? `Auto-publishes in ${Math.max(0,Math.ceil((Date.parse(node.dataset.deadline)-now)/1000))}s` : `Auto-publish suspended • ${controlSnapshot?.health.automation || "unavailable"}`);
+    document.querySelectorAll("[data-deadline]").forEach(node=>node.textContent = controlSnapshot?.health.automation === "ACTIVE" ? `Auto-publishes in ${Math.max(0,Math.ceil((Date.parse(node.dataset.deadline)-now)/1000))}s` : controlSnapshot?.health.automation === "PAUSED" ? "Automatic publishing is paused" : "Waiting for the results feed");
     document.querySelectorAll("[data-detected]").forEach(node=>node.textContent=`${Math.max(0,Math.floor((now-Date.parse(node.dataset.detected))/1000))}s`);
   }
   function renderControl() {
@@ -73,10 +88,10 @@
     renderControl.signature = signature;
     const h=controlSnapshot.health, entries=Object.entries(controlSnapshot.states);
     const pending=entries.filter(([,s])=>["NBC_PENDING","NBC_HELD"].includes(s.callState) && !s.manualOverride);
-    $("control-top-status").textContent=`NBC: ${h.status} • Auto-calls: ${h.automation} • Pending: ${h.pending} • Overrides: ${h.overrides}`;
+    $("control-top-status").textContent=`Results feed: ${FEAResultsUI.feedLabel(h)}`;
     $("queue-count").textContent=h.pending;
-    $("automation-status").textContent=`NBC automation ${h.automation} • Grace period ${h.graceSeconds}s`;
-    $("control-summary").innerHTML=[["NBC status",h.status],["Pending calls",h.pending],["Overrides",h.overrides],["Result feed",h.lastChangedResult || "Awaiting first result"],["FEA calls",["house","senate","governor"].map(t=>`${t}: ${controlSnapshot.races.filter(r=>r.type===t&&r.calls?.length).length}`).join(" / ")],["System",h.error || (h.stale?"Warning: upstream data stale or unavailable":"Healthy • no new votes is normal")]].map(([label,value])=>`<article><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></article>`).join("");
+    $("automation-status").textContent=h.automation === "ACTIVE" ? `NBC calls publish automatically after ${h.graceSeconds} seconds. You can hold a call before it publishes.` : h.automation === "PAUSED" ? "Automatic publishing is paused." : "Automatic publishing is waiting for the results feed. Manual calls are available.";
+    $("control-summary").innerHTML=[["Results feed",FEAResultsUI.feedLabel(h)],["NBC calls waiting",h.pending],["Manual overrides",h.overrides],["Latest update",relativeTime(h.lastUpstreamUpdate)]].map(([label,value])=>`<article><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></article>`).join("");
     $("pending-calls").innerHTML=pending.map(([id,s])=>callCard(id,s,true)).join("")||"No calls waiting.";
     $("dashboard-pending").innerHTML=pending.slice(0,4).map(([id,s])=>callCard(id,s,true)).join("")||"No calls need attention.";
     $("published-calls").innerHTML=entries.filter(([,s])=>s.calls?.length&&!s.manualOverride).sort((a,b)=>String(b[1].calls[0]?.calledAt).localeCompare(String(a[1].calls[0]?.calledAt))).slice(0,15).map(([id,s])=>callCard(id,s)).join("")||"No published NBC calls.";
@@ -87,8 +102,8 @@
   }
   async function refreshControl() {
     if(refreshingControl) return; refreshingControl=true;
-    try { const payload=await adminFetch("/api/admin/results-control"); controlSnapshot={...payload,receivedAt:Date.now()}; state.allRaces=payload.races.map(r=>({...r,label:r.electionName})); state.latestRaces=state.allRaces; state.calls.races=payload.states; renderControl(); if(currentRace())renderRaceMeta(currentRace()); }
-    catch(e) { setStatus($("control-status"),`Control refresh failed: ${e.message}. Your edits are preserved.`,true); }
+    try { const payload=await adminFetch("/api/admin/results-control"); controlSnapshot={...payload,receivedAt:Date.now()}; state.allRaces=payload.races.map(r=>({...r,label:FEAResultsUI.raceLabel({...r,stateName:stateNames[r.state]}),watch:state.watchlist?.get(r.id)})); state.latestRaces=state.allRaces; state.calls.races=payload.states; renderControl(); if(currentRace()){renderRaceMeta(currentRace());renderCandidateList(currentRace());} }
+    catch(e) { setStatus($("control-status"),"Unable to refresh results. Your edits are still here.",true); }
     finally { refreshingControl=false; }
   }
   document.addEventListener("click", event=>{
@@ -159,7 +174,7 @@
       const alias = `${race.state}-${race.type === "senate" ? "SEN" : race.type === "governor" ? "GOV" : district}`;
       const haystack = `${race.id} ${race.label} ${alias} ${stateNames[race.state] || race.state} ${race.district || ""} ${officeName} ${(race.candidates || []).map(c=>c.name).join(" ")}`.toLowerCase().replace(/[^a-z0-9]/g, "");
       return (!term || haystack.includes(term)) && (!office || race.type === office) &&
-        (!filter || (filter === "called" && !!status.calls?.length) || (filter === "uncalled" && !status.calls?.length) || (filter === "pending" && status.callState === "NBC_PENDING") || (filter === "override" && status.manualOverride) || (filter === "key" && race.keyRace));
+        (!filter || (filter === "called" && !!status.calls?.length) || (filter === "uncalled" && !status.calls?.length) || (filter === "pending" && status.callState === "NBC_PENDING") || (filter === "override" && status.manualOverride) || (filter === "key" && !!race.watch));
     });
   }
 
@@ -327,19 +342,30 @@
   }
 
   function renderRaceMeta(race) {
-    $("race-control-meta").textContent = `${race.label} • ${race.calls?.[0]?.provider === "NBC" ? "NBC projects" : race.calls?.length ? "FEA manual call" : "Uncalled"} • Expected vote: ${race.expectedVotePercent ?? "unavailable"} • Precinct reporting: ${race.reportingPercent ?? "unavailable"} • Updated: ${race.lastUpdated || "Awaiting results"} • Counties: ${race.countyCount || race.counties?.length || 0} • ${controlSnapshot?.states?.[race.id]?.manualOverride ? "NBC automation paused for this race" : "NBC auto enabled"} • NBC: ${controlSnapshot?.states?.[race.id]?.providerCall?.candidate || "No explicit projection"}`;
+    const state=controlSnapshot?.states?.[race.id] || {};
+    const advancedOpen=$("race-control-meta").querySelector("details")?.open;
+    $("admin-race-title").textContent=FEAResultsUI.raceLabel({...race,stateName:stateNames[race.state]});
+    const expected=race.expectedVotePercent??race.estimatedVoteReporting;
+    const facts=[["Expected vote",expected!=null?`${Number(expected).toFixed(1)}%`:"Not available yet"],["NBC",state.providerCall?`${state.providerCall.candidate} projected`:"Not called"],["FEA",state.calls?.length?state.calls.map(c=>c.candidate).join(", "):"Not called"],["Your choice",state.manualOverride?"Manual override":FEAResultsUI.stateLabel(state.callState)]];
+    $("race-control-meta").innerHTML=`<dl class="operator-race-facts">${facts.map(([label,value])=>`<div><dt>${label}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl><details class="race-advanced" ${advancedOpen?"open":""}><summary>Advanced details</summary><dl>${Object.entries({"Race ID":race.id,"Provider race ID":race.providerRaceId,"Source":race.sourceUrl,"Last update":race.lastUpdated,"Call state":state.callState||"UNCALLED","County areas":race.countyCount||0}).map(([label,value])=>`<div><dt>${label}</dt><dd>${escapeHtml(value??"Not available")}</dd></div>`).join("")}</dl></details>`;
+  }
+
+  function renderCandidateList(race) {
+    const focused=candidateList.contains(document.activeElement)?document.activeElement.dataset.candidate:null;
+    candidateList.innerHTML = (race.candidates || []).map((candidate) => `
+      <button class="admin-candidate" type="button" data-candidate="${escapeHtml(candidate.name)}">
+        <strong>${escapeHtml(candidate.name)}</strong>
+        <span class="operator-candidate-party">${escapeHtml(candidate.party || candidate.partyCode || "")}</span><span class="operator-candidate-total">${(candidate.votes || 0).toLocaleString()} votes</span><b>${Number(candidate.percent || 0).toFixed(1)}%</b>
+      </button>
+    `).join("");
+    if(focused) [...candidateList.querySelectorAll("[data-candidate]")].find(button=>button.dataset.candidate===focused)?.focus();
   }
 
   function renderRace() {
     const race = currentRace();
     if (!race) { candidateList.innerHTML = "No matching races."; callRows.innerHTML = ""; return; }
     renderRaceMeta(race);
-    candidateList.innerHTML = (race.candidates || []).map((candidate) => `
-      <button class="admin-candidate" type="button" data-candidate="${escapeHtml(candidate.name)}">
-        <strong>${escapeHtml(candidate.name)}</strong>
-        <span>${escapeHtml(candidate.party || candidate.partyCode || "")} • ${(candidate.votes || 0).toLocaleString()} votes • ${Number(candidate.percent || 0).toFixed(1)}%</span>
-      </button>
-    `).join("");
+    renderCandidateList(race);
     renderCalls();
     clearNoteForm();
     renderNoteSelect();
@@ -348,7 +374,7 @@
   function renderApp() {
     const races = activeRaces();
     const previousValue = raceSelect.value;
-    raceModeLabel.textContent = state.showAllRaces ? "All persisted races" : "Latest result races only";
+    raceModeLabel.textContent = "2026 races";
     raceSelect.innerHTML = races.map((race) => `
       <option value="${escapeHtml(race.id)}">${escapeHtml(race.state ? `${race.state} - ${race.label}` : race.label)}</option>
     `).join("");
@@ -392,7 +418,7 @@
     const calls = state.calls.races?.[race?.id]?.calls || [];
     if (!race || !calls.length) {
       callPreview.className = "admin-preview-empty";
-      callPreview.innerHTML = "This race has no manual call yet. Save a call to preview the OBS graphic.";
+      callPreview.innerHTML = "Call a race to see the broadcast graphic here.";
       return;
     }
     const calledCandidates = calls.map((call) => ({
@@ -436,6 +462,7 @@
     let payload;
     try { payload = await adminFetch("/api/admin/bootstrap"); } finally { state.unlocking = false; }
     // bootstrap succeeded
+    try { const response=await fetch("data/election-night-watchlist.json",{cache:"no-store"});state.watchlist=FEAResultsUI.watchMetadata(response.ok?await response.json():null,payload.races||[]); } catch {state.watchlist=new Map();}
     sessionStorage.setItem("feaAdminSecret", state.secret);
     state.latestRaces = payload.latestRaces || payload.races || [];
     state.allRaces = payload.allRaces || state.latestRaces;
@@ -465,7 +492,7 @@
     const race = currentRace();
     if (!race) return;
     const calls = collectCalls();
-    if (!await confirmAction(calls.length ? `Call ${race.label} for ${calls.map(c=>c.candidate).join(" and ")}? This pauses NBC automation for this race.` : `Clear the FEA call for ${race.label} and keep NBC automation overridden?`)) return;
+    if (!await confirmAction(calls.length ? `Call ${race.label} for ${calls.map(c=>c.candidate).join(" and ")}? Automatic NBC calls stop for this race until you choose to use them again.` : `Clear the FEA call for ${race.label} and keep NBC automation overridden?`)) return;
     setStatus(callStatus, "Saving...");
     try {
       const payload = await adminFetch("/api/admin/calls", {
@@ -476,11 +503,8 @@
       dirty = false;
       await refreshControl();
       renderCalls();
-      const files = (payload.persistedFiles || []).join(", ");
-      if(payload.persistence?.warning || payload.persistence?.error) setStatus($("control-status"), `Saved locally; GitHub persistence needs attention: ${payload.persistence.warning || payload.persistence.error}`, true);
-      setStatus(callStatus, files
-        ? `Calls saved to repo data files: ${files}.`
-        : "Calls saved. The site will pick this up on its next refresh.");
+      backupStatus(payload);
+      setStatus(callStatus,"Call saved.");
     } catch (error) {
       setStatus(callStatus, error.message, true);
     }
@@ -498,11 +522,8 @@
       });
       state.overlay = payload.overlay || state.overlay;
       overlayDirty = false;
-      const files = (payload.persistedFiles || []).join(", ");
-      if(payload.persistence?.warning || payload.persistence?.error) setStatus($("control-status"), `Saved locally; GitHub persistence needs attention: ${payload.persistence.warning || payload.persistence.error}`, true);
-      setStatus(overlayStatus, files
-        ? `Overlay ticker saved to repo data files: ${files}.`
-        : "Overlay ticker saved. The OBS overlay will pick this up on its next refresh.");
+      backupStatus(payload);
+      setStatus(overlayStatus,"Ticker saved. Your broadcast will update shortly.");
     } catch (error) {
       setStatus(overlayStatus, error.message, true);
     }
@@ -535,10 +556,9 @@
       $("noteEmbed").value = "";
       renderNoteSelect();
       $("saveNote").textContent = "Add newest note";
-      const files = (payload.persistedFiles || []).join(", ");
-      if(payload.persistence?.warning || payload.persistence?.error) setStatus($("control-status"), `Saved locally; GitHub persistence needs attention: ${payload.persistence.warning || payload.persistence.error}`, true);
+      backupStatus(payload);
       const message = wasEditing ? "Analyst note updated" : "Analyst note added as newest note";
-      setStatus(noteStatus, files ? `${message} in repo data files: ${files}.` : `${message}.`);
+      setStatus(noteStatus,`${message}.`);
     } catch (error) {
       setStatus(noteStatus, error.message, true);
     }
@@ -547,7 +567,7 @@
   $("unlockAdmin").addEventListener("click", () => unlock().catch((error) => {
     const status = document.createElement("p");
     status.className = "admin-status error";
-    status.textContent = error.message;
+    status.textContent = "Unable to sign in. Check your password and try again.";
     loginPanel.querySelector(".admin-status")?.remove();
     status.setAttribute("role","alert");
     loginPanel.append(status);
@@ -621,7 +641,7 @@
     }
     openElectionNightTest.href = testUrl;
     
-    setStatus(testModeStatus, `Lab link ready for ${selectedMode}${selectedMode === "simulation" ? ` (${selectedState})` : ""}. Open the lab page to test the election-night board.`);
+    setStatus(testModeStatus, "Test board ready. Open it to try this scenario.");
   });
 
   if (state.secret) {

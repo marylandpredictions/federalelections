@@ -11,104 +11,31 @@
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
   <script src="assets/theme.js?v=20261027-night-final"></script>
   <link rel="stylesheet" href="assets/wiki.css?v=20261027-night-final2">
+  <link rel="stylesheet" href="assets/results-board.css?v=20261027-board5">
 </head>
-<body>
-  <header class="site-header">
-    <a class="brand" href="/">
-      <img class="brand-mark" src="assets/img/FEA_Icon.webp" alt="Federal Elections Analysis">
-      <span><strong>Federal Elections Analysis</strong><small style="font-weight: 700;">Election analysis</small></span>
-    </a>
-    <nav class="site-nav" aria-label="Primary navigation">
-      <a href="/">Home</a>
-      <a class="active" href="/results">Results</a>
-      <a href="/videos">Videos</a>
-      <a href="/articles">Articles</a>
-    </nav>
-    <div class="site-nav-right">
-      <a href="https://gofund.me/50724cf21" target="_blank" rel="noopener" class="donate-button">$ Donate</a>
-      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
-        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
-        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A8.5 8.5 0 1 1 11.21 3 6.5 6.5 0 0 0 21 12.79Z"></path></svg>
-      </button>
-    </div>
-  </header>
-
-  <main class="election-night-page">
-    <section class="text-panel compact-page-head election-night-hero" aria-labelledby="page-title">
-      <div>
-        <p class="kicker">Federal Elections Analysis</p>
-        <h1 id="page-title">2026 Election Night.</h1>
-        <p class="lede">House, Senate, and governor results. NBC projections and FEA manual calls are labeled separately.</p><p id="results-provider-status" role="status">Checking result feed…</p>
+<body class="results-board">
+  <main class="election-night-page" aria-label="2026 election results">
+    <h1 class="board-sr-only">2026 Election Night</h1>
+    <div class="board-top-controls">
+      <div class="election-mode-toggle" role="tablist" aria-label="Election office">
+        <button type="button" data-mode="house" role="tab">House</button><button type="button" data-mode="senate" role="tab">Senate</button><button type="button" data-mode="governor" role="tab">Governors</button>
       </div>
-      <div class="hero-actions election-mode-toggle" role="tablist" aria-label="Election results mode">
-        <button class="button-link" type="button" data-mode="house">House</button>
-        <button class="button-link" type="button" data-mode="senate">Senate</button>
-        <button class="button-link" type="button" data-mode="governor">Governors</button>
-      </div>
-    </section>
-
-    <section class="map-panel election-map-panel" aria-label="Election night results map">
-      <section class="election-chamber-board" aria-label="Election night call tracker">
-        <div class="election-chamber-copy">
-          <p id="chamber-board-subtitle">Calls will appear here.</p>
-        </div>
-        <div class="election-chamber-meter" aria-label="Called seats by party">
-          <div class="election-chamber-labels">
-            <strong id="chamber-dem-count">0 D</strong>
-            <span id="chamber-majority-label">Majority</span>
-            <strong id="chamber-rep-count">0 R</strong>
-          </div>
-          <div class="election-chamber-bar">
-            <span id="chamber-bar-dem-safe" class="election-chamber-segment chamber-dem-safe" hidden></span>
-            <span id="chamber-bar-dem" class="election-chamber-segment chamber-dem"></span>
-            <span id="chamber-bar-uncalled" class="election-chamber-segment chamber-uncalled"></span>
-            <span id="chamber-bar-rep" class="election-chamber-segment chamber-rep"></span>
-            <span id="chamber-bar-rep-safe" class="election-chamber-segment chamber-rep-safe" hidden></span>
-            <i id="chamber-majority-line" class="election-chamber-majority-line" aria-hidden="true"></i>
-          </div>
+      <section class="election-chamber-board" aria-label="Chamber control">
+        <p id="chamber-board-subtitle" class="board-sr-only"></p>
+        <div class="election-chamber-meter"><div class="election-chamber-labels"><strong id="chamber-dem-count">0 D</strong><span id="chamber-majority-label">218 for majority</span><strong id="chamber-rep-count">0 R</strong></div>
+          <div class="election-chamber-bar"><span id="chamber-bar-dem-safe" class="election-chamber-segment chamber-dem-safe" hidden></span><span id="chamber-bar-dem" class="election-chamber-segment chamber-dem"></span><span id="chamber-bar-uncalled" class="election-chamber-segment chamber-uncalled"></span><span id="chamber-bar-rep" class="election-chamber-segment chamber-rep"></span><span id="chamber-bar-rep-safe" class="election-chamber-segment chamber-rep-safe" hidden></span><i id="chamber-majority-line" class="election-chamber-majority-line" aria-hidden="true"></i></div>
         </div>
       </section>
-      <div class="election-map-shell">
-        <div id="election-map" class="election-map-canvas" aria-live="polite"></div>
-        <aside id="focused-race-panel" class="election-focus-panel election-focus-overlay" aria-labelledby="focused-race-title" hidden>
-          <div class="focused-card-head">
-            <span class="focused-pill" id="focused-race-kind" hidden></span>
-            <span class="focused-pill focused-pill-light" id="focused-race-rating"></span>
-            <button class="focused-close" type="button" data-clear-focus aria-label="Close selected race">×</button>
-          </div>
-          <h3 id="focused-race-title">Select a race.</h3>
-          <div id="focused-race-content"></div>
-        </aside>
-      </div>
-    </section>
+    </div>
+    <div class="board-overflow"><button id="board-menu-button" type="button" aria-label="Results menu" aria-expanded="false" aria-controls="board-menu">⋯</button><div id="board-menu" hidden><a href="/">Return to main site</a><button type="button" data-theme-toggle>Change theme</button></div></div>
+    <p id="results-provider-status" class="board-delay" role="status" hidden></p>
+    <section class="election-map-panel" aria-label="Election results map"><div class="election-map-shell"><div id="election-map" class="election-map-canvas"></div>
+      <aside id="focused-race-panel" class="election-focus-panel election-focus-overlay" aria-labelledby="focused-race-title" hidden>
+        <div class="focused-card-head"><span id="focused-race-kind" class="focused-pill" hidden></span><span id="focused-race-rating" class="focused-pill focused-pill-light"></span><button class="sheet-toggle" type="button" aria-label="Expand race details" aria-expanded="false">⌃</button><button class="focused-close" type="button" data-clear-focus aria-label="Close selected race">×</button></div>
+        <h2 id="focused-race-title">Select a race</h2><div id="focused-race-content"></div>
+      </aside>
+    </div></section>
   </main>
-
-  <footer class="site-footer">
-    <div>
-      <strong>Federal Elections Analysis</strong>
-      <p>Election coverage, public analysis, and team updates.</p>
-    </div>
-    <nav class="footer-columns" aria-label="Footer navigation">
-      <section class="footer-link-group" aria-label="Site links">
-        <strong>Site</strong>
-        <a href="/">Home</a>
-        <a href="/videos">Videos</a>
-        <a class="active" href="/results">Results</a>
-        <a href="/articles">Articles</a>
-      </section>
-
-      <section class="footer-link-group" aria-label="Other links">
-        <strong>Other</strong>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
-        <a href="/terms">Terms</a>
-        <a href="/privacy">Privacy</a>
-      </section>
-    </nav>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
-  <script src="assets/election-night.js?v=20261027-night-final"></script>
-</body>
-</html>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script><script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+  <script src="assets/results-ui.js?v=20261027-board5"></script><script src="assets/election-night.js?v=20261027-board5"></script>
+</body></html>

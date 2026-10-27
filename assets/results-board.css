@@ -1,0 +1,532 @@
+/* A dedicated election canvas. Site chrome is absent from this document. */
+body.results-board {
+  padding: 0 !important;
+  margin: 0;
+  overflow: hidden;
+  background: #071226;
+  color: var(--ink);
+  --header-offset: 0px !important;
+  --board-panel: color-mix(in srgb, var(--paper) 96%, transparent);
+  --board-edge: color-mix(in srgb, var(--line) 22%, transparent);
+}
+.results-board .board-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.results-board .election-night-page {
+  display: block;
+  position: relative;
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  isolation: isolate;
+}
+.results-board .election-map-panel,
+.results-board .election-map-shell,
+.results-board .election-map-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  overflow: hidden;
+}
+.results-board .election-map-canvas > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  min-height: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.results-board .board-top-controls {
+  position: absolute;
+  z-index: 5;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(620px, calc(100% - 150px));
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+.results-board .election-mode-toggle {
+  display: flex;
+  gap: 3px;
+  padding: 4px;
+  border: 1px solid var(--board-edge);
+  border-radius: 100px;
+  background: var(--board-panel);
+  box-shadow: 0 4px 18px #0002;
+  pointer-events: auto;
+}
+.results-board .election-mode-toggle button {
+  padding: 10px 22px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 100px;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.results-board .election-mode-toggle button.active {
+  background: #273b75;
+  color: white;
+}
+.results-board .election-chamber-board,
+.results-board .election-chamber-board.is-focused-compact {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid var(--board-edge);
+  border-radius: 12px;
+  background: var(--board-panel);
+  box-shadow: 0 4px 18px #0002;
+  min-height: 0;
+  pointer-events: auto;
+}
+.results-board .election-chamber-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 7px;
+  gap: 12px;
+}
+.results-board .election-chamber-labels strong {
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+.results-board .election-chamber-labels small,
+.results-board .election-chamber-labels em {
+  display: none;
+}
+.results-board .election-chamber-labels > span {
+  font-size: 0.68rem;
+  line-height: 1.1;
+}
+.results-board .election-chamber-labels b {
+  font-size: inherit;
+}
+.results-board .election-chamber-bar {
+  height: 10px;
+  border: 0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 0;
+}
+.results-board .election-chamber-copy {
+  display: none;
+}
+.results-board .board-overflow {
+  position: absolute;
+  z-index: 12;
+  right: 16px;
+  top: 14px;
+}
+.results-board .board-overflow > button {
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--board-edge);
+  border-radius: 50%;
+  background: var(--board-panel);
+  color: var(--ink);
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+.results-board #board-menu {
+  position: absolute;
+  right: 0;
+  top: 54px;
+  width: 205px;
+  display: grid;
+  gap: 4px;
+  padding: 7px;
+  border: 1px solid var(--board-edge);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: 0 8px 30px #0004;
+}
+.results-board #board-menu a,
+.results-board #board-menu button {
+  display: block;
+  text-decoration: none;
+  text-align: left;
+  padding: 13px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--ink);
+  background: transparent;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-height: 44px;
+}
+.results-board #board-menu a:hover,
+.results-board #board-menu button:hover {
+  background: var(--paper-2);
+}
+.results-board .board-delay {
+  position: absolute;
+  z-index: 6;
+  left: 16px;
+  top: 14px;
+  max-width: 220px;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: var(--board-panel);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  margin: 0;
+  color: var(--muted);
+}
+.results-board .election-map-controls {
+  position: absolute;
+  left: 16px;
+  bottom: 18px;
+  top: auto;
+  right: auto;
+  transform: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: calc(100% - 32px);
+  padding: 9px;
+  border-radius: 12px;
+  border: 1px solid var(--board-edge);
+  background: var(--board-panel);
+  box-shadow: 0 4px 18px #0002;
+  z-index: 4;
+}
+.results-board .election-map-controls select,
+.results-board .election-map-controls input,
+.results-board .election-map-controls button {
+  min-height: 40px;
+  max-width: 210px;
+  background: var(--paper-2);
+  color: var(--ink);
+  border: 1px solid var(--board-edge);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.75rem;
+  padding: 8px;
+}
+.results-board .election-map-controls button {
+  min-width: 40px;
+  cursor: pointer;
+}
+.results-board .election-comparison-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.results-board .election-comparison-control > span {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+}
+.results-board .board-watch-select {
+  max-width: 180px;
+}
+.results-board .map-background-city,
+.results-board .map-context-layer,
+.results-board .map-background-state-label {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+.results-board .map-background-city {
+  fill: #93a4be;
+}
+.results-board .election-map-shape {
+  cursor: pointer;
+}
+.results-board .election-map-shape:focus-visible {
+  stroke: #f7d568;
+  stroke-width: 2;
+  outline: none;
+}
+.results-board .election-focus-panel {
+  position: absolute;
+  z-index: 7;
+  width: 370px;
+  max-width: calc(100% - 32px);
+  max-height: calc(100dvh - 170px);
+  min-width: 0;
+  min-height: 0;
+  padding: 20px;
+  border: 1px solid var(--board-edge);
+  border-radius: 16px;
+  background: var(--paper);
+  box-shadow: 0 12px 45px #0005;
+  overflow: auto;
+  resize: none;
+  touch-action: auto;
+}
+.results-board .focused-card-head {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  cursor: default;
+  padding: 0;
+  margin-bottom: 12px;
+}
+.results-board .focused-close {
+  margin-left: auto;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1.5rem;
+}
+.results-board .focused-pill {
+  font-size: 0.65rem;
+  padding: 5px 7px;
+  letter-spacing: 0.05em;
+}
+.results-board #focused-race-title {
+  font-size: 1.5rem;
+  margin: 0 0 14px;
+  line-height: 1.15;
+  color: var(--ink);
+}
+.results-board .selected-race-table {
+  margin: 14px 0;
+  width: 100%;
+  table-layout: auto;
+  font-variant-numeric: tabular-nums;
+}
+.results-board .selected-race-table th {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.results-board .selected-race-table th,
+.results-board .selected-race-table td {
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--board-edge);
+  background: transparent;
+}
+.results-board .selected-race-table td strong {
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+.results-board .selected-race-table td small {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+.results-board .selected-race-table td:not(:first-child) {
+  text-align: right;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.results-board .race-call-banner {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--focus-color);
+  background: var(--paper-2);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+.results-board .race-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+.results-board .race-facts div {
+  display: grid;
+  gap: 4px;
+}
+.results-board .race-facts dt {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.results-board .race-facts dd {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+.results-board .race-attribution {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin: 14px 0 0;
+}
+.results-board .sheet-toggle {
+  display: none;
+}
+.results-board .focus-resize-handle {
+  display: none;
+}
+:root[data-theme="light"] body.results-board {
+  background: #e1e8f4;
+}
+:root[data-theme="light"] .results-board .map-background-city {
+  fill: #435875;
+}
+@media (max-width: 950px) {
+  .results-board .board-delay {
+    top: 140px;
+    left: 12px;
+    max-width: 240px;
+  }
+  .results-board .election-map-controls input {
+    max-width: 150px;
+  }
+}
+@media (max-width: 600px) {
+  .results-board .board-top-controls {
+    top: 8px;
+    left: 10px;
+    transform: none;
+    width: calc(100% - 76px);
+    gap: 7px;
+  }
+  .results-board .election-mode-toggle {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .results-board .election-mode-toggle button {
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    flex: 1;
+  }
+  .results-board .election-chamber-board,
+  .results-board .election-chamber-board.is-focused-compact {
+    padding: 8px 10px;
+  }
+  .results-board .election-chamber-labels strong {
+    font-size: 1.15rem;
+  }
+  .results-board .board-overflow {
+    right: 10px;
+    top: 8px;
+  }
+  .results-board .board-delay {
+    top: 130px;
+    font-size: 0.68rem;
+    padding: 6px 9px;
+  }
+  .results-board .election-map-controls {
+    left: 8px;
+    bottom: 10px;
+    gap: 5px;
+    padding: 6px;
+    max-width: calc(100% - 16px);
+  }
+  .results-board .election-map-controls select {
+    max-width: 150px;
+  }
+  .results-board .election-map-controls input {
+    max-width: 130px;
+  }
+  .results-board .election-comparison-control > span {
+    display: none;
+  }
+  .results-board .election-map-controls button {
+    min-width: 38px;
+    padding: 6px;
+  }
+  .results-board .election-focus-panel {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    max-width: 100%;
+    max-height: 46dvh;
+    padding: 12px 18px 18px;
+    border-radius: 18px 18px 0 0;
+    box-sizing: border-box;
+    overscroll-behavior: contain;
+  }
+  .results-board .election-focus-panel.is-expanded {
+    max-height: 75dvh;
+  }
+  .results-board .sheet-toggle {
+    display: inline-grid;
+    place-items: center;
+    min-height: 44px;
+    min-width: 44px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font-size: 1.3rem;
+    cursor: pointer;
+  }
+  .results-board .focused-card-head {
+    margin-bottom: 5px;
+  }
+  .results-board #focused-race-title {
+    font-size: 1.25rem;
+  }
+  .results-board .has-focused-race .election-map-controls {
+    bottom: calc(46dvh + 8px);
+  }
+  .results-board .has-focused-race .election-map-controls input,
+  .results-board .has-focused-race .election-comparison-control,
+  .results-board .has-focused-race .board-watch-select {
+    display: none;
+  }
+  .results-board .has-focused-race .election-map-controls {
+    padding: 4px;
+  }
+  .results-board .election-map-tooltip {
+    display: none !important;
+  }
+}
+.results-board .election-focus-panel {
+  color: var(--ink);
+}
+.results-board .selected-race-table th {
+  color: var(--muted);
+}
+.results-board .selected-race-table td,
+.results-board .race-facts dd {
+  color: var(--ink);
+}
+.results-board .selected-race-table td:first-child {
+  padding-left: 12px;
+  position: relative;
+}
+.results-board .election-chamber-labels > span,
+.results-board .election-chamber-labels b {
+  color: var(--ink);
+}
+.results-board .election-comparison-control > span {
+  color: var(--muted);
+}
+.results-board .selected-race-table th:nth-child(3),
+.results-board .selected-race-table td:nth-child(3) {
+  display: table-cell;
+}
+.results-board .selected-race-table th:first-child {
+  width: 48%;
+}
+.results-board .selected-race-table th:nth-child(2) {
+  width: 28%;
+}
+.results-board .selected-race-table th:nth-child(3) {
+  width: 24%;
+}

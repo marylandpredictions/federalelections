@@ -19,6 +19,20 @@ Official current MIT/MEDSL Dataverse files:
 
 Harvard Dataverse currently requires a guestbook response before downloading these two public files. If an automated fetch receives `You may not download this file without the required Guestbook response`, download the two `.tab` files in a browser, place them in `data/baselines/source`, then run the build command below.
 
+## Current availability — October 27, 2026
+
+Only 2024 presidential shift for Senate/governor is currently enabled. State margins use official FEC state returns; county detail uses rebuilt MEDSL county returns. Both use all candidate votes as the denominator. See [the second-pass audit](../../docs/election-board-second-pass.md) for provenance, source controls and county/state discrepancies.
+
+All 435 House presidential comparisons are disabled: there is no verified presidential tabulation on current 2026 district geometry. House comparisons require a district row with geographyVerified true and a geometryId equal to the race's geometryId; no statewide fallback is permitted. 2024 House, 2020 presidential, last-Senate and last-governor choices remain hidden pending their documented source/geography checks. Existing files below are formats/build inputs, not evidence that a comparison is publishable.
+
+Rebuild the corrected presidential files alone with:
+
+```powershell
+node scripts/results/build-presidential-comparisons.mjs
+```
+
+This uses local MEDSL source version 20260225, selects TOTAL once, excludes bookkeeping and Alaska reporting districts from county joins, and writes 2024 state totals from source/fec-president-2024-states.json after validating all three FEC national controls. This command does not enable a manifest option. The broader legacy builder below also regenerates disabled House/Senate/governor files; those outputs require independent certification.
+
 ## County Presidential Baselines
 
 Generate these with:
@@ -117,7 +131,7 @@ Expected shape:
 }
 ```
 
-House comparison is only shown on the House map because the baseline is district-level.
+A House comparison can only be enabled after its district geography and source are verified. It is currently hidden.
 
 ## Senate and Governor Baselines
 

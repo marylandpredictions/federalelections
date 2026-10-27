@@ -1,466 +1,635 @@
 {
-  "source": "MIT Election Data and Science Lab county presidential returns / official certified returns",
-  "sourceFile": "data/baselines/source/countypres_2000-2024.csv",
-  "updatedAt": "2026-06-14",
+  "source": "Federal Election Commission: Official 2024 Presidential General Election Results, state election office returns",
+  "sourceUrl": "https://www.fec.gov/resources/cms-content/documents/2024presgeresults.pdf",
+  "retrievedAt": "2026-10-27",
+  "sourcePages": {
+    "demVotes": 3,
+    "repVotes": 5,
+    "totalVotes": 6
+  },
+  "verification": "All 51 statewide rows transcribed from the FEC public table; national D, R and total controls match the FEC publication exactly. Source totals include all presidential votes.",
   "states": [
+    {
+      "state": "AL",
+      "demVotes": 772412,
+      "repVotes": 1462616,
+      "totalVotes": 2265090,
+      "valid": true,
+      "demShare": 34.10072005968858,
+      "repShare": 64.57209205815222,
+      "margin": -30.47137199846364
+    },
     {
       "state": "AK",
       "demVotes": 140026,
       "repVotes": 184458,
       "totalVotes": 338177,
-      "demShare": 43.2,
-      "repShare": 56.8,
-      "margin": -13.7
-    },
-    {
-      "state": "AL",
-      "demVotes": 772412,
-      "repVotes": 1462616,
-      "totalVotes": 2264972,
-      "demShare": 34.6,
-      "repShare": 65.4,
-      "margin": -30.9
-    },
-    {
-      "state": "AR",
-      "demVotes": 793810,
-      "repVotes": 1518482,
-      "totalVotes": 1182676,
-      "demShare": 34.3,
-      "repShare": 65.7,
-      "margin": -31.3
+      "valid": true,
+      "demShare": 41.40612756041954,
+      "repShare": 54.54480937497228,
+      "margin": -13.138681814552733
     },
     {
       "state": "AZ",
-      "demVotes": 2145165,
-      "repVotes": 2461122,
-      "totalVotes": 3412953,
-      "demShare": 46.6,
-      "repShare": 53.4,
-      "margin": -6.9
+      "demVotes": 1582860,
+      "repVotes": 1770242,
+      "totalVotes": 3390161,
+      "valid": true,
+      "demShare": 46.689817976196416,
+      "repShare": 52.2170480988956,
+      "margin": -5.527230122699187
+    },
+    {
+      "state": "AR",
+      "demVotes": 396905,
+      "repVotes": 759241,
+      "totalVotes": 1182676,
+      "valid": true,
+      "demShare": 33.55990989924544,
+      "repShare": 64.19687217800987,
+      "margin": -30.63696227876443
     },
     {
       "state": "CA",
       "demVotes": 9276179,
       "repVotes": 6081697,
-      "totalVotes": 15862678,
-      "demShare": 60.4,
-      "repShare": 39.6,
-      "margin": 20.8
+      "totalVotes": 15865475,
+      "valid": true,
+      "demShare": 58.467704244593996,
+      "repShare": 38.33290210346681,
+      "margin": 20.134802141127196
     },
     {
       "state": "CO",
       "demVotes": 1728159,
       "repVotes": 1377441,
-      "totalVotes": 3190873,
-      "demShare": 55.6,
-      "repShare": 44.4,
-      "margin": 11.3
+      "totalVotes": 3192745,
+      "valid": true,
+      "demShare": 54.12768636392822,
+      "repShare": 43.14284416700989,
+      "margin": 10.984842196918326
     },
     {
       "state": "CT",
       "demVotes": 992053,
       "repVotes": 736918,
       "totalVotes": 1759010,
-      "demShare": 57.4,
-      "repShare": 42.6,
-      "margin": 14.8
-    },
-    {
-      "state": "DC",
-      "demVotes": 294185,
-      "repVotes": 21076,
-      "totalVotes": 325879,
-      "demShare": 93.3,
-      "repShare": 6.7,
-      "margin": 86.6
+      "valid": true,
+      "demShare": 56.398371811416645,
+      "repShare": 41.89390623134604,
+      "margin": 14.504465580070608
     },
     {
       "state": "DE",
       "demVotes": 289758,
       "repVotes": 214351,
-      "totalVotes": 511697,
-      "demShare": 57.5,
-      "repShare": 42.5,
-      "margin": 15
+      "totalVotes": 512912,
+      "valid": true,
+      "demShare": 56.49273169666531,
+      "repShare": 41.790989487475436,
+      "margin": 14.70174220918988
+    },
+    {
+      "state": "DC",
+      "demVotes": 294185,
+      "repVotes": 21076,
+      "totalVotes": 325869,
+      "valid": true,
+      "demShare": 90.27707452994915,
+      "repShare": 6.467629630311567,
+      "margin": 83.80944489963758
     },
     {
       "state": "FL",
       "demVotes": 4683038,
       "repVotes": 6110125,
       "totalVotes": 10893752,
-      "demShare": 43.4,
-      "repShare": 56.6,
-      "margin": -13.2
+      "valid": true,
+      "demShare": 42.98829273881029,
+      "repShare": 56.08834311631108,
+      "margin": -13.100050377500791
     },
     {
       "state": "GA",
       "demVotes": 2548017,
       "repVotes": 2663117,
-      "totalVotes": 5250047,
-      "demShare": 48.9,
-      "repShare": 51.1,
-      "margin": -2.2
+      "totalVotes": 5250905,
+      "valid": true,
+      "demShare": 48.52529230675474,
+      "repShare": 50.71729539955493,
+      "margin": -2.1920030928001935
     },
     {
       "state": "HI",
       "demVotes": 313044,
       "repVotes": 193661,
       "totalVotes": 516701,
-      "demShare": 61.8,
-      "repShare": 38.2,
-      "margin": 23.6
-    },
-    {
-      "state": "IA",
-      "demVotes": 1413835,
-      "repVotes": 1854038,
-      "totalVotes": 1674011,
-      "demShare": 43.3,
-      "repShare": 56.7,
-      "margin": -13.5
+      "valid": true,
+      "demShare": 60.58513531036325,
+      "repShare": 37.480283568253206,
+      "margin": 23.104851742110043
     },
     {
       "state": "ID",
       "demVotes": 274972,
       "repVotes": 605246,
       "totalVotes": 905057,
-      "demShare": 31.2,
-      "repShare": 68.8,
-      "margin": -37.5
+      "valid": true,
+      "demShare": 30.381732863234028,
+      "repShare": 66.87379910878542,
+      "margin": -36.492066245551385
     },
     {
       "state": "IL",
       "demVotes": 3062863,
       "repVotes": 2449079,
       "totalVotes": 5633310,
-      "demShare": 55.6,
-      "repShare": 44.4,
-      "margin": 11.1
+      "valid": true,
+      "demShare": 54.37057431598829,
+      "repShare": 43.474955221708015,
+      "margin": 10.895619094280272
     },
     {
       "state": "IN",
       "demVotes": 1163603,
       "repVotes": 1720347,
       "totalVotes": 2936677,
-      "demShare": 40.3,
-      "repShare": 59.7,
-      "margin": -19.3
+      "valid": true,
+      "demShare": 39.62311823874399,
+      "repShare": 58.58141702339073,
+      "margin": -18.95829878464673
+    },
+    {
+      "state": "IA",
+      "demVotes": 707278,
+      "repVotes": 927019,
+      "totalVotes": 1663506,
+      "valid": true,
+      "demShare": 42.5173098263547,
+      "repShare": 55.72682034209675,
+      "margin": -13.209510515742053
     },
     {
       "state": "KS",
       "demVotes": 544853,
       "repVotes": 758802,
       "totalVotes": 1327591,
-      "demShare": 41.8,
-      "repShare": 58.2,
-      "margin": -16.4
+      "valid": true,
+      "demShare": 41.04072715166041,
+      "repShare": 57.15630792917396,
+      "margin": -16.115580777513557
     },
     {
       "state": "KY",
       "demVotes": 704043,
       "repVotes": 1337494,
       "totalVotes": 2074530,
-      "demShare": 34.5,
-      "repShare": 65.5,
-      "margin": -31
+      "valid": true,
+      "demShare": 33.937470173967114,
+      "repShare": 64.47214549801642,
+      "margin": -30.534675324049303
     },
     {
       "state": "LA",
-      "demVotes": 1133303,
-      "repVotes": 1799142,
+      "demVotes": 766870,
+      "repVotes": 1208505,
       "totalVotes": 2006975,
-      "demShare": 38.6,
-      "repShare": 61.4,
-      "margin": -22.7
+      "valid": true,
+      "demShare": 38.21024178178602,
+      "repShare": 60.21524931800346,
+      "margin": -22.00500753621744
     },
     {
-      "state": "MA",
-      "demVotes": 2126518,
-      "repVotes": 1251303,
-      "totalVotes": 3473668,
-      "demShare": 63,
-      "repShare": 37,
-      "margin": 25.9
+      "state": "ME",
+      "demVotes": 435652,
+      "repVotes": 377977,
+      "totalVotes": 831375,
+      "valid": true,
+      "demShare": 52.401383250639,
+      "repShare": 45.464080589385055,
+      "margin": 6.937302661253947
     },
     {
       "state": "MD",
       "demVotes": 1902577,
       "repVotes": 1035550,
       "totalVotes": 3038334,
-      "demShare": 64.8,
-      "repShare": 35.2,
-      "margin": 29.5
+      "valid": true,
+      "demShare": 62.61908664419382,
+      "repShare": 34.08282302077389,
+      "margin": 28.536263623419938
     },
     {
-      "state": "ME",
-      "demVotes": 430342,
-      "repVotes": 376991,
-      "totalVotes": 824806,
-      "demShare": 53.3,
-      "repShare": 46.7,
-      "margin": 6.6
+      "state": "MA",
+      "demVotes": 2126518,
+      "repVotes": 1251303,
+      "totalVotes": 3473668,
+      "valid": true,
+      "demShare": 61.218228109306935,
+      "repShare": 36.02252719603601,
+      "margin": 25.19570091327093
     },
     {
       "state": "MI",
       "demVotes": 2736533,
       "repVotes": 2816636,
       "totalVotes": 5664186,
-      "demShare": 49.3,
-      "repShare": 50.7,
-      "margin": -1.4
+      "valid": true,
+      "demShare": 48.31290850971349,
+      "repShare": 49.72710995013229,
+      "margin": -1.4142014404188
     },
     {
       "state": "MN",
       "demVotes": 1656979,
       "repVotes": 1519032,
       "totalVotes": 3253920,
-      "demShare": 52.2,
-      "repShare": 47.8,
-      "margin": 4.3
-    },
-    {
-      "state": "MO",
-      "demVotes": 1200599,
-      "repVotes": 1751986,
-      "totalVotes": 2995327,
-      "demShare": 40.7,
-      "repShare": 59.3,
-      "margin": -18.7
+      "valid": true,
+      "demShare": 50.922548802674925,
+      "repShare": 46.683139106062846,
+      "margin": 4.239409696612086
     },
     {
       "state": "MS",
       "demVotes": 466668,
       "repVotes": 747744,
       "totalVotes": 1228008,
-      "demShare": 38.4,
-      "repShare": 61.6,
-      "margin": -23.1
+      "valid": true,
+      "demShare": 38.00203256004847,
+      "repShare": 60.89080852893467,
+      "margin": -22.888775968886197
+    },
+    {
+      "state": "MO",
+      "demVotes": 1200599,
+      "repVotes": 1751986,
+      "totalVotes": 2995327,
+      "valid": true,
+      "demShare": 40.08240168769554,
+      "repShare": 58.49064225708912,
+      "margin": -18.40824056939359
     },
     {
       "state": "MT",
       "demVotes": 231906,
       "repVotes": 352079,
-      "totalVotes": 602963,
-      "demShare": 39.7,
-      "repShare": 60.3,
-      "margin": -20.6
-    },
-    {
-      "state": "NC",
-      "demVotes": 2715375,
-      "repVotes": 2898423,
-      "totalVotes": 5699141,
-      "demShare": 48.4,
-      "repShare": 51.6,
-      "margin": -3.3
-    },
-    {
-      "state": "ND",
-      "demVotes": 112327,
-      "repVotes": 246505,
-      "totalVotes": 368155,
-      "demShare": 31.3,
-      "repShare": 68.7,
-      "margin": -37.4
+      "totalVotes": 602990,
+      "valid": true,
+      "demShare": 38.45934426773246,
+      "repShare": 58.38886217018524,
+      "margin": -19.929517902452776
     },
     {
       "state": "NE",
       "demVotes": 369995,
       "repVotes": 564816,
-      "totalVotes": 947159,
-      "demShare": 39.6,
-      "repShare": 60.4,
-      "margin": -20.8
-    },
-    {
-      "state": "NH",
-      "demVotes": 418488,
-      "repVotes": 395523,
-      "totalVotes": 826189,
-      "demShare": 51.4,
-      "repShare": 48.6,
-      "margin": 2.8
-    },
-    {
-      "state": "NJ",
-      "demVotes": 2220713,
-      "repVotes": 1968215,
-      "totalVotes": 4272725,
-      "demShare": 53,
-      "repShare": 47,
-      "margin": 6
-    },
-    {
-      "state": "NM",
-      "demVotes": 957604,
-      "repVotes": 846782,
-      "totalVotes": 923362,
-      "demShare": 53.1,
-      "repShare": 46.9,
-      "margin": 6.1
+      "totalVotes": 952182,
+      "valid": true,
+      "demShare": 38.85759235104213,
+      "repShare": 59.31807154514578,
+      "margin": -20.460479194103648
     },
     {
       "state": "NV",
       "demVotes": 705197,
       "repVotes": 751205,
       "totalVotes": 1484840,
-      "demShare": 48.4,
-      "repShare": 51.6,
-      "margin": -3.2
+      "valid": true,
+      "demShare": 47.49313057299103,
+      "repShare": 50.5916462379785,
+      "margin": -3.0985156649874734
+    },
+    {
+      "state": "NH",
+      "demVotes": 418488,
+      "repVotes": 395523,
+      "totalVotes": 826189,
+      "valid": true,
+      "demShare": 50.65281672837572,
+      "repShare": 47.8731864016587,
+      "margin": 2.7796303267170104
+    },
+    {
+      "state": "NJ",
+      "demVotes": 2220713,
+      "repVotes": 1968215,
+      "totalVotes": 4272725,
+      "valid": true,
+      "demShare": 51.97416168838388,
+      "repShare": 46.06463088544196,
+      "margin": 5.909530802941917
+    },
+    {
+      "state": "NM",
+      "demVotes": 478802,
+      "repVotes": 423391,
+      "totalVotes": 923403,
+      "valid": true,
+      "demShare": 51.85189998299767,
+      "repShare": 45.85116141056505,
+      "margin": 6.000738572432621
     },
     {
       "state": "NY",
       "demVotes": 4619195,
       "repVotes": 3578899,
       "totalVotes": 8262495,
-      "demShare": 56.3,
-      "repShare": 43.7,
-      "margin": 12.7
+      "valid": true,
+      "demShare": 55.90557089595818,
+      "repShare": 43.31499141603111,
+      "margin": 12.590579479927069
+    },
+    {
+      "state": "NC",
+      "demVotes": 2715375,
+      "repVotes": 2898423,
+      "totalVotes": 5699141,
+      "valid": true,
+      "demShare": 47.64533813078146,
+      "repShare": 50.857190583633574,
+      "margin": -3.2118524528521055
+    },
+    {
+      "state": "ND",
+      "demVotes": 112327,
+      "repVotes": 246505,
+      "totalVotes": 368155,
+      "valid": true,
+      "demShare": 30.510790292132388,
+      "repShare": 66.9568524127066,
+      "margin": -36.44606212057421
     },
     {
       "state": "OH",
       "demVotes": 2533699,
       "repVotes": 3180116,
       "totalVotes": 5767788,
-      "demShare": 44.3,
-      "repShare": 55.7,
-      "margin": -11.3
+      "valid": true,
+      "demShare": 43.92843495634722,
+      "repShare": 55.13579902728741,
+      "margin": -11.207364070940194
     },
     {
       "state": "OK",
-      "demVotes": 999198,
-      "repVotes": 2072426,
+      "demVotes": 499599,
+      "repVotes": 1036213,
       "totalVotes": 1566173,
-      "demShare": 32.5,
-      "repShare": 67.5,
-      "margin": -34.9
+      "valid": true,
+      "demShare": 31.89934956099997,
+      "repShare": 66.16210342024796,
+      "margin": -34.262753859247994
     },
     {
       "state": "OR",
       "demVotes": 1240600,
       "repVotes": 919480,
       "totalVotes": 2244493,
-      "demShare": 57.4,
-      "repShare": 42.6,
-      "margin": 14.9
+      "valid": true,
+      "demShare": 55.273061666933245,
+      "repShare": 40.96604444745428,
+      "margin": 14.307017219478965
     },
     {
       "state": "PA",
-      "demVotes": 6846084,
-      "repVotes": 7086616,
-      "totalVotes": 7034206,
-      "demShare": 49.1,
-      "repShare": 50.9,
-      "margin": -1.7
+      "demVotes": 3423042,
+      "repVotes": 3543308,
+      "totalVotes": 7058732,
+      "valid": true,
+      "demShare": 48.493723801951965,
+      "repShare": 50.197514227767826,
+      "margin": -1.7037904258158547
     },
     {
       "state": "RI",
-      "demVotes": 283750,
-      "repVotes": 214291,
-      "totalVotes": 511816,
-      "demShare": 57,
-      "repShare": 43,
-      "margin": 13.9
+      "demVotes": 285156,
+      "repVotes": 214406,
+      "totalVotes": 513386,
+      "valid": true,
+      "demShare": 55.544171442150734,
+      "repShare": 41.76311780999092,
+      "margin": 13.781053632159818
     },
     {
       "state": "SC",
-      "demVotes": 2056904,
-      "repVotes": 2967494,
+      "demVotes": 1028452,
+      "repVotes": 1483747,
       "totalVotes": 2548140,
-      "demShare": 40.9,
-      "repShare": 59.1,
-      "margin": -18.1
+      "valid": true,
+      "demShare": 40.36089068889465,
+      "repShare": 58.22862951015251,
+      "margin": -17.86773882125786
     },
     {
       "state": "SD",
       "demVotes": 146859,
       "repVotes": 272081,
       "totalVotes": 428922,
-      "demShare": 35.1,
-      "repShare": 64.9,
-      "margin": -29.9
+      "valid": true,
+      "demShare": 34.23909242239848,
+      "repShare": 63.43367791812964,
+      "margin": -29.194585495731157
     },
     {
       "state": "TN",
       "demVotes": 1056265,
       "repVotes": 1966865,
       "totalVotes": 3063942,
-      "demShare": 34.9,
-      "repShare": 65.1,
-      "margin": -30.1
+      "valid": true,
+      "demShare": 34.47405336001791,
+      "repShare": 64.19393709149847,
+      "margin": -29.719883731480557
     },
     {
       "state": "TX",
-      "demVotes": 8746992,
-      "repVotes": 11507322,
+      "demVotes": 4835250,
+      "repVotes": 6393597,
       "totalVotes": 11388674,
-      "demShare": 43.2,
-      "repShare": 56.8,
-      "margin": -13.6
+      "valid": true,
+      "demShare": 42.456654743124616,
+      "repShare": 56.1399597529967,
+      "margin": -13.683305009872088
     },
     {
       "state": "UT",
       "demVotes": 562566,
       "repVotes": 883818,
       "totalVotes": 1488494,
-      "demShare": 38.9,
-      "repShare": 61.1,
-      "margin": -22.2
-    },
-    {
-      "state": "VA",
-      "demVotes": 2335395,
-      "repVotes": 2075085,
-      "totalVotes": 4482576,
-      "demShare": 53,
-      "repShare": 47,
-      "margin": 5.9
+      "valid": true,
+      "demShare": 37.79430753499846,
+      "repShare": 59.376658555560184,
+      "margin": -21.58235102056172
     },
     {
       "state": "VT",
       "demVotes": 235791,
       "repVotes": 119395,
-      "totalVotes": 372885,
-      "demShare": 66.4,
-      "repShare": 33.6,
-      "margin": 32.8
+      "totalVotes": 369422,
+      "valid": true,
+      "demShare": 63.82700543010432,
+      "repShare": 32.319407073753055,
+      "margin": 31.507598356351274
+    },
+    {
+      "state": "VA",
+      "demVotes": 2333778,
+      "repVotes": 2074097,
+      "totalVotes": 4503288,
+      "valid": true,
+      "demShare": 51.82386736091495,
+      "repShare": 46.05739184347081,
+      "margin": 5.766475517444143
     },
     {
       "state": "WA",
       "demVotes": 2245849,
       "repVotes": 1530923,
       "totalVotes": 3924243,
-      "demShare": 59.5,
-      "repShare": 40.5,
-      "margin": 18.9
+      "valid": true,
+      "demShare": 57.23012056083173,
+      "repShare": 39.011931727979125,
+      "margin": 18.218188832852604
+    },
+    {
+      "state": "WV",
+      "demVotes": 214309,
+      "repVotes": 533556,
+      "totalVotes": 762582,
+      "valid": true,
+      "demShare": 28.10307612820654,
+      "repShare": 69.96703305349457,
+      "margin": -41.863956925288036
     },
     {
       "state": "WI",
       "demVotes": 1668229,
       "repVotes": 1697626,
       "totalVotes": 3422918,
-      "demShare": 49.6,
-      "repShare": 50.4,
-      "margin": -0.9
-    },
-    {
-      "state": "WV",
-      "demVotes": 214309,
-      "repVotes": 533556,
-      "totalVotes": 762390,
-      "demShare": 28.7,
-      "repShare": 71.3,
-      "margin": -42.7
+      "valid": true,
+      "demShare": 48.73704248830968,
+      "repShare": 49.5958711251628,
+      "margin": -0.8588286368531176
     },
     {
       "state": "WY",
       "demVotes": 69527,
       "repVotes": 192633,
       "totalVotes": 269048,
-      "demShare": 26.5,
-      "repShare": 73.5,
-      "margin": -47
+      "valid": true,
+      "demShare": 25.84185721506943,
+      "repShare": 71.59800481698433,
+      "margin": -45.7561476019149
+    }
+  ],
+  "updatedAt": "2026-10-27",
+  "marginBasis": "all-votes",
+  "countyAggregationDifferences": [
+    {
+      "state": "AL",
+      "countyMinusOfficial": {
+        "totalVotes": -118
+      }
+    },
+    {
+      "state": "AZ",
+      "countyMinusOfficial": {
+        "totalVotes": 22792
+      }
+    },
+    {
+      "state": "CA",
+      "countyMinusOfficial": {
+        "totalVotes": -2797
+      }
+    },
+    {
+      "state": "CO",
+      "countyMinusOfficial": {
+        "totalVotes": -1872
+      }
+    },
+    {
+      "state": "DE",
+      "countyMinusOfficial": {
+        "totalVotes": -1215
+      }
+    },
+    {
+      "state": "DC",
+      "countyMinusOfficial": {
+        "totalVotes": 10
+      }
+    },
+    {
+      "state": "GA",
+      "countyMinusOfficial": {
+        "totalVotes": -858
+      }
+    },
+    {
+      "state": "IA",
+      "countyMinusOfficial": {
+        "totalVotes": 10505
+      }
+    },
+    {
+      "state": "ME",
+      "countyMinusOfficial": {
+        "demVotes": -5310,
+        "repVotes": -986,
+        "totalVotes": -6569
+      }
+    },
+    {
+      "state": "MT",
+      "countyMinusOfficial": {
+        "totalVotes": -27
+      }
+    },
+    {
+      "state": "NE",
+      "countyMinusOfficial": {
+        "totalVotes": -5023
+      }
+    },
+    {
+      "state": "NM",
+      "countyMinusOfficial": {
+        "totalVotes": -41
+      }
+    },
+    {
+      "state": "PA",
+      "countyMinusOfficial": {
+        "totalVotes": -24526
+      }
+    },
+    {
+      "state": "RI",
+      "countyMinusOfficial": {
+        "demVotes": -1406,
+        "repVotes": -115,
+        "totalVotes": -1570
+      }
+    },
+    {
+      "state": "VT",
+      "countyMinusOfficial": {
+        "totalVotes": 3463
+      }
+    },
+    {
+      "state": "VA",
+      "countyMinusOfficial": {
+        "demVotes": 1617,
+        "repVotes": 988,
+        "totalVotes": -20712
+      }
+    },
+    {
+      "state": "WV",
+      "countyMinusOfficial": {
+        "totalVotes": -192
+      }
     }
   ]
 }
