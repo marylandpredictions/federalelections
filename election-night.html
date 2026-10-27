@@ -12,7 +12,7 @@
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
   <script src="assets/theme.js?v=20261027-night-final"></script>
   <link rel="stylesheet" href="assets/wiki.css?v=20261027-night-final2">
-  <link rel="stylesheet" href="assets/results-board.css?v=20261027-board5">
+  <link rel="stylesheet" href="assets/results-board.css?v=20261027-desk14">
 </head>
 <body class="results-board">
   <main class="election-night-page" aria-label="2026 election results">
@@ -33,10 +33,11 @@
     <section class="election-map-panel" aria-label="Election results map"><div class="election-map-shell"><div id="election-map" class="election-map-canvas"></div>
       <aside id="focused-race-panel" class="election-focus-panel election-focus-overlay" aria-labelledby="focused-race-title" hidden>
         <div class="focused-card-head"><span id="focused-race-kind" class="focused-pill" hidden></span><span id="focused-race-rating" class="focused-pill focused-pill-light"></span><button class="sheet-toggle" type="button" aria-label="Expand race details" aria-expanded="false">⌃</button><button class="focused-close" type="button" data-clear-focus aria-label="Close selected race">×</button></div>
-        <h2 id="focused-race-title">Select a race</h2><div id="focused-race-content"></div>
+        <h2 id="focused-race-title">Select a race</h2><div id="focused-race-content"></div><button type="button" class="focus-resize-handle" aria-label="Resize race window. Arrow keys resize; Home or double-click resets." title="Drag to resize · double-click to reset">◢</button>
       </aside>
     </div></section>
+    <section id="projection-alerts" aria-label="Recent projections"></section><p id="projection-announcer" class="board-sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script><script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
-  <script src="assets/results-ui.js?v=20261027-board5"></script><script src="assets/election-night.js?v=20261027-board5"></script>
+  <script src="assets/results-desk.js?v=20261027-desk14"></script><script src="assets/results-desk-board.js?v=20261027-desk14"></script><script src="assets/results-ui.js?v=20261027-desk14"></script><script src="assets/election-night.js?v=20261027-desk14"></script>
 </body></html>

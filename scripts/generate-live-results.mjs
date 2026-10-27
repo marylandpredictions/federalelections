@@ -1,5 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
+import { resultSignature } from "./results/history.mjs";
 import { getResultsControl } from "./results/control.mjs";
 
 const OUTPUT_URL = new URL("../data/live-results.json", import.meta.url);
@@ -971,7 +972,8 @@ function voteHistoryPoint(race) {
   return {
     at: new Date().toISOString(),
     sourceUpdatedAt: isoDate(race.lastUpdated) || "",
-    reporting: Number(race.estimatedVoteReporting ?? race.percentReporting ?? 0),
+    expectedVotePercent: race.expectedVotePercent ?? race.estimatedVoteReporting ?? null,
+    precinctReporting: race.reportingPercent ?? race.percentReporting ?? null,
     candidates: (race.candidates || []).map((candidate) => ({
       name: candidate.name,
       party: candidate.party,
@@ -983,16 +985,7 @@ function voteHistoryPoint(race) {
   };
 }
 
-function voteHistorySignature(point) {
-  const candidates = (point?.candidates || [])
-    .map((candidate) => [
-      normalizeName(candidate.name),
-      Number(candidate.votes || 0)
-    ].join(":"))
-    .sort()
-    .join("|");
-  return candidates;
-}
+function voteHistorySignature(point) { return resultSignature(point); }
 
 function voteHistoryTotalVotes(point) {
   return (point?.candidates || []).reduce((sum, candidate) => sum + Number(candidate.votes || 0), 0);
@@ -1038,7 +1031,9 @@ function mergeVoteHistory(...histories) {
       const normalized = {
         at,
         sourceUpdatedAt: isoDate(point.sourceUpdatedAt) || "",
-        reporting: Number(point.reporting ?? point.estimatedVoteReporting ?? 0),
+        expectedVotePercent: point.expectedVotePercent ?? point.estimatedVoteReporting ?? null,
+        precinctReporting: point.precinctReporting ?? null,
+        ...(point.reporting != null ? {legacyReporting:point.reporting} : {}),
         candidates: (point.candidates || []).map(normalizeHistoryCandidate).filter((candidate) => candidate.name)
       };
       if (!normalized.candidates.length) continue;
@@ -1064,9 +1059,9 @@ function appendVoteHistory(race) {
   const latest = stored.at(-1);
   const pointSignature = voteHistorySignature(point);
   if (latest && voteHistorySignature(latest) === pointSignature) {
-    return stored.slice(-240);
+    return stored.slice(-2400);
   }
-  return [...stored, point].slice(-240);
+  return [...stored, point].slice(-2400);
 }
 
 function isRaceCloseOrUncalled(race) {
@@ -1257,7 +1252,9 @@ export async function buildRaceResultDetailWithHistory(id, options = {}) {
   };
   if (options.persist !== false) {
     mkdirSync(DETAIL_DIR_URL, { recursive: true });
-    writeFileSync(new URL(`${id}.json`, DETAIL_DIR_URL), JSON.stringify(hydratedDetail, null, 2), "utf8");
+    const target=new URL(`${id}.json`, DETAIL_DIR_URL), encoded=JSON.stringify(hydratedDetail);
+    let previous="";try{previous=readFileSync(target,"utf8");}catch{}
+    if(previous!==encoded)writeFileSync(target,encoded,"utf8");
   }
   return hydratedDetail;
 }

@@ -1,3 +1,6 @@
+import { ResultsChangeFeed } from "./scripts/results/change-feed.mjs";
+import { CountyHistory, resultSignature } from "./scripts/results/history.mjs";
+import { brotliCompressSync, gzipSync, gunzipSync, constants as zlibConstants } from "node:zlib";
 import { createServer } from "node:http";
 import { getResultsControl } from "./scripts/results/control.mjs";
 import { createWriteStream } from "node:fs";
@@ -42,6 +45,20 @@ const adminSecret = process.env.ADMIN_SECRET || process.env.ADMIN_PASSWORD || ""
 const maxBodyBytes = 8 * 1024 * 1024;
 const rateLimitMs = 60_000;
 const rateLimit = new Map();
+const resultsFeed = new ResultsChangeFeed();
+const countyHistory = new CountyHistory(root);
+const wireCache = new Map();
+let wireCacheBytes = 0;
+function compressBody(body, encoding, etag) {
+  const key=etag+":"+encoding;
+  if(wireCache.has(key))return wireCache.get(key);
+  const output=encoding==="br"?brotliCompressSync(body,{params:{[zlibConstants.BROTLI_PARAM_QUALITY]:4}}):gzipSync(body);
+  if(output.length<=4*1024*1024){
+    wireCache.set(key,output);wireCacheBytes+=output.length;
+    while(wireCacheBytes>24*1024*1024 || wireCache.size>80){const oldest=wireCache.keys().next().value;wireCacheBytes-=wireCache.get(oldest).length;wireCache.delete(oldest);}
+  }
+  return output;
+}
 let liveResultsCache = null;
 let liveResultsCacheAt = 0;
 const liveResultsCacheMs = 15_000;
@@ -356,72 +373,47 @@ async function handleContact(request, response) {
   }
 }
 
-async function handleLiveResults(request, response) {
-  if (request.method !== "GET") {
-    sendJson(response, 405, { ok: false, error: "Method not allowed." }, "/api/live-results");
-    return;
-  }
-
-  const now = Date.now();
-  const ifNoneMatch = request.headers["if-none-match"];
-  
-  // Generate ETag from cache timestamp
-  const currentETag = liveResultsCache ? `"${liveResultsCacheAt}"` : null;
-  
-  // Check if client has current version
-  if (liveResultsCache && now - liveResultsCacheAt < liveResultsCacheMs && ifNoneMatch && currentETag && ifNoneMatch === currentETag) {
-    response.writeHead(304, {
-      "ETag": currentETag,
-      "Cache-Control": "public, max-age=10"
-    });
-    response.end();
-    return;
-  }
-  
-  if (liveResultsCache && now - liveResultsCacheAt < liveResultsCacheMs) {
-    response.writeHead(200, {
-      "Content-Type": "application/json; charset=utf-8",
-      "ETag": currentETag,
-      "Cache-Control": "public, max-age=10"
-    });
-    response.end(JSON.stringify(liveResultsCache));
-    return;
-  }
-
-  try {
-    liveResultsCache = await buildLiveResults();
-    liveResultsCacheAt = now;
-    await writeLiveResultsSnapshot(liveResultsCache, { details: false });
-    
-    const newETag = `"${liveResultsCacheAt}"`;
-    response.writeHead(200, {
-      "Content-Type": "application/json; charset=utf-8",
-      "ETag": newETag,
-      "Cache-Control": "public, max-age=10"
-    });
-    response.end(JSON.stringify(liveResultsCache));
-  } catch (error) {
-    console.error(error);
-    sendJson(response, 502, { ok: false, error: "Live results source unavailable." }, "/api/live-results");
-  }
+function sendLive(request, response, payload, etag) {
+  const headers = {"Content-Type":"application/json; charset=utf-8", "Cache-Control":"private, no-cache", "ETag":etag, "Vary":"Accept-Encoding"};
+  const modified=payload.updatedAt || payload.generatedAt || payload.lastUpdated;
+  if(modified && Number.isFinite(Date.parse(modified)))headers["Last-Modified"]=new Date(modified).toUTCString();
+  if (request.headers["if-none-match"] === etag) { response.writeHead(304, headers); response.end(); return; }
+  let body = Buffer.from(JSON.stringify(payload));
+  const encoding=request.headers["accept-encoding"] || "";
+  if(body.length>1024 && /\bbr\b/.test(encoding)) { body=compressBody(body,"br",etag); headers["Content-Encoding"]="br"; }
+  else if(body.length>1024 && /\bgzip\b/.test(encoding)) { body=compressBody(body,"gzip",etag); headers["Content-Encoding"]="gzip"; }
+  headers["Content-Length"]=body.length;
+  logBandwidth(request.url,body.length);response.writeHead(200,headers);response.end(body);
 }
-
+async function currentPublicResults() {
+  if (!liveResultsCache || Date.now()-liveResultsCacheAt>=liveResultsCacheMs) {
+    liveResultsCache=await buildLiveResults();liveResultsCacheAt=Date.now();
+  }
+  resultsFeed.update(liveResultsCache);return liveResultsCache;
+}
+async function handleLiveResults(request, response, url) {
+  if (request.method!=="GET") { sendJson(response,405,{error:"Method not allowed"});return; }
+  const data=await currentPublicResults();
+  const version=resultsFeed.current.version;
+  if(url.pathname==="/api/results-version") sendLive(request,response,resultsFeed.metadata(), '"'+version+'"');
+  else if(url.pathname==="/api/live-results/changes") {
+    const since=url.searchParams.get("since") || "";
+    sendLive(request,response,resultsFeed.changes(since),'"'+version+':'+createHash("sha256").update(since).digest("hex").slice(0,12)+'"');
+  } else sendLive(request,response,resultsFeed.full(data),'"'+version+'"');
+}
 async function handleLiveResultRace(request, response, url) {
-  if (request.method !== "GET") {
-    sendJson(response, 405, { ok: false, error: "Method not allowed." }, "/api/live-results/race");
-    return;
-  }
-  const id = url.searchParams.get("id");
-  if (!isValidRaceId(id)) {
-    sendJson(response, 400, { ok: false, error: "Missing race id." }, "/api/live-results/race");
-    return;
-  }
-  try {
-    sendJson(response, 200, await buildRaceResultDetailWithHistory(id, { persist: true }), "/api/live-results/race");
-  } catch (error) {
-    console.error(error);
-    sendJson(response, 502, { ok: false, error: "Live race detail source unavailable." }, "/api/live-results/race");
-  }
+  if(request.method!=="GET"){sendJson(response,405,{error:"Method not allowed"});return;}
+  const id=url.searchParams.get("id"),fips=url.searchParams.get("county");
+  if(!isValidRaceId(id) || (fips && !/^\d{5}$/.test(fips))){sendJson(response,400,{error:"Invalid race or county"});return;}
+  await currentPublicResults();
+  const race=resultsFeed.current.races.get(id);
+  if(!race){sendJson(response,404,{error:"Unknown race"});return;}
+  if(request.headers["if-none-match"]==='"'+race.version+'"'){sendLive(request,response,{},'"'+race.version+'"');return;}
+  if(fips){sendLive(request,response,{raceId:id,fips,version:race.version,voteHistory:countyHistory.read(id,fips)},'"'+race.version+':'+fips+'"');return;}
+  const detail=await buildRaceResultDetailWithHistory(id,{persist:true});
+  // Provider/private control details are not part of public detail.
+  delete detail.providerCall; delete detail.callState; delete detail.sourceUrl; delete detail.providerRaceId;
+  sendLive(request,response,{...detail,version:race.version},'"'+race.version+'"');
 }
 
 async function refreshPersistedLiveResults(raceId = "") {
@@ -721,7 +713,7 @@ async function handleAdmin(request, response, url) {
   if (url.pathname === "/api/admin/results-control") {
     const control = await getResultsControl();
     try {
-      if (request.method === "GET") { sendJson(response, 200, { ok: true, ...control.adminSnapshot() }); return; }
+      if (request.method === "GET") { sendJson(response, 200, { ok: true, ...control.adminSnapshot(),versionInfo:{publicVersion:resultsFeed.current?.version || "Not generated",retainedSnapshots:resultsFeed.snapshots.size,wireCacheBytes} }); return; }
       if (request.method !== "POST") { sendJson(response, 405, { ok: false, error: "Method not allowed" }); return; }
       const payload = await readJsonBody(request);
       const snapshot = await control.action(payload);
@@ -1018,7 +1010,8 @@ async function serveStatic(request, response) {
   try {
     const body = await readFile(filePath);
     const fileExt = extname(filePath).toLowerCase();
-    const contentType = contentTypes[fileExt] || "application/octet-stream";
+    const precompressed=filePath.endsWith(".json.gz");
+    const contentType = precompressed ? "application/json; charset=utf-8" : contentTypes[fileExt] || "application/octet-stream";
     const isCacheable = cacheableExtensions.includes(fileExt);
     
     const headers = {
@@ -1026,17 +1019,28 @@ async function serveStatic(request, response) {
     };
     
     // Add cache headers for static assets
-    if (isCacheable) {
+    if ((isCacheable || fileExt === ".json" || precompressed) && (new URL(request.url, "http://localhost").searchParams.has("v") || /\.[a-f0-9]{12}\.json(?:\.gz)?$/.test(filePath))) {
       headers["Cache-Control"] = "public, max-age=31536000, immutable"; // 1 year
     } else if (fileExt === ".html") {
       headers["Cache-Control"] = "public, max-age=60"; // 1 minute for HTML
     } else if (fileExt === ".json") {
       // For JSON files in /data, use a shorter cache to allow updates
-      headers["Cache-Control"] = "public, max-age=300"; // 5 minutes
+      headers["Cache-Control"] = "public, max-age=60, must-revalidate";
     }
     
+    headers["ETag"]='"'+createHash("sha256").update(body).digest("hex").slice(0,20)+'"';
+    headers["Vary"]="Accept-Encoding";
+    if(request.headers["if-none-match"]===headers["ETag"]){response.writeHead(304,headers);response.end();return;}
+    let output=body;
+    if(precompressed){if(/\bgzip\b/.test(request.headers["accept-encoding"] || ""))headers["Content-Encoding"]="gzip";else output=gunzipSync(body);}
+    else if(compressibleTypes.some(type=>contentType.startsWith(type)) && body.length>1024){
+      const accepted=request.headers["accept-encoding"] || "";
+      if(/\bbr\b/.test(accepted)){output=compressBody(body,"br",headers["ETag"]);headers["Content-Encoding"]="br";}
+      else if(/\bgzip\b/.test(accepted)){output=compressBody(body,"gzip",headers["ETag"]);headers["Content-Encoding"]="gzip";}
+    }
+    headers["Content-Length"]=output.length;
     response.writeHead(200, headers);
-    response.end(body);
+    response.end(output);
   } catch (error) {
     console.error(`Error serving ${requestedPath}:`, error);
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
@@ -1059,9 +1063,10 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
         liveResultsCache = data; liveResultsCacheAt = Date.now();
         await writeLiveResultsSnapshot(data, { details: false });
         for (const race of data.groups.flatMap(g => g.races)) {
-          const callsSignature = JSON.stringify(race.calls || []);
-          if (callsSignature !== publishedCalls.get(race.id) && (race.calls?.length || publishedCalls.has(race.id))) {
-            await buildRaceResultDetailWithHistory(race.id, {persist:true});
+          const callsSignature = JSON.stringify([race.calls || [], race.detailVersion]);
+          if (callsSignature !== publishedCalls.get(race.id) && (race.detailVersion || race.calls?.length || publishedCalls.has(race.id))) {
+            const detail = await buildRaceResultDetailWithHistory(race.id, {persist:true});
+            countyHistory.record(detail);
           }
           publishedCalls.set(race.id,callsSignature);
         }
@@ -1082,8 +1087,8 @@ createServer(async (request, response) => {
     await handleContact(request, response);
     return;
   }
-  if (url.pathname === "/api/live-results") {
-    await handleLiveResults(request, response);
+  if (["/api/live-results", "/api/results-version", "/api/live-results/changes"].includes(url.pathname)) {
+    await handleLiveResults(request, response, url);
     return;
   }
   if (url.pathname === "/api/live-results/race") {

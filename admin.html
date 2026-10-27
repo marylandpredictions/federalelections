@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <title>FEA Admin</title>
   <link rel="icon" href="assets/img/FEA_Icon.webp" type="image/webp">
-  <script src="assets/theme.js?v=20261027-night-final"></script><link rel="stylesheet" href="assets/wiki.css?v=20261027-night-final2"><link rel="stylesheet" href="assets/admin-control.css?v=20261027-board5">
+  <script src="assets/theme.js?v=20261027-night-final"></script><link rel="stylesheet" href="assets/wiki.css?v=20261027-night-final2"><link rel="stylesheet" href="assets/admin-control.css?v=20261027-desk14">
 </head>
 <body class="admin-page">
   <main class="admin-shell">
@@ -101,11 +101,11 @@
           </select>
         </div>
         <div class="admin-field">
-          <label for="simulationState">Simulation state (for simulation mode)</label>
+          <label for="simulationState">Test scenario</label>
           <select class="admin-select" id="simulationState">
             <option value="pre_election">Pre-election</option>
             <option value="polls_closed_no_votes">Polls closed, no votes</option>
-            <option value="polls_open">Polls open</option><option value="early_reporting">Early reporting</option><option value="reporting">Active reporting</option><option value="nbc_pending">NBC call pending</option><option value="nbc_accepted">NBC call accepted</option><option value="manual_override">Manual override</option><option value="provider_outage">Provider outage</option><option value="near_complete">Near complete</option><option value="completed">Completed</option>
+            <option value="polls_open">Polls open</option><option value="early_reporting">Early reporting</option><option value="reporting">Active reporting</option><option value="nbc_pending">NBC call waiting</option><option value="nbc_accepted">NBC call published</option><option value="manual_override">FEA override</option><option value="provider_outage">Results feed delayed</option><option value="near_complete">Near complete</option><option value="completed">Completed</option>
             <option value="called">Races called</option>
           </select>
         </div>
@@ -143,12 +143,12 @@
               <input class="admin-input" id="noteDate">
             </div>
             <div class="admin-field">
-              <label for="noteImage">Image URL or image JSON</label>
+              <label for="noteImage">Image link (optional)</label>
               <input class="admin-input" id="noteImage" placeholder="Optional">
             </div>
             <div class="admin-field">
-              <label for="noteEmbed">Embed URL or embed JSON</label>
-              <input class="admin-input" id="noteEmbed" placeholder='Optional, e.g. {"type":"governor-race-preview","state":"CA"}'>
+              <label for="noteEmbed">Video or embed link (optional)</label>
+              <input class="admin-input" id="noteEmbed" placeholder="Optional link">
             </div>
           </div>
           <div class="admin-field">
@@ -165,7 +165,7 @@
     <p id="control-status" class="admin-status" role="status"></p>
     <dialog id="control-confirm"><form method="dialog"><h2>Confirm election call action</h2><p id="confirm-message"></p><div class="admin-actions"><button class="admin-button secondary" value="cancel">Cancel</button><button class="admin-button" value="confirm">Confirm</button></div></form></dialog>
   </main>
-  <script src="assets/results-ui.js?v=20261027-board5"></script>
-  <script src="assets/admin.js?v=20261027-board5"></script>
+  <script src="assets/results-ui.js?v=20261027-desk14"></script>
+  <script src="assets/admin.js?v=20261027-desk14"></script>
 </body>
 </html>

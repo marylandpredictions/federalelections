@@ -85,6 +85,8 @@ test("HTTP integration: admin auth, calls, detail and summary refresh, no foreca
     "server.mjs",
     "scripts/generate-live-results.mjs",
     "scripts/results/control.mjs",
+    "scripts/results/change-feed.mjs",
+    "scripts/results/history.mjs",
     "scripts/results/nbc-provider.mjs",
     "admin.html",
     "index.html",
@@ -180,9 +182,16 @@ test("HTTP integration: admin auth, calls, detail and summary refresh, no foreca
     await fetch(base + "/api/admin/bootstrap", { headers: auth })
   ).json();
   assert.equal(bootstrap.races[0].id, "house-CO-4");
+  await assert.rejects(readFile(join(root,"data/live-results-races/house-CO-4.json")),{code:"ENOENT"});
   let response = await fetch(base + "/api/live-results");
   assert.equal(response.status, 200);
   const tag = response.headers.get("etag");
+  const initialVersion=(await response.json()).version;
+  const unchangedVersion=await fetch(base+"/api/results-version",{headers:{"if-none-match":tag}});
+  assert.equal(unchangedVersion.status,304);
+  assert.equal((await unchangedVersion.text()).length,0);
+  assert.deepEqual((await (await fetch(base+"/api/live-results/changes?since="+initialVersion)).json()).races,[]);
+  assert.equal((await (await fetch(base+"/api/live-results/changes?since=expired")).json()).reset,true);
   assert.equal(
     (
       await fetch(base + "/api/live-results", {
@@ -207,6 +216,12 @@ test("HTTP integration: admin auth, calls, detail and summary refresh, no foreca
     })
   ).json();
   assert.equal(summary.groups[0].races[0].calls[0].candidate, "Candidate A");
+  const delta=await (await fetch(base+"/api/live-results/changes?since="+initialVersion)).json();
+  assert.equal(delta.races.length,1);
+  assert.equal(delta.races[0].calls[0].candidate,"Candidate A");
+  assert.equal(delta.races[0].counties,undefined);
+  assert.equal(delta.races[0].voteHistory,undefined);
+  assert.equal(delta.races[0].providerCall,undefined);
   const detail = await (
     await fetch(base + "/api/live-results/race?id=house-CO-4")
   ).json();

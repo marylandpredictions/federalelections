@@ -481,6 +481,7 @@ export class ResultsControl {
       const { _signature, providerCall, counties, ...safe } = raw;
       return {
         ...safe,
+        detailVersion: _signature || "",
         countyCount: counties?.length || 0,
         hasBreakdown: !!counties?.length,
         ...(details ? { counties: counties || [] } : {}),

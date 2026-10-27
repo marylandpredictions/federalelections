@@ -150,6 +150,8 @@ export function parseNbcResults(data, source, catalogue) {
 export class NbcProvider {
   constructor({ sources = [], fetchImpl = fetch, timeoutMs = 12000 } = {}) {
     Object.assign(this, { sources, fetchImpl, timeoutMs });
+    this.httpCache = new Map();
+    this.httpCacheBytes = 0;
   }
   async fetchResults(catalogue) {
     if (!this.sources.length)
@@ -169,16 +171,27 @@ export class NbcProvider {
         throw new Error(
           "Source must be a verified public NBC general-election feed",
         );
+      const cached = this.httpCache.get(url.href);
       const response = await this.fetchImpl(url, {
         signal: AbortSignal.timeout(this.timeoutMs),
         redirect: "error",
-        headers: { Accept: "application/json" },
+        headers: { Accept: "application/json",
+          ...(cached?.etag ? {"If-None-Match":cached.etag} : {}),
+          ...(cached?.modified ? {"If-Modified-Since":cached.modified} : {}) },
       });
-      if (!response.ok)
+      if (!response.ok && response.status !== 304)
         throw new Error(`NBC connection failed: HTTP ${response.status}`);
-      const body = await response.text();
+      if(response.status === 304 && !cached) throw new Error("NBC 304 without a validated cached response");
+      const body = response.status === 304 ? cached.body : await response.text();
       if (body.length > 20000000) throw new Error("NBC payload exceeds limit");
       rows.push(...parseNbcResults(JSON.parse(body), source, catalogue));
+      if(response.status !== 304 && Buffer.byteLength(body)<=16*1024*1024) {
+        if(cached)this.httpCacheBytes-=Buffer.byteLength(cached.body);
+        this.httpCache.delete(url.href);
+        this.httpCache.set(url.href, {body,etag:response.headers?.get("etag"),modified:response.headers?.get("last-modified")});
+        this.httpCacheBytes+=Buffer.byteLength(body);
+        while(this.httpCacheBytes>32*1024*1024 || this.httpCache.size>128){const oldest=this.httpCache.keys().next().value;this.httpCacheBytes-=Buffer.byteLength(this.httpCache.get(oldest).body);this.httpCache.delete(oldest);}
+      }
     }
     if (new Set(rows.map((r) => r.id)).size !== rows.length)
       throw new Error("Duplicate source mappings");

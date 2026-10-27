@@ -1,3 +1,4 @@
+function boardMotionDuration(ms) { return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : ms; }
 const FIPS_TO_STATE = {
   "01": "AL", "02": "AK", "04": "AZ", "05": "AR", "06": "CA", "08": "CO", "09": "CT", "10": "DE", "11": "DC",
   "12": "FL", "13": "GA", "15": "HI", "16": "ID", "17": "IL", "18": "IN", "19": "IA", "20": "KS",
@@ -761,9 +762,10 @@ function countyTooltipRowsClean(candidates, race) {
   return candidates.slice(0, 3).map((candidate) => {
     const raceCandidate = candidateByName(race, candidate.name) || candidate;
     const color = candidateColor(raceCandidate);
-    const callMark = raceCandidate?.isWinner ? `<span class="tooltip-call-mark">${race?.winners && race.winners > 1 ? "&rarr;" : "&#10003;"}</span>` : "";
-    const votes = Number.isFinite(candidate.votes) && candidate.votes > 0 ? formatVotes(candidate.votes) : "--";
-    const percent = Number.isFinite(candidate.percent) && candidate.percent > 0 ? formatPercent(candidate.percent || 0) : "--";
+    // A statewide projection is not a separate county projection.
+    const callMark = "";
+    const votes = Number.isFinite(candidate.votes) && candidate.votes >= 0 ? formatVotes(candidate.votes) : "--";
+    const percent = Number.isFinite(candidate.percent) && candidate.percent >= 0 ? formatPercent(candidate.percent) : "--";
     return `
       <tr>
         <td><span class="tooltip-party-bar" style="background:${color}"></span>${escapeHtml(candidate.name || "Candidate")} ${callMark}<small>(${normalizedPartyCode(raceCandidate)})</small></td>
@@ -778,8 +780,9 @@ function countyTooltipMarkupClean(county, feature, descriptions, race, compariso
   const props = feature?.properties || {};
   const countyName = county?.name || props.countyName || props.NAME || "County";
   const description = countyDescriptionForFeature(feature, descriptions);
-  const countyCandidates = countyTopCandidatesForElectionNight(county, 3);
-  const fallbackCandidates = topCandidates(race, 3);
+  const countyTotal=(county?.candidates || []).reduce((sum,c)=>sum+(Number(c.votes) || 0),0);
+  const countyCandidates = countyTopCandidatesForElectionNight(county, 3).map(c=>({...c,percent:countyTotal>0?c.votes/countyTotal*100:NaN}));
+  const fallbackCandidates = topCandidates(race, 3).map(c=>({...c,votes:NaN,percent:NaN}));
   const rows = countyTooltipRowsClean(countyCandidates.length ? countyCandidates : fallbackCandidates, race);
   const reporting = county?.estimatedVoteReporting;
   const hasCountyVotes = countyCandidates.some((candidate) => Number(candidate.votes) > 0 || Number(candidate.percent) > 0);
@@ -954,6 +957,7 @@ class ElectionNightPage {
       this.safeJson("data/result-analysis-notes.json"),
       this.safeJson("data/election-night-watchlist.json")
     ]);
+    this.resultsVersion = liveResults?.version || null;
     this.lastCheckedAt = liveResults?.groups ? Date.now() : null;
     this.liveRaceIndex = (liveResults?.groups || []).flatMap(group => group.races || []);
     const races = (results?.races || []).map(race => normalizeElectionRace(this.liveRaceIndex.find(r => r.id === race.id) || race));
@@ -967,7 +971,7 @@ class ElectionNightPage {
     this.countyDescriptions = new Map((countyDescriptions?.rows || []).map((row) => [String(row.fips).padStart(5, "0"), row.description]));
     this.comparisonManifest = comparisonManifest || { sources: [] };
     if (!this.comparisonSource(this.comparisonMode)) this.comparisonMode = "live";
-    await Promise.all((this.comparisonManifest.sources || []).filter(source=>source.status==="available").flatMap(source=>["state","district","county"].map(kind=>this.loadComparisonDataset(kind,source))));
+    await Promise.all((this.comparisonManifest.sources || []).filter(source=>source.status==="available").flatMap(source=>["state","district"].map(kind=>this.loadComparisonDataset(kind,source))));
     this.normalizeComparisonModeForCurrentMap();
     this.applyLabMode();
   }
@@ -1377,7 +1381,7 @@ class ElectionNightPage {
       return;
     }
     if (this.selectedMode === "senate" || this.selectedMode === "governor") {
-      this.loadCountyFeatures();
+      this.loadCountyFeatures(this.currentRace?.state);
     }
   }
 
@@ -1651,7 +1655,7 @@ class ElectionNightPage {
         <select data-comparison-baseline aria-label="Comparison baseline">${comparisonOptions}</select>
       </label>
       <select class="board-watch-select" aria-label="Watch races"><option value="">Watch races</option>${this.modeRaces().filter(race=>this.watchlist?.has(race.id)).map(race=>`<option value="${escapeHtml(race.id)}">${escapeHtml(this.shortRaceLabel(race))} • ${FEAResultsUI.watchLabel(race.watch)}</option>`).join("")}</select>
-      ${this.selectedMode === "house" ? `<input class="election-map-search" type="search" placeholder="Search district" aria-label="Search House district">` : ""}
+      <input class="election-map-search" type="search" placeholder="Find race or candidate" aria-label="Search races" list="dashboard-race-suggestions"><datalist id="dashboard-race-suggestions">${Object.values(this.dataByMode).flat().map(r=>`<option value="${escapeHtml(FEAResultsUI.raceLabel({...r,stateName:STATE_NAMES[r.state]}))}">${escapeHtml(this.shortRaceLabel(r))}</option>`).join("")}</datalist>
       <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
       <button type="button" data-zoom="out" aria-label="Zoom out">-</button>
       <button type="button" data-zoom="reset" aria-label="Reset map">Reset</button>
@@ -1661,8 +1665,8 @@ class ElectionNightPage {
     controls.addEventListener("click", (event) => {
       const action = event.target?.dataset?.zoom;
       if (!action || !this.svg || !this.zoom) return;
-      if (action === "in") this.svg.transition().duration(220).call(this.zoom.scaleBy, 1.35);
-      if (action === "out") this.svg.transition().duration(220).call(this.zoom.scaleBy, 0.75);
+      if (action === "in") this.svg.transition().duration(boardMotionDuration(220)).call(this.zoom.scaleBy, 1.35);
+      if (action === "out") this.svg.transition().duration(boardMotionDuration(220)).call(this.zoom.scaleBy, 0.75);
       if (action === "reset") this.clearFocus();
     });
     const comparisonSelect = controls.querySelector("[data-comparison-baseline]");
@@ -1680,14 +1684,12 @@ class ElectionNightPage {
         if (event.key !== "Enter") return;
         const term = String(search.value || "").trim().toLowerCase();
         if (!term) return;
-        const race = this.modeRaces().find((item) => {
-          const id = houseGeometryId(item).toLowerCase();
-          const title = String(item.title || item.electionName || "").toLowerCase();
-          const state = String(item.state || "").toLowerCase();
-          const district = String(item.district || "").toLowerCase();
-          return id.includes(term) || title.includes(term) || `${state}-${district}`.includes(term);
-        });
-        if (race) this.selectRace(race, null);
+        const compact=term.replace(/[^a-z0-9]/g,"");
+        const race = Object.values(this.dataByMode).flat().find(item => [
+          FEAResultsUI.raceLabel({...item,stateName:STATE_NAMES[item.state]}),this.shortRaceLabel(item),item.id,
+          ...(item.candidates || []).map(c=>c.name)
+        ].some(value=>String(value).toLowerCase().replace(/[^a-z0-9]/g,"").includes(compact)));
+        if (race) this.openDashboardRace(race.id);
       });
     }
   }
@@ -1706,6 +1708,8 @@ class ElectionNightPage {
   }
 
   async renderSelectedRaceMap(race, options = {}) {
+    const presidential=this.comparisonManifest.sources.find(s=>s.id==="pres-2024" && s.status==="available");
+    if(race.type!=="house" && presidential)await this.loadComparisonDataset("county",presidential);
     if (String(race?.type || "").toLowerCase() === "house") {
       const [detail, features] = await Promise.all([
         this.findLiveDetailForRace(race),
@@ -1922,7 +1926,7 @@ class ElectionNightPage {
       { pad: 42 }
     );
     const duration = Number.isFinite(options.duration) ? options.duration : 500;
-    if (duration > 0) this.svg.transition().duration(duration).call(this.zoom.transform, target);
+    if (duration > 0) this.svg.transition().duration(boardMotionDuration(duration)).call(this.zoom.transform, target);
     else this.svg.call(this.zoom.transform, target);
   }
 
@@ -2058,7 +2062,7 @@ class ElectionNightPage {
   applyTransform(transform, duration = 250) {
     if (!this.svg || !this.zoom || !transform) return;
     const target = d3.zoomIdentity.translate(transform.x, transform.y).scale(transform.k);
-    if (duration > 0) this.svg.transition().duration(duration).call(this.zoom.transform, target);
+    if (duration > 0) this.svg.transition().duration(boardMotionDuration(duration)).call(this.zoom.transform, target);
     else this.svg.call(this.zoom.transform, target);
   }
 
@@ -2179,7 +2183,7 @@ class ElectionNightPage {
       return;
     }
     if (this.svg && this.zoom) {
-      this.svg.transition().duration(300).call(this.zoom.transform, d3.zoomIdentity);
+      this.svg.transition().duration(boardMotionDuration(300)).call(this.zoom.transform, d3.zoomIdentity);
     }
   }
 
@@ -2337,6 +2341,7 @@ function initElectionNight() {
     setTimeout(initElectionNight, 60);
     return;
   }
+  window.FEAEnhanceBoard?.(ElectionNightPage);
   new ElectionNightPage();
 }
 

@@ -530,3 +530,870 @@ body.results-board {
 .results-board .selected-race-table th:nth-child(3) {
   width: 24%;
 }
+
+/* FEA Election Night Desk: semantic surfaces in both themes. */
+body.results-board {
+  --board-bg: #081326;
+  --map-bg: #081326;
+  --map-neutral: #354961;
+  --panel-bg: #15243a;
+  --panel-raised: #1e304a;
+  --panel-border: #425671;
+  --text-primary: #f5f7fd;
+  --text-secondary: #b7c6dc;
+  --control-bg: #21334e;
+  --hover-bg: #2c4264;
+  --shadow: 0 14px 45px #0005;
+  --chart-line: #a9c3ff;
+  --ink: var(--text-primary);
+  --muted: var(--text-secondary);
+  --paper: var(--panel-bg);
+  --paper-2: var(--panel-raised);
+  --board-panel: var(--panel-bg);
+  --board-edge: var(--panel-border);
+  background: var(--board-bg);
+  font-variant-numeric: tabular-nums;
+}
+:root[data-theme="light"] body.results-board {
+  --board-bg: #eaf0f6;
+  --map-bg: #eaf0f6;
+  --map-neutral: #b6c6d7;
+  --panel-bg: #fff;
+  --panel-raised: #f1f5fa;
+  --panel-border: #c6d2e1;
+  --text-primary: #152a49;
+  --text-secondary: #536782;
+  --control-bg: #eaf0fa;
+  --hover-bg: #dce6f5;
+  --shadow: 0 12px 36px #243c6129;
+  --chart-line: #273b75;
+  background: var(--board-bg);
+}
+.results-board button:focus-visible,
+.results-board select:focus-visible,
+.results-board input:focus-visible,
+.results-board a:focus-visible,
+.results-board [tabindex]:focus-visible {
+  outline: 3px solid #849eed;
+  outline-offset: 3px;
+}
+.results-board [hidden] {
+  display: none !important;
+}
+.results-board .election-focus-panel {
+  background: var(--panel-bg);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--panel-border);
+  container-type: inline-size;
+  padding: 18px 20px 25px;
+  box-sizing: border-box;
+  min-width: 340px;
+}
+.results-board .focused-card-head {
+  background: transparent !important;
+  border: 0;
+  box-shadow: none;
+  position: relative;
+  min-height: 35px;
+}
+.results-board .focused-pill {
+  border-radius: 5px;
+  background: var(--control-bg);
+  color: var(--text-primary);
+}
+.results-board #focused-race-kind {
+  background: #efd66b;
+  color: #222c40;
+}
+.results-board .focused-close {
+  border: 0;
+  border-radius: 50%;
+  background: var(--panel-raised);
+  color: var(--text-primary);
+  font-size: 1.5rem;
+}
+.results-board .focused-close:hover {
+  background: var(--hover-bg);
+}
+.results-board .desk-tabs {
+  display: flex;
+  gap: 3px;
+  overflow: auto;
+  border-bottom: 1px solid var(--panel-border);
+  margin: 0 -3px 15px;
+  scrollbar-width: thin;
+}
+.results-board .desk-tabs button {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  color: var(--text-secondary);
+  padding: 11px 5px;
+  min-height: 44px;
+  font: inherit;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.results-board .desk-tabs button[aria-selected="true"] {
+  border-color: #849eed;
+  color: var(--text-primary);
+  background: var(--panel-raised);
+}
+.results-board .selected-race-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0 16px;
+}
+.results-board .selected-race-table th {
+  text-align: right;
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  padding: 8px 6px;
+}
+.results-board .selected-race-table th:first-child {
+  text-align: left;
+  width: 48%;
+}
+.results-board .selected-race-table td {
+  padding: 13px 6px;
+  line-height: 1.3;
+  vertical-align: middle;
+  border-color: var(--panel-border);
+}
+.results-board .selected-race-table td strong {
+  font-size: 0.92rem;
+  font-weight: 800;
+  display: block;
+}
+.results-board .selected-race-table td small {
+  font-size: 0.67rem;
+  margin-top: 4px;
+}
+.results-board .selected-race-table td:not(:first-child) {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.results-board .selected-party-rail {
+  width: 4px;
+  top: 10px;
+  bottom: 10px;
+  border-radius: 3px;
+}
+.results-board .selected-race-table tr.is-projected {
+  background: var(--panel-raised);
+}
+.results-board .winner-check {
+  color: #6cdba7;
+  display: inline-block;
+  animation: winner-in 0.3s ease-out;
+}
+:root[data-theme="light"] .results-board .winner-check {
+  color: #177341;
+}
+.results-board .projection-banner {
+  display: grid;
+  gap: 7px;
+  background: var(--panel-raised);
+  border-left: 5px solid var(--party-accent);
+  padding: 15px;
+  border-radius: 5px 12px 12px 5px;
+  margin: 0 0 12px;
+}
+.results-board .projection-banner small {
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  color: var(--text-secondary);
+}
+.results-board .projection-banner strong {
+  font-size: 1.45rem;
+  line-height: 1.08;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+.results-board .projection-banner span,
+.results-board .projection-banner time {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+.results-board .race-facts {
+  grid-template-columns: 1fr;
+  gap: 13px;
+  margin: 18px 0;
+}
+.results-board .race-facts div {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 12px;
+}
+.results-board .race-facts dt {
+  font-size: 0.62rem;
+  line-height: 1.4;
+  letter-spacing: 0.035em;
+}
+.results-board .race-facts dd {
+  font-size: 0.81rem;
+  text-align: right;
+  font-weight: 750;
+  line-height: 1.4;
+}
+@container (min-width:450px) {
+  .results-board .race-facts {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 22px;
+  }
+  .results-board .race-facts div {
+    display: block;
+  }
+  .results-board .race-facts dd {
+    text-align: left;
+    margin-top: 4px;
+  }
+  .results-board .selected-race-table td:not(:first-child) {
+    font-size: 1rem;
+  }
+}
+.results-board .focus-resize-handle {
+  display: block;
+  position: sticky;
+  float: right;
+  bottom: -20px;
+  right: 0;
+  width: 27px;
+  height: 27px;
+  margin: 0 -14px -18px 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: nwse-resize;
+  font-size: 1.2rem;
+  touch-action: none;
+  opacity: 0.65;
+}
+.results-board .focus-resize-handle:hover,
+.results-board .focus-resize-handle:focus-visible {
+  opacity: 1;
+  color: var(--text-primary);
+}
+.results-board .county-list {
+  display: grid;
+  gap: 5px;
+  max-height: 340px;
+  overflow: auto;
+}
+.results-board .county-list button {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--panel-raised);
+  color: var(--text-primary);
+  padding: 12px;
+  border: 0;
+  border-radius: 7px;
+  font: inherit;
+  font-size: 0.8rem;
+  text-align: left;
+  min-height: 44px;
+  cursor: pointer;
+}
+.results-board .county-list button:hover {
+  background: var(--hover-bg);
+}
+.results-board .county-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.results-board .county-heading h3 {
+  font-size: 1.05rem;
+}
+.results-board [data-unlock-county] {
+  background: var(--control-bg);
+  color: var(--text-primary);
+  border: 0;
+  border-radius: 5px;
+  font: inherit;
+  font-size: 0.7rem;
+  padding: 10px;
+  cursor: pointer;
+}
+.results-board .county-result-shape.is-county-selected {
+  stroke: #f5c947 !important;
+  stroke-width: 3px !important;
+  paint-order: stroke;
+  filter: drop-shadow(0 0 3px #0005);
+}
+:root[data-theme="light"]
+  .results-board
+  .county-result-shape.is-county-selected {
+  stroke: #9e5900 !important;
+}
+.results-board .county-result-shape,
+.results-board .map-context-shape {
+  vector-effect: non-scaling-stroke;
+}
+:root[data-theme="light"] .results-board .county-result-shape {
+  stroke: #59718e;
+}
+:root[data-theme="light"] .results-board .election-map-tooltip {
+  background: #fff;
+  color: #152a49;
+  border-color: #bbcbdc;
+  box-shadow: var(--shadow);
+}
+:root[data-theme="light"] .results-board .election-map-tooltip td,
+:root[data-theme="light"] .results-board .election-map-tooltip-title {
+  color: #152a49;
+  background: transparent;
+}
+.results-board .trend-mode-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  gap: 10px;
+}
+.results-board .trend-mode-label select {
+  background: var(--control-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  min-height: 42px;
+  padding: 8px;
+  font: inherit;
+}
+.results-board #desk-trend-chart {
+  min-height: 160px;
+  margin-top: 12px;
+}
+.results-board #desk-trend-chart svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+.results-board .chart-axis text {
+  fill: var(--text-secondary);
+  font-size: 10px;
+}
+.results-board .chart-axis path,
+.results-board .chart-axis line {
+  stroke: var(--panel-border);
+}
+.results-board .trend-point {
+  fill: var(--panel-bg);
+  stroke: var(--chart-line);
+  stroke-width: 2;
+  cursor: crosshair;
+}
+.results-board .trend-point:hover,
+.results-board .trend-point:focus {
+  r: 7;
+  fill: var(--chart-line);
+}
+.results-board .trend-detail,
+.results-board .desk-hint {
+  font-size: 0.74rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+.results-board .vote-batch {
+  display: grid;
+  gap: 7px;
+  background: var(--panel-raised);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+}
+.results-board .vote-batch small {
+  color: var(--text-secondary);
+  font-size: 0.65rem;
+}
+.results-board .vote-batch span {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.results-board .demographic-source {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+.results-board .demographic-bars {
+  display: grid;
+  gap: 13px;
+}
+.results-board .demographic-bars div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px;
+  font-size: 0.76rem;
+}
+.results-board .demographic-bars i {
+  grid-column: 1/-1;
+  height: 5px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to right,
+    #849eed var(--bar),
+    var(--panel-raised) var(--bar)
+  );
+}
+.results-board #projection-alerts {
+  position: absolute;
+  z-index: 9;
+  right: 16px;
+  bottom: 18px;
+  width: 310px;
+  max-width: calc(100% - 32px);
+  display: grid;
+  gap: 9px;
+  pointer-events: none;
+  max-height: calc(100dvh - 180px);
+  overflow: auto;
+}
+.results-board .projection-toast {
+  position: relative;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-left: 4px solid #849eed;
+  border-radius: 12px;
+  padding: 14px 15px;
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 6px;
+  pointer-events: auto;
+  animation: projection-enter 0.35s ease-out;
+  cursor: pointer;
+}
+.results-board .projection-toast.is-correction {
+  border-left-color: #e7b75b;
+}
+.results-board .projection-toast small {
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+}
+.results-board .projection-toast h3 {
+  font-size: 0.95rem;
+  margin: 0;
+  color: var(--text-primary);
+}
+.results-board .projection-toast strong {
+  font-size: 0.83rem;
+  padding-right: 12px;
+  color: var(--text-primary);
+}
+.results-board .toast-dismiss {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  min-width: 32px;
+  min-height: 32px;
+  font-size: 1.2rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.results-board .toast-view,
+.results-board .more-projections {
+  background: var(--control-bg);
+  border: 0;
+  border-radius: 5px;
+  color: var(--text-primary);
+  padding: 10px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.7rem;
+  cursor: pointer;
+  min-height: 38px;
+  pointer-events: auto;
+}
+.results-board .toast-view {
+  justify-self: start;
+}
+.results-board .election-chamber-segment {
+  transition: width 0.6s ease;
+}
+.results-board .number-updated {
+  animation: number-change 0.65s ease-out;
+}
+.results-board .projection-pulse {
+  animation: map-projection 1.4s ease-out;
+}
+.results-board .county-updated {
+  animation: county-change 0.9s ease-out;
+}
+.results-board .desk-lab-tools {
+  position: absolute;
+  z-index: 11;
+  left: 14px;
+  top: 175px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 10px;
+  max-width: 230px;
+  font-size: 0.7rem;
+  box-shadow: var(--shadow);
+}
+.results-board .desk-lab-tools summary {
+  cursor: pointer;
+  min-height: 25px;
+}
+.results-board .desk-lab-tools div {
+  display: grid;
+  gap: 5px;
+}
+.results-board .desk-lab-tools button {
+  background: var(--control-bg);
+  color: var(--text-primary);
+  border: 0;
+  padding: 9px;
+  border-radius: 5px;
+  font: inherit;
+  cursor: pointer;
+}
+@keyframes projection-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes number-change {
+  0% {
+    opacity: 0.35;
+    transform: translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes winner-in {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes map-projection {
+  0%,
+  50% {
+    stroke: #f5d363;
+    stroke-width: 3px;
+  }
+  100% {
+    stroke-width: 0.4px;
+  }
+}
+@keyframes county-change {
+  0% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@media (max-width: 600px) {
+  .results-board .election-focus-panel {
+    min-width: 0;
+    padding: 12px 16px 20px;
+    height: auto !important;
+    max-height: 46dvh;
+  }
+  .results-board .election-focus-panel.is-expanded {
+    max-height: 75dvh;
+  }
+  .results-board .focus-resize-handle {
+    display: none !important;
+  }
+  .results-board .desk-tabs button {
+    font-size: 0.6rem;
+    padding: 9px 3px;
+  }
+  .results-board .projection-banner strong {
+    font-size: 1.22rem;
+  }
+  .results-board .selected-race-table td strong {
+    font-size: 0.83rem;
+  }
+  .results-board .selected-race-table td:not(:first-child) {
+    font-size: 0.78rem;
+  }
+  .results-board #projection-alerts {
+    top: 166px;
+    bottom: auto;
+    right: 8px;
+    width: 260px;
+    max-height: calc(50dvh - 150px);
+    gap: 6px;
+  }
+  .results-board .projection-toast {
+    padding: 9px 12px;
+    gap: 3px;
+  }
+  .results-board .projection-toast h3 {
+    font-size: 0.8rem;
+  }
+  .results-board .projection-toast strong {
+    font-size: 0.75rem;
+  }
+  .results-board .projection-toast .toast-view {
+    min-height: 34px;
+    padding: 7px;
+  }
+  .results-board .has-focused-race.sheet-expanded .election-map-controls {
+    bottom: calc(75dvh + 8px);
+  }
+  .results-board .desk-lab-tools {
+    top: 165px;
+    left: 8px;
+    max-width: 145px;
+  }
+  .results-board .election-map-controls input {
+    max-width: 155px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .results-board *,
+  .results-board *::before,
+  .results-board *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.results-board .election-focus-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.results-board .focused-card-head,
+.results-board #focused-race-title {
+  flex-shrink: 0;
+}
+.results-board #focused-race-content {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  flex: 1;
+  padding: 0 2px 4px;
+}
+.results-board .focus-resize-handle {
+  position: absolute;
+  bottom: 2px;
+  right: 3px;
+  margin: 0;
+  z-index: 3;
+}
+.results-board .desk-tabs {
+  position: sticky;
+  top: 0;
+  background: var(--panel-bg);
+  z-index: 2;
+}
+.results-board .desk-lab-tools {
+  left: auto;
+  right: 80px;
+  top: 14px;
+}
+.results-board .desk-advanced {
+  border-top: 1px solid var(--panel-border);
+  padding-top: 12px;
+  font-size: 0.75rem;
+}
+.results-board .desk-advanced > summary {
+  cursor: pointer;
+  min-height: 35px;
+  color: var(--text-secondary);
+}
+@media (max-width: 600px) {
+  .results-board .desk-lab-tools {
+    right: 8px;
+    top: 165px;
+  }
+}
+
+.results-board #focused-race-content {
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+.results-board .county-heading h3,
+.results-board #desk-demographics h3 {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  color: var(--text-primary);
+}
+
+@media (max-width: 600px) {
+  .results-board .projection-banner {
+    padding: 10px;
+    gap: 4px;
+  }
+  .results-board .projection-banner strong {
+    font-size: 1.1rem;
+  }
+  .results-board .projection-banner span,
+  .results-board .projection-banner time {
+    font-size: 0.63rem;
+  }
+  .results-board .sheet-expanded #projection-alerts {
+    top: calc(25dvh - 48px);
+    max-height: 44px;
+    display: flex;
+    gap: 5px;
+    right: 8px;
+    left: 8px;
+    width: auto;
+    overflow: hidden;
+  }
+  .results-board .sheet-expanded .projection-toast {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0 7px;
+    padding: 3px 8px;
+    min-width: 0;
+    flex: 1;
+  }
+  .results-board .sheet-expanded .projection-toast small,
+  .results-board .sheet-expanded .toast-dismiss {
+    display: none;
+  }
+  .results-board .sheet-expanded .projection-toast h3 {
+    font-size: 0.6rem;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .results-board .sheet-expanded .projection-toast strong {
+    font-size: 0.65rem;
+    padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .results-board .sheet-expanded .toast-view {
+    grid-column: 2;
+    grid-row: 1/3;
+    min-height: 36px;
+    font-size: 0.6rem;
+    padding: 5px;
+  }
+  .results-board .sheet-expanded .more-projections {
+    font-size: 0.55rem;
+    max-width: 85px;
+    padding: 4px;
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 600px) {
+  .results-board .board-delay {
+    top: 140px;
+  }
+  .results-board .desk-lab-tools {
+    top: 140px;
+    right: 8px;
+    left: auto;
+    max-width: 105px;
+    padding: 4px;
+    font-size: 0.55rem;
+  }
+  .results-board .desk-lab-tools summary {
+    min-height: 19px;
+  }
+  .results-board #projection-alerts {
+    top: 176px;
+  }
+  .results-board .sheet-expanded #projection-alerts {
+    top: calc(25dvh - 44px);
+    max-height: 40px;
+  }
+  .results-board .projection-toast h3 {
+    padding-right: 24px;
+  }
+}
+
+:root[data-theme="light"]
+  .results-board
+  .map-context-shape:not(.is-focused-geography) {
+  fill: #d9e2ed;
+  stroke: #a8b9cd;
+}
+:root[data-theme="light"]
+  .results-board
+  .state-result-shape.election-map-muted {
+  fill: #d9e2ed;
+  stroke: #a8b9cd;
+}
+
+@media (min-width: 601px) {
+  .results-board .has-focused-race.desk-panel-left .election-map-controls {
+    left: calc(var(--desk-panel-width, 370px) + 32px);
+    max-width: calc(100% - var(--desk-panel-width, 370px) - 48px);
+  }
+  .results-board .has-focused-race .election-comparison-control select {
+    width: 135px;
+  }
+  .results-board .has-focused-race .board-watch-select {
+    width: 120px;
+  }
+  .results-board #projection-alerts {
+    bottom: calc(var(--desk-controls-height, 60px) + 28px);
+  }
+}
+@media (max-width: 600px) {
+  .results-board
+    .has-focused-race:not(.sheet-expanded)
+    .election-map-controls
+    input,
+  .results-board
+    .has-focused-race:not(.sheet-expanded)
+    .election-map-controls
+    .board-watch-select {
+    display: block;
+    width: 100px;
+    max-width: 100px;
+    min-height: 44px;
+    font-size: 0.65rem;
+  }
+  .results-board
+    .has-focused-race:not(.sheet-expanded)
+    .election-map-controls
+    button {
+    min-width: 44px;
+    width: 44px;
+    min-height: 44px;
+    padding: 4px;
+  }
+  .results-board .sheet-expanded .election-map-controls {
+    display: none;
+  }
+}
+
+@media (min-width: 601px) {
+  .results-board .has-focused-race .election-map-controls {
+    max-width: calc(100% - var(--desk-panel-width, 370px) - 48px);
+  }
+  .results-board .has-focused-race:not(.desk-panel-left) #projection-alerts {
+    right: calc(var(--desk-panel-width, 370px) + 32px);
+  }
+}

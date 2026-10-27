@@ -1,0 +1,211 @@
+{
+  "builtAt": "2026-10-27T23:25:50.959Z",
+  "method": "Before is HEAD; after is working tree. Compression sizes are local gzip level 9 / Brotli quality 4. Initial House totals exclude external D3/TopoJSON/font/icon requests and before's idle preloads of up to 16 district maps; excludes HTTP headers. Ohio is a representative lazy statewide selection, not a national county-file replacement. Render production traffic is not measured.",
+  "rows": [
+    {
+      "label": "Initial HTML",
+      "before": {
+        "file": "results.html",
+        "raw": 4125,
+        "gzip": 1419,
+        "brotli": 1365
+      },
+      "after": {
+        "file": "results.html",
+        "raw": 4636,
+        "gzip": 1581,
+        "brotli": 1530
+      }
+    },
+    {
+      "label": "Shared CSS",
+      "before": {
+        "file": "assets/wiki.css",
+        "raw": 221035,
+        "gzip": 33056,
+        "brotli": 36022
+      },
+      "after": {
+        "file": "assets/wiki.css",
+        "raw": 221035,
+        "gzip": 33056,
+        "brotli": 36022
+      }
+    },
+    {
+      "label": "Board CSS",
+      "before": {
+        "file": "assets/results-board.css",
+        "raw": 12098,
+        "gzip": 2485,
+        "brotli": 2603
+      },
+      "after": {
+        "file": "assets/results-board.css",
+        "raw": 31472,
+        "gzip": 5693,
+        "brotli": 6199
+      }
+    },
+    {
+      "label": "Map interaction JS",
+      "before": {
+        "file": "assets/election-night.js",
+        "raw": 109987,
+        "gzip": 25648,
+        "brotli": 26947
+      },
+      "after": {
+        "file": "assets/election-night.js",
+        "raw": 110845,
+        "gzip": 26037,
+        "brotli": 27139
+      }
+    },
+    {
+      "label": "State geometry",
+      "before": {
+        "file": "data/result-us-states.geojson",
+        "raw": 89263,
+        "gzip": 28764,
+        "brotli": 27491
+      },
+      "after": {
+        "file": "data/results/maps/states.c418eb7842b5.json.gz",
+        "raw": 74955,
+        "gzip": 22864,
+        "brotli": 22497,
+        "precompressedTransfer": 22864
+      }
+    },
+    {
+      "label": "House geometry",
+      "before": {
+        "file": "data/house-districts-119.geojson",
+        "raw": 22441064,
+        "gzip": 6595479,
+        "brotli": 6332493
+      },
+      "after": {
+        "file": "data/results/maps/house.48f84a149262.json.gz",
+        "raw": 4781220,
+        "gzip": 1303985,
+        "brotli": 1321204,
+        "precompressedTransfer": 1303985
+      }
+    },
+    {
+      "label": "National county geometry → Ohio on demand",
+      "before": {
+        "file": "data/result-counties.geojson",
+        "raw": 28324120,
+        "gzip": 8487041,
+        "brotli": 7819951
+      },
+      "after": {
+        "file": "data/results/maps/counties-39.7992220e4bce.json.gz",
+        "raw": 329645,
+        "gzip": 78462,
+        "brotli": 78321,
+        "precompressedTransfer": 78462
+      }
+    },
+    {
+      "label": "Highways → national display lines",
+      "before": {
+        "file": "data/result-major-highways.geojson",
+        "raw": 17947630,
+        "gzip": 2872170,
+        "brotli": 2969290
+      },
+      "after": {
+        "file": "data/results/maps/highways-national.f05b58f1ab30.json.gz",
+        "raw": 238728,
+        "gzip": 64687,
+        "brotli": 65783,
+        "precompressedTransfer": 64687
+      }
+    },
+    {
+      "label": "National summary (wire JSON, not pretty snapshot)",
+      "before": {
+        "raw": 363402,
+        "gzip": 16058,
+        "brotli": 15376
+      },
+      "after": {
+        "raw": 306529,
+        "gzip": 23020,
+        "brotli": 22548
+      }
+    },
+    {
+      "label": "assets/results-desk.js",
+      "after": {
+        "raw": 4831,
+        "gzip": 1553,
+        "brotli": 1603
+      }
+    },
+    {
+      "label": "assets/results-desk-board.js",
+      "after": {
+        "raw": 56008,
+        "gzip": 14282,
+        "brotli": 15021
+      }
+    },
+    {
+      "label": "data/results/county-demographics.min.json",
+      "after": {
+        "raw": 531549,
+        "gzip": 100331,
+        "brotli": 110217
+      }
+    }
+  ],
+  "initialHouse": {
+    "before": {
+      "requests": 17,
+      "raw": 43828600,
+      "gzip": 9868992,
+      "brotli": 9713157
+    },
+    "after": {
+      "requests": 16,
+      "raw": 5866603,
+      "gzip": 1505956,
+      "brotli": 1528677
+    }
+  },
+  "polling": {
+    "seconds": 15,
+    "beforeFull": {
+      "raw": 363402,
+      "gzip": 16058,
+      "brotli": 15376
+    },
+    "unchangedVersionResponseBody": 0,
+    "versionResponse": {
+      "raw": 73,
+      "gzip": 93,
+      "brotli": 67
+    },
+    "noChanges": {
+      "raw": 118,
+      "gzip": 126,
+      "brotli": 100
+    },
+    "oneRaceDelta": {
+      "raw": 725,
+      "gzip": 395,
+      "brotli": 384
+    },
+    "fullRecovery": {
+      "raw": 306529,
+      "gzip": 23020,
+      "brotli": 22548
+    }
+  },
+  "htmlBytes": 4636
+}
