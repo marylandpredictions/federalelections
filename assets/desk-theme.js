@@ -107,6 +107,29 @@
       D: "#1030b2",
       R: "#ff2a4f",
     }),
+    make("nbc-big-board", "NBC Big Board", "light", "#174b91", {
+      D: "#0075d5",
+      R: "#e52330",
+      I: "#8b57b5",
+      O: "#d59119",
+    }, {
+      "board-bg": "#e8edf3",
+      "map-bg": "#e8edf3",
+      "map-neutral": "#b7c2ce",
+      "panel-bg": "#ffffff",
+      "panel-raised": "#eef3f9",
+      "panel-border": "#627b9b",
+      "text-primary": "#102b50",
+      "text-secondary": "#3d526c",
+      "text-muted": "#52647b",
+      "state-border": "#ffffff",
+      "district-border": "#ffffff",
+      selection: "#ffce00",
+      focus: "#174b91",
+      watch: "#ffce00",
+      tossup: "#ffce00",
+      "chart-line": "#174b91",
+    }),
   ];
   function mix(a, b, t) {
     return (
