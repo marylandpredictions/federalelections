@@ -235,7 +235,7 @@ test("All House comparison choices remain unavailable without verified district 
       .appliesTo.includes("governor"),
   );
 });
-test("Board has no site header/footer/hero, a two-item overflow, and decorative city labels", async () => {
+test("Board has no site header/footer/hero, a compact overflow, and decorative city labels", async () => {
   for (const file of ["results.html", "election-night.html"]) {
     const html = await readFile(file, "utf8");
     assert.doesNotMatch(

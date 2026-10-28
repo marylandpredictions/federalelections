@@ -152,7 +152,25 @@
     // A minor-party-only contest still needs a meaningful summary.
     return rows.length ? rows : ranked.filter(c=>!c.writeIn).slice(0,2);
   }
+  function racePollCloseAt(race, schedule) {
+    const state = String(race?.state || '').toUpperCase();
+    const statewide = schedule?.events?.find(e => e.states?.includes(state))?.at;
+    const split = race?.type === 'house' && schedule?.districtExceptions?.[state];
+    const district = String(race?.district ?? '').replace(/^0+(?=\d)/, '');
+    return Date.parse((split && (split[district] || split.default)) || statewide);
+  }
+  function nextPollClosures(races, schedule, now = Date.now()) {
+    const upcoming = (races || []).map(r => ({id:r.id, at:racePollCloseAt(r,schedule)})).filter(r => Number.isFinite(r.at) && r.at > now);
+    const at = upcoming.length ? Math.min(...upcoming.map(r => r.at)) : null;
+    return {at, raceIds:upcoming.filter(r => r.at === at).map(r => r.id)};
+  }
+  function raceOutlineIds(races, schedule, mode = 'next', now = Date.now()) {
+    return mode === 'watch' ? (races || []).filter(r => r.watch?.watch || r.watch?.tossup).map(r => r.id) : nextPollClosures(races,schedule,now).raceIds;
+  }
   const api = {
+    racePollCloseAt,
+    nextPollClosures,
+    raceOutlineIds,
     summaryCandidates,
     finite,
     total,

@@ -33,8 +33,13 @@ window.FEACompleteBoard = function (Page) {
     projection: p.renderProjectionQueue,
     trend: p.renderTrendChart,
     fills: p.updateMapFills,
+    county: p.renderCountyDetailMap,
   };
   p.init = async function () {
+    this.outlineMode = 'next';
+    try { if (localStorage.getItem('feaDeskOutlines.v1') === 'watch') this.outlineMode = 'watch'; } catch {}
+    const outlineSelect=document.getElementById('desk-outline-mode');
+    if(outlineSelect) outlineSelect.value=this.outlineMode;
     this.pinnedIds = [];
     try {
       const x = JSON.parse(localStorage.getItem("feaDeskPins.v1"));
@@ -64,7 +69,7 @@ window.FEACompleteBoard = function (Page) {
     legend.id = "desk-map-legend";
     legend.setAttribute("aria-label", "Map legend");
     legend.innerHTML =
-      '<span class="legend-neutral">No votes</span><span class="legend-leading">Leading</span><span class="legend-called">Called ✓</span>';
+      '<span class="legend-neutral">No votes</span><span class="legend-leading">Leading</span><span class="legend-called">Called ✓</span><span id="desk-outline-legend" class="legend-outline">Next poll closes</span>';
     document.querySelector("main").append(legend);
     await original.init.call(this);
     this.loadEvidence = {
@@ -99,6 +104,7 @@ window.FEACompleteBoard = function (Page) {
       () => {
         clearTimeout(this.livePollTimer);
         clearInterval(this.clockTimer);
+        clearTimeout(this.outlineTimer);
       },
       { once: true },
     );
@@ -117,8 +123,33 @@ window.FEACompleteBoard = function (Page) {
   p.updateMapFills = function (...args) {
     const start = performance.now();
     const result = original.fills.apply(this, args);
+    this.updateRaceOutlines();
     document.body.dataset.mapUpdateMs = (performance.now() - start).toFixed(2);
     return result;
+  };
+  p.renderMap = async function (...args) {
+    const result=await original.map.apply(this,args);
+    this.updateRaceOutlines();
+    return result;
+  };
+  p.renderCountyDetailMap = function (...args) {
+    const result=original.county.apply(this,args);
+    this.updateRaceOutlines();
+    return result;
+  };
+  p.updateRaceOutlines = function (now=Date.now()) {
+    const races=this.modeRaces?.() || [],next=FEADesk.nextPollClosures(races,this.pollSchedule,now);
+    this.outlineRaceIds=new Set(FEADesk.raceOutlineIds(races,this.pollSchedule,this.outlineMode,now));
+    this.viewport?.selectAll('.state-result-shape,.house-district-shape,.map-context-shape').classed('is-competitive-race',feature=>{
+      const id=feature.properties?.id;
+      if(this.selectedMode==='house' && /^[A-Z]{2}-(?:\d+|AL)$/.test(id || ''))return this.outlineRaceIds.has(raceIdFromHouseGeometryId(id));
+      const state=FIPS_TO_STATE[featureStateFipsForElectionNight(feature)];
+      return races.some(r=>r.state===state && this.outlineRaceIds.has(r.id));
+    });
+    const legend=document.getElementById('desk-outline-legend');
+    if(legend)legend.textContent=this.outlineMode==='watch'?'Races to watch':next.at?'Next poll closes · '+new Date(next.at).toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'})+' ET':this.pollSchedule?'No upcoming poll closes':'Poll-close schedule unavailable';
+    clearTimeout(this.outlineTimer);
+    if(next.at && this.outlineMode!=='watch')this.outlineTimer=setTimeout(()=>this.updatePollClock(),Math.min(2147483647,Math.max(1,next.at-now)));
   };
   p.pulseRace = function (race) {
     if (!document.hidden && !this.suppressDeskEvents)
@@ -364,6 +395,11 @@ window.FEACompleteBoard = function (Page) {
   };
   p.bindEvents = function () {
     original.bind.call(this);
+    document.getElementById('desk-outline-mode')?.addEventListener('change',event=>{
+      this.outlineMode=event.target.value==='watch'?'watch':'next';
+      try { localStorage.setItem('feaDeskOutlines.v1',this.outlineMode); } catch {}
+      this.updateRaceOutlines();
+    });
     document
       .querySelector("[data-desk-appearance]")
       ?.addEventListener("click", () => {
@@ -731,17 +767,19 @@ window.FEACompleteBoard = function (Page) {
     return this.deskRefreshPromise;
   };
   p.updatePollClock = function (now = Date.now(), simulated = false) {
+    this.updateRaceOutlines(now);
     const node = document.getElementById("desk-poll-clock"),
       events = this.pollSchedule?.events || [];
     if (!node) return;
-    const upcoming = events.find((e) => Date.parse(e.at) > now),
+    const nextClose = FEADesk.nextPollClosures(this.modeRaces?.() || [],this.pollSchedule,now).at,
+      upcoming = nextClose ? {at:nextClose} : null,
       days = Math.ceil((Date.parse("2026-11-03T05:00:00Z") - now) / 86400000);
     node.textContent =
       days > 0
         ? `November 3 · ${days} ${days === 1 ? "day" : "days"} to Election Day`
         : upcoming
           ? `Next scheduled close · ${new Date(upcoming.at).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" })} ET · ${upcoming.states.join(", ")}`
-          : "Scheduled polls closed · results continue";
+          : this.pollSchedule?.events?.length ? "Scheduled polls closed · results continue" : "Poll-close schedule unavailable";
     node.title =
       "Scheduled closing times can be extended. Voters in line may still vote. Verified schedule coverage: " +
       (this.pollSchedule?.coverage || "pending");

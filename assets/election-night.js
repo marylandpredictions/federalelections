@@ -1559,7 +1559,7 @@ class ElectionNightPage {
       .attr("class", (feature) => {
         const state = FIPS_TO_STATE[featureStateFipsForElectionNight(feature)];
         const race = raceByState.get(state);
-        return race ? `state-result-shape election-map-shape ${isCompetitiveRace(race) ? "is-competitive-race" : ""}` : "state-result-shape election-map-shape election-map-muted";
+        return race ? `state-result-shape election-map-shape ${this.outlineRaceIds?.has(race.id) ? "is-competitive-race" : ""}` : "state-result-shape election-map-shape election-map-muted";
       })
       .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("fill", (feature) => {
@@ -1610,7 +1610,7 @@ class ElectionNightPage {
       .join("path")
       .attr("class", (feature) => {
         const race = raceByDistrict.get(feature.properties?.id);
-        return race ? `house-district-shape election-map-shape ${isCompetitiveRace(race) ? "is-competitive-race" : ""}` : "house-district-shape election-map-shape election-map-muted";
+        return race ? `house-district-shape election-map-shape ${this.outlineRaceIds?.has(race.id) ? "is-competitive-race" : ""}` : "house-district-shape election-map-shape election-map-muted";
       })
       .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("fill-rule", "evenodd")
