@@ -10,7 +10,7 @@ test('Static fallback summaries and existing detail files contain the same compl
  const catalogue=new Map(read('data/election-night-races.json').races.map(r=>[r.id,r]));
  const snapshot=read('data/live-results.json').groups.flatMap(g=>g.races);
  assert.equal(snapshot.length,506);
- for(const row of [...snapshot,...['governor-IA','house-CO-4','senate-OH','senate-TX'].map(id=>read('data/live-results-races/'+id+'.json'))]){
+ for(const row of [...snapshot,...[...catalogue.keys()].map(id=>read('data/live-results-races/'+id+'.json'))]){
   assert.deepEqual(row.candidates.map(c=>c.name).sort(),catalogue.get(row.id).candidates.map(c=>c.name).sort(),row.id);
   assert.ok(row.candidates.every(c=>!genericName(c.name)&&!c.placeholder));
  }
