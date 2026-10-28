@@ -889,9 +889,13 @@ class ElectionNightPage {
 
   mapDimensions() {
     const rect=document.getElementById("election-map")?.getBoundingClientRect();
-    return {width:Math.max(320,Math.round(rect?.width || 1160)),height:Math.max(360,Math.round(rect?.height || 720))};
+    return {width:Math.max(320,Math.round(rect?.width || 1160)),height:Math.max(180,Math.round(rect?.height || 720))};
   }
-  mapExtent(width,height) { return [[16,Math.min(155,height*.22)],[width-16,height-76]]; }
+  mapExtent(width,height) {
+    const header=document.querySelector('.board-top-controls')?.getBoundingClientRect();
+    const top=Math.min(Math.max(60,(header?.bottom||145)+12),height-100);
+    return [[16,top],[width-16,Math.max(top+24,height-76)]];
+  }
 
   async refreshResults() {
     if (this.refreshBusy) return;
@@ -1994,6 +1998,17 @@ class ElectionNightPage {
       top: (panelRect.top - svgRect.top) * scaleY,
       bottom: (panelRect.bottom - svgRect.top) * scaleY
     };
+    const portraitSheet=viewBox.width<=600 && !(viewBox.width>=480 && viewBox.height<=500);
+    if ((portraitSheet && !panel.classList.contains('is-expanded')) || (viewBox.width >= 480 && viewBox.width <= 1100 && viewBox.height <= 500)) {
+      const header=document.querySelector('.board-top-controls')?.getBoundingClientRect();
+      const controls=document.querySelector('.election-map-controls')?.getBoundingClientRect();
+      const left=16, right=portraitSheet?viewBox.width-16:Math.max(left+80,panelBox.left-16);
+      const top=Math.max(60,((header?.bottom||68)-svgRect.top)*scaleY+12);
+      const bottom=Math.max(top+60,((controls?.top||svgRect.bottom-60)-svgRect.top)*scaleY-12);
+      const dx=Math.max(1,bounds.x1-bounds.x0),dy=Math.max(1,bounds.y1-bounds.y0);
+      const k=Math.min((right-left)/dx,(bottom-top)/dy);
+      return d3.zoomIdentity.translate(left+(right-left-dx*k)/2-bounds.x0*k,top+(bottom-top-dy*k)/2-bounds.y0*k).scale(k);
+    }
     const raceBox = {
       left: bounds.x0 * transform.k + transform.x,
       right: bounds.x1 * transform.k + transform.x,

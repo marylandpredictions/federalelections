@@ -1296,7 +1296,7 @@ window.FEAEnhanceBoard = function (Page) {
   p.renderProjectionQueue = function () {
     const host = document.getElementById("projection-alerts");
     if (!host) return;
-    const limit = innerWidth <= 600 ? 1 : 3;
+    const limit = innerWidth <= 600 || (innerWidth <= 1100 && innerHeight <= 500) ? 1 : 3;
     // Keep existing cards and timers; a burst never restarts their dismissal clocks.
     const visible = new Set(this.alertQueue.slice(0, limit).map((e) => e.key));
     for (const card of [...host.querySelectorAll(".projection-toast")])
