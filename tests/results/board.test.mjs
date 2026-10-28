@@ -244,7 +244,7 @@ test("Board has no site header/footer/hero, a two-item overflow, and decorative 
     );
     assert.match(html, /id="board-menu-button"[^>]*aria-expanded="false"/);
     assert.match(html, /Return to main site/);
-    assert.match(html, /Change theme/);
+    assert.match(html, /data-desk-appearance>Appearance/);
     assert.doesNotMatch(html, /Donate|Ratings|Videos|Articles/);
   }
   const js = await readFile("assets/election-night.js", "utf8");

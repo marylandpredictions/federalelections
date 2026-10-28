@@ -13,6 +13,10 @@ export function publicRace(race) {
     "title",
     "electionDate",
     "electionScope",
+    "electionFormat",
+    "rosterVerified",
+    "rosterReviewed",
+    "rosterIncomplete",
     "candidates",
     "calls",
     "status",
@@ -27,11 +31,36 @@ export function publicRace(race) {
     "provider",
     "detailVersion",
   ];
-  return Object.fromEntries(
+  const result = Object.fromEntries(
     keys
       .filter((key) => race[key] !== undefined)
       .map((key) => [key, race[key]]),
   );
+  result.candidates = (race.candidates || []).map((candidate) =>
+    Object.fromEntries(
+      [
+        "id",
+        "name",
+        "party",
+        "partyCode",
+        "partyLabels",
+        "aliases",
+        "writeIn",
+        "ballotStatus",
+        "summaryVisible",
+        "votes",
+        "percent",
+        "incumbent",
+        "isWinner",
+        "winner",
+        "callStatus",
+        "callLabel",
+      ]
+        .filter((key) => candidate[key] !== undefined)
+        .map((key) => [key, candidate[key]]),
+    ),
+  );
+  return result;
 }
 export function publicProvider(provider = {}) {
   return {

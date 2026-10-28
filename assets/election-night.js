@@ -1,4 +1,4 @@
-function boardMotionDuration(ms) { return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : ms; }
+function boardMotionDuration(ms) { return document.body.dataset.motion==='reduced'||window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : ms; }
 const FIPS_TO_STATE = {
   "01": "AL", "02": "AK", "04": "AZ", "05": "AR", "06": "CA", "08": "CO", "09": "CT", "10": "DE", "11": "DC",
   "12": "FL", "13": "GA", "15": "HI", "16": "ID", "17": "IL", "18": "IN", "19": "IA", "20": "KS",
@@ -128,7 +128,7 @@ const MAP_CITY_LABELS = [
 ];
 
 function partyColor(party) {
-  return PARTY_COLORS[String(party || "U").toUpperCase()] || PARTY_COLORS.U;
+  return window.FEADeskTheme?.resolved.partyColors[String(party || "O").toUpperCase()] || window.FEADeskTheme?.candidateColor({party}) || PARTY_COLORS[String(party || "U").toUpperCase()] || PARTY_COLORS.U;
 }
 
 function partyLabel(party) {
@@ -138,7 +138,8 @@ function partyLabel(party) {
   if (value === "I") return "Independent";
   if (value === "L") return "Libertarian";
   if (value === "G") return "Green";
-  return "Other";
+  if (value === "NP") return "No party";
+  return value === "U" || value === "O" ? "Other" : String(party);
 }
 
 function partyGroupLabel(party) {
@@ -412,6 +413,14 @@ function raceWinnerParty(race) {
 }
 
 function raceColor(race) {
+  if(window.FEADeskTheme) {
+    const neutral=FEADeskTheme.resolved.tokens['map-neutral'];
+    if(!race||(!hasActiveResults(race)&&!isActuallyCalled(race)))return neutral;
+    const leaders=topCandidates(race,2),called=race.calls?.[0],leader=called?race.candidates.find(c=>c.name===called.candidate):leaders[0];
+    if(!leader)return neutral;
+    const base=FEADeskTheme.candidateColor(leader,race.candidates);
+    return FEADeskTheme.mix(neutral,base,called?1:Math.min(.84,.48+Math.max(0,(leaders[0]?.percent||0)-(leaders[1]?.percent||0))/100));
+  }
   if (!race || (!hasActiveResults(race) && !isActuallyCalled(race))) return "#5f6b80";
   const candidates = topCandidates(race, 2);
   const leader = candidates[0];
@@ -476,6 +485,7 @@ function candidateName(name, party, status) {
 function normalizeCandidate(candidate) {
   const party = normalizedPartyCode(candidate);
   return {
+    ...candidate,
     name: candidate.name || candidate.candidateName || partyLabel(party),
     party,
     votes: Number(candidate.votes) || 0,
@@ -493,7 +503,8 @@ function normalizedPartyCode(candidate) {
   if (partyText.includes("republican") || partyText === "gop" || partyText === "rep" || partyText === "r") return "R";
   if (partyText.includes("libertarian") || partyText === "l") return "L";
   if (partyText.includes("green") || partyText === "g") return "G";
-  return String(candidate.partyCode || candidate.party || "U").charAt(0).toUpperCase();
+  if (["np","no party","nonpartisan","no-party"].includes(partyText)) return "NP";
+  return String(candidate.partyCode || candidate.party || "U").toUpperCase();
 }
 
 function buildFallbackCandidate(party, name, status, percent = 0) {
@@ -508,7 +519,7 @@ function buildFallbackCandidate(party, name, status, percent = 0) {
 }
 
 function candidateColor(candidate) {
-  return candidate?.color || partyColor(normalizedPartyCode(candidate));
+  return window.FEADeskTheme?.candidateColor(candidate) || candidate?.color || partyColor(normalizedPartyCode(candidate));
 }
 
 function candidateByName(race, name) {
@@ -655,7 +666,7 @@ function tooltipMarkup(race, title, comparisonNote = "") {
   }
 
   const live = hasActiveResults(race);
-  const rows = topCandidates(race, 3).map((candidate, index) => {
+  const rows = FEADesk.summaryCandidates(race, topCandidates(race, 99)).map((candidate, index) => {
     const color = candidateColor(candidate);
     const value = live ? formatPercent(candidate.percent || 0) : "Awaiting";
     return `
@@ -710,7 +721,7 @@ function houseStateTooltipMarkup(races, title) {
 }
 
 function countyTooltipRows(candidates, race) {
-  return candidates.slice(0, 3).map((candidate) => {
+  return FEADesk.summaryCandidates(race, candidates).map((candidate) => {
     const raceCandidate = candidateByName(race, candidate.name) || candidate;
     const color = candidateColor(raceCandidate);
     const callMark = raceCandidate?.isWinner ? `<span class="tooltip-call-mark">${race?.winners && race.winners > 1 ? "→" : "✓"}</span>` : "";
@@ -759,7 +770,7 @@ function countyTooltipMarkup(county, feature, descriptions, race) {
 }
 
 function countyTooltipRowsClean(candidates, race) {
-  return candidates.slice(0, 3).map((candidate) => {
+  return FEADesk.summaryCandidates(race, candidates).map((candidate) => {
     const raceCandidate = candidateByName(race, candidate.name) || candidate;
     const color = candidateColor(raceCandidate);
     // A statewide projection is not a separate county projection.
@@ -781,8 +792,8 @@ function countyTooltipMarkupClean(county, feature, descriptions, race, compariso
   const countyName = county?.name || props.countyName || props.NAME || "County";
   const description = countyDescriptionForFeature(feature, descriptions);
   const countyTotal=(county?.candidates || []).reduce((sum,c)=>sum+(Number(c.votes) || 0),0);
-  const countyCandidates = countyTopCandidatesForElectionNight(county, 3).map(c=>({...c,percent:countyTotal>0?c.votes/countyTotal*100:NaN}));
-  const fallbackCandidates = topCandidates(race, 3).map(c=>({...c,votes:NaN,percent:NaN}));
+  const countyCandidates = countyTopCandidatesForElectionNight(county, 99).map(c=>({...c,percent:countyTotal>0?c.votes/countyTotal*100:NaN}));
+  const fallbackCandidates = topCandidates(race, 99).map(c=>({...c,votes:NaN,percent:NaN}));
   const rows = countyTooltipRowsClean(countyCandidates.length ? countyCandidates : fallbackCandidates, race);
   const reporting = county?.estimatedVoteReporting;
   const hasCountyVotes = countyCandidates.some((candidate) => Number(candidate.votes) > 0 || Number(candidate.percent) > 0);
@@ -865,7 +876,7 @@ class ElectionNightPage {
     this.renderSummary();
     await this.renderMap();
     this.preloadLikelyDetailAssets();
-    if (!this.isLabPage || this.query.get("live") === "true") window.setInterval(() => this.refreshResults(), 15000);
+    this.scheduleDeskPoll?.();
   }
 
   renderProviderStatus(provider) {
@@ -1009,7 +1020,7 @@ class ElectionNightPage {
   }
 
   seedSimulatedRace(race, reportingPercent = 18) {
-    const candidates = race.candidates?.length ? race.candidates : [buildFallbackCandidate("D"), buildFallbackCandidate("R")];
+    const candidates = race.candidates?.length ? race.candidates : [buildFallbackCandidate("D", "Simulated candidate A"), buildFallbackCandidate("R", "Simulated candidate B")];
     const baseTotal = 18000 + (stringToNumber(race.id || race.title) % 90000);
     const simulatedShares = { dem: 48 + (stringToNumber(race.id) % 9), rep: 44 };
     const partyCounts = candidates.reduce((counts, candidate) => {
@@ -1272,7 +1283,7 @@ class ElectionNightPage {
       const county = countyForFeature(feature, lookup);
       const leader = countyTopCandidatesForElectionNight(county, 1)[0];
       if (!leader) return "#334054";
-      return d3.interpolateRgb("#06142e", candidateColor(leader))(0.9);
+      return window.FEADeskTheme ? FEADeskTheme.mix(FEADeskTheme.resolved.tokens['map-neutral'],FEADeskTheme.candidateColor(leader,county.candidates),.72) : d3.interpolateRgb("#06142e", candidateColor(leader))(0.9);
     }
     const source = this.comparisonSource();
     if (!source || source.id === "live") return "#334054";
@@ -1635,7 +1646,7 @@ class ElectionNightPage {
       .on("zoom", (event) => {
         this.viewport.attr("transform", event.transform);
         const labelScale = Math.max(0.38, Math.min(1, 1 / Math.sqrt(event.transform.k)));
-        this.viewport.selectAll(".map-background-city").style("font-size", `${10 * labelScale}px`);
+        this.viewport.selectAll(".map-background-city").style("font-size", `${10 * labelScale * Math.min(2,Math.max(1,width/1920))}px`);
       });
     this.svg.call(this.zoom);
   }
@@ -1894,7 +1905,8 @@ class ElectionNightPage {
         if (!city.point) return false;
         if (raceStates.has(city.state)) return false;
         const [x, y] = city.point;
-        const inFrame = x > -90 && x < 1250 && y > -90 && y < 810;
+        const frame=this.mapDimensions();
+        const inFrame = x > -90 && x < frame.width+90 && y > -90 && y < frame.height+90;
         if (!inFrame) return false;
         return !options.state || city.state === options.state || !options.detail;
       }))
@@ -2342,6 +2354,7 @@ function initElectionNight() {
     return;
   }
   window.FEAEnhanceBoard?.(ElectionNightPage);
+  window.FEACompleteBoard?.(ElectionNightPage);
   new ElectionNightPage();
 }
 

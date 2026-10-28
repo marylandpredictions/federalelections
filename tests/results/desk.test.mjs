@@ -520,6 +520,7 @@ test("County hover never substitutes statewide vote totals or statewide projecti
     end = code.indexOf("function countyDescriptionForFeature", start);
   const context = vm.createContext({
     candidateByName: (r, name) => r.candidates.find((c) => c.name === name),
+    FEADesk: desk,
     candidateColor: () => "blue",
     normalizedPartyCode: () => "D",
     escapeHtml: (v) => String(v),

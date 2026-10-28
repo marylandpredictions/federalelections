@@ -87,6 +87,8 @@
     if(renderControl.signature === signature) {updateQueueClocks();return;}
     renderControl.signature = signature;
     const h=controlSnapshot.health, entries=Object.entries(controlSnapshot.states);
+    const rosterNode=document.getElementById('candidate-roster-review');
+    if(rosterNode){const races=controlSnapshot.races||[],official=races.filter(r=>r.rosterVerified).length,reviewed=races.filter(r=>r.rosterReviewed).length,empty=races.filter(r=>!r.candidates?.length);rosterNode.textContent=reviewed+' / '+races.length+' rosters reviewed · '+official+' official-source rosters · '+(races.length-reviewed)+' need review · '+empty.length+' empty rosters. Official Louisiana/Wyoming lists and dated Ballotpedia general-election lists are kept separately. Run npm run sync:results-candidates to refresh the curated catalogue; add -- --refresh-louisiana to refresh its official source.';}
     const pending=entries.filter(([,s])=>["NBC_PENDING","NBC_HELD"].includes(s.callState) && !s.manualOverride);
     $("control-top-status").textContent=`Results feed: ${FEAResultsUI.feedLabel(h)}`;
     $("queue-count").textContent=h.pending;

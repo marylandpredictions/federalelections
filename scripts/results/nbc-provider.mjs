@@ -2,6 +2,7 @@
  * Provider contract: fetchResults(catalogue) -> normalized race[]. Throws on invalid data.
  * A projection flag has NO authority unless its exact meaning has been verified in the source manifest.
  */
+import { genericName } from './candidate-roster.mjs';
 export function percent(value) {
   if (value === null || value === undefined || value === "") return null;
   const n = Number(value);
@@ -19,7 +20,7 @@ function candidate(raw) {
   const name =
     raw.name || [raw.firstName, raw.lastName].filter(Boolean).join(" ");
   const votes = Number(raw.votes ?? 0);
-  if (!name || !Number.isSafeInteger(votes) || votes < 0)
+  if (genericName(name) || !Number.isSafeInteger(votes) || votes < 0)
     throw new Error("Invalid NBC candidate");
   const party = String(raw.party || "").toUpperCase();
   const partyCode =
@@ -32,10 +33,14 @@ function candidate(raw) {
       GRN: "G",
       DEMOCRATIC: "D",
       REPUBLICAN: "R",
+      NPA: "NP",
+      NOP: "NP",
+      'NO PARTY': 'NP',
     }[party] || party;
   return {
     id: String(raw.candidateId ?? raw.id ?? name),
     name,
+    ...(Array.isArray(raw.partyLabels)?{partyLabels:raw.partyLabels.filter(p=>typeof p==='string').slice(0,8)}:{}),
     party: partyCode,
     partyCode,
     votes,

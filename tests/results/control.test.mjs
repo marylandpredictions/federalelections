@@ -16,8 +16,8 @@ const catalogue = [
     district: 4,
     electionName: "Colorado 4",
     candidates: [
-      { name: "Candidate A", party: "D", votes: 0 },
-      { name: "Candidate B", party: "R", votes: 0 },
+      { name: "Alex Example", party: "D", votes: 0 },
+      { name: "Blair Example", party: "R", votes: 0 },
     ],
   },
 ];
@@ -50,7 +50,7 @@ function fixture({
           candidates: [
             {
               candidateId: 1,
-              name: "Candidate A",
+              name: "Alex Example",
               party: "DEM",
               votes,
               percentVote: 55,
@@ -58,7 +58,7 @@ function fixture({
             },
             {
               candidateId: 2,
-              name: "Candidate B",
+              name: "Blair Example",
               party: "GOP",
               votes: 80,
               percentVote: 45,
@@ -71,7 +71,7 @@ function fixture({
             fips: "08001",
             percentIn: 30,
             candidates: [
-              { name: "Candidate A", party: "DEM", votes: 20, percentVote: 60 },
+              { name: "Alex Example", party: "DEM", votes: 20, percentVote: 60 },
             ],
           },
         ],
@@ -131,7 +131,7 @@ test("NBC normalizes vote, expected vote and precinct percentages separately; re
   assert.equal(r.reportingPercent, 40);
   assert.equal(r.candidates[0].percent, 55);
   assert.equal(r.counties[0].fips, "08001");
-  assert.equal(r.providerCall.candidate, "Candidate A");
+  assert.equal(r.providerCall.candidate, "Alex Example");
   assert.equal(r.candidates[0].isWinner, false);
 });
 test("No call inferred from lead, vote share, percent in or unverified winner flags", () => {
@@ -238,13 +238,13 @@ test("Manual override (including uncall) stays authoritative until explicit retu
   await x.control.action({
     action: "manual",
     raceId: "house-CO-4",
-    calls: [{ candidate: "Candidate B", status: "winner" }],
+    calls: [{ candidate: "Blair Example", status: "winner" }],
   });
   x.advance(60000);
   await x.control.poll();
   assert.equal(
     x.control.calls.races["house-CO-4"].calls[0].candidate,
-    "Candidate B",
+    "Blair Example",
   );
   assert.equal(
     x.control.calls.races["house-CO-4"].callState,
@@ -263,7 +263,7 @@ test("Manual override (including uncall) stays authoritative until explicit retu
   await x.control.tick();
   assert.equal(
     x.control.calls.races["house-CO-4"].calls[0].candidate,
-    "Candidate A",
+    "Alex Example",
   );
 });
 test("Manual call works without any provider; candidate mismatch rejected", async (t) => {
@@ -279,7 +279,7 @@ test("Manual call works without any provider; candidate mismatch rejected", asyn
   await x.control.action({
     action: "manual",
     raceId: "house-CO-4",
-    calls: [{ candidate: "Candidate A", status: "projected" }],
+    calls: [{ candidate: "Alex Example", status: "projected" }],
   });
   assert.equal(
     x.control.calls.races["house-CO-4"].callState,
@@ -354,7 +354,7 @@ test("Conflicting upstream projection held and never silently replaces a publish
   assert.equal(x.control.calls.races["house-CO-4"].callState, "NBC_HELD");
   assert.equal(
     x.control.calls.races["house-CO-4"].calls[0].candidate,
-    "Candidate A",
+    "Alex Example",
   );
 });
 test("Withdrawn pending projection held for human review, not published", async (t) => {
@@ -380,7 +380,7 @@ test("Failed save preserves memory and existing call decision; retry remains pos
     x.control.action({
       action: "manual",
       raceId: "house-CO-4",
-      calls: [{ candidate: "Candidate B", status: "winner" }],
+      calls: [{ candidate: "Blair Example", status: "winner" }],
     }),
   );
   assert.equal(x.control.calls.races["house-CO-4"].callState, "NBC_PENDING");
@@ -390,11 +390,11 @@ test("Failed save preserves memory and existing call decision; retry remains pos
   await x.control.action({
     action: "manual",
     raceId: "house-CO-4",
-    calls: [{ candidate: "Candidate B", status: "winner" }],
+    calls: [{ candidate: "Blair Example", status: "winner" }],
   });
   assert.equal(
     x.control.calls.races["house-CO-4"].calls[0].candidate,
-    "Candidate B",
+    "Blair Example",
   );
 });
 
@@ -412,7 +412,7 @@ test("Public results cannot observe an uncommitted call while a save is in progr
   const action = x.control.action({
     action: "manual",
     raceId: "house-CO-4",
-    calls: [{ candidate: "Candidate B", status: "projected" }],
+    calls: [{ candidate: "Blair Example", status: "projected" }],
   });
   await saving;
   assert.equal(x.control.results().groups[0].races[0].calls.length, 0);
@@ -421,6 +421,16 @@ test("Public results cannot observe an uncommitted call while a save is in progr
   await action;
   assert.equal(
     x.control.results().groups[0].races[0].calls[0].candidate,
-    "Candidate B",
+    "Blair Example",
   );
+});
+
+test('A stale zero-vote runtime roster cannot reintroduce filler or hide catalogue summary priorities', async t => {
+ const x=await setup(t);
+ x.control.catalogue[0].candidates[0].summaryVisible=true;
+ x.control.visible.runtime.races['house-CO-4']={candidates:[{name:'independent longshot, caucus not credited',party:'I',votes:0}]};
+ const race=x.control.results().groups[0].races[0];
+ assert.deepEqual(race.candidates.map(c=>c.name),['Alex Example','Blair Example']);
+ assert.equal(race.candidates[0].summaryVisible,true);
+ assert.equal(race.candidates[1].summaryVisible,undefined);
 });

@@ -85,6 +85,7 @@ test("HTTP integration: admin auth, calls, detail and summary refresh, no foreca
     "server.mjs",
     "scripts/generate-live-results.mjs",
     "scripts/results/control.mjs",
+    "scripts/results/candidate-roster.mjs",
     "scripts/results/change-feed.mjs",
     "scripts/results/history.mjs",
     "scripts/results/nbc-provider.mjs",
@@ -102,8 +103,8 @@ test("HTTP integration: admin auth, calls, detail and summary refresh, no foreca
     electionName: "Colorado 4",
     electionDate: "2026-11-03",
     candidates: [
-      { name: "Candidate A", party: "D", votes: 0 },
-      { name: "Candidate B", party: "R", votes: 0 },
+      { name: "Alex Example", party: "D", votes: 0 },
+      { name: "Blair Example", party: "R", votes: 0 },
     ],
   };
   await writeFile(
@@ -205,7 +206,7 @@ test("HTTP integration: admin auth, calls, detail and summary refresh, no foreca
     headers: auth,
     body: JSON.stringify({
       raceId: "house-CO-4",
-      calls: [{ candidate: "Candidate A", status: "projected" }],
+      calls: [{ candidate: "Alex Example", status: "projected" }],
     }),
   });
   assert.equal(response.status, 200);
@@ -215,10 +216,10 @@ test("HTTP integration: admin auth, calls, detail and summary refresh, no foreca
       headers: { "if-none-match": tag },
     })
   ).json();
-  assert.equal(summary.groups[0].races[0].calls[0].candidate, "Candidate A");
+  assert.equal(summary.groups[0].races[0].calls[0].candidate, "Alex Example");
   const delta=await (await fetch(base+"/api/live-results/changes?since="+initialVersion)).json();
   assert.equal(delta.races.length,1);
-  assert.equal(delta.races[0].calls[0].candidate,"Candidate A");
+  assert.equal(delta.races[0].calls[0].candidate,"Alex Example");
   assert.equal(delta.races[0].counties,undefined);
   assert.equal(delta.races[0].voteHistory,undefined);
   assert.equal(delta.races[0].providerCall,undefined);
@@ -255,7 +256,7 @@ test("HTTP integration: admin auth, calls, detail and summary refresh, no foreca
   const after = await (
     await fetch(base + "/api/live-results/race?id=house-CO-4")
   ).json();
-  assert.equal(after.calls[0].candidate, "Candidate A");
+  assert.equal(after.calls[0].candidate, "Alex Example");
   assert.ok(!(await fetch(base + "/.env")).ok);
 });
 

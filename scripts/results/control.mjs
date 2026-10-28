@@ -1,6 +1,7 @@
 import { readFile, writeFile, rename, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { NbcProvider } from "./nbc-provider.mjs";
+import { genericName } from "./candidate-roster.mjs";
 import { createHash } from "node:crypto";
 const numberSetting = (value, fallback, min) =>
   Number.isFinite(Number(value)) && Number(value) >= min
@@ -57,7 +58,7 @@ export class ResultsControl {
       await json(join(this.root, "data/election-night-races.json"), {
         races: [],
       })
-    ).races;
+    ).races.map(race=>({...race,candidates:(race.candidates||[]).filter(c=>!genericName(c.name)&&!c.placeholder)}));
     this.config = await json(join(this.root, "data/results-provider.json"), {
       sources: [],
     });
@@ -486,15 +487,24 @@ export class ResultsControl {
         hasBreakdown: !!counties?.length,
         ...(details ? { counties: counties || [] } : {}),
         type: base.type,
+        electionName: base.electionName,
+        candidateStatus: base.candidateStatus,
+        rosterVerified: base.rosterVerified,
+        rosterReviewed: base.rosterReviewed,
+        rosterIncomplete: base.rosterIncomplete,
         electionDate: "2026-11-03",
         electionScope: "General",
         callState: s.callState || "UNCALLED",
         calls,
         status: calls.length ? "called" : "uncalled",
-        candidates: (raw.candidates || []).map((c) => {
+        candidates: ((raw.candidates || []).some(c=>Number(c.votes)>0) || calls.length ? raw.candidates : base.candidates || []).filter(c=>!genericName(c.name)&&!c.placeholder).map((c) => {
           const call = calls.find((k) => k.candidate === c.name);
+          const identity = (base.candidates || []).find(k => (k.id && c.id && k.id === c.id) || k.name === c.name || k.aliases?.includes(c.name));
           return {
             ...c,
+            ...(identity?.summaryVisible ? { summaryVisible:true } : {}),
+            ...(identity?.writeIn ? { writeIn:true } : {}),
+            ...(identity?.ballotStatus ? { ballotStatus:identity.ballotStatus } : {}),
             isWinner: !!call,
             winner: !!call,
             callStatus: call?.status || "",

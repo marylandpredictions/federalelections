@@ -40,7 +40,7 @@ window.FEAEnhanceBoard = function (Page) {
     FEAResultsUI.raceLabel({ ...race, stateName: STATE_NAMES[race.state] });
   const party = (c) => c?.partyCode || c?.party || "";
   const color = (c) =>
-    party(c) === "D" ? "#2785ed" : party(c) === "R" ? "#e74757" : "#9a78d7";
+    window.FEADeskTheme?.candidateColor(c) || (party(c) === "D" ? "#2785ed" : party(c) === "R" ? "#e74757" : "#9a78d7");
   const time = (value) =>
     value && Number.isFinite(Date.parse(value))
       ? new Date(value).toLocaleTimeString("en-US", {
@@ -196,6 +196,7 @@ window.FEAEnhanceBoard = function (Page) {
       (event) => {
         if (
           event.key === "/" &&
+          !document.querySelector('dialog[open]') &&
           !event.target.closest("input,textarea,select,[contenteditable]")
         ) {
           event.preventDefault();
@@ -208,7 +209,7 @@ window.FEAEnhanceBoard = function (Page) {
             document.querySelector(".sheet-toggle")?.click();
           document.querySelector(".election-map-search")?.focus();
         }
-        if (event.key === "Escape" && this.lockedCounty && document.getElementById("board-menu")?.hidden !== false) {
+        if (event.key === "Escape" && this.lockedCounty && !document.querySelector('dialog[open]') && document.getElementById("board-menu")?.hidden !== false) {
           event.stopImmediatePropagation();
           this.lockCounty(null);
         }
@@ -802,7 +803,7 @@ window.FEAEnhanceBoard = function (Page) {
       body = `${county ? `<p>${esc(county.name)} · <button type="button" data-unlock-county>Clear county</button></p>` : ""}<label class="trend-mode-label">Chart <select data-trend-mode aria-label="Trend metric">${[
         ["total", "Total votes"],
         ["share", "Candidate vote share"],
-        ["margin", "Margin"],
+        ["margin", "D−R vote margin"],
         ["expected", "Expected vote in"],
       ]
         .map(
@@ -846,13 +847,14 @@ window.FEAEnhanceBoard = function (Page) {
   };
   p.candidateTable = function (row, call) {
     const total = FEADesk.total(row);
+    const max=Math.max(0,...(row.candidates||[]).map(c=>c.votes)),tied=(row.candidates||[]).filter(c=>c.votes===max).length>1;
     return `<table class="selected-race-table"><thead><tr><th>Candidate</th><th>Votes</th><th>Vote %</th></tr></thead><tbody>${[
       ...(row.candidates || []),
     ]
       .sort((a, b) => b.votes - a.votes)
       .map(
         (c) =>
-          `<tr class="${call?.candidate === c.name ? "is-projected" : ""}"><td><span class="selected-party-rail" style="background:${color(c)}"></span><strong>${esc(c.name)} ${call?.candidate === c.name ? '<span class="winner-check" aria-label="Projected winner">✓</span>' : ""}</strong><small>${esc(partyLabel(party(c)))}</small></td><td data-number="${esc(c.name)}-votes">${total ? fmt(c.votes) : "—"}</td><td data-number="${esc(c.name)}-share">${total ? percent((c.votes / total) * 100) : "—"}</td></tr>`,
+          `<tr class="${call?.candidate === c.name ? "is-projected" : ""}"><td><span class="selected-party-rail" style="background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></span><strong>${esc(c.name)} ${!call&&total&&c.votes===max?`<span class="desk-leader-tag">${tied?"Tied":"Leading"}</span>`:""} ${call?.candidate === c.name ? '<span class="winner-check" aria-label="Projected winner">✓</span>' : ""}</strong><small>${esc(c.partyLabels?.length?c.partyLabels.join(" / "):partyLabel(party(c)))}${c.writeIn?" · Write-in":""}${c.ballotStatus?" · "+esc(c.ballotStatus):""}</small>${total?`<span class="desk-candidate-track" aria-hidden="true"><i data-bar-id="${esc(c.id||c.name)}" style="width:${Math.max(0,Math.min(100,c.votes/total*100))}%;background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></i></span>`:''}</td><td data-number="${esc(c.name)}-votes">${total ? fmt(c.votes) : "—"}</td><td data-number="${esc(c.name)}-share">${total ? percent((c.votes / total) * 100) : "—"}</td></tr>`,
       )
       .join("")}</tbody></table>`;
   };
@@ -881,6 +883,7 @@ window.FEAEnhanceBoard = function (Page) {
           : null;
     const m = FEADesk.metrics(data, previous, stateBaseline),
       expected = data.expectedVotePercent ?? data.estimatedVoteReporting;
+    const leaders=[...(data.candidates||[])].sort((a,b)=>b.votes-a.votes);
     return `${call ? `<div class="projection-banner" style="--party-accent:${color(candidate)}"><small>${projectionSource(call)} PROJECTS</small><strong>${esc(call.candidate)}</strong><span>${esc(partyLabel(party(candidate)))} · ${esc(title(data))}</span>${call.calledAt ? `<time>Called ${esc(time(call.calledAt))}</time>` : ""}</div>` : ""}${this.candidateTable(data, call)}${this.facts(
       [
         ["Expected vote in", expected != null ? percent(expected) : null],
@@ -889,8 +892,8 @@ window.FEAEnhanceBoard = function (Page) {
           data.reportingPercent != null ? percent(data.reportingPercent) : null,
         ],
         [
-          "Current margin",
-          m.margin !== null ? signed(m.margin) + " pts" : null,
+          "Lead margin",
+          m.votes>0&&leaders[1] ? ((leaders[0].votes-leaders[1].votes)/m.votes*100).toFixed(1)+" pts" : null,
         ],
         [
           "Last update",
@@ -915,7 +918,7 @@ window.FEAEnhanceBoard = function (Page) {
             : null,
         ],
         [
-          "Margin change",
+          "D−R margin change",
           previous &&
           m.margin !== null &&
           FEADesk.metrics(previous).margin !== null
@@ -960,7 +963,7 @@ window.FEAEnhanceBoard = function (Page) {
             : null,
         ],
         [
-          "Current margin",
+          "D−R vote margin",
           m.margin !== null ? signed(m.margin) + " pts" : null,
         ],
         [
@@ -1022,7 +1025,7 @@ window.FEAEnhanceBoard = function (Page) {
       mode === "share"
         ? points.at(-1).candidates.map((c) => ({
             name: c.name,
-            color: color(c),
+            color: window.FEADeskTheme?.candidateColor(c,points.at(-1).candidates)||color(c),
             value: (p) => {
               const t = FEADesk.total(p),
                 v = p.candidates.find((k) => k.name === c.name);
@@ -1130,12 +1133,16 @@ window.FEAEnhanceBoard = function (Page) {
       .attr("cx", (p) => x(new Date(p.at)))
       .attr("cy", (p) => y(series[0].value(p) ?? values[0]))
       .attr("r", 5)
-      .attr("tabindex", 0)
+      .attr("tabindex", (_,i) => i===points.length-1?0:-1)
       .attr("role", "button")
       .attr("aria-label", (p) => `Inspect update at ${time(p.at)}`)
       .on("pointerenter focus click", (_, p) => describe(p))
       .on("keydown", (e, p) => {
-        if (e.key === "Enter" || e.key === " ") describe(p);
+        if (e.key === "Enter" || e.key === " ") {e.preventDefault();describe(p);}
+        if(["ArrowLeft","ArrowRight","Home","End"].includes(e.key)){
+          e.preventDefault();const nodes=[...svg.node().querySelectorAll('.trend-point')],i=nodes.indexOf(e.currentTarget),next=e.key==='Home'?0:e.key==='End'?nodes.length-1:Math.max(0,Math.min(nodes.length-1,i+(e.key==='ArrowRight'?1:-1)));
+          for(const node of nodes)node.setAttribute('tabindex','-1');nodes[next].setAttribute('tabindex','0');nodes[next].focus();
+        }
       });
     svg
       .append("rect")

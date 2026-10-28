@@ -13,8 +13,8 @@
       );
     const votes = valid(row) ? total(row) : null,
       prior = previous && valid(previous) ? total(previous) : null;
-    const d = candidates.find((c) => (c.partyCode || c.party) === "D"),
-      r = candidates.find((c) => (c.partyCode || c.party) === "R");
+    const partyTotal = p => { const list=candidates.filter(c=>(c.partyCode||c.party)===p); return list.length ? {votes:list.reduce((sum,c)=>sum+(finite(c.votes)||0),0)} : null; };
+    const d = partyTotal("D"), r = partyTotal("R");
     const margin =
       votes > 0 && d && r ? ((d.votes - r.votes) / votes) * 100 : null;
     const expected = finite(
@@ -142,7 +142,18 @@
             ]),
       );
   }
+  function summaryCandidates(race, candidates = race?.candidates || []) {
+    const code = c => String(c.partyCode || c.party || '').toUpperCase();
+    const key = c => String(c.id || c.name).normalize('NFKC').toLowerCase();
+    const identity = c => (race?.candidates || []).find(k => (k.id && c.id && k.id === c.id) || k.name === c.name || k.aliases?.includes(c.name));
+    const ranked = [...candidates].sort((a,b) => (Number(b.votes)||0)-(Number(a.votes)||0));
+    const liveLeaders = new Set(ranked.filter(c => Number(c.votes)>0).slice(0,2).map(key));
+    const rows = candidates.filter(c => { const meta = identity(c); return (!(c.writeIn || meta?.writeIn) && ['D','R'].includes(code(c))) || c.summaryVisible || meta?.summaryVisible || liveLeaders.has(key(c)); });
+    // A minor-party-only contest still needs a meaningful summary.
+    return rows.length ? rows : ranked.filter(c=>!c.writeIn).slice(0,2);
+  }
   const api = {
+    summaryCandidates,
     finite,
     total,
     metrics,

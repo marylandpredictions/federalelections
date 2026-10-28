@@ -82,7 +82,9 @@
     "verify:image-assets": "node scripts/verify-image-assets.mjs",
     "verify-benchmark-alignment": "node scripts/verify-benchmark-alignment.mjs",
     "run:sensitivity-experiments": "node scripts/run-sensitivity-experiments.mjs",
-    "test:results": "node --test tests/results/*.test.mjs"
+    "test:results": "node --test tests/results/*.test.mjs",
+    "sync:results-candidates": "node scripts/results/sync-candidate-rosters.mjs",
+    "audit:results-candidates": "node --test tests/results/candidate-audit.test.mjs"
   },
   "dependencies": {
     "sharp": "^0.34.5"
