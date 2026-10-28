@@ -1,0 +1,325 @@
+.results-board #night-controls {
+  position: absolute;
+  left: 18px;
+  top: 46px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-width: 24vw;
+  align-items: center;
+}
+.results-board #night-controls button,
+.results-board #night-drawer button {
+  background: var(--panel-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font: inherit;
+  cursor: pointer;
+}
+.results-board #night-controls button {
+  font-size: 0.7rem;
+  min-height: 32px;
+}
+.results-board #night-controls small {
+  flex-basis: 100%;
+  color: var(--text-secondary);
+  font-size: 0.65rem;
+}
+.results-board #night-controls button[aria-pressed="true"] {
+  outline: 2px solid var(--focus);
+}
+.results-board #night-drawer {
+  position: absolute;
+  z-index: 18;
+  left: 12px;
+  top: 92px;
+  bottom: 85px;
+  width: min(360px, calc(100vw - 24px));
+  background: var(--panel-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  box-shadow: 0 8px 30px #0004;
+  padding: 12px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.results-board #night-drawer[hidden] {
+  display: none;
+}
+.results-board #night-drawer header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.results-board #night-drawer h2 {
+  font-size: 1rem;
+  margin: 0;
+}
+.results-board #night-drawer h3 {
+  font-size: 0.75rem;
+  margin: 16px 0 7px;
+  color: var(--text-secondary);
+}
+.results-board #night-drawer p,
+.results-board #night-drawer label {
+  font-size: 0.75rem;
+}
+.results-board #night-drawer button[data-activity-race] {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px;
+  width: 100%;
+  margin-bottom: 5px;
+  text-align: left;
+  font-size: 0.75rem;
+}
+.results-board #night-drawer button span {
+  grid-column: 1/-1;
+  color: var(--text-secondary);
+}
+.results-board #night-drawer time {
+  grid-column: 2;
+  grid-row: 1;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+}
+.results-board #night-drawer select,
+.results-board #desk-window-preset {
+  max-width: 100%;
+  background: var(--control-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 5px;
+}
+.results-board .night-changed {
+  stroke: var(--focus) !important;
+  stroke-width: 3 !important;
+  stroke-dasharray: 5 2;
+  vector-effect: non-scaling-stroke;
+}
+.results-board .night-geo-labels {
+  fill: var(--text-primary);
+  paint-order: stroke;
+  stroke: var(--map-bg);
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  pointer-events: none;
+  user-select: none;
+  font-weight: 650;
+}
+.results-board .night-geo-labels text {
+  vector-effect: non-scaling-stroke;
+}
+.results-board .night-spark {
+  display: block;
+  width: 80px;
+  height: 20px;
+  overflow: visible;
+  margin-top: 3px;
+}
+.results-board .night-spark polyline {
+  fill: none;
+  stroke: var(--chart-line);
+  stroke-width: 1.8;
+  vector-effect: non-scaling-stroke;
+}
+.results-board .desk-pin .has-recent-update::after {
+  content: "Updated";
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.6rem;
+}
+.results-board #night-race-update {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin: 0 0 6px;
+}
+.results-board #night-race-update:empty {
+  display: none;
+}
+.results-board.night-loading .focused-close::before {
+  content: "Loading…";
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  position: absolute;
+  right: 40px;
+}
+.results-board.night-tv #focused-race-panel {
+  font-size: 1.15rem;
+}
+.results-board.night-tv .selected-race-table {
+  font-size: 1em;
+}
+.results-board .night-first {
+  animation: night-first 0.8s ease-out 1;
+}
+@keyframes night-first {
+  from {
+    box-shadow: inset 3px 0 var(--focus);
+  }
+  to {
+    box-shadow: inset 0 0 transparent;
+  }
+}
+.results-board.night-burst .election-map-shape,
+.results-board.night-burst .county-updated,
+.results-board.night-burst .seat-call-update {
+  animation: none !important;
+  transition: none !important;
+}
+.results-board .election-map-shape:hover {
+  stroke: var(--focus);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.results-board .election-map-shape.is-county-selected {
+  stroke: var(--selection) !important;
+  stroke-width: 4 !important;
+  vector-effect: non-scaling-stroke;
+}
+@media (max-width: 1100px) {
+  .results-board #night-controls {
+    top: 178px;
+    left: 12px;
+    max-width: calc(100vw - 24px);
+  }
+  .results-board #night-controls small {
+    display: none;
+  }
+  .results-board #night-drawer {
+    top: 220px;
+  }
+  .results-board:has(.has-focused-race) #night-controls {
+    max-width: 240px;
+  }
+}
+@media (max-width: 600px) {
+  .results-board #night-controls {
+    top: 178px;
+  }
+  .results-board #night-drawer {
+    top: 220px;
+    bottom: 12px;
+  }
+  .results-board:has(.sheet-expanded) #night-controls {
+    display: none;
+  }
+}
+@media (max-height: 500px) and (min-width: 480px) {
+  .results-board #night-controls {
+    top: 70px;
+    left: 12px;
+    max-width: 250px;
+  }
+  .results-board #night-drawer {
+    top: 72px;
+    bottom: 8px;
+  }
+  .results-board #night-controls button {
+    padding: 3px 7px;
+    min-height: 27px;
+    font-size: 0.65rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .results-board .night-first {
+    animation: none;
+  }
+  .results-board .night-changed {
+    transition: none;
+  }
+}
+.results-board[data-motion="reduced"] .night-first,
+.results-board.desk-hidden .night-first {
+  animation: none;
+}
+
+@media (max-width: 1000px) and (min-height: 501px) {
+  .results-board #desk-pins {
+    top: 225px;
+  }
+  .results-board #desk-map-legend {
+    display: none;
+  }
+}
+
+.results-board #night-calls {
+  background: var(--panel-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  width: min(500px, calc(100vw - 24px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 16px;
+}
+.results-board #night-calls header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.results-board #night-calls h2 {
+  font-size: 1.1rem;
+}
+.results-board #night-calls button {
+  background: var(--control-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--panel-border);
+  border-radius: 7px;
+  padding: 8px;
+  cursor: pointer;
+}
+.results-board #night-calls [data-call-race] {
+  display: grid;
+  width: 100%;
+  gap: 5px;
+  text-align: left;
+  margin: 6px 0;
+}
+.results-board #night-calls::backdrop {
+  background: #0006;
+}
+
+@media (min-width: 1101px) {
+  .results-board:has(.board-delay:not([hidden])) #night-controls {
+    top: 98px;
+  }
+}
+
+.results-board.night-loading #night-state::after {
+  content: " · Loading race…";
+}
+.results-board.night-loading #night-state {
+  display: block;
+}
+
+.results-board #board-menu {
+  max-height: calc(100dvh - 84px);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.results-board #board-menu label {
+  display: grid;
+  gap: 5px;
+  padding: 7px 12px;
+  font-size: 0.75rem;
+}
+.results-board #desk-menu-feedback {
+  font-size: 0.7rem;
+  margin: 0 12px;
+}
+.results-board #desk-menu-feedback:empty {
+  display: none;
+}
+.results-board #desk-menu-feedback input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media(min-width:2500px){.results-board #projection-alerts{width:430px}}

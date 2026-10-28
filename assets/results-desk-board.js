@@ -55,7 +55,8 @@ window.FEAEnhanceBoard = function (Page) {
       : "FEA";
   p.init = async function () {
     this.events = new EventTarget();
-    this.callTracker = new FEADesk.CallTracker(sessionStorage);
+    let storage;try{storage=sessionStorage;}catch{}
+    this.callTracker = new FEADesk.CallTracker(storage);
     this.countyGeometries = new Map();
     this.lockedCounty = null;
     this.alertQueue = [];
@@ -287,8 +288,9 @@ window.FEAEnhanceBoard = function (Page) {
         fips,
         file ? (await this.safeJson(file))?.features || [] : [],
       );
+      while(this.countyGeometries.size>6)this.countyGeometries.delete(this.countyGeometries.keys().next().value);
     }
-    return this.countyGeometries.get(fips);
+    const features=this.countyGeometries.get(fips);this.countyGeometries.delete(fips);this.countyGeometries.set(fips,features);return features;
   };
   p.safeJson = async function (url) {
     try {
@@ -336,6 +338,7 @@ window.FEAEnhanceBoard = function (Page) {
       const previousSelected = this.currentRace
         ? this.liveRaceDetails.get(this.currentRace.id)
         : null;
+      this.observePublicUpdate?.(changes.races);
       for (const id of changed)
         if (id !== this.currentRace?.id) this.liveRaceDetails.delete(id);
       const index = new Map(this.liveRaceIndex.map((r) => [r.id, r]));
@@ -384,11 +387,14 @@ window.FEAEnhanceBoard = function (Page) {
         );
         this.currentRace = race;
         await this.findLiveDetailForRace(race);
+        this.observeCountyUpdate?.(previousSelected,this.liveRaceDetails.get(race.id));
         this.renderFocusedRace(race);
         this.updateMapFills(changed, previousSelected);
       }
       for (const detail of events)
         this.events.dispatchEvent(new CustomEvent("call-change", { detail }));
+      if(events.length>3&&!document.hidden&&!this.suppressDeskEvents)document.getElementById('projection-announcer').textContent=events.length+' projection updates. Open Published calls in the results menu to review them.';
+      this.renderNightAwareness?.();
     } catch {
       this.renderProviderStatus({ stale: true });
     } finally {
@@ -464,7 +470,15 @@ window.FEAEnhanceBoard = function (Page) {
             `/api/live-results/race?id=${encodeURIComponent(race.id)}`,
           );
           if (detail?.id === race.id && Array.isArray(detail.candidates)) {
+            const latestVersion=(this.liveRaceIndex||[]).find(r=>r.id===race.id)?.version||race.version;
+            if((!this.isLabPage||this.query.get('live')==='true')&&latestVersion&&detail.version!==latestVersion){
+              const lastGood=this.liveRaceDetails.get(race.id)||cached;
+              if(lastGood?.version!==latestVersion&&this.currentRace?.id===race.id)this.detailRetryID=race.id;
+              return lastGood||null;
+            }
+            this.liveRaceDetails.delete(race.id);
             this.liveRaceDetails.set(race.id, detail);
+            while(this.liveRaceDetails.size>24){const id=this.liveRaceDetails.keys().next().value;if(id===this.currentRace?.id){const row=this.liveRaceDetails.get(id);this.liveRaceDetails.delete(id);this.liveRaceDetails.set(id,row);}else this.liveRaceDetails.delete(id);}
             if (this.detailRetryID === race.id) {
               this.detailRetryID = null;
               this.renderProviderStatus(this.publicProvider);
@@ -493,10 +507,15 @@ window.FEAEnhanceBoard = function (Page) {
     }
   };
   p.selectRace = async function (race, feature, options = {}) {
+    const selection=this.selectionRequest=(this.selectionRequest||0)+1;
+    this.mapRevision=(this.mapRevision||0)+1;
     if (this.currentRace?.id !== race.id) {
       this.lockedCounty = null;
       this.chartMode = "total";
+      this.focusedPanelTab='results';
     }
+    this.currentRace=race;
+    this.renderFocusedRace(race);
     this.stateRoads ||= new Map();
     const roadFile = this.mapAssets?.highwaysByState?.[race.state];
     if (roadFile && !this.stateRoads.has(race.state))
@@ -504,6 +523,7 @@ window.FEAEnhanceBoard = function (Page) {
         race.state,
         (await this.safeJson(roadFile))?.features || [],
       );
+    if(selection!==this.selectionRequest||this.currentRace?.id!==race.id)return;
     if (this.stateRoads.has(race.state))
       this.highwayFeatures = this.stateRoads.get(race.state);
     const result = await original.selectRace.call(this, race, feature, options);
@@ -635,7 +655,7 @@ window.FEAEnhanceBoard = function (Page) {
             this.isLabPage && this.query.get("live") !== "true"
               ? {
                   voteHistory:
-                    this.countyHistories.get(`${race.id}:${county}`) || [],
+                    this.countyHistories.get(`${race.id}:${county}`) || this.labHistory((data.counties||[]).find(c=>c.fips===county)||{}),
                 }
               : await this.safeJson(
                   `/api/live-results/race?id=${encodeURIComponent(race.id)}&county=${county}`,
@@ -650,6 +670,7 @@ window.FEAEnhanceBoard = function (Page) {
               `${race.id}:${county}`,
               result?.voteHistory || [],
             );
+          while(this.countyHistories.size>64)this.countyHistories.delete(this.countyHistories.keys().next().value);
           return result?.voteHistory || [];
         })(),
       );
@@ -678,6 +699,7 @@ window.FEAEnhanceBoard = function (Page) {
           `${race.id}:${county.fips}`,
           this.labHistory(county),
         );
+      while(this.countyHistories.size>64)this.countyHistories.delete(this.countyHistories.keys().next().value);
     }
     this.viewport
       .selectAll(".county-result-shape")
@@ -1125,23 +1147,24 @@ window.FEAEnhanceBoard = function (Page) {
         m = FEADesk.metrics(point);
       detail.textContent = `${time(point.at)} · ${fmt(total)} votes · ${point.candidates.map((c) => `${c.name}: ${fmt(c.votes)} (${percent(total ? (c.votes / total) * 100 : null)})`).join(" · ")}${m.margin !== null ? ` · Margin ${signed(m.margin)}` : ""}${point.expectedVotePercent != null ? ` · Expected vote ${percent(point.expectedVotePercent)}` : ""}`;
     };
+    const targets=window.FEANight?.historyTargets(points)||points;
     svg
       .selectAll(".trend-point")
-      .data(points)
+      .data(targets)
       .join("circle")
       .attr("class", "trend-point")
       .attr("cx", (p) => x(new Date(p.at)))
       .attr("cy", (p) => y(series[0].value(p) ?? values[0]))
       .attr("r", 5)
-      .attr("tabindex", (_,i) => i===points.length-1?0:-1)
+      .attr("tabindex", (_,i) => i===targets.length-1?0:-1)
       .attr("role", "button")
       .attr("aria-label", (p) => `Inspect update at ${time(p.at)}`)
       .on("pointerenter focus click", (_, p) => describe(p))
       .on("keydown", (e, p) => {
         if (e.key === "Enter" || e.key === " ") {e.preventDefault();describe(p);}
         if(["ArrowLeft","ArrowRight","Home","End"].includes(e.key)){
-          e.preventDefault();const nodes=[...svg.node().querySelectorAll('.trend-point')],i=nodes.indexOf(e.currentTarget),next=e.key==='Home'?0:e.key==='End'?nodes.length-1:Math.max(0,Math.min(nodes.length-1,i+(e.key==='ArrowRight'?1:-1)));
-          for(const node of nodes)node.setAttribute('tabindex','-1');nodes[next].setAttribute('tabindex','0');nodes[next].focus();
+          e.preventDefault();const i=points.indexOf(p),next=e.key==='Home'?0:e.key==='End'?points.length-1:Math.max(0,Math.min(points.length-1,i+(e.key==='ArrowRight'?1:-1))),point=points[next];
+          d3.select(e.currentTarget).datum(point).attr('cx',x(new Date(point.at))).attr('cy',y(series[0].value(point)??values[0])).attr('aria-label',`Inspect update at ${time(point.at)}`);describe(point);
         }
       });
     svg
@@ -1236,6 +1259,7 @@ window.FEAEnhanceBoard = function (Page) {
           150,
           Math.min(parseFloat(panel.style.top), innerHeight - h - 8),
         ) + "px";
+    this.positionDeskControls();
   };
   p.savePanelSize = function () {
     if (innerWidth <= 600) return;
@@ -1320,6 +1344,7 @@ window.FEAEnhanceBoard = function (Page) {
       const start = () => {
         if (card.matches(":hover") || card.contains(document.activeElement))
           return;
+        clearTimeout(card._timer);
         card._started = Date.now();
         card._timer = setTimeout(dismiss, card._remaining || 18000);
       };

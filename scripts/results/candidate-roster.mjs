@@ -1,8 +1,8 @@
 // Candidate identities are independent of probabilities and result calls.
 export const genericName = (v) =>
   !String(v || "").trim() ||
-  /^(democrat(ic)?|republican|gop|independent|other|unknown|tbd|candidate pending)$/i.test(
-    String(v).trim(),
+  /^(?:(?:democrat(?:ic)?|republican|gop|independent|other|unknown)(?:party)?(?:candidate|nominee)?|tbd|tba|candidate(?:pending)?)$/i.test(
+    String(v).replace(/[\s\p{P}]+/gu, ""),
   ) || /\b(?:longshot|caucus not credited|runoff|to be (?:determined|announced)|placeholder|winner of (?:the )?primary)\b/i.test(String(v)) || /^(?:simulated|sample|test|generic) candidate\b|^(?:democratic|republican|independent) (?:candidate|nominee)$|^candidate [A-Z0-9]$/i.test(String(v).trim());
 export function mergeRoster(race, { official, reviewed, metadata = [] } = {}) {
   const seen = new Set(),

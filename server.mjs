@@ -1,8 +1,10 @@
-import { ResultsChangeFeed } from "./scripts/results/change-feed.mjs";
+import { ResultsChangeFeed,publishedCallBackup } from "./scripts/results/change-feed.mjs";
 import { CountyHistory, resultSignature } from "./scripts/results/history.mjs";
 import { brotliCompressSync, gzipSync, gunzipSync, constants as zlibConstants } from "node:zlib";
 import { createServer } from "node:http";
 import { getResultsControl } from "./scripts/results/control.mjs";
+import {resultStorage} from './scripts/results/storage.mjs';
+import {readiness} from './scripts/results/readiness.mjs';
 import { createWriteStream } from "node:fs";
 import { mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
 import { dirname, extname, join, resolve } from "node:path";
@@ -34,7 +36,7 @@ const root = resolve(process.cwd());
 const port = Number(process.env.PORT || 8000);
 const contactTo = process.env.CONTACT_TO || "federalelectionsanalysis@gmail.com";
 const submissionsPath = resolve(root, "data", "contact-submissions.jsonl");
-const callsPath = resolve(root, "data", "result-calls.json");
+const callsPath = resultStorage(root).calls;
 const analysisNotesPath = resolve(root, "data", "result-analysis-notes.json");
 const overlayConfigPath = resolve(root, "data", "overlay-config.json");
 const predictionsPath = resolve(root, "data", "predictions");
@@ -194,7 +196,7 @@ async function commitJsonFileToGitHub(relativePath, payload, message) {
 }
 
 async function persistControlToGitHub(payload, message) {
-  try { return await commitJsonFileToGitHub("data/result-calls.json", payload, message); }
+  try { return await commitJsonFileToGitHub("data/result-calls.json", publishedCallBackup(payload), message); }
   catch(error) { return { committed:false, warning:`Local save succeeded; GitHub persistence failed: ${error.message}` }; }
 }
 
@@ -710,6 +712,9 @@ async function handleAdmin(request, response, url) {
     return;
   }
 
+  if(url.pathname==='/api/admin/results-self-test'&&request.method==='GET'){
+    sendJson(response,200,await readiness(await getResultsControl(),root));return;
+  }
   if (url.pathname === "/api/admin/results-control") {
     const control = await getResultsControl();
     try {
@@ -1000,6 +1005,13 @@ async function serveStatic(request, response) {
   }
   
   const filePath = resolve(join(root, requestedPath));
+  // Windows accepts case aliases and trailing dots/spaces for the same file.
+  const privatePath = value => value.replace(/\\/g, '/').replace(/[. ]+(?=\/|$)/g, '').toLowerCase();
+  const storageDirectory=privatePath(resultStorage(root).directory);
+  const normalizedFile=privatePath(filePath);
+  if(privatePath(decodedPath)==='/data/result-calls.json'||normalizedFile===privatePath(callsPath)||normalizedFile.startsWith(storageDirectory+'/')){
+    response.writeHead(404,{'Content-Type':'text/plain','Cache-Control':'no-store'});response.end('Not found');return;
+  }
 
   if (!filePath.startsWith(`${root}\\`) && !filePath.startsWith(`${root}/`)) {
     response.writeHead(403, { "Content-Type": "text/plain; charset=utf-8" });

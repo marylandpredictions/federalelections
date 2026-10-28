@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 
 const hash = (value) =>
   createHash("sha256").update(JSON.stringify(value)).digest("hex").slice(0, 20);
+// Optional GitHub backup is public data, never a copy of private control state.
+export function publishedCallBackup(payload){return {version:1,description:'Published projections only. Pending decisions, overrides, audit and results history require durable server storage.',races:Object.fromEntries(Object.entries(payload.races||{}).map(([id,state])=>[id,{calls:(state.calls||[]).map(call=>Object.fromEntries(['candidate','status','calledAt','provider','source','providerTimestamp'].filter(k=>call[k]!==undefined).map(k=>[k,call[k]])))}]))};}
 // Public summaries only. Private pending providerCall never enters this feed.
 export function publicRace(race) {
   const keys = [

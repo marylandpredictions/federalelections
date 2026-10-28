@@ -1,10 +1,11 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync,renameSync } from "node:fs";
+import {resultStorage} from './results/storage.mjs';
 import { pathToFileURL } from "node:url";
 import { resultSignature } from "./results/history.mjs";
 import { getResultsControl } from "./results/control.mjs";
 
 const OUTPUT_URL = new URL("../data/live-results.json", import.meta.url);
-const DETAIL_DIR_URL = new URL("../data/live-results-races/", import.meta.url);
+const DETAIL_DIR_URL = process.env.RESULTS_STORAGE_DIR ? pathToFileURL(resultStorage().details+'/') : new URL("../data/live-results-races/", import.meta.url);
 const CALLS_URL = new URL("../data/result-calls.json", import.meta.url);
 const FEATURED_CANDIDATES_URL = new URL("../data/result-featured-candidates.json", import.meta.url);
 const NBC_BASE = "https://www.nbcnews.com/firecracker/api/v2/state-results/2026-primary-elections";
@@ -1254,7 +1255,7 @@ export async function buildRaceResultDetailWithHistory(id, options = {}) {
     mkdirSync(DETAIL_DIR_URL, { recursive: true });
     const target=new URL(`${id}.json`, DETAIL_DIR_URL), encoded=JSON.stringify(hydratedDetail);
     let previous="";try{previous=readFileSync(target,"utf8");}catch{}
-    if(previous!==encoded)writeFileSync(target,encoded,"utf8");
+    if(previous!==encoded){const temp=new URL(`${id}.json.tmp`,DETAIL_DIR_URL);writeFileSync(temp,encoded,"utf8");renameSync(temp,target);}
   }
   return hydratedDetail;
 }

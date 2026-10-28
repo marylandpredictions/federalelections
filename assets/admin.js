@@ -77,7 +77,7 @@
   function updateQueueClocks() {
     const skew=controlSnapshot ? Date.parse(controlSnapshot.serverTime)-controlSnapshot.receivedAt : 0;
     const now=Date.now()+skew;
-    document.querySelectorAll("[data-deadline]").forEach(node=>node.textContent = controlSnapshot?.health.automation === "ACTIVE" ? `Auto-publishes in ${Math.max(0,Math.ceil((Date.parse(node.dataset.deadline)-now)/1000))}s` : controlSnapshot?.health.automation === "PAUSED" ? "Automatic publishing is paused" : "Waiting for the results feed");
+    document.querySelectorAll("[data-deadline]").forEach(node=>{const id=node.closest('.queue-card')?.querySelector('[data-open-race]')?.dataset.openRace,healthy=controlSnapshot?.health.lastHealthyRaceIds;node.textContent=Array.isArray(healthy)&&!healthy.includes(id)?'Waiting for a verified race update':controlSnapshot?.health.automation === "ACTIVE" ? `Auto-publishes in ${Math.max(0,Math.ceil((Date.parse(node.dataset.deadline)-now)/1000))}s` : controlSnapshot?.health.automation === "PAUSED" ? "Automatic publishing is paused" : "Waiting for the results feed";});
     document.querySelectorAll("[data-detected]").forEach(node=>node.textContent=`${Math.max(0,Math.floor((now-Date.parse(node.dataset.detected))/1000))}s`);
   }
   function renderControl() {
@@ -88,7 +88,8 @@
     renderControl.signature = signature;
     const h=controlSnapshot.health, entries=Object.entries(controlSnapshot.states);
     const rosterNode=document.getElementById('candidate-roster-review');
-    if(rosterNode){const races=controlSnapshot.races||[],official=races.filter(r=>r.rosterVerified).length,reviewed=races.filter(r=>r.rosterReviewed).length,empty=races.filter(r=>!r.candidates?.length);rosterNode.textContent=reviewed+' / '+races.length+' rosters reviewed · '+official+' official-source rosters · '+(races.length-reviewed)+' need review · '+empty.length+' empty rosters. Official Louisiana/Wyoming lists and dated Ballotpedia general-election lists are kept separately. Run npm run sync:results-candidates to refresh the curated catalogue; add -- --refresh-louisiana to refresh its official source.';}
+    if(rosterNode&&controlSnapshot.rosterAudit){const a=controlSnapshot.rosterAudit;rosterNode.textContent=`Candidate roster ${a.reviewed} / ${a.total} reviewed · ${a.official} official-source verified · ${a.needsReview} need review · ${a.placeholders} generic placeholders. ${a.issues.slice(0,8).map(i=>i.race+': '+i.message).join('; ')}`;}
+    if(rosterNode&&!controlSnapshot.rosterAudit)rosterNode.textContent='Candidate audit unavailable. Run npm run audit:results-candidates before deployment.';
     const pending=entries.filter(([,s])=>["NBC_PENDING","NBC_HELD"].includes(s.callState) && !s.manualOverride);
     $("control-top-status").textContent=`Results feed: ${FEAResultsUI.feedLabel(h)}`;
     $("queue-count").textContent=h.pending;
@@ -109,6 +110,7 @@
     finally { refreshingControl=false; }
   }
   document.addEventListener("click", event=>{
+    if(event.target.closest('[data-results-self-test]'))runButton(event.target,async()=>{const report=await adminFetch('/api/admin/results-self-test');const node=document.getElementById('results-self-test-output');node.textContent=report.status+'\n'+report.checks.map(c=>c.status+' · '+c.name+': '+c.explanation).join('\n');});
     const nav=event.target.closest("[data-workspace]"); if(nav) showWorkspace(nav.dataset.workspace);
     const global=event.target.closest("[data-global]"); if(global) runButton(global,()=>controlAction(global.dataset.global));
     const action=event.target.closest("[data-call-action]");

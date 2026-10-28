@@ -49,6 +49,9 @@ jobs:
           done
           node scripts/update-president-aggregate.mjs
 
+      - name: Candidate deployment quality gate
+        run: npm run audit:results-candidates
+
       - name: Verify generated JSON
         run: node scripts/verify-data-json.mjs
 

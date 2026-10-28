@@ -107,6 +107,7 @@
               call: race.calls?.[0] || null,
             });
             this.seen.add(key);
+            while(this.seen.size>2000)this.seen.delete(this.seen.values().next().value);
           }
         }
       }

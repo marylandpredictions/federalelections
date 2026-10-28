@@ -3,6 +3,8 @@ import { join } from "node:path";
 import { NbcProvider } from "./nbc-provider.mjs";
 import { genericName } from "./candidate-roster.mjs";
 import { createHash } from "node:crypto";
+import { resultStorage } from './storage.mjs';
+import { auditRosters } from './roster-audit.mjs';
 const numberSetting = (value, fallback, min) =>
   Number.isFinite(Number(value)) && Number(value) >= min
     ? Number(value)
@@ -29,8 +31,10 @@ export class ResultsControl {
     graceSeconds = process.env.NBC_CALL_GRACE_SECONDS,
     pollSeconds = process.env.NBC_POLL_SECONDS,
     staleSeconds = process.env.NBC_STALE_SECONDS,
+    storageDir = process.env.RESULTS_STORAGE_DIR,
   } = {}) {
     Object.assign(this, { root, now, provider });
+    this.storage=resultStorage(root,storageDir);
     this.graceSeconds = numberSetting(graceSeconds, 30, 0);
     this.pollSeconds = numberSetting(pollSeconds, 45, 15);
     this.staleSeconds = numberSetting(staleSeconds, 180, 30);
@@ -54,18 +58,21 @@ export class ResultsControl {
     return task;
   }
   async init() {
-    this.catalogue = (
+    const catalogue = (
       await json(join(this.root, "data/election-night-races.json"), {
         races: [],
       })
-    ).races.map(race=>({...race,candidates:(race.candidates||[]).filter(c=>!genericName(c.name)&&!c.placeholder)}));
+    ).races;
+    this.rosterAudit=auditRosters(catalogue);
+    if(!this.rosterAudit.passed)console.warn(JSON.stringify({event:'candidate-roster-needs-review',issues:this.rosterAudit.issues.slice(0,20)}));
+    this.catalogue=catalogue.map(race=>({...race,candidates:(race.candidates||[]).filter(c=>!genericName(c.name)&&!c.placeholder)}));
     this.config = await json(join(this.root, "data/results-provider.json"), {
       sources: [],
     });
     this.provider ||= new NbcProvider(this.config);
-    this.calls = await json(join(this.root, "data/result-calls.json"), {
+    this.calls = await json(this.storage.calls, await json(join(this.root, "data/result-calls.json"), {
       races: {},
-    });
+    }));
     this.calls.races ||= {};
     this.calls.automation ||= { paused: false };
     for (const [id, s] of Object.entries(this.calls.races))
@@ -74,15 +81,20 @@ export class ResultsControl {
         s.calls?.length &&
         !s.callState
       ) {
-        s.manualOverride = true;
-        s.callState = "MANUAL_FEA_CALL";
+        const nbc=s.calls.every(c=>c.provider==='NBC'||/^nbc-/.test(c.source||''));
+        s.manualOverride = !nbc;
+        s.callState = nbc?'NBC_HELD':"MANUAL_FEA_CALL";
+        if(nbc)s.attentionReason='Published NBC call restored from backup. Verify the live source before resuming automation.';
       }
-    this.runtime = await json(join(this.root, ".runtime/results-state.json"), {
+    this.runtime = await json(this.storage.state, {
       races: {},
       health: {},
       audit: [],
     });
     this.runtime.audit ||= [];
+    // Calls and last-good votes are recovered from the same committed envelope.
+    if(this.runtime.committedCalls)this.calls=structuredClone(this.runtime.committedCalls);
+    for(const state of Object.values(this.calls.races))for(const call of state.calls||[])if(/^nbc-/.test(call.source||''))call.provider='NBC';
     this.commitVisibleState();
     return this;
   }
@@ -103,20 +115,25 @@ export class ResultsControl {
       previousState: previous,
       newState: next,
     });
+    this.runtime.audit=this.runtime.audit.slice(-5000);
+    console.info(JSON.stringify({event:'result-control',race,action,actor,previous,next}));
   }
   state(id) {
     return (this.calls.races[id] ||= { calls: [], callState: "UNCALLED" });
   }
   async save() {
-    const callsPath = join(this.root, "data/result-calls.json");
+    const callsPath = this.storage.calls;
     const previous = await json(callsPath, { races: {} });
+    const previousState=await json(this.storage.state,null);
+    if(!previousState?.committedCalls)await atomic(this.storage.state,{...this.visible.runtime,committedCalls:previous});
     await atomic(callsPath, this.calls);
     try {
       await atomic(
-        join(this.root, ".runtime/results-state.json"),
-        this.runtime,
+        this.storage.state,
+        {...this.runtime,committedCalls:this.calls},
       );
     } catch (error) {
+      console.error(JSON.stringify({event:'persistence-write-failed',message:error.message}));
       try {
         await atomic(callsPath, previous);
       } catch (rollback) {
@@ -135,18 +152,20 @@ export class ResultsControl {
       const h = this.runtime.health;
       h.lastAttempt = new Date(this.now()).toISOString();
       try {
-        const races = await this.provider.fetchResults(this.catalogue);
-        if (!Array.isArray(races) || !races.length)
+        const incoming = await this.provider.fetchResults(this.catalogue);
+        if (!Array.isArray(incoming) || !incoming.length)
           throw Error("Provider returned no normalized races");
-        const seen = new Set();
-        for (const r of races) {
+        const seen = new Set(),races=[],quarantined=[...(this.provider.quarantined||[])];
+        const duplicates=new Set(incoming.filter((r,i)=>incoming.findIndex(k=>k?.id===r?.id)!==i).map(r=>r?.id));
+        for (const r of incoming) {
+          try {
           if (
-            !this.catalogue.some((c) => c.id === r.id) ||
+            !r || !this.catalogue.some((c) => c.id === r.id) || duplicates.has(r.id) ||
             seen.has(r.id) ||
             !Array.isArray(r.candidates) ||
             !r.candidates.length ||
             r.candidates.some(
-              (c) => !c.name || !Number.isSafeInteger(c.votes) || c.votes < 0,
+              (c) => genericName(c.name) || !Number.isSafeInteger(c.votes) || c.votes < 0,
             )
           )
             throw Error("Invalid normalized provider result");
@@ -156,7 +175,17 @@ export class ResultsControl {
           )
             throw Error("Provider call candidate missing");
           seen.add(r.id);
+          const before=Date.parse(this.runtime.races[r.id]?.lastUpdated||''),after=Date.parse(r.lastUpdated||'');
+          if(Number.isFinite(before)&&Number.isFinite(after)&&after<before)throw Error('Regressed provider timestamp; last-good race retained');
+          if((this.runtime.races[r.id]?.candidates||[]).some(c=>c.votes>0)&&!r.candidates.some(c=>c.votes>0))throw Error('Unexpected zero-vote reset; last-good race retained for review');
+          races.push(r);
+          } catch(error){quarantined.push({race:r?.id||'Unknown',reason:error.message});}
         }
+        const quarantineChanged=JSON.stringify(h.quarantined||[])!==JSON.stringify(quarantined.slice(0,100));
+        h.quarantined=quarantined.slice(0,100);
+        if(!races.length)throw Error('No healthy normalized provider races; last-good snapshot retained');
+        h.lastHealthyRaceIds=races.map(r=>r.id);
+        if(quarantined.length&&quarantineChanged)console.warn(JSON.stringify({event:'invalid-race-quarantined',races:h.quarantined}));
         let changed = false;
         for (const r of races) {
           const prior = this.runtime.races[r.id];
@@ -241,6 +270,7 @@ export class ResultsControl {
         const timestamps = races
           .map((r) => Date.parse(r.lastUpdated || ""))
           .filter(Number.isFinite);
+        const recovered=h.connection==='failed';
         Object.assign(h, {
           lastSuccess: new Date(this.now()).toISOString(),
           lastUpstreamUpdate: timestamps.length
@@ -250,8 +280,10 @@ export class ResultsControl {
           connection: "connected",
         });
         if (changed) h.lastChangedResult = new Date(this.now()).toISOString();
+        if(recovered)console.info(JSON.stringify({event:'provider-recovered'}));
         this.failures = 0;
       } catch (e) {
+        if(h.error!==e.message)console.warn(JSON.stringify({event:'provider-fetch-failed',message:e.message}));
         this.failures++;
         Object.assign(h, {
           connection: e.message.startsWith("No verified NBC")
@@ -283,7 +315,7 @@ export class ResultsControl {
       .map(([, s]) => s);
     return {
       ...h,
-      stale,
+      stale: stale || !!h.quarantined?.length,
       status:
         h.connection === "unavailable"
           ? "UNAVAILABLE"
@@ -345,6 +377,7 @@ export class ResultsControl {
     for (const [id, s] of Object.entries(this.calls.races))
       if (
         s.callState === "NBC_PENDING" &&
+        (!this.runtime.health.lastHealthyRaceIds || this.runtime.health.lastHealthyRaceIds.includes(id)) &&
         this.now() >= Date.parse(s.publishAt)
       )
         this.publish(id, s, "nbc-auto");
@@ -478,7 +511,7 @@ export class ResultsControl {
     const races = this.catalogue.map((base) => {
       const raw = this.visible.runtime.races[base.id] || base;
       const s = this.visible.calls.races[base.id] || {};
-      const calls = s.calls || [];
+      const calls = (s.calls || []).map(call=>({...call,provider:call.provider==='NBC'||/^nbc-/.test(call.source||'')?'NBC':'FEA'}));
       const { _signature, providerCall, counties, ...safe } = raw;
       return {
         ...safe,
@@ -536,6 +569,8 @@ export class ResultsControl {
   adminSnapshot() {
     return {
       health: this.health(),
+      rosterAudit:this.rosterAudit,
+      persistence:{configuredDirectory:this.storage.directory,durableConfigured:this.storage.durable,lastGoodRaces:Object.keys(this.visible.runtime.races).length,quarantined:this.visible.runtime.health.quarantined||[]},
       serverTime: new Date(this.now()).toISOString(),
       states: Object.fromEntries(
         Object.entries(this.visible.calls.races).filter(([id]) =>

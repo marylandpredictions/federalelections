@@ -3,9 +3,15 @@ services:
     name: federal-elections-analysis
     env: node
     plan: starter
-    buildCommand: npm install
+    buildCommand: npm install && npm run audit:results-candidates
     startCommand: npm start
+    disk:
+      name: election-results
+      mountPath: /var/data/election-results
+      sizeGB: 10
     envVars:
+      - key: RESULTS_STORAGE_DIR
+        value: /var/data/election-results
       - key: NODE_VERSION
         value: 22
       - key: HOST

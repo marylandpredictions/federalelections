@@ -837,7 +837,8 @@ function countyDescriptionForFeature(feature, descriptions) {
 
 class ElectionNightPage {
   constructor() {
-    this.selectedMode = localStorage.getItem("electionNightMode") || "house";
+    this.selectedMode = 'house';try{this.selectedMode=localStorage.getItem('electionNightMode')||'house';}catch{}
+    if(!MODE_LABELS[this.selectedMode])this.selectedMode='house';
     this.query = new URLSearchParams(window.location.search);
     this.isLabPage = window.location.pathname.includes("fea-results-lab-26") || window.location.pathname === "/election-night.html";
     this.dataByMode = { house: [], senate: [], governor: [] };
@@ -851,7 +852,7 @@ class ElectionNightPage {
     this.liveRaceIndex = [];
     this.liveRaceDetails = new Map();
     this.comparisonManifest = { sources: [] };
-    this.comparisonMode = localStorage.getItem("electionNightComparison") || "live";
+    this.comparisonMode = 'live';try{this.comparisonMode=localStorage.getItem('electionNightComparison')||'live';}catch{}
     this.comparisonData = new Map();
     this.countyFeatures = null;
     this.countyDescriptions = new Map();
@@ -1341,12 +1342,14 @@ class ElectionNightPage {
         .then((detail) => {
           const features = detail?.features || [];
           this.districtCountyFeatures.set(id, features);
+          while(this.districtCountyFeatures.size>24)this.districtCountyFeatures.delete(this.districtCountyFeatures.keys().next().value);
           this.districtCountyFeaturePromises.delete(id);
           return features;
         })
         .catch((error) => {
           console.warn(`Could not load district county map ${id}`, error);
           this.districtCountyFeatures.set(id, []);
+          while(this.districtCountyFeatures.size>24)this.districtCountyFeatures.delete(this.districtCountyFeatures.keys().next().value);
           this.districtCountyFeaturePromises.delete(id);
           return [];
         });
@@ -1361,8 +1364,9 @@ class ElectionNightPage {
 
   async switchMode(mode) {
     if (!MODE_LABELS[mode] || mode === this.selectedMode) return;
+    this.selectionRequest=(this.selectionRequest||0)+1;
     this.selectedMode = mode;
-    localStorage.setItem("electionNightMode", mode);
+    try{localStorage.setItem("electionNightMode", mode);}catch{}
     this.currentRace = null;
     this.detailMapActive = false;
     this.normalizeComparisonModeForCurrentMap();
@@ -1509,6 +1513,7 @@ class ElectionNightPage {
   }
 
   async renderMap() {
+    const revision=this.mapRevision=(this.mapRevision||0)+1;
     const container = document.getElementById("election-map");
     if (!container) return;
     if (!window.d3) {
@@ -1518,10 +1523,11 @@ class ElectionNightPage {
 
     container.innerHTML = `<div class="election-map-loading">Loading ${MODE_LABELS[this.selectedMode]} map...</div>`;
     await this.prepareComparisonData();
+    if(revision!==this.mapRevision)return;
     if (this.selectedMode === "house") {
-      await this.renderHouseMap(container);
+      await this.renderHouseMap(container,revision);
     } else {
-      await this.renderStateMap(container);
+      await this.renderStateMap(container,revision);
     }
   }
 
@@ -1535,12 +1541,14 @@ class ElectionNightPage {
     ]);
   }
 
-  async renderStateMap(container) {
+  async renderStateMap(container,revision=this.mapRevision) {
+    const office=this.selectedMode;
     this.detailMapActive = false;
     const [stateFeatures, highwayFeatures] = await Promise.all([
       this.loadResultStateFeatures(),
       this.loadHighwayFeatures()
     ]);
+    if(revision!==this.mapRevision||office!==this.selectedMode)return;
     this.stateFeatures = stateFeatures;
 
     const {width,height} = this.mapDimensions();
@@ -1586,13 +1594,14 @@ class ElectionNightPage {
     this.addZoomControls();
   }
 
-  async renderHouseMap(container) {
+  async renderHouseMap(container,revision=this.mapRevision) {
     this.detailMapActive = false;
     const [stateFeatures, houseFeatures, highwayFeatures] = await Promise.all([
       this.loadResultStateFeatures(),
       this.loadHouseFeatures(),
       this.loadHighwayFeatures()
     ]);
+    if(revision!==this.mapRevision||this.selectedMode!=='house')return;
     this.stateFeatures = stateFeatures;
     this.geo = { type: "FeatureCollection", features: houseFeatures };
     this.ensureAllHouseRacesFromGeometry();
@@ -1651,6 +1660,7 @@ class ElectionNightPage {
         this.viewport.attr("transform", event.transform);
         const labelScale = Math.max(0.38, Math.min(1, 1 / Math.sqrt(event.transform.k)));
         this.viewport.selectAll(".map-background-city").style("font-size", `${10 * labelScale * Math.min(2,Math.max(1,width/1920))}px`);
+        this.queueNightLabels?.();
       });
     this.svg.call(this.zoom);
   }
@@ -1688,7 +1698,7 @@ class ElectionNightPage {
     if (comparisonSelect) {
       comparisonSelect.addEventListener("change", async () => {
         this.comparisonMode = comparisonSelect.value || "live";
-        localStorage.setItem("electionNightComparison", this.comparisonMode);
+        try{localStorage.setItem("electionNightComparison", this.comparisonMode);}catch{}
         if (this.currentRace) await this.selectRace(this.currentRace, null);
         else await this.renderMap();
       });
@@ -1724,7 +1734,7 @@ class ElectionNightPage {
 
   async renderSelectedRaceMap(race, options = {}) {
     const presidential=this.comparisonManifest.sources.find(s=>s.id==="pres-2024" && s.status==="available");
-    if(race.type!=="house" && presidential)await this.loadComparisonDataset("county",presidential);
+    if(race.type!=="house" && presidential){const baseline=this.loadComparisonDataset('county',presidential);if(this.isComparisonActive())await baseline;else baseline.catch(()=>{});}
     if (String(race?.type || "").toLowerCase() === "house") {
       const [detail, features] = await Promise.all([
         this.findLiveDetailForRace(race),
@@ -2370,6 +2380,7 @@ function initElectionNight() {
   }
   window.FEAEnhanceBoard?.(ElectionNightPage);
   window.FEACompleteBoard?.(ElectionNightPage);
+  window.FEANightAwareness?.(ElectionNightPage);
   new ElectionNightPage();
 }
 

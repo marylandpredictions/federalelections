@@ -50,9 +50,18 @@ function candidate(raw) {
     winner: false,
   };
 }
-export function parseNbcResults(data, source, catalogue) {
+export function parseNbcResults(data, source, catalogue, {onInvalid}={}) {
   if (!data || !Array.isArray(data.races) || !data.races.length)
     throw new Error("NBC races array missing or empty");
+  if(onInvalid){
+    const rows=[];
+    for(const mapping of source.races||[]){
+      try{rows.push(...parseNbcResults(data,{...source,races:[mapping]},catalogue));}
+      catch(error){onInvalid({race:mapping.feaRaceId,reason:error.message});}
+    }
+    if(!rows.length)throw Error('No healthy mapped NBC races');
+    return rows;
+  }
   const rows = [];
   for (const mapping of source.races || []) {
     const local = catalogue.find((r) => r.id === mapping.feaRaceId);
@@ -159,6 +168,7 @@ export class NbcProvider {
     this.httpCacheBytes = 0;
   }
   async fetchResults(catalogue) {
+    this.quarantined=[];
     if (!this.sources.length)
       throw new Error(
         "No verified NBC 2026 general-election source configured",
@@ -189,7 +199,7 @@ export class NbcProvider {
       if(response.status === 304 && !cached) throw new Error("NBC 304 without a validated cached response");
       const body = response.status === 304 ? cached.body : await response.text();
       if (body.length > 20000000) throw new Error("NBC payload exceeds limit");
-      rows.push(...parseNbcResults(JSON.parse(body), source, catalogue));
+      rows.push(...parseNbcResults(JSON.parse(body), source, catalogue,{onInvalid:issue=>this.quarantined.push(issue)}));
       if(response.status !== 304 && Buffer.byteLength(body)<=16*1024*1024) {
         if(cached)this.httpCacheBytes-=Buffer.byteLength(cached.body);
         this.httpCache.delete(url.href);

@@ -32,6 +32,9 @@ jobs:
       - name: Generate live results data
         run: node scripts/generate-live-results.mjs
 
+      - name: Candidate deployment quality gate
+        run: npm run audit:results-candidates
+
       - name: Commit live results data
         run: |
           git config user.name "github-actions[bot]"

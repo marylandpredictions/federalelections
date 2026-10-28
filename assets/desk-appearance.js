@@ -33,6 +33,10 @@ window.FEAAppearance = function () {
     }
   }
   function preview() {
+    try { previewTheme(); }
+    catch { T.apply(before || T.presets[0]); feedback('Theme preview could not be displayed. Your previous appearance has been restored.'); }
+  }
+  function previewTheme() {
     const r = T.apply(draft);
     q("#contrast-feedback").textContent = r.warnings.length
       ? "Contrast needs attention: " + r.warnings.join(", ")

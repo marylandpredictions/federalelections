@@ -1,9 +1,10 @@
-import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
+import { appendFileSync, mkdirSync, readFileSync,writeFileSync,renameSync,statSync } from "node:fs";
 import { join } from "node:path";
+import {resultStorage} from './storage.mjs';
 export const resultSignature = (row) =>
   JSON.stringify([
     row.expectedVotePercent ?? row.estimatedVoteReporting ?? null,
-    row.reportingPercent ?? row.percentReporting ?? null,
+    row.reportingPercent ?? row.percentReporting ?? row.precinctReporting ?? null,
     (row.candidates || [])
       .map((c) => [c.name, c.partyCode || c.party, c.votes])
       .sort((a, b) => a[0].localeCompare(b[0])),
@@ -25,7 +26,7 @@ export function historyPoint(row, at = new Date().toISOString()) {
 // One sparse row per changed county. No unchanged county state is appended.
 export class CountyHistory {
   constructor(root) {
-    this.directory = join(root, ".runtime", "county-history");
+    this.directory = join(resultStorage(root).directory, "county-history");
     this.latest = new Map();
   }
   record(race, at = new Date().toISOString()) {
@@ -54,11 +55,15 @@ export class CountyHistory {
     }
     if (changes.length) {
       mkdirSync(join(this.directory, race.id), { recursive: true });
-      for (const row of changes)
+      for (const row of changes){
+        const path=join(this.directory,race.id,`${row.fips}.ndjson`);
         appendFileSync(
-          join(this.directory, race.id, `${row.fips}.ndjson`),
+          path,
           JSON.stringify(row) + "\n",
         );
+        // Compact at a byte threshold; disk and public reads remain bounded.
+        if(statSync(path).size>2*1024*1024){const rows=this.read(race.id,row.fips);writeFileSync(path+'.tmp',rows.map(r=>JSON.stringify(r)).join('\n')+'\n');renameSync(path+'.tmp',path);}
+      }
     }
     return changes;
   }
@@ -69,7 +74,7 @@ export class CountyHistory {
         .trim()
         .split("\n")
         .filter(Boolean)
-        .flatMap((line) => {
+        .slice(-2400).flatMap((line) => {
           try {
             const row = JSON.parse(line);
             return !fips || row.fips === fips ? [row] : [];
