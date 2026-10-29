@@ -51,7 +51,8 @@ window.FEACompleteBoard = function (Page) {
     this.appearance = FEAAppearance();
     this.lastPollClock = Date.now();
     this.pollEventsSeen = new Set();
-    try {this.pollEventsSeen=new Set(JSON.parse(sessionStorage.getItem('feaPollCloseSeen.v1')||'[]'));}catch{}
+    this.pollSeenStorageKey=this.isLabPage&&this.query.get('live')!=='true'?'feaPollCloseSeen.lab.v1':'feaPollCloseSeen.v1';
+    try {this.pollEventsSeen=new Set(JSON.parse(sessionStorage.getItem(this.pollSeenStorageKey)||'[]'));}catch{}
     const tray = document.createElement("section");
     tray.id = "desk-pins";
     tray.setAttribute("aria-label", "Pinned races");
@@ -389,7 +390,16 @@ window.FEACompleteBoard = function (Page) {
   };
   p.renderTrendChart = async function () {
     const focused = this.trendFocusLabel;
-    await original.trend.call(this);
+    const content=document.getElementById('focused-race-content');
+    const key=`${this.currentRace?.id}:${this.focusedPanelTab}:${this.lockedCounty || ''}`;
+    const pending=this.trendScrollRestore;
+    const top=pending?.key===key?pending.top:content?.scrollTop;
+    const interaction=this.trendScrollInteraction||0;
+    const rendering=original.trend.call(this),revision=this.trendRenderRevision;
+    await rendering;
+    if(revision!==this.trendRenderRevision||key!==`${this.currentRace?.id}:${this.focusedPanelTab}:${this.lockedCounty || ''}`)return;
+    if(content&&interaction===(this.trendScrollInteraction||0)&&Number.isFinite(top))content.scrollTop=top;
+    if(this.trendScrollRestore===pending)this.trendScrollRestore=null;
     if (focused) {
       const nodes = [...document.querySelectorAll(".trend-point")],
         target = nodes.find((n) => n.getAttribute("aria-label") === focused) || nodes.at(-1);
@@ -403,6 +413,14 @@ window.FEACompleteBoard = function (Page) {
   };
   p.bindEvents = function () {
     original.bind.call(this);
+    const trendContent=document.getElementById('focused-race-content');
+    if(trendContent&&!this.trendScrollBound){
+      this.trendScrollBound=true;
+      for(const type of ['wheel','pointerdown','touchstart','keydown'])trendContent.addEventListener(type,()=>{
+        this.trendScrollInteraction=(this.trendScrollInteraction||0)+1;
+        this.trendScrollRestore=null;
+      },{passive:true});
+    }
     document.getElementById('desk-outline-mode')?.addEventListener('change',event=>{
       this.outlineMode=event.target.value==='watch'?'watch':'next';
       try { localStorage.setItem('feaDeskOutlines.v1',this.outlineMode); } catch {}
@@ -556,6 +574,7 @@ window.FEACompleteBoard = function (Page) {
     const viewKey = `${race?.id}:${this.focusedPanelTab}:${this.lockedCounty || ''}`;
     const viewContent = document.getElementById("focused-race-content");
     const savedScroll = this.completedViewKey === viewKey ? viewContent.scrollTop : 0;
+    this.trendScrollRestore=this.focusedPanelTab==='trends'?{key:viewKey,top:savedScroll}:null;
     if (document.activeElement?.classList.contains("trend-point"))
       this.trendFocusLabel = document.activeElement.getAttribute("aria-label");
     const content = document.getElementById("focused-race-content"),
@@ -583,11 +602,11 @@ window.FEACompleteBoard = function (Page) {
     );
     pin.setAttribute("aria-pressed", String(this.pinnedIds.includes(race.id)));
     if (this.focusedPanelTab === "counties" && !this.lockedCounty) {
-      const rows = this.panelData(race).counties || [];
+      const data=this.panelData(race),rows = [...(data.counties || [])],sortLabel=data.localReporting?'Sort towns / cities':'Sort counties';
       const select = document.createElement("label");
       select.className = "county-sort";
       select.innerHTML =
-        'Sort counties <select data-county-sort aria-label="Sort counties"><option value="name">Name</option><option value="votes">Votes counted</option><option value="margin">Closest margin</option><option value="reporting">Expected vote in</option></select>';
+        `${sortLabel} <select data-county-sort aria-label="${sortLabel}"><option value="name">Name</option><option value="votes">Votes counted</option><option value="margin">Closest margin</option><option value="reporting">Expected vote in</option></select>`;
       content.querySelector(".county-list")?.before(select);
       select.querySelector("select").value = this.countySort || "name";
       const sort = this.countySort || "name";
@@ -808,7 +827,7 @@ window.FEACompleteBoard = function (Page) {
         !this.pollEventsSeen.has(key)
       ) {
         this.pollEventsSeen.add(key);
-        try{sessionStorage.setItem('feaPollCloseSeen.v1',JSON.stringify([...this.pollEventsSeen].slice(-50)));}catch{}
+        try{sessionStorage.setItem(this.pollSeenStorageKey||'feaPollCloseSeen.v1',JSON.stringify([...this.pollEventsSeen].slice(-50)));}catch{}
         if(!document.hidden&&!this.suppressDeskEvents)this.showPollClose(event, simulated);
       }
     }

@@ -1,0 +1,30 @@
+name: Election results quality
+
+on:
+  push:
+    branches: [main]
+    paths: ['assets/**', 'data/results/**', 'data/election-night-races.json', 'data/results-provider.json', 'data/live-results*', 'data/live-results-races/**', 'scripts/results/**', 'scripts/generate-live-results.mjs', 'tests/results/**', '*results*.html', 'election-night.html', 'call-overlay.html', 'admin.html', 'server.mjs', 'render.yaml', 'package*.json', '.github/workflows/results-quality.yml']
+  pull_request:
+    paths: ['assets/**', 'data/results/**', 'data/election-night-races.json', 'data/results-provider.json', 'data/live-results*', 'data/live-results-races/**', 'scripts/results/**', 'scripts/generate-live-results.mjs', 'tests/results/**', '*results*.html', 'election-night.html', 'call-overlay.html', 'admin.html', 'server.mjs', 'render.yaml', 'package*.json', '.github/workflows/results-quality.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: results-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run audit:results-candidates
+      - run: npm run test:results

@@ -1,4 +1,31 @@
 // Candidate identities are independent of probabilities and result calls.
+const identityKey = (value) => String(value || '').normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+function identityForms(value) {
+  const text=String(value || '').replace(/[“”]/g,'"');
+  const variants=[text,text.replace(/"[^"]*"/g,' ')];
+  const nickname=text.match(/"([^"]+)"/);
+  if(nickname){const last=text.replace(/"[^"]*"/g,' ').trim().split(/\s+/).at(-1);variants.push(nickname[1]+' '+last);}
+  return variants.map(name=>{
+    const tokens=name.normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,' ').trim().split(/\s+/);
+    const suffix=/^(jr|sr|ii|iii|iv|v)$/.test(tokens.at(-1))?tokens.pop():null;
+    return {key:tokens.filter((t,i)=>!(i>0&&i<tokens.length-1&&t.length===1)).join(''),suffix};
+  });
+}
+// Conservative ballot reconciliation: never match by party or surname alone.
+export function matchBallotCandidate(candidate, roster) {
+  if(!roster?.length)return candidate;
+  const names=c=>[c.name,...(c.aliases || [])];
+  const exact=roster.filter(c=>names(c).some(n=>identityKey(n)===identityKey(candidate.name)));
+  let matches=exact;
+  if(!matches.length){
+    const incoming=identityForms(candidate.name);
+    matches=roster.filter(c=>names(c).some(n=>identityForms(n).some(a=>incoming.some(b=>a.key&&a.key===b.key&&(!a.suffix||!b.suffix||a.suffix===b.suffix)))));
+  }
+  if(matches.length!==1)throw Error((matches.length?'Ambiguous':'Unknown')+' provider candidate: '+candidate.name);
+  const local=matches[0],party=local.partyCode||local.party;
+  if(party&&candidate.partyCode&&identityKey(party)!==identityKey(candidate.partyCode))throw Error('Provider party mismatch: '+candidate.name);
+  return {...candidate,name:local.name,...(party?{party,partyCode:party}:{}),...(local.writeIn?{writeIn:true}:{}),...(local.partyLabels?{partyLabels:local.partyLabels}:{})};
+}
 export const genericName = (v) =>
   !String(v || "").trim() ||
   /^(?:(?:democrat(?:ic)?|republican|gop|independent|other|unknown)(?:party)?(?:candidate|nominee)?|tbd|tba|candidate(?:pending)?)$/i.test(

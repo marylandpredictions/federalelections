@@ -84,22 +84,10 @@ window.FEANightAwareness = function (Page) {
     callsDialog.innerHTML =
       '<header><h2>Published calls</h2><button type="button">Close</button></header><div></div>';
     document.body.append(callsDialog);
+    this.callsDialog=callsDialog;
     calls.onclick = () => {
-      callsDialog.querySelector("div").innerHTML =
-        Object.values(this.dataByMode)
-          .flat()
-          .filter((r) => r.calls?.length)
-          .sort((a, b) =>
-            String(b.calls[0].calledAt || "").localeCompare(
-              String(a.calls[0].calledAt || ""),
-            ),
-          )
-          .map(
-            (r) =>
-              `<button type="button" data-call-race="${esc(r.id)}"><strong>${esc(label(r))}</strong><span>${N.source(r.calls[0])} PROJECTS · ${esc(r.calls[0].candidate)}</span></button>`,
-          )
-          .join("") || "<p>No published calls.</p>";
       callsDialog.showModal();
+      this.renderPublishedCalls();
     };
     callsDialog.querySelector("header button").onclick = () =>
       callsDialog.close();
@@ -375,11 +363,26 @@ window.FEANightAwareness = function (Page) {
       }
     });
   };
+  p.renderPublishedCalls = function () {
+    const dialog=this.callsDialog;
+    if(!dialog?.open)return;
+    const races=Object.values(this.dataByMode).flat().filter(r=>r.calls?.length).sort((a,b)=>String(b.calls[0].calledAt||'').localeCompare(String(a.calls[0].calledAt||'')));
+    const corrections=[...(this.activity?.corrections||this.activity?.items||[])].reverse().filter(e=>e.kind==='correction').slice(0,10);
+    const key=JSON.stringify([races.map(r=>[r.id,r.calls]),corrections.map(e=>e.id)]);
+    if(key===this.publishedCallsKey)return;
+    this.publishedCallsKey=key;
+    const content=dialog.querySelector('div'),scroll=content.scrollTop,focused=document.activeElement?.dataset?.callRace;
+    content.innerHTML=races.map(r=>`<button type="button" data-call-race="${esc(r.id)}"><strong>${esc(label(r))}</strong><span>${N.source(r.calls[0])} PROJECTS · ${esc(r.calls[0].candidate)}</span></button>`).join('')||'<p>No published calls.</p>';
+    if(corrections.length)content.insertAdjacentHTML('beforeend','<h3>Recent corrections · this session</h3>'+corrections.map(e=>`<button type="button" data-call-race="${esc(e.race)}"><strong>${esc(label(this.findDeskRace(e.race)))}</strong><span>${esc(e.retracted?'Projection withdrawn':e.source+' projection corrected · '+e.candidate)}</span></button>`).join(''));
+    if(focused)[...content.querySelectorAll('[data-call-race]')].find(b=>b.dataset.callRace===focused)?.focus({preventScroll:true});
+    content.scrollTop=scroll;
+  };
   p.renderNightAwareness = function (now = Date.now()) {
     safe(() => {
       const host = document.getElementById("night-controls");
       if (!host || !this.activity) return;
       this.activity.prune(now);
+      this.renderPublishedCalls();
       const all = this.modeRaces(),
         state = N.presentation(
           all,
@@ -408,11 +411,7 @@ window.FEANightAwareness = function (Page) {
         this.activity.items.length;
       const changed = new Set(this.activity.changed(now, this.activityWindow)),
         show = this.changedUntil > now;
-      const changedCounties = new Set(
-        this.activity.items
-          .filter((e) => e.county && now - e.at <= this.activityWindow)
-          .map((e) => e.race + ":" + e.county),
-      );
+      const changedCounties = new Set(this.activity.changedCounties(now,this.activityWindow));
       document
         .getElementById("night-changed")
         .setAttribute("aria-pressed", String(show));
@@ -896,6 +895,8 @@ window.FEANightAwareness = function (Page) {
         target = this.currentRace || races[0];
       if (!this.liveRaceDetails.has(target.id))
         this.liveRaceDetails.set(target.id, { ...target, voteHistory: [] });
+      // This tool generates a separate, chronologically ordered six-hour fixture.
+      this.liveRaceDetails.get(target.id).voteHistory=[];
       for (let i = 0; i < 1440; i++) {
         const r = target,
           b = structuredClone(r),

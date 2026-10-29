@@ -53,10 +53,15 @@ window.FEAEnhanceBoard = function (Page) {
     call?.provider === "NBC" || /^nbc-/.test(call?.source || "")
       ? "NBC"
       : "FEA";
+  const requestDeadline = () => {
+    if(typeof AbortController==='undefined')return {signal:undefined,clear(){}};
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
+    return {signal:controller.signal,clear:()=>clearTimeout(timer)};
+  };
   p.init = async function () {
     this.events = new EventTarget();
     let storage;try{storage=sessionStorage;}catch{}
-    this.callTracker = new FEADesk.CallTracker(storage);
+    this.callTracker = new FEADesk.CallTracker(storage,this.isLabPage&&this.query.get('live')!=='true'?'fea-lab-call-events-v1':'fea-public-call-events-v1');
     this.countyGeometries = new Map();
     this.lockedCounty = null;
     this.alertQueue = [];
@@ -71,12 +76,7 @@ window.FEAEnhanceBoard = function (Page) {
       this.positionDeskControls();
       if (this.focusedPanelTab === "trends") this.renderTrendChart();
     }).observe(document.getElementById("focused-race-panel"));
-    new MutationObserver(() => {
-      this.updateMapFills(new Set(this.modeRaces().map((r) => r.id)));
-    }).observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
+    // FEACompleteBoard's fea-desk-theme handler already refreshes fills.
   };
   p.loadData = async function () {
     // Manifest is small; heavy resources stay lazy.
@@ -115,7 +115,7 @@ window.FEAEnhanceBoard = function (Page) {
     this.applyLabMode();
     this.publicProvider = live?.provider;
     this.renderProviderStatus(live?.provider);
-    this.callTracker.observe(this.liveRaceIndex);
+    this.callTracker.observe(this.isLabPage&&this.query.get('live')!=='true'?Object.values(this.dataByMode).flat():this.liveRaceIndex);
   };
   p.bindEvents = function () {
     original.bindEvents.call(this);
@@ -293,23 +293,29 @@ window.FEAEnhanceBoard = function (Page) {
     const features=this.countyGeometries.get(fips);this.countyGeometries.delete(fips);this.countyGeometries.set(fips,features);return features;
   };
   p.safeJson = async function (url) {
+    const deadline=url.startsWith('/api/')?requestDeadline():null;
     try {
       const isApi = url.startsWith("/api/");
       const isMapManifest=url.split('?')[0].endsWith('/map-assets.json');
       const response = await fetch(url, {
         cache: isApi || isMapManifest ? "no-cache" : "default",
+        ...(deadline?{signal:deadline.signal}:{}),
       });
       return response.ok ? await response.json() : null;
     } catch {
       return null;
+    } finally {
+      deadline?.clear();
     }
   };
   p.refreshResults = async function () {
     if (this.refreshBusy) return;
     this.refreshBusy = true;
+    const deadline=requestDeadline();
     try {
       const check = await fetch("/api/results-version", {
         cache: "no-cache",
+        signal:deadline.signal,
         headers: this.resultsVersion
           ? { "If-None-Match": `"${this.resultsVersion}"` }
           : {},
@@ -399,6 +405,7 @@ window.FEAEnhanceBoard = function (Page) {
     } catch {
       this.renderProviderStatus({ stale: true });
     } finally {
+      deadline.clear();
       this.refreshBusy = false;
     }
   };
@@ -498,6 +505,13 @@ window.FEAEnhanceBoard = function (Page) {
     }
   };
   p.retrySelectedDetail = async function () {
+    if(this.currentRace&&this.countyHistoryRetry===`${this.currentRace.id}:${this.lockedCounty}`){
+      if(this.focusedPanelTab==='trends')await this.renderTrendChart();
+      else if(this.focusedPanelTab==='counties'){
+        await this.loadCountyHistory(this.currentRace,this.lockedCounty);
+        this.renderFocusedRace(this.currentRace);
+      }
+    }
     if (!this.currentRace || this.detailRetryID !== this.currentRace.id) return;
     const race = this.currentRace,
       previous = this.liveRaceDetails.get(race.id);
@@ -662,6 +676,13 @@ window.FEAEnhanceBoard = function (Page) {
               : await this.safeJson(
                   `/api/live-results/race?id=${encodeURIComponent(race.id)}&county=${county}`,
                 );
+          if(!result||!Array.isArray(result.voteHistory)){
+            this.countyHistoryRetry=`${race.id}:${county}`;
+            return [];
+          }
+          if(this.countyHistoryRetry===`${race.id}:${county}`)this.countyHistoryRetry=null;
+          const latest=(this.liveRaceIndex||[]).find(r=>r.id===race.id)||this.panelData(race);
+          if((latest.version||'')!==(data.version||''))return result.voteHistory;
           const prefix = `${race.id}:${county}:`;
           for (const old of this.countyHistories.keys())
             if (old.startsWith(prefix) && old !== key)
@@ -728,9 +749,10 @@ window.FEAEnhanceBoard = function (Page) {
       });
   };
   p.labHistory = function (row) {
+    const end=Date.now();
     return [0.22, 0.38, 0.51, 0.67, 0.83, 1].map((factor, i) => ({
       at: new Date(
-        Date.parse("2026-11-04T00:00:00Z") + i * 600000,
+        end - (5-i) * 600000,
       ).toISOString(),
       expectedVotePercent: Math.round(
         (row.expectedVotePercent ?? row.estimatedVoteReporting ?? 60) * factor,
@@ -834,7 +856,7 @@ window.FEAEnhanceBoard = function (Page) {
         ? this.countyMarkup(data, county)
         : `<p class="desk-hint">Select a ${data.localReporting ? 'town or city' : 'county'} on the map or below to keep its results open.</p><div class="county-list">${counties.map((c) => `<button type="button" data-county-fips="${esc(c.fips)}"><span>${esc(c.name)}</span><strong>${FEADesk.total(c) ? fmt(FEADesk.total(c)) : '—'}</strong></button>`).join("")}</div>`;
     if (this.focusedPanelTab === "trends")
-      body = `${county ? `<p>${esc(county.name)} · <button type="button" data-unlock-county>Clear county</button></p>` : ""}<label class="trend-mode-label">Chart <select data-trend-mode aria-label="Trend metric">${[
+      body = `${county ? `<p>${esc(county.name)} · <button type="button" data-unlock-county>Clear ${data.localReporting?'town / city':'county'}</button></p>` : ""}<label class="trend-mode-label">Chart <select data-trend-mode aria-label="Trend metric">${[
         ["total", "Total votes"],
         ["share", "Candidate vote share"],
         ["margin", "D−R vote margin"],
@@ -846,7 +868,7 @@ window.FEAEnhanceBoard = function (Page) {
         )
         .join(
           "",
-        )}</select></label><div id="desk-trend-chart"></div><section id="desk-trend-detail" class="trend-detail" aria-label="Selected results update" role="status"></section>`;
+        )}</select></label><div id="desk-trend-chart"><p class="desk-hint">Loading observed history...</p></div><section id="desk-trend-detail" class="trend-detail" aria-label="Selected results update" role="status"></section>`;
     if (this.focusedPanelTab === "demographics")
       body =
         '<div id="desk-demographics"><p class="desk-hint">Loading Census estimates…</p></div>';
@@ -983,7 +1005,7 @@ window.FEAEnhanceBoard = function (Page) {
         this.countyHistories?.get(`${race.id}:${county.fips}`) || [],
       previous = history.length > 1 ? history.at(-2) : null,
       m = FEADesk.metrics(county, previous, baseline);
-    return `<div class="county-heading"><h3>${esc(county.name)}</h3><button type="button" data-unlock-county>Clear county</button></div>${this.candidateTable(county)}${this.facts(
+    return `<div class="county-heading"><h3>${esc(county.name)}</h3><button type="button" data-unlock-county>Clear ${race.localReporting?'town / city':'county'}</button></div>${this.candidateTable(county)}${this.facts(
       [
         ["Votes counted", fmt(m.votes)],
         [
@@ -1031,6 +1053,7 @@ window.FEAEnhanceBoard = function (Page) {
     )}`;
   };
   p.renderTrendChart = async function () {
+    const revision=this.trendRenderRevision=(this.trendRenderRevision||0)+1;
     const race = this.currentRace;
     if (!race) return;
     const id = race.id,
@@ -1039,6 +1062,7 @@ window.FEAEnhanceBoard = function (Page) {
       history = data.voteHistory || [];
     if (county) history = await this.loadCountyHistory(race, county);
     if (
+      revision!==this.trendRenderRevision ||
       this.currentRace?.id !== id ||
       this.lockedCounty !== county ||
       this.focusedPanelTab !== "trends"
@@ -1177,13 +1201,13 @@ window.FEAEnhanceBoard = function (Page) {
     const inspectionRule=svg.append('line').attr('class','trend-inspection-rule').attr('y1',14).attr('y2',height-30);
     const inspectionDot=svg.append('circle').attr('class','trend-inspection-dot').attr('r',4);
     let described;
-    const describe = (point) => {
+    const describe = (point, inspected = true) => {
       if (described === point) return;
       described = point;
       const px=x(new Date(point.at)),py=y(series[0].value(point)??values[0]);
       inspectionRule.attr('x1',px).attr('x2',px);
       inspectionDot.attr('cx',px).attr('cy',py).attr('stroke',pointColor(point));
-      this.trendInspectedAt = point.at;
+      if(inspected)this.trendInspectedAt = point.at;
       const total = FEADesk.total(point),
         m = FEADesk.metrics(point);
       const scroll = document.getElementById('focused-race-content').scrollTop;
@@ -1225,7 +1249,7 @@ window.FEAEnhanceBoard = function (Page) {
         describe(nearest);
       });
     const caption=document.createElement('p');caption.className='trend-time-caption';caption.textContent='Observed updates · Eastern time';container.append(caption);
-    describe(points.find(p => p.at === this.trendInspectedAt) || points.at(-1));
+    describe(points.find(p => p.at === this.trendInspectedAt) || points.at(-1), false);
   };
   p.renderDemographics = async function () {
     const race = this.currentRace,
@@ -1350,6 +1374,10 @@ window.FEAEnhanceBoard = function (Page) {
     requestAnimationFrame(() => paths.classed("projection-pulse", true));
   };
   p.queueProjection = function (event) {
+    // Corrections supersede older notices for this race, including visible cards.
+    this.alertQueue=this.alertQueue.filter(e=>e.race.id!==event.race.id);
+    const host=document.getElementById('projection-alerts');
+    for(const card of [...(host?.children||[])])if(card.dataset.raceId===event.race.id){clearTimeout(card._timer);card.remove();}
     this.alertQueue.push(event);
     const live = document.getElementById("projection-announcer");
     if (live)
@@ -1375,6 +1403,7 @@ window.FEAEnhanceBoard = function (Page) {
       const card = document.createElement("article");
       card.className = `projection-toast ${event.correction ? "is-correction" : ""}`;
       card.dataset.eventKey = event.key;
+      card.dataset.raceId = event.race.id;
       card.innerHTML = FEAProjectionCard.content(event);
       card.style.setProperty('--party-accent',FEAProjectionCard.accent(event));
       const dismiss = () => {

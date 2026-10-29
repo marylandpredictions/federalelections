@@ -66,9 +66,16 @@ export class ResultsControl {
     this.rosterAudit=auditRosters(catalogue);
     if(!this.rosterAudit.passed)console.warn(JSON.stringify({event:'candidate-roster-needs-review',issues:this.rosterAudit.issues.slice(0,20)}));
     this.catalogue=catalogue.map(race=>({...race,candidates:(race.candidates||[]).filter(c=>!genericName(c.name)&&!c.placeholder)}));
-    this.config = await json(join(this.root, "data/results-provider.json"), {
-      sources: [],
-    });
+    try {
+      this.config = await json(join(this.root, "data/results-provider.json"), {sources: []});
+    } catch {
+      this.configurationError='Provider configuration could not be read. Check its JSON and restart the service.';
+      this.config={sources:[]};
+    }
+    if(!this.config || !Array.isArray(this.config.sources) || this.config.sources.some(s=>!s||typeof s.url!=='string'||!Array.isArray(s.races))){
+      this.configurationError='Provider configuration is malformed. Check sources and race mappings, then restart the service.';
+      this.config={sources:[]};
+    }
     this.provider ||= new NbcProvider(this.config);
     this.calls = await json(this.storage.calls, await json(join(this.root, "data/result-calls.json"), {
       races: {},
@@ -92,8 +99,12 @@ export class ResultsControl {
       audit: [],
     });
     this.runtime.audit ||= [];
+    this.runtime.races ||= {};
+    this.runtime.health ||= {};
     // Calls and last-good votes are recovered from the same committed envelope.
     if(this.runtime.committedCalls)this.calls=structuredClone(this.runtime.committedCalls);
+    this.calls.races ||= {};
+    this.calls.automation ||= {paused:false};
     for(const state of Object.values(this.calls.races))for(const call of state.calls||[])if(/^nbc-/.test(call.source||''))call.provider='NBC';
     this.commitVisibleState();
     return this;
@@ -122,6 +133,7 @@ export class ResultsControl {
     return (this.calls.races[id] ||= { calls: [], callState: "UNCALLED" });
   }
   async save() {
+    try {
     const callsPath = this.storage.calls;
     const previous = await json(callsPath, { races: {} });
     const previousState=await json(this.storage.state,null);
@@ -133,7 +145,6 @@ export class ResultsControl {
         {...this.runtime,committedCalls:this.calls},
       );
     } catch (error) {
-      console.error(JSON.stringify({event:'persistence-write-failed',message:error.message}));
       try {
         await atomic(callsPath, previous);
       } catch (rollback) {
@@ -144,6 +155,12 @@ export class ResultsControl {
       throw error;
     }
     this.commitVisibleState();
+    this.persistenceError=null;
+    } catch(error) {
+      if(this.persistenceError!==error.message)console.error(JSON.stringify({event:'persistence-write-failed',message:error.message}));
+      this.persistenceError=error.message;
+      throw error;
+    }
   }
   async poll() {
     if (this.now() < this.nextPoll) return;
@@ -152,6 +169,7 @@ export class ResultsControl {
       const h = this.runtime.health;
       h.lastAttempt = new Date(this.now()).toISOString();
       try {
+        if(this.configurationError)throw Error(this.configurationError);
         const incoming = await this.provider.fetchResults(this.catalogue);
         if (!Array.isArray(incoming) || !incoming.length)
           throw Error("Provider returned no normalized races");
@@ -306,6 +324,7 @@ export class ResultsControl {
     const state = working ? this : this.visible;
     const h = state.runtime.health;
     const stale =
+      h.connection !== 'connected' ||
       !h.lastSuccess ||
       this.now() - Date.parse(h.lastSuccess) > this.staleSeconds * 1000 ||
       !h.lastUpstreamUpdate ||
@@ -315,9 +334,11 @@ export class ResultsControl {
       .map(([, s]) => s);
     return {
       ...h,
-      stale: stale || !!h.quarantined?.length,
+      stale: stale || !!h.quarantined?.length || !!this.persistenceError,
+      persistenceError:this.persistenceError || null,
+      configurationError:this.configurationError || null,
       status:
-        h.connection === "unavailable"
+        this.persistenceError ? 'STORAGE ERROR' : h.connection === "unavailable"
           ? "UNAVAILABLE"
           : h.connection === "failed"
             ? "CONNECTION FAILED"
@@ -328,7 +349,7 @@ export class ResultsControl {
                 : "CONNECTED",
       automation: state.calls.automation.paused
         ? "PAUSED"
-        : stale || h.connection !== "connected"
+        : stale || this.persistenceError || h.connection !== "connected"
           ? "DEGRADED"
           : "ACTIVE",
       pollSeconds: this.pollSeconds,

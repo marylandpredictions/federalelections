@@ -320,6 +320,7 @@ test("Outage retains last valid votes/calls and suspends pending auto publicatio
   await x.control.poll();
   await x.control.tick();
   assert.equal(x.control.health().status, "CONNECTION FAILED");
+  assert.equal(x.control.health().stale, true);
   assert.equal(x.control.calls.races["house-CO-4"].callState, "NBC_PENDING");
   assert.equal(x.control.results().groups[0].races[0].candidates[0].votes, 100);
   assert.ok(Date.parse(x.control.health().nextAttemptAt) > x.now());
@@ -385,6 +386,9 @@ test("Failed save preserves memory and existing call decision; retry remains pos
   );
   assert.equal(x.control.calls.races["house-CO-4"].callState, "NBC_PENDING");
   assert.equal(x.control.calls.races["house-CO-4"].calls.length, 0);
+  assert.ok(x.control.health().persistenceError);
+  assert.equal(x.control.health().stale, true);
+  assert.equal(x.control.health().automation, "DEGRADED");
   await rm(path, { recursive: true });
   await rename(path + ".saved", path);
   await x.control.action({
@@ -396,6 +400,7 @@ test("Failed save preserves memory and existing call decision; retry remains pos
     x.control.calls.races["house-CO-4"].calls[0].candidate,
     "Blair Example",
   );
+  assert.equal(x.control.health().persistenceError, null);
 });
 
 test("Public results cannot observe an uncommitted call while a save is in progress", async (t) => {

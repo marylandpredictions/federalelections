@@ -1,7 +1,27 @@
-import { readFile, mkdir, writeFile, unlink } from "node:fs/promises";
+import { readFile, mkdir, writeFile, unlink, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
+import { gunzipSync } from "node:zlib";
 import { auditCandidateFiles } from "./audit-candidates.mjs";
+export function validatePollSchedule(data) {
+  if(data?.electionDate!=='2026-11-03'||!Array.isArray(data.events)||!data.events.length||!/^https:\/\//.test(data.sourceUrl||'')||!Number.isFinite(Date.parse(data.checkedAt)))throw Error('Poll-close schedule or provenance is invalid.');
+  const states=new Set();let previous=0;
+  for(const event of data.events){
+    const at=Date.parse(event.at);
+    if(!Number.isFinite(at)||at<=previous||at<Date.parse('2026-11-03T05:00:00Z')||at>Date.parse('2026-11-04T12:00:00Z')||!event.states?.length)throw Error('Invalid poll-close group.');
+    previous=at;
+    for(const state of event.states){if(!/^[A-Z]{2}$/.test(state)||states.has(state))throw Error('Duplicate or invalid poll-close state.');states.add(state);}
+  }
+  const required='AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' ');
+  if(states.size!==51||required.some(state=>!states.has(state)))throw Error('Poll-close coverage must include all 50 states and DC.');
+  for(const state of ['IN','KY','FL','KS','MI','TX','ID'])if(!data.districtExceptions?.[state]?.default)throw Error('Verified district poll-close exceptions are missing.');
+  for(const [state,exceptions] of Object.entries(data.districtExceptions||{}))for(const [district,value] of Object.entries(exceptions))if(!states.has(state)||!(district==='default'||/^\d+$/.test(district))||!Number.isFinite(Date.parse(value))||Date.parse(value)<Date.parse('2026-11-03T05:00:00Z')||Date.parse(value)>Date.parse('2026-11-04T12:00:00Z'))throw Error('Invalid district poll-close exception.');
+}
+async function asset(root,path){
+  if(typeof path!=='string'||!path.startsWith('data/results/')||path.includes('..')||path.includes('\\'))throw Error('Invalid manifest asset path.');
+  const bytes=await readFile(join(root,path));
+  return JSON.parse((path.endsWith('.gz')?gunzipSync(bytes):bytes).toString('utf8'));
+}
 export async function readiness(control, root) {
   const checks = [],
     add = (name, status, explanation) =>
@@ -36,19 +56,38 @@ export async function readiness(control, root) {
   ]) {
     try {
       const data = JSON.parse(await readFile(join(root, path), "utf8"));
+      if(name==='Poll-close schedule')validatePollSchedule(data);
       if (name === "Geometry manifest") {
-        for (const file of [data.states, data.house].filter(Boolean))
-          await readFile(join(root, file));
+        if(!data.states||!data.house||!Object.keys(data.counties||{}).length)throw Error('Geometry manifest is incomplete.');
+        for (const file of [data.states,data.house,...Object.values(data.counties||{}),...Object.values(data.municipalities||{}).map(m=>m.path)]){
+          const geometry=await asset(root,file);
+          if(!(geometry.type==='FeatureCollection'&&geometry.features?.length||geometry.type==='Topology'&&Object.keys(geometry.objects||{}).length&&geometry.arcs?.length))throw Error('Geometry asset is empty or malformed.');
+        }
+      }
+      if(name==='Demographics manifest'){
+        if(data.status!=='available'){add(name,'WARNING','Census estimates are not available; results remain usable.');continue;}
+        const demographics=await asset(root,data.file);
+        if(!Object.keys(demographics.counties||{}).length||!Object.keys(demographics.states||{}).length)throw Error('Demographics asset is empty.');
       }
       add(name, "PASS", path);
-    } catch {
-      add(name, "FAIL", "Required data or referenced geometry is unavailable.");
+    } catch(error) {
+      add(name, "FAIL", "Required data is unavailable or invalid: "+error.message);
     }
   }
   for (const file of [
     "assets/desk-theme.js",
     "assets/night-awareness.js",
     "assets/night-awareness-board.js",
+    "assets/results-desk-board.js",
+    "assets/results-desk.js",
+    "assets/results-ui.js",
+    "assets/desk-appearance.js",
+    "assets/projection-card.js",
+    "assets/projection-card.css",
+    "assets/overlay-model.js",
+    "assets/call-overlay.js",
+    "assets/call-overlay.css",
+    "call-overlay.html",
   ]) {
     try {
       await readFile(join(root, file));
@@ -63,10 +102,11 @@ export async function readiness(control, root) {
     h.stale ? "WARNING" : "PASS",
     h.error || h.status || "See feed health.",
   );
+  const publicRaces=control.results().groups.flatMap((g)=>g.races||[]);
   add(
     "Public snapshot",
-    "PASS",
-    `${control.results().groups.flatMap((g) => g.races).length} races available; private pending calls excluded.`,
+    publicRaces.length?'PASS':'FAIL',
+    `${publicRaces.length} races available; private pending calls excluded.`,
   );
   add(
     "Last-good snapshot",
@@ -76,8 +116,12 @@ export async function readiness(control, root) {
   let probe;
   try {
     await mkdir(control.storage.directory, { recursive: true });
+    for(const path of [control.storage.calls||join(control.storage.directory,'result-calls.json'),control.storage.state||join(control.storage.directory,'results-state.json')]){
+      try{if(!(await stat(path)).isFile())throw Error('Runtime target is not a file.');}catch(error){if(error.code!=='ENOENT')throw error;}
+    }
     probe = join(control.storage.directory, ".readiness-" + randomUUID());
     await writeFile(probe, "write probe", { flag: "wx" });
+    if(await readFile(probe,'utf8')!=='write probe')throw Error('Storage readback failed.');
     await unlink(probe);
     add(
       "Storage writable",
@@ -86,6 +130,8 @@ export async function readiness(control, root) {
     );
   } catch {
     add("Storage writable", "FAIL", "Results storage is not writable.");
+  } finally {
+    if(probe)await unlink(probe).catch(()=>{});
   }
   add(
     "Production persistence",

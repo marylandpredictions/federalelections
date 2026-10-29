@@ -2,7 +2,7 @@
  * Provider contract: fetchResults(catalogue) -> normalized race[]. Throws on invalid data.
  * A projection flag has NO authority unless its exact meaning has been verified in the source manifest.
  */
-import { genericName } from './candidate-roster.mjs';
+import { genericName, matchBallotCandidate } from './candidate-roster.mjs';
 export function percent(value) {
   if (value === null || value === undefined || value === "") return null;
   const n = Number(value);
@@ -98,12 +98,15 @@ export function parseNbcResults(data, source, catalogue, {onInvalid}={}) {
       if (district(summary.district) !== district(local.district))
         throw new Error("NBC district mismatch");
     }
-    const candidates = summary.candidates.map(candidate);
+    const normalizeCandidate=raw=>matchBallotCandidate(candidate(raw),local.candidates);
+    const candidates = summary.candidates.map(normalizeCandidate);
     if (
       new Set(candidates.map((c) => c.id)).size !== candidates.length ||
       new Set(candidates.map((c) => c.name)).size !== candidates.length
     )
       throw new Error("Duplicate NBC candidates");
+    if(local.rosterReviewed && local.candidates.some(c=>!candidates.some(k=>k.name===c.name)))
+      throw Error('Provider roster incomplete; reviewed candidates missing: '+local.candidates.filter(c=>!candidates.some(k=>k.name===c.name)).map(c=>c.name).join(', '));
     const total = candidates.reduce((n, c) => n + c.votes, 0);
     for (const c of candidates)
       if (c.percent === null) c.percent = total ? (c.votes / total) * 100 : 0;
@@ -143,7 +146,7 @@ export function parseNbcResults(data, source, catalogue, {onInvalid}={}) {
             provider: "NBC",
             raceId: local.id,
             providerRaceId: String(mapping.providerRaceId),
-            candidate: candidate(winners[0]).name,
+            candidate: normalizeCandidate(winners[0]).name,
             status: "projected",
             providerTimestamp: timestamp(summary.callTimestamp),
           }
@@ -154,7 +157,7 @@ export function parseNbcResults(data, source, catalogue, {onInvalid}={}) {
         fips: /^(?:\d{5}|\d{10})$/.test(String(a.fips || a.geoid || "")) ? String(a.fips || a.geoid) : "",
         estimatedVoteReporting: percent(a.percentIn),
         percentReporting: percent(a.precinctsReportingPercent),
-        candidates: (a.candidates || []).map(candidate),
+        candidates: (a.candidates || []).map(normalizeCandidate),
       })),
     });
   }
@@ -174,6 +177,9 @@ export class NbcProvider {
         "No verified NBC 2026 general-election source configured",
       );
     const rows = [];
+    const mappings=this.sources.flatMap(source=>source.races||[]).map(m=>m.feaRaceId);
+    if(new Set(mappings).size!==mappings.length)throw Error('Duplicate source mappings');
+    // Validate the complete manifest before issuing any request.
     for (const source of this.sources) {
       const url = new URL(source.url);
       if (
@@ -186,7 +192,11 @@ export class NbcProvider {
         throw new Error(
           "Source must be a verified public NBC general-election feed",
         );
+    }
+    const readSource=async source=>{
+      const url=new URL(source.url);
       const cached = this.httpCache.get(url.href);
+      try {
       const response = await this.fetchImpl(url, {
         signal: AbortSignal.timeout(this.timeoutMs),
         redirect: "error",
@@ -207,9 +217,21 @@ export class NbcProvider {
         this.httpCacheBytes+=Buffer.byteLength(body);
         while(this.httpCacheBytes>32*1024*1024 || this.httpCache.size>128){const oldest=this.httpCache.keys().next().value;this.httpCacheBytes-=Buffer.byteLength(this.httpCache.get(oldest).body);this.httpCache.delete(oldest);}
       }
-    }
+      } catch(error) {
+        // A failing state endpoint must not stall healthy states or clear their votes.
+        for(const mapping of source.races || [])if(!this.quarantined.some(i=>i.race===mapping.feaRaceId))this.quarantined.push({race:mapping.feaRaceId,reason:error.message});
+      }
+    };
+    // A few slow states should not serially delay the entire national poll.
+    let cursor=0;
+    await Promise.all(Array.from({length:Math.min(8,this.sources.length)},async()=>{
+      while(cursor<this.sources.length)await readSource(this.sources[cursor++]);
+    }));
+    this.quarantined.sort((a,b)=>String(a.race).localeCompare(String(b.race)));
+    if(!rows.length)throw Error(this.quarantined[0]?.reason || 'No healthy mapped NBC races');
     if (new Set(rows.map((r) => r.id)).size !== rows.length)
       throw new Error("Duplicate source mappings");
-    return rows;
+    const order=new Map(catalogue.map((r,i)=>[r.id,i]));
+    return rows.sort((a,b)=>order.get(a.id)-order.get(b.id));
   }
 }

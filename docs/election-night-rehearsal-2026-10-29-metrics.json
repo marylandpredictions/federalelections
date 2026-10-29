@@ -1,0 +1,207 @@
+{
+  "date": "2026-10-29",
+  "startingHead": "09c7ca4fb52d486820f0c5cc28ae2d2568a4af06",
+  "scope": "Isolated synthetic local rehearsal, not actual NBC/Render/OBS certification",
+  "tests": {
+    "before": 112,
+    "after": 130,
+    "failed": 0
+  },
+  "candidateAudit": {
+    "total": 506,
+    "reviewed": 506,
+    "official": 10,
+    "placeholders": 0,
+    "needsReview": 0,
+    "issues": []
+  },
+  "wire": {
+    "full": {
+      "status": 200,
+      "wireBytes": 66368,
+      "cache": "private, no-cache",
+      "etag": "\"bbd34dee8ee797fc66ad\""
+    },
+    "fifteenCallDelta": {
+      "status": 200,
+      "wireBytes": 2853,
+      "cache": "private, no-cache",
+      "etag": "\"bbd34dee8ee797fc66ad:ad68c09798c6\"",
+      "races": 15
+    },
+    "unchangedHeartbeat": {
+      "status": 304,
+      "wireBytes": 0,
+      "cache": "private, no-cache",
+      "etag": "\"bbd34dee8ee797fc66ad\"",
+      "data": null
+    },
+    "houseCallsBefore": 0,
+    "houseCallsAfter": 15
+  },
+  "singleRace": {
+    "status": 200,
+    "wireBytes": 715,
+    "races": [
+      "senate-NC"
+    ],
+    "cache": "private, no-cache"
+  },
+  "largeBurst": {
+    "races": 506,
+    "wireBytes": 66147,
+    "status": 200,
+    "largestRawDrops": [
+      {
+        "race": "governor-TN",
+        "votes": 804
+      },
+      {
+        "race": "house-LA-6",
+        "votes": 799
+      },
+      {
+        "race": "senate-TN",
+        "votes": 799
+      },
+      {
+        "race": "governor-FL",
+        "votes": 799
+      },
+      {
+        "race": "governor-IL",
+        "votes": 799
+      }
+    ]
+  },
+  "restart": {
+    "restartAndImmediateOutage": "PASS",
+    "races": 506,
+    "callsPreserved": 2,
+    "auditPreserved": 6,
+    "raceHistory": 2,
+    "countyHistory": 2,
+    "provider": {
+      "name": "NBC News",
+      "status": "CONNECTION FAILED",
+      "stale": true,
+      "lastUpstreamUpdate": "2026-10-29T16:54:01.502Z"
+    },
+    "serverVersion": "ae9d9c771b7a543fc8a3"
+  },
+  "configurationRestart": {
+    "passed": true,
+    "calls": 16,
+    "overrides": 2,
+    "audit": 43,
+    "provider": {
+      "name": "NBC News",
+      "status": "CONNECTION FAILED",
+      "stale": true,
+      "lastUpstreamUpdate": "2026-10-29T17:28:27.441Z"
+    }
+  },
+  "healthyRestart": {
+    "passed": true,
+    "provider": {
+      "name": "NBC News",
+      "status": "CONNECTED",
+      "stale": false,
+      "lastUpstreamUpdate": "2026-10-29T17:32:30.381Z"
+    },
+    "overrides": 2,
+    "audit": 43,
+    "manualUncall": true,
+    "FEAOverride": true
+  },
+  "persistenceFailure": {
+    "failureStatus": 400,
+    "operatorMessage": "Save failed. Your previous result state is retained. Check server storage and retry.",
+    "healthStatus": "STORAGE ERROR",
+    "publicCallRetained": true,
+    "recoveryStatus": 200,
+    "publicRetraction": true,
+    "winnerMarkersCleared": true,
+    "afterVersion": "84fd97c7746abf8fb488"
+  },
+  "sparseCounty": {
+    "selected": "Adams 39001",
+    "before": [
+      3,
+      3
+    ],
+    "after": [
+      4,
+      3
+    ],
+    "changedCountyRows": 1,
+    "unchangedCountyRows": 0
+  },
+  "longRun": {
+    "kind": "six",
+    "changed": 435,
+    "mapMs": 1.1,
+    "panelMs": 18.100000001490116,
+    "projectionMs": 0,
+    "activity": 200,
+    "queue": 0,
+    "toastNodes": 0,
+    "elapsedMs": 817.6999999992549,
+    "longRun": {
+      "simulatedHours": 6,
+      "updates": 1440,
+      "activityBefore": 200,
+      "activityAfter": 200,
+      "nodesBefore": 1284,
+      "nodesAfter": 1284,
+      "details": 1,
+      "raceHistory": 1440,
+      "countyHistoryCache": 0,
+      "geometryCache": 0,
+      "projectionQueue": 0,
+      "elapsedMs": 794.0999999977648,
+      "heapBefore": 27689018,
+      "heapAfter": 31275194
+    }
+  },
+  "burst": {
+    "kind": "burst",
+    "changed": 80,
+    "mapMs": 1.7,
+    "panelMs": 25.800000000745058,
+    "projectionMs": 0,
+    "activity": 200,
+    "queue": 5,
+    "toastNodes": 3,
+    "elapsedMs": 39,
+    "longRun": {
+      "simulatedHours": 6,
+      "updates": 1440,
+      "activityBefore": 200,
+      "activityAfter": 200,
+      "nodesBefore": 1284,
+      "nodesAfter": 1284,
+      "details": 1,
+      "raceHistory": 1440,
+      "countyHistoryCache": 0,
+      "geometryCache": 0,
+      "projectionQueue": 0,
+      "elapsedMs": 794.0999999977648,
+      "heapBefore": 27689018,
+      "heapAfter": 31275194
+    }
+  },
+  "scroll": {
+    "before": {
+      "scroll": 298,
+      "text": "1:45 PM ET1,317 votesJohn Sununu951 72.2%Edmond Laplante359 27.3%Chris Pappas7 0.5%Margin R +71.7 pts50.0% expected vote in",
+      "transform": "translate(396.549332207271,163.82316856418336) scale(0.7005134228297643)"
+    },
+    "after": {
+      "pin": "New Hampshire SenateJohn SununuLeading · +45.0 pts · 60% expected vote×",
+      "scroll": 298,
+      "text": "1:46 PM ET1,580 votesJohn Sununu1,141 72.2%Edmond Laplante431 27.3%Chris Pappas8 0.5%Margin R +71.7 pts60.0% expected vote in",
+      "transform": "translate(396.549332207271,163.82316856418336) scale(0.7005134228297643)"
+    }
+  }
+}

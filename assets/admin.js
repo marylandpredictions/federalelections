@@ -92,14 +92,14 @@
     if(rosterNode&&!controlSnapshot.rosterAudit)rosterNode.textContent='Candidate audit unavailable. Run npm run audit:results-candidates before deployment.';
     const pending=entries.filter(([,s])=>["NBC_PENDING","NBC_HELD"].includes(s.callState) && !s.manualOverride);
     $("control-top-status").textContent=`Results feed: ${FEAResultsUI.feedLabel(h)}`;
-    $("queue-count").textContent=h.pending;
+    $("queue-count").textContent=pending.length;
     $("automation-status").textContent=h.automation === "ACTIVE" ? `NBC calls publish automatically after ${h.graceSeconds} seconds. You can hold a call before it publishes.` : h.automation === "PAUSED" ? "Automatic publishing is paused." : "Automatic publishing is waiting for the results feed. Manual calls are available.";
-    $("control-summary").innerHTML=[["Results feed",`${FEAResultsUI.feedLabel(h)} · ${relativeTime(h.lastUpstreamUpdate)}`],["Calls waiting",h.pending],["FEA overrides",h.overrides]].map(([label,value])=>`<article><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></article>`).join("");
+    $("control-summary").innerHTML=[["Results feed",`${FEAResultsUI.feedLabel(h)} · ${relativeTime(h.lastUpstreamUpdate)}`],["Calls needing attention",pending.length],["FEA overrides",h.overrides]].map(([label,value])=>`<article><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></article>`).join("");
     $("pending-calls").innerHTML=pending.map(([id,s])=>callCard(id,s,true)).join("")||"No calls waiting.";
     $("dashboard-pending").innerHTML=pending.slice(0,4).map(([id,s])=>callCard(id,s,true)).join("")||"No calls need attention.";
     $("published-calls").innerHTML=entries.filter(([,s])=>s.calls?.length&&!s.manualOverride).sort((a,b)=>String(b[1].calls[0]?.calledAt).localeCompare(String(a[1].calls[0]?.calledAt))).slice(0,15).map(([id,s])=>callCard(id,s)).join("")||"No published NBC calls.";
     $("override-calls").innerHTML=entries.filter(([,s])=>s.manualOverride||s.callState==='NBC_IGNORED').map(([id,s])=>callCard(id,s)).join("")||"No overrides or ignored projections.";
-    $("provider-health").innerHTML=Object.entries({"NBC status":h.status,"Sources":h.sources.map(s=>s.url).join("; ")||"No confirmed general-election endpoint configured","Last attempt":h.lastAttempt,"Last success":h.lastSuccess,"Last upstream timestamp":h.lastUpstreamUpdate,"Last changed result":h.lastChangedResult,"Public result version":controlSnapshot.versionInfo?.publicVersion,"Retained change snapshots":controlSnapshot.versionInfo?.retainedSnapshots,"Poll interval":`${h.pollSeconds}s`,"Next attempt":h.nextAttemptAt,"House / Senate / Governor":Object.values(h.counts).join(" / "),"Pending / overrides":`${h.pending} / ${h.overrides}`,"Data stale":h.stale?"Yes":"No","Latest provider error":h.error||"None"}).map(([label,value])=>`<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value || "Not yet available")}</dd></div>`).join("");
+    $("provider-health").innerHTML=Object.entries({"NBC status":h.status,"Sources":h.sources.map(s=>s.url).join("; ")||"No confirmed general-election endpoint configured","Last attempt":h.lastAttempt,"Last success":h.lastSuccess,"Last upstream timestamp":h.lastUpstreamUpdate,"Last changed result":h.lastChangedResult,"Public result version":controlSnapshot.versionInfo?.publicVersion,"Retained change snapshots":controlSnapshot.versionInfo?.retainedSnapshots,"Poll interval":`${h.pollSeconds}s`,"Next attempt":h.nextAttemptAt,"House / Senate / Governor":Object.values(h.counts).join(" / "),"Pending / overrides":`${h.pending} / ${h.overrides}`,"Data stale":h.stale?"Yes":"No","Latest provider error":h.error||"None","Runtime storage":h.persistenceError||"No write error","Races needing provider review":(h.quarantined||[]).slice(0,20).map(i=>i.race+': '+i.reason).join('; ')||"None"}).map(([label,value])=>`<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value || "Not yet available")}</dd></div>`).join("");
     $("control-audit").innerHTML=controlSnapshot.audit.slice(0,100).map(e=>`<p>${escapeHtml(e.timestamp)} • ${escapeHtml(e.race)} • ${escapeHtml(e.candidate)} • ${escapeHtml(e.action)} • ${escapeHtml(e.actor)} • ${escapeHtml(e.previousState)} → ${escapeHtml(e.newState)}</p>`).join("")||"No call actions recorded.";
     updateQueueClocks();
   }
@@ -232,10 +232,8 @@
   }
 
   function candidatePhoto(candidate = {}, race = {}) {
-    if (candidate.headshotUrl) return candidate.headshotUrl;
-    const folder = PHOTO_FOLDERS[String(race.id)];
-    if (folder) return `assets/img/candidates/${folder}/${slugify(candidate.name)}.webp`;
-    return `assets/img/candidates/live-results/${slugify(candidate.name)}.webp`;
+    // Guessed general-election filenames repeatedly returned 404 on refresh.
+    return candidate.headshotUrl || null;
   }
 
   function authHeaders() {
@@ -440,7 +438,7 @@
       const photo = candidatePhoto(item.candidate, race);
       return `
         <span class="admin-preview-avatar" style="--candidate-color:${escapeHtml(candidateColor(item.candidate))}">
-          <img src="${escapeHtml(photo)}" alt="" onerror="this.remove()">
+          ${photo?`<img src="${escapeHtml(photo)}" alt="" onerror="this.remove()">`:''}
           <span>${escapeHtml(initials(item.candidate.name))}</span>
         </span>
       `;

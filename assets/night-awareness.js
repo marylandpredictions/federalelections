@@ -87,18 +87,49 @@
       this.retention = retention;
       this.items = [];
       this.sequence = 0;
+      this.recentChanges=new Map();
+      this.recentCounties=new Map();
+      this.voteBatches=[];
+      this.corrections=[];
     }
     prune(now) {
       this.items = this.items
         .filter((i) => now - i.at <= this.retention)
         .slice(-this.capacity);
+      // The visible feed is not the source of truth for a nationwide burst.
+      if(this.metricsPrunedAt!==now){
+        this.metricsPrunedAt=now;
+        for(const [race,at] of this.recentChanges)if(now-at>this.retention)this.recentChanges.delete(race);
+        for(const [key,at] of this.recentCounties)if(now-at>this.retention)this.recentCounties.delete(key);
+        this.voteBatches=this.voteBatches.filter(i=>now-i.at<=300000).slice(-12000);
+        this.corrections=this.corrections.filter(i=>now-i.at<=this.retention).slice(-10);
+      }
+    }
+    markChanged(race,now){
+      if(!race)return;
+      const at=Math.max(this.recentChanges.get(race)||0,now);
+      this.recentChanges.delete(race);this.recentChanges.set(race,at);
+      while(this.recentChanges.size>1000)this.recentChanges.delete(this.recentChanges.keys().next().value);
     }
     add(item, now) {
-      this.items.push({ ...item, at: now, id: ++this.sequence });
+      const entry={ ...item, at: now, id: ++this.sequence };
+      this.items.push(entry);
+      this.markChanged(item.race,now);
+      if(item.race&&item.county){
+        const key=item.race+':'+item.county,at=Math.max(this.recentCounties.get(key)||0,now);
+        this.recentCounties.delete(key);this.recentCounties.set(key,at);
+        while(this.recentCounties.size>6000)this.recentCounties.delete(this.recentCounties.keys().next().value);
+      }
+      if(!item.county&&['votes','first-results','vote-correction'].includes(item.kind)){
+        this.voteBatches.push({race:item.race,at:now,votes:item.votes});
+        if(this.voteBatches.length>12000)this.voteBatches.shift();
+      }
+      if(item.kind==='correction'){this.corrections.push(entry);if(this.corrections.length>10)this.corrections.shift();}
       this.prune(now);
     }
     observe(before, after, now = Date.now(), county = null) {
       if (!before) return [];
+      if(!county&&before.version&&after.version&&before.version!==after.version)this.markChanged(after.id,now);
       const start = this.sequence,
         base = { race: after.id, county },
         old = total(before),
@@ -143,22 +174,18 @@
     }
     changed(now = Date.now(), windowMs = 60000) {
       this.prune(now);
-      return [
-        ...new Set(
-          this.items
-            .filter((i) => i.race && now - i.at <= windowMs)
-            .map((i) => i.race),
-        ),
-      ];
+      return [...this.recentChanges].filter(([,at])=>now-at<=windowMs).map(([race])=>race);
+    }
+    changedCounties(now=Date.now(),windowMs=60000){
+      this.prune(now);
+      return [...this.recentCounties].filter(([,at])=>now-at<=windowMs).map(([key])=>key);
     }
     drops(now = Date.now(), windowMs = 300000) {
       this.prune(now);
       const rows = new Map();
-      for (const i of this.items) {
+      for (const i of this.voteBatches) {
         if (
-          now - i.at > windowMs ||
-          i.county ||
-          !["votes", "first-results", "vote-correction"].includes(i.kind)
+          now - i.at > windowMs
         )
           continue;
         rows.set(i.race, (rows.get(i.race) || 0) + i.votes);
