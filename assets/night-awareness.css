@@ -323,3 +323,54 @@
 }
 
 @media(min-width:2500px){.results-board #projection-alerts{width:430px}}
+
+/* Map gestures do one transform write; remove costly SVG filter surfaces. */
+.results-board .election-map-viewport path,
+.results-board .election-map-viewport path:hover {
+  filter: none !important;
+}
+.results-board .map-moving :is(.night-geo-labels,.map-background-cities,.map-background-roads) {
+  visibility: hidden;
+}
+.results-board .map-moving path { transition: none !important; animation: none !important; }
+.results-board .election-map-viewport path { vector-effect: non-scaling-stroke; }
+.results-board .election-map-viewport .map-background-city {
+  fill: var(--text-primary);
+  paint-order: stroke;
+  stroke: var(--map-bg);
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.results-board .election-map-tooltip :is(small,.election-map-tooltip-muted,.election-map-tooltip-foot,.county-tooltip-empty) {
+  color: var(--text-secondary) !important;
+  opacity: 1;
+}
+.results-board .election-map-tooltip .election-map-tooltip-table td small {
+  color: var(--text-secondary) !important;
+}
+.results-board #desk-trend-chart { min-height: 230px; }
+.results-board #desk-trend-detail {
+  display: block;
+  background: var(--panel-raised);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+  font: 14px/1.5 system-ui, sans-serif;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+.results-board #desk-trend-detail:empty { display: none; }
+.results-board #desk-trend-detail :is(header,footer,li) { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.results-board #desk-trend-detail header { margin-bottom: 10px; }
+.results-board #desk-trend-detail ul { list-style: none; margin: 0; padding: 0; }
+.results-board #desk-trend-detail li { border-top: 1px solid var(--panel-border); padding: 8px 0; }
+.results-board #desk-trend-detail li > span { flex: 1 1 130px; }
+.results-board #desk-trend-detail strong { font-weight: 650; }
+.results-board #desk-trend-detail :is(small,footer) { color: var(--text-secondary); font-size: 13px; }
+.results-board #desk-trend-detail footer { padding-top: 8px; }
+.results-board :is(#focused-race-content,#night-drawer) { overflow-anchor: none; }
+.results-board[data-theme-preset="nyt-results"] :is(#focused-race-title,.appearance-dialog h2) {
+  font-family: Georgia, 'Times New Roman', serif;
+}

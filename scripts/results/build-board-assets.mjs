@@ -12,9 +12,10 @@ export function buildBoardAssets(root = process.cwd()) {
   const manifest = {
     version: 2,
     precision: 4,
-    note: "Display geometry rounded to four decimals. National House topology retains the top 20% of weighted arc points; selected-race county geometry and original sources remain unchanged. Not a district-baseline certification.",
+    note: "Display geometry rounded to four decimals. National House topology retains the top 5% of weighted arc points; selected-race county geometry and original sources remain unchanged. Not a district-baseline certification.",
     counties: {},
   };
+  try { manifest.municipalities=JSON.parse(readFileSync(resolve(root,'data/results/map-assets.json'))).municipalities; } catch {}
   const read = (file) => JSON.parse(readFileSync(resolve(root, file), "utf8"));
   const round = (value) =>
     Array.isArray(value)
@@ -46,7 +47,8 @@ export function buildBoardAssets(root = process.cwd()) {
   const originalHouse = compact(read("data/house-districts-119.geojson"));
   const weighted = presimplify(topology({ districts: originalHouse }));
   const displayHouse = quantize(
-    simplify(weighted, quantile(weighted, 0.8)),
+    // topojson-simplify quantiles sort DESCENDING: .05 retains the top 5%.
+    simplify(weighted, quantile(weighted, 0.05)),
     1e6,
   );
   const decoded = feature(displayHouse, displayHouse.objects.districts);

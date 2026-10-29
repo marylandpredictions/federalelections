@@ -49,7 +49,6 @@ const CHAMBER_CONFIG = {
   senate: { total: 100, majority: 51, unit: "seats" }
 };
 
-const NON_COUNTY_REPORTING_STATES = new Set(["ME", "VT", "MA", "CT", "RI", "NH"]);
 const SENATE_NOT_UP_BY_PARTY = { D: 34, R: 31 };
 const GOVERNOR_NOT_UP_BY_PARTY = { D: 8, R: 6 };
 
@@ -350,6 +349,11 @@ function countyLookupForElectionNight(race) {
     lookup.set(String(cleanName).toLowerCase(), county);
     lookup.set(regionLookupKey(county.name), county);
     lookup.set(regionLookupKey(cleanName), county);
+    if (/^(town|city|municipality|township|minor civil division|cousub)$/i.test(county.type || '')) {
+      const key = 'local:' + regionLookupKey(String(county.name || '').replace(/\s+(town|city|township)$/i,''));
+      // Repeated names require an exact GEOID, never an arbitrary name join.
+      lookup.set(key, lookup.has(key) ? null : county);
+    }
   }
   return lookup;
 }
@@ -369,6 +373,8 @@ function featureCountyFipsForElectionNight(feature) {
 
 function countyForFeature(feature, lookup) {
   const props = feature?.properties || {};
+  if (props.localType === 'municipality')
+    return lookup.get(featureCountyFipsForElectionNight(feature)) || lookup.get('local:' + regionLookupKey(String(props.NAME || '').replace(/\s+(town|city|township)$/i,''))) || null;
   const countyName = props.countyName || props.NAME || "";
   const cleanName = cleanCountyName(countyName);
   return lookup.get(featureCountyFipsForElectionNight(feature))
@@ -954,8 +960,13 @@ class ElectionNightPage {
     window.addEventListener("resize", () => {
       window.clearTimeout(this.resizeTimer);
       this.resizeTimer = window.setTimeout(async () => {
-        if (this.currentRace) await this.selectRace(this.currentRace,null,{preserveMapTransform:false});
-        else await this.renderMap();
+        const size = this.mapDimensions();
+        // Ignore mobile browser chrome/keyboard height changes: these are not a
+        // request to reset the user's map. Real width changes retain its view.
+        if (this.renderedMapSize?.width === size.width && Math.abs(this.renderedMapSize.height - size.height) < 120) return;
+        const transform = this.currentTransform();
+        if (this.currentRace) await this.selectRace(this.currentRace,null,{preserveMapTransform:true});
+        else { await this.renderMap(); this.applyTransform(transform, 0); }
       },180);
     });
     window.addEventListener("keydown", (event) => {
@@ -1552,7 +1563,7 @@ class ElectionNightPage {
     this.stateFeatures = stateFeatures;
 
     const {width,height} = this.mapDimensions();
-    const projection = d3.geoAlbersUsa().fitExtent(this.mapExtent(width,height), {
+    const projection = FEANight.fitRenderedGeometry(d3.geoAlbersUsa(),this.mapExtent(width,height), {
       type: "FeatureCollection",
       features: this.stateFeatures
     });
@@ -1607,7 +1618,7 @@ class ElectionNightPage {
     this.ensureAllHouseRacesFromGeometry();
 
     const {width,height} = this.mapDimensions();
-    const projection = d3.geoAlbersUsa().fitExtent(this.mapExtent(width,height), this.geo);
+    const projection = FEANight.fitRenderedGeometry(d3.geoAlbersUsa(),this.mapExtent(width,height), this.geo);
     this.path = d3.geoPath(projection);
     const raceByDistrict = new Map(this.modeRaces().map((race) => [houseGeometryId(race), race]));
 
@@ -1646,6 +1657,7 @@ class ElectionNightPage {
   }
 
   createSvg(container, width, height) {
+    this.renderedMapSize = {width, height};
     container.innerHTML = "";
     this.svg = d3.select(container)
       .append("svg")
@@ -1655,11 +1667,14 @@ class ElectionNightPage {
 
     this.viewport = this.svg.append("g").attr("class", "election-map-viewport");
     this.zoom = d3.zoom()
-      .scaleExtent([0.85, 90])
+      .scaleExtent([0.2, 90])
+      .on("start", () => { this.svg.classed("map-moving", true); this.hideTooltip(); })
       .on("zoom", (event) => {
         this.viewport.attr("transform", event.transform);
-        const labelScale = Math.max(0.38, Math.min(1, 1 / Math.sqrt(event.transform.k)));
-        this.viewport.selectAll(".map-background-city").style("font-size", `${10 * labelScale * Math.min(2,Math.max(1,width/1920))}px`);
+      })
+      .on("end", (event) => {
+        this.svg.classed("map-moving", false);
+        this.viewport.selectAll(".map-background-city").style("font-size", `${10 * Math.min(2,Math.max(1,width/1920)) / event.transform.k}px`);
         this.queueNightLabels?.();
       });
     this.svg.call(this.zoom);
@@ -1727,6 +1742,7 @@ class ElectionNightPage {
     const previousTransform = options.preserveMapTransform ? this.currentTransform() : null;
     this.renderFocusedRace(race);
     const renderedDetail = await this.renderSelectedRaceMap(race, options);
+    if (this.currentRace?.id !== race.id) return;
     if (renderedDetail && previousTransform) this.applyTransform(previousTransform, 0);
     if (renderedDetail) return;
     if (feature && this.path && this.zoom && this.svg) this.zoomToFeature(feature);
@@ -1760,7 +1776,8 @@ class ElectionNightPage {
 
     const state = String(detail?.state || race?.state || "").toUpperCase();
     const statewideSource = detail || race;
-    if (!this.isStatewideRace(statewideSource) || NON_COUNTY_REPORTING_STATES.has(state)) return false;
+    if (!this.isStatewideRace(statewideSource)) return false;
+    const localReporting = allFeatures[0]?.properties?.localType === 'municipality';
     const counties = (detail?.counties || []).filter((county) => {
       const type = String(county.type || "County").toLowerCase();
       return type === "county" && county.candidates?.length;
@@ -1770,7 +1787,7 @@ class ElectionNightPage {
     const features = allFeatures.filter((feature) => featureStateFipsForElectionNight(feature) === stateFips);
     if (!features.length) return false;
 
-    this.renderCountyDetailMap(counties.length ? detail : race, features, { preserveMapTransform: options.preserveMapTransform });
+    this.renderCountyDetailMap((counties.length || localReporting) ? (detail || race) : race, features, { preserveMapTransform: options.preserveMapTransform });
     return true;
   }
 
@@ -1797,7 +1814,7 @@ class ElectionNightPage {
       ? this.geo.features.filter((feature) => String(feature.properties?.id || "").startsWith(`${selectedState}-`))
       : [];
     const baseCollection = selectedCollection;
-    const projection = d3.geoAlbersUsa().fitExtent([[34, 34], [width - 34, height - 34]], baseCollection);
+    const projection = FEANight.fitRenderedGeometry(d3.geoAlbersUsa(),[[34, 34], [width - 34, height - 34]], baseCollection);
     this.path = d3.geoPath(projection);
     if (this.isLabPage) this.seedFeatureCounties(race, features, Number(race.expectedVotePercent || 18) || 18);
     const lookup = countyLookupForElectionNight(race);
@@ -2019,76 +2036,25 @@ class ElectionNightPage {
       const k=Math.min((right-left)/dx,(bottom-top)/dy);
       return d3.zoomIdentity.translate(left+(right-left-dx*k)/2-bounds.x0*k,top+(bottom-top-dy*k)/2-bounds.y0*k).scale(k);
     }
-    const raceBox = {
-      left: bounds.x0 * transform.k + transform.x,
-      right: bounds.x1 * transform.k + transform.x,
-      top: bounds.y0 * transform.k + transform.y,
-      bottom: bounds.y1 * transform.k + transform.y
-    };
-    const overlapX = Math.min(raceBox.right, panelBox.right) - Math.max(raceBox.left, panelBox.left);
-    const overlapY = Math.min(raceBox.bottom, panelBox.bottom) - Math.max(raceBox.top, panelBox.top);
-    const meaningfulOverlap = overlapX > 12 && overlapY > 12;
-    const clearance = 34;
-    const pad = Number.isFinite(options.pad) ? options.pad : 42;
-    let dx = 0;
-    let dy = 0;
-
-    const panelOnRight = (panelBox.left + panelBox.right) / 2 >= viewBox.width / 2;
-    const panelOnBottom = (panelBox.top + panelBox.bottom) / 2 >= viewBox.height / 2;
-    const protectedRight = panelOnRight ? panelBox.left - clearance : viewBox.width - pad;
-    const protectedLeft = panelOnRight ? pad : panelBox.right + clearance;
-    const protectedBottom = panelOnBottom ? panelBox.top - clearance : viewBox.height - pad;
-    const protectedTop = panelOnBottom ? pad : panelBox.bottom + clearance;
-
-    const raceWidth = raceBox.right - raceBox.left;
-    const raceHeight = raceBox.bottom - raceBox.top;
-    const horizontalClearanceNeeded = meaningfulOverlap || raceBox.right > protectedRight || raceBox.left < protectedLeft;
-    const verticalClearanceNeeded = meaningfulOverlap && (raceBox.bottom > protectedBottom || raceBox.top < protectedTop);
-
-    if (raceWidth < Math.max(120, protectedRight - protectedLeft) && horizontalClearanceNeeded) {
-      if (panelOnRight && raceBox.right > protectedRight) dx = protectedRight - raceBox.right;
-      if (!panelOnRight && raceBox.left < protectedLeft) dx = protectedLeft - raceBox.left;
-    }
-    if (raceHeight < Math.max(120, protectedBottom - protectedTop) && verticalClearanceNeeded) {
-      if (panelOnBottom && raceBox.bottom > protectedBottom) dy = protectedBottom - raceBox.bottom;
-      if (!panelOnBottom && raceBox.top < protectedTop) dy = protectedTop - raceBox.top;
-    }
-
-    if (!dx && !dy && meaningfulOverlap) {
-      const panelCenterX = (panelBox.left + panelBox.right) / 2;
-      const raceCenterX = (raceBox.left + raceBox.right) / 2;
-      const panelCenterY = (panelBox.top + panelBox.bottom) / 2;
-      const raceCenterY = (raceBox.top + raceBox.bottom) / 2;
-      if (overlapX >= overlapY * .75 || panelRect.width > panelRect.height) {
-        dx = panelCenterX >= raceCenterX
-          ? panelBox.left - raceBox.right - clearance
-          : panelBox.right - raceBox.left + clearance;
-      } else {
-        dy = panelCenterY >= raceCenterY
-          ? panelBox.top - raceBox.bottom - clearance
-          : panelBox.bottom - raceBox.top + clearance;
-      }
-    }
-
-    const candidate = {
-      left: raceBox.left + dx,
-      right: raceBox.right + dx,
-      top: raceBox.top + dy,
-      bottom: raceBox.bottom + dy
-    };
-    const availableWidth = viewBox.width - pad * 2;
-    const availableHeight = viewBox.height - pad * 2;
-    if ((candidate.right - candidate.left) <= availableWidth) {
-      if (candidate.left < pad) dx += pad - candidate.left;
-      if (candidate.right > viewBox.width - pad) dx -= candidate.right - (viewBox.width - pad);
-    }
-    if ((candidate.bottom - candidate.top) <= availableHeight) {
-      if (candidate.top < pad) dy += pad - candidate.top;
-      if (candidate.bottom > viewBox.height - pad) dy -= candidate.bottom - (viewBox.height - pad);
-    }
-
-    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) return transform;
-    return d3.zoomIdentity.translate(transform.x + dx, transform.y + dy).scale(transform.k);
+    const pad = Number.isFinite(options.pad) ? options.pad : 24;
+    const header = document.querySelector('.board-top-controls')?.getBoundingClientRect();
+    const controls = document.querySelector('.election-map-controls')?.getBoundingClientRect();
+    const frame = {left:pad, right:viewBox.width-pad,
+      top:Math.max(pad, ((header?.bottom || 68)-svgRect.top)*scaleY+12),
+      bottom:Math.min(viewBox.height-pad, ((controls?.top || svgRect.bottom)-svgRect.top)*scaleY-12)};
+    const width=Math.max(1,bounds.x1-bounds.x0),height=Math.max(1,bounds.y1-bounds.y0);
+    const raceBox={left:bounds.x0*transform.k+transform.x,right:bounds.x1*transform.k+transform.x,top:bounds.y0*transform.k+transform.y,bottom:bounds.y1*transform.k+transform.y};
+    const overlaps = raceBox.left<panelBox.right+16 && raceBox.right>panelBox.left-16 && raceBox.top<panelBox.bottom+16 && raceBox.bottom>panelBox.top-16;
+    if(!overlaps && raceBox.left>=frame.left && raceBox.right<=frame.right && raceBox.top>=frame.top && raceBox.bottom<=frame.bottom)return transform;
+    const spaces=[{...frame,right:Math.min(frame.right,panelBox.left-20)},
+      {...frame,left:Math.max(frame.left,panelBox.right+20)},
+      {...frame,bottom:Math.min(frame.bottom,panelBox.top-20)},
+      {...frame,top:Math.max(frame.top,panelBox.bottom+20)}]
+      .filter(r=>r.right-r.left>=80 && r.bottom-r.top>=60)
+      .map(r=>({...r,k:Math.min(transform.k,(r.right-r.left)/width,(r.bottom-r.top)/height)}))
+      .sort((a,b)=>b.k-a.k);
+    const box=spaces[0] || {...frame,k:Math.min((frame.right-frame.left)/width,(frame.bottom-frame.top)/height)};
+    return d3.zoomIdentity.translate((box.left+box.right-width*box.k)/2-bounds.x0*box.k,(box.top+box.bottom-height*box.k)/2-bounds.y0*box.k).scale(box.k);
   }
 
   currentTransform() {

@@ -151,7 +151,7 @@ export function parseNbcResults(data, source, catalogue, {onInvalid}={}) {
       counties: (raw.areas || []).map((a) => ({
         name: String(a.name || ""),
         type: a.areaType || "County",
-        fips: /^\d{5}$/.test(String(a.fips || "")) ? String(a.fips) : "",
+        fips: /^(?:\d{5}|\d{10})$/.test(String(a.fips || a.geoid || "")) ? String(a.fips || a.geoid) : "",
         estimatedVoteReporting: percent(a.percentIn),
         percentReporting: percent(a.precinctsReportingPercent),
         candidates: (a.candidates || []).map(candidate),

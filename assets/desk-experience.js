@@ -396,7 +396,7 @@ window.FEACompleteBoard = function (Page) {
       if (target) {
         for (const n of nodes) n.setAttribute("tabindex", "-1");
         target.setAttribute("tabindex", "0");
-        target.focus();
+        target.focus({preventScroll:true});
       }
       this.trendFocusLabel = null;
     }
@@ -516,6 +516,7 @@ window.FEACompleteBoard = function (Page) {
   p.renderPins = function () {
     const tray = document.getElementById("desk-pins");
     if (!tray) return;
+    const trayScroll = tray.scrollLeft;
     const active = tray.contains(document.activeElement)
         ? document.activeElement
         : null,
@@ -547,10 +548,14 @@ window.FEACompleteBoard = function (Page) {
             (focusId ? n.dataset.pinOpen : n.dataset.unpin) ===
             (focusId || removeId),
         );
-      target?.focus();
+      target?.focus({preventScroll:true});
     }
+    tray.scrollLeft = trayScroll;
   };
   p.renderFocusedRace = function (race) {
+    const viewKey = `${race?.id}:${this.focusedPanelTab}:${this.lockedCounty || ''}`;
+    const viewContent = document.getElementById("focused-race-content");
+    const savedScroll = this.completedViewKey === viewKey ? viewContent.scrollTop : 0;
     if (document.activeElement?.classList.contains("trend-point"))
       this.trendFocusLabel = document.activeElement.getAttribute("aria-label");
     const content = document.getElementById("focused-race-content"),
@@ -606,11 +611,13 @@ window.FEACompleteBoard = function (Page) {
           const ordered = [...(c.candidates || [])].sort(
             (a, b) => b.votes - a.votes,
           );
-          button.innerHTML = `<span>${esc(c.name)}<small>${esc(FEADesk.total(c) ? ordered[0]?.name : "Awaiting results")}</small></span><strong>${FEADesk.total(c).toLocaleString()}<small>${Number.isFinite(deskLeaderMargin(c)) ? "+" + deskLeaderMargin(c).toFixed(1) + " pts" : ""}${c.estimatedVoteReporting != null ? " · " + Number(c.estimatedVoteReporting).toFixed(0) + "% in" : ""}</small></strong>`;
+          button.innerHTML = `<span>${esc(c.name)}<small>${esc(FEADesk.total(c) ? ordered[0]?.name : "Awaiting results")}</small></span><strong>${FEADesk.total(c) ? FEADesk.total(c).toLocaleString() : '—'}<small>${Number.isFinite(deskLeaderMargin(c)) ? "+" + deskLeaderMargin(c).toFixed(1) + " pts" : ""}${c.estimatedVoteReporting != null ? " · " + Number(c.estimatedVoteReporting).toFixed(0) + "% in" : ""}</small></strong>`;
           list.append(button);
         }
       }
     }
+    viewContent.scrollTop = savedScroll;
+    this.completedViewKey = viewKey;
     if (
       T.current.motion !== "reduced" &&
       !matchMedia("(prefers-reduced-motion: reduce)").matches

@@ -406,7 +406,7 @@ async function handleLiveResults(request, response, url) {
 async function handleLiveResultRace(request, response, url) {
   if(request.method!=="GET"){sendJson(response,405,{error:"Method not allowed"});return;}
   const id=url.searchParams.get("id"),fips=url.searchParams.get("county");
-  if(!isValidRaceId(id) || (fips && !/^\d{5}$/.test(fips))){sendJson(response,400,{error:"Invalid race or county"});return;}
+  if(!isValidRaceId(id) || (fips && !/^(?:\d{5}|\d{10})$/.test(fips))){sendJson(response,400,{error:"Invalid race or county"});return;}
   await currentPublicResults();
   const race=resultsFeed.current.races.get(id);
   if(!race){sendJson(response,404,{error:"Unknown race"});return;}

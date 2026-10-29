@@ -1,7 +1,7 @@
 {
   "version": 2,
   "precision": 4,
-  "note": "Display geometry rounded to four decimals. National House topology retains the top 20% of weighted arc points; selected-race county geometry and original sources remain unchanged. Not a district-baseline certification.",
+  "note": "Display geometry rounded to four decimals. National House topology retains the top 5% of weighted arc points; selected-race county geometry and original sources remain unchanged. Not a district-baseline certification.",
   "counties": {
     "10": "data/results/maps/counties-10.dbd268f3141a.json.gz",
     "11": "data/results/maps/counties-11.ec275972016e.json.gz",
@@ -56,7 +56,7 @@
     "09": "data/results/maps/counties-09.eb742a7beae3.json.gz"
   },
   "states": "data/results/maps/states.c418eb7842b5.json.gz",
-  "house": "data/results/maps/house.48f84a149262.json.gz",
+  "house": "data/results/maps/house.39b3c34b1197.json.gz",
   "highways": "data/results/maps/highways-national.f05b58f1ab30.json.gz",
   "highwaysByState": {
     "ME": "data/results/maps/highways-ME.59afb9d40bed.json.gz",
@@ -67,5 +67,49 @@
     "NM": "data/results/maps/highways-NM.193575daf563.json.gz",
     "MT": "data/results/maps/highways-MT.565cd7aae624.json.gz",
     "SC": "data/results/maps/highways-SC.1fee46363def.json.gz"
+  },
+  "municipalities": {
+    "23": {
+      "path": "data/results/maps/municipalities-23.54e26031cade.json.gz",
+      "state": "ME",
+      "count": 529,
+      "source": "https://www2.census.gov/geo/tiger/GENZ2025/shp/cb_2025_23_cousub_500k.zip",
+      "vintage": 2025
+    },
+    "25": {
+      "path": "data/results/maps/municipalities-25.7f769bf6ba5c.json.gz",
+      "state": "MA",
+      "count": 351,
+      "source": "https://www2.census.gov/geo/tiger/GENZ2025/shp/cb_2025_25_cousub_500k.zip",
+      "vintage": 2025
+    },
+    "33": {
+      "path": "data/results/maps/municipalities-33.28d2f7a384d9.json.gz",
+      "state": "NH",
+      "count": 259,
+      "source": "https://www2.census.gov/geo/tiger/GENZ2025/shp/cb_2025_33_cousub_500k.zip",
+      "vintage": 2025
+    },
+    "44": {
+      "path": "data/results/maps/municipalities-44.71e79bc56260.json.gz",
+      "state": "RI",
+      "count": 39,
+      "source": "https://www2.census.gov/geo/tiger/GENZ2025/shp/cb_2025_44_cousub_500k.zip",
+      "vintage": 2025
+    },
+    "50": {
+      "path": "data/results/maps/municipalities-50.8e911452e757.json.gz",
+      "state": "VT",
+      "count": 256,
+      "source": "https://www2.census.gov/geo/tiger/GENZ2025/shp/cb_2025_50_cousub_500k.zip",
+      "vintage": 2025
+    },
+    "09": {
+      "path": "data/results/maps/municipalities-09.659840493ab3.json.gz",
+      "state": "CT",
+      "count": 169,
+      "source": "https://www2.census.gov/geo/tiger/GENZ2025/shp/cb_2025_09_cousub_500k.zip",
+      "vintage": 2025
+    }
   }
 }

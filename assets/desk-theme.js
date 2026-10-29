@@ -121,7 +121,7 @@
       "panel-border": "#627b9b",
       "text-primary": "#102b50",
       "text-secondary": "#3d526c",
-      "text-muted": "#52647b",
+      "text-muted": "#43556b",
       "state-border": "#ffffff",
       "district-border": "#ffffff",
       selection: "#ffce00",
@@ -129,6 +129,15 @@
       watch: "#ffce00",
       tossup: "#ffce00",
       "chart-line": "#174b91",
+    }),
+    make("nyt-results", "NYT Results", "light", "#333333", {
+      D: "#2676bc", R: "#d84040", I: "#8872a8", O: "#a5792a",
+    }, {
+      "board-bg": "#f7f7f5", "map-bg": "#f7f7f5", "map-neutral": "#d8d8d4",
+      "panel-bg": "#ffffff", "panel-raised": "#f1f1ee", "panel-border": "#8b8b85",
+      "text-primary": "#151515", "text-secondary": "#41413d", "text-muted": "#55554f",
+      "state-border": "#ffffff", "district-border": "#ffffff", "county-border": "#6b6b66",
+      focus: "#222222", selection: "#725600", "chart-line": "#333333",
     }),
   ];
   function mix(a, b, t) {
@@ -277,6 +286,7 @@
       document.documentElement.dataset.theme = resolved.mode;
       document.body.style.colorScheme = resolved.mode;
       document.body.dataset.motion = current.motion;
+      document.body.dataset.themePreset = current.id;
       for (const [k, v] of Object.entries(resolved.tokens))
         document.body.style.setProperty("--" + k, v);
       for (const [k, v] of Object.entries(resolved.partyColors)) {

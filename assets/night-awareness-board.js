@@ -435,6 +435,10 @@ window.FEANightAwareness = function (Page) {
         });
       const drawer = document.getElementById("night-drawer");
       if (drawer.hidden) return;
+      const drawerKey = [this.selectedMode,this.activity.sequence,this.activity.items.length,this.activityWindow,this.resultsVersion,Math.floor(now/30000)].join(':');
+      if (this.lastDrawerKey === drawerKey) return;
+      this.lastDrawerKey = drawerKey;
+      const drawerScroll = drawer.scrollTop;
       const active = document.activeElement?.dataset?.activityKey;
       const button = (id, text, key = "", county = "") =>
         `<button type="button" data-activity-race="${esc(id)}" data-activity-key="${esc(key)}" ${county ? `data-county="${esc(county)}"` : ""}>${text}</button>`;
@@ -510,7 +514,8 @@ window.FEANightAwareness = function (Page) {
       if (active)
         drawer
           .querySelector(`[data-activity-key="${CSS.escape(active)}"]`)
-          ?.focus();
+          ?.focus({preventScroll:true});
+      drawer.scrollTop = drawerScroll;
     });
   };
   p.nightMargin = (r) => {
@@ -656,6 +661,15 @@ window.FEANightAwareness = function (Page) {
   p.updateNightLabels = function () {
     safe(() => {
       if (!this.viewport || !this.svg || !this.path) return;
+      const projection = this.path.projection();
+      if (this.labelProjection !== projection) {
+        this.labelProjection = projection;
+        this.labelAnchors = new WeakMap();
+      }
+      const anchor = f => {
+        if (!this.labelAnchors.has(f)) this.labelAnchors.set(f, N.projectedAnchor(f, projection));
+        return this.labelAnchors.get(f);
+      };
       this.viewport.selectAll(".night-geo-labels").remove();
       const transform = this.currentTransform(),
         k = transform.k,
@@ -682,7 +696,6 @@ window.FEANightAwareness = function (Page) {
             county &&
             featureCountyFipsForElectionNight(f) === this.lockedCounty;
           if (
-            (county && k < 3 && !locked) ||
             (house && k < 2.5) ||
             (!county && !house && k > 9)
           )
@@ -692,10 +705,12 @@ window.FEANightAwareness = function (Page) {
               : house
                 ? id
                 : state,
-            point = this.path.centroid(f);
-          if (!text || !point.every(Number.isFinite)) return;
-          const bounds = this.path.bounds(f);
-          if (county && !locked && (bounds[1][0] - bounds[0][0]) * k < 65)
+            point = anchor(f);
+          if (!text || !point?.every(Number.isFinite)) return;
+          const sx=point[0]*k+transform.x, sy=point[1]*k+transform.y;
+          if(sx < -30 || sx > innerWidth+30 || sy < -30 || sy > innerHeight+30)return;
+          const width = nodes[i].getBoundingClientRect().width;
+          if (county && !locked && width < 65)
             return;
           rows.push({
             id: "geo-" + i,
@@ -714,11 +729,9 @@ window.FEANightAwareness = function (Page) {
           });
         });
       for (const [state, features] of stateFeatures) {
-        const point = this.path.centroid({
-          type: "FeatureCollection",
-          features,
-        });
-        if (point.every(Number.isFinite))
+        const stateFeature = (this.stateFeatures || []).find(f => FIPS_TO_STATE[featureStateFipsForElectionNight(f)] === state);
+        const point = stateFeature ? anchor(stateFeature) : anchor(features[0]);
+        if (point?.every(Number.isFinite))
           rows.push({
             id: "state-" + state,
             text: state,

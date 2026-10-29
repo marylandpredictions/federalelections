@@ -215,6 +215,39 @@
       (_, i) => points[Math.round((i * (points.length - 1)) / (limit - 1))],
     );
   }
+  // Use the largest projected exterior, independent of spherical ring winding.
+  // geoPath.centroid can choose the complement for GeoJSON-oriented polygons.
+  function projectedAnchor(feature, projection) {
+    const geometry = feature?.geometry;
+    const polygons = geometry?.type === "Polygon" ? [geometry.coordinates]
+      : geometry?.type === "MultiPolygon" ? geometry.coordinates : [];
+    let best = null;
+    for (const polygon of polygons) {
+      const points = (polygon[0] || []).map(projection).filter(p => p?.every(Number.isFinite));
+      let area = 0, x = 0, y = 0;
+      for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+        const cross = points[j][0] * points[i][1] - points[i][0] * points[j][1];
+        area += cross; x += (points[j][0] + points[i][0]) * cross; y += (points[j][1] + points[i][1]) * cross;
+      }
+      if (Math.abs(area) > (best?.area || 1e-8))
+        best = {area: Math.abs(area), point: [x / (3 * area), y / (3 * area)]};
+    }
+    return best?.point || null;
+  }
+  function fitRenderedGeometry(projection, extent, collection) {
+    let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+    for(const feature of collection.features || [collection]) {
+      const g=feature.geometry,polygons=g?.type==='Polygon'?[g.coordinates]:g?.type==='MultiPolygon'?g.coordinates:[];
+      for(const polygon of polygons) for(const ring of polygon) for(const coordinate of ring) {
+        const p=projection(coordinate);if(!p?.every(Number.isFinite))continue;
+        x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);
+      }
+    }
+    if(!(x1>x0&&y1>y0))return projection;
+    const [[left,top],[right,bottom]]=extent, t=projection.translate();
+    const scale=Math.min((right-left)/(x1-x0),(bottom-top)/(y1-y0));
+    return projection.scale(projection.scale()*scale).translate([(left+right)/2-((x0+x1)/2-t[0])*scale,(top+bottom)/2-((y0+y1)/2-t[1])*scale]);
+  }
   function parseView(search) {
     const q = new URLSearchParams(search),
       out = {};
@@ -230,7 +263,7 @@
       ["results", "counties", "trends", "demographics"].includes(q.get("tab"))
     )
       out.tab = q.get("tab");
-    if (/^\d{5}$/.test(q.get("county") || "")) out.county = q.get("county");
+    if (/^(?:\d{5}|\d{10})$/.test(q.get("county") || "")) out.county = q.get("county");
     if (/^[a-z][\w-]{0,60}$/.test(q.get("lens") || ""))
       out.lens = q.get("lens");
     return out;
@@ -310,6 +343,8 @@
     closeGroups,
     sparkline,
     historyTargets,
+    projectedAnchor,
+    fitRenderedGeometry,
     parseView,
     viewUrl,
     panelPreset,

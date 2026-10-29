@@ -283,7 +283,7 @@ window.FEAEnhanceBoard = function (Page) {
     const fips = stateFipsForElectionNight(state || this.currentRace?.state);
     if (!fips) return [];
     if (!this.countyGeometries.has(fips)) {
-      const file = this.mapAssets?.counties?.[fips];
+      const file = this.mapAssets?.municipalities?.[fips]?.path || this.mapAssets?.counties?.[fips];
       this.countyGeometries.set(
         fips,
         file ? (await this.safeJson(file))?.features || [] : [],
@@ -683,6 +683,7 @@ window.FEAEnhanceBoard = function (Page) {
   p.renderCountyDetailMap = function (race, features, options = {}) {
     original.renderCounty.call(this, race, features, options);
     this.visibleCountyFeatures = features;
+    this.visibleLocalRace = features[0]?.properties?.localType === 'municipality' ? race.id : null;
     const countyLookup = countyLookupForElectionNight(race);
     for (const feature of features) {
       const county = countyForFeature(feature, countyLookup);
@@ -752,8 +753,7 @@ window.FEAEnhanceBoard = function (Page) {
   };
   p.panelData = function (race) {
     const detail = this.liveRaceDetails.get(race.id);
-    if (!detail) return race;
-    return race.version && detail.version !== race.version
+    const data = !detail ? race : race.version && detail.version !== race.version
       ? {
           ...detail,
           ...race,
@@ -762,6 +762,16 @@ window.FEAEnhanceBoard = function (Page) {
           watch: race.watch,
         }
       : { ...race, ...detail, watch: race.watch };
+    if (this.visibleLocalRace === race.id) {
+      const lookup = countyLookupForElectionNight(data);
+      return {...data, localReporting: true, counties: this.visibleCountyFeatures.map(feature => {
+        const row = countyForFeature(feature, lookup);
+        return row ? {...row, fips: featureCountyFipsForElectionNight(feature)} : {
+          name: feature.properties.NAME, fips: featureCountyFipsForElectionNight(feature), type:'Municipality', candidates:[],
+        };
+      })};
+    }
+    return data;
   };
   p.renderFocusedRace = function (race) {
     if (!race) return;
@@ -814,13 +824,13 @@ window.FEAEnhanceBoard = function (Page) {
       "demographics",
     ];
     if (!tabs.includes(this.focusedPanelTab)) this.focusedPanelTab = "results";
-    const tabbar = `<div class="desk-tabs" role="tablist" aria-label="Race information">${tabs.map((tab) => `<button role="tab" type="button" data-panel-tab="${tab}" aria-selected="${this.focusedPanelTab === tab}" aria-controls="desk-panel-view">${tab}</button>`).join("")}</div>`;
+    const tabbar = `<div class="desk-tabs" role="tablist" aria-label="Race information">${tabs.map((tab) => `<button role="tab" type="button" data-panel-tab="${tab}" aria-selected="${this.focusedPanelTab === tab}" aria-controls="desk-panel-view">${data.localReporting && tab === 'counties' ? 'Towns / cities' : tab}</button>`).join("")}</div>`;
     let body = "";
     if (this.focusedPanelTab === "results") body = this.resultsMarkup(data);
     if (this.focusedPanelTab === "counties")
       body = county
         ? this.countyMarkup(data, county)
-        : `<p class="desk-hint">Select a county on the map or below to keep its results open.</p><div class="county-list">${counties.map((c) => `<button type="button" data-county-fips="${esc(c.fips)}"><span>${esc(c.name)}</span><strong>${fmt(FEADesk.total(c))}</strong></button>`).join("")}</div>`;
+        : `<p class="desk-hint">Select a ${data.localReporting ? 'town or city' : 'county'} on the map or below to keep its results open.</p><div class="county-list">${counties.map((c) => `<button type="button" data-county-fips="${esc(c.fips)}"><span>${esc(c.name)}</span><strong>${FEADesk.total(c) ? fmt(FEADesk.total(c)) : '—'}</strong></button>`).join("")}</div>`;
     if (this.focusedPanelTab === "trends")
       body = `${county ? `<p>${esc(county.name)} · <button type="button" data-unlock-county>Clear county</button></p>` : ""}<label class="trend-mode-label">Chart <select data-trend-mode aria-label="Trend metric">${[
         ["total", "Total votes"],
@@ -834,7 +844,7 @@ window.FEAEnhanceBoard = function (Page) {
         )
         .join(
           "",
-        )}</select></label><div id="desk-trend-chart"></div><p id="desk-trend-detail" class="trend-detail" role="status"></p>`;
+        )}</select></label><div id="desk-trend-chart"></div><section id="desk-trend-detail" class="trend-detail" aria-label="Selected results update" role="status"></section>`;
     if (this.focusedPanelTab === "demographics")
       body =
         '<div id="desk-demographics"><p class="desk-hint">Loading Census estimates…</p></div>';
@@ -856,8 +866,8 @@ window.FEAEnhanceBoard = function (Page) {
         node.classList.add("number-updated");
     }
     if (focusKey)
-      content.querySelector(`[data-panel-tab="${focusKey}"]`)?.focus();
-    if (metricFocused) content.querySelector("[data-trend-mode]")?.focus();
+      content.querySelector(`[data-panel-tab="${focusKey}"]`)?.focus({preventScroll:true});
+    if (metricFocused) content.querySelector("[data-trend-mode]")?.focus({preventScroll:true});
     this.setFocusedUiState(true);
     if (!this.panelPositionedFor || this.panelPositionedFor !== race.id) {
       this.positionFocusPanelForRace(race);
@@ -959,6 +969,8 @@ window.FEAEnhanceBoard = function (Page) {
     )}${m.batchShares.length ? `<div class="vote-batch"><small>Votes added in latest update</small>${m.batchShares.map((c) => `<span>${esc(c.name)} <b>${percent(c.share)}</b></span>`).join("")}</div>` : ""}</details>${data.provider === "NBC" ? '<p class="race-attribution">Results via NBC News</p>' : ""}`;
   };
   p.countyMarkup = function (race, county) {
+    if (!FEADesk.total(county))
+      return `<div class="county-heading"><h3>${esc(county.name)}</h3><button type="button" data-unlock-county>Clear ${race.localReporting ? 'town / city' : 'county'}</button></div><p class="desk-hint">Awaiting ${race.localReporting ? 'local' : 'county'} results.</p>${county.candidates?.length ? this.candidateTable(county) : ''}`;
     const baseline =
       race.type !== "house"
         ? this.comparisonData
@@ -1142,10 +1154,16 @@ window.FEAEnhanceBoard = function (Page) {
             .x((p) => x(new Date(p.at)))
             .y((p) => y(s.value(p))),
         );
+    let described;
     const describe = (point) => {
+      if (described === point) return;
+      described = point;
+      this.trendInspectedAt = point.at;
       const total = FEADesk.total(point),
         m = FEADesk.metrics(point);
-      detail.textContent = `${time(point.at)} · ${fmt(total)} votes · ${point.candidates.map((c) => `${c.name}: ${fmt(c.votes)} (${percent(total ? (c.votes / total) * 100 : null)})`).join(" · ")}${m.margin !== null ? ` · Margin ${signed(m.margin)}` : ""}${point.expectedVotePercent != null ? ` · Expected vote ${percent(point.expectedVotePercent)}` : ""}`;
+      const scroll = document.getElementById('focused-race-content').scrollTop;
+      detail.innerHTML = `<header><strong>${esc(time(point.at))}</strong><span>${fmt(total)} votes</span></header><ul>${point.candidates.map(c => `<li><span>${esc(c.name)}</span><strong>${fmt(c.votes)} <small>${percent(total ? c.votes / total * 100 : null)}</small></strong></li>`).join('')}</ul><footer>${m.margin !== null ? `<span>Margin ${signed(m.margin)}</span>` : ''}${point.expectedVotePercent != null ? `<span>${percent(point.expectedVotePercent)} expected vote in</span>` : ''}</footer>`;
+      document.getElementById('focused-race-content').scrollTop = scroll;
     };
     const targets=window.FEANight?.historyTargets(points)||points;
     svg
@@ -1184,7 +1202,7 @@ window.FEAEnhanceBoard = function (Page) {
         );
         describe(nearest);
       });
-    describe(points.at(-1));
+    describe(points.find(p => p.at === this.trendInspectedAt) || points.at(-1));
   };
   p.renderDemographics = async function () {
     const race = this.currentRace,
