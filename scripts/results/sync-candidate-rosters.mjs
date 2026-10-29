@@ -116,7 +116,12 @@ const audit = {
   officialRaces: officialRows.map((r) => ({
     id: r.id,
     candidates: r.candidates.length,
+    sourceUrl:r.sourceUrl,
+    authority:r.verification?.authority||r.sourceName||'Louisiana Secretary of State',
+    checkedAt:r.verification?.checkedAt||r.checkedAt||r.sourceDate||official.retrievedAt,
   })),
+  secondaryReviewed:reviewedRows.length,
+  unverifiedByOffice:Object.fromEntries(['senate','governor','house'].map(type=>[type,catalogue.races.filter(r=>r.type===type&&!r.rosterVerified).map(r=>r.id)])),
   uncertifiedRaces: catalogue.races
     .filter((r) => !r.rosterVerified)
     .map((r) => ({ id: r.id, candidates: r.candidates.length })),

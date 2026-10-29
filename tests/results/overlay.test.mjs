@@ -51,9 +51,9 @@ test('Public and OBS cards share source/title/winner markup, escape names, and O
 });
 // Runs the real overlay controller against a small DOM/transport adapter.
 async function controller({preview=false}={}){
- const s=await scope(),nodes=new Map(),timers=new Map(),requests=[];let seq=0,fail=false,payload=full([race()]);
+ const s=await scope(),nodes=new Map(),timers=new Map(),intervals=new Map(),handlers=new Map(),requests=[];let seq=0,fail=false,payload=full([race()]);
  const node=id=>{if(!nodes.has(id))nodes.set(id,{innerHTML:'',textContent:'',style:{}});return nodes.get(id)};
- Object.assign(s,{URLSearchParams,AbortController,location:{search:preview?'?preview=1':''},sessionStorage:null,localStorage:null,window:{addEventListener(){}},document:{getElementById:node},setInterval:()=>++seq,clearInterval(){},setTimeout:(fn,ms)=>{const id=++seq;timers.set(id,{fn,ms});return id},clearTimeout:id=>timers.delete(id),FEADeskTheme:{read:()=>({current:{}}),presets:[{}],apply(){},candidateColor:()=> '#123456',resolved:{tokens:{warning:'#ffa500'}}}});
+ Object.assign(s,{URLSearchParams,AbortController,location:{search:preview?'?preview=1':''},sessionStorage:null,localStorage:null,window:{addEventListener(name,fn){assert.ok(!handlers.has(name));handlers.set(name,fn);}},document:{getElementById:node},setInterval:(fn,ms)=>{const id=++seq;intervals.set(id,{fn,ms});return id},clearInterval:id=>intervals.delete(id),setTimeout:(fn,ms)=>{const id=++seq;timers.set(id,{fn,ms});return id},clearTimeout:id=>timers.delete(id),FEADeskTheme:{read:()=>({current:{}}),presets:[{}],apply(){},candidateColor:()=> '#123456',resolved:{tokens:{warning:'#ffa500'}}}});
  s.fetch=async(url,options)=>{
   requests.push({url,options});if(fail==='timeout'&&url.startsWith('/api/'))return new Promise((_,reject)=>options.signal.addEventListener('abort',()=>reject(Error('timeout'))));if(fail&&url.startsWith('/api/'))throw Error('network down');
   const data=url==='/api/results-version'?{version:payload.version}:url.startsWith('/api/live-results')?payload:url==='/data/overlay-config.json'?{tickerItems:[]} : null;
@@ -61,7 +61,7 @@ async function controller({preview=false}={}){
  };
  vm.runInContext(await readFile('assets/call-overlay.js','utf8'),s);
  const settle=async()=>{for(let i=0;i<5;i++)await new Promise(resolve=>setImmediate(resolve));};await settle();
- return {nodes,requests,abort(){for(const t of timers.values())if(t.ms===12000)t.fn();},setPayload:p=>payload=p,setFailure:f=>fail=f,async tick(){const entry=[...timers.entries()].find(([,t])=>t.ms===15000);assert.ok(entry,'next refresh scheduled');timers.delete(entry[0]);await entry[1].fn();await settle();}};
+ return {nodes,requests,timers,intervals,handlers,abort(){for(const t of timers.values())if(t.ms===12000)t.fn();},setPayload:p=>payload=p,setFailure:f=>fail=f,async tick(){const entry=[...timers.entries()].find(([,t])=>t.ms===15000);assert.ok(entry,'next refresh scheduled');timers.delete(entry[0]);await entry[1].fn();await settle();}};
 }
 test('Real overlay transport retains last data on failure, recovers with deltas, retracts visibly and sends ETags',async()=>{
  const c=await controller();assert.match(c.nodes.get('broadcast-ticker-track').innerHTML,/UNCALLED/);
@@ -88,4 +88,14 @@ test('Overlay aborts a stalled request and schedules recovery without blanking d
  assert.match(c.nodes.get('broadcast-health').textContent,/Updates delayed/);
  assert.match(c.nodes.get('broadcast-ticker-track').innerHTML,/UNCALLED/);
  c.setFailure(false);await c.tick();assert.equal(c.nodes.get('broadcast-health').textContent,'');
+});
+test('Six accelerated hours of the actual OBS controller keep timers, intervals, event bindings and render targets bounded',async()=>{
+ const c=await controller(),nodeCount=c.nodes.size;
+ for(let i=0;i<1440;i++){
+  const row=race();row.candidates[0].votes+=i;
+  if(i%480<240)row.calls=[{candidate:'A',provider:'NBC',status:'projected',calledAt:new Date(1800000000000+i*15000).toISOString()}];
+  c.setPayload({version:'soak-'+i,races:[row]});c.setFailure(i>=700&&i<720);await c.tick();
+  assert.ok(c.timers.size<=2);assert.equal(c.intervals.size,2);assert.equal(c.handlers.size,1);assert.equal(c.nodes.size,nodeCount);assert.ok(c.nodes.get('broadcast-ticker-track').innerHTML.length<10000);
+ }
+ c.handlers.get('pagehide')();assert.equal(c.timers.size,0);assert.equal(c.intervals.size,0);
 });

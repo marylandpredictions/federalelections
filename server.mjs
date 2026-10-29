@@ -3,7 +3,7 @@ import { CountyHistory, resultSignature } from "./scripts/results/history.mjs";
 import { brotliCompressSync, gzipSync, gunzipSync, constants as zlibConstants } from "node:zlib";
 import { createServer } from "node:http";
 import { getResultsControl } from "./scripts/results/control.mjs";
-import {resultStorage} from './scripts/results/storage.mjs';
+import {resultStorage,assertStorageConfiguration} from './scripts/results/storage.mjs';
 import {readiness} from './scripts/results/readiness.mjs';
 import { createWriteStream } from "node:fs";
 import { mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
@@ -33,6 +33,7 @@ async function loadLocalEnv() {
 await loadLocalEnv();
 
 const root = resolve(process.cwd());
+assertStorageConfiguration(root,process.env.RESULTS_STORAGE_DIR);
 const port = Number(process.env.PORT || 8000);
 const contactTo = process.env.CONTACT_TO || "federalelectionsanalysis@gmail.com";
 const submissionsPath = resolve(root, "data", "contact-submissions.jsonl");

@@ -62,6 +62,7 @@ function fixture({
               party: "GOP",
               votes: 80,
               percentVote: 45,
+              isWinner: false,
             },
           ],
         },

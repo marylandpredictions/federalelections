@@ -3,9 +3,9 @@ name: Election results quality
 on:
   push:
     branches: [main]
-    paths: ['assets/**', 'data/results/**', 'data/election-night-races.json', 'data/results-provider.json', 'data/live-results*', 'data/live-results-races/**', 'scripts/results/**', 'scripts/generate-live-results.mjs', 'tests/results/**', '*results*.html', 'election-night.html', 'call-overlay.html', 'admin.html', 'server.mjs', 'render.yaml', 'package*.json', '.github/workflows/results-quality.yml']
+    paths: ['assets/**', 'data/results/**', 'data/election-night*.json', 'data/result-calls.json', 'data/overlay-config.json', 'data/results-provider.json', 'data/live-results*', 'data/live-results-races/**', 'scripts/results/**', 'scripts/generate-live-results.mjs', 'tests/results/**', '*results*.html', 'election-night.html', 'call-overlay.html', 'admin.html', 'server.mjs', 'render.yaml', 'package*.json', '.github/workflows/results-quality.yml']
   pull_request:
-    paths: ['assets/**', 'data/results/**', 'data/election-night-races.json', 'data/results-provider.json', 'data/live-results*', 'data/live-results-races/**', 'scripts/results/**', 'scripts/generate-live-results.mjs', 'tests/results/**', '*results*.html', 'election-night.html', 'call-overlay.html', 'admin.html', 'server.mjs', 'render.yaml', 'package*.json', '.github/workflows/results-quality.yml']
+    paths: ['assets/**', 'data/results/**', 'data/election-night*.json', 'data/result-calls.json', 'data/overlay-config.json', 'data/results-provider.json', 'data/live-results*', 'data/live-results-races/**', 'scripts/results/**', 'scripts/generate-live-results.mjs', 'tests/results/**', '*results*.html', 'election-night.html', 'call-overlay.html', 'admin.html', 'server.mjs', 'render.yaml', 'package*.json', '.github/workflows/results-quality.yml']
   workflow_dispatch:
 
 permissions:
@@ -27,4 +27,16 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run audit:results-candidates
-      - run: npm run test:results
+      - run: npm run test:results | tee results-tests.log
+      - run: npm run test:results-restart
+      - run: npm run certify:results -- --test-log results-tests.log
+        if: always()
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: election-results-certification
+          include-hidden-files: true
+          path: |
+            .runtime/results-certification.json
+            results-tests.log
+          if-no-files-found: warn

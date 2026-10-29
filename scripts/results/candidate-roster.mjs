@@ -95,6 +95,7 @@ export function mergeRoster(race, { official, reviewed, metadata = [] } = {}) {
     ...(official
       ? {
           rosterSource: official.sourceUrl,
+          ...(official.verification?{rosterVerification:Object.fromEntries(Object.entries(official.verification).filter(([key])=>key!=='candidates'))}:{}),
           electionFormat:
             race.state === "LA" && race.type === "house"
               ? "Open congressional primary"

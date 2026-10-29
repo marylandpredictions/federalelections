@@ -117,6 +117,8 @@ export function parseNbcResults(data, source, catalogue, {onInvalid}={}) {
         : null;
     if (field && !["isWinner", "winner"].includes(field))
       throw new Error("Unsupported projection field");
+    if(field&&!summary.candidates.every(c=>typeof c[field]==='boolean'))
+      throw Error('Verified projection state missing; absent flags cannot retract a public call');
     const winners = field
       ? summary.candidates.filter((c) => c[field] === true)
       : [];

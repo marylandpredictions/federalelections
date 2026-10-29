@@ -89,6 +89,20 @@ export function auditCandidateFiles(root = process.cwd()) {
     }
   }
   report.needsReview = new Set(report.issues.map((i) => i.race)).size;
+  report.secondaryReviewed=races.filter(r=>r.rosterReviewed&&!r.rosterIncomplete&&!r.rosterVerified).length;
+  report.emptyRosters=races.filter(r=>!r.candidates?.length).map(r=>r.id);
+  // This command audits local files; a missing live source is not zero mismatches.
+  report.providerMismatches={status:'NOT_TESTED',count:null,reason:'Requires activated provider samples; local snapshot identities checked separately.'};
+  let watch;try{watch=read('data/election-night-watchlist.json');}catch{watch={races:{}};}
+  const watchIds=new Set(Object.entries(watch.races||{}).filter(([,v])=>v.watch||v.tossup).map(([id])=>id));
+  report.unverified=Object.fromEntries(['senate','governor','house'].map(office=>[office,races.filter(r=>r.type===office&&!r.rosterVerified).map(r=>r.id)]));
+  report.unverified.watchTossup=races.filter(r=>!r.rosterVerified&&watchIds.has(r.id)).map(r=>r.id);
+  for(const race of sourceRows.filter(r=>r.verification)){
+    const v=race.verification;
+    if(v.status!=='OFFICIAL_SOURCE_VERIFIED'||v.electionDate!=='2026-11-03'||!v.authority||!v.scope||!Number.isFinite(Date.parse(v.checkedAt))||!/^https:\/\//.test(v.sourceUrl||'')||!/^[a-f0-9]{64}$/.test(v.sha256||'')||!Array.isArray(v.candidates)||v.candidates.length!==race.candidates.length)issue(race.id,'Official verification provenance is incomplete');
+    else if(v.candidates.some(c=>!c.ballotName||!race.candidates.some(r=>r.name===c.name&&(r.partyCode||r.party)===c.party)))issue(race.id,'Official verification identities or parties differ from the reviewed roster');
+  }
+  report.needsReview=new Set(report.issues.map(i=>i.race)).size;
   report.passed = !report.issues.length;
   return report;
 }

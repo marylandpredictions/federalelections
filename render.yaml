@@ -12,6 +12,10 @@ services:
     envVars:
       - key: RESULTS_STORAGE_DIR
         value: /var/data/election-results
+      - key: RESULTS_REQUIRE_PERSISTENCE
+        value: "1"
+      - key: RESULTS_EXPECTED_STORAGE_ROOT
+        value: /var/data/election-results
       - key: NODE_VERSION
         value: 22
       - key: HOST

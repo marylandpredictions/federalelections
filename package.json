@@ -84,7 +84,9 @@
     "run:sensitivity-experiments": "node scripts/run-sensitivity-experiments.mjs",
     "test:results": "node --test tests/results/*.test.mjs",
     "sync:results-candidates": "node scripts/results/sync-candidate-rosters.mjs",
-    "audit:results-candidates": "node scripts/results/audit-candidates.mjs"
+    "audit:results-candidates": "node scripts/results/audit-candidates.mjs",
+    "test:results-restart": "node --test tests/results/restart.test.mjs",
+    "certify:results": "node scripts/results/certification.mjs"
   },
   "dependencies": {
     "sharp": "^0.34.5"

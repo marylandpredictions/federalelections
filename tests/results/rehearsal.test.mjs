@@ -20,10 +20,10 @@ test('Candidate reconciliation refuses ambiguous names, conflicting suffixes, un
 test('Provider uses canonical reviewed identities for votes, counties and explicit calls; missing candidates are quarantined',()=>{
  const local={id:'senate-OH',type:'senate',state:'OH',rosterReviewed:true,candidates:roster.slice(0,2)};
  const source={projection:{verified:true,candidateFlag:'isWinner'},races:[{feaRaceId:local.id,providerRaceId:'1'}]};
- const raw={stateAbbr:'OH',electionDate:'2026-11-03',races:[{summary:{raceId:'1',officeName:'US Senate',candidates:[{name:'John Smith',party:'DEM',votes:55,isWinner:true},{name:'Bob Jones',party:'GOP',votes:45}]},areas:[{fips:'39001',name:'Adams',candidates:[{name:'John Smith',party:'DEM',votes:5}]}]}]};
+ const raw={stateAbbr:'OH',electionDate:'2026-11-03',races:[{summary:{raceId:'1',officeName:'US Senate',candidates:[{name:'John Smith',party:'DEM',votes:55,isWinner:true},{name:'Bob Jones',party:'GOP',votes:45,isWinner:false}]},areas:[{fips:'39001',name:'Adams',candidates:[{name:'John Smith',party:'DEM',votes:5}]}]}]};
  const r=parseNbcResults(raw,source,[local])[0];assert.equal(r.providerCall.candidate,roster[0].name);assert.equal(r.candidates[0].name,roster[0].name);assert.equal(r.counties[0].candidates[0].name,roster[0].name);
  raw.races[0].summary.candidates.pop();assert.throws(()=>parseNbcResults(raw,source,[local]),/roster incomplete/);
- const issues=[];assert.equal(parseNbcResults({...raw,races:[...raw.races,{summary:{raceId:'2',officeName:'US Senate',candidates:[{name:'Sam Proper',party:'DEM',votes:2}]}}]}, {...source,races:[...source.races,{feaRaceId:'senate-PA',providerRaceId:'2'}]},[local,{id:'senate-PA',state:'OH',type:'senate',candidates:[{name:'Sam Proper',party:'D'}]}],{onInvalid:i=>issues.push(i)}).length,1);
+ const issues=[];assert.equal(parseNbcResults({...raw,races:[...raw.races,{summary:{raceId:'2',officeName:'US Senate',candidates:[{name:'Sam Proper',party:'DEM',votes:2,isWinner:false}]}}]}, {...source,races:[...source.races,{feaRaceId:'senate-PA',providerRaceId:'2'}]},[local,{id:'senate-PA',state:'OH',type:'senate',candidates:[{name:'Sam Proper',party:'D'}]}],{onInvalid:i=>issues.push(i)}).length,1);
  assert.match(issues[0].reason,/roster incomplete/);
 });
 import {NbcProvider} from '../../scripts/results/nbc-provider.mjs';

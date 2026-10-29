@@ -1,10 +1,11 @@
-import { readFile, writeFile, rename, mkdir } from "node:fs/promises";
+import { readFile, writeFile, rename, mkdir,readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { NbcProvider } from "./nbc-provider.mjs";
-import { genericName } from "./candidate-roster.mjs";
+import { genericName,matchBallotCandidate } from "./candidate-roster.mjs";
 import { createHash } from "node:crypto";
 import { resultStorage } from './storage.mjs';
 import { auditRosters } from './roster-audit.mjs';
+import {readStateFile,validateCalls,validateRuntime} from './recovery.mjs';
 const numberSetting = (value, fallback, min) =>
   Number.isFinite(Number(value)) && Number(value) >= min
     ? Number(value)
@@ -77,9 +78,19 @@ export class ResultsControl {
       this.config={sources:[]};
     }
     this.provider ||= new NbcProvider(this.config);
-    this.calls = await json(this.storage.calls, await json(join(this.root, "data/result-calls.json"), {
-      races: {},
-    }));
+    // Read the committed envelope first: its matching calls are authoritative.
+    // Truncated runtime must fail clearly rather than publish the seed as zeros.
+    const savedRuntime=await readStateFile(this.storage.state,undefined);
+    this.runtime=validateRuntime(savedRuntime===undefined?{races:{},health:{},audit:[]}:savedRuntime);
+    if(this.runtime.committedCalls){
+      this.calls=structuredClone(this.runtime.committedCalls);
+      try{validateCalls(await readStateFile(this.storage.calls,{races:{}}));}
+      catch(error){this.recoveryWarning='Recovered matching calls from committed runtime envelope; repair the calls file before the next write.';console.error(JSON.stringify({event:'state-recovered',message:this.recoveryWarning}));}
+    }else this.calls=validateCalls(await readStateFile(this.storage.calls,await readStateFile(join(this.root,'data/result-calls.json'),{races:{}})));
+    if(savedRuntime===undefined&&this.storage.durable){
+      const details=await readdir(this.storage.details).catch(error=>{if(error.code==='ENOENT')return [];throw error;});
+      if(Object.keys(this.calls.races).some(id=>this.catalogue.some(r=>r.id===id))||details.some(p=>p.endsWith('.json')))throw Error('Runtime envelope missing but prior election state exists. Restore a private backup; refusing zero-result fallback.');
+    }
     this.calls.races ||= {};
     this.calls.automation ||= { paused: false };
     for (const [id, s] of Object.entries(this.calls.races))
@@ -93,11 +104,6 @@ export class ResultsControl {
         s.callState = nbc?'NBC_HELD':"MANUAL_FEA_CALL";
         if(nbc)s.attentionReason='Published NBC call restored from backup. Verify the live source before resuming automation.';
       }
-    this.runtime = await json(this.storage.state, {
-      races: {},
-      health: {},
-      audit: [],
-    });
     this.runtime.audit ||= [];
     this.runtime.races ||= {};
     this.runtime.health ||= {};
@@ -105,6 +111,16 @@ export class ResultsControl {
     if(this.runtime.committedCalls)this.calls=structuredClone(this.runtime.committedCalls);
     this.calls.races ||= {};
     this.calls.automation ||= {paused:false};
+    // Unknown recovered winners fail clearly; reviewed aliases preserve identities.
+    for(const local of this.catalogue){
+      const raw=this.runtime.races[local.id],state=this.calls.races[local.id];
+      if(raw)raw.candidates=raw.candidates.map(c=>matchBallotCandidate(c,local.candidates));
+      for(const call of state?.calls||[]){
+        try{call.candidate=matchBallotCandidate({name:call.candidate},local.candidates).name;}
+        catch(error){throw Error('Invalid saved call for '+local.id+': '+error.message);}
+      }
+      for(const call of [state?.providerCall,raw?.providerCall].filter(Boolean))call.candidate=matchBallotCandidate({name:call.candidate},local.candidates).name;
+    }
     for(const state of Object.values(this.calls.races))for(const call of state.calls||[])if(/^nbc-/.test(call.source||''))call.provider='NBC';
     this.commitVisibleState();
     return this;
@@ -156,6 +172,7 @@ export class ResultsControl {
     }
     this.commitVisibleState();
     this.persistenceError=null;
+    this.recoveryWarning=null;
     } catch(error) {
       if(this.persistenceError!==error.message)console.error(JSON.stringify({event:'persistence-write-failed',message:error.message}));
       this.persistenceError=error.message;
@@ -334,11 +351,12 @@ export class ResultsControl {
       .map(([, s]) => s);
     return {
       ...h,
-      stale: stale || !!h.quarantined?.length || !!this.persistenceError,
+      stale: stale || !!h.quarantined?.length || !!this.persistenceError || !!this.recoveryWarning,
       persistenceError:this.persistenceError || null,
       configurationError:this.configurationError || null,
+      recoveryWarning:this.recoveryWarning || null,
       status:
-        this.persistenceError ? 'STORAGE ERROR' : h.connection === "unavailable"
+        this.persistenceError || this.recoveryWarning ? 'STORAGE ERROR' : h.connection === "unavailable"
           ? "UNAVAILABLE"
           : h.connection === "failed"
             ? "CONNECTION FAILED"
@@ -349,7 +367,7 @@ export class ResultsControl {
                 : "CONNECTED",
       automation: state.calls.automation.paused
         ? "PAUSED"
-        : stale || this.persistenceError || h.connection !== "connected"
+        : stale || this.persistenceError || this.recoveryWarning || h.connection !== "connected"
           ? "DEGRADED"
           : "ACTIVE",
       pollSeconds: this.pollSeconds,

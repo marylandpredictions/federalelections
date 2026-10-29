@@ -1,4 +1,6 @@
-import { readFile, mkdir, writeFile, unlink, stat } from "node:fs/promises";
+import { readFile, mkdir, writeFile, unlink, stat,rename,access } from "node:fs/promises";
+import {constants} from 'node:fs';
+import {storageConfiguration} from './storage.mjs';
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { gunzipSync } from "node:zlib";
@@ -22,7 +24,7 @@ async function asset(root,path){
   const bytes=await readFile(join(root,path));
   return JSON.parse((path.endsWith('.gz')?gunzipSync(bytes):bytes).toString('utf8'));
 }
-export async function readiness(control, root) {
+export async function readiness(control, root, {storageEnvironment=process.env}={}) {
   const checks = [],
     add = (name, status, explanation) =>
       checks.push({ name, status, explanation });
@@ -97,6 +99,9 @@ export async function readiness(control, root) {
     }
   }
   const h = control.health();
+  if(h.recoveryWarning)add('State recovery','WARNING',h.recoveryWarning);
+  const storageConfig=storageConfiguration(root,control.storage.durable?control.storage.directory:undefined,storageEnvironment);
+  add('Storage configuration',storageConfig.issues.length?'FAIL':'PASS',storageConfig.issues.join(' ')||'No configuration-level ephemeral-path conflict detected; hosted durability remains unverified.');
   add(
     "Provider",
     h.stale ? "WARNING" : "PASS",
@@ -113,25 +118,28 @@ export async function readiness(control, root) {
     Object.keys(control.visible.runtime.races).length ? "PASS" : "WARNING",
     `${Object.keys(control.visible.runtime.races).length} provider races persisted. A real provider snapshot is still required if zero.`,
   );
-  let probe;
+  let probe,renamed;
   try {
     await mkdir(control.storage.directory, { recursive: true });
     for(const path of [control.storage.calls||join(control.storage.directory,'result-calls.json'),control.storage.state||join(control.storage.directory,'results-state.json')]){
-      try{if(!(await stat(path)).isFile())throw Error('Runtime target is not a file.');}catch(error){if(error.code!=='ENOENT')throw error;}
+      try{if(!(await stat(path)).isFile())throw Error('Runtime target is not a file.');await access(path,constants.R_OK|constants.W_OK);JSON.parse(await readFile(path,'utf8'));}catch(error){if(error.code!=='ENOENT')throw error;}
     }
     probe = join(control.storage.directory, ".readiness-" + randomUUID());
     await writeFile(probe, "write probe", { flag: "wx" });
     if(await readFile(probe,'utf8')!=='write probe')throw Error('Storage readback failed.');
-    await unlink(probe);
+    renamed=probe+'.renamed';await rename(probe,renamed);
+    if(await readFile(renamed,'utf8')!=='write probe')throw Error('Atomic rename readback failed.');
+    await unlink(renamed);
     add(
       "Storage writable",
       "PASS",
-      "Temporary write/readiness probe succeeded.",
+      "Temporary create, write, readback, atomic rename and deletion succeeded; existing state files are accessible.",
     );
-  } catch {
-    add("Storage writable", "FAIL", "Results storage is not writable.");
+  } catch(error) {
+    add("Storage writable", "FAIL", "Results storage probe failed: "+error.message);
   } finally {
     if(probe)await unlink(probe).catch(()=>{});
+    if(renamed)await unlink(renamed).catch(()=>{});
   }
   add(
     "Production persistence",
