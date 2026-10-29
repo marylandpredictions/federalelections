@@ -1,56 +1,6 @@
 {
-  "description": "Federal Elections Analysis published race calls and persistent election-night control state. NBC projections publish only through the configured grace/override workflow; manual FEA calls remain authoritative.",
-  "_howToUse": {
-    "fileToEdit": "data/result-calls.json",
-    "candidateNameRule": "Candidate names must match the candidate name in data/live-results.json exactly. Use raceIdGuide below to find the race, then copy the candidate name exactly.",
-    "singleWinnerExample": {
-      "races": {
-        "ga-sen-r-runoff-2026": {
-          "calls": [
-            {
-              "candidate": "Mike Collins",
-              "status": "projected",
-              "calledAt": "2026-06-16T21:15:00-04:00"
-            }
-          ]
-        }
-      }
-    },
-    "runoffOrPrimaryExample": {
-      "races": {
-        "al-sen-r-runoff-2026": {
-          "calls": [
-            {
-              "candidate": "Barry Moore",
-              "status": "winner",
-              "calledAt": "2026-06-16T21:30:00-05:00"
-            }
-          ]
-        }
-      }
-    },
-    "statusOptions": {
-      "winner": "Use for a final or certain single-winner call. Label shown: Winner.",
-      "projected": "Use for a single-winner projection before the result is final. Label shown: Projected winner.",
-      "advances": "Use for top-two/open-primary candidates who are projected to advance. Label shown: Advances.",
-      "advanced": "Use when a top-two/open-primary advance is final. Label shown: Advanced to general election."
-    },
-    "optionalLabel": "You can add a custom label field to any call if exact wording is needed.",
-    "optionalCalledAt": "Add calledAt in ISO format. The OBS overlay uses this to decide which call is newest.",
-    "obsOverlay": "For livestreams, add call-overlay.html as an OBS Browser Source. Suggested size: 1920x300, transparent background enabled. It checks this file automatically.",
-    "important": "Use the authenticated election-night admin for calls, holds and overrides. Do not manually add a candidate unless FEA is intentionally calling that race. Historical primary calls remain archived in this file; general-election automation uses the current catalogue.",
-    "automaticCalls": "NBC source, callState, publishAt and manualOverride are managed by the control service. Return to NBC auto through the admin to clear an override."
-  },
-  "raceIdGuide": {
-    "al-sen-r-runoff-2026": "Alabama Senate Republican Runoff",
-    "ga-gov-r-runoff-2026": "Georgia Governor Republican Runoff",
-    "ga-sen-r-runoff-2026": "Georgia Senate Republican Runoff",
-    "ga-house-11-r-runoff-2026": "Georgia US House 11 Republican Runoff",
-    "dc-mayor-d-2026": "District of Columbia Mayor Democratic Primary",
-    "dc-delegate-d-2026": "District of Columbia Delegate Democratic Primary",
-    "ok-gov-r-2026": "Oklahoma Governor Republican Primary",
-    "ok-house-1-r-2026": "Oklahoma US House 1 Republican Primary"
-  },
+  "version": 1,
+  "description": "Published projections only. Pending decisions, overrides, audit and results history require durable server storage.",
   "races": {
     "al-sen-r-runoff-2026": {
       "calls": [
@@ -124,9 +74,16 @@
           "calledAt": "2026-06-17T03:56:06.020Z"
         }
       ]
+    },
+    "senate-OH": {
+      "calls": [
+        {
+          "candidate": "Sherrod Brown",
+          "status": "projected",
+          "calledAt": "2026-10-29T23:14:16.188Z",
+          "source": "fea-manual"
+        }
+      ]
     }
-  },
-  "automation": {
-    "paused": false
   }
 }
