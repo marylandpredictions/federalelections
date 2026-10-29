@@ -44,6 +44,9 @@ window.FEANightAwareness = function (Page) {
     }
   };
   p.init = async function () {
+    this.mapLabelsEnabled=true;
+    try { this.mapLabelsEnabled=localStorage.getItem('feaDeskMapLabels.v1')!=='off'; } catch {}
+    document.body.dataset.mapLabels=this.mapLabelsEnabled?'on':'off';
     this.activity = new N.Activity();
     this.activityWindow = 60000;
     this.firstResultSeen = new Set();
@@ -62,6 +65,11 @@ window.FEANightAwareness = function (Page) {
     for (const r of Object.values(this.dataByMode).flat())
       if (N.total(r) > 0) this.firstResultSeen.add(r.id);
     const menu = document.getElementById("board-menu");
+    const labelsToggle=document.createElement('button');
+    labelsToggle.type='button';labelsToggle.id='desk-map-labels';
+    const reflectLabels=()=>{labelsToggle.textContent='Map labels: '+(this.mapLabelsEnabled?'On':'Off');labelsToggle.setAttribute('aria-pressed',String(this.mapLabelsEnabled));document.body.dataset.mapLabels=this.mapLabelsEnabled?'on':'off';};
+    reflectLabels();menu.append(labelsToggle);
+    labelsToggle.onclick=()=>{this.mapLabelsEnabled=!this.mapLabelsEnabled;reflectLabels();try{localStorage.setItem('feaDeskMapLabels.v1',this.mapLabelsEnabled?'on':'off');}catch{}this.queueNightLabels();};
     menu.insertAdjacentHTML(
       "beforeend",
       '<button type="button" id="desk-fullscreen">Enter fullscreen</button><button type="button" id="desk-share">Share this view</button><label>Race window<select id="desk-window-preset" aria-label="Race window layout"><option value="custom">Custom size</option><option value="compact">Compact</option><option value="analysis">Analysis</option><option value="map-first">Map first</option><option value="tv">TV</option></select></label><p id="desk-menu-feedback" role="status"></p>',
@@ -661,6 +669,7 @@ window.FEANightAwareness = function (Page) {
   p.updateNightLabels = function () {
     safe(() => {
       if (!this.viewport || !this.svg || !this.path) return;
+      if (this.mapLabelsEnabled===false) {this.viewport.selectAll('.night-geo-labels').remove();return;}
       const projection = this.path.projection();
       if (this.labelProjection !== projection) {
         this.labelProjection = projection;

@@ -6,6 +6,7 @@ import { gzipSync } from "node:zlib";
 import { topology } from "topojson-server";
 import { presimplify, quantile, simplify } from "topojson-simplify";
 import { feature, quantize } from "topojson-client";
+import { dissolveCounty } from './county-geometry.mjs';
 export function buildBoardAssets(root = process.cwd()) {
   const directory = resolve(root, "data/results/maps");
   mkdirSync(directory, { recursive: true });
@@ -16,6 +17,7 @@ export function buildBoardAssets(root = process.cwd()) {
     counties: {},
   };
   try { manifest.municipalities=JSON.parse(readFileSync(resolve(root,'data/results/map-assets.json'))).municipalities; } catch {}
+  manifest.countyGeometry = 'Shared district-fragment arcs dissolved into county outlines. House-detail files remain separate.';
   const read = (file) => JSON.parse(readFileSync(resolve(root, file), "utf8"));
   const round = (value) =>
     Array.isArray(value)
@@ -135,7 +137,7 @@ export function buildBoardAssets(root = process.cwd()) {
   for (const feature of read("data/result-counties.geojson").features) {
     const fips = String(feature.properties.GEOID || "").slice(0, 2);
     if (!groups.has(fips)) groups.set(fips, []);
-    groups.get(fips).push(feature);
+    groups.get(fips).push(dissolveCounty(feature));
   }
   for (const [fips, features] of groups)
     manifest.counties[fips] = write(

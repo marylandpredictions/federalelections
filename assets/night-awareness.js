@@ -215,6 +215,10 @@
       (_, i) => points[Math.round((i * (points.length - 1)) / (limit - 1))],
     );
   }
+  function marginDomain(values) {
+    const bound=Math.max(1,...values.filter(v=>typeof v==='number' && Number.isFinite(v)).map(Math.abs));
+    return [-bound,bound];
+  }
   // Use the largest projected exterior, independent of spherical ring winding.
   // geoPath.centroid can choose the complement for GeoJSON-oriented polygons.
   function projectedAnchor(feature, projection) {
@@ -343,6 +347,7 @@
     closeGroups,
     sparkline,
     historyTargets,
+    marginDomain,
     projectedAnchor,
     fitRenderedGeometry,
     parseView,

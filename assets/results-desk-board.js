@@ -295,8 +295,9 @@ window.FEAEnhanceBoard = function (Page) {
   p.safeJson = async function (url) {
     try {
       const isApi = url.startsWith("/api/");
+      const isMapManifest=url.split('?')[0].endsWith('/map-assets.json');
       const response = await fetch(url, {
-        cache: isApi ? "no-cache" : "default",
+        cache: isApi || isMapManifest ? "no-cache" : "default",
       });
       return response.ok ? await response.json() : null;
     } catch {
@@ -1099,7 +1100,7 @@ window.FEAEnhanceBoard = function (Page) {
     const y = d3
       .scaleLinear()
       .domain(
-        mode === "share" || mode === "expected"
+        mode === "margin" ? FEANight.marginDomain(values) : mode === "share" || mode === "expected"
           ? [0, 100]
           : extent[0] === extent[1]
             ? [extent[0] - 1, extent[1] + 1]
@@ -1114,11 +1115,9 @@ window.FEAEnhanceBoard = function (Page) {
       .attr("role", "group")
       .attr(
         "aria-label",
-        `${series.map((s) => s.name).join(", ")} over ${points.length} observed updates. ${time(points[0].at)} to ${time(points.at(-1).at)}.`,
+        `${series.map((s) => s.name).join(", ")} over ${points.length} observed updates. ${time(points[0].at)} to ${time(points.at(-1).at)}.${mode==='margin'?' Democratic leads above zero; Republican leads below zero, in percentage points.':''}`,
       );
-    svg
-      .append("title")
-      .text("Reported results over time; descriptive, not a prediction.");
+    // Accessible description lives on the SVG; no native hover-title popup.
     svg
       .append("g")
       .attr("class", "chart-axis")
@@ -1137,14 +1136,20 @@ window.FEAEnhanceBoard = function (Page) {
         d3
           .axisLeft(y)
           .ticks(4)
-          .tickFormat((d) => (mode === "total" ? d3.format("~s")(d) : d + "%")),
+          .tickFormat((d) => mode === 'margin' ? (d===0 ? 'Even' : `${d>0?'D':'R'}+${Math.abs(d)}`) : (mode === "total" ? d3.format("~s")(d) : d + "%")),
       );
+    if(mode==='margin') {
+      const gradient=svg.append('defs').append('linearGradient').attr('id','desk-margin-colors').attr('gradientUnits','userSpaceOnUse').attr('x1',0).attr('x2',0).attr('y1',y(y.domain()[1])).attr('y2',y(y.domain()[0]));
+      gradient.append('stop').attr('offset','50%').attr('stop-color','var(--party-d)');
+      gradient.append('stop').attr('offset','50%').attr('stop-color','var(--party-r)');
+      svg.append('line').attr('class','trend-zero-line').attr('x1',46).attr('x2',width-14).attr('y1',y(0)).attr('y2',y(0));
+    }
     for (const s of series)
       svg
         .append("path")
         .datum(points)
         .attr("fill", "none")
-        .attr("stroke", s.color)
+        .attr("stroke", mode==='margin' ? 'url(#desk-margin-colors)' : s.color)
         .attr("stroke-width", 2)
         .attr(
           "d",
@@ -1174,6 +1179,7 @@ window.FEAEnhanceBoard = function (Page) {
       .attr("cx", (p) => x(new Date(p.at)))
       .attr("cy", (p) => y(series[0].value(p) ?? values[0]))
       .attr("r", 5)
+      .style('stroke',p=>mode==='margin' ? (series[0].value(p)>=0?'var(--party-d)':'var(--party-r)') : null)
       .attr("tabindex", (_,i) => i===targets.length-1?0:-1)
       .attr("role", "button")
       .attr("aria-label", (p) => `Inspect update at ${time(p.at)}`)

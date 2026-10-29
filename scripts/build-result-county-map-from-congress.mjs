@@ -8,6 +8,7 @@
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { dissolveCounty } from './results/county-geometry.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
@@ -69,11 +70,12 @@ for (const file of files) {
 
 const features = [...byCounty.values()]
   .filter((feature) => feature.geometry.coordinates.length)
+  .map(dissolveCounty)
   .sort((a, b) => String(a.id).localeCompare(String(b.id)));
 
 const geojson = {
   type: "FeatureCollection",
-  model: "FEA result county map from Census 119th district-within-county geometry",
+  model: "FEA result county map: Census 119th district-within-county pieces dissolved into county boundaries",
   generatedAt: new Date().toISOString(),
   source: "data/maps/congress/119/*.json",
   features

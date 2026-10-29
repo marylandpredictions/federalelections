@@ -374,3 +374,8 @@
 .results-board[data-theme-preset="nyt-results"] :is(#focused-race-title,.appearance-dialog h2) {
   font-family: Georgia, 'Times New Roman', serif;
 }
+.results-board[data-map-labels="off"] :is(.night-geo-labels,.map-background-cities,.map-background-city) { display: none !important; }
+.results-board .trend-zero-line { stroke: var(--text-secondary); stroke-width: 1.5; stroke-dasharray: 4 3; }
+/* Inline baselines clipped the shorter national bar's leading segments. */
+.results-board .chamber-uncalled { display: flex; align-items: stretch; line-height: 0; }
+.results-board .chamber-leading { display: block; flex-shrink: 0; }
