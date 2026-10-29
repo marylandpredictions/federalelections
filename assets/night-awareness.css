@@ -379,3 +379,19 @@
 /* Inline baselines clipped the shorter national bar's leading segments. */
 .results-board .chamber-uncalled { display: flex; align-items: stretch; line-height: 0; }
 .results-board .chamber-leading { display: block; flex-shrink: 0; }
+.results-board .trend-summary { display:flex; justify-content:space-between; gap:14px; align-items:end; padding:12px 0 14px; }
+.results-board .trend-summary small { display:block; color:var(--text-secondary); font-size:11px; margin-bottom:4px; }
+.results-board .trend-summary strong { color:var(--text-primary); font-size:21px; font-weight:750; font-variant-numeric:tabular-nums; }
+.results-board .trend-summary > span { text-align:right; font-size:11px; line-height:1.5; color:var(--text-secondary); }
+.results-board .trend-grid line { stroke:var(--chart-grid); opacity:.35; stroke-width:1; }
+.results-board #desk-trend-chart .chart-axis .domain { display:none; }
+.results-board #desk-trend-chart .chart-axis text { font-size:11px; }
+.results-board #desk-trend-chart .trend-point { opacity:0; }
+.results-board .trend-latest-dot,.results-board .trend-inspection-dot { fill:var(--panel-bg); stroke-width:2.5; pointer-events:none; }
+.results-board .trend-inspection-rule { stroke:var(--text-muted); stroke-width:1; stroke-dasharray:3 4; opacity:.7; pointer-events:none; }
+.results-board .trend-margin-area { pointer-events:none; }
+.results-board .trend-time-caption { color:var(--text-muted); font-size:11px; margin:3px 0 0; }
+.results-board .trend-series-key { color:var(--text-secondary); font-size:12px; padding-bottom:8px; }
+.results-board .trend-series-key > div { display:flex; flex-wrap:wrap; gap:6px 12px; padding:8px 0; }
+.results-board .trend-series-key span { display:flex; align-items:center; gap:5px; }
+.results-board .trend-series-key i { width:9px; height:9px; border-radius:50%; }

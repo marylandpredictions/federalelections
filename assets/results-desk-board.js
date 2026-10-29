@@ -60,7 +60,7 @@ window.FEAEnhanceBoard = function (Page) {
     this.countyGeometries = new Map();
     this.lockedCounty = null;
     this.alertQueue = [];
-    this.chartMode = "total";
+    this.chartMode = "margin";
     this.events.addEventListener("call-change", (event) => {
       this.queueProjection(event.detail);
       this.pulseRace(event.detail.race);
@@ -512,7 +512,8 @@ window.FEAEnhanceBoard = function (Page) {
     this.mapRevision=(this.mapRevision||0)+1;
     if (this.currentRace?.id !== race.id) {
       this.lockedCounty = null;
-      this.chartMode = "total";
+      this.chartMode = "margin";
+      this.trendInspectedAt = null;
       this.focusedPanelTab='results';
     }
     this.currentRace=race;
@@ -1108,6 +1109,16 @@ window.FEAEnhanceBoard = function (Page) {
       )
       .nice()
       .range([height - 30, 14]);
+    const latest=points.at(-1),latestMargin=FEADesk.metrics(latest).margin;
+    const summary=document.createElement('div');summary.className='trend-summary';
+    const latestValue=mode==='margin'?(latestMargin===null?'—':signed(latestMargin)+' pts'):mode==='total'?fmt(FEADesk.total(latest))+' votes':percent(series[0].value(latest));
+    const unit=mode==='margin'?'Lead · percentage points':mode==='total'?'Votes counted':mode==='share'?series[0].name+' - vote share':'Expected vote in';
+    summary.innerHTML=`<div><small>${esc(unit)}</small><strong>${esc(latestValue)}</strong></div><span>Latest observed<br>${esc(time(latest.at))}</span>`;
+    container.append(summary);
+    if(mode==='share'){
+      const key=document.createElement('details');key.className='trend-series-key';key.open=series.length<=4;
+      key.innerHTML='<summary>Candidate colors</summary><div>'+series.map(s=>`<span><i style="background:${esc(s.color)}"></i>${esc(s.name)}</span>`).join('')+'</div>';container.append(key);
+    }
     const svg = d3
       .select(container)
       .append("svg")
@@ -1118,6 +1129,7 @@ window.FEAEnhanceBoard = function (Page) {
         `${series.map((s) => s.name).join(", ")} over ${points.length} observed updates. ${time(points[0].at)} to ${time(points.at(-1).at)}.${mode==='margin'?' Democratic leads above zero; Republican leads below zero, in percentage points.':''}`,
       );
     // Accessible description lives on the SVG; no native hover-title popup.
+    svg.append('g').attr('class','trend-grid').selectAll('line').data(y.ticks(4)).join('line').attr('x1',46).attr('x2',width-14).attr('y1',d=>y(d)).attr('y2',d=>y(d));
     svg
       .append("g")
       .attr("class", "chart-axis")
@@ -1125,8 +1137,8 @@ window.FEAEnhanceBoard = function (Page) {
       .call(
         d3
           .axisBottom(x)
-          .ticks(3)
-          .tickFormat((d) => time(d.toISOString()).replace(" ET", "")),
+          .ticks(width>480?4:3).tickSize(0).tickPadding(10)
+          .tickFormat((d) => Date.parse(points.at(-1).at)-Date.parse(points[0].at)>86400000?d.toLocaleDateString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric'}):time(d.toISOString()).replace(" ET", "")),
       );
     svg
       .append("g")
@@ -1135,13 +1147,14 @@ window.FEAEnhanceBoard = function (Page) {
       .call(
         d3
           .axisLeft(y)
-          .ticks(4)
+          .ticks(4).tickSize(0).tickPadding(8)
           .tickFormat((d) => mode === 'margin' ? (d===0 ? 'Even' : `${d>0?'D':'R'}+${Math.abs(d)}`) : (mode === "total" ? d3.format("~s")(d) : d + "%")),
       );
     if(mode==='margin') {
       const gradient=svg.append('defs').append('linearGradient').attr('id','desk-margin-colors').attr('gradientUnits','userSpaceOnUse').attr('x1',0).attr('x2',0).attr('y1',y(y.domain()[1])).attr('y2',y(y.domain()[0]));
       gradient.append('stop').attr('offset','50%').attr('stop-color','var(--party-d)');
       gradient.append('stop').attr('offset','50%').attr('stop-color','var(--party-r)');
+      svg.append('path').datum(points).attr('class','trend-margin-area').attr('fill','url(#desk-margin-colors)').attr('opacity',.1).attr('d',d3.area().defined(p=>series[0].value(p)!==null).x(p=>x(new Date(p.at))).y0(y(0)).y1(p=>y(series[0].value(p))));
       svg.append('line').attr('class','trend-zero-line').attr('x1',46).attr('x2',width-14).attr('y1',y(0)).attr('y2',y(0));
     }
     for (const s of series)
@@ -1150,7 +1163,7 @@ window.FEAEnhanceBoard = function (Page) {
         .datum(points)
         .attr("fill", "none")
         .attr("stroke", mode==='margin' ? 'url(#desk-margin-colors)' : s.color)
-        .attr("stroke-width", 2)
+        .attr("stroke-width", 2.5).attr('stroke-linejoin','round').attr('stroke-linecap','round')
         .attr(
           "d",
           d3
@@ -1159,15 +1172,22 @@ window.FEAEnhanceBoard = function (Page) {
             .x((p) => x(new Date(p.at)))
             .y((p) => y(s.value(p))),
         );
+    const pointColor=p=>mode==='margin'?(series[0].value(p)>=0?'var(--party-d)':'var(--party-r)'):series[0].color;
+    svg.append('circle').attr('class','trend-latest-dot').attr('cx',x(new Date(latest.at))).attr('cy',y(series[0].value(latest)??values[0])).attr('r',3.5).attr('stroke',pointColor(latest));
+    const inspectionRule=svg.append('line').attr('class','trend-inspection-rule').attr('y1',14).attr('y2',height-30);
+    const inspectionDot=svg.append('circle').attr('class','trend-inspection-dot').attr('r',4);
     let described;
     const describe = (point) => {
       if (described === point) return;
       described = point;
+      const px=x(new Date(point.at)),py=y(series[0].value(point)??values[0]);
+      inspectionRule.attr('x1',px).attr('x2',px);
+      inspectionDot.attr('cx',px).attr('cy',py).attr('stroke',pointColor(point));
       this.trendInspectedAt = point.at;
       const total = FEADesk.total(point),
         m = FEADesk.metrics(point);
       const scroll = document.getElementById('focused-race-content').scrollTop;
-      detail.innerHTML = `<header><strong>${esc(time(point.at))}</strong><span>${fmt(total)} votes</span></header><ul>${point.candidates.map(c => `<li><span>${esc(c.name)}</span><strong>${fmt(c.votes)} <small>${percent(total ? c.votes / total * 100 : null)}</small></strong></li>`).join('')}</ul><footer>${m.margin !== null ? `<span>Margin ${signed(m.margin)}</span>` : ''}${point.expectedVotePercent != null ? `<span>${percent(point.expectedVotePercent)} expected vote in</span>` : ''}</footer>`;
+      detail.innerHTML = `<header><strong>${esc(time(point.at))}</strong><span>${fmt(total)} votes</span></header><ul>${point.candidates.map(c => `<li><span>${esc(c.name)}</span><strong>${fmt(c.votes)} <small>${percent(total ? c.votes / total * 100 : null)}</small></strong></li>`).join('')}</ul><footer>${m.margin !== null ? `<span>Margin ${signed(m.margin)} pts</span>` : ''}${point.expectedVotePercent != null ? `<span>${percent(point.expectedVotePercent)} expected vote in</span>` : ''}</footer>`;
       document.getElementById('focused-race-content').scrollTop = scroll;
     };
     const targets=window.FEANight?.historyTargets(points)||points;
@@ -1178,7 +1198,7 @@ window.FEAEnhanceBoard = function (Page) {
       .attr("class", "trend-point")
       .attr("cx", (p) => x(new Date(p.at)))
       .attr("cy", (p) => y(series[0].value(p) ?? values[0]))
-      .attr("r", 5)
+      .attr("r", 9)
       .style('stroke',p=>mode==='margin' ? (series[0].value(p)>=0?'var(--party-d)':'var(--party-r)') : null)
       .attr("tabindex", (_,i) => i===targets.length-1?0:-1)
       .attr("role", "button")
@@ -1201,13 +1221,10 @@ window.FEAEnhanceBoard = function (Page) {
       .attr("aria-hidden", "true")
       .on("pointermove click", (event) => {
         const [px] = d3.pointer(event, svg.node());
-        const nearest = points.reduce((a, b) =>
-          Math.abs(x(new Date(a.at)) - px) < Math.abs(x(new Date(b.at)) - px)
-            ? a
-            : b,
-        );
+        const nearest=points[d3.bisector(p=>Date.parse(p.at)).center(points,+x.invert(px))];
         describe(nearest);
       });
+    const caption=document.createElement('p');caption.className='trend-time-caption';caption.textContent='Observed updates · Eastern time';container.append(caption);
     describe(points.find(p => p.at === this.trendInspectedAt) || points.at(-1));
   };
   p.renderDemographics = async function () {
@@ -1358,7 +1375,8 @@ window.FEAEnhanceBoard = function (Page) {
       const card = document.createElement("article");
       card.className = `projection-toast ${event.correction ? "is-correction" : ""}`;
       card.dataset.eventKey = event.key;
-      card.innerHTML = `<button class="toast-dismiss" aria-label="Dismiss projection notification">×</button><small>${event.correction ? "PROJECTION UPDATE" : projectionSource(event.call) + " PROJECTS"}</small><h3>${esc(title(event.race))}</h3><strong>${esc(event.call?.candidate || "Previous projection withdrawn")}</strong><button class="toast-view" type="button">View race</button>`;
+      card.innerHTML = FEAProjectionCard.content(event);
+      card.style.setProperty('--party-accent',FEAProjectionCard.accent(event));
       const dismiss = () => {
         clearTimeout(card._timer);
         this.alertQueue = this.alertQueue.filter((e) => e.key !== event.key);
