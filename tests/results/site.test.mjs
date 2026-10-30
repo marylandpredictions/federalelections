@@ -31,7 +31,7 @@ test("Countdown has one fixed Eastern target, renders days/hours/minutes and exp
     }
   }
 });
-test("All public primary navigation uses Home, Results, Videos, Articles; no ratings dropdown", async () => {
+test("All public primary navigation includes Features and polling bias; no ratings dropdown", async () => {
   const { readdir } = await import("node:fs/promises");
   let checked = 0;
   async function walk(dir) {
@@ -61,9 +61,11 @@ test("All public primary navigation uses Home, Results, Videos, Articles; no rat
         if (nav) {
           assert.deepEqual(
             [...nav.matchAll(/<a[^>]*>(.*?)<\/a>/g)].map((m) => m[1]),
-            ["Home", "Results", "Videos", "Articles"],
+            ["Home", "Results", "Videos", "Articles", "State polling bias"],
             path,
           );
+          assert.match(nav, /<summary[^>]*>Features<\/summary>/, path);
+          assert.match(nav, /href="\/features\/polling-bias"/, path);
           checked++;
         }
       }

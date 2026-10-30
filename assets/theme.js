@@ -37,7 +37,7 @@
         logo.className = "footer-logo-link";
         logo.href = "/";
         logo.setAttribute("aria-label", "Federal Elections Analysis home");
-        logo.innerHTML = '<img src="assets/img/FEA_Icon.webp" alt=""><span>Federal Elections Analysis</span>';
+        logo.innerHTML = '<img src="/assets/img/FEA_Icon.webp" alt=""><span>Federal Elections Analysis</span>';
         footer.prepend(logo);
       }
       const copyHost = footer.querySelector(":scope > div");
@@ -77,6 +77,18 @@
         document.querySelectorAll(".nav-dropdown[open]").forEach((otherDropdown) => {
           if (otherDropdown !== dropdown) otherDropdown.open = false;
         });
+      });
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      document.querySelectorAll('.nav-dropdown[open]').forEach(dropdown => {
+        if (dropdown.contains(document.activeElement)) dropdown.querySelector('summary')?.focus();
+        dropdown.open = false;
+      });
+    });
+    document.addEventListener('click', (event) => {
+      document.querySelectorAll('.nav-dropdown[open]').forEach(dropdown => {
+        if (!dropdown.contains(event.target) || event.target.closest('.nav-dropdown-menu a')) dropdown.open = false;
       });
     });
   });

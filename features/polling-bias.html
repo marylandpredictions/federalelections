@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>State Polling Bias | Federal Elections Analysis</title>
+<meta name="description" content="Explore state-by-state Senate polling biases, historical polling errors and 2026 bias priors. View U.S. maps and the evidence behind each state's estimate.">
+<link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
+<script src="/assets/theme.js?v=20261030-features2"></script>
+<link rel="stylesheet" href="/assets/wiki.css?v=20261030-features1">
+<link rel="stylesheet" href="/assets/polling-bias.css?v=20261030-feature1">
+<script defer src="/assets/polling-bias.js?v=20261030-feature3"></script>
+</head><body>
+<header class="site-header">
+    <a class="brand" href="/">
+      <img class="brand-mark" src="/assets/img/FEA_Icon.webp" alt="Federal Elections Analysis">
+      <span><strong>Federal Elections Analysis</strong><small style="font-weight: 700;">Election analysis</small></span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/results">Results</a><a href="/videos">Videos</a><a href="/articles">Articles</a><details class="nav-dropdown"><summary class="active">Features</summary><div class="nav-dropdown-menu"><a href="/features/polling-bias" aria-current="page">State polling bias</a></div></details></nav>
+    <div class="site-nav-right">
+      <a href="https://gofund.me/50724cf21" target="_blank" rel="noopener" class="donate-button">$ Donate</a>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A8.5 8.5 0 1 1 11.21 3 6.5 6.5 0 0 0 21 12.79Z"></path></svg>
+      </button>
+    </div>
+  </header>
+<main class="bias-page">
+<header class="bias-hero">
+<p class="kicker">Features / Polling research</p>
+<h1>State-by-state<br>polling biases.</h1>
+<p class="lede">Where have Senate polls overstated each party? Explore the historical evidence and the source’s starting bias estimates for 2026.</p>
+<p class="bias-source">Source: <a href="https://docs.google.com/spreadsheets/d/1_jm2C7nYv4MRVhPWf-_4Q1UCJzDU_liIJAhG7pUT-BQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer">State-by-State Polling Biases spreadsheet ↗</a><br>Data reproduced from the supplied PDF export · October 30, 2026</p>
+<div class="bias-meta"><span><strong>50</strong> states</span><span><strong>135</strong> Senate contests</span><span><strong>835</strong> poll observations</span><span><strong>2014–2024</strong> historical evidence</span></div>
+<a href="#state-details">Skip maps and choose a state ↓</a>
+</header>
+<section class="bias-map-grid" aria-label="State polling bias maps">
+<article class="bias-map-card"><h2>2026 bias prior</h2><p>The source’s final starting estimate for each state. This is a polling-bias estimate, not a race forecast.</p><div id="bias-map-prior" class="bias-map" aria-busy="true">Loading state map…</div><div class="bias-legend" aria-label="Bias color scale"><div class="bias-legend-bar"></div><div class="bias-legend-labels"><span>Overstated Republicans</span><span>Overstated Democrats</span></div><div class="bias-legend-values"><span>−7 pp or less</span><span>0</span><span>+7 pp or more</span></div></div></article>
+<article class="bias-map-card"><h2>Historical Senate bias</h2><p>The source’s raw weighted Senate polling bias, before the final state prior. Gray indicates no direct race evidence.</p><div id="bias-map-rawBias" class="bias-map" aria-busy="true">Loading state map…</div><div class="bias-legend" aria-label="Bias color scale"><div class="bias-legend-bar"></div><div class="bias-legend-labels"><span>Overstated Republicans</span><span>Overstated Democrats</span></div><div class="bias-legend-values"><span>−7 pp or less</span><span>0</span><span>+7 pp or more</span></div></div></article>
+</section>
+<div class="bias-explanation"><p><strong>Read the sign.</strong> Bias is the polling D−R margin minus the actual D−R margin, in percentage points. Positive / blue means polls overstated Democrats; negative / red means polls overstated Republicans.</p><p><strong>Read the evidence.</strong> A large estimate can come from a small sample. Confidence labels and all weighting fields are reproduced from the source. Map colors saturate at ±7 points; the tables retain the actual values.</p></div>
+<section id="state-details" class="bias-section" aria-labelledby="bias-state-name">
+<div class="bias-section-heading"><div><p class="kicker">State detail · <span id="bias-division-name">Historical evidence</span></p><h2 id="bias-state-name" tabindex="-1">Explore a state</h2></div><label for="bias-state">Choose a state<select id="bias-state"><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></label></div>
+<p id="bias-detail-loading" role="status">Loading state detail…</p>
+<div id="bias-detail-content" hidden>
+<p class="bias-reading" id="bias-reading"></p><dl class="bias-stats"><div><dt>2026 bias prior</dt><dd id="bias-prior"></dd></div><div><dt>Source confidence</dt><dd id="bias-confidence"></dd></div><div><dt>Raw weighted Senate bias</dt><dd id="bias-raw"></dd></div><div><dt>Division prior</dt><dd id="bias-division"></dd></div><div><dt>Historical contests</dt><dd id="bias-races"></dd></div><div><dt>Poll observations</dt><dd id="bias-polls"></dd></div><div><dt>Evidence weight</dt><dd id="bias-weight"></dd></div><div><dt>Coherence multiplier</dt><dd id="bias-coherence"></dd></div></dl>
+<p class="bias-footnote" id="bias-evidence"></p>
+<div class="bias-table-wrap" role="region" aria-label="Historical race evidence; scroll horizontally for all columns" tabindex="0"><table class="bias-table"><caption>Race-by-race evidence</caption><thead><tr><th scope="col">Year</th><th scope="col">Polls used</th><th scope="col">Final 21 days</th><th scope="col">Window</th><th scope="col">Poll D−R margin</th><th scope="col">Actual D−R margin</th><th scope="col">Raw bias</th><th scope="col">Capped bias</th><th scope="col">Race weight</th></tr></thead><tbody id="bias-race-rows"></tbody></table></div>
+<p id="bias-no-races" class="bias-footnote" hidden></p>
+<p class="bias-footnote">Margins and biases are in percentage points. “45d fallback” and “21d” are the source’s polling-window labels. Scroll the table sideways on smaller screens to see every field.</p>
+</div></section>
+<section class="bias-section" aria-labelledby="all-states-title"><div class="bias-section-heading"><div><p class="kicker">The complete picture</p><h2 id="all-states-title">All 50 states</h2></div></div>
+<div class="bias-table-wrap" role="region" aria-label="All state priors; scroll horizontally for all columns" tabindex="0"><table class="bias-table"><caption>Source state estimates · percentage points</caption><thead><tr><th scope="col">State</th><th scope="col">2026 prior</th><th scope="col">Confidence</th><th scope="col">Raw Senate bias</th><th scope="col">Contests</th><th scope="col">Polls</th></tr></thead><tbody><tr><th scope="row"><a href="#state-details" data-state="AL">Alabama</a></th><td class="bias-positive">+4.72</td><td>Very low</td><td>+8.25</td><td>2</td><td>3</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="AK">Alaska</a></th><td class="bias-negative">-0.43</td><td>Very low</td><td>+0.74</td><td>1</td><td>4</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="AZ">Arizona</a></th><td class="bias-negative">-0.84</td><td>High</td><td>-0.91</td><td>5</td><td>62</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="AR">Arkansas</a></th><td class="bias-positive">+5.17</td><td>Low</td><td>+9.17</td><td>2</td><td>9</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="CA">California</a></th><td class="bias-positive">+1.49</td><td>Low</td><td>+3.59</td><td>2</td><td>4</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="CO">Colorado</a></th><td class="bias-negative">-0.09</td><td>Medium</td><td>+0.03</td><td>3</td><td>20</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="CT">Connecticut</a></th><td class="bias-positive">+0.15</td><td>Medium</td><td>+0.43</td><td>2</td><td>5</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="DE">Delaware</a></th><td class="bias-positive">+3.38</td><td>Very low</td><td>+6.60</td><td>2</td><td>4</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="FL">Florida</a></th><td class="bias-positive">+5.02</td><td>High</td><td>+5.47</td><td>4</td><td>51</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="GA">Georgia</a></th><td class="bias-negative">-0.48</td><td>High</td><td>-1.17</td><td>3</td><td>57</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="HI">Hawaii</a></th><td class="bias-negative">-0.80</td><td>Very low</td><td>+0.08</td><td>1</td><td>2</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="ID">Idaho</a></th><td class="bias-negative">-0.16</td><td>Very low</td><td>+2.32</td><td>1</td><td>3</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="IL">Illinois</a></th><td class="bias-negative">-0.95</td><td>Low</td><td>-2.56</td><td>3</td><td>9</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="IN">Indiana</a></th><td class="bias-positive">+5.77</td><td>Medium</td><td>+7.10</td><td>3</td><td>19</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="IA">Iowa</a></th><td class="bias-positive">+4.26</td><td>High</td><td>+4.82</td><td>4</td><td>31</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="KS">Kansas</a></th><td class="bias-positive">+2.85</td><td>Low</td><td>+3.32</td><td>3</td><td>5</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="KY">Kentucky</a></th><td class="bias-positive">+6.13</td><td>Low</td><td>+8.45</td><td>3</td><td>10</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="LA">Louisiana</a></th><td class="bias-positive">+3.11</td><td>Very low</td><td>+5.54</td><td>1</td><td>8</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="ME">Maine</a></th><td class="bias-positive">+5.51</td><td>Low</td><td>+11.74</td><td>2</td><td>7</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="MD">Maryland</a></th><td class="bias-negative">-0.37</td><td>Low</td><td>-2.38</td><td>3</td><td>5</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="MA">Massachusetts</a></th><td class="bias-negative">-0.48</td><td>Low</td><td>-0.53</td><td>3</td><td>11</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="MI">Michigan</a></th><td class="bias-positive">+2.65</td><td>High</td><td>+2.82</td><td>4</td><td>67</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="MN">Minnesota</a></th><td class="bias-negative">-1.09</td><td>Medium</td><td>-2.33</td><td>3</td><td>11</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="MS">Mississippi</a></th><td class="bias-positive">+3.06</td><td>Very low</td><td>+2.09</td><td>1</td><td>2</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="MO">Missouri</a></th><td class="bias-positive">+3.16</td><td>High</td><td>+3.34</td><td>3</td><td>21</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="MT">Montana</a></th><td class="bias-positive">+1.48</td><td>High</td><td>+2.02</td><td>4</td><td>12</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="NE">Nebraska</a></th><td class="bias-positive">+2.38</td><td>Very low</td><td>+4.20</td><td>1</td><td>2</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="NV">Nevada</a></th><td class="bias-negative">-1.39</td><td>High</td><td>-1.55</td><td>4</td><td>45</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="NH">New Hampshire</a></th><td class="bias-negative">-3.79</td><td>High</td><td>-4.43</td><td>4</td><td>41</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="NJ">New Jersey</a></th><td class="bias-positive">+4.51</td><td>Medium</td><td>+5.58</td><td>4</td><td>13</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="NM">New Mexico</a></th><td class="bias-negative">-1.14</td><td>Medium</td><td>-1.62</td><td>4</td><td>9</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="NY">New York</a></th><td class="bias-positive">+0.74</td><td>Medium</td><td>+0.58</td><td>4</td><td>11</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="NC">North Carolina</a></th><td class="bias-positive">+1.15</td><td>High</td><td>+0.97</td><td>4</td><td>65</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="ND">North Dakota</a></th><td class="bias-positive">+2.01</td><td>Low</td><td>+1.76</td><td>2</td><td>4</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="OH">Ohio</a></th><td class="bias-positive">+0.86</td><td>High</td><td>+0.74</td><td>4</td><td>23</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="OK">Oklahoma</a></th><td class="bias-positive">+1.83</td><td>Very low</td><td>Division only</td><td>0</td><td>0</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="OR">Oregon</a></th><td class="bias-negative">-0.68</td><td>Medium</td><td>-0.59</td><td>3</td><td>9</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="PA">Pennsylvania</a></th><td class="bias-negative">-0.15</td><td>High</td><td>-0.38</td><td>4</td><td>59</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="RI">Rhode Island</a></th><td class="bias-negative">-0.92</td><td>Very low</td><td>-2.17</td><td>2</td><td>5</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="SC">South Carolina</a></th><td class="bias-positive">+3.69</td><td>Low</td><td>+6.36</td><td>1</td><td>2</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="SD">South Dakota</a></th><td class="bias-positive">+5.52</td><td>Very low</td><td>+10.70</td><td>4</td><td>9</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="TN">Tennessee</a></th><td class="bias-positive">+4.47</td><td>Low</td><td>+5.43</td><td>2</td><td>7</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="TX">Texas</a></th><td class="bias-positive">+1.22</td><td>High</td><td>+1.09</td><td>4</td><td>21</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="UT">Utah</a></th><td class="bias-positive">+0.30</td><td>Very low</td><td>+2.91</td><td>2</td><td>4</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="VT">Vermont</a></th><td class="bias-negative">-0.80</td><td>Very low</td><td>-2.39</td><td>2</td><td>2</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="VA">Virginia</a></th><td class="bias-positive">+3.20</td><td>Medium</td><td>+3.53</td><td>3</td><td>12</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="WA">Washington</a></th><td class="bias-negative">-6.84</td><td>Medium</td><td>-9.72</td><td>2</td><td>6</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="WV">West Virginia</a></th><td class="bias-positive">+3.21</td><td>Low</td><td>+3.97</td><td>2</td><td>6</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="WI">Wisconsin</a></th><td class="bias-negative">-0.08</td><td>High</td><td>-0.35</td><td>4</td><td>36</td></tr>
+<tr><th scope="row"><a href="#state-details" data-state="WY">Wyoming</a></th><td class="bias-positive">+0.17</td><td>Very low</td><td>+10.76</td><td>1</td><td>2</td></tr></tbody></table></div></section>
+<section class="bias-section bias-method" aria-labelledby="bias-method-title"><h2 id="bias-method-title">What these numbers mean</h2>
+<h3>Polling error, not the state’s partisan lean</h3><p>A +3 bias means polls overstated the Democratic D−R margin by three points. It does not mean the state voted Democratic, and it is not a prediction that the same error will repeat.</p>
+<h3>Historical evidence and a 2026 starting estimate</h3><p>The historical table includes Senate contests from 2014 through 2024. The source provides a raw weighted state bias, a Census-division prior, evidence weights, a coherence multiplier and a final 2026 prior. These values are reproduced as supplied; no new weighting formula or forecast is introduced here.</p>
+<h3>Uneven evidence matters</h3><p>The confidence labels are qualitative source labels, not probabilities or confidence intervals. Oklahoma has no usable standard D-vs-R modern Senate race in the source and uses its division prior. It is gray on the historical map, while its 2026 prior remains visible. Historical outliers retain both raw and capped bias values in the race table.</p>
+<div class="bias-source-panel"><h3>Source &amp; data snapshot</h3><p><a href="https://docs.google.com/spreadsheets/d/1_jm2C7nYv4MRVhPWf-_4Q1UCJzDU_liIJAhG7pUT-BQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Open the original State-by-State Polling Biases spreadsheet ↗</a></p><p>This page uses the PDF export supplied with the spreadsheet, imported October 30, 2026. It is a published snapshot and does not silently change when the sheet is edited. State priors display two decimals; race margins display three. The <a href="/data/features/polling-bias.json">underlying data</a> preserves the supplied precision.</p></div>
+</section>
+<noscript><p>JavaScript is needed for the interactive maps and selected-state evidence. The complete state-prior table and original spreadsheet link remain available above.</p></noscript>
+</main><footer class="site-footer">
+    <div>
+      <strong>Federal Elections Analysis</strong>
+      <p>Election coverage, public analysis, and team updates.</p>
+    </div>
+    <nav class="footer-columns" aria-label="Footer navigation">
+      <section class="footer-link-group" aria-label="Site links">
+        <strong>Site</strong>
+        <a href="/">Home</a>
+        <a href="/videos">Videos</a>
+        <a href="/results">Results</a>
+        <a href="/articles">Articles</a>
+      </section>
+      <section class="footer-link-group" aria-label="Forecast links">
+        <strong>Ratings</strong>
+        <a href="/predictions/2026/senate">Senate</a>
+        <a href="/predictions/2026/house">House</a>
+        <a href="/predictions/2026/governor">Governors</a>
+      </section>
+      <section class="footer-link-group" aria-label="Other links">
+        <strong>Other</strong>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        <a href="/terms">Terms</a>
+        <a href="/privacy">Privacy</a>
+      </section>
+    </nav>
+  </footer></body></html>

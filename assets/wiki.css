@@ -394,6 +394,7 @@ button {
 
 .nav-dropdown {
   position: relative;
+  flex: 0 0 auto;
 }
 
 .nav-dropdown summary::after {
@@ -9643,3 +9644,14 @@ body {
 :root[data-theme="light"] .site-header,:root[data-theme="light"] .site-footer{background:#849eed;color:#000e38}
 :root[data-theme="light"] .hero-main h1{background:none;color:#000e38;-webkit-text-fill-color:#000e38}
 .election-countdown{container-type:inline-size}.countdown-digits{gap:clamp(8px,4cqw,18px)}.countdown-digits strong{font-size:clamp(2rem,20cqw,4.25rem)}
+
+/* Keep all five public navigation options visible on phone-sized screens. */
+@media (max-width: 600px) {
+  .site-nav { gap: 2px; }
+  .site-nav > a, .site-nav > .nav-dropdown > summary { padding-inline: 6px; font-size: .78rem; }
+  .site-nav > .nav-dropdown > summary::after { margin-left: 6px; width: 6px; height: 6px; }
+}
+@media (max-width: 360px) {
+  .site-nav { gap: 0; }
+  .site-nav > a, .site-nav > .nav-dropdown > summary { padding-inline: 4px; font-size: .74rem; }
+}
