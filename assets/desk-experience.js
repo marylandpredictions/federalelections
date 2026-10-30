@@ -118,6 +118,11 @@ window.FEACompleteBoard = function (Page) {
   };
   p.renderProviderStatus = function (provider) {
     original.status.call(this, provider);
+    let link=document.getElementById('desk-nbc-results');
+    const page=provider?.publicResultsUrl||this.publicProvider?.publicResultsUrl;
+    let safe=null;try{const u=new URL(page);if(u.protocol==='https:'&&['www.nbcnews.com','nbcnews.com'].includes(u.hostname)&&!u.port&&!u.username&&!u.password)safe=u.href;}catch{}
+    const menu=document.getElementById('board-menu');
+    if(safe&&menu){if(!link){link=document.createElement('a');link.id='desk-nbc-results';link.textContent='NBC 2026 results';link.target='_blank';link.rel='noopener noreferrer';menu.append(link);}link.href=safe;link.hidden=false;}else if(link)link.hidden=true;
     if (
       !this.isLabPage &&
       Date.now() < Date.parse("2026-11-03T05:00:00Z") &&

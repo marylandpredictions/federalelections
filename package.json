@@ -86,7 +86,9 @@
     "sync:results-candidates": "node scripts/results/sync-candidate-rosters.mjs",
     "audit:results-candidates": "node scripts/results/audit-candidates.mjs",
     "test:results-restart": "node --test tests/results/restart.test.mjs",
-    "certify:results": "node scripts/results/certification.mjs"
+    "certify:results": "node scripts/results/certification.mjs",
+    "detect:nbc-results": "node scripts/detect-nbc-2026-results.mjs",
+    "test:nbc-detector": "node --test tests/results/nbc-discovery.test.mjs"
   },
   "dependencies": {
     "sharp": "^0.34.5"

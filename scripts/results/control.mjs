@@ -355,6 +355,7 @@ export class ResultsControl {
       persistenceError:this.persistenceError || null,
       configurationError:this.configurationError || null,
       recoveryWarning:this.recoveryWarning || null,
+      publicResultsUrl:this.config.automaticDiscovery?.pageUrls?.[0]||null,
       status:
         this.persistenceError || this.recoveryWarning ? 'STORAGE ERROR' : h.connection === "unavailable"
           ? "UNAVAILABLE"

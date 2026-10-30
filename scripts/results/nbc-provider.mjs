@@ -184,12 +184,15 @@ export class NbcProvider {
     // Validate the complete manifest before issuing any request.
     for (const source of this.sources) {
       const url = new URL(source.url);
+      let observedApplication=false;
+      try{const page=new URL(source.discovery?.pageUrl);observedApplication=source.discovery?.method==='NBC_2026_GENERAL_APP_AND_SCHEMA_V1'&&page.protocol==='https:'&&['www.nbcnews.com','nbcnews.com'].includes(page.hostname)&&!page.username&&!page.password&&!page.port&&/^[a-f0-9]{64}$/.test(source.discovery.mappingFingerprint||'')&&Number.isFinite(Date.parse(source.discovery.verifiedAt));}catch{}
       if (
         source.status !== "CONFIRMED" ||
         source.election !== "2026-general" ||
         url.protocol !== "https:" ||
         url.hostname !== "www.nbcnews.com" ||
-        !url.pathname.startsWith("/firecracker/")
+        url.port || url.username || url.password ||
+        !url.pathname.startsWith("/firecracker/")&&!observedApplication
       )
         throw new Error(
           "Source must be a verified public NBC general-election feed",

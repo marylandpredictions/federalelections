@@ -6,9 +6,18 @@ import {auditCandidateFiles} from './audit-candidates.mjs';
 import {readiness} from './readiness.mjs';
 import {ResultsControl} from './control.mjs';
 import {storageConfiguration} from './storage.mjs';
+import {pathToFileURL} from 'node:url';
+export async function createCertificationControl(root,temp){
+ const disk=join(temp,'disk');await mkdir(disk,{recursive:true});
+ // This is a disposable static check, not recovery of the hosted runtime. Do
+ // not import committed public calls into a new disk without its envelope.
+ await writeFile(join(disk,'result-calls.json'),JSON.stringify({races:{}}));
+ return new ResultsControl({root,storageDir:disk}).init();
+}
+export async function runCertification(){
 const root=process.cwd(),temp=await mkdtemp(join(tmpdir(),'fea-certification-'));
 try{
- const control=await new ResultsControl({root,storageDir:join(temp,'disk')}).init();
+ const control=await createCertificationControl(root,temp);
  const checks=await readiness(control,root,{storageEnvironment:{}}),candidates=auditCandidateFiles(root),provider=JSON.parse(await readFile(join(root,'data/results-provider.json'),'utf8'));
  for(const check of checks.checks)if(['Storage configuration','Storage writable','Production persistence','Last-good snapshot','Provider'].includes(check.name))check.scope='ISOLATED_DISPOSABLE_CONTROL; not the running hosted service';
  const value=flag=>{const i=process.argv.indexOf(flag);return i<0?null:process.argv[i+1];};
@@ -19,3 +28,5 @@ try{
  const output=resolve(value('--output')||'.runtime/results-certification.json');await mkdir(dirname(output),{recursive:true});await writeFile(output,JSON.stringify(report,null,2)+'\n');
  console.log(JSON.stringify({output,classification:report.classification,candidates:{total:candidates.total,official:candidates.official,secondary:candidates.secondaryReviewed,issues:candidates.issues.length},tests},null,2));if(report.classification==='NOT READY')process.exitCode=1;
 }finally{await rm(temp,{recursive:true,force:true,maxRetries:5,retryDelay:100});}
+}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)await runCertification();
