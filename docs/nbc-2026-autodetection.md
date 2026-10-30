@@ -10,6 +10,9 @@ delayed. A date guard makes subsequent years' scheduled runs exit without networ
 requests. **Run workflow** also permits a check outside that window, without
 bypassing verification. Scheduled workflows require this file on the default
 branch; this repository uses `main`.
+Ordinary checks use a shallow, sparse checkout of detector/configuration files.
+Full assets/history and installed dependencies are needed only after a verified
+configuration change.
 
 1. An isolated Node script checks a small set of historical NBC route families
    and rotating state routes. It also follows bounded 2026 results links found
@@ -111,7 +114,7 @@ calls, runtime storage or fallback providers are deleted by the detector.
 
 - Installation and the production candidate gate passed: 506 reviewed races,
   81 official-source verified, zero placeholders/review issues.
-- All 170 results tests passed (142 existing plus 28 detector/integration tests),
+- All 171 results tests passed (142 existing plus 29 detector/integration tests),
   with zero failures or skips; the five restart checks also passed separately. A
   restricted local-server attempt failed; the full suite passed when allowed
   to start its isolated restart/recovery servers.
@@ -119,6 +122,10 @@ calls, runtime storage or fallback providers are deleted by the detector.
   committed call state into a disposable empty disk incorrectly triggered the
   production missing-envelope guard. Certification now explicitly seeds its own
   empty calls fixture; the production recovery safeguard remains unchanged.
+- A disposable local bare Git remote exercised the publishing path: a verified
+  configuration commit rebased over a concurrent operator commit and pushed
+  successfully while runner-specific installed dependency metadata remained
+  uncommitted. No actual NBC activation was fabricated for this test.
 - A live dry run fetched NBC's robots policy. The candidate hub returned 404;
   remaining checks stopped under access policy. No real application/feed was
   verified and the production registry remained unchanged.

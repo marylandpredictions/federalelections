@@ -6,6 +6,7 @@ import {join} from 'node:path';
 import {verifyPage, discoverUrls, ownedUrl, robotsAllowed, PublicReader, mappingsForPayload, detect} from '../../scripts/results/nbc-discovery.mjs';
 import {parseNbcResults, NbcProvider} from '../../scripts/results/nbc-provider.mjs';
 import vm from 'node:vm';
+import {execFileSync} from 'node:child_process';
 import {run} from '../../scripts/detect-nbc-2026-results.mjs';
 import {createCertificationControl} from '../../scripts/results/certification.mjs';
 
@@ -142,6 +143,30 @@ test('workflow gates bot writes and limits publication to the provider registry 
   assert.match(workflow,/workflow_dispatch:/);assert.match(workflow,/\*\/5/);assert.match(workflow,/contents: write/);assert.match(workflow,/refs\/heads\/main/);
   assert.match(workflow,/npm run test:results/);assert.match(workflow,/git add -- data\/results-provider.json/);assert.doesNotMatch(workflow,/--force|secrets\.(?!GITHUB_TOKEN)/);
   const quality=await readFile('.github/workflows/results-quality.yml','utf8');assert.match(quality,/scripts\/detect-nbc-2026-results.mjs/);
+  assert.match(workflow,/sparse-checkout-cone-mode: false/);assert.match(workflow,/git sparse-checkout disable/);assert.match(workflow,/rebase.autoStash=true/);
+});
+test('bot publishing rebases concurrent main changes without committing installed dependency metadata',async()=>{
+  const root=await mkdtemp(join(tmpdir(),'nbc-git-publish-'));
+  const git=(cwd,...args)=>execFileSync('git',args,{cwd,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+  try{
+    const remote=join(root,'remote.git'),publisher=join(root,'publisher'),other=join(root,'other');
+    git(root,'init','--bare',remote);git(root,'init','-b','main',publisher);
+    git(publisher,'config','user.name','Detector fixture');git(publisher,'config','user.email','fixture@example.invalid');
+    await mkdir(join(publisher,'data'));await mkdir(join(publisher,'node_modules'));
+    await writeFile(join(publisher,'data/results-provider.json'),'{"sources":[]}');await writeFile(join(publisher,'node_modules/.package-lock.json'),'initial platform');
+    git(publisher,'add','.');git(publisher,'commit','-m','Fixture seed');git(publisher,'remote','add','origin',remote);git(publisher,'push','-u','origin','main');
+    git(root,'clone','--branch','main',remote,other);git(other,'config','user.name','Other fixture');git(other,'config','user.email','other@example.invalid');
+    await writeFile(join(publisher,'data/results-provider.json'),'{"sources":[],"automaticDiscovery":{"status":"PAGE_CONFIRMED"}}');
+    await writeFile(join(publisher,'node_modules/.package-lock.json'),'installed runner platform');
+    git(publisher,'add','--','data/results-provider.json');git(publisher,'commit','-m','Auto-enable NBC 2026 general election results');
+    await writeFile(join(other,'operator-change.txt'),'preserve this');git(other,'add','.');git(other,'commit','-m','Concurrent operator change');git(other,'push','origin','main');
+    git(publisher,'-c','rebase.autoStash=true','pull','--rebase','origin','main');git(publisher,'push','origin','HEAD:main');
+    assert.equal(await readFile(join(publisher,'node_modules/.package-lock.json'),'utf8'),'installed runner platform');
+    assert.equal(await readFile(join(publisher,'operator-change.txt'),'utf8'),'preserve this');
+    assert.equal(git(publisher,'diff','HEAD^','HEAD','--name-only'),'data/results-provider.json');
+    assert.equal(git(publisher,'show','HEAD:node_modules/.package-lock.json'),'initial platform');
+    assert.equal(git(publisher,'rev-parse','HEAD'),git(root,'--git-dir='+remote,'rev-parse','refs/heads/main'));
+  }finally{await rm(root,{recursive:true,force:true,maxRetries:4,retryDelay:100});}
 });
 test('CI static certification isolates committed public calls from disposable runtime recovery',async()=>{
   const root=await mkdtemp(join(tmpdir(),'nbc-certification-'));try{

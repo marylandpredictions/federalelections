@@ -20,7 +20,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/results/
+            /scripts/detect-nbc-2026-results.mjs
+            /data/results-provider.json
+            /data/election-night-races.json
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -37,6 +43,10 @@ jobs:
       - name: Install and verify activation
         if: steps.discovery.outputs.changed == 'true'
         run: |
+          git sparse-checkout disable
+          if [ "$(git rev-parse --is-shallow-repository)" = true ]; then
+            git fetch --unshallow origin main
+          fi
           npm ci
           npm run audit:results-candidates
           npm run test:results
@@ -50,7 +60,9 @@ jobs:
           test "$(git diff --cached --name-only)" = 'data/results-provider.json'
           git commit -m 'Auto-enable NBC 2026 general election results'
           for attempt in 1 2 3; do
-            git pull --rebase origin main
+            # npm ci changes tracked platform metadata in this repository.
+            # Preserve that install while rebasing; never stage it for publishing.
+            git -c rebase.autoStash=true pull --rebase origin main
             npm run audit:results-candidates
             npm run test:results
             if git push origin HEAD:main; then exit 0; fi
