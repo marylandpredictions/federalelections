@@ -21,15 +21,23 @@ were checked before publication: 135 Senate contests, 835 poll observations.
 - Positive values mean the polling D−R margin exceeded the actual D−R margin:
   Democratic overstatement, shown blue. Negative values mean Republican
   overstatement, shown red.
-- Both maps use the same color scale, saturated at ±7 percentage points. Actual
+- The single enlarged map shows FEA's estimated 2026 polling error, saturated
+  at ±7 percentage points. Hover and keyboard focus show state previews. Actual
   values and historical outliers remain in the tables without color clipping.
 - The final 2026 prior is a source estimate, not an election-result forecast.
   Confidence labels, weights and coherence multipliers are reproduced without
   inventing a new formula.
-- Oklahoma has no direct race evidence. Its historical map is gray; its
-  division-based prior remains visible. Zero evidence is not zero polling bias.
-- This is a dated snapshot, not an automatic sheet sync. Update the JSON and
-  displayed snapshot date together if a newer source is supplied; bump the data
+- Public-facing labels use **D by 3.00** or **R by 3.00**, rather than signed
+  numbers. In the polling-average/result columns that means a party lead; in
+  the polling-miss column it means the party polls overstated. A worked example
+  explains the distinction. The main history table has five columns; weights,
+  caps and polling periods sit in an expandable calculation section.
+- Oklahoma has no direct race evidence. Its regional estimate remains on the
+  map with its very low confidence and lack of state evidence explained.
+- Public source credit is **FEA calculations**, linked to the original sheet.
+  Import provenance remains here and in the data, without a PDF-export banner.
+- This is a published snapshot, not an automatic sheet sync. Update the JSON
+  if a newer set of calculations is supplied; bump the data
   URL versions in `assets/polling-bias.js` after changing cached data.
 
 ## Geometry and verification
@@ -37,7 +45,7 @@ were checked before publication: 135 Senate contests, 835 poll observations.
 Geometry comes from the repository's `data/result-us-states.geojson`, projected
 with Albers USA and Alaska/Hawaii insets. Exterior rings were normalized to D3's
 clockwise spherical convention before projection to prevent world-complement
-rectangles. The preprojected geometry loads once for both maps; the browser
+rectangles. The preprojected geometry loads once for the map; the browser
 downloads no chart library. Small-state callouts and Hawaii have leader lines.
 
 Automated tests cover source totals, split-column alignment, sign convention,
@@ -46,3 +54,8 @@ label contrast, page IDs and the public Features navigation. Browser checks
 covered 1366×768, 390×844, 768×1024 and 844×390 layouts, light/dark themes, actual
 map selection, Oklahoma's empty-evidence state, dropdown navigation and Escape.
 These are browser viewport checks, not physical-device certification.
+
+The subsequent accessibility pass checked the enlarged single map and state
+previews at 1920×1080 and the simplified tables at 390×844, including light/dark
+colors, keyboard previews that survive focus-induced scrolling, Escape dismissal,
+Oklahoma's missing-evidence explanation and the FEA calculations credit.

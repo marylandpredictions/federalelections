@@ -21,7 +21,7 @@ test('source outliers, zero-evidence Oklahoma and source precision remain intact
  assert.equal(state('ME').races.find(r=>r.year===2020).bias,13.625);assert.equal(state('ME').races.find(r=>r.year===2020).cappedBias,12);
  assert.match(data.source.sha256,/^[a-f0-9]{64}$/);assert.equal(data.source.format,'User-provided PDF export');
 });
-test('both maps have exactly the source state coverage and finite geographic paths and labels',()=>{
+test('the map has exactly the source state coverage and finite geographic paths and labels',()=>{
  assert.deepEqual(geometry.states.map(s=>s.abbr).sort(),data.states.map(s=>s.abbr).sort());
  for(const state of geometry.states){assert.match(state.d,/^M/);assert.doesNotMatch(state.d,/NaN|Infinity/);assert.ok(state.label.every(Number.isFinite));assert.ok(state.label[0]>=0&&state.label[0]<=960);assert.ok(state.label[1]>=0&&state.label[1]<=600);assert.ok(state.bounds[1][0]-state.bounds[0][0]<600,state.abbr+': world-complement slab');assert.ok(state.bounds[1][1]-state.bounds[0][1]<450,state.abbr+': world-complement slab');}
 });
@@ -32,8 +32,19 @@ test('positive is Democratic overstatement and every map label meets 4.5:1 contr
  assert.notEqual(ui.color(null),ui.color(0));
 });
 test('feature page includes a usable static table, source link, unique IDs and no chart dependency',()=>{
- assert.ok(html.includes(data.source.url));assert.match(html,/snapshot/);assert.match(html,/not a race forecast/);assert.doesNotMatch(html,/cdn.*d3|C:[\\/]/);
+ assert.ok(html.includes(data.source.url));assert.match(html,/FEA calculations/);assert.match(html,/not a race forecast/);assert.doesNotMatch(html,/cdn.*d3|C:[\\/]|Data reproduced from|PDF export/);
  const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length);
  for(const state of data.states)assert.ok(html.includes(`data-state="${state.abbr}"`));
  assert.match(html,/aria-current="page">State polling bias/);assert.match(html,/<summary class="active">Features/);
+});
+test('plain-language party labels distinguish polling direction without signed-number shorthand',()=>{
+ assert.equal(ui.partyNumber(3.25),'D by 3.25');assert.equal(ui.partyNumber(-3.25),'R by 3.25');assert.equal(ui.partyNumber(0),'Even');assert.equal(ui.partyNumber(-.0001),'Even');assert.equal(ui.partyNumber(null),'Not available');
+ assert.equal(ui.plainBias(2),'Polls may overstate Democrats by 2.00 points');assert.equal(ui.plainBias(-2),'Polls may overstate Republicans by 2.00 points');
+ assert.equal(ui.partyClass(2),'bias-positive');assert.equal(ui.partyClass(-2),'bias-negative');assert.equal(ui.partyClass(null),'');
+});
+test('one large map and hover previews accompany a simpler five-column history table',()=>{
+ assert.equal((html.match(/id="bias-map-/g)||[]).length,1);assert.doesNotMatch(html,/id="bias-map-rawBias"/);
+ assert.match(html,/id="bias-preview"[^>]*role="tooltip"/);assert.match(html,/More about the calculation/);assert.match(html,/Polling average/);assert.match(html,/Actual result/);assert.match(html,/Polling miss/);
+ const table=html.slice(html.indexOf('<caption>Polls compared'),html.indexOf('id="bias-race-rows"'));assert.equal((table.match(/scope="col"/g)||[]).length,5);
+ const css=readFileSync('assets/polling-bias.css','utf8');assert.match(css,/\.bias-preview[^}]*pointer-events: none/s);
 });
