@@ -34,6 +34,11 @@ window.FEACompleteBoard = function (Page) {
     trend: p.renderTrendChart,
     fills: p.updateMapFills,
     county: p.renderCountyDetailMap,
+    raceColor: p.comparisonColorForRace,
+    countyColor: p.comparisonColorForCounty,
+    tooltip: p.showTooltip,
+    extent: p.mapExtent,
+    mode: p.switchMode,
   };
   p.init = async function () {
     this.outlineMode = 'next';
@@ -49,6 +54,7 @@ window.FEACompleteBoard = function (Page) {
         ].slice(0, 12);
     } catch {}
     this.appearance = FEAAppearance();
+    this.currentPresentation = T.current.presentation;
     this.lastPollClock = Date.now();
     this.pollEventsSeen = new Set();
     this.pollSeenStorageKey=this.isLabPage&&this.query.get('live')!=='true'?'feaPollCloseSeen.lab.v1':'feaPollCloseSeen.v1';
@@ -73,6 +79,13 @@ window.FEACompleteBoard = function (Page) {
     legend.innerHTML =
       '<span class="legend-neutral">No votes</span><span class="legend-leading">Leading</span><span class="legend-called">Called ✓</span><span id="desk-outline-legend" class="legend-outline">Next poll closes</span>';
     document.querySelector("main").append(legend);
+    const masthead = document.createElement('header'); masthead.id = 'desk-masthead';
+    masthead.innerHTML = '<span class="desk-publication">FEDERAL ELECTIONS ANALYSIS</span><strong id="desk-edition-title">Election Results 2026</strong><span class="desk-edition-note">Reported results · November 3</span>';
+    document.querySelector('main').prepend(masthead);
+    const index = document.createElement('aside'); index.id = 'desk-race-index'; index.setAttribute('aria-label','Races to watch');
+    document.querySelector('main').append(index);
+    const historyNote = document.createElement('p'); historyNote.id = 'desk-history-map-note'; historyNote.hidden = true; historyNote.setAttribute('role','status');
+    document.querySelector('main').append(historyNote);
     await original.init.call(this);
     this.loadEvidence = {
       timeToUsableMapMs: Math.round(performance.now()),
@@ -141,11 +154,14 @@ window.FEACompleteBoard = function (Page) {
   };
   p.renderMap = async function (...args) {
     const result=await original.map.apply(this,args);
+    this.reflectHistoricalLens();
     this.updateRaceOutlines();
     return result;
   };
   p.renderCountyDetailMap = function (...args) {
     const result=original.county.apply(this,args);
+    this.reflectHistoricalLens();
+    if(this.pastMapSource)this.updateMapFills(new Set([args[0].id]));
     this.updateRaceOutlines();
     return result;
   };
@@ -454,6 +470,11 @@ window.FEACompleteBoard = function (Page) {
       this.renderProjectionQueue();
       if (this.currentRace) this.renderFocusedRace(this.currentRace);
       this.renderPins();
+      if(this.currentPresentation!==T.current.presentation) {
+        this.currentPresentation=T.current.presentation;
+        if(this.currentRace)this.reframeComparison();
+        else this.renderMap().catch(()=>{});
+      }
       document.body.dataset.themeApplyMs = (
         performance.now() - themeStart
       ).toFixed(2);
@@ -461,6 +482,21 @@ window.FEACompleteBoard = function (Page) {
     document
       .querySelector("#focused-race-panel")
       ?.addEventListener("click", (event) => {
+        const historyColumn = event.target.closest('[data-history-column]');
+        if (historyColumn && this.currentRace) {
+          const id = historyColumn.dataset.historyColumn;
+          this.pastColumnIds = this.pastColumnIds?.includes(id) ? this.pastColumnIds.filter(s=>s!==id) : [...(this.pastColumnIds||[]),id].slice(-2);
+          this.renderPastMargins(this.currentRace); this.reframeComparison();
+          [...document.querySelectorAll('[data-history-column]')].find(b=>b.dataset.historyColumn===id)?.focus({preventScroll:true});
+        }
+        const historyMap = event.target.closest('[data-history-map]');
+        if (historyMap && this.currentRace) {
+          const id=historyMap.dataset.historyMap, raceId=this.currentRace.id;
+          this.setHistoricalMap(id).then(()=>{
+            if(this.currentRace?.id===raceId&&(document.activeElement===document.body||document.activeElement===historyMap))
+              [...document.querySelectorAll('[data-history-map]')].find(b=>b.dataset.historyMap===id)?.focus({preventScroll:true});
+          });
+        }
         if (event.target.closest("[data-pin-race]") && this.currentRace)
           this.togglePin(this.currentRace.id);
         if (event.target.closest('[data-past-margin]') && this.currentRace) {
@@ -469,8 +505,17 @@ window.FEACompleteBoard = function (Page) {
           if (this.pastMarginRace && innerWidth <= 600 && !document.getElementById('focused-race-panel').classList.contains('is-expanded'))
             document.querySelector('.sheet-toggle')?.click();
           this.renderPastMargins(race);
+          document.getElementById('focused-race-content').scrollTop=0;
+          if (!this.pastMarginRace) this.setHistoricalMap(null);
+          this.reframeComparison();
         }
       });
+    document.getElementById('desk-race-index')?.addEventListener('click',event=>{
+      const race = event.target.closest('[data-index-race]'); if(race)this.openDashboardRace(race.dataset.indexRace);
+    });
+    document.getElementById('election-map')?.addEventListener('change',event=>{
+      if(event.target.matches('[data-comparison-baseline]'))this.setHistoricalMap(null);
+    });
     document
       .getElementById("desk-pins")
       .addEventListener("click", async (event) => {
@@ -582,15 +627,105 @@ window.FEACompleteBoard = function (Page) {
     }
     tray.scrollLeft = trayScroll;
   };
+  p.mapExtent = function (width,height) {
+    const extent=original.extent.call(this,width,height);
+    if(['broadcast','editorial'].includes(T.current.presentation)&&innerWidth>1000&&!this.currentRace) {
+      const index=document.getElementById('desk-race-index')?.getBoundingClientRect();
+      if(index?.width)extent[0][0]=Math.min(width*.36,index.right+24);
+    }
+    return extent;
+  };
+  p.reframeComparison = function () {
+    // Only deliberate comparison actions reframe; ordinary updates retain zoom.
+    this.positionDeskControls();
+    if (this.detailMapActive) this.focusRenderedSelection('.county-result-shape', {pad:32});
+  };
+  p.reflectHistoricalLens = function () {
+    const lens=document.querySelector('[data-comparison-baseline]'); if(!lens)return;
+    lens.querySelector('[data-historical-lens]')?.remove();
+    if(this.pastMapSource) {
+      const source=this.comparisonManifest.sources.find(s=>s.id===this.pastMapSource);
+      const option=document.createElement('option');option.dataset.historicalLens='';option.value='historical';option.textContent=source.label.replace(/shift$/i,'result');
+      lens.append(option);lens.value='historical';lens.disabled=true;
+    } else {lens.disabled=false;lens.value=this.comparisonMode||'live';}
+  };
+  p.setHistoricalMap = async function (id) {
+    const source = this.comparisonManifest?.sources.find(s=>s.id===id);
+    if(id==='') {
+      this.comparisonMode='live'; this.beforeHistoricalLens=null;
+      try{localStorage.setItem('electionNightComparison','live');}catch{}
+    } else if(!id && this.pastMapSource) {
+      this.comparisonMode=this.beforeHistoricalLens||'live'; this.beforeHistoricalLens=null;
+    } else if(source && !this.pastMapSource) this.beforeHistoricalLens=this.comparisonMode;
+    this.pastMapSource = source && FEAResultsUI.historicalSnapshot(this.currentRace,source,this.comparisonData) ? id : null;
+    this.reflectHistoricalLens();
+    const note = document.getElementById('desk-history-map-note');
+    if(note) { note.hidden = !this.pastMapSource; note.textContent = this.pastMapSource ? `${source.label.replace(/shift$/i,'margin')} · Historical votes, not 2026 results` : ''; }
+    document.body.classList.toggle('history-map-active',Boolean(this.pastMapSource));
+    const raceId=this.currentRace?.id;
+    if(this.pastMapSource && this.detailMapActive && this.currentRace.type!=='house') {
+      if(note)note.textContent='Loading historical map…';
+      await this.loadComparisonDataset('county',source);
+      if(this.currentRace?.id!==raceId||this.pastMapSource!==id)return;
+      const matched=this.visibleCountyFeatures?.some(f=>FEAResultsUI.historicalSnapshot(this.currentRace,source,this.comparisonData,featureCountyFipsForElectionNight(f)));
+      if(note)note.textContent=matched?`${source.label.replace(/shift$/i,'margin')} · Historical votes, not 2026 results`:'No verified historical results for the displayed local boundaries';
+    }
+    this.hideTooltip(); this.updateMapFills(new Set(Object.values(this.dataByMode).flat().map(r=>r.id)));
+    if(this.currentRace)this.renderPastMargins(this.currentRace);
+  };
+  p.historicalMapColor = function (race, fips = null) {
+    const source = this.comparisonManifest?.sources.find(s=>s.id===this.pastMapSource);
+    const snapshot = FEAResultsUI.historicalSnapshot(race,source,this.comparisonData,race?.type==='house'?null:fips), tokens=T.resolved.tokens;
+    return snapshot && snapshot.margin!==0 ? T.mix(tokens['map-neutral'],T.resolved.partyColors[snapshot.margin>0?'D':'R'],Math.min(.95,.45+Math.abs(snapshot.margin)/100)) : tokens['map-neutral'];
+  };
+  p.comparisonColorForRace = function (race) {
+    return this.pastMapSource ? this.historicalMapColor(race) : original.raceColor.call(this,race);
+  };
+  p.comparisonColorForCounty = function (feature,race,lookup) {
+    return this.pastMapSource ? this.historicalMapColor(race,featureCountyFipsForElectionNight(feature)) : original.countyColor.call(this,feature,race,lookup);
+  };
+  p.showTooltip = function (event, html) {
+    if(this.pastMapSource) {
+      const feature = event.currentTarget?.__data__, county=event.currentTarget?.classList?.contains('county-result-shape');
+      const race = county ? this.currentRace : feature ? this.modeRaces().find(r=>this.selectedMode==='house' ? houseGeometryId(r)===feature.properties?.id : r.state===FIPS_TO_STATE[featureStateFipsForElectionNight(feature)]) : null;
+      const source = this.comparisonManifest.sources.find(s=>s.id===this.pastMapSource);
+      const snapshot = FEAResultsUI.historicalSnapshot(race,source,this.comparisonData,county&&race?.type!=='house'?featureCountyFipsForElectionNight(feature):null);
+      html = `<strong>${esc(snapshot?.name || (race ? label(race) : 'Historical result'))}</strong><p>${esc(source.label.replace(/shift$/i,'margin'))}</p>${snapshot ? `<strong>${snapshot.margin>=0?'D':'R'} +${Math.abs(snapshot.margin).toFixed(1)}</strong><p>${snapshot.total.toLocaleString()} votes · Final historical result</p>` : '<p>No verified comparable result</p>'}`;
+    }
+    return original.tooltip.call(this,event,html);
+  };
+  p.selectRace = function (race,...args) {
+    if(this.currentRace?.id!==race.id) {
+      if(this.pastMapSource)this.setHistoricalMap(null);
+      this.pastMarginRace=null; this.pastColumnIds=null;
+    }
+    return original.select.call(this,race,...args);
+  };
+  p.clearFocus = function (...args) {
+    if(this.pastMapSource)this.setHistoricalMap(null);
+    this.pastMarginRace=null; document.body.classList.remove('has-history-comparison');
+    const result=original.clear.apply(this,args);
+    this.renderPresentationShell();
+    return result;
+  };
+  p.switchMode = function (mode,...args) {
+    if(mode!==this.selectedMode) {
+      if(this.pastMapSource)this.setHistoricalMap(null);
+      this.pastMarginRace=null; this.pastColumnIds=null;
+      document.body.classList.remove('has-history-comparison');
+    }
+    return original.mode.call(this,mode,...args);
+  };
   p.renderPastMargins = function (race) {
     let button = document.querySelector('[data-past-margin]');
     if (!button) {
       button = document.createElement('button'); button.type = 'button';
-      button.dataset.pastMargin = ''; button.textContent = 'Past margin';
+      button.dataset.pastMargin = ''; button.textContent = 'Compare years ›';
       button.setAttribute('aria-controls', 'desk-past-margins');
       document.querySelector('.focused-card-head').insertBefore(button, document.querySelector('.focused-close'));
     }
     const open = this.pastMarginRace === race.id;
+    document.body.classList.toggle('has-history-comparison',open);
     button.setAttribute('aria-expanded', String(open));
     let section = document.getElementById('desk-past-margins');
     if (!section) {
@@ -600,6 +735,7 @@ window.FEACompleteBoard = function (Page) {
     }
     section.hidden = !open;
     if (!open) return;
+    const matrixScroll=section.querySelector('.comparison-matrix')?.scrollLeft||0;
     if (this.lockedCounty && race.type !== 'house') {
       this.pastMarginLoads ||= new Map();
       const missing = (this.comparisonManifest?.sources || []).filter(s => s.status === 'available' && s.countyCompatible && s.appliesTo?.includes(race.type) && !this.comparisonData.has(`${s.id}:county`) && !this.pastMarginLoads.has(s.id));
@@ -615,10 +751,30 @@ window.FEACompleteBoard = function (Page) {
     const county = this.panelData(race).counties?.find(c => c.fips === this.lockedCounty);
     const historicalCounty = this.lockedCounty && [...this.comparisonData.values()].flatMap(data => data?.counties || data?.rows || []).find(row => String(row.fips || row.countyFips || '') === String(this.lockedCounty));
     const scopeLabel = this.lockedCounty ? county?.name || historicalCounty?.county || historicalCounty?.name || `Selected area · ${this.lockedCounty}` : label(race);
-    const rows = FEAResultsUI.pastMargins(race, this.comparisonManifest?.sources, this.comparisonData, this.lockedCounty);
-    section.innerHTML = `<header><strong>Past election margins</strong><span>${esc(scopeLabel)}</span></header><dl>${rows.map(row => `<div><dt>${esc(row.label)}</dt><dd class="${row.margin === null ? '' : row.margin > 0 ? 'past-dem' : row.margin < 0 ? 'past-rep' : ''}">${row.margin === null ? '<span aria-label="No verified comparable margin">—</span>' : row.margin === 0 ? 'Even' : `${row.margin > 0 ? 'D' : 'R'} +${Math.abs(row.margin).toFixed(1)}`}</dd></div>`).join('')}</dl><p>Margin in percentage points. Presidential results are labeled separately from this office. Blank (—) means no verified comparison for these boundaries.</p>`;
+    const sources = (this.comparisonManifest?.sources || []).filter(s=>s.id!=='live'&&s.appliesTo?.includes(race.type));
+    this.pastColumnIds ||= [sources.find(s=>s.status==='available')?.id || sources[0]?.id].filter(Boolean);
+    const current = this.lockedCounty ? county || {candidates:[]} : this.panelData(race);
+    const total = FEADesk.total(current), candidates=[...(current.candidates||[])].sort((a,b)=>(b.votes||0)-(a.votes||0));
+    const votes = party => candidates.filter(c=>(c.partyCode||c.party)===party).reduce((n,c)=>n+(c.votes||0),0);
+    const liveMargin=total?(votes('D')-votes('R'))/total*100:null;
+    const marginLabel=value=>value===null?'—':value===0?'Even':`${value>0?'D':'R'} +${Math.abs(value).toFixed(1)}`;
+    const column=(heading,subtitle,snapshot,isCurrent=false)=>{
+      const call=isCurrent?current.calls?.[0]:null;
+      return `<section class="comparison-column ${isCurrent?'comparison-current':''}" aria-label="${esc(heading+' '+subtitle)}"><header><strong class="comparison-year">${esc(heading)}</strong><span>${esc(subtitle)}</span></header><div class="comparison-candidates">${snapshot?snapshot.candidates.map(c=>{
+        const color=T.candidateColor(c,snapshot.candidates),ink=T.foreground(color),party=c.partyCode||c.party||'O';
+        return `<div class="comparison-candidate" style="--candidate-color:${color};--candidate-ink:${ink}"><small>${esc(party)}${call?.candidate===c.name?' · PROJECTED WINNER':''}</small><strong>${esc(c.name)}</strong><b>${snapshot.total?(c.votes/snapshot.total*100).toFixed(1)+'<em>%</em>':'—'}</b><span>${snapshot.total?Number(c.votes).toLocaleString()+' votes':'Awaiting results'}</span></div>`;
+      }).join(''):'<div class="comparison-unavailable"><strong>—</strong><span>No verified result for these boundaries</span></div>'}</div><footer><span>D−R margin</span><strong>${marginLabel(snapshot?.margin??null)}</strong></footer></section>`;
+    };
+    const historical=sources.filter(s=>this.pastColumnIds.includes(s.id));
+    const firstSnapshot=historical[0]&&FEAResultsUI.historicalSnapshot(race,historical[0],this.comparisonData,this.lockedCounty);
+    const shift=liveMargin!==null&&firstSnapshot?liveMargin-firstSnapshot.margin:null;
+    const year=source=>source.id.match(/20\d{2}/)?.[0]||'Last';
+    const office=source=>source.id.startsWith('pres-')?'PRES':race.type.toUpperCase();
+    section.innerHTML=`<header class="comparison-heading"><div><small>PAST & PRESENT</small><strong>${esc(scopeLabel)}</strong></div><span>Earlier elections · Final results</span></header><div class="comparison-workspace"><div class="comparison-matrix" style="--comparison-columns:${1+historical.length}">${column('2026',this.lockedCounty?'This local race':race.type==='house'?'House':race.type==='senate'?'Senate':'Governor',{total,candidates,margin:liveMargin},true)}${historical.map(source=>column(year(source),source.label.replace(/shift$/i,'result').replace(/margin$/i,'result'),FEAResultsUI.historicalSnapshot(race,source,this.comparisonData,this.lockedCounty))).join('')}</div><nav class="comparison-rail" aria-label="Historical comparison controls"><small>COMPARE</small>${sources.map(source=>`<button type="button" data-history-column="${esc(source.id)}" aria-pressed="${this.pastColumnIds.includes(source.id)}">${esc(year(source))}<span>${esc(office(source))}</span></button>`).join('')}<small>MAP</small><button type="button" data-history-map="" aria-pressed="${!this.pastMapSource&&this.comparisonMode==='live'}">2026<span>LIVE</span></button>${sources.map(source=>`<button type="button" data-history-map="${esc(source.id)}" aria-pressed="${this.pastMapSource===source.id}" ${FEAResultsUI.historicalSnapshot(race,source,this.comparisonData)?'':'disabled'}>${esc(year(source))}<span>${esc(office(source))}</span></button>`).join('')}</nav></div><p class="comparison-context">${shift===null?total?'Compare observed results with a verified historical election.':'Awaiting 2026 results. Historical columns show the earlier election, not a forecast.':`${Math.abs(shift).toFixed(1)} points more ${shift>=0?'Democratic':'Republican'} than ${esc(historical[0].label.replace(/shift$/i,'result'))}. Different offices and candidates can produce different results.`} Blank (—) means no verified comparison for these boundaries.</p>`;
+    section.querySelector('.comparison-matrix').scrollLeft=matrixScroll;
   };
   p.renderFocusedRace = function (race) {
+    this.renderPresentationShell();
     const viewKey = `${race?.id}:${this.focusedPanelTab}:${this.lockedCounty || ''}`;
     const viewContent = document.getElementById("focused-race-content");
     const savedScroll = this.completedViewKey === viewKey ? viewContent.scrollTop : 0;
@@ -816,6 +972,20 @@ window.FEACompleteBoard = function (Page) {
     bar.setAttribute("aria-label", caption.textContent);
     bar.title =
       "Called seats and seats not up are resolved. Leading races remain uncalled.";
+    this.renderPresentationShell();
+  };
+  p.renderPresentationShell = function () {
+    const heading=document.getElementById('desk-edition-title');
+    if(heading) heading.textContent=this.currentRace?label(this.currentRace):`${this.selectedMode==='house'?'House':this.selectedMode==='senate'?'Senate':'Governor'} Election Results`;
+    const index=document.getElementById('desk-race-index'); if(!index)return;
+    const focusRace=index.contains(document.activeElement)?document.activeElement.closest('[data-index-race]')?.dataset.indexRace:null;
+    const races=this.modeRaces(),watched=races.filter(r=>r.watch?.watch||r.watch?.tossup);
+    const rows=(watched.length?watched:races).slice(0,8);
+    index.innerHTML=`<header><small>2026 ELECTION</small><h2>${watched.length?'Races to watch':'Race directory'}</h2><p>${races.filter(r=>r.calls?.length).length} called · ${races.filter(r=>!r.calls?.length).length} unresolved</p></header>${rows.map(r=>{
+      const total=FEADesk.total(r),leader=[...(r.candidates||[])].sort((a,b)=>b.votes-a.votes)[0],call=r.calls?.[0];
+      return `<button type="button" data-index-race="${esc(r.id)}" style="--race-accent:${total&&leader?T.candidateColor(leader,r.candidates):T.resolved.tokens['panel-border']}"><strong>${esc(label(r))}</strong><span>${esc(call?'Called · '+call.candidate:total?'Leading · '+leader.name:'Awaiting results')}</span><b aria-hidden="true">›</b></button>`;
+    }).join('')}<p class="desk-index-note">Select a race or explore the map. Leading races remain uncalled.</p>`;
+    if(focusRace)[...index.querySelectorAll('[data-index-race]')].find(b=>b.dataset.indexRace===focusRace)?.focus({preventScroll:true});
   };
   p.queueProjection = function (event) {
     if (document.hidden || this.suppressDeskEvents) return;

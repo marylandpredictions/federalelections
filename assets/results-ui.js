@@ -67,6 +67,27 @@
     );
     return margin(row);
   }
+  function historicalSnapshot(race, source, datasets = new Map(), countyFips = null) {
+    if (!race || !source || source.status !== 'available' || !source.appliesTo?.includes(race.type)) return null;
+    let row, value;
+    if (countyFips) {
+      const data = datasets.get(`${source.id}:county`);
+      if (race.type === 'house' || source.countyCompatible !== true || data?.marginBasis !== 'all-votes') return null;
+      const matches = (data.counties || data.rows || []).filter(r => String(r.fips || r.countyFips || '') === String(countyFips) && r.valid !== false);
+      if (matches.length !== 1) return null;
+      row = matches[0]; value = margin(row);
+    } else {
+      value = baselineMargin(race, source, {state:datasets.get(`${source.id}:state`),district:datasets.get(`${source.id}:district`)});
+      row = race.type === 'house' ? datasets.get(`${source.id}:district`)?.districts?.find(r=>r.id===districtId(race)) : datasets.get(`${source.id}:state`)?.states?.find(r=>r.state===race.state&&r.valid!==false);
+    }
+    if (!Number.isFinite(value) || !row) return null;
+    const total = Number(row.totalVotes), other = total - Number(row.demVotes) - Number(row.repVotes);
+    return {margin:value,total,name:row.county||row.name,candidates:[
+      {name:source.candidateLabels?.D||'Democratic',party:'D',votes:Number(row.demVotes)},
+      {name:source.candidateLabels?.R||'Republican',party:'R',votes:Number(row.repVotes)},
+      ...(other > 0 ? [{name:'Other votes',party:'O',votes:other}] : []),
+    ]};
+  }
   function pastMargins(race, sources = [], datasets = new Map(), countyFips = null) {
     return sources.filter(s => s.id !== 'live' && s.appliesTo?.includes(race?.type)).map(source => {
       let value = NaN;
@@ -134,6 +155,7 @@
     districtId,
     baselineMargin,
     pastMargins,
+    historicalSnapshot,
     shift,
     stateLabel,
     feedLabel,

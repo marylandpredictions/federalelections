@@ -118,13 +118,13 @@
       R: "#ff2a4f",
     }),
     make("nbc-big-board", "NBC Big Board", "light", "#174b91", {
-      D: "#0075d5",
-      R: "#e52330",
+      D: "#0078bd",
+      R: "#c8203f",
       I: "#8b57b5",
       O: "#d59119",
     }, {
-      "board-bg": "#e8edf3",
-      "map-bg": "#e8edf3",
+      "board-bg": "#e1e3e5",
+      "map-bg": "#e1e3e5",
       "map-neutral": "#b7c2ce",
       "panel-bg": "#ffffff",
       "panel-raised": "#eef3f9",
@@ -141,9 +141,9 @@
       "chart-line": "#174b91",
     }),
     make("nyt-results", "NYT Results", "light", "#333333", {
-      D: "#2676bc", R: "#d84040", I: "#8872a8", O: "#a5792a",
+      D: "#2b6b9c", R: "#c5232b", I: "#8872a8", O: "#a5792a",
     }, {
-      "board-bg": "#f7f7f5", "map-bg": "#f7f7f5", "map-neutral": "#d8d8d4",
+      "board-bg": "#ffffff", "map-bg": "#ffffff", "map-neutral": "#d9d9d9",
       "panel-bg": "#ffffff", "panel-raised": "#f1f1ee", "panel-border": "#8b8b85",
       "text-primary": "#151515", "text-secondary": "#41413d", "text-muted": "#55554f",
       "state-border": "#ffffff", "district-border": "#ffffff", "county-border": "#6b6b66",

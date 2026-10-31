@@ -439,7 +439,7 @@ window.FEAEnhanceBoard = function (Page) {
             .attr("fill", this.comparisonColorForCounty(f, detail, lookup))
             .classed(
               "election-map-muted",
-              !county && !this.isComparisonActive(),
+              !county && !this.isComparisonActive() && !this.pastMapSource,
             );
           if (before && FEADesk.total(county) !== FEADesk.total(before)) {
             nodes[i].classList.remove("county-updated");
@@ -910,7 +910,7 @@ window.FEAEnhanceBoard = function (Page) {
       .sort((a, b) => b.votes - a.votes)
       .map(
         (c) =>
-          `<tr class="${call?.candidate === c.name ? "is-projected" : ""}"><td><span class="selected-party-rail" style="background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></span><strong>${esc(c.name)} ${!call&&total&&c.votes===max?`<span class="desk-leader-tag">${tied?"Tied":"Leading"}</span>`:""} ${call?.candidate === c.name ? '<span class="winner-check" aria-label="Projected winner">✓</span>' : ""}</strong><small>${esc(c.partyLabels?.length?c.partyLabels.join(" / "):partyLabel(party(c)))}${c.writeIn?" · Write-in":""}${c.ballotStatus?" · "+esc(c.ballotStatus):""}</small>${total?`<span class="desk-candidate-track" aria-hidden="true"><i data-bar-id="${esc(c.id||c.name)}" style="width:${Math.max(0,Math.min(100,c.votes/total*100))}%;background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></i></span>`:''}</td><td data-number="${esc(c.name)}-votes">${total ? fmt(c.votes) : "—"}</td><td data-number="${esc(c.name)}-share">${total ? percent((c.votes / total) * 100) : "—"}</td></tr>`,
+          `<tr class="${call?.candidate === c.name ? "is-projected" : ""}" style="--candidate-color:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)};--candidate-ink:${window.FEADeskTheme?.foreground(window.FEADeskTheme.candidateColor(c,row.candidates))||'#ffffff'}"><td><span class="selected-party-rail" style="background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></span><strong>${esc(c.name)} ${!call&&total&&c.votes===max?`<span class="desk-leader-tag">${tied?"Tied":"Leading"}</span>`:""} ${call?.candidate === c.name ? '<span class="winner-check" aria-label="Projected winner">✓</span>' : ""}</strong><small>${esc(c.partyLabels?.length?c.partyLabels.join(" / "):partyLabel(party(c)))}${c.writeIn?" · Write-in":""}${c.ballotStatus?" · "+esc(c.ballotStatus):""}</small>${total?`<span class="desk-candidate-track" aria-hidden="true"><i data-bar-id="${esc(c.id||c.name)}" style="width:${Math.max(0,Math.min(100,c.votes/total*100))}%;background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></i></span>`:''}</td><td data-number="${esc(c.name)}-votes">${total ? fmt(c.votes) : "—"}</td><td data-number="${esc(c.name)}-share">${total ? percent((c.votes / total) * 100) : "—"}</td></tr>`,
       )
       .join("")}</tbody></table>`;
   };
