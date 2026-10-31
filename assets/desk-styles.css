@@ -1,0 +1,78 @@
+/* Presentation profiles use the same semantic colors and race DOM. No sizing
+   profile overrides the operator's saved panel dimensions or mobile sheet. */
+.results-board .focused-card-head { flex-wrap: wrap; gap: 5px; }
+.results-board [data-past-margin] { min-height: 32px; padding: 5px 8px; font: inherit; font-size: .65rem; color: var(--text-primary); background: var(--control-bg); border: 1px solid var(--panel-border); border-radius: 4px; cursor: pointer; }
+.results-board [data-past-margin][aria-expanded="true"] { border-color: var(--focus); box-shadow: inset 0 -2px var(--focus); }
+.results-board #desk-past-margins { padding: 12px; margin: 0 0 10px; background: var(--panel-raised); border: 1px solid var(--panel-border); border-radius: 6px; }
+.results-board #desk-past-margins[hidden] { display: none; }
+.results-board #desk-past-margins header { display: grid; gap: 3px; font-size: .8rem; }
+.results-board #desk-past-margins header span, .results-board #desk-past-margins p { color: var(--text-secondary); font-size: .68rem; line-height: 1.5; }
+.results-board #desk-past-margins p { margin: 8px 0 0; }
+.results-board #desk-past-margins dl { margin: 8px 0; }
+.results-board #desk-past-margins dl > div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--panel-border); }
+.results-board #desk-past-margins dt { font-size: .72rem; }
+.results-board #desk-past-margins dd { margin: 0; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.results-board #desk-past-margins .past-dem { color: color-mix(in srgb, var(--party-d-text) 80%, var(--text-primary)); }
+.results-board #desk-past-margins .past-rep { color: color-mix(in srgb, var(--party-r-text) 80%, var(--text-primary)); }
+
+/* Broadcast: flat rectangular modules, bolder hierarchy, full-width tabs,
+   tall vote tracks and a scoreboard treatment for the chamber. */
+.results-board[data-presentation="broadcast"] { font-family: Arial, Helvetica, sans-serif; }
+.results-board[data-presentation="broadcast"] :is(.election-focus-panel,.election-chamber-board,.election-mode-toggle,.desk-pin,#night-drawer,#desk-past-margins) { border-radius: 2px; box-shadow: none; }
+.results-board[data-presentation="broadcast"] .election-focus-panel { border-top: 5px solid var(--focus); }
+.results-board[data-presentation="broadcast"] #focused-race-title { font-size: clamp(1.3rem, 2.1vw, 1.9rem); font-weight: 900; text-transform: uppercase; letter-spacing: -.035em; line-height: 1.05; }
+.results-board[data-presentation="broadcast"] .election-mode-toggle button { border-radius: 0; text-transform: uppercase; letter-spacing: .04em; font-weight: 900; }
+.results-board[data-presentation="broadcast"] .election-chamber-labels strong { font-size: 1.8rem; font-weight: 900; }
+.results-board[data-presentation="broadcast"] .election-chamber-bar { height: 16px; border-radius: 0; }
+.results-board[data-presentation="broadcast"] .desk-tabs { gap: 0; border: 1px solid var(--panel-border); margin-inline: 0; }
+.results-board[data-presentation="broadcast"] .desk-tabs button { border-right: 1px solid var(--panel-border); }
+.results-board[data-presentation="broadcast"] .desk-tabs button[aria-selected="true"] { background: var(--text-primary); color: var(--panel-bg); border-bottom-color: var(--watch); }
+.results-board[data-presentation="broadcast"] .selected-race-table td { padding-block: 16px; }
+.results-board[data-presentation="broadcast"] .selected-race-table td strong { font-size: 1.05rem; font-weight: 900; }
+.results-board[data-presentation="broadcast"] .selected-race-table td:last-child { font-size: 1.25rem; font-weight: 900; }
+.results-board[data-presentation="broadcast"] .desk-candidate-track { height: 9px; border-radius: 0; }
+.results-board[data-presentation="broadcast"] .trend-summary { background: var(--panel-raised); padding: 12px; border-left: 4px solid var(--focus); }
+.results-board[data-presentation="broadcast"] .trend-summary strong { font-size: 26px; font-weight: 900; }
+
+/* Editorial: serif headings, quiet rules, compact data tables, unboxed tabs.
+   Everything remains palette-aware when used with a custom dark theme. */
+.results-board[data-presentation="editorial"] { font-family: Arial, Helvetica, sans-serif; }
+.results-board[data-presentation="editorial"] :is(.election-focus-panel,.election-chamber-board,.election-mode-toggle,.desk-pin,#night-drawer,#desk-past-margins) { border-radius: 0; box-shadow: none; }
+.results-board[data-presentation="editorial"] :is(#focused-race-title,#desk-past-margins header strong,#night-drawer h2) { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-spacing: -.03em; }
+.results-board[data-presentation="editorial"] #focused-race-title { font-size: 1.8rem; line-height: 1.1; border-bottom: 2px solid var(--text-primary); padding-bottom: 12px; }
+.results-board[data-presentation="editorial"] .election-mode-toggle { border: 0; border-bottom: 1px solid var(--panel-border); padding: 0; }
+.results-board[data-presentation="editorial"] .election-mode-toggle button { border-radius: 0; font-size: .78rem; }
+.results-board[data-presentation="editorial"] .election-mode-toggle button.active { background: transparent; box-shadow: inset 0 -2px var(--text-primary); }
+.results-board[data-presentation="editorial"] .desk-tabs { gap: 12px; border-bottom-color: var(--text-primary); }
+.results-board[data-presentation="editorial"] .desk-tabs button { flex: 0 0 auto; text-transform: capitalize; font-size: .73rem; font-weight: 500; padding-inline: 0; }
+.results-board[data-presentation="editorial"] .desk-tabs button[aria-selected="true"] { background: transparent; border-bottom-color: var(--text-primary); font-weight: 700; }
+.results-board[data-presentation="editorial"] .selected-race-table th { border-bottom: 1px solid var(--text-primary); font-weight: 500; text-transform: none; }
+.results-board[data-presentation="editorial"] .selected-race-table td { padding-block: 11px; font-weight: 500; }
+.results-board[data-presentation="editorial"] .selected-race-table td strong { font-size: .9rem; font-weight: 600; }
+.results-board[data-presentation="editorial"] .desk-candidate-track { height: 3px; border-radius: 0; }
+.results-board[data-presentation="editorial"] .election-chamber-bar { height: 7px; border-radius: 0; }
+.results-board[data-presentation="editorial"] .election-chamber-bar::after { display: none; }
+.results-board[data-presentation="editorial"] .trend-summary { border-bottom: 1px solid var(--panel-border); }
+.results-board[data-presentation="editorial"] .trend-summary strong { font-family: Georgia, 'Times New Roman', serif; font-size: 24px; }
+
+.results-board[data-presentation="contrast"] :is(.election-focus-panel,.election-chamber-board,.desk-tabs,#desk-past-margins) { border-width: 2px; border-radius: 3px; }
+.results-board[data-presentation="contrast"] :is(.desk-tabs button,.selected-race-table td,.selected-race-table td small) { font-size: .85rem; }
+.results-board[data-presentation="contrast"] .selected-race-table td { border-bottom: 2px solid var(--panel-border); }
+.results-board[data-presentation="contrast"] .desk-candidate-track { height: 8px; }
+.results-board[data-presentation="studio"] .election-focus-panel { border-radius: 20px; border-top: 4px solid var(--focus); }
+.results-board[data-presentation="studio"] #focused-race-title { font-size: 1.6rem; letter-spacing: -.04em; }
+.results-board[data-presentation="studio"] .desk-tabs { border: 0; gap: 5px; }
+.results-board[data-presentation="studio"] .desk-tabs button { border-radius: 9px; border: 1px solid var(--panel-border); }
+.results-board[data-presentation="studio"] .desk-candidate-track { height: 7px; border-radius: 8px; }
+@media (min-width: 1101px) {
+  .results-board[data-presentation="broadcast"] .board-top-controls { width: min(740px, 53vw); }
+  .results-board[data-presentation="editorial"] .board-top-controls { width: min(700px, 51vw); grid-template-columns: auto 1fr; gap: 18px; align-items: center; }
+  .results-board[data-presentation="editorial"] .election-mode-toggle button { padding-inline: 12px; }
+}
+@media (max-width: 600px), (max-height: 500px) {
+  .results-board[data-presentation] #focused-race-title { font-size: 1.15rem; padding-bottom: 4px; }
+  .results-board[data-presentation] .selected-race-table td { padding-block: 8px; }
+  .results-board[data-presentation] .selected-race-table td:last-child { font-size: .9rem; }
+  .results-board #desk-past-margins { padding: 8px; }
+  .results-board #desk-past-margins p { font-size: .62rem; }
+}

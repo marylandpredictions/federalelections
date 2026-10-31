@@ -27,6 +27,14 @@
 @media(prefers-reduced-motion:reduce){.fea-projections .projection-toast{animation:none}}
 [data-motion="reduced"] .fea-projections .projection-toast { animation:none; }
 
+/* Shared presentation profiles keep public and OBS projection cards aligned. */
+[data-presentation="broadcast"] .fea-projections .projection-toast { border-radius: 2px; box-shadow: none; border-top: 4px solid var(--party-accent, var(--focus)); }
+[data-presentation="broadcast"] .fea-projections .projection-toast h3 { text-transform: uppercase; font-weight: 900; letter-spacing: -.025em; }
+[data-presentation="editorial"] .fea-projections .projection-toast { border-radius: 0; box-shadow: none; border-top: 2px solid var(--text-primary); }
+[data-presentation="editorial"] .fea-projections .projection-toast h3 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; }
+[data-presentation="contrast"] .fea-projections .projection-toast { border-width: 2px; }
+[data-presentation="studio"] .fea-projections .projection-toast { border-radius: 18px; }
+
 /* Public cards scale within the existing phone/landscape safe-area layout. */
 .results-board #projection-alerts { font-size:14px; }
 @media(max-width:600px){.results-board #projection-alerts{font-size:13px}}

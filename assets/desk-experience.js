@@ -463,6 +463,13 @@ window.FEACompleteBoard = function (Page) {
       ?.addEventListener("click", (event) => {
         if (event.target.closest("[data-pin-race]") && this.currentRace)
           this.togglePin(this.currentRace.id);
+        if (event.target.closest('[data-past-margin]') && this.currentRace) {
+          const race = this.currentRace;
+          this.pastMarginRace = this.pastMarginRace === race.id ? null : race.id;
+          if (this.pastMarginRace && innerWidth <= 600 && !document.getElementById('focused-race-panel').classList.contains('is-expanded'))
+            document.querySelector('.sheet-toggle')?.click();
+          this.renderPastMargins(race);
+        }
       });
     document
       .getElementById("desk-pins")
@@ -575,6 +582,42 @@ window.FEACompleteBoard = function (Page) {
     }
     tray.scrollLeft = trayScroll;
   };
+  p.renderPastMargins = function (race) {
+    let button = document.querySelector('[data-past-margin]');
+    if (!button) {
+      button = document.createElement('button'); button.type = 'button';
+      button.dataset.pastMargin = ''; button.textContent = 'Past margin';
+      button.setAttribute('aria-controls', 'desk-past-margins');
+      document.querySelector('.focused-card-head').insertBefore(button, document.querySelector('.focused-close'));
+    }
+    const open = this.pastMarginRace === race.id;
+    button.setAttribute('aria-expanded', String(open));
+    let section = document.getElementById('desk-past-margins');
+    if (!section) {
+      section = document.createElement('section'); section.id = 'desk-past-margins';
+      section.setAttribute('aria-label', 'Past election margins');
+      document.getElementById('focused-race-content').prepend(section);
+    }
+    section.hidden = !open;
+    if (!open) return;
+    if (this.lockedCounty && race.type !== 'house') {
+      this.pastMarginLoads ||= new Map();
+      const missing = (this.comparisonManifest?.sources || []).filter(s => s.status === 'available' && s.countyCompatible && s.appliesTo?.includes(race.type) && !this.comparisonData.has(`${s.id}:county`) && !this.pastMarginLoads.has(s.id));
+      for (const source of missing) {
+        // Cache and deduplicate the existing county dataset; never fetch per county.
+        const loading = this.loadComparisonDataset('county', source);
+        this.pastMarginLoads.set(source.id, loading);
+        loading.then(() => {
+          if (this.currentRace?.id === race.id && this.pastMarginRace === race.id) this.renderPastMargins(this.currentRace);
+        }).catch(() => {}).finally(() => this.pastMarginLoads.delete(source.id));
+      }
+    }
+    const county = this.panelData(race).counties?.find(c => c.fips === this.lockedCounty);
+    const historicalCounty = this.lockedCounty && [...this.comparisonData.values()].flatMap(data => data?.counties || data?.rows || []).find(row => String(row.fips || row.countyFips || '') === String(this.lockedCounty));
+    const scopeLabel = this.lockedCounty ? county?.name || historicalCounty?.county || historicalCounty?.name || `Selected area · ${this.lockedCounty}` : label(race);
+    const rows = FEAResultsUI.pastMargins(race, this.comparisonManifest?.sources, this.comparisonData, this.lockedCounty);
+    section.innerHTML = `<header><strong>Past election margins</strong><span>${esc(scopeLabel)}</span></header><dl>${rows.map(row => `<div><dt>${esc(row.label)}</dt><dd class="${row.margin === null ? '' : row.margin > 0 ? 'past-dem' : row.margin < 0 ? 'past-rep' : ''}">${row.margin === null ? '<span aria-label="No verified comparable margin">—</span>' : row.margin === 0 ? 'Even' : `${row.margin > 0 ? 'D' : 'R'} +${Math.abs(row.margin).toFixed(1)}`}</dd></div>`).join('')}</dl><p>Margin in percentage points. Presidential results are labeled separately from this office. Blank (—) means no verified comparison for these boundaries.</p>`;
+  };
   p.renderFocusedRace = function (race) {
     const viewKey = `${race?.id}:${this.focusedPanelTab}:${this.lockedCounty || ''}`;
     const viewContent = document.getElementById("focused-race-content");
@@ -606,6 +649,7 @@ window.FEACompleteBoard = function (Page) {
       (this.pinnedIds.includes(race.id) ? "Unpin " : "Pin ") + label(race),
     );
     pin.setAttribute("aria-pressed", String(this.pinnedIds.includes(race.id)));
+    this.renderPastMargins(race);
     if (this.focusedPanelTab === "counties" && !this.lockedCounty) {
       const data=this.panelData(race),rows = [...(data.counties || [])],sortLabel=data.localReporting?'Sort towns / cities':'Sort counties';
       const select = document.createElement("label");

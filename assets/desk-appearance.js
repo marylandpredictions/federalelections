@@ -121,6 +121,15 @@ window.FEAAppearance = function () {
     };
     modeLabel.append(mode);
     simple.append(modeLabel);
+    const styleLabel = el('label', 'Appearance style'), style = el('select');
+    style.setAttribute('aria-label', 'Appearance style');
+    for (const [value, name] of Object.entries(T.styles)) {
+      const option = el('option', name); option.value = value; style.append(option);
+    }
+    style.value = draft.presentation;
+    style.onchange = () => { draft.presentation = style.value; preview(); };
+    styleLabel.append(style); simple.append(styleLabel);
+    simple.append(el('p', 'Style changes typography, spacing, tables and panel treatments. Colors remain customizable.'));
     const motionLabel = el("label", "Reduce motion"),
       motion = el("input");
     motion.type = "checkbox";

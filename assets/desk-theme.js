@@ -31,6 +31,13 @@
     ],
   };
   const tokenNames = Object.values(groups).flat();
+  // Presentation survives saving/duplicating a preset under a custom ID.
+  const styles = {
+    standard: 'FEA balanced', broadcast: 'NBC broadcast', editorial: 'NYT editorial',
+    contrast: 'High visibility', studio: 'California studio',
+  };
+  const presetStyles = { 'nbc-big-board': 'broadcast', 'nyt-results': 'editorial',
+    'high-contrast': 'contrast', 'california-inspired': 'studio' };
   function validate(raw) {
     if (
       !raw ||
@@ -63,6 +70,8 @@
     }
     if (raw.motion !== undefined && !["system", "reduced"].includes(raw.motion))
       throw Error("Invalid motion preference.");
+    if (raw.presentation !== undefined && !Object.hasOwn(styles, raw.presentation))
+      throw Error("Invalid appearance style.");
     return {
       schemaVersion: 1,
       id: raw.id,
@@ -72,6 +81,7 @@
       partyColors,
       advanced,
       motion: raw.motion || "system",
+      presentation: raw.presentation || presetStyles[raw.id] || 'standard',
     };
   }
   const make = (
@@ -287,6 +297,7 @@
       document.body.style.colorScheme = resolved.mode;
       document.body.dataset.motion = current.motion;
       document.body.dataset.themePreset = current.id;
+      document.body.dataset.presentation = current.presentation;
       for (const [k, v] of Object.entries(resolved.tokens))
         document.body.style.setProperty("--" + k, v);
       for (const [k, v] of Object.entries(resolved.partyColors)) {
@@ -316,6 +327,7 @@
     presets,
     groups,
     tokenNames,
+    styles,
     mix,
     contrast,
     foreground,

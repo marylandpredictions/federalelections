@@ -67,6 +67,23 @@
     );
     return margin(row);
   }
+  function pastMargins(race, sources = [], datasets = new Map(), countyFips = null) {
+    return sources.filter(s => s.id !== 'live' && s.appliesTo?.includes(race?.type)).map(source => {
+      let value = NaN;
+      if (countyFips) {
+        // Never substitute statewide or district returns for a local reporting unit.
+        const data = datasets.get(`${source.id}:county`);
+        if (race.type !== 'house' && source.status === 'available' && source.countyCompatible === true && data?.marginBasis === 'all-votes') {
+          const rows = data.counties || data.rows || [];
+          const matches = rows.filter(r => String(r.fips || r.countyFips || '') === String(countyFips) && r.valid !== false);
+          if (matches.length === 1) value = margin(matches[0]);
+        }
+      } else value = baselineMargin(race, source, {
+        state: datasets.get(`${source.id}:state`), district: datasets.get(`${source.id}:district`),
+      });
+      return { id: source.id, label: source.label.replace(/shift$/i, 'margin'), margin: Number.isFinite(value) ? value : null };
+    });
+  }
   function shift(current, baseline) {
     const a = finite(current),
       b = finite(baseline);
@@ -116,6 +133,7 @@
     margin,
     districtId,
     baselineMargin,
+    pastMargins,
     shift,
     stateLabel,
     feedLabel,
