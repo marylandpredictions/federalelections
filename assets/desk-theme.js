@@ -126,20 +126,25 @@
       "board-bg": "#1c2c44",
       "map-bg": "#1c2c44",
       "map-neutral": "#858c9a",
-      "panel-bg": "#ffffff",
-      "panel-raised": "#eef3f9",
+      "panel-bg": "#20334a",
+      "panel-raised": "#2b415b",
       "panel-border": "#627b9b",
-      "text-primary": "#102b50",
-      "text-secondary": "#3d526c",
-      "text-muted": "#43556b",
+      "text-primary": "#f4f7fc",
+      "text-secondary": "#cbd6e3",
+      "text-muted": "#bac9db",
       "state-border": "#ffffff",
       "district-border": "#ffffff",
       "county-border": "#ffffff",
       selection: "#ffce00",
-      focus: "#174b91",
+      focus: "#ffce00",
       watch: "#ffce00",
       tossup: "#ffce00",
-      "chart-line": "#174b91",
+      "chart-line": "#8dc9ff",
+      "control-bg": "#2b415b", "hover-bg": "#354d68",
+      "tooltip-bg": "#20334a", "projection-bg": "#20334a",
+      "poll-bg": "#20334a", "tray-bg": "#20334a",
+      "pin-bg": "#20334a", "race-window-bg": "#20334a",
+      "chart-axis": "#cbd6e3", "chart-grid": "#50657d",
     }),
     make("nyt-results", "NYT Results", "light", "#333333", {
       D: "#2b6b9c", R: "#c5232b", I: "#8872a8", O: "#a5792a",
@@ -283,6 +288,15 @@
         const advanced={...x.current.advanced};
         for(const [name,oldValue,newValue] of [['board-bg','#e1e3e5','#1c2c44'],['map-bg','#e1e3e5','#1c2c44'],['map-neutral','#b7c2ce','#858c9a']])
           if(advanced[name]===oldValue)advanced[name]=newValue;
+        // Migrate only the previous built-in surface palette. Saved custom IDs
+        // and individual custom token values remain untouched.
+        const previous={'panel-bg':'#ffffff','panel-raised':'#eef3f9','panel-border':'#627b9b','text-primary':'#102b50','text-secondary':'#3d526c','text-muted':'#43556b','focus':'#174b91','chart-line':'#174b91'};
+        const slate=presets.find(p=>p.id==='nbc-big-board').advanced;
+        if(advanced['panel-bg']===previous['panel-bg']){
+          for(const name of ['control-bg','hover-bg','tooltip-bg','projection-bg','poll-bg','tray-bg','pin-bg','race-window-bg','chart-axis','chart-grid'])
+            if(!advanced[name])advanced[name]=slate[name];
+        }
+        for(const [name,value] of Object.entries(previous))if(advanced[name]===value)advanced[name]=slate[name];
         x.current={...x.current,advanced};
       }
       return {

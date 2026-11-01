@@ -162,3 +162,33 @@ The final full results suite passed with 217 tests (0 skipped), including the
 palette migration and shared-renderer scope checks. Phone checks found and fixed an inherited auto-height rule
 that had allowed the race sheet to grow above the viewport. Physical touch/pen
 hardware and actual TV viewing still require external verification.
+
+
+### Clean display on another screen
+
+Choose **Open clean display** in the three-dot menu on Map maker or Results.
+Move the new browser window onto the external display. The controlling window
+keeps its tools. The receiver hides editing controls, pencil, menus (even when
+open on the controller), map controls and bottom operator controls, and expands
+the map. The public map, selection, comparisons, theme, zoom and ink follow the
+controller. Drawing follows at up to roughly three updates a second; this is a
+presentation stream, not an independent operator window.
+
+Both windows must be in the **same browser/profile and origin**. Allow popups for
+this site. No public feed polling or local-preference writes run in the receiver.
+Updates are bounded and coalesced; the last frame remains visible if the sender
+closes, with a paused warning after approximately 25 seconds. Keep the controller
+open and awake. After reloading it, reopen the clean display from the menu.
+
+Safari's ordinary AirPlay **screen mirroring sends the same pixels** to iPad and
+TV. This website cannot give that mirror a different layout. The separate-window
+mode requires a setup that actually allows a separate browser window on the
+external screen (for example an extended desktop). It is not a cross-device link
+or a native iPad external-display app. Real iPad/TV behavior still needs physical
+verification. See [Apple screen-mirroring guidance](https://support.apple.com/en-gb/102661).
+
+Race detail now uses the Results Albers fitting and state context asset, keeping
+neighboring geography behind selected counties. The selected counties alone
+determine framing; context never changes district eligibility or history scope.
+NBC's default panels use coordinated slate surfaces and softer corners; party
+rails and large broadcast numerals remain. Saved custom themes retain their values.

@@ -1,0 +1,30 @@
+/* Read-only receiver only. Controller layout and controls never change. */
+html[data-clean-display],html[data-clean-display] body { margin:0!important;width:100%;height:100dvh!important;overflow:hidden!important; }
+#clean-display-wait { position:fixed;inset:35% 10% auto;text-align:center;color:#e7eefb;font:24px system-ui; }
+html[data-clean-display] body { background:#1c2c44; }
+#clean-display-content { display:contents; }
+html[data-clean-display] :is(.board-overflow,#board-menu,.maker-tools,.maker-draw-button,#maker-draw-tools,.prediction-map-controls,.election-map-controls,#maker-county-reset,#maker-status,#night-controls,#night-drawer,#night-calls,#desk-map-legend,#desk-race-index,.focus-resize-handle,.focused-close,.sheet-toggle,.desk-panel-tools,.maker-detail-actions,.maker-rating-control,#maker-county-apply,.prediction-map-tooltip,.election-map-tooltip,.map-tooltip,.desk-tabs,.comparison-rail,.county-focus-band button) { display:none!important; }
+html[data-clean-display] .map-maker .maker-workspace,
+html[data-clean-display] body.map-maker.maker-detail-open[data-presentation] .maker-workspace { position:absolute!important;inset:170px 18px 12px!important;margin:0!important;display:block!important; }
+html[data-clean-display] .maker-map-region { width:100%!important;height:100%!important; }
+html[data-clean-display] .map-maker #maker-map { height:100%!important; }
+html[data-clean-display] .map-maker .board-top-controls { position:absolute!important;top:88px!important;left:18px!important;right:18px!important;width:auto!important;margin:0!important; }
+html[data-clean-display] .map-maker[data-presentation="broadcast"] .board-top-controls { width:var(--maker-tower-width,200px)!important;bottom:18px!important; }
+html[data-clean-display] .map-maker[data-presentation="broadcast"] .maker-workspace { left:calc(var(--maker-tower-width,200px) + 44px)!important;top:90px!important; }
+html[data-clean-display] .map-maker #desk-masthead { padding-right:18px!important; }
+html[data-clean-display] .is-drawing #maker-ink { pointer-events:none!important; }
+html[data-clean-display] .election-map-shell { bottom:12px!important; }
+html[data-clean-display] .map-maker #focused-race-panel { max-height:calc(100dvh - 190px)!important; }
+@media (prefers-reduced-motion:reduce) { html[data-clean-display] * { animation:none!important;transition:none!important; } }
+
+html[data-clean-display] :is(.election-mode-toggle,#maker-detail-note,.desk-lab-tools) { display:none!important; }
+html[data-clean-display] .map-maker[data-presentation="broadcast"].maker-detail-open .maker-workspace { left:18px!important; }
+html[data-clean-display] .map-maker.maker-detail-open #maker-county-map { inset:0!important;height:100%!important; }
+html[data-clean-display] .map-maker #focused-race-content { scrollbar-width:none; }
+html[data-clean-display] .map-maker #focused-race-content::-webkit-scrollbar { display:none; }
+
+#clean-display-health { position:fixed;right:20px;bottom:10px;z-index:9999;font:14px system-ui;padding:8px 12px;background:#20334a;color:#fff;border-left:3px solid #ffce00; }
+#clean-display-health[hidden] { display:none; }
+html[data-clean-display] body > #clean-display-content { pointer-events:none; }
+
+html[data-clean-display] .map-maker[data-presentation="broadcast"] .election-chamber-board { top:0!important; }

@@ -120,3 +120,15 @@
   .results-board[data-presentation="broadcast"] .comparison-matrix { grid-template-columns:repeat(var(--comparison-columns),minmax(0,1fr)); }
   .results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate strong { font-size:17px; }
 }
+
+/* Integrated broadcast surfaces: retain the numbers and party rails without
+   stark white islands against the map. Applies to saved broadcast styles too. */
+.results-board[data-presentation="broadcast"] :is(.election-focus-panel,.election-chamber-board,#desk-race-index,#desk-pins,#night-drawer,.fea-projection-card,.comparison-column) {
+ border-radius:9px; border-width:1px; box-shadow:0 8px 24px #00000024;
+}
+.results-board[data-presentation="broadcast"] .election-focus-panel { border-top:3px solid var(--selection); }
+.results-board[data-presentation="broadcast"] :is(.selected-race-table tbody tr,.comparison-candidate) { border-radius:5px;overflow:hidden; }
+.results-board[data-presentation="broadcast"] .desk-tabs { border-bottom:1px solid var(--panel-border); }
+.results-board[data-presentation="broadcast"] .focused-card-head { background:var(--panel-raised); }
+
+.results-board[data-presentation="broadcast"] .desk-tabs button[aria-selected="true"] { background:var(--panel-raised);color:var(--text-primary);box-shadow:inset 0 -3px var(--selection); }

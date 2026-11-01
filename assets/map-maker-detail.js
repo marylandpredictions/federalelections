@@ -5,7 +5,7 @@
   const label=source=>source.id.startsWith('pres-')?source.id.slice(5)+' President':source.id==='house-2024'?'2024 House':source.id==='senate-last'?'Previous Senate election':'Previous governor election';
   function create({model,brush,edited,title,onContext=()=>{}}){
     const $=id=>document.getElementById(id),panel=$('focused-race-panel'),cache=new Map(),datasets=new Map();
-    let race,unit='',features=[],sources=[],active='ratings',sequence=0,geography,manifest,countyData,districtData,roster=[];
+    let race,unit='',features=[],sources=[],active='ratings',sequence=0,geography,manifest,countyData,districtData,roster=[],contextStates=[];
     async function json(file){if(!file)throw Error('Data unavailable');if(!cache.has(file)){if(cache.size>24)cache.delete(cache.keys().next().value);cache.set(file,fetch('/'+file.replace(/^\//,'')).then(r=>{if(!r.ok)throw Error('Data unavailable');return r.json();}).catch(e=>{cache.delete(file);throw e;}));}return cache.get(file);}
     const snapshot=(source,id=unit)=>FEAResultsUI.historicalSnapshot(race,source,datasets,id||null);
     function color(f){if(active!=='history')return FeaPredictionMaps.colors[model.rating(race.id+'@'+unitId(f))];const s=sources.find(s=>s.id===$('maker-history-source').value),row=s&&snapshot(s,unitId(f));if(!row)return FEADeskTheme.resolved.tokens['map-neutral'];const party=row.margin>=0?'D':'R',base=FEADeskTheme.candidateColor({party});return FEADeskTheme.mix(base,FEADeskTheme.resolved.tokens['panel-bg'],Math.max(0,.65-Math.abs(row.margin)/40));}
@@ -45,11 +45,14 @@
     function draw(collection){
       const rewind=geometry=>{const polygon=rings=>d3.geoArea({type:'Polygon',coordinates:rings})>Math.PI*2?rings.map(r=>[...r].reverse()):rings;return geometry.type==='Polygon'?{...geometry,coordinates:polygon(geometry.coordinates)}:geometry.type==='MultiPolygon'?{...geometry,coordinates:geometry.coordinates.map(polygon)}:geometry;};
       features=collection.features.filter(f=>/^\d{5}(\d{5})?$/.test(unitId(f))).map(f=>({...f,geometry:rewind(f.geometry)}));
-      const svg=d3.select($('maker-county-map')).append('svg').attr('viewBox','0 0 900 620').attr('role','group').attr('aria-label','County ratings and historical map'),g=svg.append('g');
+      const svg=d3.select($('maker-county-map')).append('svg').attr('viewBox','0 0 900 620').attr('role','group').attr('aria-label','County ratings and historical map').attr('class','election-map-svg'),g=svg.append('g').attr('class','election-map-viewport');
       // Identical projection/fitting routine to /results. Correct GeoJSON ring
       // orientation first so a county cannot fill the projection's clip box.
-      const projection=FEANight.fitRenderedGeometry(d3.geoAlbersUsa(),[[34,34],[866,586]],{type:'FeatureCollection',features}),path=d3.geoPath(projection);
-      g.selectAll('path').data(features).join('path').attr('class','county-result-shape').attr('d',path).attr('data-unit',unitId).attr('data-name',f=>f.properties.countyName||f.properties.NAME||f.properties.name||unitId(f)).attr('role','button').attr('tabindex',0).on('click',(event,f)=>{unit=unitId(f);if(active==='counties'){model.apply([[race.id+'@'+unit,brush()]]);edited(`${event.currentTarget.dataset.name} · ${brush()}`);}if(active==='ratings')tab('counties');refresh();}).on('keydown',(event,f)=>{if(['Enter',' '].includes(event.key)){event.preventDefault();unit=unitId(f);if(active==='ratings')tab('counties');refresh();}}).append('title').text(f=>(f.properties.countyName||f.properties.NAME||f.properties.name||unitId(f)));
+      const region=$('maker-county-map').getBoundingClientRect(),card=panel.getBoundingClientRect(),left=region.width&&card.top<region.top+70?Math.min(650,(card.width+48)/region.width*900):34;
+      const projection=FEANight.fitRenderedGeometry(d3.geoAlbersUsa(),[[left,34],[866,586]],{type:'FeatureCollection',features}),path=d3.geoPath(projection);
+      g.append('g').attr('class','election-map-context-layer').attr('aria-hidden','true').attr('pointer-events','none')
+        .selectAll('path').data(contextStates.map(f=>({...f,geometry:rewind(f.geometry)}))).join('path').attr('class',f=>'map-context-shape '+(String(f.id||f.properties?.STATEFP).padStart(2,'0')===FEAScenario.stateFips[race.state]?'is-selected-context':'is-dimmed-context')).attr('d',path);
+      g.append('g').attr('class','maker-county-layer').selectAll('path').data(features).join('path').attr('class','county-result-shape election-map-shape').attr('d',path).attr('data-unit',unitId).attr('data-name',f=>f.properties.countyName||f.properties.NAME||f.properties.name||unitId(f)).attr('role','button').attr('tabindex',0).on('click',(event,f)=>{unit=unitId(f);if(active==='counties'){model.apply([[race.id+'@'+unit,brush()]]);edited(`${event.currentTarget.dataset.name} · ${brush()}`);}if(active==='ratings')tab('counties');refresh();}).on('keydown',(event,f)=>{if(['Enter',' '].includes(event.key)){event.preventDefault();unit=unitId(f);if(active==='ratings')tab('counties');refresh();}}).append('title').text(f=>(f.properties.countyName||f.properties.NAME||f.properties.name||unitId(f)));
       const zoom=d3.zoom().scaleExtent([1,12]).on('zoom',e=>g.attr('transform',e.transform));svg.call(zoom).on('dblclick.zoom',null);
       $('maker-county-reset').onclick=()=>svg.call(zoom.transform,d3.zoomIdentity);
       refresh();onContext();
@@ -66,7 +69,8 @@
         $('maker-detail-roster').innerHTML=`<p class="desk-preelection">Reviewed 2026 ballot roster · Your scenario has no vote totals or calls.</p><table class="selected-race-table"><thead><tr><th>Candidate</th><th>Votes</th><th>Vote %</th></tr></thead><tbody>${roster.map(c=>{const color=FEADeskTheme.candidateColor(c,roster);return `<tr style="--candidate-color:${color};--candidate-ink:${FEADeskTheme.foreground(color)}"><td><span class="selected-party-rail" style="background:${color}"></span><strong>${esc(c.name)}</strong><small>${esc(c.partyLabels?.join(' / ')||c.party)}</small></td><td>—</td><td>—</td></tr>`;}).join('')}</tbody></table>`;
         const fips=FEAScenario.stateFips[race.state],house=race.type==='house',exact=house&&geography?.currentComparable;
         // No fallback pretending an old district outline is a current district.
-        const geometry=await json(exact?geography.geometryFile:!house&&assets.municipalities?.[fips]?.path||assets.counties[fips]);
+        const [geometry,states]=await Promise.all([json(exact?geography.geometryFile:!house&&assets.municipalities?.[fips]?.path||assets.counties[fips]),json(assets.states)]);
+        contextStates=states.features||[];
         if(token!==sequence)return;
         panel.querySelector('[data-detail-tab="counties"]').textContent=geometry.features[0]?.properties?.localType==='municipality'?'Towns / cities':'Counties';
         sources=comparisons.sources.filter(s=>s.id!=='live'&&s.status==='available'&&s.appliesTo?.includes(race.type));

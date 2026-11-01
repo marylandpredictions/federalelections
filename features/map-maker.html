@@ -4,14 +4,14 @@
 <title>Map Maker | Federal Elections Analysis</title>
 <meta name="description" content="Build your own House, Senate and governor ratings maps. Paint races, undo changes, save your scenario and download an image.">
 <link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
-<script src="/assets/desk-theme.js?v=20261101-maker4"></script><script src="/assets/desk-bootstrap.js?v=20261101-maker4"></script>
+<script src="/assets/desk-theme.js?v=20261101-display1"></script><script src="/assets/desk-bootstrap.js?v=20261101-maker4"></script>
 <link rel="stylesheet" href="/assets/wiki.css?v=20261101-maker4">
 <link rel="stylesheet" href="/assets/results-board.css?v=20261028-board18">
 <link rel="stylesheet" href="/assets/desk-experience.css?v=20261101-maker4">
 <link rel="stylesheet" href="/assets/projection-card.css?v=20261031-reference2">
 <link rel="stylesheet" href="/assets/desk-styles.css?v=20261101-maker4">
-<link rel="stylesheet" href="/assets/desk-reference.css?v=20261101-maker4">
-<link rel="stylesheet" href="/assets/map-maker.css?v=20261101-maker4">
+<link rel="stylesheet" href="/assets/desk-reference.css?v=20261101-display1">
+<link rel="stylesheet" href="/assets/map-maker.css?v=20261101-display1">
 <script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 <script defer src="/assets/prediction-map-utils.js?v=20261101-maker4"></script>
 <script defer src="/assets/desk-appearance.js?v=20261031-styles1"></script>
@@ -20,8 +20,8 @@
 <script defer src="/assets/yapms-import.js?v=20261101-maker4"></script>
 <script defer src="/assets/night-awareness.js?v=20261101-maker4"></script>
 <script defer src="/assets/map-annotations.js?v=20261101-maker4"></script>
-<script defer src="/assets/map-maker-detail.js?v=20261101-maker4"></script>
-<script defer src="/assets/map-maker.js?v=20261101-maker4"></script>
+<script defer src="/assets/map-maker-detail.js?v=20261101-display1"></script>
+<script defer src="/assets/map-maker.js?v=20261101-display1"></script>
 </head><body class="results-board map-maker">
 <header id="desk-masthead"><a class="desk-publication" href="/" aria-label="FEA home"><img src="/assets/img/FEA_Icon.webp" alt="Federal Elections Analysis" width="104" height="44"></a><strong>Map maker</strong><span class="desk-edition-note">Your scenario · Not live results</span></header>
 <button type="button" id="maker-draw-button" class="maker-draw-button" aria-label="Draw on map" aria-pressed="false" aria-controls="maker-draw-tools" title="Draw on map"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16-1 5 5-1L20 8l-4-4L4 16ZM14 6l4 4M3 21l5-1"/></svg></button>
@@ -51,4 +51,5 @@
 </main>
 <noscript><p>This map editor needs JavaScript. <a href="/features/polling-bias">Explore state polling bias</a>.</p></noscript>
 <dialog id="maker-import-review" aria-labelledby="maker-import-title"><h2 id="maker-import-title">Match YAPms parties</h2><p>This file uses custom candidate names. Choose which party each represents; colors alone do not identify a party.</p><form method="dialog"><div id="maker-import-parties"></div><button value="cancel">Cancel</button><button value="apply">Import ratings</button></form></dialog>
+<script src="/assets/clean-display.js?v=20261101-display1"></script>
 </body></html>

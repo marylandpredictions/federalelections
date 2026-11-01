@@ -165,3 +165,16 @@ body.map-maker[data-presentation="broadcast"] :is(#desk-masthead,.maker-tools,.e
 .map-maker .prediction-shape-feature.is-muted { fill:color-mix(in srgb,var(--map-neutral) 28%,var(--map-bg));stroke:color-mix(in srgb,var(--map-neutral) 70%,var(--map-bg)); }
 
 body.results-board.map-maker.maker-detail-open[data-presentation="broadcast"] .maker-workspace { grid-template-columns:minmax(0,1fr) clamp(150px,12vw,240px); }
+
+/* Share the results geography treatment; the selected geography remains above
+   the dim national backdrop. Never overlay mismatched state paths on House SVG. */
+.map-maker :is(.prediction-shape-svg,.election-map-svg) { background:var(--map-bg); }
+.map-maker .prediction-shape-feature { stroke:var(--state-border);stroke-width:.55px;vector-effect:non-scaling-stroke;transition:fill .18s; }
+.map-maker .prediction-shape-feature[data-race-id^="house-"] { stroke:var(--district-border);stroke-width:.25px; }
+.map-maker .election-map-context-layer { pointer-events:none; }
+.map-maker .map-context-shape { fill:var(--map-neutral);stroke:var(--state-border);stroke-width:.6px;vector-effect:non-scaling-stroke; }
+.map-maker .map-context-shape.is-dimmed-context { opacity:.3; }
+.map-maker .map-context-shape.is-selected-context { opacity:.5; }
+
+@media (min-width:801px) and (min-height:481px) { #maker-county-map { inset:0; } }
+#maker-county-map .map-context-shape { cursor:default;stroke:var(--state-border); }
