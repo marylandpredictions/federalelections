@@ -4,13 +4,13 @@
   const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const label=source=>source.id.startsWith('pres-')?source.id.slice(5)+' President':source.id==='house-2024'?'2024 House':source.id==='senate-last'?'Previous Senate election':'Previous governor election';
   function create({model,brush,edited,title}){
-    const $=id=>document.getElementById(id),dialog=$('maker-detail'),cache=new Map(),datasets=new Map();
+    const $=id=>document.getElementById(id),panel=$('maker-detail'),cache=new Map(),datasets=new Map();
     let race,unit='',features=[],sources=[],active='ratings',sequence=0,geography,manifest,countyData,districtData;
     async function json(file){if(!file)throw Error('Data unavailable');if(!cache.has(file)){if(cache.size>24)cache.delete(cache.keys().next().value);cache.set(file,fetch('/'+file.replace(/^\//,'')).then(r=>{if(!r.ok)throw Error('Data unavailable');return r.json();}).catch(e=>{cache.delete(file);throw e;}));}return cache.get(file);}
     const snapshot=(source,id=unit)=>FEAResultsUI.historicalSnapshot(race,source,datasets,id||null);
     function color(f){if(active!=='history')return FeaPredictionMaps.colors[model.rating(race.id+'@'+unitId(f))];const s=sources.find(s=>s.id===$('maker-history-source').value),row=s&&snapshot(s,unitId(f));if(!row)return FEADeskTheme.resolved.tokens['map-neutral'];const party=row.margin>=0?'D':'R',base=FEADeskTheme.candidateColor({party});return FEADeskTheme.mix(base,FEADeskTheme.resolved.tokens['panel-bg'],Math.max(0,.65-Math.abs(row.margin)/40));}
     function refresh(){
-      if(!race||!dialog.open)return;
+      if(!race||panel.hidden)return;
       for(const path of $('maker-county-map').querySelectorAll('[data-unit]')){const f=features.find(f=>unitId(f)===path.dataset.unit);path.setAttribute('fill',color(f));path.classList.toggle('is-selected',path.dataset.unit===unit);path.setAttribute('aria-label',`${path.dataset.name}: ${active==='history'?'past election':model.rating(race.id+'@'+path.dataset.unit)}`);}
       const f=features.find(f=>unitId(f)===unit),name=f?(f.properties.countyName||f.properties.NAME||f.properties.name||unit):title(race);
       $('maker-detail-location').textContent=name;
@@ -37,7 +37,7 @@
         $('maker-detail-demographics').innerHTML=`<h3>${esc(row.name)}</h3><p class="demographic-source">2024 ACS ${district?'1-year · 119th Congress':'5-year'} estimates · U.S. Census Bureau</p>${row.boundaryStatus==='historical-boundaries'?'<p class="demographic-boundary-warning">Earlier district boundaries; this profile does not describe the redrawn 2026 district.</p>':''}<dl class="race-facts"><dt>Population</dt><dd>${Number(row.population).toLocaleString('en-US')}</dd><dt>Median household income</dt><dd>${row.income===null?'Unavailable':'$'+Number(row.income).toLocaleString('en-US')}</dd></dl><div class="demographic-bars">${bars.filter(([,v])=>Number.isFinite(v)).map(([l,v])=>`<div><span>${l}</span><strong>${v.toFixed(1)}%</strong><i style="--bar:${Math.min(100,v)}%"></i></div>`).join('')}</div><p class="desk-hint">Residents, not voters or party registration. Race and ethnicity overlap. Education covers adults 25+.${race.type==='house'&&selected?' Whole-county estimates, not the district portion.':''}</p>`;
       }catch{if(token===sequence)$('maker-detail-demographics').textContent='Census data could not load. Select this tab again to retry.';}
     }
-    function tab(value){active=value;for(const b of dialog.querySelectorAll('[data-detail-tab]'))b.setAttribute('aria-selected',String(b.dataset.detailTab===value));for(const section of dialog.querySelectorAll('[data-detail-content]'))section.hidden=section.dataset.detailContent!==value;$('maker-history-options').hidden=value!=='history';refresh();}
+    function tab(value){active=value;for(const b of panel.querySelectorAll('[data-detail-tab]'))b.setAttribute('aria-selected',String(b.dataset.detailTab===value));for(const section of panel.querySelectorAll('[data-detail-content]'))section.hidden=section.dataset.detailContent!==value;$('maker-history-options').hidden=value!=='history';panel.querySelector('.maker-detail-actions').hidden=value!=='ratings';refresh();}
     function draw(collection){
       features=collection.features.filter(f=>/^\d{5}(\d{5})?$/.test(unitId(f)));
       const svg=d3.select($('maker-county-map')).append('svg').attr('viewBox','0 0 900 620').attr('role','group').attr('aria-label','County ratings and historical map'),g=svg.append('g');
@@ -52,13 +52,15 @@
     async function open(value){
       race={...value};unit='';features=[];sources=[];active='ratings';const token=++sequence;
       $('maker-detail-title').textContent=title(race);$('maker-county-map').replaceChildren();$('maker-detail-note').textContent='Loading geography and past elections…';$('maker-detail-history').textContent='Loading past elections…';
-      if(!dialog.open)dialog.showModal();tab('ratings');
+      panel.hidden=false;$('maker-map').hidden=true;$('maker-detail-map').hidden=false;document.body.classList.add('maker-detail-open');tab('ratings');
+      $('maker-detail-close').focus({preventScroll:true});
       try{
         const [assets,comparisons,geo]=await Promise.all([json('data/results/map-assets.json'),json('data/result-comparison-baselines.json'),json('data/results/district-geography.json')]);
         if(token!==sequence)return;geography=geo.districts?.[FEAResultsUI.districtId(race)];race.geometryId=geography?.geometryId;
         const fips=FEAScenario.stateFips[race.state],house=race.type==='house',exact=house&&geography?.currentComparable;
         // No fallback pretending an old district outline is a current district.
         const geometry=await json(exact?geography.geometryFile:assets.counties[fips]);
+        if(token!==sequence)return;
         sources=comparisons.sources.filter(s=>s.id!=='live'&&s.status==='available'&&s.appliesTo?.includes(race.type));
         await Promise.all(sources.flatMap(s=>['state','county',...(house?['district']:[])].map(async scope=>{try{if(s[scope+'File'])datasets.set(s.id+':'+scope,await json(s[scope+'File']));}catch{datasets.delete(s.id+':'+scope);}})));
         if(token!==sequence)return;
@@ -67,12 +69,14 @@
         draw(geometry);tab(active);
       }catch{if(token===sequence)$('maker-detail-note').textContent='Detail data could not load. Close and reopen to retry; your map is unchanged.';}
     }
-    $('maker-detail-close').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{sequence++;race=null;features=[];$('maker-county-map').replaceChildren();});
-    dialog.querySelectorAll('[data-detail-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.detailTab));
+    function close(){if(panel.hidden)return;const id=race?.id;sequence++;race=null;features=[];$('maker-county-map').replaceChildren();panel.hidden=true;$('maker-detail-map').hidden=true;$('maker-map').hidden=false;document.body.classList.remove('maker-detail-open');document.querySelector(`[data-race-id="${id}"]`)?.focus({preventScroll:true});}
+    $('maker-detail-close').onclick=close;
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))close();});
+    panel.querySelectorAll('[data-detail-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.detailTab));
     $('maker-race-wide').onclick=()=>{unit='';refresh();};$('maker-history-source').onchange=refresh;
     $('maker-county-undo').onclick=()=>{if(model.undo())edited('Last rating change undone.');};$('maker-county-redo').onclick=()=>{if(model.redo())edited('Rating change restored.');};
     $('maker-county-apply').onclick=()=>{if(unit){model.apply([[race.id+'@'+unit,brush()]]);edited('County rating updated.');refresh();}};
-    return {open,refresh};
+    return {open,close,refresh};
   }
   const api={unitId,create};root.FEAMakerDetail=api;if(typeof module!=='undefined')module.exports=api;
 })(globalThis);

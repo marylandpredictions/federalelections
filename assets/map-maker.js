@@ -24,16 +24,17 @@
       const race=byId.get(node.dataset.raceId);if(!race){node.setAttribute('fill',muted);continue;}
       node.setAttribute('fill',M.colors[model.rating(race.id)]);node.setAttribute('data-rating',model.rating(race.id));node.setAttribute('aria-label',`${title(race)}: ${model.rating(race.id)}`);
     }
-    const counts=model.counts(model.state.office),total=current().length;
-    $('maker-totals').replaceChildren(...Object.entries(counts).map(([party,n])=>{const span=document.createElement('span');span.className='maker-'+party.toLowerCase();span.style.setProperty('--tower-color',T.candidateColor({party}));span.textContent=`${n} ${party==='T'?'Tossup':party}`;return span;}));
+    const counts=model.totalCounts(model.state.office),held=S.heldSeats[model.state.office],total=Object.values(counts).reduce((n,v)=>n+v,0);
+    $('maker-totals').replaceChildren(...Object.entries(counts).map(([party,n])=>{const span=document.createElement('span');span.className='maker-'+party.toLowerCase();span.style.setProperty('--tower-color',T.candidateColor({party}));span.setAttribute('aria-label',`${n} ${party==='T'?'Tossup':party}`);const number=document.createElement('strong'),label=document.createElement('small');number.className='maker-total-number';number.textContent=n;label.className='maker-total-party';label.textContent=party==='T'?'Tossup':party;span.append(number,document.createTextNode(' '),label);return span;}));
     $('maker-seat-bar').replaceChildren(...['D','I','T','R'].map(party=>{const span=document.createElement('span');span.style.width=counts[party]/total*100+'%';span.style.background=party==='T'?M.colors.Tossup:T.candidateColor({party});return span;}));
-    $('maker-count-caption').textContent=`Your ratings · ${total} ${model.state.office==='house'?'districts':'races on the 2026 ballot'} · Not election calls`;
+    $('maker-count-caption').textContent=`${total} ${model.state.office==='governor'?'governors':'seats'} · ${current().length} up for election.${model.state.office!=='house'?` Includes ${held.D} D / ${held.R} R${held.I?` / ${held.I} I`:''} not up.`:''} Your scenario · Not election calls.`;
     $('maker-undo').disabled=!model.past.length;$('maker-redo').disabled=!model.future.length;
     document.querySelectorAll('[data-office]').forEach(b=>{b.classList.toggle('active',b.dataset.office===model.state.office);b.setAttribute('aria-selected',String(b.dataset.office===model.state.office));});
   }
   function edited(text){sync();detail?.refresh();$('maker-map').querySelectorAll('.prediction-map-tooltip').forEach(n=>n.hidden=true);status(text);save();}
   function paint(race){selected=race.id;$('maker-race').value=selected;if(model.apply([[race.id,brush]]))edited(`${title(race)} · ${brush}`);}
   async function render(){
+    detail?.close();
     const token=++generation;map?.destroy();map=null;selected='';
     const office=model.state.office,data=current();
     $('maker-race').replaceChildren(new Option('Find a race',''),...data.map(r=>new Option(title(r),r.id)));
@@ -111,8 +112,8 @@
       }
       save();await render();status(message);
     }catch(error){status(error.message||'This scenario file could not be opened.');}finally{e.target.value='';}};
-    const openDetail=id=>{const race=races.find(r=>r.id===id);if(race&&$('maker-detail-enabled').checked){selected=id;$('maker-race').value=id;detail.open(race);}};
-    $('maker-detail-enabled').onchange=e=>{$('maker-open-detail').hidden=!e.target.checked;lastTouch=null;status(e.target.checked?'County detail enabled. Right-click a race, double tap, or use Open selected race detail in this menu.':'County detail disabled. Click or tap to paint.');};
+    const openDetail=id=>{const race=races.find(r=>r.id===id);if(race&&$('maker-detail-enabled').checked){selected=id;$('maker-race').value=id;$('board-menu').hidden=true;$('maker-menu-button').setAttribute('aria-expanded','false');detail.open(race);}};
+    $('maker-detail-enabled').onchange=e=>{$('maker-open-detail').hidden=!e.target.checked;lastTouch=null;if(!e.target.checked)detail.close();status(e.target.checked?'County detail enabled. Right-click a race, double tap, or use Open selected race detail in this menu.':'County detail disabled. Click or tap to paint.');};
     $('maker-open-detail').onclick=()=>{if(selected)openDetail(selected);else status('Select a race on the map or in Find a race first.');};
     $('maker-map').addEventListener('contextmenu',e=>{const id=e.target.closest('[data-race-id]')?.dataset.raceId;if(id&&$('maker-detail-enabled').checked){e.preventDefault();openDetail(id);}});
     $('maker-map').addEventListener('keydown',e=>{if(e.key==='F10'&&e.shiftKey&&$('maker-detail-enabled').checked){const id=e.target.closest('[data-race-id]')?.dataset.raceId;if(id){e.preventDefault();openDetail(id);}}});

@@ -90,3 +90,36 @@ YAPms files for all three offices imported through the browser. CO-04 county
 painting, county and district Census profiles, historical returns, and TX-01's
 redrawn-boundary warning were exercised. Phone-sized layout was checked at
 390×844; actual physical-device double-tap behavior still requires verification.
+
+## Held seats and in-page detail correction
+
+National totals include seats not on the ballot: Senate 32 D / 31 R / 2 I,
+governors 6 D / 8 R. Independents King and Sanders remain I. The bar denominators
+are 100 Senate seats, 50 governorships and 435 House seats. Editing, clearing or
+importing ratings never alters held seats. Sources checked November 1, 2026:
+[Senate membership and classes](https://www.senate.gov/senators/),
+[Senate Class I](https://www.senate.gov/senators/Class_I.htm),
+[NGA governors](https://www.nga.org/governors/) and
+[NGA election schedule](https://www.nga.org/governors/elections/).
+The 14 held governorships are DE, IN, KY, LA, MS, MO, MT, NJ, NC, ND, UT, VA,
+WA and WV. The public results page's reversed governor held-seat note was fixed.
+
+County detail is an **in-page panel and map drilldown**, like `/results`.
+No modal, backdrop or focus trap opens. Office controls and Appearance remain
+available. Back/Escape restores the existing national map and zoom; switching
+offices or disabling detail closes the panel. Mobile uses the map and panel in
+the same scrollable page. The opt-in menu setting still starts off.
+
+NBC broadcast counters use adjacent D/R columns with a WHAT IF header, compact
+I/tossup rows, and responsive sizing. At a measured 3840×2160 viewport, the rail
+was 600 CSS pixels wide and numbers were 160 CSS pixels; at desktop sizes the
+rail shrinks to 240 pixels. This follows the reviewed Kornacki broadcast
+scenario board, retaining FEA identity and ratings. Tooltip background, text
+and rating pill now use matching theme surfaces, fixing white text over a
+light tooltip in the NBC preset.
+
+Follow-up validation: 212 result tests passed, 0 skipped. Browser workflows
+checked 50-governor totals, nonmodal county/history/Census detail, menu behavior,
+and phone-sized layout at 390×844. 4K DOM bounds and typography were measured;
+the browser screenshot cropped the large virtual viewport, so that capture is
+not full-frame visual certification of a physical 4K display.

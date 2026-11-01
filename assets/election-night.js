@@ -50,7 +50,7 @@ const CHAMBER_CONFIG = {
 };
 
 const SENATE_NOT_UP_BY_PARTY = { D: 34, R: 31 };
-const GOVERNOR_NOT_UP_BY_PARTY = { D: 8, R: 6 };
+const GOVERNOR_NOT_UP_BY_PARTY = { D: 6, R: 8 };
 
 const MAP_CITY_LABELS = [
   { name: "Los Angeles", state: "CA", lon: -118.2437, lat: 34.0522 },
