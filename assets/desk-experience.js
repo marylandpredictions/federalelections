@@ -769,6 +769,7 @@ window.FEACompleteBoard = function (Page) {
     const votes = party => candidates.filter(c=>(c.partyCode||c.party)===party).reduce((n,c)=>n+(c.votes||0),0);
     const liveMargin=total?(votes('D')-votes('R'))/total*100:null;
     const column=(heading,subtitle,snapshot,isCurrent=false)=>{
+      if(!isCurrent)return FEAResultsUI.comparisonColumn(heading,subtitle,snapshot,T);
       const call=isCurrent?current.calls?.[0]:null,lead=snapshot?FEAResultsUI.candidateLead(snapshot.candidates,snapshot.total):null;
       const reporting=current.expectedVotePercent??current.estimatedVoteReporting;
       const meta=isCurrent&&snapshot?.total&&Number.isFinite(reporting)?`${reporting.toFixed(1)}% expected vote in`:!isCurrent&&snapshot?.total?`${snapshot.total.toLocaleString()} votes`:'';

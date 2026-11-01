@@ -42,8 +42,10 @@ test('Full scenario totals include held seats, keep independents separate, and s
 
 test('Race explorer uses an inline board panel and shared map region, not a modal',()=>{
  const html=readFileSync('features/map-maker.html','utf8'),code=readFileSync('assets/map-maker-detail.js','utf8');
- assert.match(html,/<aside id="maker-detail"[^>]*hidden>/);assert.doesNotMatch(html,/<dialog id="maker-detail"/);
+ assert.match(html,/<aside id="focused-race-panel"[^>]*hidden>/);assert.doesNotMatch(html,/<dialog id="focused-race-panel"/);
  assert.doesNotMatch(code,/showModal\(/);assert.match(code,/\$\('maker-map'\)\.hidden=true/);
  assert.match(code,/\$\('maker-map'\)\.hidden=false/);assert.match(code,/maker-detail-open/);
+ assert.match(code,/FEANight.fitRenderedGeometry\(d3.geoAlbersUsa\(\)/);assert.doesNotMatch(code,/geoIdentity\(/);
+ assert.match(code,/FEAResultsUI.comparisonColumn/);assert.doesNotMatch(html,/data-detail-tab="trends"/);
  assert.match(readFileSync('assets/election-night.js','utf8'),/GOVERNOR_NOT_UP_BY_PARTY = \{ D: 6, R: 8 \}/);
 });

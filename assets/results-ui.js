@@ -111,6 +111,21 @@
     const context=snapshot.round==='first-choice'?'First-choice historical returns':snapshot.round==='final-ranked-choice'?'Final ranked-choice returns':'Published historical returns';
     return head+`<table class="election-map-tooltip-table"><thead><tr><th>Candidate</th><th>Votes</th><th>Pct</th></tr></thead><tbody>${body}</tbody></table><div class="election-map-tooltip-foot"><span>Lead ${esc(margin)}</span><span>${snapshot.total.toLocaleString('en-US')} votes</span></div><div class="election-map-tooltip-muted">${context}</div>`;
   }
+  // Shared by the live board and scenario explorer: same historical cards,
+  // typography and theme treatment, without manufacturing a current result.
+  function comparisonColumn(heading,subtitle,snapshot,theme){
+    const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const lead=snapshot?candidateLead(snapshot.candidates,snapshot.total):null;
+    return `<section class="comparison-column" aria-label="${esc(heading+' '+subtitle)}"><header><strong class="comparison-year">${esc(heading)}</strong><span>${esc(subtitle)}</span>${snapshot?.total?`<small class="comparison-reporting">${snapshot.total.toLocaleString()} votes</small>`:''}</header><div class="comparison-candidates">${snapshot?snapshot.candidates.map(c=>{
+      const color=theme.candidateColor(c,snapshot.candidates),ink=theme.foreground(color),party=c.partyCode||c.party||'O';
+      return `<div class="comparison-candidate ${snapshot.total&&c.votes===Math.max(...snapshot.candidates.map(r=>r.votes))?'is-history-leader':''}" style="--candidate-color:${color};--candidate-ink:${ink}"><small>${esc(party)}</small><strong>${esc(c.name)}</strong><b>${snapshot.total?(c.votes/snapshot.total*100).toFixed(1)+'<em>%</em>':'—'}</b><span>${snapshot.total?Number(c.votes).toLocaleString()+' votes':'—'}</span></div>`;
+    }).join(''):'<div class="comparison-unavailable"><strong>—</strong><span>No verified result for these boundaries</span></div>'}</div><footer><span>Lead margin</span><strong>${lead?lead.margin===0?'Even':esc(lead.party)+' +'+lead.margin.toFixed(1):'—'}</strong></footer></section>`;
+  }
+  function demographicProfile(row,{district=false,county=false,house=false,simulated=false}={}){
+    const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const fmt=value=>Number(value).toLocaleString('en-US');
+    return `<h3>${esc(row.name)}</h3>${district&&row.boundaryStatus==='historical-boundaries'?'<p class="demographic-boundary-warning">Earlier district boundaries · This profile describes the 119th Congress, not the redrawn 2026 district.</p>':''}<p class="demographic-source">${simulated?'Simulated demographic fixture · Not Census data':district?'2024 ACS 1-year estimates · U.S. Census Bureau · 119th Congress':'2024 ACS 5-year estimates · U.S. Census Bureau'}</p><dl class="race-facts"><div><dt>Population</dt><dd data-number="Population">${fmt(row.population)}</dd></div>${row.income!==null&&row.income!==undefined?`<div><dt>Median household income</dt><dd data-number="Median household income">$${fmt(row.income)}</dd></div>`:''}</dl><div class="demographic-bars">${[['White, non-Hispanic',row.whiteNH],['Black alone',row.black],['Hispanic / Latino',row.hispanic],['Asian alone',row.asian],['Age 65+',row.age65],['Bachelor’s degree+',row.bachelors]].filter(([,v])=>Number.isFinite(v)).map(([label,value])=>`<div><span>${label}</span><strong>${value.toFixed(1)}%</strong><i style="--bar:${Math.min(100,value)}%"></i></div>`).join('')}</div><p class="desk-hint">Race and ethnicity overlap. Education covers adults 25+. Estimates describe residents, not party registration or voters.${county&&house?' Whole-county estimates; not a district-portion tabulation.':district?' Direct district estimates; county medians were not averaged.':''}</p>`;
+  }
   function pastMargins(race, sources = [], datasets = new Map(), countyFips = null) {
     return sources.filter(s => s.id !== 'live' && s.appliesTo?.includes(race?.type)).map(source => {
       let value = NaN;
@@ -179,6 +194,8 @@
     baselineMargin,
     pastMargins,
     historicalSnapshot,
+    comparisonColumn,
+    demographicProfile,
     candidateLead,
     historicalTooltip,
     shift,

@@ -1,6 +1,6 @@
 (async function(){
   const $=id=>document.getElementById(id),key='fea-map-maker-v1',S=FEAScenario,M=FeaPredictionMaps,T=FEADeskTheme;
-  let model,races=[],map,brush='Safe Democratic',selected='',generation=0,stroke=new Map(),detail,lastTouch=null;
+  let model,races=[],map,brush='Safe Democratic',selected='',generation=0,stroke=new Map(),detail,ink,lastTouch=null;
   const short=rating=>rating.replace(' Democratic',' D').replace(' Republican',' R').replace(' Independent',' I');
   const title=r=>r.type==='house'?`${r.state}-${['0','AL'].includes(String(r.district))?'AL':String(r.district).padStart(2,'0')}`:`${r.state} ${r.type==='senate'?'Senate':'Governor'}`;
   const status=text=>$('maker-status').textContent=text;
@@ -8,24 +8,30 @@
   const token=name=>getComputedStyle(document.body).getPropertyValue('--'+name).trim()||T.resolved.tokens[name];
   function save(){try{localStorage.setItem(key,JSON.stringify(model.state));}catch{status('Browser saving is unavailable. Save a scenario file to keep your map.');}}
   function palette(){
+    const canvas=token('map-bg'),canvasInk=T.foreground(canvas);
+    document.body.style.setProperty('--maker-canvas-ink',canvasInk);
+    for(const node of [$('desk-masthead'),document.querySelector('.maker-tools'),document.querySelector('.election-chamber-board')]){
+      for(const name of ['text-primary','text-secondary','control-bg','panel-border','panel-raised'])node.style.removeProperty('--'+name);
+      if(document.body.dataset.presentation==='broadcast')for(const [name,value] of Object.entries({'text-primary':canvasInk,'text-secondary':T.mix(canvasInk,canvas,.2),'control-bg':T.mix(canvas,canvasInk,.12),'panel-border':T.mix(canvas,canvasInk,.4),'panel-raised':T.mix(canvas,canvasInk,.15)}))node.style.setProperty('--'+name,value);
+    }
     for(const rating of S.ratings){
       const party=rating.includes('Democratic')?'D':rating.includes('Republican')?'R':'I';
       const tint=rating.startsWith('Safe')?0:rating.startsWith('Likely')?.2:rating.startsWith('Lean')?.4:.65;
       const tintSurface=document.body.dataset.presentation==='broadcast'?'#d3dde7':token('panel-bg');
       M.colors[rating]=rating==='Tossup'?token('map-neutral'):T.mix(T.candidateColor({party}),tintSurface,tint);
     }
-    for(const button of $('maker-palette').querySelectorAll('button')){button.style.setProperty('--paint-color',M.colors[button.dataset.rating]);button.setAttribute('aria-pressed',String(button.dataset.rating===brush));}
+    for(const button of $('maker-palette').querySelectorAll('button')){button.style.setProperty('--paint-color',M.colors[button.dataset.rating]);button.style.setProperty('--paint-ink',T.foreground(M.colors[button.dataset.rating]));button.setAttribute('aria-pressed',String(button.dataset.rating===brush));}
     $('maker-brush').value=brush;
   }
   function sync(){
-    const byId=new Map(races.map(r=>[r.id,r])),muted=token('panel-raised');
+    const byId=new Map(races.map(r=>[r.id,r])),muted=T.mix(token('map-neutral'),token('map-bg'),.72);
     for(const race of races)race.prediction.rating=model.rating(race.id);
     for(const node of $('maker-map').querySelectorAll('[data-race-id]')){
       const race=byId.get(node.dataset.raceId);if(!race){node.setAttribute('fill',muted);continue;}
       node.setAttribute('fill',M.colors[model.rating(race.id)]);node.setAttribute('data-rating',model.rating(race.id));node.setAttribute('aria-label',`${title(race)}: ${model.rating(race.id)}`);
     }
     const counts=model.totalCounts(model.state.office),held=S.heldSeats[model.state.office],total=Object.values(counts).reduce((n,v)=>n+v,0);
-    $('maker-totals').replaceChildren(...Object.entries(counts).map(([party,n])=>{const span=document.createElement('span');span.className='maker-'+party.toLowerCase();span.style.setProperty('--tower-color',T.candidateColor({party}));span.setAttribute('aria-label',`${n} ${party==='T'?'Tossup':party}`);const number=document.createElement('strong'),label=document.createElement('small');number.className='maker-total-number';number.textContent=n;label.className='maker-total-party';label.textContent=party==='T'?'Tossup':party;span.append(number,document.createTextNode(' '),label);return span;}));
+    $('maker-totals').replaceChildren(...Object.entries(counts).map(([party,n])=>{const span=document.createElement('span');span.className='maker-'+party.toLowerCase();span.hidden=party==='I'&&!n;span.style.setProperty('--tower-color',T.candidateColor({party}));span.style.setProperty('--tower-ink',(T.contrast(T.candidateColor({party}),'#ffffff')>=3?'#ffffff':T.foreground(T.candidateColor({party}))));span.setAttribute('aria-label',`${n} ${party==='T'?'Tossup':party}`);const number=document.createElement('strong'),label=document.createElement('small');number.className='maker-total-number';number.textContent=n;label.className='maker-total-party';label.textContent=party==='T'?'Tossup':party;span.append(number,document.createTextNode(' '),label);return span;}));
     $('maker-seat-bar').replaceChildren(...['D','I','T','R'].map(party=>{const span=document.createElement('span');span.style.width=counts[party]/total*100+'%';span.style.background=party==='T'?M.colors.Tossup:T.candidateColor({party});return span;}));
     $('maker-count-caption').textContent=`${total} ${model.state.office==='governor'?'governors':'seats'} · ${current().length} up for election.${model.state.office!=='house'?` Includes ${held.D} D / ${held.R} R${held.I?` / ${held.I} I`:''} not up.`:''} Your scenario · Not election calls.`;
     $('maker-undo').disabled=!model.past.length;$('maker-redo').disabled=!model.future.length;
@@ -34,12 +40,14 @@
   function edited(text){sync();detail?.refresh();$('maker-map').querySelectorAll('.prediction-map-tooltip').forEach(n=>n.hidden=true);status(text);save();}
   function paint(race){selected=race.id;$('maker-race').value=selected;if(model.apply([[race.id,brush]]))edited(`${title(race)} · ${brush}`);}
   async function render(){
+    ink?.setEnabled(false);
     detail?.close();
     const token=++generation;map?.destroy();map=null;selected='';
     const office=model.state.office,data=current();
     $('maker-race').replaceChildren(new Option('Find a race',''),...data.map(r=>new Option(title(r),r.id)));
     sync();status(`Loading ${office==='house'?'House districts':office+' map'}…`);
     const host=document.createElement('div');host.style.height='100%';$('maker-map').replaceChildren(host);
+    ink?.sync();
     try{
       const controller=await M.renderRaceShapeMap({container:host,data:{races:data},office,ratingLabel:'Your rating',onSelect:paint,
         isPaintEnabled:()=>$('maker-drag').checked,
@@ -52,7 +60,7 @@
       host.querySelector('svg')?.setAttribute('aria-label',`Your ${office} ratings map`);
       host.querySelector('svg')?.setAttribute('role','group');
       host.querySelectorAll('[data-race-id]').forEach(n=>{n.setAttribute('role',n.dataset.raceId?'button':'img');if(!n.dataset.raceId){n.setAttribute('tabindex','-1');n.setAttribute('aria-label',`${n.getAttribute('aria-label')||'State'} · Not on the 2026 ballot`);}});
-      sync();status('Choose a rating, then click a race. Drag the map to pan; use + and − to zoom.');
+      sync();ink?.sync();status('Choose a rating, then click a race. Drag the map to pan; use + and − to zoom.');
     }catch{if(token===generation){host.textContent='The map could not load. Try another office or reload the page. Your saved ratings are unchanged.';status('Map unavailable. Your ratings are still saved.');}}
   }
   function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -67,7 +75,7 @@
       add('text',{x:30,y:75,fill:token('text-secondary'),'font-family':'Arial','font-size':18},'User-created ratings · Not FEA’s forecast or live election results');
       const clone=original.cloneNode(true);clone.setAttribute('x','0');clone.setAttribute('y','90');clone.setAttribute('width','1600');clone.setAttribute('height','880');clone.removeAttribute('class');
       clone.querySelector('.prediction-shape-layer')?.removeAttribute('transform');
-      clone.querySelectorAll('path').forEach(n=>{n.setAttribute('stroke',token('state-border'));n.setAttribute('stroke-width','.6');n.setAttribute('vector-effect','non-scaling-stroke');});outer.append(clone);
+      clone.querySelectorAll('path').forEach(n=>{n.setAttribute('stroke',token('state-border'));n.setAttribute('stroke-width','.6');n.setAttribute('vector-effect','non-scaling-stroke');});ink?.appendTo(clone,model.state.office);outer.append(clone);
       S.ratings.forEach((rating,i)=>{const x=30+(i%7)*220,y=1000+Math.floor(i/7)*40;add('rect',{x,y:y-15,width:18,height:18,fill:M.colors[rating]});add('text',{x:x+25,y,fill:token('text-primary'),'font-family':'Arial','font-size':17},short(rating));});
       if(model.state.office!=='house'){add('rect',{x:1350,y:1025,width:18,height:18,fill:token('panel-raised')});add('text',{x:1375,y:1040,fill:token('text-primary'),'font-family':'Arial','font-size':14},'Not on 2026 ballot');}
       const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(outer)],{type:'image/svg+xml'}));
@@ -79,9 +87,10 @@
     const catalogue=(await response.json()).races;
     let saved;try{const raw=localStorage.getItem(key);if(raw)saved=S.validate(JSON.parse(raw),catalogue);}catch{status('An older saved map could not be restored. Starting a blank map.');}
     model=new S.Scenario(catalogue,saved);
-    detail=FEAMakerDetail.create({model,brush:()=>$('maker-county-brush').value||brush,edited,title});
+    detail=FEAMakerDetail.create({model,brush:()=>$('maker-county-brush').value||brush,edited,title,onContext:()=>ink?.sync()});
+    ink=FEAMapInk.create({getScope:()=>detail.raceId||model.state.office});
     races=catalogue.map(r=>({id:r.id,raceId:r.id,type:r.type,state:r.state,district:r.district,displayName:title(r),prediction:{rating:model.rating(r.id)}}));
-    for(const rating of S.ratings){const b=document.createElement('button');b.type='button';b.dataset.rating=rating;b.textContent=short(rating);b.title=rating;b.onclick=()=>{brush=rating;$('maker-county-brush').value=brush;palette();status(`Paint rating: ${rating}`);};$('maker-palette').append(b);$('maker-brush').add(new Option(rating,rating));$('maker-county-brush').add(new Option(rating,rating));}
+    for(const rating of S.ratings){const b=document.createElement('button');b.type='button';b.dataset.rating=rating;b.textContent=short(rating);b.title=rating;if(rating.includes('Democratic')||rating.includes('Republican')){b.style.gridColumn=rating.includes('Democratic')?'1':'2';b.style.gridRow=String(['Safe','Likely','Lean','Tilt'].findIndex(s=>rating.startsWith(s))+1);}else if(rating==='Tossup'){b.style.gridColumn='1 / -1';b.style.gridRow='5';}b.onclick=()=>{brush=rating;$('maker-county-brush').value=brush;palette();status(`Paint rating: ${rating}`);};$('maker-palette').append(b);$('maker-brush').add(new Option(rating,rating));$('maker-county-brush').add(new Option(rating,rating));$('maker-race-rating').add(new Option(rating,rating));}
     $('maker-county-brush').value=brush;
     $('maker-brush').onchange=e=>{brush=e.target.value;$('maker-county-brush').value=brush;palette();};
     $('maker-title').value=model.state.title;$('maker-title').oninput=e=>{model.state.title=e.target.value;save();};
@@ -122,8 +131,8 @@
     const appearance=FEAAppearance();$('maker-appearance').onclick=()=>{ $('board-menu').hidden=true;$('maker-menu-button').setAttribute('aria-expanded','false');appearance.open();};
     $('maker-menu-button').onclick=()=>{const menu=$('board-menu');menu.hidden=!menu.hidden;$('maker-menu-button').setAttribute('aria-expanded',String(!menu.hidden));};
     document.addEventListener('click',e=>{if(!e.target.closest('.board-overflow')){$('board-menu').hidden=true;$('maker-menu-button').setAttribute('aria-expanded','false');}});
-    document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('board-menu').hidden=true;$('maker-menu-button').setAttribute('aria-expanded','false');}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!e.target.closest('input,select,textarea,dialog')){e.preventDefault();e.shiftKey?$('maker-redo').click():$('maker-undo').click();}});
-    document.addEventListener('fea-desk-theme',()=>{palette();sync();detail.refresh();});
+    document.addEventListener('keydown',e=>{if(ink.enabled)return;if(e.key==='Escape'){$('board-menu').hidden=true;$('maker-menu-button').setAttribute('aria-expanded','false');}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!e.target.closest('input,select,textarea,dialog')){e.preventDefault();e.shiftKey?$('maker-redo').click():$('maker-undo').click();}});
+    document.addEventListener('fea-desk-theme',()=>{palette();sync();detail.refresh();ink.sync();});
     palette();await render();
   }catch{status('The map maker could not start. Reload to try again.');}
 })();

@@ -1297,30 +1297,7 @@ window.FEAEnhanceBoard = function (Page) {
       return;
     }
     const district=race.type==='house'&&!county;
-    node.innerHTML = `<h3>${esc(row.name)}</h3>${district&&row.boundaryStatus==='historical-boundaries'?'<p class="demographic-boundary-warning">Earlier district boundaries · This profile describes the 119th Congress, not the redrawn 2026 district.</p>':''}<p class="demographic-source">${this.demographics?.simulated ? "Simulated demographic fixture · Not Census data" : district?'2024 ACS 1-year estimates · U.S. Census Bureau · 119th Congress':"2024 ACS 5-year estimates · U.S. Census Bureau"}</p>${this.facts(
-      [
-        ["Population", fmt(row.population)],
-        [
-          "Median household income",
-          row.income !== null ? "$" + fmt(row.income) : null,
-        ],
-      ],
-    )}<div class="demographic-bars">${[
-      ["White, non-Hispanic", row.whiteNH],
-      ["Black alone", row.black],
-      ["Hispanic / Latino", row.hispanic],
-      ["Asian alone", row.asian],
-      ["Age 65+", row.age65],
-      ["Bachelor’s degree+", row.bachelors],
-    ]
-      .filter(([, v]) => v !== null)
-      .map(
-        ([label, value]) =>
-          `<div><span>${esc(label)}</span><strong>${percent(value)}</strong><i style="--bar:${Math.min(100, value)}%"></i></div>`,
-      )
-      .join(
-        "",
-      )}</div><p class="desk-hint">Race and ethnicity overlap. Education covers adults 25+. Estimates describe residents, not party registration or voters.${race.type === "house" && county ? " Whole-county estimates; not a district-portion tabulation." : district?' Direct district estimates; county medians were not averaged.':''}</p>`;
+    node.innerHTML = FEAResultsUI.demographicProfile(row,{district,county:!!county,house:race.type==='house',simulated:!!this.demographics?.simulated});
   };
   p.setPanelSize = function (width, height) {
     if (innerWidth <= 600) return;

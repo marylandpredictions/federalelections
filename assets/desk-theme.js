@@ -118,14 +118,14 @@
       R: "#ff2a4f",
     }),
     make("nbc-big-board", "NBC Big Board", "light", "#174b91", {
-      D: "#0078bd",
-      R: "#c8203f",
+      D: "#008cdb",
+      R: "#eb263b",
       I: "#8b57b5",
       O: "#d59119",
     }, {
-      "board-bg": "#e1e3e5",
-      "map-bg": "#e1e3e5",
-      "map-neutral": "#b7c2ce",
+      "board-bg": "#1c2c44",
+      "map-bg": "#1c2c44",
+      "map-neutral": "#858c9a",
       "panel-bg": "#ffffff",
       "panel-raised": "#eef3f9",
       "panel-border": "#627b9b",
@@ -275,6 +275,16 @@
     try {
       const x = JSON.parse(storage.getItem(key));
       if (x?.schemaVersion !== 1) throw Error();
+      // Upgrade the untouched earlier NBC palette. Custom colors and saved
+      // custom themes keep their exact values.
+      if(x.current?.id==='nbc-big-board'&&x.current.partyColors?.D==='#0078bd'&&x.current.partyColors?.R==='#c8203f')
+        x.current={...x.current,partyColors:{...x.current.partyColors,D:'#008cdb',R:'#eb263b'}};
+      if(x.current?.id==='nbc-big-board'){
+        const advanced={...x.current.advanced};
+        for(const [name,oldValue,newValue] of [['board-bg','#e1e3e5','#1c2c44'],['map-bg','#e1e3e5','#1c2c44'],['map-neutral','#b7c2ce','#858c9a']])
+          if(advanced[name]===oldValue)advanced[name]=newValue;
+        x.current={...x.current,advanced};
+      }
       return {
         schemaVersion: 1,
         current: validate(x.current),

@@ -110,11 +110,9 @@ available. Back/Escape restores the existing national map and zoom; switching
 offices or disabling detail closes the panel. Mobile uses the map and panel in
 the same scrollable page. The opt-in menu setting still starts off.
 
-NBC broadcast counters use adjacent D/R columns with a WHAT IF header, compact
-I/tossup rows, and responsive sizing. At a measured 3840×2160 viewport, the rail
-was 600 CSS pixels wide and numbers were 160 CSS pixels; at desktop sizes the
-rail shrinks to 240 pixels. This follows the reviewed Kornacki broadcast
-scenario board, retaining FEA identity and ratings. Tooltip background, text
+The held-seat correction introduced adjacent D/R columns and responsive sizing.
+The subsequent drawing pass below refines their proportions and removes the
+extra WHAT IF heading, while retaining FEA identity and ratings. Tooltip background, text
 and rating pill now use matching theme surfaces, fixing white text over a
 light tooltip in the NBC preset.
 
@@ -123,3 +121,44 @@ checked 50-governor totals, nonmodal county/history/Census detail, menu behavior
 and phone-sized layout at 390×844. 4K DOM bounds and typography were measured;
 the browser screenshot cropped the large virtual viewport, so that capture is
 not full-frame visual certification of a physical 4K display.
+
+## Drawing and results-page detail presentation
+
+The pencil beside the three-dot menu toggles drawing immediately. Choose any
+color or the Yellow/White/Green shortcuts, select stroke width, then draw with
+mouse, touch or pen. Resume map, the pencil, or Escape restores interaction.
+While drawing, map pan/zoom, painting, office controls, the race card and menu
+are paused; drawing Undo (including Ctrl/Cmd+Z) never undoes a race rating.
+Ink follows the map's SVG zoom transform and stays separate for each office
+and race detail. PNG downloads include the current national map's ink.
+
+Drawings last until reload; FEA/YAPms rating files do not serialize them.
+The store retains at most 100 strokes globally, each at most 1,500 points.
+Pointer sampling uses screen distance, including at deep zoom. Only the active
+stroke updates during pointer movement, once per animation frame; completed
+strokes and map geography remain untouched. The mobile pencil/toolbar stay
+reachable while the page is scrolled.
+
+Race detail now uses the actual `/results` focus-panel shell, candidate-table
+classes, tabs, county list, comparison cards and Census profile renderer. The
+comparison-card and Census HTML functions are shared by both pages. Trends is
+omitted. The scenario card shows the existing reviewed roster without invented
+votes/calls. County maps use `/results`' Albers USA projection and rendered-
+geometry fitting, with ring orientation corrected before projection. Desktop
+detail occupies the left race card; the county map fits the space alongside it.
+Mobile uses a bounded results-style sheet. New England local-unit geometry is
+selected from the same manifest as the live board; unavailable historical or
+Census matches remain explicitly unavailable.
+
+NBC's palette now uses brighter broadcast blue/red, neutral gray, a dark slate
+canvas, a compact right-side rating rail and right-side map controls. The old
+untouched NBC party palette upgrades on load; customized/saved theme colors
+remain intact. Light race cards retain the public board's theme treatment.
+
+Browser checks exercised actual freehand strokes, green color selection,
+stroke Undo, map-zoom alignment and unchanged race totals. A downloaded
+1600×1100 PNG contained the green annotation (1,266 matching ink pixels).
+The final full results suite passed with 217 tests (0 skipped), including the
+palette migration and shared-renderer scope checks. Phone checks found and fixed an inherited auto-height rule
+that had allowed the race sheet to grow above the viewport. Physical touch/pen
+hardware and actual TV viewing still require external verification.
