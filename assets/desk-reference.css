@@ -1,0 +1,122 @@
+/* Reference-specific compositions. Shared data, calls, map navigation and custom
+   palette tokens remain authoritative; these rules only change presentation. */
+.results-board .desk-result-status { display:none; }
+.results-board .comparison-reporting { font-size:11px; font-variant-numeric:tabular-nums; }
+.results-board[data-presentation="broadcast"] {
+  --reference-condensed:'FEA Condensed','Arial Narrow',Arial,sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
+}
+.results-board[data-presentation="broadcast"] :is(#desk-masthead strong,#focused-race-title,.comparison-year,.comparison-candidate strong,.comparison-candidate b,.selected-race-table td strong,.selected-race-table td:last-child,.election-chamber-labels strong) {
+  font-family:var(--reference-condensed); font-weight:800; letter-spacing:-.025em;
+}
+.results-board[data-presentation="broadcast"] #desk-masthead { background:var(--panel-bg); border-top:0; border-bottom:2px solid var(--text-primary); height:72px; }
+.results-board[data-presentation="broadcast"] #desk-masthead .desk-publication { border-right:2px solid var(--panel-border); padding-right:18px; }
+.results-board[data-presentation="broadcast"] #desk-masthead strong { font-size:clamp(30px,3vw,58px); }
+.results-board[data-presentation="broadcast"] .desk-result-status { display:grid; grid-template-columns:1fr auto; align-items:baseline; gap:6px; margin:0 0 7px; padding:9px 0; border-top:2px solid var(--panel-border); font-family:var(--reference-condensed); font-size:20px; font-weight:800; text-transform:uppercase; }
+.results-board[data-presentation="broadcast"] .desk-result-status > span { justify-self:start; padding:3px 6px; background:var(--watch); color:var(--status-ink); }
+.results-board[data-presentation="broadcast"] .desk-result-status strong { font-size:26px; }
+.results-board[data-presentation="broadcast"] .desk-result-status small { font-size:12px; font-weight:500; }
+.results-board[data-presentation="broadcast"] .desk-result-status i { grid-column:1/-1; height:5px; background:linear-gradient(to right,var(--watch) var(--reporting),var(--panel-raised) var(--reporting)); }
+/* Keep a real table for assistive technology. The visual order matches the
+   broadcast board: name at left, percentage above vote total at right. */
+.results-board[data-presentation="broadcast"] .selected-race-table { display:block; border-spacing:0; }
+.results-board[data-presentation="broadcast"] .selected-race-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+.results-board[data-presentation="broadcast"] .selected-race-table tbody { display:grid; gap:3px; }
+.results-board[data-presentation="broadcast"] .selected-race-table tr { display:grid; grid-template-columns:minmax(0,1fr) minmax(92px,31%); grid-template-rows:auto auto; background:var(--candidate-color); color:var(--candidate-ink); padding:7px; gap:2px 8px; }
+.results-board[data-presentation="broadcast"] .selected-race-table tbody tr:hover { background:var(--candidate-color) !important; box-shadow:inset 0 0 0 2px var(--focus); }
+.results-board[data-presentation="broadcast"] .selected-race-table td { border:0; padding:0; min-width:0; width:auto !important; }
+.results-board[data-presentation="broadcast"] .selected-race-table td strong { overflow-wrap:normal; word-break:normal; }
+.results-board[data-presentation="broadcast"] .selected-race-table td:first-child { grid-column:1; grid-row:1/3; align-content:center; padding:8px; background:transparent; }
+.results-board[data-presentation="broadcast"] .selected-race-table td:first-child strong { font-size:clamp(23px,2vw,36px); line-height:1.05; }
+.results-board[data-presentation="broadcast"] .selected-race-table td:first-child small { display:block; margin-top:5px; font-size:11px; }
+.results-board[data-presentation="broadcast"] .selected-race-table td:nth-child(2) { grid-column:2; grid-row:2; background:var(--panel-bg); color:var(--text-primary); text-align:right; padding:4px 8px; font:600 17px var(--reference-condensed); }
+.results-board[data-presentation="broadcast"] .selected-race-table td:last-child { grid-column:2; grid-row:1; padding:3px 8px; background:var(--panel-bg); color:var(--text-primary); font-size:clamp(34px,3.1vw,56px); text-align:right; line-height:1; }
+.results-board[data-presentation="broadcast"] .desk-candidate-track { display:none; }
+.results-board[data-presentation="broadcast"] .desk-preelection { background:transparent; border:0; padding:0; font-size:12px; }
+.results-board[data-presentation="broadcast"] .desk-tabs { border:0; border-bottom:2px solid var(--text-primary); }
+.results-board[data-presentation="broadcast"] .desk-tabs button { border:0; font-family:var(--reference-condensed); font-size:15px; }
+.results-board[data-presentation="broadcast"] .comparison-candidate { grid-template-columns:minmax(0,1fr) auto; grid-template-rows:auto 1fr; column-gap:8px; align-items:center; min-height:96px; padding:8px; }
+.results-board[data-presentation="broadcast"] .comparison-candidate small { grid-column:1; grid-row:1; }
+.results-board[data-presentation="broadcast"] .comparison-candidate strong { grid-column:1; grid-row:2; font-size:clamp(18px,1.6vw,30px); }
+.results-board[data-presentation="broadcast"] .comparison-candidate b { grid-column:2; grid-row:1; color:var(--text-primary); background:var(--panel-bg); padding:4px 6px 0; font-size:clamp(30px,3vw,56px); text-align:right; }
+.results-board[data-presentation="broadcast"] .comparison-candidate > span { grid-column:2; grid-row:2; color:var(--text-primary); background:var(--panel-bg); padding:4px 6px; text-align:right; font-size:12px; }
+.results-board[data-presentation="broadcast"] .comparison-column > header { border-bottom:2px solid var(--text-primary); }
+.results-board[data-presentation="broadcast"] .comparison-matrix { grid-template-columns:minmax(0,1.65fr) repeat(calc(var(--comparison-columns) - 1),minmax(0,1fr)); }
+.results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate { display:flex; flex-direction:column; justify-content:center; gap:0; text-align:center; background:var(--panel-bg); color:color-mix(in srgb,var(--candidate-color) 70%,var(--text-primary)); min-height:115px; }
+.results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate.is-history-leader { background:var(--candidate-color); color:var(--candidate-ink); }
+.results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate :is(b,span) { background:transparent; color:inherit; padding:0; text-align:center; }
+.results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate small { font-size:10px; }
+.results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate strong { font-size:clamp(20px,1.8vw,34px); }
+.results-board[data-presentation="broadcast"] #desk-past-margins .comparison-heading { padding-bottom:6px; }
+.results-board[data-presentation="broadcast"] .comparison-rail button { font-family:var(--reference-condensed); }
+.results-board[data-presentation="broadcast"] .county-result-shape:not(.is-county-selected) { stroke:var(--county-border); stroke-width:.7px; }
+.results-board[data-presentation="broadcast"] .county-result-shape:not(.is-county-selected):hover { stroke:var(--focus); stroke-width:1.3px; }
+.results-board:has(.desk-lab-tools) #results-provider-status { position:fixed; top:auto; bottom:2px; left:auto; right:18px; z-index:30; max-width:calc(100vw - 48px); padding:3px 6px; background:var(--panel-bg); border-bottom:2px solid var(--watch); }
+
+/* NYT's results hierarchy: black publication rules, quiet utility controls,
+   modest party swatches, and a white analytical canvas. */
+.results-board[data-presentation="editorial"] { font-family:Arial,Helvetica,sans-serif; }
+.results-board[data-presentation="editorial"] #desk-masthead { border-bottom:3px double var(--text-primary); align-items:center; }
+.results-board[data-presentation="editorial"] #desk-masthead .desk-publication { font-family:Georgia,'Times New Roman',serif; font-size:12px; letter-spacing:-.02em; line-height:1.1; max-width:105px; }
+.results-board[data-presentation="editorial"] :is(.election-map-controls,#night-controls) :is(button,select,input),
+.results-board[data-presentation="editorial"] :is([data-pin-race],[data-past-margin]) { background:var(--panel-bg); border:1px solid var(--panel-border); box-shadow:none; border-radius:3px; color:var(--text-primary); }
+.results-board[data-presentation="editorial"] .election-map-controls { background:var(--panel-bg); border-top:1px solid var(--panel-border); border-bottom:0; }
+.results-board[data-presentation="editorial"] .desk-preelection { border-radius:0; border:0; border-bottom:1px solid var(--panel-border); padding:10px 0; background:transparent; }
+.results-board[data-presentation="editorial"] .selected-race-table { width:100%; border-collapse:collapse; }
+.results-board[data-presentation="editorial"] .selected-race-table td:first-child { padding-left:16px; position:relative; }
+.results-board[data-presentation="editorial"] .selected-party-rail { width:4px; top:15px; bottom:15px; border-radius:0; }
+.results-board[data-presentation="editorial"] .selected-race-table td strong { font-family:Arial,Helvetica,sans-serif; font-weight:700; font-size:17px; }
+.results-board[data-presentation="editorial"] .selected-race-table td small { font-size:11px; color:var(--text-secondary); }
+.results-board[data-presentation="editorial"] .selected-race-table td:nth-child(2) { font-size:15px; font-weight:400; }
+.results-board[data-presentation="editorial"] .selected-race-table td:last-child { font:700 22px Georgia,'Times New Roman',serif; }
+.results-board[data-presentation="editorial"] .desk-candidate-track { background:transparent; height:3px; margin-top:9px; }
+.results-board[data-presentation="editorial"] .comparison-candidate { border-left:4px solid var(--candidate-color); padding:14px; background:var(--panel-bg); }
+.results-board[data-presentation="editorial"] .comparison-year { font-weight:700; letter-spacing:-.05em; }
+.results-board[data-presentation="editorial"] .comparison-rail button { background:var(--panel-bg); border:0; border-bottom:1px solid var(--panel-border); font-family:Georgia,serif; font-weight:700; }
+.results-board[data-presentation="editorial"] .comparison-rail button[aria-pressed="true"] { background:var(--text-primary); color:var(--panel-bg); box-shadow:none; }
+.results-board[data-presentation="editorial"] #desk-past-margins .comparison-heading strong { font-size:14px; font-family:Arial,sans-serif; font-weight:400; letter-spacing:0; }
+.results-board[data-presentation="editorial"] .night-geo-labels text { font-size:11px; paint-order:stroke; stroke:var(--map-bg); stroke-width:2px; }
+.results-board[data-presentation="editorial"] .map-context-shape.is-dimmed-context { fill:var(--map-bg); stroke:var(--panel-border); opacity:.35; }
+@media(min-width:1001px) {
+  .results-board[data-presentation="broadcast"] .election-focus-panel { left:18px; right:auto; top:194px; padding:14px; border:0; border-top:2px solid var(--text-primary); }
+  .results-board[data-presentation="broadcast"] #focused-race-title { font-size:clamp(32px,3vw,52px); margin:8px 0 12px; }
+  .results-board[data-presentation="broadcast"] .board-top-controls { top:84px; }
+  .results-board[data-presentation="broadcast"] .election-chamber-board { background:var(--panel-bg); border:0; }
+  .results-board[data-presentation="broadcast"] .election-chamber-bar { height:10px; }
+  .results-board[data-presentation="broadcast"] .election-chamber-bar::after { display:none; }
+  .results-board[data-presentation="editorial"] .election-night-page:not(.has-focused-race) #desk-race-index { display:none; }
+  .results-board[data-presentation="editorial"] .election-night-page:not(.has-focused-race) :is(.map-background-roads,.map-background-city) { display:none; }
+  .results-board[data-presentation="editorial"] .election-night-page:not(.has-focused-race) .election-map-controls { left:24px; top:220px; bottom:auto; right:auto; width:170px; max-width:170px; display:flex; flex-wrap:wrap; padding:10px; gap:8px; border:0; }
+  .results-board[data-presentation="editorial"] .election-night-page:not(.has-focused-race) .election-map-controls :is(select,input) { width:100%; font-size:12px; }
+  .results-board.night-tv[data-presentation="broadcast"] .election-focus-panel { width:clamp(560px,36vw,1400px) !important; top:194px; height:calc(100dvh - 218px) !important; max-height:calc(100dvh - 218px) !important; }
+  .results-board.night-tv.has-history-comparison[data-presentation="broadcast"] .election-focus-panel { width:min(68vw,2500px) !important; }
+  .results-board.night-tv[data-presentation="broadcast"] .selected-race-table tr { min-height:clamp(108px,7vw,245px); }
+  .results-board.night-tv[data-presentation="broadcast"] .selected-race-table td:first-child { padding-left:clamp(75px,5.4vw,170px); }
+  .results-board.night-tv[data-presentation="broadcast"] .selected-race-table td:first-child strong { font-size:clamp(29px,2.1vw,76px); }
+  .results-board.night-tv[data-presentation="broadcast"] .selected-race-table td:last-child { font-size:clamp(50px,4vw,142px); }
+  .results-board.night-tv[data-presentation="broadcast"] .selected-race-table td:nth-child(2) { font-size:clamp(20px,1.5vw,50px); }
+  .results-board.night-tv[data-presentation="broadcast"] .desk-result-status { font-size:clamp(23px,1.8vw,58px); }
+  .results-board.night-tv[data-presentation="broadcast"] .desk-result-status strong { font-size:clamp(28px,2.3vw,76px); }
+  .results-board.night-tv[data-presentation="broadcast"] .comparison-candidate { min-height:clamp(112px,7.5vw,260px); }
+  .results-board.night-tv[data-presentation="broadcast"] .comparison-candidate strong { font-size:clamp(24px,1.8vw,58px); }
+  .results-board.night-tv[data-presentation="broadcast"] .comparison-candidate b { font-size:clamp(43px,3.4vw,118px); }
+  .results-board.night-tv[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate { min-height:clamp(120px,8vw,290px); }
+  .results-board.night-tv[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate strong { font-size:clamp(28px,2vw,68px); }
+  .results-board.night-tv[data-presentation="editorial"] .selected-race-table td strong { font-family:Arial,Helvetica,sans-serif; font-size:clamp(24px,1.5vw,52px); }
+  .results-board.night-tv[data-presentation="editorial"] .selected-race-table td:nth-child(2) { font-size:clamp(19px,1.1vw,38px); }
+  .results-board.night-tv[data-presentation="editorial"] .selected-race-table td:last-child { font-size:clamp(40px,2.7vw,92px); }
+}
+@media(max-width:600px) {
+  .results-board[data-presentation="broadcast"] #desk-masthead { height:56px; }
+  .results-board[data-presentation="broadcast"] #desk-masthead strong { font-size:25px; }
+  .results-board[data-presentation="broadcast"] #focused-race-title { font-size:29px; }
+  .results-board[data-presentation="broadcast"] .selected-race-table td:first-child strong { font-size:23px; }
+  .results-board[data-presentation="broadcast"] .comparison-candidate { display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:auto; min-height:120px; padding:8px 5px; }
+  .results-board[data-presentation="broadcast"] .comparison-candidate :is(small,strong,b),
+  .results-board[data-presentation="broadcast"] .comparison-candidate > span { grid-column:1; grid-row:auto; }
+  .results-board[data-presentation="broadcast"] .comparison-candidate strong { font-size:17px; }
+  .results-board[data-presentation="broadcast"] .comparison-candidate b { font-size:30px; }
+  .results-board[data-presentation="broadcast"] .comparison-candidate > span { font-size:10px; }
+  .results-board[data-presentation="broadcast"] .comparison-matrix { grid-template-columns:repeat(var(--comparison-columns),minmax(0,1fr)); }
+  .results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate strong { font-size:17px; }
+}

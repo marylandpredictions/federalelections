@@ -911,8 +911,11 @@ window.FEAEnhanceBoard = function (Page) {
   };
   p.candidateTable = function (row, call) {
     const total = FEADesk.total(row);
+    const reporting=row.expectedVotePercent??row.estimatedVoteReporting;
+    const statusInk=window.FEADeskTheme?.foreground(window.FEADeskTheme.resolved.tokens.watch)||'#172638';
+    const status=`<div class="desk-result-status" style="--status-ink:${statusInk}"><span>${call?projectionSource(call)+' PROJECTS':total?'Counting':'Awaiting results'}</span>${total&&Number.isFinite(reporting)?`<strong>${percent(reporting)}<small> expected vote in</small></strong><i aria-hidden="true" style="--reporting:${Math.max(0,Math.min(100,reporting))}%"></i>`:''}</div>`;
     const max=Math.max(0,...(row.candidates||[]).map(c=>c.votes)),tied=(row.candidates||[]).filter(c=>c.votes===max).length>1;
-    return `<table class="selected-race-table"><thead><tr><th>Candidate</th><th>Votes</th><th>Vote %</th></tr></thead><tbody>${[
+    return `${status}<table class="selected-race-table"><thead><tr><th>Candidate</th><th>Votes</th><th>Vote %</th></tr></thead><tbody>${[
       ...(row.candidates || []),
     ]
       .sort((a, b) => b.votes - a.votes)

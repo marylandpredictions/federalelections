@@ -74,6 +74,34 @@ a broadcast product. Larger year controls and adjacent columns retain the map.
 Phones retain the bottom sheet. Leaving TV restores the existing manual sizing.
 Initials are intentional fallbacks; no guessed portrait URLs are requested.
 
+The reference-fidelity pass adds `desk-reference.css`: NBC's current column is
+1.65 times a historical column, with compact stacked historical figures and a
+colored historical leader. Live candidate rows put percentage over votes in a
+separate box, alongside the party-colored name area. The status strip reports
+only counting, awaiting results, or the actual published call source; closeness
+never becomes a projection. County borders, scope headings and the year rail
+follow the broadcast treatment. A row hover retains its party background and
+contrast, rather than applying the generic table hover fill.
+
+NBC uses locally hosted Roboto Condensed from the
+[Google Fonts distribution](https://github.com/google/fonts/tree/main/ofl/robotocondensed),
+with its SIL Open Font License retained beside the asset. It is a freely licensed
+substitute for the reference's condensed lettering, not NBC's proprietary font.
+The shared projection stylesheet loads the same font for board and OBS headings.
+NYT uses serif publication/race headings, quiet utility controls and table rules,
+and a left map-control rail in the national view. Its national map keeps the full
+canvas instead of the previous permanent race-directory sidebar. Existing watch
+and search controls remain available. Custom palettes and basic FEA layouts are
+preserved. The FEA identity, election data and initials fallbacks remain deliberate
+differences from the reference screenshots.
+
+Reference-pass verification: 197 results tests passed with no skips. Browser
+checks covered both 1920×1080 TV styles, both 390×844 phone sheets, phone year
+comparisons, the NYT national control rail, and NBC panel containment at
+3840×2160. The corrected hovered independent row retained its purple background
+and white foreground. The reference proof screenshots use the explicitly labeled
+simulated-results lab. No physical TV or OBS compositing is claimed here.
+
 ## Verification
 
 Automated coverage includes exact all-vote margins, unavailable sources,

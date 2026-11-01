@@ -770,9 +770,11 @@ window.FEACompleteBoard = function (Page) {
     const liveMargin=total?(votes('D')-votes('R'))/total*100:null;
     const column=(heading,subtitle,snapshot,isCurrent=false)=>{
       const call=isCurrent?current.calls?.[0]:null,lead=snapshot?FEAResultsUI.candidateLead(snapshot.candidates,snapshot.total):null;
-      return `<section class="comparison-column ${isCurrent?'comparison-current':''}" aria-label="${esc(heading+' '+subtitle)}"><header><strong class="comparison-year">${esc(heading)}</strong><span>${esc(subtitle)}</span></header><div class="comparison-candidates">${snapshot?snapshot.candidates.map(c=>{
+      const reporting=current.expectedVotePercent??current.estimatedVoteReporting;
+      const meta=isCurrent&&snapshot?.total&&Number.isFinite(reporting)?`${reporting.toFixed(1)}% expected vote in`:!isCurrent&&snapshot?.total?`${snapshot.total.toLocaleString()} votes`:'';
+      return `<section class="comparison-column ${isCurrent?'comparison-current':''}" aria-label="${esc(heading+' '+subtitle)}"><header><strong class="comparison-year">${esc(heading)}</strong><span>${esc(subtitle)}</span>${meta?`<small class="comparison-reporting">${esc(meta)}</small>`:''}</header><div class="comparison-candidates">${snapshot?snapshot.candidates.map(c=>{
         const color=T.candidateColor(c,snapshot.candidates),ink=T.foreground(color),party=c.partyCode||c.party||'O';
-        return `<div class="comparison-candidate" data-initials="${esc(String(c.name).trim().split(/\s+/).filter(Boolean).filter((_,i,a)=>i===0||i===a.length-1).map(n=>n[0]).join(''))}" style="--candidate-color:${color};--candidate-ink:${ink}"><small>${esc(party)}${call?.candidate===c.name?' · PROJECTED WINNER':''}</small><strong>${esc(c.name)}</strong><b>${snapshot.total?(c.votes/snapshot.total*100).toFixed(1)+'<em>%</em>':'—'}</b><span>${snapshot.total?Number(c.votes).toLocaleString()+' votes':'Awaiting results'}</span></div>`;
+        return `<div class="comparison-candidate ${!isCurrent&&snapshot.total&&c.votes===Math.max(...snapshot.candidates.map(r=>r.votes))?'is-history-leader':''}" data-initials="${esc(String(c.name).trim().split(/\s+/).filter(Boolean).filter((_,i,a)=>i===0||i===a.length-1).map(n=>n[0]).join(''))}" style="--candidate-color:${color};--candidate-ink:${ink}"><small>${esc(party)}${call?.candidate===c.name?' · PROJECTED WINNER':''}</small><strong>${esc(c.name)}</strong><b>${snapshot.total?(c.votes/snapshot.total*100).toFixed(1)+'<em>%</em>':'—'}</b><span>${snapshot.total?Number(c.votes).toLocaleString()+' votes':'Awaiting results'}</span></div>`;
       }).join(''):'<div class="comparison-unavailable"><strong>—</strong><span>No verified result for these boundaries</span></div>'}</div><footer><span>Lead margin</span><strong>${lead?lead.margin===0?'Even':esc(lead.party)+' +'+lead.margin.toFixed(1):'—'}</strong></footer></section>`;
     };
     const historical=sources.filter(s=>this.pastColumnIds.includes(s.id));
@@ -806,10 +808,12 @@ window.FEACompleteBoard = function (Page) {
       warning.textContent='Earlier district outline shown · 2026 boundaries need verification. Historical district comparisons stay unavailable.';
       content.prepend(warning);
     }
-    if(document.body.classList.contains('night-tv')&&this.lockedCounty) {
+    if((T.current.presentation==='broadcast'||document.body.classList.contains('night-tv'))&&this.lockedCounty) {
       const area=this.panelData(race).counties?.find(c=>c.fips===this.lockedCounty);
       const feature=this.visibleCountyFeatures?.find(f=>featureCountyFipsForElectionNight(f)===this.lockedCounty);
       document.getElementById('focused-race-title').textContent=area?.name||feature?.properties?.countyName||feature?.properties?.NAME||label(race);
+    } else if(T.current.presentation==='broadcast') {
+      document.getElementById('focused-race-title').textContent=race.type==='house'?`${race.state} | ${['AL','0'].includes(String(race.district))?'AT LARGE':'DISTRICT '+race.district}`:`${race.state} | STATEWIDE`;
     }
     let pin = document.querySelector("[data-pin-race]");
     if (!pin) {

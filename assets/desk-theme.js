@@ -134,6 +134,7 @@
       "text-muted": "#43556b",
       "state-border": "#ffffff",
       "district-border": "#ffffff",
+      "county-border": "#ffffff",
       selection: "#ffce00",
       focus: "#174b91",
       watch: "#ffce00",
