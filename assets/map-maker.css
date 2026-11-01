@@ -1,4 +1,5 @@
 html:has(body.map-maker) { overflow:hidden; }
+html:has(body.map-maker dialog[open]) { overflow:hidden!important; }
 .map-maker { margin:0; height:100dvh; min-height:0; overflow:hidden; background:var(--board-bg); color:var(--text-primary); }
 .map-maker #desk-masthead { display:flex; height:76px; }
 .map-maker .board-overflow { top:16px !important; }
@@ -54,7 +55,8 @@ body.map-maker.results-board #desk-masthead strong { font-size:32px; line-height
 #maker-detail h2 { font-size:30px; margin:0; } .maker-kicker { font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin:0 0 4px; }
 #maker-detail-note { color:var(--text-secondary); font-size:13px; min-height:18px; }
 #maker-detail nav { display:flex; gap:5px; border-bottom:1px solid var(--panel-border); padding-bottom:8px; }
-.maker-detail-body { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(300px,1fr); gap:20px; height:calc(100% - 155px); min-height:300px; }
+.maker-detail-body { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(300px,1fr); gap:20px; height:calc(100% - 210px); min-height:300px; }
+.maker-detail-actions { display:flex; gap:5px; padding:8px 0; }.map-maker dialog button:disabled { opacity:.45; cursor:default; }
 .maker-detail-map { position:relative; min-width:0; } #maker-county-reset { position:absolute; top:8px; left:8px; z-index:1; }
 #maker-county-map { height:100%; min-height:300px; background:var(--map-bg); } #maker-county-map svg { width:100%; height:100%; touch-action:none; display:block; }
 #maker-county-map path { stroke:var(--county-border,var(--state-border)); stroke-width:.7px; vector-effect:non-scaling-stroke; cursor:pointer; }
@@ -64,6 +66,7 @@ body.map-maker.results-board #desk-masthead strong { font-size:32px; line-height
 .maker-detail-info .comparison-matrix { display:grid; grid-template-columns:1fr; gap:18px; }
 .maker-detail-info .comparison-column { padding:12px 0; border-bottom:1px solid var(--panel-border); min-width:0; }
 .maker-detail-info .comparison-column h3 { margin:0 0 8px; } .maker-past-lead { font-size:28px; display:block; margin:4px 0 12px; }
+.maker-lead-D { color:var(--party-d-text); }.maker-lead-R { color:var(--party-r-text); }.maker-lead-I { color:var(--party-i-text); }.maker-lead-O { color:var(--text-primary); }
 .maker-detail-info .election-map-tooltip-table { width:100%; border-collapse:collapse; font-size:13px; }
 .maker-detail-info .election-map-tooltip-table :is(th,td) { text-align:right; padding:8px 4px; border-bottom:1px solid var(--panel-border); }
 .maker-detail-info .election-map-tooltip-table :is(th,td):first-child { text-align:left; }
@@ -76,39 +79,39 @@ body.map-maker.results-board #desk-masthead strong { font-size:32px; line-height
    Reference: Kornacki's Road to 270 WHAT IF board, rather than NBC web results. */
 body.map-maker[data-theme-preset="nbc-big-board"] { --board-bg:#152b40!important; --map-bg:#152b40!important; --panel-bg:#1b3249!important; --panel-raised:#31485e!important; --control-bg:#233d56!important; --text-primary:#ffffff!important; --text-secondary:#d5e0eb!important; --panel-border:#6b8195!important; --map-neutral:#9baabd!important; --party-d-text:#65caff!important; --party-r-text:#ff7b88!important; --party-i-text:#d2b4ff!important; }
 @media(min-width:801px) {
- body.map-maker[data-theme-preset="nbc-big-board"] .maker-workspace { inset:158px 18px 14px 194px; grid-template-columns:minmax(0,1fr) 210px; gap:12px; }
- body.map-maker[data-theme-preset="nbc-big-board"] .maker-tools { grid-column:2; grid-row:1; border:0; border-left:2px solid var(--panel-border); }
- body.map-maker[data-theme-preset="nbc-big-board"] .maker-map-region { grid-column:1; grid-row:1; }
- body.map-maker[data-theme-preset="nbc-big-board"] .board-top-controls { display:block; top:88px!important; left:18px!important; right:18px!important; }
- body.map-maker[data-theme-preset="nbc-big-board"] .election-mode-toggle { margin-left:176px; width:max-content; }
- body.map-maker[data-theme-preset="nbc-big-board"] .election-chamber-board { position:absolute; left:0; top:74px; width:150px; box-sizing:border-box; border:0; background:transparent; padding:0; box-shadow:none; }
- body.map-maker[data-theme-preset="nbc-big-board"] .maker-totals { display:flex; flex-direction:column; gap:7px; }
- body.map-maker[data-theme-preset="nbc-big-board"] .maker-totals span { display:block; padding:17px 12px; color:white; font-family:var(--reference-condensed,Arial); font-size:38px; text-transform:uppercase; background:var(--map-neutral); border-bottom:4px solid var(--text-primary); }
- body.map-maker[data-theme-preset="nbc-big-board"] .maker-totals :is(.maker-d,.maker-r,.maker-i) { background:var(--tower-color); }
- body.map-maker[data-theme-preset="nbc-big-board"] .maker-totals .maker-t { font-size:25px; color:var(--text-primary); background:var(--panel-raised); }
- body.map-maker[data-theme-preset="nbc-big-board"] #maker-seat-bar { height:6px; margin-top:10px; }
- body.map-maker[data-theme-preset="nbc-big-board"] #maker-count-caption { font-size:12px; line-height:1.5; text-align:left; }
- body.map-maker[data-theme-preset="nbc-big-board"] #desk-masthead strong { font:800 42px var(--reference-condensed,Arial); text-transform:uppercase; }
- body.map-maker[data-theme-preset="nbc-big-board"] #maker-palette { grid-template-columns:1fr; }
- body.map-maker[data-theme-preset="nbc-big-board"] #maker-palette button { min-height:31px; padding:5px 8px; border-radius:0; border-left-width:22px; font-weight:800; }
- body.map-maker[data-theme-preset="nbc-big-board"] .maker-tools > p { display:none; }
- body.map-maker[data-theme-preset="nyt-results"] #desk-masthead { justify-content:center; border-bottom:1px solid var(--panel-border); }
- body.map-maker[data-theme-preset="nyt-results"] #desk-masthead .desk-publication { position:absolute; left:18px; }
- body.map-maker[data-theme-preset="nyt-results"] #desk-masthead strong { font:700 36px Georgia,serif; }
- body.map-maker[data-theme-preset="nyt-results"] .board-top-controls { top:88px!important; grid-template-columns:230px minmax(0,750px); justify-content:center; gap:30px; border-bottom:1px solid var(--panel-border); padding-bottom:14px; }
- body.map-maker[data-theme-preset="nyt-results"] .election-chamber-board { border:0; background:transparent; box-shadow:none; }
- body.map-maker[data-theme-preset="nyt-results"] .maker-workspace { grid-template-columns:minmax(0,1fr) 240px; inset:190px max(18px,3vw) 18px; gap:30px; }
- body.map-maker[data-theme-preset="nyt-results"] .maker-tools { grid-column:2; grid-row:1; border:0; border-left:1px solid var(--panel-border); background:transparent; }
- body.map-maker[data-theme-preset="nyt-results"] .maker-map-region { grid-column:1; grid-row:1; }
- body.map-maker[data-theme-preset="nyt-results"] .maker-tools h1 { font:700 24px Georgia,serif; }
- body.map-maker[data-theme-preset="nyt-results"] #maker-seat-bar { height:8px; border-radius:0; }
+ body.map-maker[data-presentation="broadcast"] .maker-workspace { inset:158px 18px 14px 194px; grid-template-columns:minmax(0,1fr) 210px; gap:12px; }
+ body.map-maker[data-presentation="broadcast"] .maker-tools { grid-column:2; grid-row:1; border:0; border-left:2px solid var(--panel-border); }
+ body.map-maker[data-presentation="broadcast"] .maker-map-region { grid-column:1; grid-row:1; }
+ body.map-maker[data-presentation="broadcast"] .board-top-controls { display:block; top:88px!important; left:18px!important; right:18px!important; }
+ body.map-maker[data-presentation="broadcast"] .election-mode-toggle { margin-left:176px; width:max-content; }
+ body.map-maker[data-presentation="broadcast"] .election-chamber-board { position:absolute; left:0; top:74px; width:150px; box-sizing:border-box; border:0; background:transparent; padding:0; box-shadow:none; }
+ body.map-maker[data-presentation="broadcast"] .maker-totals { display:flex; flex-direction:column; gap:7px; }
+ body.map-maker[data-presentation="broadcast"] .maker-totals span { display:block; padding:17px 12px; color:white; font-family:var(--reference-condensed,Arial); font-size:38px; text-transform:uppercase; background:var(--map-neutral); border-bottom:4px solid var(--text-primary); }
+ body.map-maker[data-presentation="broadcast"] .maker-totals :is(.maker-d,.maker-r,.maker-i) { background:var(--tower-color); }
+ body.map-maker[data-presentation="broadcast"] .maker-totals .maker-t { font-size:25px; color:var(--text-primary); background:var(--panel-raised); }
+ body.map-maker[data-presentation="broadcast"] #maker-seat-bar { height:6px; margin-top:10px; }
+ body.map-maker[data-presentation="broadcast"] #maker-count-caption { font-size:12px; line-height:1.5; text-align:left; }
+ body.map-maker[data-presentation="broadcast"] #desk-masthead strong { font:800 42px var(--reference-condensed,Arial); text-transform:uppercase; }
+ body.map-maker[data-presentation="broadcast"] #maker-palette { grid-template-columns:1fr; }
+ body.map-maker[data-presentation="broadcast"] #maker-palette button { min-height:31px; padding:5px 8px; border-radius:0; border-left-width:22px; font-weight:800; }
+ body.map-maker[data-presentation="broadcast"] .maker-tools > p { display:none; }
+ body.map-maker[data-presentation="editorial"] #desk-masthead { justify-content:center; border-bottom:1px solid var(--panel-border); }
+ body.map-maker[data-presentation="editorial"] #desk-masthead .desk-publication { position:absolute; left:18px; }
+ body.map-maker[data-presentation="editorial"] #desk-masthead strong { position:absolute; left:50%; transform:translateX(-50%); flex:none; width:auto; margin:0; font:700 36px Georgia,serif; }
+ body.map-maker[data-presentation="editorial"] .board-top-controls { top:88px!important; grid-template-columns:230px minmax(0,750px); justify-content:center; gap:30px; border-bottom:1px solid var(--panel-border); padding-bottom:14px; }
+ body.map-maker[data-presentation="editorial"] .election-chamber-board { border:0; background:transparent; box-shadow:none; }
+ body.map-maker[data-presentation="editorial"] .maker-workspace { grid-template-columns:minmax(0,1fr) 240px; inset:190px max(18px,3vw) 18px; gap:30px; }
+ body.map-maker[data-presentation="editorial"] .maker-tools { grid-column:2; grid-row:1; border:0; border-left:1px solid var(--panel-border); background:transparent; }
+ body.map-maker[data-presentation="editorial"] .maker-map-region { grid-column:1; grid-row:1; }
+ body.map-maker[data-presentation="editorial"] .maker-tools h1 { font:700 24px Georgia,serif; }
+ body.map-maker[data-presentation="editorial"] #maker-seat-bar { height:8px; border-radius:0; }
 }
 @media(max-width:800px) {
  html:has(body.map-maker) { overflow-y:auto; }
  .map-maker { height:auto; min-height:100dvh; overflow:auto; }.map-maker #desk-masthead { height:62px; padding-left:10px; gap:8px; }.map-maker #desk-masthead strong { font-size:25px; }.map-maker #desk-masthead .desk-edition-note { display:none; }
  .map-maker .board-overflow { top:7px !important; right:10px; }.map-maker .board-top-controls { top:70px !important; grid-template-columns:1fr; gap:6px; left:10px; right:10px; }
  .map-maker .election-mode-toggle { justify-content:center; }.map-maker .election-mode-toggle button { min-height:36px; padding:7px 12px; }.maker-totals { font-size:19px; }
- .map-maker .maker-workspace { position:relative; inset:auto; margin:190px 10px 15px; display:flex; flex-direction:column; gap:10px; }.maker-tools { padding:10px; overflow:visible; }.maker-tools h1 { font-size:18px; }.maker-tools > p { margin:5px 0; }
+ .map-maker .maker-workspace { position:relative; inset:auto; margin:210px 10px 15px; display:flex; flex-direction:column; gap:10px; }.maker-tools { padding:10px; overflow:visible; }.maker-tools h1 { font-size:18px; }.maker-tools > p { margin:5px 0; }
  #maker-palette { display:none; }.maker-mobile-brush { display:flex; gap:10px; align-items:center; font-size:13px; }.maker-mobile-brush select { flex:1; min-width:0; }.maker-actions { margin-top:8px; }.maker-drag { margin:5px 0; }.maker-file-tools { margin-top:8px; padding-top:8px; }.maker-file-tools summary { margin:0; }
  .maker-map-region { height:410px; flex:none; } #maker-map { height:370px; }
  body.map-maker.results-board .board-top-controls { left:10px!important; right:10px!important; }

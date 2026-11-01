@@ -13,9 +13,9 @@ other offices intact. Painting and theme changes update existing paths, retainin
 zoom. Office changes intentionally open the selected national map.
 
 Ratings and the map title save under `fea-map-maker-v1` in this browser. They do
-not sync between devices. **Save scenario file** and **Open scenario file** move
+not sync between devices. **Save scenario file** and **Open FEA / YAPms file** move
 the map between devices; imports validate the schema, office, title, every race
-ID and every rating before applying any changes. Files over 1 MB are rejected.
+ID and every rating before applying any changes. Files over 5 MB are rejected.
 **Download PNG** produces a full national map with its rating legend and an
 explicit user-created-scenario label. The file does not claim to be live results.
 
@@ -38,3 +38,55 @@ grouped undo, redo, keyboard painting, stable zoom after edits, reload restorati
 scenario download/import, PNG download/rendering and phone-sized layout. Logo
 geometry was checked in all six preset styles at a phone-sized viewport. These
 are browser checks, not physical-device certification.
+
+## YAPms imports and county explorer (November 1, 2026)
+
+The file picker accepts YAPms JSON downloads for 2026 USA House, Senate and
+governor blank-map scenarios. All races in that office must match before anything
+changes. The imported office is replaced; other offices and county ratings stay
+intact. Split allocations become Tossup with an explicit import note. Custom
+candidate names prompt for a party mapping; colors never guess party identity.
+Four margin indices map to Safe, Likely, Lean and Tilt, not vote percentages.
+Changed/custom House boundary revisions import by district ID and explicitly
+retain FEA's displayed map boundaries.
+
+The three fixtures are actual public YAPms downloads, containing only blank-map
+metadata and Tossup allocations. Source: [YAPms](https://yapms.com), its
+[SavedMap format](https://github.com/yapms/yapms/blob/main/apps/yapms/src/lib/types/SavedMap.ts)
+and its 2026 map families. Senate/Governor revision `2024312` is a 2026 map date,
+not a 2024 election result. The downloaded House revision `2026253` contains a
+confirmed `TN-` identifier typo: its upstream SVG explicitly labels that path
+`short-name="TN-2"`, `long-name="Tennessee's 2nd"`. Only that revision receives
+the alias; disabled DC is excluded. Unknown active districts are rejected.
+
+**Map maker menu → County detail: right-click / double tap** enables the explorer.
+It starts off on every load. Normal single clicks/taps still paint. Right-click,
+touch double tap, Shift+F10, or the menu's **Open selected race detail** opens it.
+Closing restores the untouched national SVG and its zoom. Counties paint with
+the detail brush; Undo/Redo includes county edits. County ratings save/export
+separately as `raceId@countyFips`, so district fragments and statewide scenarios
+cannot overwrite each other or national totals.
+
+Past elections reuses FEA's verified historical snapshot and tooltip renderer.
+There is no 2026/current-results comparison column. Exact district geometry
+requirements still apply; unavailable comparisons remain blank. County history
+and Census profiles within House detail describe whole counties, clearly labeled.
+Redrawn districts without verified current county intersections show labeled
+statewide county context instead of an old district boundary. Demographics use
+the existing ACS county/state and direct district datasets and boundary warnings.
+
+The NBC presentation uses a broadcast scenario-board composition: party towers,
+large national map, condensed headings, compact paint rail and dark studio
+surfaces. Reference visually reviewed: [Kornacki's Road to 270 WHAT IF board](https://cdn.kqed.org/wp-content/uploads/sites/2/2020/11/n_msnbc_kornackiearlystates_201103_1920x1080.jpg).
+The NYT presentation uses an editorial headline, rules, restrained totals and
+right-hand tools. FEA branding remains; these are inspired layouts, not NBC/NYT
+products. Saved/custom themes retain the selected presentation layout.
+
+Validation this pass: 210 results tests passed (0 skipped); the unrelated local
+Git publishing fixture transiently failed once, then passed alone and in a full
+rerun. Candidate audit passed: 506 reviewed, 0 placeholders, 0 needing review.
+Data JSON validation and both existing prediction/YAPms tests passed. Actual
+YAPms files for all three offices imported through the browser. CO-04 county
+painting, county and district Census profiles, historical returns, and TX-01's
+redrawn-boundary warning were exercised. Phone-sized layout was checked at
+390×844; actual physical-device double-tap behavior still requires verification.

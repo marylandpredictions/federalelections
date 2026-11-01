@@ -16,12 +16,13 @@
       $('maker-detail-location').textContent=name;
       $('maker-detail-rating').textContent=unit?`Your rating: ${model.rating(race.id+'@'+unit)}`:'Select a county to rate it or inspect its history.';
       $('maker-county-apply').disabled=!unit;
+      $('maker-county-undo').disabled=!model.past.length;$('maker-county-redo').disabled=!model.future.length;
       if(active==='history')history();if(active==='demographics')demographics();
     }
     function history(){
       $('maker-detail-history').innerHTML='<p class="desk-hint">Published past elections only. No 2026 results or projected shift.</p>'+(race.type==='house'&&unit?'<p class="desk-hint">Whole-county reference; not votes within this district’s portion.</p>':'')+'<div class="comparison-matrix">'+sources.map(s=>{
         const row=snapshot(s),lead=row&&FEAResultsUI.candidateLead(row.candidates,row.total);
-        return `<section class="comparison-column"><h3>${esc(label(s))}</h3>${row?`<strong class="maker-past-lead" style="color:${FEADeskTheme.candidateColor({party:lead?.party})}">${esc(lead?.party||'')} +${lead?.margin.toFixed(1)||'0.0'}</strong>`+FEAResultsUI.historicalTooltip(row,{name:row.name||title(race),label:row.round==='first-choice'?'First-choice returns':'Published returns',color:FEADeskTheme.candidateColor}):'<p class="desk-hint">—<br>No verified comparable result</p>'}</section>`;
+        return `<section class="comparison-column"><h3>${esc(label(s))}</h3>${row?`<strong class="maker-past-lead maker-lead-${['D','R','I'].includes(lead?.party)?lead.party:'O'}">${esc(lead?.party||'')} +${lead?.margin.toFixed(1)||'0.0'}</strong>`+FEAResultsUI.historicalTooltip(row,{name:row.name||title(race),label:row.round==='first-choice'?'First-choice returns':'Published returns',color:FEADeskTheme.candidateColor}):'<p class="desk-hint">—<br>No verified comparable result</p>'}</section>`;
       }).join('')+'</div>';
     }
     async function demographics(){
@@ -49,7 +50,7 @@
       refresh();
     }
     async function open(value){
-      race={...value};unit='';active='ratings';const token=++sequence;
+      race={...value};unit='';features=[];sources=[];active='ratings';const token=++sequence;
       $('maker-detail-title').textContent=title(race);$('maker-county-map').replaceChildren();$('maker-detail-note').textContent='Loading geography and past elections…';$('maker-detail-history').textContent='Loading past elections…';
       if(!dialog.open)dialog.showModal();tab('ratings');
       try{
@@ -69,6 +70,7 @@
     $('maker-detail-close').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{sequence++;race=null;features=[];$('maker-county-map').replaceChildren();});
     dialog.querySelectorAll('[data-detail-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.detailTab));
     $('maker-race-wide').onclick=()=>{unit='';refresh();};$('maker-history-source').onchange=refresh;
+    $('maker-county-undo').onclick=()=>{if(model.undo())edited('Last rating change undone.');};$('maker-county-redo').onclick=()=>{if(model.redo())edited('Rating change restored.');};
     $('maker-county-apply').onclick=()=>{if(unit){model.apply([[race.id+'@'+unit,brush()]]);edited('County rating updated.');refresh();}};
     return {open,refresh};
   }

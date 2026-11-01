@@ -11,7 +11,8 @@
     for(const rating of S.ratings){
       const party=rating.includes('Democratic')?'D':rating.includes('Republican')?'R':'I';
       const tint=rating.startsWith('Safe')?0:rating.startsWith('Likely')?.2:rating.startsWith('Lean')?.4:.65;
-      M.colors[rating]=rating==='Tossup'?token('map-neutral'):T.mix(T.candidateColor({party}),token('panel-bg'),tint);
+      const tintSurface=document.body.dataset.presentation==='broadcast'?'#d3dde7':token('panel-bg');
+      M.colors[rating]=rating==='Tossup'?token('map-neutral'):T.mix(T.candidateColor({party}),tintSurface,tint);
     }
     for(const button of $('maker-palette').querySelectorAll('button')){button.style.setProperty('--paint-color',M.colors[button.dataset.rating]);button.setAttribute('aria-pressed',String(button.dataset.rating===brush));}
     $('maker-brush').value=brush;
@@ -60,14 +61,14 @@
     try{
       const ns='http://www.w3.org/2000/svg',outer=document.createElementNS(ns,'svg');outer.setAttribute('xmlns',ns);outer.setAttribute('width','1600');outer.setAttribute('height','1100');
       const add=(tag,attrs,text)=>{const n=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);if(text)n.textContent=text;outer.append(n);return n;};
-      add('rect',{width:1600,height:1100,fill:T.resolved.tokens['map-bg']});
-      add('text',{x:30,y:45,fill:T.resolved.tokens['text-primary'],'font-family':'Arial','font-size':30},`${model.state.title||'My election map'} · ${model.state.office==='governor'?'Governors':model.state.office==='house'?'House':'Senate'}`);
-      add('text',{x:30,y:75,fill:T.resolved.tokens['text-secondary'],'font-family':'Arial','font-size':18},'User-created ratings · Not FEA’s forecast or live election results');
+      add('rect',{width:1600,height:1100,fill:token('map-bg')});
+      add('text',{x:30,y:45,fill:token('text-primary'),'font-family':'Arial','font-size':30},`${model.state.title||'My election map'} · ${model.state.office==='governor'?'Governors':model.state.office==='house'?'House':'Senate'}`);
+      add('text',{x:30,y:75,fill:token('text-secondary'),'font-family':'Arial','font-size':18},'User-created ratings · Not FEA’s forecast or live election results');
       const clone=original.cloneNode(true);clone.setAttribute('x','0');clone.setAttribute('y','90');clone.setAttribute('width','1600');clone.setAttribute('height','880');clone.removeAttribute('class');
       clone.querySelector('.prediction-shape-layer')?.removeAttribute('transform');
-      clone.querySelectorAll('path').forEach(n=>{n.setAttribute('stroke',T.resolved.tokens['state-border']);n.setAttribute('stroke-width','.6');n.setAttribute('vector-effect','non-scaling-stroke');});outer.append(clone);
-      S.ratings.forEach((rating,i)=>{const x=30+(i%7)*220,y=1000+Math.floor(i/7)*40;add('rect',{x,y:y-15,width:18,height:18,fill:M.colors[rating]});add('text',{x:x+25,y,fill:T.resolved.tokens['text-primary'],'font-family':'Arial','font-size':17},short(rating));});
-      if(model.state.office!=='house'){add('rect',{x:1350,y:1025,width:18,height:18,fill:T.resolved.tokens['panel-raised']});add('text',{x:1375,y:1040,fill:T.resolved.tokens['text-primary'],'font-family':'Arial','font-size':14},'Not on 2026 ballot');}
+      clone.querySelectorAll('path').forEach(n=>{n.setAttribute('stroke',token('state-border'));n.setAttribute('stroke-width','.6');n.setAttribute('vector-effect','non-scaling-stroke');});outer.append(clone);
+      S.ratings.forEach((rating,i)=>{const x=30+(i%7)*220,y=1000+Math.floor(i/7)*40;add('rect',{x,y:y-15,width:18,height:18,fill:M.colors[rating]});add('text',{x:x+25,y,fill:token('text-primary'),'font-family':'Arial','font-size':17},short(rating));});
+      if(model.state.office!=='house'){add('rect',{x:1350,y:1025,width:18,height:18,fill:token('panel-raised')});add('text',{x:1375,y:1040,fill:token('text-primary'),'font-family':'Arial','font-size':14},'Not on 2026 ballot');}
       const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(outer)],{type:'image/svg+xml'}));
       try{const img=new Image();await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=url;});const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=1100;canvas.getContext('2d').drawImage(img,0,0);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw Error('Image unavailable');download(blob,`fea-${model.state.office}-scenario.png`);status('PNG downloaded with your map and rating legend.');}finally{URL.revokeObjectURL(url);}
     }catch{status('The image could not be created. Save a scenario file to keep your work.');}finally{$('maker-image').disabled=false;}

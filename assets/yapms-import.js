@@ -17,6 +17,10 @@
     for(const region of value.regions){
       if(!region||typeof region.id!=='string'||typeof region.disabled!=='boolean'||!Array.isArray(region.candidates))throw Error('Invalid YAPms region.');
       let suffix=region.id.toUpperCase();
+      // Confirmed upstream SVG typo: revision 2026253 has region="TN-"
+      // with short-name="TN-2" and long-name="Tennessee's 2nd".
+      if(office==='house'&&revision==='2026253'&&suffix==='TN-')suffix='TN-2';
+      if(office==='house'&&suffix==='DC-AL'&&region.disabled)continue;
       if(office==='house'){const match=/^([A-Z]{2})-(\d{1,2}|AL)$/.exec(suffix);if(!match)throw Error('Unknown House district: '+suffix);suffix=match[1]+'-'+(['0','00','AL'].includes(match[2])?'AL':match[2].padStart(2,'0'));}
       else suffix=suffix.replace(/-S$/,'');
       const houseRace=office==='house'?expected.find(r=>r.state===suffix.slice(0,2)&&(['AL','0'].includes(String(r.district).toUpperCase())?'AL':String(r.district).padStart(2,'0'))===suffix.slice(3)):null;
