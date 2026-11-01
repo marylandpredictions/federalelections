@@ -3,7 +3,7 @@ import { pathToFileURL } from "node:url";
 import { createHash } from "node:crypto";
 import { gzipSync } from "node:zlib";
 import { fetchCensusSummary } from "./census-summary.mjs";
-const variables = [
+export const variables = [
   "NAME",
   "B01003_001E",
   "B03002_003E",
@@ -49,7 +49,7 @@ export function normalizeDemographics(table) {
         ? keys.reduce((s, key) => s + number(r[key]), 0)
         : null;
     const state = String(r.state || "").padStart(2, "0"),
-      fips = state + (r.county || "");
+      fips = state + (r['congressional district'] || r.county || "");
     result[fips] = {
       name: r.NAME,
       population,

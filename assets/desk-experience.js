@@ -39,6 +39,7 @@ window.FEACompleteBoard = function (Page) {
     tooltip: p.showTooltip,
     extent: p.mapExtent,
     mode: p.switchMode,
+    lock: p.lockCounty,
   };
   p.init = async function () {
     this.outlineMode = 'next';
@@ -649,6 +650,11 @@ window.FEACompleteBoard = function (Page) {
       lens.append(option);lens.value='historical';lens.disabled=true;
     } else {lens.disabled=false;lens.value=this.comparisonMode||'live';}
   };
+  p.canHistoricalMap = function (source) {
+    if(this.currentRace?.type==='house'&&this.lockedCounty)return false;
+    if(this.currentRace?.type!=='house'&&source.countyCompatible!==true)return false;
+    return Boolean(FEAResultsUI.historicalSnapshot(this.currentRace,source,this.comparisonData));
+  };
   p.setHistoricalMap = async function (id) {
     const source = this.comparisonManifest?.sources.find(s=>s.id===id);
     if(id==='') {
@@ -657,7 +663,7 @@ window.FEACompleteBoard = function (Page) {
     } else if(!id && this.pastMapSource) {
       this.comparisonMode=this.beforeHistoricalLens||'live'; this.beforeHistoricalLens=null;
     } else if(source && !this.pastMapSource) this.beforeHistoricalLens=this.comparisonMode;
-    this.pastMapSource = source && FEAResultsUI.historicalSnapshot(this.currentRace,source,this.comparisonData) ? id : null;
+    this.pastMapSource = source && this.canHistoricalMap(source) ? id : null;
     this.reflectHistoricalLens();
     const note = document.getElementById('desk-history-map-note');
     if(note) { note.hidden = !this.pastMapSource; note.textContent = this.pastMapSource ? `${source.label.replace(/shift$/i,'margin')} · Historical votes, not 2026 results` : ''; }
@@ -690,7 +696,7 @@ window.FEACompleteBoard = function (Page) {
       const race = county ? this.currentRace : feature ? this.modeRaces().find(r=>this.selectedMode==='house' ? houseGeometryId(r)===feature.properties?.id : r.state===FIPS_TO_STATE[featureStateFipsForElectionNight(feature)]) : null;
       const source = this.comparisonManifest.sources.find(s=>s.id===this.pastMapSource);
       const snapshot = FEAResultsUI.historicalSnapshot(race,source,this.comparisonData,county&&race?.type!=='house'?featureCountyFipsForElectionNight(feature):null);
-      html = `<strong>${esc(snapshot?.name || (race ? label(race) : 'Historical result'))}</strong><p>${esc(source.label.replace(/shift$/i,'margin'))}</p>${snapshot ? `<strong>${snapshot.margin>=0?'D':'R'} +${Math.abs(snapshot.margin).toFixed(1)}</strong><p>${snapshot.total.toLocaleString()} votes · Final historical result</p>` : '<p>No verified comparable result</p>'}`;
+      html = `<strong>${esc(snapshot?.name || (race ? label(race) : 'Historical result'))}</strong><p>${esc(source.label.replace(/shift$/i,'margin'))}</p>${snapshot ? `<strong>${snapshot.margin>=0?'D':'R'} +${Math.abs(snapshot.margin).toFixed(1)}</strong><p>${snapshot.total.toLocaleString()} votes · ${snapshot.round==='first-choice'?'First-choice historical returns':snapshot.round==='final-ranked-choice'?'Final ranked-choice returns':'Published historical returns'}</p>` : '<p>No verified comparable result</p>'}`;
     }
     return original.tooltip.call(this,event,html);
   };
@@ -716,6 +722,10 @@ window.FEACompleteBoard = function (Page) {
     }
     return original.mode.call(this,mode,...args);
   };
+  p.lockCounty = function (fips,...args) {
+    if(fips&&this.currentRace?.type==='house'&&this.pastMapSource)this.setHistoricalMap(null);
+    return original.lock.call(this,fips,...args);
+  };
   p.renderPastMargins = function (race) {
     let button = document.querySelector('[data-past-margin]');
     if (!button) {
@@ -736,9 +746,9 @@ window.FEACompleteBoard = function (Page) {
     section.hidden = !open;
     if (!open) return;
     const matrixScroll=section.querySelector('.comparison-matrix')?.scrollLeft||0;
-    if (this.lockedCounty && race.type !== 'house') {
+    if (this.lockedCounty) {
       this.pastMarginLoads ||= new Map();
-      const missing = (this.comparisonManifest?.sources || []).filter(s => s.status === 'available' && s.countyCompatible && s.appliesTo?.includes(race.type) && !this.comparisonData.has(`${s.id}:county`) && !this.pastMarginLoads.has(s.id));
+      const missing = (this.comparisonManifest?.sources || []).filter(s => s.status === 'available' && s.countyCompatible && s.appliesTo?.includes(race.type) && (race.type!=='house'||s.countyReferenceCompatible) && !this.comparisonData.has(`${s.id}:county`) && !this.pastMarginLoads.has(s.id));
       for (const source of missing) {
         // Cache and deduplicate the existing county dataset; never fetch per county.
         const loading = this.loadComparisonDataset('county', source);
@@ -750,27 +760,28 @@ window.FEACompleteBoard = function (Page) {
     }
     const county = this.panelData(race).counties?.find(c => c.fips === this.lockedCounty);
     const historicalCounty = this.lockedCounty && [...this.comparisonData.values()].flatMap(data => data?.counties || data?.rows || []).find(row => String(row.fips || row.countyFips || '') === String(this.lockedCounty));
-    const scopeLabel = this.lockedCounty ? county?.name || historicalCounty?.county || historicalCounty?.name || `Selected area · ${this.lockedCounty}` : label(race);
+    const wholeCountyReference=race.type==='house'&&this.lockedCounty;
+    const scopeLabel = (this.lockedCounty ? county?.name || historicalCounty?.county || historicalCounty?.name || `Selected area · ${this.lockedCounty}` : label(race))+(wholeCountyReference?' · Whole county reference':'');
     const sources = (this.comparisonManifest?.sources || []).filter(s=>s.id!=='live'&&s.appliesTo?.includes(race.type));
     this.pastColumnIds ||= [sources.find(s=>s.status==='available')?.id || sources[0]?.id].filter(Boolean);
     const current = this.lockedCounty ? county || {candidates:[]} : this.panelData(race);
     const total = FEADesk.total(current), candidates=[...(current.candidates||[])].sort((a,b)=>(b.votes||0)-(a.votes||0));
     const votes = party => candidates.filter(c=>(c.partyCode||c.party)===party).reduce((n,c)=>n+(c.votes||0),0);
     const liveMargin=total?(votes('D')-votes('R'))/total*100:null;
-    const marginLabel=value=>value===null?'—':value===0?'Even':`${value>0?'D':'R'} +${Math.abs(value).toFixed(1)}`;
     const column=(heading,subtitle,snapshot,isCurrent=false)=>{
-      const call=isCurrent?current.calls?.[0]:null;
+      const call=isCurrent?current.calls?.[0]:null,lead=snapshot?FEAResultsUI.candidateLead(snapshot.candidates,snapshot.total):null;
       return `<section class="comparison-column ${isCurrent?'comparison-current':''}" aria-label="${esc(heading+' '+subtitle)}"><header><strong class="comparison-year">${esc(heading)}</strong><span>${esc(subtitle)}</span></header><div class="comparison-candidates">${snapshot?snapshot.candidates.map(c=>{
         const color=T.candidateColor(c,snapshot.candidates),ink=T.foreground(color),party=c.partyCode||c.party||'O';
-        return `<div class="comparison-candidate" style="--candidate-color:${color};--candidate-ink:${ink}"><small>${esc(party)}${call?.candidate===c.name?' · PROJECTED WINNER':''}</small><strong>${esc(c.name)}</strong><b>${snapshot.total?(c.votes/snapshot.total*100).toFixed(1)+'<em>%</em>':'—'}</b><span>${snapshot.total?Number(c.votes).toLocaleString()+' votes':'Awaiting results'}</span></div>`;
-      }).join(''):'<div class="comparison-unavailable"><strong>—</strong><span>No verified result for these boundaries</span></div>'}</div><footer><span>D−R margin</span><strong>${marginLabel(snapshot?.margin??null)}</strong></footer></section>`;
+        return `<div class="comparison-candidate" data-initials="${esc(String(c.name).trim().split(/\s+/).filter(Boolean).filter((_,i,a)=>i===0||i===a.length-1).map(n=>n[0]).join(''))}" style="--candidate-color:${color};--candidate-ink:${ink}"><small>${esc(party)}${call?.candidate===c.name?' · PROJECTED WINNER':''}</small><strong>${esc(c.name)}</strong><b>${snapshot.total?(c.votes/snapshot.total*100).toFixed(1)+'<em>%</em>':'—'}</b><span>${snapshot.total?Number(c.votes).toLocaleString()+' votes':'Awaiting results'}</span></div>`;
+      }).join(''):'<div class="comparison-unavailable"><strong>—</strong><span>No verified result for these boundaries</span></div>'}</div><footer><span>Lead margin</span><strong>${lead?lead.margin===0?'Even':esc(lead.party)+' +'+lead.margin.toFixed(1):'—'}</strong></footer></section>`;
     };
     const historical=sources.filter(s=>this.pastColumnIds.includes(s.id));
     const firstSnapshot=historical[0]&&FEAResultsUI.historicalSnapshot(race,historical[0],this.comparisonData,this.lockedCounty);
-    const shift=liveMargin!==null&&firstSnapshot?liveMargin-firstSnapshot.margin:null;
+    const twoParty=rows=>{const parties=[...rows].sort((a,b)=>b.votes-a.votes).slice(0,2).map(c=>c.partyCode||c.party);return parties.includes('D')&&parties.includes('R');};
+    const shift=!wholeCountyReference&&liveMargin!==null&&firstSnapshot&&twoParty(candidates)&&twoParty(firstSnapshot.candidates)?liveMargin-firstSnapshot.margin:null;
     const year=source=>source.id.match(/20\d{2}/)?.[0]||'Last';
     const office=source=>source.id.startsWith('pres-')?'PRES':race.type.toUpperCase();
-    section.innerHTML=`<header class="comparison-heading"><div><small>PAST & PRESENT</small><strong>${esc(scopeLabel)}</strong></div><span>Earlier elections · Final results</span></header><div class="comparison-workspace"><div class="comparison-matrix" style="--comparison-columns:${1+historical.length}">${column('2026',this.lockedCounty?'This local race':race.type==='house'?'House':race.type==='senate'?'Senate':'Governor',{total,candidates,margin:liveMargin},true)}${historical.map(source=>column(year(source),source.label.replace(/shift$/i,'result').replace(/margin$/i,'result'),FEAResultsUI.historicalSnapshot(race,source,this.comparisonData,this.lockedCounty))).join('')}</div><nav class="comparison-rail" aria-label="Historical comparison controls"><small>COMPARE</small>${sources.map(source=>`<button type="button" data-history-column="${esc(source.id)}" aria-pressed="${this.pastColumnIds.includes(source.id)}">${esc(year(source))}<span>${esc(office(source))}</span></button>`).join('')}<small>MAP</small><button type="button" data-history-map="" aria-pressed="${!this.pastMapSource&&this.comparisonMode==='live'}">2026<span>LIVE</span></button>${sources.map(source=>`<button type="button" data-history-map="${esc(source.id)}" aria-pressed="${this.pastMapSource===source.id}" ${FEAResultsUI.historicalSnapshot(race,source,this.comparisonData)?'':'disabled'}>${esc(year(source))}<span>${esc(office(source))}</span></button>`).join('')}</nav></div><p class="comparison-context">${shift===null?total?'Compare observed results with a verified historical election.':'Awaiting 2026 results. Historical columns show the earlier election, not a forecast.':`${Math.abs(shift).toFixed(1)} points more ${shift>=0?'Democratic':'Republican'} than ${esc(historical[0].label.replace(/shift$/i,'result'))}. Different offices and candidates can produce different results.`} Blank (—) means no verified comparison for these boundaries.</p>`;
+    section.innerHTML=`<header class="comparison-heading"><div><small>PAST & PRESENT</small><strong>${esc(scopeLabel)}</strong></div><span>Earlier elections · Reported returns</span></header><div class="comparison-workspace"><div class="comparison-matrix" style="--comparison-columns:${1+historical.length}">${column('2026',this.lockedCounty?'This local race':race.type==='house'?'House':race.type==='senate'?'Senate':'Governor',{total,candidates,margin:liveMargin},true)}${historical.map(source=>column(String(FEAResultsUI.historicalSnapshot(race,source,this.comparisonData,this.lockedCounty)?.year||year(source)),FEAResultsUI.historicalSnapshot(race,source,this.comparisonData,this.lockedCounty)?.label||source.label.replace(/shift$/i,'result').replace(/margin$/i,'result'),FEAResultsUI.historicalSnapshot(race,source,this.comparisonData,this.lockedCounty))).join('')}</div><nav class="comparison-rail" aria-label="Historical comparison controls"><small>COMPARE</small>${sources.map(source=>`<button type="button" data-history-column="${esc(source.id)}" aria-pressed="${this.pastColumnIds.includes(source.id)}">${esc(year(source))}<span>${esc(office(source))}</span></button>`).join('')}<small>MAP</small><button type="button" data-history-map="" aria-pressed="${!this.pastMapSource&&this.comparisonMode==='live'}">2026<span>LIVE</span></button>${sources.map(source=>`<button type="button" data-history-map="${esc(source.id)}" aria-pressed="${this.pastMapSource===source.id}" ${this.canHistoricalMap(source)?'':'disabled'}>${esc(year(source))}<span>${esc(office(source))}</span></button>`).join('')}</nav></div><p class="comparison-context">${shift===null?total?'Compare observed results with a verified historical election.':'Awaiting 2026 results. Historical columns show the earlier election, not a forecast.':`${Math.abs(shift).toFixed(1)} points more ${shift>=0?'Democratic':'Republican'} than ${esc(historical[0].label.replace(/shift$/i,'result'))}. Different offices and candidates can produce different results.`} ${wholeCountyReference?'Whole-county historical reference; these are not votes for only the district portion. No shift is calculated between different scopes. ' : ''}Blank (—) means no verified comparison for these boundaries.</p>`;
     section.querySelector('.comparison-matrix').scrollLeft=matrixScroll;
   };
   p.renderFocusedRace = function (race) {
@@ -790,6 +801,16 @@ window.FEACompleteBoard = function (Page) {
       );
     original.focused.call(this, race);
     if (!race) return;
+    if(race.geometryReviewRequired) {
+      const warning=document.createElement('p');warning.className='desk-geometry-warning';
+      warning.textContent='Earlier district outline shown · 2026 boundaries need verification. Historical district comparisons stay unavailable.';
+      content.prepend(warning);
+    }
+    if(document.body.classList.contains('night-tv')&&this.lockedCounty) {
+      const area=this.panelData(race).counties?.find(c=>c.fips===this.lockedCounty);
+      const feature=this.visibleCountyFeatures?.find(f=>featureCountyFipsForElectionNight(f)===this.lockedCounty);
+      document.getElementById('focused-race-title').textContent=area?.name||feature?.properties?.countyName||feature?.properties?.NAME||label(race);
+    }
     let pin = document.querySelector("[data-pin-race]");
     if (!pin) {
       pin = document.createElement("button");

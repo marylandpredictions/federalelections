@@ -1,11 +1,9 @@
 {
-  "source": "MIT Election Data and Science Lab county presidential returns; official state records",
+  "source": "MIT Election Data and Science Lab county presidential returns",
   "sourceUrl": "https://doi.org/10.7910/DVN/VOQCHQ",
-  "sourceFile": "data/baselines/source/countypres_2000-2024.csv",
-  "sourceVersion": "20260225",
-  "updatedAt": "2026-10-27",
   "marginBasis": "all-votes",
-  "aggregation": "Use TOTAL when present; otherwise sum source ballot partitions once. Never add TOTAL to its component modes. County map excludes unmatched Census FIPS and Alaska reporting districts.",
+  "aggregation": "TOTAL rows take priority over ballot-mode components. Invalid rows, unmatched FIPS and Alaska legislative districts are excluded.",
+  "year": 2020,
   "invalid": [],
   "rows": [
     {

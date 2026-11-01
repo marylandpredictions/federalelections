@@ -12,17 +12,22 @@ button expands the sheet, and year headers remain visible while scrolling.
 Comparisons use the existing comparison manifest and cached baseline datasets.
 Only sources marked `available` are used. Each column names its election (for
 example, **2024 presidential margin**); this is not mislabeled as a previous
-Senate or governor result. At implementation, the verified 2024 presidential
-state/county source is available, with Harris/Trump names from that official
-source. Other presidential votes are aggregated as **Other votes**, not assigned
-to an invented candidate. Older presidential and same-office sources remain
-disabled by the existing provenance gate and display a blank dash. Historical
-columns use raw vote counts and the all-votes denominator, including other votes.
+Senate or governor result. Presidential sources now cover 2016, 2020 and 2024.
+The previous same-seat Senate election is available for all 35 contests, including
+the appropriate special elections and Georgia's January 2021 runoff. Same-office
+House/governor coverage and the remaining gaps are listed in
+[comparison-data-coverage.md](comparison-data-coverage.md). Actual historical
+candidates retain their identities, including independents and same-party races.
+Presidential minor-candidate totals remain **Other votes**. Columns use raw counts
+and the all-votes denominator. Lead margin compares the top two actual candidates;
+it does not turn an independent into a Democrat or imply a call.
 
 House comparisons require a verified district row, an exact current `geometryId`
 match and the all-votes denominator. There is no statewide fallback. County
 comparisons require an exact unique valid FIPS match and compatible county
-returns. Missing/redrawn/unverified boundaries stay blank. Local datasets load
+returns. A House county can show an explicitly labeled **whole-county reference**;
+this never becomes a district-portion estimate, a shift between different scopes,
+or a historical district map. Missing/redrawn/unverified boundaries stay blank. Local datasets load
 only when needed, reusing the existing cache and deduplicating concurrent loads.
 
 ## Appearance
@@ -57,6 +62,17 @@ Visual references inspected in this pass:
 - The [NYT results screenshot](https://media.designrush.com/tinymce_images/729749/conversions/the-new-york-times-election-results-tracker-content.jpg): editorial headline, strong scorebar, restrained map/table hierarchy.
 
 These are FEA presentations with FEA attribution, not NBC/NYT-branded services.
+
+The **TV** window preset has separate broadcast/editorial compositions on large
+screens. NBC uses horizontal party blocks, initials tiles and boxed percentage/
+vote figures beside the name, following the
+[2020 Pennsylvania broadcast frame](https://static.independent.co.uk/2020/11/07/16/steve%20kornacki%20.png).
+NYT uses large serif figures, white space and restrained rules, informed by its
+[2024 House results layout](https://img.hankyung.com/photo/202411/01.38576832.1.png).
+This is an imagined NYT broadcast adaptation, not an assertion that NYT has such
+a broadcast product. Larger year controls and adjacent columns retain the map.
+Phones retain the bottom sheet. Leaving TV restores the existing manual sizing.
+Initials are intentional fallbacks; no guessed portrait URLs are requested.
 
 ## Verification
 

@@ -368,7 +368,11 @@ function featureStateFipsForElectionNight(feature) {
 
 function featureCountyFipsForElectionNight(feature) {
   const props = feature?.properties || {};
-  return String(feature?.id || props.GEOID || props.countyFips || `${props.STATE || props.STATEFP || ""}${props.COUNTY || props.COUNTYFP || ""}`).padStart(5, "0");
+  // A county-within-district GEOID is a composite (for example 4801405),
+  // not the county FIPS (48405). Municipal GEOIDs remain distinct local IDs.
+  if(props.localType==='municipality')return String(feature?.id||props.GEOID||'');
+  const county=props.countyFips || ((props.STATEFP||props.STATE)&&(props.COUNTYFP||props.COUNTY) ? `${props.STATEFP||props.STATE}${props.COUNTYFP||props.COUNTY}` : null);
+  return String(county || feature?.id || props.GEOID || '').padStart(5,'0');
 }
 
 function countyForFeature(feature, lookup) {

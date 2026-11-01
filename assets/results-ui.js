@@ -72,7 +72,7 @@
     let row, value;
     if (countyFips) {
       const data = datasets.get(`${source.id}:county`);
-      if (race.type === 'house' || source.countyCompatible !== true || data?.marginBasis !== 'all-votes') return null;
+      if ((race.type === 'house' && source.countyReferenceCompatible!==true) || source.countyCompatible !== true || data?.marginBasis !== 'all-votes') return null;
       const matches = (data.counties || data.rows || []).filter(r => String(r.fips || r.countyFips || '') === String(countyFips) && r.valid !== false);
       if (matches.length !== 1) return null;
       row = matches[0]; value = margin(row);
@@ -82,11 +82,19 @@
     }
     if (!Number.isFinite(value) || !row) return null;
     const total = Number(row.totalVotes), other = total - Number(row.demVotes) - Number(row.repVotes);
-    return {margin:value,total,name:row.county||row.name,candidates:[
+    const candidates=Array.isArray(row.candidates)&&row.candidates.length?row.candidates:[
       {name:source.candidateLabels?.D||'Democratic',party:'D',votes:Number(row.demVotes)},
       {name:source.candidateLabels?.R||'Republican',party:'R',votes:Number(row.repVotes)},
       ...(other > 0 ? [{name:'Other votes',party:'O',votes:other}] : []),
-    ]};
+    ];
+    if(candidates.some(c=>!c.name||!Number.isSafeInteger(c.votes)||c.votes<0)||candidates.reduce((n,c)=>n+c.votes,0)>total)return null;
+    return {margin:value,total,name:row.county||row.name,year:row.year,label:row.baselineRace,round:row.round,scope:race.type==='house'&&countyFips?'whole-county-reference':countyFips?'county':'race',candidates};
+  }
+  function candidateLead(candidates,total) {
+    if(!(total>0)||!Array.isArray(candidates)||!candidates.length||candidates.some(c=>!Number.isFinite(c.votes)||c.votes<0))return null;
+    const rows=[...candidates].sort((a,b)=>b.votes-a.votes);
+    if(rows.reduce((n,c)=>n+c.votes,0)>total)return null;
+    return {name:rows[0].name,party:rows[0].partyCode||rows[0].party||'O',margin:(rows[0].votes-(rows[1]?.votes||0))/total*100};
   }
   function pastMargins(race, sources = [], datasets = new Map(), countyFips = null) {
     return sources.filter(s => s.id !== 'live' && s.appliesTo?.includes(race?.type)).map(source => {
@@ -156,6 +164,7 @@
     baselineMargin,
     pastMargins,
     historicalSnapshot,
+    candidateLead,
     shift,
     stateLabel,
     feedLabel,

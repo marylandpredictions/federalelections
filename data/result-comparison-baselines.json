@@ -12,12 +12,16 @@
     },
     {
       "id": "pres-2024",
-      "candidateLabels": { "D": "Kamala Harris", "R": "Donald J. Trump" },
+      "candidateLabels": {
+        "D": "Kamala Harris",
+        "R": "Donald J. Trump"
+      },
       "label": "2024 presidential shift",
       "description": "Results minus the 2024 presidential Democratic margin. County files are compatible with statewide race detail maps.",
       "appliesTo": [
         "senate",
-        "governor"
+        "governor",
+        "house"
       ],
       "countyCompatible": true,
       "status": "available",
@@ -31,7 +35,8 @@
         "https://doi.org/10.7910/DVN/VOQCHQ"
       ],
       "marginBasis": "all-votes",
-      "districtUnavailableReason": "No verified current-geography presidential district baseline."
+      "districtFile": "data/baselines/pres-2024-districts.json",
+      "countyReferenceCompatible": true
     },
     {
       "id": "pres-2020",
@@ -39,22 +44,51 @@
       "description": "Results minus the 2020 presidential Democratic margin. County files are compatible with statewide race detail maps.",
       "appliesTo": [
         "senate",
-        "governor"
+        "governor",
+        "house"
       ],
       "countyCompatible": true,
-      "status": "unavailable",
+      "status": "available",
       "countyFile": "data/baselines/pres-2020-counties.json",
       "stateFile": "data/baselines/pres-2020-states.json",
       "sourceNotes": [
         "Rebuilt from the local MEDSL source; TOTAL rows are never added to component modes. House requires a verified current-geography district tabulation, currently unavailable."
       ],
       "sourceUrls": [
-        "https://electionlab.mit.edu/data",
-        "https://github.com/MEDSL"
+        "https://www.fec.gov/documents/4228/federalelections2020.xlsx",
+        "https://doi.org/10.7910/DVN/VOQCHQ"
       ],
       "marginBasis": "all-votes",
-      "districtUnavailableReason": "No verified current-geography presidential district baseline.",
-      "unavailableReason": "County-derived statewide totals require reconciliation against official statewide controls."
+      "candidateLabels": {
+        "D": "Joe Biden",
+        "R": "Donald J. Trump"
+      },
+      "countyReferenceCompatible": true,
+      "districtFile": "data/baselines/pres-2020-districts.json"
+    },
+    {
+      "id": "pres-2016",
+      "label": "2016 presidential shift",
+      "status": "available",
+      "candidateLabels": {
+        "D": "Hillary Clinton",
+        "R": "Donald J. Trump"
+      },
+      "appliesTo": [
+        "senate",
+        "governor",
+        "house"
+      ],
+      "countyCompatible": true,
+      "countyReferenceCompatible": true,
+      "stateFile": "data/baselines/pres-2016-states.json",
+      "countyFile": "data/baselines/pres-2016-counties.json",
+      "marginBasis": "all-votes",
+      "sourceUrls": [
+        "https://www.fec.gov/resources/cms-content/documents/federalelections2016.xlsx",
+        "https://doi.org/10.7910/DVN/VOQCHQ"
+      ],
+      "districtFile": "data/baselines/pres-2016-districts.json"
     },
     {
       "id": "house-2024",
@@ -64,13 +98,16 @@
         "house"
       ],
       "countyCompatible": false,
-      "status": "unavailable",
-      "districtFile": "data/baselines/house-2024-districts.json",
+      "status": "available",
+      "districtFile": "data/results/comparisons/house-2024-districts.json",
       "sourceNotes": [
         "Use official state returns or MIT/MEDSL-style district House returns.",
         "County pieces stay dim because this baseline is district-level, not split-county."
       ],
-      "unavailableReason": "Historical source/geography not verified for this election-night comparison."
+      "marginBasis": "all-votes",
+      "sourceUrls": [
+        "https://clerk.house.gov/member_info/electionInfo/2024/statistics2024.pdf"
+      ]
     },
     {
       "id": "senate-last",
@@ -80,16 +117,15 @@
         "senate"
       ],
       "countyCompatible": false,
-      "status": "unavailable",
-      "stateFile": "data/baselines/senate-last-states.json",
+      "status": "available",
+      "stateFile": "data/results/comparisons/senate-last-states.json",
       "sourceNotes": [
-        "For current 2026 coverage, use the same-seat-cycle baseline where available, such as Collins 2020 instead of King 2024 in Maine.",
-        "If the same-cycle baseline is unavailable, fall back to the latest usable Senate statewide baseline and note that fallback in the generated source file."
+        "Same-seat comparisons: OH/FL 2022 regular, OK 2022 special, NE 2024 Ricketts special, GA January 2021 Ossoff runoff; other seats 2020. Independents retain their source identities."
       ],
       "sourceUrls": [
         "https://doi.org/10.7910/DVN/PEJ5QU"
       ],
-      "unavailableReason": "Historical source/geography not verified for this election-night comparison."
+      "marginBasis": "all-votes"
     },
     {
       "id": "governor-last",
@@ -98,14 +134,25 @@
       "appliesTo": [
         "governor"
       ],
-      "countyCompatible": false,
-      "status": "unavailable",
-      "stateFile": "data/baselines/governor-last-states.json",
+      "countyCompatible": true,
+      "status": "available",
+      "stateFile": "data/results/comparisons/governor-last-states.json",
       "sourceNotes": [
-        "Uses previous gubernatorial general-election margins from the FEA governor forecast input file.",
-        "This is state-level only. Replace with certified governor returns when a complete statewide governor returns source is added."
+        "Partial coverage only. Eight states and 434 counties reconcile to independently checked statewide candidate-vote controls. Other states remain unavailable; no forecast-derived vote totals."
       ],
-      "unavailableReason": "Historical source/geography not verified for this election-night comparison."
+      "countyFile": "data/results/comparisons/governor-last-counties.json",
+      "marginBasis": "all-votes",
+      "sourceUrls": [
+        "https://historicalelectiondata.coloradosos.gov/contest/25580",
+        "https://sos.iowa.gov/elections/pdf/2022/general/govcanvsummary.pdf",
+        "https://electionresults.sos.nm.gov/resultsSW.aspx?eid=2838&map=CTY&type=SW",
+        "https://gc.nh.gov/house/calendars_journals/Journals/2025/HJ%2002%20January%208%2C%202025.PDF",
+        "https://www.legis.state.pa.us/WU01/LI/HJ/2023/0/20230103.pdf",
+        "https://uselectionatlas.org/RESULTS/state2.php?elect=0&fips=46&off=5&year=2022",
+        "https://ballotpedia.org/Wisconsin_gubernatorial_election,_2022",
+        "https://sos.wyo.gov/Elections/Docs/2022/Results/General/2022_General_Statewide_Candidates_Summary.pdf"
+      ]
     }
-  ]
+  ],
+  "geographyFile": "data/results/district-geography.json"
 }

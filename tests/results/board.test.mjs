@@ -215,15 +215,21 @@ test("Rebuilt presidential data passes totals checks and known FEC statewide anc
     assert.equal(r.repVotes, rep);
   }
 });
-test("All House comparison choices remain unavailable without verified district geography", async () => {
+test("House comparison choices require verified matching district geography for every published row", async () => {
   const manifest = JSON.parse(
     await readFile("data/result-comparison-baselines.json", "utf8"),
   );
-  assert.ok(
-    manifest.sources
-      .filter((s) => s.id !== "live" && s.status === "available")
-      .every((s) => !s.appliesTo.includes("house")),
-  );
+  for(const source of manifest.sources.filter(s=>s.id!=='live'&&s.status==='available'&&s.appliesTo.includes('house'))) {
+    assert.ok(source.districtFile);
+    const data=JSON.parse(await readFile(source.districtFile,'utf8'));
+    assert.equal(data.marginBasis,'all-votes');
+    for(const row of data.districts) {
+      const [state,district]=row.id.split('-'),race={type:'house',state,district,geometryId:row.geometryId};
+      const margin=UI.baselineMargin(race,source,{district:data});
+      assert.equal(Number.isFinite(margin),Boolean(row.geographyVerified&&row.geometryId&&row.totalVotes>0));
+      assert.ok(Number.isNaN(UI.baselineMargin({...race,geometryId:'wrong-boundary'},source,{district:data})));
+    }
+  }
   assert.ok(
     manifest.sources
       .find((s) => s.id === "pres-2024")
@@ -311,5 +317,6 @@ test("Manual override cards display the FEA choice, not the conflicting NBC cand
 test('Published 2024 statewide presidential comparisons match all three FEC national controls',async()=>{
  const data=JSON.parse(await readFile('data/baselines/pres-2024-states.json','utf8'));
  assert.match(data.sourceUrl,/fec.gov/);const sum=data.states.reduce((n,r)=>{n.d+=r.demVotes;n.r+=r.repVotes;n.total+=r.totalVotes;return n;},{d:0,r:0,total:0});assert.deepEqual(sum,{d:75017613,r:77302580,total:155238302});
- const manifest=JSON.parse(await readFile('data/result-comparison-baselines.json','utf8'));assert.equal(manifest.sources.find(s=>s.id==='pres-2020').status,'unavailable');
+ const manifest=JSON.parse(await readFile('data/result-comparison-baselines.json','utf8'));assert.equal(manifest.sources.find(s=>s.id==='pres-2020').status,'available');
+ const prior=JSON.parse(await readFile('data/baselines/pres-2020-states.json','utf8'));assert.match(prior.sourceUrl,/fec.gov/);assert.equal(prior.states.reduce((n,r)=>n+r.demVotes,0),81283501);assert.equal(prior.states.reduce((n,r)=>n+r.repVotes,0),74223975);assert.equal(prior.states.reduce((n,r)=>n+r.totalVotes,0),158429631);
 });

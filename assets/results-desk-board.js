@@ -94,7 +94,13 @@ window.FEAEnhanceBoard = function (Page) {
     const catalogue = this.liveRaceIndex.length
       ? this.liveRaceIndex
       : (await this.safeJson("data/election-night-races.json"))?.races || [];
-    const races = catalogue.map((race) => normalizeElectionRace(race));
+    const geography=comparisons?.geographyFile?await this.safeJson(comparisons.geographyFile):null;
+    const races = catalogue.map((race) => {
+      const row=normalizeElectionRace(race),geo=row.type==='house'?geography?.districts?.[FEAResultsUI.districtId(row)]:null;
+      if(geo?.currentComparable)row.geometryId=geo.geometryId;
+      if(geo&&!geo.currentComparable)row.geometryReviewRequired=true;
+      return row;
+    });
     this.watchlist = FEAResultsUI.watchMetadata(watchlist, races);
     for (const race of races) race.watch = this.watchlist.get(race.id);
     for (const mode of ["house", "senate", "governor"])
@@ -231,6 +237,7 @@ window.FEAEnhanceBoard = function (Page) {
   };
   p.preloadLikelyDetailAssets = function () {}; // Deliberately lazy, including watched races.
   p.comparisonColorForRace = function (race) {
+    if(this.isComparisonActive()&&!Number.isFinite(this.baselineRaceMargin(race)))return window.FEADeskTheme?.resolved.tokens['map-neutral']||'#8993a0';
     if (!this.isComparisonActive() && !FEADesk.total(race))
       return getComputedStyle(document.body)
         .getPropertyValue("--map-neutral")
@@ -238,6 +245,7 @@ window.FEAEnhanceBoard = function (Page) {
     return original.comparisonColorForRace.call(this, race);
   };
   p.comparisonColorForCounty = function (feature, race, lookup) {
+    if(this.isComparisonActive()&&(!this.comparisonSource()?.countyCompatible||!this.baselineCountyRow(feature)))return window.FEADeskTheme?.resolved.tokens['map-neutral']||'#8993a0';
     if (
       !this.isComparisonActive() &&
       !FEADesk.total(countyForFeature(feature, lookup))
@@ -731,7 +739,7 @@ window.FEAEnhanceBoard = function (Page) {
       .attr("role", "button")
       .attr(
         "aria-label",
-        (f) => `Select ${f.properties?.NAME || f.properties?.name || "county"}`,
+        (f) => `Select ${f.properties?.NAME || f.properties?.name || f.properties?.countyName || "county"}`,
       )
       .classed(
         "is-county-selected",
@@ -910,7 +918,7 @@ window.FEAEnhanceBoard = function (Page) {
       .sort((a, b) => b.votes - a.votes)
       .map(
         (c) =>
-          `<tr class="${call?.candidate === c.name ? "is-projected" : ""}" style="--candidate-color:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)};--candidate-ink:${window.FEADeskTheme?.foreground(window.FEADeskTheme.candidateColor(c,row.candidates))||'#ffffff'}"><td><span class="selected-party-rail" style="background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></span><strong>${esc(c.name)} ${!call&&total&&c.votes===max?`<span class="desk-leader-tag">${tied?"Tied":"Leading"}</span>`:""} ${call?.candidate === c.name ? '<span class="winner-check" aria-label="Projected winner">✓</span>' : ""}</strong><small>${esc(c.partyLabels?.length?c.partyLabels.join(" / "):partyLabel(party(c)))}${c.writeIn?" · Write-in":""}${c.ballotStatus?" · "+esc(c.ballotStatus):""}</small>${total?`<span class="desk-candidate-track" aria-hidden="true"><i data-bar-id="${esc(c.id||c.name)}" style="width:${Math.max(0,Math.min(100,c.votes/total*100))}%;background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></i></span>`:''}</td><td data-number="${esc(c.name)}-votes">${total ? fmt(c.votes) : "—"}</td><td data-number="${esc(c.name)}-share">${total ? percent((c.votes / total) * 100) : "—"}</td></tr>`,
+          `<tr class="${call?.candidate === c.name ? "is-projected" : ""}" style="--candidate-color:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)};--candidate-ink:${window.FEADeskTheme?.foreground(window.FEADeskTheme.candidateColor(c,row.candidates))||'#ffffff'}"><td><span class="tv-candidate-initials" aria-hidden="true">${esc(String(c.name).trim().split(/\s+/).filter(Boolean).filter((_,i,a)=>i===0||i===a.length-1).map(n=>n[0]).join(''))}</span><span class="selected-party-rail" style="background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></span><strong>${esc(c.name)} ${!call&&total&&c.votes===max?`<span class="desk-leader-tag">${tied?"Tied":"Leading"}</span>`:""} ${call?.candidate === c.name ? '<span class="winner-check" aria-label="Projected winner">✓</span>' : ""}</strong><small>${esc(c.partyLabels?.length?c.partyLabels.join(" / "):partyLabel(party(c)))}${c.writeIn?" · Write-in":""}${c.ballotStatus?" · "+esc(c.ballotStatus):""}</small>${total?`<span class="desk-candidate-track" aria-hidden="true"><i data-bar-id="${esc(c.id||c.name)}" style="width:${Math.max(0,Math.min(100,c.votes/total*100))}%;background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></i></span>`:''}</td><td data-number="${esc(c.name)}-votes">${total ? fmt(c.votes) : "—"}</td><td data-number="${esc(c.name)}-share">${total ? percent((c.votes / total) * 100) : "—"}</td></tr>`,
       )
       .join("")}</tbody></table>`;
   };
@@ -1256,11 +1264,17 @@ window.FEAEnhanceBoard = function (Page) {
       county = this.lockedCounty;
     if (!race) return;
     if (!this.demographics) {
-      const manifest = await this.safeJson("data/results/demographics.json");
-      this.demographics =
-        manifest?.status === "available"
-          ? await this.safeJson(manifest.file)
-          : { counties: {}, states: {} };
+      this.demographicsLoading ||= (async()=>{
+        this.demographicsManifest=await this.safeJson('data/results/demographics.json');
+        this.demographics=this.demographicsManifest?(this.demographicsManifest.status==='available'?await this.safeJson(this.demographicsManifest.file):{counties:{},states:{}}):null;
+      })();
+      await this.demographicsLoading;
+      if (!this.demographics) this.demographicsLoading = null;
+    }
+    if(race.type==='house'&&!county&&!this.districtDemographics) {
+      this.districtDemographicsLoading ||= this.demographicsManifest?.districtFile?this.safeJson(this.demographicsManifest.districtFile):Promise.resolve(null);
+      this.districtDemographics=await this.districtDemographicsLoading;
+      if (!this.districtDemographics) this.districtDemographicsLoading = null;
     }
     if (
       this.currentRace?.id !== race.id ||
@@ -1272,14 +1286,15 @@ window.FEAEnhanceBoard = function (Page) {
     if (!node) return;
     const row = county
       ? this.demographics?.counties?.[county]
-      : race.type !== "house"
-        ? this.demographics?.states?.[stateFipsForElectionNight(race.state)]
-        : null;
+      : race.type === 'house'
+        ? this.districtDemographics?.districts?.[FEAResultsUI.districtId(race)]
+        : this.demographics?.states?.[stateFipsForElectionNight(race.state)];
     if (!row) {
       node.innerHTML = `<p class="desk-hint">${race.type === "house" && !county ? "Select a county for Census estimates. These describe the whole county, not only its district portion." : "Census estimates are not available for this area yet."}</p>`;
       return;
     }
-    node.innerHTML = `<h3>${esc(row.name)}</h3><p class="demographic-source">${this.demographics.simulated ? "Simulated demographic fixture · Not Census data" : "2024 ACS 5-year estimates · U.S. Census Bureau"}</p>${this.facts(
+    const district=race.type==='house'&&!county;
+    node.innerHTML = `<h3>${esc(row.name)}</h3>${district&&row.boundaryStatus==='historical-boundaries'?'<p class="demographic-boundary-warning">Earlier district boundaries · This profile describes the 119th Congress, not the redrawn 2026 district.</p>':''}<p class="demographic-source">${this.demographics?.simulated ? "Simulated demographic fixture · Not Census data" : district?'2024 ACS 1-year estimates · U.S. Census Bureau · 119th Congress':"2024 ACS 5-year estimates · U.S. Census Bureau"}</p>${this.facts(
       [
         ["Population", fmt(row.population)],
         [
@@ -1302,7 +1317,7 @@ window.FEAEnhanceBoard = function (Page) {
       )
       .join(
         "",
-      )}</div><p class="desk-hint">Race and ethnicity overlap. Education covers adults 25+. Estimates describe residents, not party registration or voters.${race.type === "house" ? " Whole-county estimates; not a district tabulation." : ""}</p>`;
+      )}</div><p class="desk-hint">Race and ethnicity overlap. Education covers adults 25+. Estimates describe residents, not party registration or voters.${race.type === "house" && county ? " Whole-county estimates; not a district-portion tabulation." : district?' Direct district estimates; county medians were not averaged.':''}</p>`;
   };
   p.setPanelSize = function (width, height) {
     if (innerWidth <= 600) return;
