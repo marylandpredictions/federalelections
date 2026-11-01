@@ -81,7 +81,7 @@ window.FEACompleteBoard = function (Page) {
       '<span class="legend-neutral">No votes</span><span class="legend-leading">Leading</span><span class="legend-called">Called ✓</span><span id="desk-outline-legend" class="legend-outline">Next poll closes</span>';
     document.querySelector("main").append(legend);
     const masthead = document.createElement('header'); masthead.id = 'desk-masthead';
-    masthead.innerHTML = '<span class="desk-publication">FEDERAL ELECTIONS ANALYSIS</span><strong id="desk-edition-title">Election Results 2026</strong><span class="desk-edition-note">Reported results · November 3</span>';
+    masthead.innerHTML = '<span class="desk-publication"><img src="assets/img/FEA_Icon.webp" alt="Federal Elections Analysis" width="96" height="96"></span><strong id="desk-edition-title">Election Results 2026</strong><span class="desk-edition-note">Reported results · November 3</span>';
     document.querySelector('main').prepend(masthead);
     const index = document.createElement('aside'); index.id = 'desk-race-index'; index.setAttribute('aria-label','Races to watch');
     document.querySelector('main').append(index);
@@ -696,7 +696,7 @@ window.FEACompleteBoard = function (Page) {
       const race = county ? this.currentRace : feature ? this.modeRaces().find(r=>this.selectedMode==='house' ? houseGeometryId(r)===feature.properties?.id : r.state===FIPS_TO_STATE[featureStateFipsForElectionNight(feature)]) : null;
       const source = this.comparisonManifest.sources.find(s=>s.id===this.pastMapSource);
       const snapshot = FEAResultsUI.historicalSnapshot(race,source,this.comparisonData,county&&race?.type!=='house'?featureCountyFipsForElectionNight(feature):null);
-      html = `<strong>${esc(snapshot?.name || (race ? label(race) : 'Historical result'))}</strong><p>${esc(source.label.replace(/shift$/i,'margin'))}</p>${snapshot ? `<strong>${snapshot.margin>=0?'D':'R'} +${Math.abs(snapshot.margin).toFixed(1)}</strong><p>${snapshot.total.toLocaleString()} votes · ${snapshot.round==='first-choice'?'First-choice historical returns':snapshot.round==='final-ranked-choice'?'Final ranked-choice returns':'Published historical returns'}</p>` : '<p>No verified comparable result</p>'}`;
+      html = FEAResultsUI.historicalTooltip(snapshot,{name:snapshot?.name || (race ? label(race) : 'Historical result'),label:source.label.replace(/shift$/i,'result').replace(/margin$/i,'result'),color:c=>T.candidateColor(c,snapshot?.candidates)});
     }
     return original.tooltip.call(this,event,html);
   };

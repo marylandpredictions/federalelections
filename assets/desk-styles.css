@@ -113,6 +113,8 @@
 /* Complete broadcast and editorial shells, not just panel recoloring. */
 .results-board:is([data-presentation="broadcast"],[data-presentation="editorial"]) #desk-masthead { display:flex; position:absolute; inset:0 0 auto; z-index:5; box-sizing:border-box; height:76px; align-items:center; gap:22px; padding:12px 86px 12px 24px; color:var(--text-primary); background:var(--panel-bg); border-bottom:3px solid var(--focus); }
 .results-board #desk-masthead .desk-publication { font-size:10px; font-weight:800; letter-spacing:.12em; max-width:110px; line-height:1.5; }
+.results-board #desk-masthead .desk-publication { display:flex; align-items:center; justify-content:center; flex-shrink:0; width:96px; height:48px; overflow:hidden; }
+.results-board #desk-masthead .desk-publication img { display:block; flex-shrink:0; width:96px; height:96px; object-fit:contain; }
 .results-board #desk-masthead strong { font-size:clamp(22px,2.7vw,40px); line-height:1.1; }
 .results-board #desk-masthead .desk-edition-note { margin-left:auto; font-size:11px; color:var(--text-secondary); }
 .results-board:is([data-presentation="broadcast"],[data-presentation="editorial"]) .board-overflow { top:16px; z-index:12; }
@@ -258,6 +260,8 @@
   .results-board:is([data-presentation="broadcast"],[data-presentation="editorial"]) #desk-race-index { display:none !important; }
   .results-board:is([data-presentation="broadcast"],[data-presentation="editorial"]) #desk-masthead { height:56px; padding:8px 68px 8px 12px; gap:12px; }
   .results-board #desk-masthead .desk-publication { font-size:8px; max-width:80px; }
+  .results-board #desk-masthead .desk-publication { width:72px; height:36px; }
+  .results-board #desk-masthead .desk-publication img { width:76px; height:76px; }
   .results-board #desk-masthead .desk-edition-note { display:none; }
   .results-board:is([data-presentation="broadcast"],[data-presentation="editorial"]) #desk-masthead strong { font-size:23px; }
   .results-board:is([data-presentation="broadcast"],[data-presentation="editorial"]) .board-top-controls { top:64px; width:calc(100% - 24px); gap:8px; grid-template-columns:1fr; }

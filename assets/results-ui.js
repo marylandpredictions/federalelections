@@ -96,6 +96,21 @@
     if(rows.reduce((n,c)=>n+c.votes,0)>total)return null;
     return {name:rows[0].name,party:rows[0].partyCode||rows[0].party||'O',margin:(rows[0].votes-(rows[1]?.votes||0))/total*100};
   }
+  function historicalTooltip(snapshot, options = {}) {
+    const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const head=`<div class="election-map-tooltip-title">${esc(options.name||snapshot?.name||'Historical result')}</div><div class="election-map-tooltip-muted">${esc(options.label||'Historical election')}</div>`;
+    if(!snapshot)return head+'<div class="election-map-tooltip-foot"><span>No verified comparable result</span></div>';
+    const sorted=[...snapshot.candidates].sort((a,b)=>b.votes-a.votes),rows=sorted.slice(0,3);
+    if(sorted.length>3)rows.push({name:'Other candidates',party:'O',votes:sorted.slice(3).reduce((n,c)=>n+c.votes,0)});
+    const body=rows.map(c=>{
+      const color=options.color?.(c);
+      const swatch=/^#[0-9a-f]{6}$/i.test(color||'')?`<span class="tooltip-party-bar" style="background:${color}"></span>`:'';
+      return `<tr><td>${swatch}${esc(c.name)} <small>(${esc(c.partyCode||c.party||'O')})</small></td><td>${c.votes.toLocaleString('en-US')}</td><td>${(c.votes/snapshot.total*100).toFixed(1)}%</td></tr>`;
+    }).join('');
+    const lead=candidateLead(snapshot.candidates,snapshot.total),margin=lead?(lead.margin===0?'Even':`${lead.party} +${lead.margin.toFixed(1)}`):'—';
+    const context=snapshot.round==='first-choice'?'First-choice historical returns':snapshot.round==='final-ranked-choice'?'Final ranked-choice returns':'Published historical returns';
+    return head+`<table class="election-map-tooltip-table"><thead><tr><th>Candidate</th><th>Votes</th><th>Pct</th></tr></thead><tbody>${body}</tbody></table><div class="election-map-tooltip-foot"><span>Lead ${esc(margin)}</span><span>${snapshot.total.toLocaleString('en-US')} votes</span></div><div class="election-map-tooltip-muted">${context}</div>`;
+  }
   function pastMargins(race, sources = [], datasets = new Map(), countyFips = null) {
     return sources.filter(s => s.id !== 'live' && s.appliesTo?.includes(race?.type)).map(source => {
       let value = NaN;
@@ -165,6 +180,7 @@
     pastMargins,
     historicalSnapshot,
     candidateLead,
+    historicalTooltip,
     shift,
     stateLabel,
     feedLabel,
