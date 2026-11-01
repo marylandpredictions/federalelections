@@ -64,7 +64,7 @@ Visual references inspected in this pass:
 These are FEA presentations with FEA attribution, not NBC/NYT-branded services.
 
 The **TV** window preset has separate broadcast/editorial compositions on large
-screens. NBC uses horizontal party blocks, initials tiles and boxed percentage/
+screens. NBC uses horizontal party blocks and boxed percentage/
 vote figures beside the name, following the
 [2020 Pennsylvania broadcast frame](https://static.independent.co.uk/2020/11/07/16/steve%20kornacki%20.png).
 NYT uses large serif figures, white space and restrained rules, informed by its
@@ -72,7 +72,7 @@ NYT uses large serif figures, white space and restrained rules, informed by its
 This is an imagined NYT broadcast adaptation, not an assertion that NYT has such
 a broadcast product. Larger year controls and adjacent columns retain the map.
 Phones retain the bottom sheet. Leaving TV restores the existing manual sizing.
-Initials are intentional fallbacks; no guessed portrait URLs are requested.
+Candidate blocks use names only, without portrait or initials slots.
 
 The reference-fidelity pass adds `desk-reference.css`: NBC's current column is
 1.65 times a historical column, with compact stacked historical figures and a
@@ -92,7 +92,7 @@ NYT uses serif publication/race headings, quiet utility controls and table rules
 and a left map-control rail in the national view. Its national map keeps the full
 canvas instead of the previous permanent race-directory sidebar. Existing watch
 and search controls remain available. Custom palettes and basic FEA layouts are
-preserved. The FEA identity, election data and initials fallbacks remain deliberate
+preserved. The FEA identity, election data and name-only candidate blocks remain deliberate
 differences from the reference screenshots.
 
 Reference-pass verification: 197 results tests passed with no skips. Browser

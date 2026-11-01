@@ -581,6 +581,7 @@
 
   async function renderYapmsHouseMap(options) {
     const {
+      ratingLabel = "FEA rating",
       container,
       data,
       selectedRaceId = "",
@@ -660,7 +661,7 @@
       return `
         <strong class="prediction-tooltip-title">${escapeHtml(raceTitle(race, "house"))}</strong>
         <div class="prediction-tooltip-rating">
-          <span>FEA rating</span>
+          <span>${escapeHtml(ratingLabel)}</span>
           <b class="rating-pill rating-${rating.toLowerCase().replace(/\s+/g, "-")}">${escapeHtml(rating)}</b>
         </div>
         ${candidates ? `
@@ -828,6 +829,7 @@
 
   async function renderRaceShapeMap(options) {
     const {
+      ratingLabel = "FEA rating",
       container,
       data,
       office,
@@ -921,7 +923,7 @@
       return `
         <strong class="prediction-tooltip-title">${escapeHtml(raceTitle(race, office))}</strong>
         <div class="prediction-tooltip-rating">
-          <span>FEA rating</span>
+          <span>${escapeHtml(ratingLabel)}</span>
           <b class="rating-pill rating-${rating.toLowerCase().replace(/\s+/g, "-")}">${escapeHtml(rating)}</b>
         </div>
         ${candidates ? `

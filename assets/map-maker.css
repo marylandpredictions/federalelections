@@ -1,0 +1,50 @@
+html:has(body.map-maker) { overflow:hidden; }
+.map-maker { margin:0; height:100dvh; min-height:0; overflow:hidden; background:var(--board-bg); color:var(--text-primary); }
+.map-maker #desk-masthead { display:flex; height:76px; }
+.map-maker .board-overflow { top:16px !important; }
+.map-maker .board-top-controls { top:90px !important; left:18px; right:18px; width:auto !important; transform:none; grid-template-columns:auto minmax(0,1fr); gap:20px; }
+.map-maker .election-chamber-board { padding:8px 15px; color:var(--text-primary); }
+.maker-totals { display:flex; justify-content:space-between; gap:10px; font-size:22px; font-weight:800; }
+.maker-totals .maker-d { color:var(--party-d-text); }.maker-totals .maker-r { color:var(--party-r-text); }.maker-totals .maker-i { color:var(--party-i-text); }
+#maker-seat-bar { display:flex; height:10px; background:var(--map-neutral); margin-top:6px; overflow:hidden; }
+#maker-seat-bar span { display:block; height:100%; }
+#maker-count-caption { font-size:11px; margin:4px 0 0; text-align:center; color:var(--text-secondary); }
+.map-maker .maker-workspace { position:absolute; inset:183px 18px 15px; margin:0; padding:0; width:auto; max-width:none; display:grid; grid-template-columns:245px minmax(0,1fr); gap:16px; }
+.maker-tools { overflow:auto; background:var(--panel-bg); border:1px solid var(--panel-border); padding:14px; scrollbar-width:thin; }
+.maker-tools h1 { font-size:23px; margin:0; }.maker-tools p { font-size:12px; line-height:1.5; color:var(--text-secondary); }
+.maker-tools :is(button,input,select),.map-maker .prediction-map-controls button { color:var(--text-primary); background:var(--control-bg); border:1px solid var(--panel-border); border-radius:4px; font:inherit; padding:8px; min-height:38px; }
+.maker-tools button { cursor:pointer; }.maker-tools button:disabled { opacity:.45; cursor:default; }
+#maker-palette { display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+#maker-palette button { border-left:9px solid var(--paint-color); font-size:12px; text-align:left; padding:7px; }
+#maker-palette button[aria-pressed="true"] { outline:2px solid var(--focus); outline-offset:1px; font-weight:800; }
+.maker-drag { display:flex; align-items:center; gap:8px; font-size:12px; margin:10px 0; }
+.maker-drag input { min-height:0; }
+.maker-actions { display:flex; gap:4px; }.maker-actions button { flex:1; padding:6px; font-size:12px; }
+.maker-file-tools { margin-top:14px; border-top:1px solid var(--panel-border); padding-top:12px; font-size:13px; }
+.maker-file-tools summary { cursor:pointer; font-weight:700; margin-bottom:12px; }
+.maker-file-tools label { display:grid; gap:5px; margin:12px 0; }.maker-file-tools :is(input,select,button) { width:100%; box-sizing:border-box; margin-bottom:6px; }
+.maker-upload input { font-size:11px; }.maker-mobile-brush { display:none; }
+.maker-map-region { position:relative; min-width:0; min-height:0; }
+#maker-map { height:calc(100% - 34px); position:relative; background:var(--map-bg); }
+.map-maker .prediction-map-stage { height:100%; width:100%; position:relative; overflow:hidden; }
+.map-maker .prediction-shape-svg { display:block; width:100%; height:100%; min-height:0; touch-action:none; }
+.map-maker .prediction-map-controls { position:absolute; z-index:2; top:8px; left:8px; display:flex; gap:4px; }
+.map-maker .prediction-map-controls button { min-width:40px; cursor:pointer; }
+.map-maker .prediction-shape-feature { stroke:var(--state-border); stroke-width:.65px; vector-effect:non-scaling-stroke; cursor:pointer; }
+.map-maker .prediction-shape-feature.is-muted { fill:var(--panel-raised); stroke:var(--panel-border); cursor:default; }
+.map-maker .prediction-shape-feature:is(:hover,:focus,.is-selected) { stroke:var(--selection); stroke-width:2px; outline:none; }
+.map-maker .prediction-rating-legend { display:none; }
+.map-maker .prediction-map-tooltip { position:absolute; z-index:5; pointer-events:none; padding:10px 14px; border:1px solid var(--panel-border); border-radius:5px; background:var(--tooltip-bg); color:var(--text-primary); font-size:13px; max-width:260px; }
+.map-maker .prediction-tooltip-title { display:block; margin-bottom:7px; }.map-maker .prediction-tooltip-rating { display:grid; gap:4px; }
+.map-maker .prediction-map-loading,.map-maker .prediction-map-error { padding:30px; }
+#maker-status { margin:6px 0; font-size:12px; line-height:1.4; color:var(--text-secondary); }
+.map-maker :is(button,input,select,summary):focus-visible { outline:3px solid var(--focus); outline-offset:2px; }
+@media(max-width:800px) {
+ html:has(body.map-maker) { overflow-y:auto; }
+ .map-maker { height:auto; min-height:100dvh; overflow:auto; }.map-maker #desk-masthead { height:62px; padding-left:10px; gap:8px; }.map-maker #desk-masthead strong { font-size:25px; }.map-maker #desk-masthead .desk-edition-note { display:none; }
+ .map-maker .board-overflow { top:7px !important; right:10px; }.map-maker .board-top-controls { top:70px !important; grid-template-columns:1fr; gap:6px; left:10px; right:10px; }
+ .map-maker .election-mode-toggle { justify-content:center; }.map-maker .election-mode-toggle button { min-height:36px; padding:7px 12px; }.maker-totals { font-size:19px; }
+ .map-maker .maker-workspace { position:relative; inset:auto; margin:190px 10px 15px; display:flex; flex-direction:column; gap:10px; }.maker-tools { padding:10px; overflow:visible; }.maker-tools h1 { font-size:18px; }.maker-tools > p { margin:5px 0; }
+ #maker-palette { display:none; }.maker-mobile-brush { display:flex; gap:10px; align-items:center; font-size:13px; }.maker-mobile-brush select { flex:1; min-width:0; }.maker-actions { margin-top:8px; }.maker-drag { margin:5px 0; }.maker-file-tools { margin-top:8px; padding-top:8px; }.maker-file-tools summary { margin:0; }
+ .maker-map-region { height:410px; flex:none; } #maker-map { height:370px; }
+}

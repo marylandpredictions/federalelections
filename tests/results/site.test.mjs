@@ -61,11 +61,12 @@ test("All public primary navigation includes Features and polling bias; no ratin
         if (nav) {
           assert.deepEqual(
             [...nav.matchAll(/<a[^>]*>(.*?)<\/a>/g)].map((m) => m[1]),
-            ["Home", "Results", "Videos", "Articles", "State polling bias"],
+            ["Home", "Results", "Videos", "Articles", "State polling bias", "Map maker"],
             path,
           );
           assert.match(nav, /<summary[^>]*>Features<\/summary>/, path);
           assert.match(nav, /href="\/features\/polling-bias"/, path);
+          assert.match(nav, /href="\/features\/map-maker"/, path);
           checked++;
         }
       }

@@ -106,15 +106,15 @@
 .results-board #desk-history-map-note { position:absolute; z-index:6; right:24px; top:166px; max-width:min(440px,40vw); background:var(--panel-bg); color:var(--text-primary); border-left:4px solid var(--focus); padding:8px; font-size:11px; box-shadow:0 2px 8px #0002; }
 .results-board.history-map-active #desk-map-legend { visibility:hidden; }
 .results-board #desk-masthead,.results-board #desk-race-index { display:none; }
-.results-board .tv-candidate-initials { display:none; }
 .results-board .demographic-boundary-warning { padding:12px; border-left:4px solid var(--warning); background:var(--panel-raised); color:var(--text-primary); font-size:13px; line-height:1.5; }
 .results-board .desk-geometry-warning { padding:10px 12px; border-left:3px solid var(--warning); background:var(--panel-raised); color:var(--text-primary); font-size:12px; line-height:1.5; }
 
 /* Complete broadcast and editorial shells, not just panel recoloring. */
 .results-board:is([data-presentation="broadcast"],[data-presentation="editorial"]) #desk-masthead { display:flex; position:absolute; inset:0 0 auto; z-index:5; box-sizing:border-box; height:76px; align-items:center; gap:22px; padding:12px 86px 12px 24px; color:var(--text-primary); background:var(--panel-bg); border-bottom:3px solid var(--focus); }
 .results-board #desk-masthead .desk-publication { font-size:10px; font-weight:800; letter-spacing:.12em; max-width:110px; line-height:1.5; }
-.results-board #desk-masthead .desk-publication { display:flex; align-items:center; justify-content:center; flex-shrink:0; width:96px; height:48px; overflow:hidden; }
-.results-board #desk-masthead .desk-publication img { display:block; flex-shrink:0; width:96px; height:96px; object-fit:contain; }
+.results-board #desk-masthead .desk-publication { display:flex; align-items:center; justify-content:center; flex:0 0 104px; width:104px; height:44px; max-width:none !important; padding:0 !important; border:0 !important; overflow:visible; }
+.results-board #desk-masthead .desk-publication img { display:block; box-sizing:border-box; flex-shrink:0; width:100%; height:100%; padding:0 4px; object-fit:cover; object-position:center; }
+.results-board #desk-masthead strong { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .results-board #desk-masthead strong { font-size:clamp(22px,2.7vw,40px); line-height:1.1; }
 .results-board #desk-masthead .desk-edition-note { margin-left:auto; font-size:11px; color:var(--text-secondary); }
 .results-board:is([data-presentation="broadcast"],[data-presentation="editorial"]) .board-overflow { top:16px; z-index:12; }
@@ -235,18 +235,13 @@
   .results-board.night-tv .comparison-rail button { min-height:clamp(52px,3.5vw,110px); font-size:clamp(17px,1.2vw,42px); }
   .results-board.night-tv .comparison-rail button span { font-size:clamp(10px,.65vw,22px); }
   .results-board.night-tv[data-presentation="broadcast"] #focused-race-title { font-family:'Arial Narrow',Impact,Arial,sans-serif; text-transform:uppercase; font-weight:900; letter-spacing:-.025em; }
-  .results-board.night-tv[data-presentation="broadcast"] .selected-race-table td:first-child { position:relative; padding-left:clamp(86px,6vw,180px); }
-  .results-board.night-tv[data-presentation="broadcast"] .tv-candidate-initials { display:grid; place-items:center; position:absolute; top:15px; bottom:15px; left:12px; width:clamp(58px,4.2vw,135px); background:color-mix(in srgb,var(--candidate-ink) 16%,transparent); color:var(--candidate-ink); font-size:clamp(24px,1.8vw,64px); font-weight:800; }
   .results-board.night-tv[data-presentation="broadcast"] .selected-race-table td:last-child { color:color-mix(in srgb,var(--candidate-color) 80%,var(--text-primary)); font-family:'Arial Narrow',Arial,sans-serif; font-weight:900; }
   .results-board.night-tv[data-presentation="broadcast"] .desk-preelection { background:transparent; border-top:2px solid var(--panel-border); border-radius:0; padding-inline:0; }
-  .results-board.night-tv[data-presentation="broadcast"] .comparison-current .comparison-candidate { padding-left:clamp(86px,6vw,180px); }
-  .results-board.night-tv[data-presentation="broadcast"] .comparison-current .comparison-candidate::before { content:attr(data-initials); position:absolute; left:10px; top:18px; width:clamp(58px,4.2vw,135px); height:clamp(80px,6.5vw,210px); display:grid; place-items:center; font-size:clamp(24px,1.8vw,64px); font-weight:800; background:color-mix(in srgb,var(--candidate-ink) 16%,transparent); }
   .results-board.night-tv[data-presentation="broadcast"] .comparison-candidate { grid-template-columns:minmax(0,1fr) auto; grid-template-rows:auto 1fr; align-items:center; column-gap:10px; min-height:clamp(115px,8vw,280px); padding-block:12px; }
   .results-board.night-tv[data-presentation="broadcast"] .comparison-candidate small { grid-column:1; grid-row:1; }
   .results-board.night-tv[data-presentation="broadcast"] .comparison-candidate strong { grid-column:1; grid-row:2; font-size:clamp(20px,1.35vw,46px); }
   .results-board.night-tv[data-presentation="broadcast"] .comparison-candidate b { grid-column:2; grid-row:1; padding:5px 8px 0; background:var(--panel-bg); color:var(--text-primary); font-size:clamp(35px,2.8vw,94px); text-align:right; }
   .results-board.night-tv[data-presentation="broadcast"] .comparison-candidate > span { grid-column:2; grid-row:2; padding:5px 8px; background:var(--panel-bg); color:var(--text-primary); text-align:right; font-size:clamp(12px,.85vw,28px); }
-  .results-board.night-tv[data-presentation="broadcast"] .comparison-current .comparison-candidate::before { top:12px; bottom:12px; height:auto; }
   .results-board.night-tv[data-presentation="editorial"] #focused-race-title { font-family:Georgia,'Times New Roman',serif; text-transform:none; font-weight:700; border-top:3px solid var(--text-primary); padding-top:18px; }
   .results-board.night-tv[data-presentation="editorial"] .selected-race-table { border-top:2px solid var(--text-primary); }
   .results-board.night-tv[data-presentation="editorial"] .selected-race-table td strong { font-family:Georgia,'Times New Roman',serif; font-weight:700; }
@@ -260,8 +255,7 @@
   .results-board:is([data-presentation="broadcast"],[data-presentation="editorial"]) #desk-race-index { display:none !important; }
   .results-board:is([data-presentation="broadcast"],[data-presentation="editorial"]) #desk-masthead { height:56px; padding:8px 68px 8px 12px; gap:12px; }
   .results-board #desk-masthead .desk-publication { font-size:8px; max-width:80px; }
-  .results-board #desk-masthead .desk-publication { width:72px; height:36px; }
-  .results-board #desk-masthead .desk-publication img { width:76px; height:76px; }
+  .results-board #desk-masthead .desk-publication { flex-basis:76px; width:76px; height:36px; }
   .results-board #desk-masthead .desk-edition-note { display:none; }
   .results-board:is([data-presentation="broadcast"],[data-presentation="editorial"]) #desk-masthead strong { font-size:23px; }
   .results-board:is([data-presentation="broadcast"],[data-presentation="editorial"]) .board-top-controls { top:64px; width:calc(100% - 24px); gap:8px; grid-template-columns:1fr; }

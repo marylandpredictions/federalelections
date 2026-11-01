@@ -434,15 +434,6 @@
     const text = names.length === 1
       ? `${names[0]} ${verb} in the ${race.label}.`
       : `${names.slice(0, -1).join(", ")} and ${names.at(-1)} ${verb} in the ${race.label}.`;
-    const avatars = calledCandidates.map((item) => {
-      const photo = candidatePhoto(item.candidate, race);
-      return `
-        <span class="admin-preview-avatar" style="--candidate-color:${escapeHtml(candidateColor(item.candidate))}">
-          ${photo?`<img src="${escapeHtml(photo)}" alt="" onerror="this.remove()">`:''}
-          <span>${escapeHtml(initials(item.candidate.name))}</span>
-        </span>
-      `;
-    }).join("");
     callPreview.className = "admin-preview-card";
     callPreview.style.setProperty("--candidate-color", color);
     callPreview.innerHTML = `
@@ -452,7 +443,6 @@
           <h3>${escapeHtml(text)}</h3>
           <small>${calls.some(c=>c.provider === "NBC") ? "NBC projects • FEA results via NBC" : "FEA manual call"}</small>
         </div>
-        <div class="admin-preview-avatars">${avatars}</div>
       </div>
     `;
   }

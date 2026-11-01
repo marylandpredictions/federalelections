@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map Maker | Federal Elections Analysis</title>
+<meta name="description" content="Build your own House, Senate and governor ratings maps. Paint races, undo changes, save your scenario and download an image.">
+<link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
+<script src="/assets/desk-theme.js?v=20261031-maker1"></script><script src="/assets/desk-bootstrap.js?v=20261031-maker1"></script>
+<link rel="stylesheet" href="/assets/wiki.css?v=20261031-maker1">
+<link rel="stylesheet" href="/assets/results-board.css?v=20261028-board18">
+<link rel="stylesheet" href="/assets/desk-experience.css?v=20261031-maker1">
+<link rel="stylesheet" href="/assets/projection-card.css?v=20261031-reference2">
+<link rel="stylesheet" href="/assets/desk-styles.css?v=20261031-maker1">
+<link rel="stylesheet" href="/assets/desk-reference.css?v=20261031-maker1">
+<link rel="stylesheet" href="/assets/map-maker.css?v=20261031-maker1">
+<script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script defer src="/assets/prediction-map-utils.js?v=20261031-maker1"></script>
+<script defer src="/assets/desk-appearance.js?v=20261031-styles1"></script>
+<script defer src="/assets/scenario-model.js?v=20261031-maker1"></script>
+<script defer src="/assets/map-maker.js?v=20261031-maker1"></script>
+</head><body class="results-board map-maker">
+<header id="desk-masthead"><a class="desk-publication" href="/" aria-label="FEA home"><img src="/assets/img/FEA_Icon.webp" alt="Federal Elections Analysis" width="104" height="44"></a><strong>Map maker</strong><span class="desk-edition-note">Your scenario · Not live results</span></header>
+<div class="board-overflow"><button id="maker-menu-button" type="button" aria-label="Map maker menu" aria-expanded="false" aria-controls="board-menu">⋯</button><div id="board-menu" hidden><a href="/">Home</a><a href="/results">Live results board</a><a href="/features/polling-bias">State polling bias</a><a href="/features/map-maker" aria-current="page">Map maker</a><button type="button" id="maker-appearance">Appearance</button></div></div>
+<section class="board-top-controls" aria-label="Scenario office and totals"><div class="election-mode-toggle" role="tablist" aria-label="Election office"><button type="button" data-office="house" role="tab">House</button><button type="button" data-office="senate" role="tab">Senate</button><button type="button" data-office="governor" role="tab">Governors</button></div><div class="election-chamber-board"><div class="maker-totals" id="maker-totals" aria-label="Your rated races"></div><div id="maker-seat-bar" aria-hidden="true"></div><p id="maker-count-caption"></p></div></section>
+<main class="maker-workspace">
+<aside class="maker-tools" aria-label="Map editing tools">
+<h1>Your ratings</h1><p>Choose a rating, then click or tap a race. These are your choices, not FEA’s forecast. Only races on the 2026 ballot are editable.</p>
+<label class="maker-mobile-brush">Paint rating<select id="maker-brush" aria-label="Paint rating"></select></label>
+<div id="maker-palette" role="group" aria-label="Paint rating"></div>
+<label class="maker-drag"><input type="checkbox" id="maker-drag"> Paint by dragging</label>
+<div class="maker-actions"><button type="button" id="maker-undo">Undo</button><button type="button" id="maker-redo">Redo</button><button type="button" id="maker-clear">Clear office</button></div>
+<details class="maker-file-tools"><summary>Find, save & download</summary><label>Find a race<select id="maker-race" aria-label="Find a race"></select></label><button type="button" id="maker-apply">Apply rating to selected race</button><label>Map title<input id="maker-title" maxlength="80" value="My 2026 election map"></label><button type="button" id="maker-image">Download PNG</button><button type="button" id="maker-save">Save scenario file</button><label class="maker-upload">Open scenario file<input type="file" id="maker-open" accept="application/json,.json"></label><p>Ratings save on this browser. Use a scenario file to move your map to another device.</p></details>
+</aside>
+<section class="maker-map-region" aria-label="Your ratings map"><div id="maker-map"><p role="status">Loading map maker…</p></div><p id="maker-status" role="status" aria-live="polite">Your scenario · Not live results</p></section>
+</main>
+<noscript><p>This map editor needs JavaScript. <a href="/features/polling-bias">Explore state polling bias</a>.</p></noscript>
+</body></html>

@@ -276,9 +276,9 @@ const ANALYST_PROFILES = {
     name: "Nathan Wang",
     image: "assets/img/analysts/nathan-wang.webp"
   },
-  "gamerdoglover": {
-    name: "gamerdoglover",
-    image: "assets/img/analysts/gamerdoglover.webp"
+  "nevonomical": {
+    name: "Nevonomical",
+    image: "assets/img/analysts/Nevonomical.webp"
   }
 };
 
@@ -1278,28 +1278,16 @@ function raceCallBanner(race) {
   }));
   const bannerCandidates = calledCandidates.length ? calledCandidates : fallbackCandidates;
   const primary = bannerCandidates[0] || null;
-  const photo = primary ? candidatePhotoUrl(race, primary) : "";
   const fill = primary ? candidateFill(race, primary) : "#49d38a";
   const callLabel = primary?.callLabel || "Race call";
   const latestCallTime = Math.max(...calls.map((call) => Date.parse(call.calledAt || "") || 0), 0);
   const callTime = latestCallTime ? timeLabel(latestCallTime) : "";
-  const avatars = bannerCandidates.slice(0, 3).map((candidate) => {
-    const avatarPhoto = candidatePhotoUrl(race, candidate);
-    return `
-      <span class="result-call-avatar" style="--candidate-color:${escapeHtml(candidateFill(race, candidate))}">
-        ${avatarPhoto ? `<img src="${escapeHtml(avatarPhoto)}" alt="">` : escapeHtml(candidateInitials(candidate.name))}
-      </span>
-    `;
-  }).join("");
   return `
     <div class="result-call-alert" style="--candidate-color:${escapeHtml(fill)}" role="status">
       <div class="result-call-copy">
         <span>${escapeHtml(callLabel)} <i aria-hidden="true">${primary ? raceCallMarkSymbol(race, primary) : "&#10003;"}</i></span>
         <strong>${escapeHtml(callDeckText(race, bannerCandidates))}</strong>
         <small>Race called by Federal Elections Analysis${callTime ? ` at ${escapeHtml(callTime)}` : ""}.</small>
-      </div>
-      <div class="result-call-avatars" aria-hidden="true">
-        ${avatars || (photo ? `<span class="result-call-avatar"><img src="${escapeHtml(photo)}" alt=""></span>` : "")}
       </div>
     </div>
   `;
@@ -1374,11 +1362,9 @@ function candidateRow(candidate, race, maxPercent) {
   const code = candidate.partyCode || partyCode(candidate.party);
   const width = Math.max(2, (Number(candidate.percent || 0) / maxPercent) * 100);
   const fill = candidateFill(race, candidate);
-  const photo = candidatePhotoUrl(race, candidate);
   return `
     <article class="result-full-candidate ${partyClass(code)}-glow ${candidate.callLabel ? "called" : ""}" style="--candidate-color:${escapeHtml(fill)}" data-candidate-name="${escapeHtml(candidate.name)}" data-candidate-percent="${Number(candidate.percent || 0).toFixed(3)}">
       <div class="result-full-candidate-name">
-        <span class="result-candidate-avatar ${partyClass(code)}">${photo ? `<img src="${escapeHtml(photo)}" alt="">` : escapeHtml(candidateInitials(candidate.name))}</span>
         <div>
           <strong>${escapeHtml(candidate.name)}${incumbentMark(race, candidate)}</strong>
         </div>
