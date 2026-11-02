@@ -8,7 +8,7 @@
    return order.filter(label=>counts.get(label)).map(label=>{const count=counts.get(label),part={label,count,total,start:offset/total,fraction:count/total};offset+=count;return part;});
  }
  function color(T,rating,surface){
-   if(rating==='Tossup')return T.resolved.tokens['map-neutral'];
+   if(rating==='Tossup')return T.resolved.tokens[T.current.presentation==='yapms'?'tossup':'map-neutral'];
    const party=rating.includes('Democratic')?'D':rating.includes('Republican')?'R':'I';
    if(T.current.presentation==='yapms'){
      const scales={D:['#2c54bc','#4f73d1','#7694e2','#a0b6ef'],R:['#b5312f','#cb5452','#dd7a78','#eba3a2']},scale=scales[party];

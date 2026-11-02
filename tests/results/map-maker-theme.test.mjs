@@ -8,7 +8,7 @@ test('YAPms distribution includes held seats exactly once and every scenario rat
 });
 test('YAPms preset keeps reference shades, editable colors and saved layout identity',()=>{
  const preset=T.presets.find(t=>t.id==='yapms-map');assert.equal(preset.presentation,'yapms');assert.deepEqual(T.resolve(preset).warnings,[]);
- T.apply(preset);assert.equal(M.color(T,'Safe Democratic','#000000'),'#2c54bc');assert.equal(M.color(T,'Lean Republican','#000000'),'#dd7a78');
+ T.apply(preset);assert.equal(M.color(T,'Tossup','#000000'),'#a8a8a8');assert.equal(M.color(T,'Safe Democratic','#000000'),'#2c54bc');assert.equal(M.color(T,'Lean Republican','#000000'),'#dd7a78');
  const saved=T.validate({...preset,id:'saved-map',partyColors:{...preset.partyColors,D:'#123456'}});assert.equal(saved.presentation,'yapms');T.apply(saved);assert.equal(M.color(T,'Safe Democratic','#000000'),'#123456');
  T.apply(T.presets[0]);assert.equal(M.color(T,'Likely Democratic','#123456'),T.mix(T.candidateColor({party:'D'}),'#123456',.2));
 });

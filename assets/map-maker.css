@@ -238,3 +238,23 @@ body.map-maker[data-presentation="yapms"] .maker-total-party { order:-1; }
  body.map-maker[data-presentation="yapms"] .maker-totals { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px; }
  body.map-maker[data-presentation="yapms"] .maker-totals > span { justify-content:center;padding:6px; }
 }
+
+/* Readable desktop controls, with a separate office row so totals never shrink
+   to make room. Uncontested states keep their distinct charcoal background. */
+body.map-maker[data-presentation="yapms"] #desk-masthead strong { font-size:clamp(25px,2vw,36px); }
+body.map-maker[data-presentation="yapms"] .board-top-controls { flex-direction:column;align-items:center;gap:8px; }
+body.map-maker[data-presentation="yapms"] .election-mode-toggle { order:0; }
+body.map-maker[data-presentation="yapms"] .election-mode-toggle button { min-height:44px;font-size:clamp(14px,1vw,19px);padding:9px 18px; }
+body.map-maker[data-presentation="yapms"] .maker-totals { font-size:clamp(20px,1.7vw,32px);gap:8px; }
+body.map-maker[data-presentation="yapms"] .maker-total-party { font-size:clamp(12px,.95vw,18px); }
+body.map-maker[data-presentation="yapms"] .maker-totals > span { min-height:50px;padding:9px 13px;gap:7px; }
+body.map-maker[data-presentation="yapms"] .maker-totals .maker-t { background:var(--tossup);color:var(--tower-ink); }
+@media(min-width:801px) and (min-height:481px) {
+ body.map-maker[data-presentation="yapms"] .maker-workspace { top:196px; }
+}
+@media(max-width:800px), (max-width:1000px) and (max-height:480px) {
+ body.map-maker[data-presentation="yapms"] .election-mode-toggle { order:0; }
+ body.map-maker[data-presentation="yapms"] .maker-totals { font-size:22px; }
+ body.map-maker[data-presentation="yapms"] .maker-total-party { font-size:12px; }
+ body.map-maker[data-presentation="yapms"] .maker-totals > span { min-height:44px; }
+}

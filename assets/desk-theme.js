@@ -154,7 +154,7 @@
       "panel-border":"#41495d", "text-primary":"#f6f7fb", "text-secondary":"#d0d5e0", "text-muted":"#b5bfce",
       "tooltip-bg":"#151c2e", "race-window-bg":"#151c2e", "projection-bg":"#151c2e",
       "state-border":"#eeeeef", "district-border":"#c3c9d4", "county-border":"#c3c9d4",
-      selection:"#ffffff", focus:"#a9c2ff",
+      tossup:"#a8a8a8", selection:"#ffffff", focus:"#a9c2ff",
     }),
     make("nyt-results", "NYT Results", "light", "#333333", {
       D: "#2b6b9c", R: "#c5232b", I: "#8872a8", O: "#a5792a",
@@ -236,6 +236,7 @@
     ])
       out[key] = out["panel-bg"];
     Object.assign(out, t.advanced);
+    if(t.presentation==='yapms'&&!t.advanced.tossup)out.tossup='#a8a8a8';
     const warnings = [];
     for (const [fg, bg] of [
       ["text-primary", "panel-bg"],
@@ -309,6 +310,7 @@
         for(const [name,value] of Object.entries(previous))if(advanced[name]===value)advanced[name]=slate[name];
         x.current={...x.current,advanced};
       }
+      if(x.current?.id==='yapms-map'&&!x.current.advanced?.tossup)x.current={...x.current,advanced:{...x.current.advanced,tossup:'#a8a8a8'}};
       return {
         schemaVersion: 1,
         current: validate(x.current),
