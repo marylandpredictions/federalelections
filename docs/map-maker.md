@@ -199,3 +199,17 @@ single-tap a race. Inspect never applies a rating, even if drag painting was on.
 **Paint ratings** restores normal painting. Touch-first devices start in Inspect
 when detail is enabled; mouse users retain right-click. Disabling County detail
 returns to Paint and hides the mode switch. No timing-sensitive double tap is required.
+
+
+### YAPms appearance
+
+Choose **Appearance → YAPms** in Map maker. The preset uses the supplied reference
+composition: navy canvas, white map borders, blue/red rating steps, compact total
+chips and a left seat-distribution ring. The ring includes held seats and updates
+with your ratings, office, undo and imports. It is descriptive scenario data.
+The desktop map uses a tighter SVG frame; switching styles restores its original
+frame without repainting geography. Small screens stack the editing controls
+and use the compact totals instead of a second large chart. Clean display keeps
+the ring and map while hiding the editing tools. Saved duplicates retain the
+YAPms presentation and customized colors. Small-state labels are omitted where
+space is tight; the geography and race finder remain available.

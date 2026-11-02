@@ -34,10 +34,10 @@
   // Presentation survives saving/duplicating a preset under a custom ID.
   const styles = {
     standard: 'FEA balanced', broadcast: 'NBC broadcast', editorial: 'NYT editorial',
-    contrast: 'High visibility', studio: 'California studio',
+    contrast: 'High visibility', studio: 'California studio', yapms: 'YAPms map maker',
   };
   const presetStyles = { 'nbc-big-board': 'broadcast', 'nyt-results': 'editorial',
-    'high-contrast': 'contrast', 'california-inspired': 'studio' };
+    'yapms-map': 'yapms', 'high-contrast': 'contrast', 'california-inspired': 'studio' };
   function validate(raw) {
     if (
       !raw ||
@@ -145,6 +145,16 @@
       "poll-bg": "#20334a", "tray-bg": "#20334a",
       "pin-bg": "#20334a", "race-window-bg": "#20334a",
       "chart-axis": "#cbd6e3", "chart-grid": "#50657d",
+    }),
+    make("yapms-map", "YAPms", "dark", "#7899e9", {
+      D:"#2c54bc", R:"#b5312f", I:"#9361ba", O:"#c79938",
+    }, {
+      "board-bg":"#0f1526", "map-bg":"#0f1526", "map-neutral":"#3e4451",
+      "panel-bg":"#151c2e", "panel-raised":"#252d41", "control-bg":"#252d41",
+      "panel-border":"#41495d", "text-primary":"#f6f7fb", "text-secondary":"#d0d5e0", "text-muted":"#b5bfce",
+      "tooltip-bg":"#151c2e", "race-window-bg":"#151c2e", "projection-bg":"#151c2e",
+      "state-border":"#eeeeef", "district-border":"#c3c9d4", "county-border":"#c3c9d4",
+      selection:"#ffffff", focus:"#a9c2ff",
     }),
     make("nyt-results", "NYT Results", "light", "#333333", {
       D: "#2b6b9c", R: "#c5232b", I: "#8872a8", O: "#a5792a",

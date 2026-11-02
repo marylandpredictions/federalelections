@@ -1030,6 +1030,19 @@
     window.addEventListener("pointerup", finishPaint);
     window.addEventListener("blur", finishPaint);
 
+    if(options.stateLabels){
+      const omitted=new Set(['CT','DE','DC','MD','MA','NJ','RI','VT','NH','HI']);
+      const labelPoint=feature=>{
+        const polygons=feature.geometry.type==='MultiPolygon'?feature.geometry.coordinates:[feature.geometry.coordinates];
+        const area=rings=>Math.abs(rings[0].reduce((sum,p,i,ring)=>{const q=ring[(i+1)%ring.length];return sum+p[0]*q[1]-q[0]*p[1];},0));
+        const rings=[...polygons].sort((a,b)=>area(b)-area(a))[0];
+        let polygon={type:'Polygon',coordinates:rings};if(window.d3.geoArea(polygon)>Math.PI*2)polygon={...polygon,coordinates:rings.map(r=>[...r].reverse())};
+        return projection(window.d3.geoCentroid(polygon));
+      };
+      const labels=features.map(feature=>{const race=raceByKey.get(featureKey(feature,office)),point=race&&!omitted.has(race.state)?labelPoint(feature):null;return point?{race,point}:null;}).filter(row=>row&&row.point.every(Number.isFinite));
+      g.append('g').attr('aria-hidden','true').attr('pointer-events','none').selectAll('text').data(labels).join('text').attr('class','prediction-state-label').attr('data-label-race-id',row=>row.race.id||row.race.raceId).attr('x',row=>row.point[0]).attr('y',row=>row.point[1]).attr('text-anchor','middle').attr('dy','.35em').attr('font-family','Arial,sans-serif').attr('font-size',12).attr('font-weight',600).text(row=>row.race.state);
+    }
+
     setSelected(selectedRaceId);
 
     function reset() {

@@ -7,6 +7,12 @@
   const current=()=>races.filter(r=>r.type===model.state.office);
   const token=name=>getComputedStyle(document.body).getPropertyValue('--'+name).trim()||T.resolved.tokens[name];
   function save(){try{localStorage.setItem(key,JSON.stringify(model.state));}catch{status('Browser saving is unavailable. Save a scenario file to keep your map.');}}
+  function fitMapFrame(){
+    const svg=$('maker-map').querySelector('svg'),layer=svg?.querySelector('.prediction-shape-layer');if(!svg||!layer)return;
+    svg.dataset.standardViewBox ||= svg.getAttribute('viewBox');
+    if(T.current.presentation!=='yapms'){svg.setAttribute('viewBox',svg.dataset.standardViewBox);return;}
+    const box=layer.getBBox();if(box.width>0&&box.height>0)svg.setAttribute('viewBox',[box.x-16,box.y-16,box.width+32,box.height+32].join(' '));
+  }
   function palette(){
     const canvas=token('map-bg'),canvasInk=T.foreground(canvas);
     document.body.style.setProperty('--maker-canvas-ink',canvasInk);
@@ -14,14 +20,21 @@
       for(const name of ['text-primary','text-secondary','control-bg','panel-border','panel-raised'])node.style.removeProperty('--'+name);
       if(document.body.dataset.presentation==='broadcast')for(const [name,value] of Object.entries({'text-primary':canvasInk,'text-secondary':T.mix(canvasInk,canvas,.2),'control-bg':T.mix(canvas,canvasInk,.12),'panel-border':T.mix(canvas,canvasInk,.4),'panel-raised':T.mix(canvas,canvasInk,.15)}))node.style.setProperty('--'+name,value);
     }
-    for(const rating of S.ratings){
-      const party=rating.includes('Democratic')?'D':rating.includes('Republican')?'R':'I';
-      const tint=rating.startsWith('Safe')?0:rating.startsWith('Likely')?.2:rating.startsWith('Lean')?.4:.65;
-      const tintSurface=document.body.dataset.presentation==='broadcast'?'#d3dde7':token('panel-bg');
-      M.colors[rating]=rating==='Tossup'?token('map-neutral'):T.mix(T.candidateColor({party}),tintSurface,tint);
-    }
+    for(const rating of S.ratings)M.colors[rating]=FEAMakerTheme.color(T,rating,document.body.dataset.presentation==='broadcast'?'#d3dde7':token('panel-bg'));
     for(const button of $('maker-palette').querySelectorAll('button')){button.style.setProperty('--paint-color',M.colors[button.dataset.rating]);button.style.setProperty('--paint-ink',T.foreground(M.colors[button.dataset.rating]));button.setAttribute('aria-pressed',String(button.dataset.rating===brush));}
-    $('maker-brush').value=brush;
+    $('maker-brush').value=brush;fitMapFrame();
+  }
+  function seatRing(){
+    const show=T.current.presentation==='yapms';$('maker-seat-summary').hidden=!show;if(!show)return;
+    const ns='http://www.w3.org/2000/svg',svg=$('maker-seat-ring'),parts=FEAMakerTheme.segments(current(),id=>model.rating(id),S.heldSeats[model.state.office]),circumference=2*Math.PI*78;
+    const add=(tag,attrs,text)=>{const n=document.createElementNS(ns,tag);for(const [key,value] of Object.entries(attrs))n.setAttribute(key,value);if(text)n.textContent=text;svg.append(n);return n;};
+    svg.replaceChildren();const total=parts[0]?.total||0;svg.setAttribute('aria-label',parts.map(p=>p.count+' '+short(p.label)).join(', '));
+    for(const p of parts){const arc=add('circle',{cx:110,cy:110,r:78,fill:'none',stroke:M.colors[p.label],'stroke-width':42,'stroke-dasharray':`${p.fraction*circumference} ${circumference}`,'stroke-dashoffset':-p.start*circumference,transform:'rotate(-90 110 110)'});const title=document.createElementNS(ns,'title');title.textContent=p.count+' '+p.label;arc.append(title);}
+    for(const p of parts){const a=p.start*Math.PI*2-Math.PI/2;add('line',{x1:110+57*Math.cos(a),y1:110+57*Math.sin(a),x2:110+99*Math.cos(a),y2:110+99*Math.sin(a),stroke:'#eeeeef','stroke-width':1});}
+    for(const r of [57,99])add('circle',{cx:110,cy:110,r,fill:'none',stroke:'#eeeeef','stroke-width':1.2});
+    const labels=[];for(const p of [...parts].sort((a,b)=>b.count-a.count)){if(p.fraction<.025)continue;const angle=(p.start+p.fraction/2)*Math.PI*2-Math.PI/2,x=110+78*Math.cos(angle),y=110+78*Math.sin(angle);if(labels.some(l=>Math.hypot(l.x-x,l.y-y)<21))continue;labels.push({x,y});const w=String(p.count).length*8+9;add('rect',{x:x-w/2,y:y-10,width:w,height:20,rx:3,fill:'#ffffff'});add('text',{x,y:y+4,'text-anchor':'middle',fill:'#171b25','font-family':'Arial,sans-serif','font-size':12,'font-weight':700},String(p.count));}
+    add('text',{x:110,y:110,'text-anchor':'middle',fill:token('text-primary'),'font-family':'Arial,sans-serif','font-size':26,'font-weight':700},String(total));
+    add('text',{x:110,y:129,'text-anchor':'middle',fill:token('text-secondary'),'font-family':'Arial,sans-serif','font-size':10},model.state.office==='governor'?'GOVERNORS':'SEATS');
   }
   function sync(){
     const byId=new Map(races.map(r=>[r.id,r])),muted=T.mix(token('map-neutral'),token('map-bg'),.72);
@@ -30,10 +43,12 @@
       const race=byId.get(node.dataset.raceId);if(!race){node.setAttribute('fill',muted);continue;}
       node.setAttribute('fill',M.colors[model.rating(race.id)]);node.setAttribute('data-rating',model.rating(race.id));node.setAttribute('aria-label',`${title(race)}: ${model.rating(race.id)}`);
     }
+    for(const label of $('maker-map').querySelectorAll('[data-label-race-id]'))label.setAttribute('fill',T.foreground(M.colors[model.rating(label.dataset.labelRaceId)]));
     const counts=model.totalCounts(model.state.office),held=S.heldSeats[model.state.office],total=Object.values(counts).reduce((n,v)=>n+v,0);
-    $('maker-totals').replaceChildren(...Object.entries(counts).map(([party,n])=>{const span=document.createElement('span');span.className='maker-'+party.toLowerCase();span.hidden=party==='I'&&!n;span.style.setProperty('--tower-color',T.candidateColor({party}));span.style.setProperty('--tower-ink',(T.contrast(T.candidateColor({party}),'#ffffff')>=3?'#ffffff':T.foreground(T.candidateColor({party}))));span.setAttribute('aria-label',`${n} ${party==='T'?'Tossup':party}`);const number=document.createElement('strong'),label=document.createElement('small');number.className='maker-total-number';number.textContent=n;label.className='maker-total-party';label.textContent=party==='T'?'Tossup':party;span.append(number,document.createTextNode(' '),label);return span;}));
+    $('maker-totals').replaceChildren(...Object.entries(counts).map(([party,n])=>{const span=document.createElement('span');span.className='maker-'+party.toLowerCase();span.hidden=party==='I'&&!n;span.style.setProperty('--tower-color',T.candidateColor({party}));span.style.setProperty('--tower-ink',(T.contrast(T.candidateColor({party}),'#ffffff')>=3?'#ffffff':T.foreground(T.candidateColor({party}))));span.setAttribute('aria-label',`${n} ${party==='T'?'Tossup':party}`);const number=document.createElement('strong'),label=document.createElement('small');number.className='maker-total-number';number.textContent=n;label.className='maker-total-party';label.textContent=T.current.presentation==='yapms'?({D:'Democrats',R:'Republicans',I:'Independent',T:'Tossup'}[party]):party==='T'?'Tossup':party;span.append(number,document.createTextNode(' '),label);return span;}));
     $('maker-seat-bar').replaceChildren(...['D','I','T','R'].map(party=>{const span=document.createElement('span');span.style.width=counts[party]/total*100+'%';span.style.background=party==='T'?M.colors.Tossup:T.candidateColor({party});return span;}));
     $('maker-count-caption').textContent=`${total} ${model.state.office==='governor'?'governors':'seats'} · ${current().length} up for election.${model.state.office!=='house'?` Includes ${held.D} D / ${held.R} R${held.I?` / ${held.I} I`:''} not up.`:''} Your scenario · Not election calls.`;
+    seatRing();
     $('maker-undo').disabled=!model.past.length;$('maker-redo').disabled=!model.future.length;
     document.querySelectorAll('[data-office]').forEach(b=>{b.classList.toggle('active',b.dataset.office===model.state.office);b.setAttribute('aria-selected',String(b.dataset.office===model.state.office));});
   }
@@ -51,14 +66,14 @@
     const host=document.createElement('div');host.style.height='100%';$('maker-map').replaceChildren(host);
     ink?.sync();
     try{
-      const controller=await M.renderRaceShapeMap({container:host,data:{races:data},office,ratingLabel:'Your rating',onSelect:paint,
+      const controller=await M.renderRaceShapeMap({container:host,data:{races:data},office,stateLabels:true,ratingLabel:'Your rating',onSelect:paint,
         isPaintEnabled:()=>!inspecting&&$('maker-drag').checked,
         onPaintStart:()=>{stroke=new Map();},
         onPaintRace:race=>{if(!stroke.has(race.id))stroke.set(race.id,model.rating(race.id));model.assign(race.id,brush);race.prediction.rating=brush;},
         onPaintEnd:()=>{const updates=[...stroke.keys()].map(id=>[id,model.rating(id)]);for(const [id,before] of stroke)model.assign(id,before);model.apply(updates);edited(`${updates.length} race${updates.length===1?'':'s'} painted · ${brush}`);stroke.clear();}
       });
       if(token!==generation){controller?.destroy();return;}
-      map=controller;
+      map=controller;fitMapFrame();
       host.querySelector('svg')?.setAttribute('aria-label',`Your ${office} ratings map`);
       host.querySelector('svg')?.setAttribute('role','group');
       host.querySelectorAll('[data-race-id]').forEach(n=>{n.setAttribute('role',n.dataset.raceId?'button':'img');if(!n.dataset.raceId){n.setAttribute('tabindex','-1');n.setAttribute('aria-label',`${n.getAttribute('aria-label')||'State'} · Not on the 2026 ballot`);}});

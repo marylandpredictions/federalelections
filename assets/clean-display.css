@@ -28,3 +28,6 @@ html[data-clean-display] .map-maker #focused-race-content::-webkit-scrollbar { d
 html[data-clean-display] body > #clean-display-content { pointer-events:none; }
 
 html[data-clean-display] .map-maker[data-presentation="broadcast"] .election-chamber-board { top:0!important; }
+
+html[data-clean-display] body.map-maker[data-presentation="yapms"] .maker-workspace { left:calc(var(--yapms-rail) + 36px)!important;top:125px!important; }
+html[data-clean-display] body.map-maker[data-presentation="yapms"].maker-detail-open .maker-workspace { left:18px!important; }

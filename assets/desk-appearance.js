@@ -13,6 +13,7 @@ window.FEAAppearance = function () {
   } catch {
     store = T.read({ getItem: () => null });
   }
+  const presets=T.presets.filter(t=>t.id!=='yapms-map'||document.body.classList.contains('map-maker')||store.current.id===t.id);
   let draft = clone(store.current),
     before = clone(store.current),
     previousFocus;
@@ -95,12 +96,12 @@ window.FEAAppearance = function () {
   function fields() {
     const select = q("#desk-theme-select");
     select.replaceChildren();
-    for (const t of [...T.presets, ...store.saved]) {
+    for (const t of [...presets, ...store.saved]) {
       const o = el("option", t.name);
       o.value = t.id;
       select.append(o);
     }
-    select.value = [...T.presets, ...store.saved].some((t) => t.id === draft.id)
+    select.value = [...presets, ...store.saved].some((t) => t.id === draft.id)
       ? draft.id
       : "custom";
     q("#theme-name").value = draft.name;
@@ -124,6 +125,7 @@ window.FEAAppearance = function () {
     const styleLabel = el('label', 'Appearance style'), style = el('select');
     style.setAttribute('aria-label', 'Appearance style');
     for (const [value, name] of Object.entries(T.styles)) {
+      if(value==='yapms'&&!document.body.classList.contains('map-maker')&&draft.presentation!=='yapms')continue;
       const option = el('option', name); option.value = value; style.append(option);
     }
     style.value = draft.presentation;
@@ -213,7 +215,7 @@ window.FEAAppearance = function () {
   }
   q("#desk-theme-select").onchange = (event) => {
     draft = clone(
-      [...T.presets, ...store.saved].find((t) => t.id === event.target.value),
+      [...presets, ...store.saved].find((t) => t.id === event.target.value),
     );
     fields();
     preview();

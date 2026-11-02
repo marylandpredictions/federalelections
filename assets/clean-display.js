@@ -65,7 +65,7 @@
   function paint(){
     frame=0;const x=pending;pending=null;if(!x)return;
     const doc=new DOMParser().parseFromString(x.html,'text/html'),safe=scrub(doc.body);
-    document.body.className=x.bodyClass;document.body.setAttribute('style',x.bodyStyle);document.body.dataset.presentation=['standard','broadcast','editorial','contrast','studio'].includes(x.presentation)?x.presentation:'standard';document.documentElement.dataset.theme=x.theme==='light'?'light':'dark';
+    document.body.className=x.bodyClass;document.body.setAttribute('style',x.bodyStyle);document.body.dataset.presentation=['standard','broadcast','editorial','contrast','studio','yapms'].includes(x.presentation)?x.presentation:'standard';document.documentElement.dataset.theme=x.theme==='light'?'light':'dark';
     patch(document.getElementById('clean-display-content'),safe,false);
     for(const href of x.styles){try{const u=new URL(href);if(u.origin!==location.origin||!u.pathname.startsWith('/assets/')||!u.pathname.endsWith('.css'))continue;if(![...document.querySelectorAll('link')].some(n=>n.href===u.href)){const link=document.createElement('link');link.rel='stylesheet';link.href=u.href;document.head.insertBefore(link,document.getElementById('clean-display-style'));}}catch{}}
     document.getElementById('clean-display-wait').hidden=true;
