@@ -178,3 +178,9 @@ body.results-board.map-maker.maker-detail-open[data-presentation="broadcast"] .m
 
 @media (min-width:801px) and (min-height:481px) { #maker-county-map { inset:0; } }
 #maker-county-map .map-context-shape { cursor:default;stroke:var(--state-border); }
+
+#maker-interaction { display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:10px 0; }
+#maker-interaction[hidden] { display:none; }
+#maker-interaction button { min-height:44px;font-size:12px;cursor:pointer; }
+#maker-interaction button[aria-pressed="true"] { outline:2px solid var(--selection);outline-offset:-2px;background:var(--panel-raised);font-weight:800; }
+#maker-interaction small { grid-column:1/-1;color:var(--text-secondary);font-size:11px;line-height:1.4; }

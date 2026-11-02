@@ -1,6 +1,6 @@
 (async function(){
   const $=id=>document.getElementById(id),key='fea-map-maker-v1',S=FEAScenario,M=FeaPredictionMaps,T=FEADeskTheme;
-  let model,races=[],map,brush='Safe Democratic',selected='',generation=0,stroke=new Map(),detail,ink,lastTouch=null;
+  let model,races=[],map,brush='Safe Democratic',selected='',generation=0,stroke=new Map(),detail,ink,inspecting=false;
   const short=rating=>rating.replace(' Democratic',' D').replace(' Republican',' R').replace(' Independent',' I');
   const title=r=>r.type==='house'?`${r.state}-${['0','AL'].includes(String(r.district))?'AL':String(r.district).padStart(2,'0')}`:`${r.state} ${r.type==='senate'?'Senate':'Governor'}`;
   const status=text=>$('maker-status').textContent=text;
@@ -38,7 +38,9 @@
     document.querySelectorAll('[data-office]').forEach(b=>{b.classList.toggle('active',b.dataset.office===model.state.office);b.setAttribute('aria-selected',String(b.dataset.office===model.state.office));});
   }
   function edited(text){sync();detail?.refresh();$('maker-map').querySelectorAll('.prediction-map-tooltip').forEach(n=>n.hidden=true);status(text);save();}
-  function paint(race){selected=race.id;$('maker-race').value=selected;if(model.apply([[race.id,brush]]))edited(`${title(race)} · ${brush}`);}
+  function inspectRace(race){selected=race.id;$('maker-race').value=selected;$('board-menu').hidden=true;$('maker-menu-button').setAttribute('aria-expanded','false');detail.open(race);}
+  function setInspect(value){inspecting=!!value&&$('maker-detail-enabled').checked;for(const b of document.querySelectorAll('[data-maker-interaction]'))b.setAttribute('aria-pressed',String((b.dataset.makerInteraction==='inspect')===inspecting));$('maker-drag').disabled=inspecting;status(inspecting?'Inspect mode: tap or click a race to open its details. Ratings stay unchanged.':'Paint mode: tap or click a race to apply your rating.');}
+  function paint(race){if(inspecting){inspectRace(race);return;}selected=race.id;$('maker-race').value=selected;if(model.apply([[race.id,brush]]))edited(`${title(race)} · ${brush}`);}
   async function render(){
     ink?.setEnabled(false);
     detail?.close();
@@ -50,7 +52,7 @@
     ink?.sync();
     try{
       const controller=await M.renderRaceShapeMap({container:host,data:{races:data},office,ratingLabel:'Your rating',onSelect:paint,
-        isPaintEnabled:()=>$('maker-drag').checked,
+        isPaintEnabled:()=>!inspecting&&$('maker-drag').checked,
         onPaintStart:()=>{stroke=new Map();},
         onPaintRace:race=>{if(!stroke.has(race.id))stroke.set(race.id,model.rating(race.id));model.assign(race.id,brush);race.prediction.rating=brush;},
         onPaintEnd:()=>{const updates=[...stroke.keys()].map(id=>[id,model.rating(id)]);for(const [id,before] of stroke)model.assign(id,before);model.apply(updates);edited(`${updates.length} race${updates.length===1?'':'s'} painted · ${brush}`);stroke.clear();}
@@ -60,7 +62,7 @@
       host.querySelector('svg')?.setAttribute('aria-label',`Your ${office} ratings map`);
       host.querySelector('svg')?.setAttribute('role','group');
       host.querySelectorAll('[data-race-id]').forEach(n=>{n.setAttribute('role',n.dataset.raceId?'button':'img');if(!n.dataset.raceId){n.setAttribute('tabindex','-1');n.setAttribute('aria-label',`${n.getAttribute('aria-label')||'State'} · Not on the 2026 ballot`);}});
-      sync();ink?.sync();status('Choose a rating, then click a race. Drag the map to pan; use + and − to zoom.');
+      sync();ink?.sync();status(inspecting?'Inspect mode: tap or click a race to open its details. Ratings stay unchanged.':'Choose a rating, then tap or click a race. Enable County detail in the menu for Inspect mode.');
     }catch{if(token===generation){host.textContent='The map could not load. Try another office or reload the page. Your saved ratings are unchanged.';status('Map unavailable. Your ratings are still saved.');}}
   }
   function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -121,12 +123,16 @@
       }
       save();await render();status(message);
     }catch(error){status(error.message||'This scenario file could not be opened.');}finally{e.target.value='';}};
-    const openDetail=id=>{const race=races.find(r=>r.id===id);if(race&&$('maker-detail-enabled').checked){selected=id;$('maker-race').value=id;$('board-menu').hidden=true;$('maker-menu-button').setAttribute('aria-expanded','false');detail.open(race);}};
-    $('maker-detail-enabled').onchange=e=>{$('maker-open-detail').hidden=!e.target.checked;lastTouch=null;if(!e.target.checked)detail.close();status(e.target.checked?'County detail enabled. Right-click a race, double tap, or use Open selected race detail in this menu.':'County detail disabled. Click or tap to paint.');};
+    const openDetail=id=>{const race=races.find(r=>r.id===id);if(race&&$('maker-detail-enabled').checked)inspectRace(race);};
+    $('maker-detail-enabled').onchange=e=>{
+      $('maker-open-detail').hidden=!e.target.checked;$('maker-interaction').hidden=!e.target.checked;
+      if(!e.target.checked){setInspect(false);detail.close();}
+      else {setInspect(matchMedia('(pointer: coarse)').matches);status('County detail enabled. Choose Inspect and tap a race, or right-click with a mouse. Choose Paint to resume ratings.');}
+    };
+    for(const b of document.querySelectorAll('[data-maker-interaction]'))b.onclick=()=>setInspect(b.dataset.makerInteraction==='inspect');
     $('maker-open-detail').onclick=()=>{if(selected)openDetail(selected);else status('Select a race on the map or in Find a race first.');};
     $('maker-map').addEventListener('contextmenu',e=>{const id=e.target.closest('[data-race-id]')?.dataset.raceId;if(id&&$('maker-detail-enabled').checked){e.preventDefault();openDetail(id);}});
     $('maker-map').addEventListener('keydown',e=>{if(e.key==='F10'&&e.shiftKey&&$('maker-detail-enabled').checked){const id=e.target.closest('[data-race-id]')?.dataset.raceId;if(id){e.preventDefault();openDetail(id);}}});
-    $('maker-map').addEventListener('click',e=>{if(!$('maker-detail-enabled').checked||e.pointerType!=='touch')return;const id=e.target.closest('[data-race-id]')?.dataset.raceId;if(!id)return;const now=performance.now();if(lastTouch?.id===id&&now-lastTouch.time<450){e.preventDefault();e.stopImmediatePropagation();lastTouch=null;openDetail(id);}else lastTouch={id,time:now};},true);
     $('maker-image').onclick=image;
     const appearance=FEAAppearance();$('maker-appearance').onclick=()=>{ $('board-menu').hidden=true;$('maker-menu-button').setAttribute('aria-expanded','false');appearance.open();};
     $('maker-menu-button').onclick=()=>{const menu=$('board-menu');menu.hidden=!menu.hidden;$('maker-menu-button').setAttribute('aria-expanded',String(!menu.hidden));};

@@ -49,3 +49,19 @@ test('Race explorer uses an inline board panel and shared map region, not a moda
  assert.match(code,/FEAResultsUI.comparisonColumn/);assert.doesNotMatch(html,/data-detail-tab="trends"/);
  assert.match(readFileSync('assets/election-night.js','utf8'),/GOVERNOR_NOT_UP_BY_PARTY = \{ D: 6, R: 8 \}/);
 });
+
+
+test('Inspect mode opens detail without painting and disabling detail restores painting',async()=>{
+ const {runInNewContext}=await import('node:vm');
+ const source=readFileSync('assets/map-maker.js','utf8');
+ const functions=['inspectRace','setInspect','paint'].map(name=>source.split('\n').find(line=>line.trim().startsWith('function '+name+'('))).join('\n');
+ const nodes=Object.fromEntries(['maker-race','board-menu','maker-menu-button','maker-detail-enabled','maker-drag'].map(id=>[id,{checked:true,setAttribute(){}}]));
+ const buttons=['paint','inspect'].map(value=>({dataset:{makerInteraction:value},setAttribute(key,value){this[key]=value;}}));
+ let opened=0,painted=0;const context={inspecting:false,selected:'',brush:'Safe Republican',$:id=>nodes[id],document:{querySelectorAll:()=>buttons},detail:{open(){opened++;}},model:{apply(){painted++;return true;}},edited(){},title:r=>r.id,status(){}};
+ runInNewContext(functions,context);
+ context.setInspect(true);context.paint({id:'senate-OH'});
+ assert.equal(opened,1);assert.equal(painted,0);assert.equal(nodes['maker-drag'].disabled,true);assert.equal(buttons[1]['aria-pressed'],'true');
+ context.setInspect(false);context.paint({id:'senate-OH'});assert.equal(painted,1);assert.equal(nodes['maker-drag'].disabled,false);
+ nodes['maker-detail-enabled'].checked=false;context.setInspect(true);context.paint({id:'senate-OH'});assert.equal(painted,2);assert.equal(opened,1);
+ assert.match(source,/isPaintEnabled:\(\)=>!inspecting&&/);assert.doesNotMatch(source,/lastTouch|pointerType!==.touch/);
+});

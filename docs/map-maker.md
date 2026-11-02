@@ -59,9 +59,9 @@ confirmed `TN-` identifier typo: its upstream SVG explicitly labels that path
 `short-name="TN-2"`, `long-name="Tennessee's 2nd"`. Only that revision receives
 the alias; disabled DC is excluded. Unknown active districts are rejected.
 
-**Map maker menu → County detail: right-click / double tap** enables the explorer.
+**Map maker menu → County detail: Inspect mode / right-click** enables the explorer.
 It starts off on every load. Normal single clicks/taps still paint. Right-click,
-touch double tap, Shift+F10, or the menu's **Open selected race detail** opens it.
+a single tap in **Inspect races** mode, Shift+F10, or the menu's **Open selected race detail** opens it.
 Closing restores the untouched national SVG and its zoom. Counties paint with
 the detail brush; Undo/Redo includes county edits. County ratings save/export
 separately as `raceId@countyFips`, so district fragments and statewide scenarios
@@ -89,7 +89,7 @@ Data JSON validation and both existing prediction/YAPms tests passed. Actual
 YAPms files for all three offices imported through the browser. CO-04 county
 painting, county and district Census profiles, historical returns, and TX-01's
 redrawn-boundary warning were exercised. Phone-sized layout was checked at
-390×844; actual physical-device double-tap behavior still requires verification.
+390×844; actual physical-device single tap in Inspect mode behavior still requires verification.
 
 ## Held seats and in-page detail correction
 
@@ -192,3 +192,10 @@ neighboring geography behind selected counties. The selected counties alone
 determine framing; context never changes district eligibility or history scope.
 NBC's default panels use coordinated slate surfaces and softer corners; party
 rails and large broadcast numerals remain. Saved custom themes retain their values.
+
+
+Touch detail: enable **County detail** in the menu. Use **Inspect races**, then
+single-tap a race. Inspect never applies a rating, even if drag painting was on.
+**Paint ratings** restores normal painting. Touch-first devices start in Inspect
+when detail is enabled; mouse users retain right-click. Disabling County detail
+returns to Paint and hides the mode switch. No timing-sensitive double tap is required.
