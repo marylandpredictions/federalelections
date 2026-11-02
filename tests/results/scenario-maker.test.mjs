@@ -27,17 +27,17 @@ test('Scenario files restore exact ratings and reject unsafe, invalid and incomp
  assert.throws(()=>validate(JSON.parse('{"schemaVersion":1,"title":"x","office":"house","ratings":{"__proto__":"Safe Democratic"}}'),catalogue));
 });
 
-test('Full scenario totals include held seats, keep independents separate, and survive edits/imports/undo',()=>{
+test('Full scenario totals include held seats, use held Senate caucus alignment, and survive edits/imports/undo',()=>{
  const model=new Scenario(catalogue);
- assert.deepEqual(model.totalCounts('senate'),{D:32,R:31,I:2,T:35});
+ assert.deepEqual(model.totalCounts('senate'),{D:34,R:31,I:0,T:35});
  assert.deepEqual(model.totalCounts('governor'),{D:6,R:8,I:0,T:36});
  assert.deepEqual(model.totalCounts('house'),{D:0,R:0,I:0,T:435});
  model.apply([['senate-CO','Safe Democratic'],['governor-CO','Lean Republican']]);
- assert.deepEqual(model.totalCounts('senate'),{D:33,R:31,I:2,T:34});assert.deepEqual(model.totalCounts('governor'),{D:6,R:9,I:0,T:35});
+ assert.deepEqual(model.totalCounts('senate'),{D:35,R:31,I:0,T:34});assert.deepEqual(model.totalCounts('governor'),{D:6,R:9,I:0,T:35});
  for(const [office,total] of [['senate',100],['governor',50],['house',435]])assert.equal(Object.values(model.totalCounts(office)).reduce((n,v)=>n+v,0),total);
- model.undo();assert.deepEqual(model.totalCounts('senate'),{D:32,R:31,I:2,T:35});
+ model.undo();assert.deepEqual(model.totalCounts('senate'),{D:34,R:31,I:0,T:35});
  const restored=new Scenario(catalogue,JSON.parse(JSON.stringify(model.state)));assert.deepEqual(restored.totalCounts('governor'),{D:6,R:8,I:0,T:36});
- model.apply(catalogue.filter(r=>r.type==='senate').map(r=>[r.id,'Safe Republican']));assert.deepEqual(model.totalCounts('senate'),{D:32,R:66,I:2,T:0});
+ model.apply(catalogue.filter(r=>r.type==='senate').map(r=>[r.id,'Safe Republican']));assert.deepEqual(model.totalCounts('senate'),{D:34,R:66,I:0,T:0});
 });
 
 test('Race explorer uses an inline board panel and shared map region, not a modal',()=>{

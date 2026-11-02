@@ -28,13 +28,14 @@
     const show=T.current.presentation==='yapms';$('maker-seat-summary').hidden=!show;if(!show)return;
     const ns='http://www.w3.org/2000/svg',svg=$('maker-seat-ring'),parts=FEAMakerTheme.segments(current(),id=>model.rating(id),S.heldSeats[model.state.office]),circumference=2*Math.PI*78;
     const add=(tag,attrs,text)=>{const n=document.createElementNS(ns,tag);for(const [key,value] of Object.entries(attrs))n.setAttribute(key,value);if(text)n.textContent=text;svg.append(n);return n;};
-    svg.replaceChildren();const total=parts[0]?.total||0;svg.setAttribute('aria-label',parts.map(p=>p.count+' '+short(p.label)).join(', '));
+    svg.replaceChildren();const total=parts[0]?.total||0;svg.setAttribute('aria-label',parts.map(p=>p.count+' '+short(p.label)).join(', ')+(model.state.office==='senate'?'. Democrats include two held independent caucus seats.':''));
+    $('maker-seat-summary').querySelector('p').textContent=model.state.office==='senate'?'D includes 2 independent caucus seats':'YOUR SCENARIO';
     for(const p of parts){const arc=add('circle',{cx:110,cy:110,r:78,fill:'none',stroke:M.colors[p.label],'stroke-width':42,'stroke-dasharray':`${p.fraction*circumference} ${circumference}`,'stroke-dashoffset':-p.start*circumference,transform:'rotate(-90 110 110)'});const title=document.createElementNS(ns,'title');title.textContent=p.count+' '+p.label;arc.append(title);}
     for(const p of parts){const a=p.start*Math.PI*2-Math.PI/2;add('line',{x1:110+57*Math.cos(a),y1:110+57*Math.sin(a),x2:110+99*Math.cos(a),y2:110+99*Math.sin(a),stroke:'#eeeeef','stroke-width':1});}
     for(const r of [57,99])add('circle',{cx:110,cy:110,r,fill:'none',stroke:'#eeeeef','stroke-width':1.2});
     const labels=[];for(const p of [...parts].sort((a,b)=>b.count-a.count)){if(p.fraction<.025)continue;const angle=(p.start+p.fraction/2)*Math.PI*2-Math.PI/2,x=110+78*Math.cos(angle),y=110+78*Math.sin(angle);if(labels.some(l=>Math.hypot(l.x-x,l.y-y)<21))continue;labels.push({x,y});const w=String(p.count).length*8+9;add('rect',{x:x-w/2,y:y-10,width:w,height:20,rx:3,fill:'#ffffff'});add('text',{x,y:y+4,'text-anchor':'middle',fill:'#171b25','font-family':'Arial,sans-serif','font-size':12,'font-weight':700},String(p.count));}
-    add('text',{x:110,y:110,'text-anchor':'middle',fill:token('text-primary'),'font-family':'Arial,sans-serif','font-size':26,'font-weight':700},String(total));
-    add('text',{x:110,y:129,'text-anchor':'middle',fill:token('text-secondary'),'font-family':'Arial,sans-serif','font-size':10},model.state.office==='governor'?'GOVERNORS':'SEATS');
+    add('text',{'class':'maker-ring-total',x:110,y:110,'text-anchor':'middle',fill:token('text-primary'),'font-family':'Arial,sans-serif','font-size':26,'font-weight':700},String(total));
+    add('text',{'class':'maker-ring-caption',x:110,y:129,'text-anchor':'middle',fill:token('text-secondary'),'font-family':'Arial,sans-serif','font-size':10},model.state.office==='governor'?'GOVERNORS':'SEATS');
   }
   function sync(){
     const byId=new Map(races.map(r=>[r.id,r])),muted=T.mix(token('map-neutral'),token('map-bg'),.72);
@@ -47,7 +48,7 @@
     const counts=model.totalCounts(model.state.office),held=S.heldSeats[model.state.office],total=Object.values(counts).reduce((n,v)=>n+v,0);
     $('maker-totals').replaceChildren(...Object.entries(counts).map(([party,n])=>{const span=document.createElement('span');span.className='maker-'+party.toLowerCase();span.hidden=party==='I'&&!n;span.style.setProperty('--tower-color',party==='T'?M.colors.Tossup:T.candidateColor({party}));span.style.setProperty('--tower-ink',party==='T'?T.foreground(M.colors.Tossup):(T.contrast(T.candidateColor({party}),'#ffffff')>=3?'#ffffff':T.foreground(T.candidateColor({party}))));span.setAttribute('aria-label',`${n} ${party==='T'?'Tossup':party}`);const number=document.createElement('strong'),label=document.createElement('small');number.className='maker-total-number';number.textContent=n;label.className='maker-total-party';label.textContent=T.current.presentation==='yapms'?({D:'Democrats',R:'Republicans',I:'Independent',T:'Tossup'}[party]):party==='T'?'Tossup':party;span.append(number,document.createTextNode(' '),label);return span;}));
     $('maker-seat-bar').replaceChildren(...['D','I','T','R'].map(party=>{const span=document.createElement('span');span.style.width=counts[party]/total*100+'%';span.style.background=party==='T'?M.colors.Tossup:T.candidateColor({party});return span;}));
-    $('maker-count-caption').textContent=`${total} ${model.state.office==='governor'?'governors':'seats'} · ${current().length} up for election.${model.state.office!=='house'?` Includes ${held.D} D / ${held.R} R${held.I?` / ${held.I} I`:''} not up.`:''} Your scenario · Not election calls.`;
+    $('maker-count-caption').textContent=`${total} ${model.state.office==='governor'?'governors':'seats'} · ${current().length} up for election.${model.state.office!=='house'?` Includes ${held.D} D / ${held.R} R${held.I?` / ${held.I} I`:''} not up.`:''} ${model.state.office==='senate'?' D includes 2 independent caucus seats.':''} Your scenario · Not election calls.`;
     seatRing();
     $('maker-undo').disabled=!model.past.length;$('maker-redo').disabled=!model.future.length;
     document.querySelectorAll('[data-office]').forEach(b=>{b.classList.toggle('active',b.dataset.office===model.state.office);b.setAttribute('aria-selected',String(b.dataset.office===model.state.office));});
@@ -149,6 +150,10 @@
     $('maker-map').addEventListener('contextmenu',e=>{const id=e.target.closest('[data-race-id]')?.dataset.raceId;if(id&&$('maker-detail-enabled').checked){e.preventDefault();openDetail(id);}});
     $('maker-map').addEventListener('keydown',e=>{if(e.key==='F10'&&e.shiftKey&&$('maker-detail-enabled').checked){const id=e.target.closest('[data-race-id]')?.dataset.raceId;if(id){e.preventDefault();openDetail(id);}}});
     $('maker-image').onclick=image;
+    const labels=$('maker-labels');
+    try{labels.checked=localStorage.getItem('feaMakerLabels.v1')!=='off';}catch{}
+    const updateLabels=()=>{document.body.classList.toggle('maker-labels-hidden',!labels.checked);};updateLabels();
+    labels.onchange=()=>{updateLabels();try{localStorage.setItem('feaMakerLabels.v1',labels.checked?'on':'off');}catch{}status(labels.checked?'Map labels on.':'Map labels off.');};
     const appearance=FEAAppearance();$('maker-appearance').onclick=()=>{ $('board-menu').hidden=true;$('maker-menu-button').setAttribute('aria-expanded','false');appearance.open();};
     $('maker-menu-button').onclick=()=>{const menu=$('board-menu');menu.hidden=!menu.hidden;$('maker-menu-button').setAttribute('aria-expanded',String(!menu.hidden));};
     document.addEventListener('click',e=>{if(!e.target.closest('.board-overflow')){$('board-menu').hidden=true;$('maker-menu-button').setAttribute('aria-expanded','false');}});

@@ -93,8 +93,9 @@ redrawn-boundary warning were exercised. Phone-sized layout was checked at
 
 ## Held seats and in-page detail correction
 
-National totals include seats not on the ballot: Senate 32 D / 31 R / 2 I,
-governors 6 D / 8 R. Independents King and Sanders remain I. The bar denominators
+National totals include seats not on the ballot: Senate 34 D / 31 R (including the two held independent senators with Democrats by caucus),
+governors 6 D / 8 R. Candidate party identities remain unchanged; chamber totals
+use caucus alignment. The bar denominators
 are 100 Senate seats, 50 governorships and 435 House seats. Editing, clearing or
 importing ratings never alters held seats. Sources checked November 1, 2026:
 [Senate membership and classes](https://www.senate.gov/senators/),
@@ -213,3 +214,12 @@ and use the compact totals instead of a second large chart. Clean display keeps
 the ring and map while hiding the editing tools. Saved duplicates retain the
 YAPms presentation and customized colors. Small-state labels are omitted where
 space is tight; the geography and race finder remain available.
+
+
+Map maker totals use Senate caucus alignment for the held seats: 34 Democratic
+caucus seats and 31 Republican seats. Independents you rate in the scenario still
+have their own category. The ring, bar and total chips
+use the same held-seat composition. **Map labels** in the menu is a browser-local
+preference and also follows into the clean display. YAPms labels are white.
+The YAPms clean display omits the masthead, centers its ring in a narrow left
+rail, and gives the map the remaining screen with compact totals above it.

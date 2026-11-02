@@ -1,9 +1,10 @@
 (function(root){
   const ratings=['Safe Democratic','Likely Democratic','Lean Democratic','Tilt Democratic','Tossup','Tilt Republican','Lean Republican','Likely Republican','Safe Republican','Safe Independent','Likely Independent','Lean Independent','Tilt Independent'];
   const offices=['house','senate','governor'];
-  // Actual party affiliation, not Senate caucus: King and Sanders remain I.
+  // Scenario chamber totals follow caucus alignment: the two held independent
+  // senators count with Democrats. User-rated Independent races remain separate.
   // Senate Class I/III (excluding FL/OH specials); NGA 2026 election roster.
-  const heldSeats={house:{D:0,R:0,I:0},senate:{D:32,R:31,I:2},governor:{D:6,R:8,I:0}};
+  const heldSeats={house:{D:0,R:0,I:0},senate:{D:34,R:31,I:0},governor:{D:6,R:8,I:0}};
   const stateFips={AL:'01',AK:'02',AZ:'04',AR:'05',CA:'06',CO:'08',CT:'09',DE:'10',DC:'11',FL:'12',GA:'13',HI:'15',ID:'16',IL:'17',IN:'18',IA:'19',KS:'20',KY:'21',LA:'22',ME:'23',MD:'24',MA:'25',MI:'26',MN:'27',MS:'28',MO:'29',MT:'30',NE:'31',NV:'32',NH:'33',NJ:'34',NM:'35',NY:'36',NC:'37',ND:'38',OH:'39',OK:'40',OR:'41',PA:'42',RI:'44',SC:'45',SD:'46',TN:'47',TX:'48',UT:'49',VT:'50',VA:'51',WA:'53',WV:'54',WI:'55',WY:'56'};
   function validUnit(id,catalogue){const [raceId,unit,...rest]=id.split('@'),race=catalogue.find(r=>r.id===raceId);return !!race&&!rest.length&&/^\d{5}(\d{5})?$/.test(unit||'')&&unit.startsWith(stateFips[race.state]);}
   function validate(value, catalogue){

@@ -1,7 +1,7 @@
 /* Read-only receiver only. Controller layout and controls never change. */
 html[data-clean-display],html[data-clean-display] body { margin:0!important;width:100%;height:100dvh!important;overflow:hidden!important; }
 #clean-display-wait { position:fixed;inset:35% 10% auto;text-align:center;color:#e7eefb;font:24px system-ui; }
-html[data-clean-display] body { background:#1c2c44; }
+html[data-clean-display] body { background:var(--board-bg,#1c2c44); }
 #clean-display-content { display:contents; }
 html[data-clean-display] :is(.board-overflow,#board-menu,.maker-tools,.maker-draw-button,#maker-draw-tools,.prediction-map-controls,.election-map-controls,#maker-county-reset,#maker-status,#night-controls,#night-drawer,#night-calls,#desk-map-legend,#desk-race-index,.focus-resize-handle,.focused-close,.sheet-toggle,.desk-panel-tools,.maker-detail-actions,.maker-rating-control,#maker-county-apply,.prediction-map-tooltip,.election-map-tooltip,.map-tooltip,.desk-tabs,.comparison-rail,.county-focus-band button) { display:none!important; }
 html[data-clean-display] .map-maker .maker-workspace,
@@ -29,5 +29,18 @@ html[data-clean-display] body > #clean-display-content { pointer-events:none; }
 
 html[data-clean-display] .map-maker[data-presentation="broadcast"] .election-chamber-board { top:0!important; }
 
-html[data-clean-display] body.map-maker[data-presentation="yapms"] .maker-workspace { left:calc(var(--yapms-rail) + 36px)!important;top:125px!important; }
-html[data-clean-display] body.map-maker[data-presentation="yapms"].maker-detail-open .maker-workspace { left:18px!important; }
+/* Reference YAPms receiver: no masthead or editing rail, centered ring at left,
+   compact totals at the very top, full-height map to their right. */
+html[data-clean-display] body.map-maker[data-presentation="yapms"] { --yapms-rail:clamp(190px,22vw,330px); }
+html[data-clean-display] body.map-maker[data-presentation="yapms"] #desk-masthead { display:none!important; }
+html[data-clean-display] body.map-maker[data-presentation="yapms"] .board-top-controls { top:10px!important;left:calc(var(--yapms-rail) + 12px)!important;right:12px!important;width:auto!important; }
+html[data-clean-display] body.map-maker[data-presentation="yapms"] .maker-workspace { inset:54px 12px 12px calc(var(--yapms-rail) + 12px)!important; }
+html[data-clean-display] body.map-maker[data-presentation="yapms"] #maker-seat-summary { display:block;left:6px;top:50%;width:var(--yapms-rail);transform:translateY(-50%); }
+html[data-clean-display] body.map-maker[data-presentation="yapms"] #maker-seat-summary p { font-size:10px;padding:0 8px; }
+html[data-clean-display] body.map-maker[data-presentation="yapms"]::before { content:'';position:fixed;left:calc(var(--yapms-rail) + 6px);top:0;bottom:0;border-left:1px solid var(--panel-border);opacity:.45; }
+html[data-clean-display] body.map-maker[data-presentation="yapms"].maker-detail-open #maker-seat-summary { display:none; }
+html[data-clean-display] body.map-maker[data-presentation="yapms"].maker-detail-open .maker-workspace { left:12px!important; }
+
+html[data-clean-display] body.map-maker[data-presentation="yapms"] :is(.maker-ring-total,.maker-ring-caption) { display:none; }
+
+html[data-clean-display] body.map-maker[data-presentation="yapms"].maker-detail-open::before { display:none; }

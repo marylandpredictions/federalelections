@@ -185,76 +185,52 @@ body.results-board.map-maker.maker-detail-open[data-presentation="broadcast"] .m
 #maker-interaction button[aria-pressed="true"] { outline:2px solid var(--selection);outline-offset:-2px;background:var(--panel-raised);font-weight:800; }
 #maker-interaction small { grid-column:1/-1;color:var(--text-secondary);font-size:11px;line-height:1.4; }
 
-/* YAPms reference composition: quiet navy canvas, left distribution ring,
-   compact party chips and a large centered map. Controls remain FEA's. */
-#maker-seat-summary[hidden] { display:none!important; }
+/* YAPms reference composition: compact chips, a left distribution ring and
+   a map that fills the remaining canvas. The receiver overrides only chrome. */
 #maker-seat-summary { display:none; }
+#maker-seat-summary[hidden] { display:none!important; }
+.prediction-state-label { display:none;pointer-events:none;user-select:none; }
+.map-maker.maker-labels-hidden :is(.prediction-state-label,.night-geo-labels,.map-background-city) { display:none!important; }
 body.map-maker[data-presentation="yapms"] { --yapms-rail:clamp(210px,21vw,290px); }
 body.map-maker[data-presentation="yapms"] #desk-masthead { height:64px;border:0;background:var(--board-bg); }
-body.map-maker[data-presentation="yapms"] #desk-masthead strong { font:600 23px Arial,sans-serif;letter-spacing:-.5px;text-transform:none; }
-body.map-maker[data-presentation="yapms"] .board-top-controls { top:76px!important;left:calc(var(--yapms-rail) + 36px);right:18px;display:flex;justify-content:center;gap:16px; }
-body.map-maker[data-presentation="yapms"] .election-mode-toggle { order:2; }
-body.map-maker[data-presentation="yapms"] .election-mode-toggle button { font-size:11px;padding:6px 9px;min-height:32px; }
-body.map-maker[data-presentation="yapms"] .election-chamber-board { background:transparent;border:0;padding:0;box-shadow:none; }
-body.map-maker[data-presentation="yapms"] .maker-totals { font:700 12px Arial,sans-serif;gap:7px; }
-body.map-maker[data-presentation="yapms"] .maker-totals > span { padding:7px 10px 10px;border-radius:3px;background:var(--tower-color);color:var(--tower-ink);border-bottom:5px solid color-mix(in srgb,var(--tower-color) 55%,white); }
-body.map-maker[data-presentation="yapms"] .maker-totals .maker-t { background:var(--map-neutral);color:var(--text-primary);order:-1; }
+body.map-maker[data-presentation="yapms"] #desk-masthead strong { font:600 26px Arial,sans-serif;letter-spacing:-.5px;text-transform:none; }
+body.map-maker[data-presentation="yapms"] .board-top-controls { top:76px!important;left:calc(var(--yapms-rail) + 36px)!important;right:18px!important;width:auto!important;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap; }
+body.map-maker[data-presentation="yapms"] .election-mode-toggle { order:2;flex:none; }
+body.map-maker[data-presentation="yapms"] .election-mode-toggle button { font-size:13px;padding:7px 12px;min-height:36px; }
+body.map-maker[data-presentation="yapms"] .election-chamber-board { flex:0 0 auto;width:max-content;min-width:0;background:transparent;border:0;padding:0;box-shadow:none; }
+body.map-maker[data-presentation="yapms"] .maker-totals { display:flex;width:max-content;font:700 clamp(14px,1vw,20px) Arial,sans-serif;gap:7px;justify-content:flex-start; }
+body.map-maker[data-presentation="yapms"] .maker-totals > span { display:flex;align-items:center;gap:5px;min-height:36px;box-sizing:border-box;padding:6px 9px 7px;border-radius:3px;background:var(--tower-color);color:var(--tower-ink);border-bottom:5px solid color-mix(in srgb,var(--tower-color) 55%,white); }
+body.map-maker[data-presentation="yapms"] .maker-total-party { order:-1;font-size:inherit; }
+body.map-maker[data-presentation="yapms"] .maker-totals .maker-t { background:var(--tossup);color:var(--tower-ink);order:-1; }
 body.map-maker[data-presentation="yapms"] :is(#maker-seat-bar,#maker-count-caption) { display:none; }
-body.map-maker[data-presentation="yapms"] .maker-workspace { display:block;inset:125px 18px 16px calc(var(--yapms-rail) + 36px); }
+body.map-maker[data-presentation="yapms"] .maker-workspace { display:block;inset:140px 18px 16px calc(var(--yapms-rail) + 36px); }
 body.map-maker[data-presentation="yapms"] .maker-map-region { height:100%; }
 body.map-maker[data-presentation="yapms"] .maker-tools { position:fixed;box-sizing:border-box;left:18px;top:calc(135px + var(--yapms-rail));bottom:18px;width:var(--yapms-rail);padding:12px 8px;background:transparent;border:0;border-top:1px solid var(--panel-border); }
 body.map-maker[data-presentation="yapms"] .maker-tools h1 { font:600 15px Arial,sans-serif; }
 body.map-maker[data-presentation="yapms"] #maker-palette button { background:var(--paint-color);color:var(--paint-ink);border:1px solid #ffffff55;font-weight:600;min-height:32px; }
 body.map-maker[data-presentation="yapms"] #maker-seat-summary { display:block;position:absolute;left:18px;top:115px;width:var(--yapms-rail);z-index:2; }
 body.map-maker[data-presentation="yapms"] #maker-seat-summary svg { width:100%;height:auto;display:block; }
-body.map-maker[data-presentation="yapms"] #maker-seat-summary p { text-align:center;font:600 10px Arial,sans-serif;letter-spacing:1.5px;color:var(--text-secondary);margin:0; }
+body.map-maker[data-presentation="yapms"] #maker-seat-summary p { text-align:center;font:500 11px Arial,sans-serif;line-height:1.4;color:var(--text-secondary);margin:0; }
 body.map-maker[data-presentation="yapms"].maker-detail-open #maker-seat-summary { display:none; }
 body.map-maker[data-presentation="yapms"].maker-detail-open .maker-workspace { left:18px; }
 body.map-maker[data-presentation="yapms"].maker-detail-open .maker-tools { display:none; }
 body.map-maker[data-presentation="yapms"] .prediction-shape-feature { stroke-width:1px; }
-body.map-maker[data-presentation="yapms"] .prediction-state-label { display:block; }
-.prediction-state-label { display:none;pointer-events:none;user-select:none; }
+body.map-maker[data-presentation="yapms"] .prediction-shape-feature.is-muted { fill:var(--map-neutral);stroke:var(--state-border);opacity:1; }
+body.map-maker[data-presentation="yapms"] .prediction-state-label { display:block;fill:#ffffff;paint-order:stroke;stroke:#20283899;stroke-width:.8px;stroke-linejoin:round; }
+@media(min-width:801px) and (max-width:1100px) and (min-height:481px) {
+ body.map-maker[data-presentation="yapms"] .board-top-controls { gap:8px; }
+ body.map-maker[data-presentation="yapms"] .maker-workspace { top:166px; }
+}
 @media(max-width:800px), (max-width:1000px) and (max-height:480px) {
  body.map-maker[data-presentation="yapms"] #maker-seat-summary { display:none; }
- body.map-maker[data-presentation="yapms"] .board-top-controls { flex-wrap:wrap;gap:8px; }
+ body.map-maker[data-presentation="yapms"] .board-top-controls { left:auto!important;right:auto!important;flex-direction:column;gap:8px; }
+ body.map-maker[data-presentation="yapms"] .election-mode-toggle { order:0; }
+ body.map-maker[data-presentation="yapms"] .election-mode-toggle button { min-height:44px; }
+ body.map-maker[data-presentation="yapms"] .election-chamber-board { width:100%; }
+ body.map-maker[data-presentation="yapms"] .maker-totals { width:100%;display:flex;justify-content:center;flex-wrap:wrap;gap:5px;font-size:14px; }
+ body.map-maker[data-presentation="yapms"] .maker-totals > span { min-height:36px; }
  body.map-maker[data-presentation="yapms"] .maker-workspace { display:flex;inset:auto; }
  body.map-maker[data-presentation="yapms"] .maker-tools { position:static;top:auto;bottom:auto;width:auto;padding:10px; }
  body.map-maker[data-presentation="yapms"] .maker-map-region { height:420px; }
  body.map-maker[data-presentation="yapms"].maker-detail-open .maker-map-region { height:850px; }
-}
-
-@media(min-width:801px) and (min-height:481px) {
- body.map-maker[data-presentation="yapms"] .board-top-controls { left:calc(var(--yapms-rail) + 36px)!important;right:18px!important;width:auto!important; }
- body.map-maker[data-presentation="yapms"] .election-chamber-board { flex:0 0 auto;width:max-content;min-width:0; }
- body.map-maker[data-presentation="yapms"] .maker-totals { width:max-content;justify-content:flex-start; }
-}
-
-body.map-maker[data-presentation="yapms"] .prediction-shape-feature.is-muted { fill:var(--map-neutral);stroke:var(--state-border);opacity:1; }
-body.map-maker[data-presentation="yapms"] .maker-totals > span { display:flex;align-items:center;gap:4px; }
-body.map-maker[data-presentation="yapms"] .maker-total-party { order:-1; }
-
-@media(max-width:800px), (max-width:1000px) and (max-height:480px) {
- body.map-maker[data-presentation="yapms"] .election-chamber-board { width:100%; }
- body.map-maker[data-presentation="yapms"] .maker-totals { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px; }
- body.map-maker[data-presentation="yapms"] .maker-totals > span { justify-content:center;padding:6px; }
-}
-
-/* Readable desktop controls, with a separate office row so totals never shrink
-   to make room. Uncontested states keep their distinct charcoal background. */
-body.map-maker[data-presentation="yapms"] #desk-masthead strong { font-size:clamp(25px,2vw,36px); }
-body.map-maker[data-presentation="yapms"] .board-top-controls { flex-direction:column;align-items:center;gap:8px; }
-body.map-maker[data-presentation="yapms"] .election-mode-toggle { order:0; }
-body.map-maker[data-presentation="yapms"] .election-mode-toggle button { min-height:44px;font-size:clamp(14px,1vw,19px);padding:9px 18px; }
-body.map-maker[data-presentation="yapms"] .maker-totals { font-size:clamp(20px,1.7vw,32px);gap:8px; }
-body.map-maker[data-presentation="yapms"] .maker-total-party { font-size:clamp(12px,.95vw,18px); }
-body.map-maker[data-presentation="yapms"] .maker-totals > span { min-height:50px;padding:9px 13px;gap:7px; }
-body.map-maker[data-presentation="yapms"] .maker-totals .maker-t { background:var(--tossup);color:var(--tower-ink); }
-@media(min-width:801px) and (min-height:481px) {
- body.map-maker[data-presentation="yapms"] .maker-workspace { top:196px; }
-}
-@media(max-width:800px), (max-width:1000px) and (max-height:480px) {
- body.map-maker[data-presentation="yapms"] .election-mode-toggle { order:0; }
- body.map-maker[data-presentation="yapms"] .maker-totals { font-size:22px; }
- body.map-maker[data-presentation="yapms"] .maker-total-party { font-size:12px; }
- body.map-maker[data-presentation="yapms"] .maker-totals > span { min-height:44px; }
 }
