@@ -356,6 +356,7 @@ export class ResultsControl {
       configurationError:this.configurationError || null,
       recoveryWarning:this.recoveryWarning || null,
       publicResultsUrl:this.config.automaticDiscovery?.pageUrls?.[0]||null,
+      publicResultsPages:Object.fromEntries(['house','senate','governor'].filter(office=>typeof this.config.publicResultsPages?.[office]==='string').map(office=>[office,this.config.publicResultsPages[office]])),
       status:
         this.persistenceError || this.recoveryWarning ? 'STORAGE ERROR' : h.connection === "unavailable"
           ? "UNAVAILABLE"

@@ -133,10 +133,11 @@ window.FEACompleteBoard = function (Page) {
   p.renderProviderStatus = function (provider) {
     original.status.call(this, provider);
     let link=document.getElementById('desk-nbc-results');
-    const page=provider?.publicResultsUrl||this.publicProvider?.publicResultsUrl;
+    const pages=provider?.publicResultsPages||this.publicProvider?.publicResultsPages;
+    const page=pages?.[this.selectedMode]||provider?.publicResultsUrl||this.publicProvider?.publicResultsUrl;
     let safe=null;try{const u=new URL(page);if(u.protocol==='https:'&&['www.nbcnews.com','nbcnews.com'].includes(u.hostname)&&!u.port&&!u.username&&!u.password)safe=u.href;}catch{}
     const menu=document.getElementById('board-menu');
-    if(safe&&menu){if(!link){link=document.createElement('a');link.id='desk-nbc-results';link.textContent='NBC 2026 results';link.target='_blank';link.rel='noopener noreferrer';menu.append(link);}link.href=safe;link.hidden=false;}else if(link)link.hidden=true;
+    if(safe&&menu){if(!link){link=document.createElement('a');link.id='desk-nbc-results';link.textContent='NBC 2026 results';link.target='_blank';link.rel='noopener noreferrer';menu.append(link);}link.textContent=pages?.[this.selectedMode]?`NBC ${this.selectedMode==='governor'?'Governor':this.selectedMode==='senate'?'Senate':'House'} results`:'NBC 2026 results';link.href=safe;link.hidden=false;}else if(link)link.hidden=true;
     if (
       !this.isLabPage &&
       Date.now() < Date.parse("2026-11-03T05:00:00Z") &&
@@ -720,7 +721,9 @@ window.FEACompleteBoard = function (Page) {
       this.pastMarginRace=null; this.pastColumnIds=null;
       document.body.classList.remove('has-history-comparison');
     }
-    return original.mode.call(this,mode,...args);
+    const result=original.mode.call(this,mode,...args);
+    if(this.publicProvider)this.renderProviderStatus(this.publicProvider);
+    return result;
   };
   p.lockCounty = function (fips,...args) {
     if(fips&&this.currentRace?.type==='house'&&this.pastMapSource)this.setHistoricalMap(null);

@@ -440,3 +440,11 @@ test('A stale zero-vote runtime roster cannot reintroduce filler or hide catalog
  assert.equal(race.candidates[0].summaryVisible,true);
  assert.equal(race.candidates[1].summaryVisible,undefined);
 });
+
+
+test('Owner-supplied NBC page links are public metadata without activating a results source',async t=>{
+ const {control}=await setup(t);const before=control.health().status;
+ const pages=Object.fromEntries(['house','senate','governor'].map(office=>[office,`https://www.nbcnews.com/politics/2026-elections/${office}-results`]));
+ control.config.publicResultsPages={...pages,privateField:'not public'};
+ assert.deepEqual(control.health().publicResultsPages,pages);assert.equal(control.health().status,before);assert.equal(control.config.sources.length,0);assert.equal(control.config.automaticDiscovery,undefined);
+});

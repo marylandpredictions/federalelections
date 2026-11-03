@@ -136,3 +136,20 @@ calls, runtime storage or fallback providers are deleted by the detector.
 - Dependency installation reported an existing high-severity `sharp` advisory.
   No detector dependency was added; the suggested breaking dependency upgrade
   was kept outside this focused change.
+
+
+## Owner-supplied public page links — November 3, 2026
+
+`publicResultsPages` in `data/results-provider.json` contains the Senate, House
+and Governor result pages supplied by the owner. Public provider health exposes
+these links; the Results menu selects the matching office immediately when the
+user switches maps. These are website links, not polling endpoints. They do not
+mark automatic discovery ACTIVE or authorize votes/calls.
+
+The live detector dry run on November 3 returned the NBC elections hub as 404
+and reported robots/access policy disallowing the three office-page requests.
+The web reader also could not access those pages. No data endpoint, race mapping,
+2026 schema, or Decision Desk projection semantics was verified. `sources` remains
+empty. The watcher continues its existing policy-respecting checks. Activation
+still requires an authorized accessible JSON source and strict adapter/mapping
+validation; webpage URLs must never be substituted as JSON sources.

@@ -128,15 +128,25 @@ test('observed alternative NBC JSON route works only with discovery provenance a
 });
 test('board adds one safe external NBC link and removes it if the source is absent or unsafe',async()=>{
   const nodes=new Map(),menu={append:node=>nodes.set(node.id,node)},status={};nodes.set('board-menu',menu);nodes.set('results-provider-status',status);
-  const document={getElementById:id=>nodes.get(id),createElement:()=>({})};
+  const document={getElementById:id=>nodes.get(id),createElement:()=>({}),body:{classList:{remove(){}}}};
   const context={window:{},FEADeskTheme:{},FEAResultsUI:{},STATE_NAMES:{},URL,Date,document};
   vm.runInNewContext(await readFile('assets/desk-experience.js','utf8'),context);
-  class Page {renderProviderStatus(){}}
+  class Page {renderProviderStatus(){} switchMode(mode){this.selectedMode=mode;}}
   context.window.FEACompleteBoard(Page);const board=new Page();board.isLabPage=true;
   board.renderProviderStatus({publicResultsUrl:page});board.renderProviderStatus({publicResultsUrl:page});
   assert.equal(nodes.size,3);assert.equal(nodes.get('desk-nbc-results').href,page);assert.equal(nodes.get('desk-nbc-results').rel,'noopener noreferrer');
   board.renderProviderStatus({publicResultsUrl:'https://evil.example'});assert.equal(nodes.get('desk-nbc-results').hidden,true);
   board.renderProviderStatus({});assert.equal(nodes.get('desk-nbc-results').hidden,true);
+  for(const office of ['house','senate','governor']){
+    board.selectedMode=office;const url=`https://www.nbcnews.com/politics/2026-elections/${office}-results`;
+    board.renderProviderStatus({publicResultsPages:{[office]:url}});assert.equal(nodes.get('desk-nbc-results').href,url);assert.equal(nodes.get('desk-nbc-results').hidden,false);
+  }
+  board.renderProviderStatus({publicResultsPages:{governor:'javascript:alert(1)'}});assert.equal(nodes.get('desk-nbc-results').hidden,true);
+  board.publicProvider={publicResultsPages:Object.fromEntries(['house','senate','governor'].map(office=>[office,`https://www.nbcnews.com/politics/2026-elections/${office}-results`]))};
+  board.switchMode('house');assert.equal(nodes.get('desk-nbc-results').href,board.publicProvider.publicResultsPages.house);
+  board.switchMode('senate');assert.equal(nodes.get('desk-nbc-results').href,board.publicProvider.publicResultsPages.senate);
+
+
 });
 test('workflow gates bot writes and limits publication to the provider registry on main',async()=>{
   const workflow=await readFile('.github/workflows/detect-nbc-2026-results.yml','utf8');
