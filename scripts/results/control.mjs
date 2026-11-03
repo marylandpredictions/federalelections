@@ -37,6 +37,7 @@ export class ResultsControl {
     Object.assign(this, { root, now, provider });
     this.storage=resultStorage(root,storageDir);
     this.graceSeconds = numberSetting(graceSeconds, 30, 0);
+    this.pollSecondsConfigured=pollSeconds!==undefined;
     this.pollSeconds = numberSetting(pollSeconds, 45, 15);
     this.staleSeconds = numberSetting(staleSeconds, 180, 30);
     this.queue = Promise.resolve();
@@ -77,6 +78,7 @@ export class ResultsControl {
       this.configurationError='Provider configuration is malformed. Check sources and race mappings, then restart the service.';
       this.config={sources:[]};
     }
+    if(!this.pollSecondsConfigured&&this.config.pollSeconds!==undefined)this.pollSeconds=numberSetting(this.config.pollSeconds,45,15);
     this.provider ||= new NbcProvider(this.config);
     // Read the committed envelope first: its matching calls are authoritative.
     // Truncated runtime must fail clearly rather than publish the seed as zeros.
@@ -114,12 +116,17 @@ export class ResultsControl {
     // Unknown recovered winners fail clearly; reviewed aliases preserve identities.
     for(const local of this.catalogue){
       const raw=this.runtime.races[local.id],state=this.calls.races[local.id];
-      if(raw)raw.candidates=raw.candidates.map(c=>matchBallotCandidate(c,local.candidates));
+      const national=raw?.providerScope==='national'&&raw.provider==='NBC'&&raw.electionDate==='2026-11-03'&&this.config.sources.some(source=>source.format==='nbc-national-v2'&&source.url===raw.sourceUrl&&source.races.some(m=>m.feaRaceId===local.id&&String(m.providerRaceId)===raw.providerRaceId));
+      if(raw){
+        if(national&&raw.candidates.some(c=>genericName(c.name)))throw Error('Invalid saved NBC candidate for '+local.id);
+        if(!national)raw.candidates=raw.candidates.map(c=>matchBallotCandidate(c,local.candidates));
+      }
+      const callRoster=national?raw.candidates:local.candidates;
       for(const call of state?.calls||[]){
-        try{call.candidate=matchBallotCandidate({name:call.candidate},local.candidates).name;}
+        try{call.candidate=matchBallotCandidate({name:call.candidate},callRoster).name;}
         catch(error){throw Error('Invalid saved call for '+local.id+': '+error.message);}
       }
-      for(const call of [state?.providerCall,raw?.providerCall].filter(Boolean))call.candidate=matchBallotCandidate({name:call.candidate},local.candidates).name;
+      for(const call of [state?.providerCall,raw?.providerCall].filter(Boolean))call.candidate=matchBallotCandidate({name:call.candidate},callRoster).name;
     }
     for(const state of Object.values(this.calls.races))for(const call of state.calls||[])if(/^nbc-/.test(call.source||''))call.provider='NBC';
     this.commitVisibleState();
@@ -213,12 +220,19 @@ export class ResultsControl {
           const before=Date.parse(this.runtime.races[r.id]?.lastUpdated||''),after=Date.parse(r.lastUpdated||'');
           if(Number.isFinite(before)&&Number.isFinite(after)&&after<before)throw Error('Regressed provider timestamp; last-good race retained');
           if((this.runtime.races[r.id]?.candidates||[]).some(c=>c.votes>0)&&!r.candidates.some(c=>c.votes>0))throw Error('Unexpected zero-vote reset; last-good race retained for review');
+          const prior=this.runtime.races[r.id],oldTotal=(prior?.candidates||[]).reduce((n,c)=>n+c.votes,0),newTotal=r.candidates.reduce((n,c)=>n+c.votes,0);
+          if(!Number.isSafeInteger(newTotal))throw Error('Unsafe total vote count');
+          if(oldTotal>=100&&newTotal<oldTotal*.5)throw Error('Suspicious partial vote reset; last-good race retained for review');
+          if((prior?.candidates||[]).some(c=>c.votes>=100&&r.candidates.some(k=>k.name===c.name&&k.votes===0)))throw Error('Candidate vote reset; last-good race retained for review');
+          if(r.providerScope==='national'&&prior?.counties?.length)r.counties=prior.counties;
           races.push(r);
           } catch(error){quarantined.push({race:r?.id||'Unknown',reason:error.message});}
         }
         const quarantineChanged=JSON.stringify(h.quarantined||[])!==JSON.stringify(quarantined.slice(0,100));
         h.quarantined=quarantined.slice(0,100);
         if(!races.length)throw Error('No healthy normalized provider races; last-good snapshot retained');
+        h.rosterMismatchCount=races.filter(r=>r.providerRosterReview&&Object.values(r.providerRosterReview).some(v=>v.length)).length;
+        h.rosterMismatches=races.filter(r=>r.providerRosterReview&&Object.values(r.providerRosterReview).some(v=>v.length)).slice(0,100).map(r=>({race:r.id,...r.providerRosterReview}));
         h.lastHealthyRaceIds=races.map(r=>r.id);
         if(quarantined.length&&quarantineChanged)console.warn(JSON.stringify({event:'invalid-race-quarantined',races:h.quarantined}));
         let changed = false;
@@ -283,7 +297,7 @@ export class ResultsControl {
                 r.providerCall.candidate,
               );
             }
-          } else {
+          } else if(r.providerCallVerified!==false) {
             const s = this.calls.races[r.id];
             if (
               s &&
@@ -562,7 +576,7 @@ export class ResultsControl {
         ...(details ? { counties: counties || [] } : {}),
         type: base.type,
         electionName: base.electionName,
-        candidateStatus: base.candidateStatus,
+        candidateStatus: raw.providerScope==='national'?raw.candidateStatus:base.candidateStatus,
         rosterVerified: base.rosterVerified,
         rosterReviewed: base.rosterReviewed,
         rosterIncomplete: base.rosterIncomplete,
@@ -571,7 +585,7 @@ export class ResultsControl {
         callState: s.callState || "UNCALLED",
         calls,
         status: calls.length ? "called" : "uncalled",
-        candidates: ((raw.candidates || []).some(c=>Number(c.votes)>0) || calls.length ? raw.candidates : base.candidates || []).filter(c=>!genericName(c.name)&&!c.placeholder).map((c) => {
+        candidates: (raw.providerScope==='national' || (raw.candidates || []).some(c=>Number(c.votes)>0) || calls.length ? raw.candidates : base.candidates || []).filter(c=>!genericName(c.name)&&!c.placeholder).map((c) => {
           const call = calls.find((k) => k.candidate === c.name);
           const identity = (base.candidates || []).find(k => (k.id && c.id && k.id === c.id) || k.name === c.name || k.aliases?.includes(c.name));
           return {

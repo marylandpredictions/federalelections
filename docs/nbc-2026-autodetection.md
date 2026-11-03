@@ -153,3 +153,74 @@ The web reader also could not access those pages. No data endpoint, race mapping
 empty. The watcher continues its existing policy-respecting checks. Activation
 still requires an authorized accessible JSON source and strict adapter/mapping
 validation; webpage URLs must never be substituted as JSON sources.
+
+
+## National Firecracker feeds activated — November 3, 2026
+
+The owner supplied three public API routes under
+`https://www.nbcnews.com/firecracker/api/v2/national-results/2026-elections/`:
+`house-results`, `senate-results`, and `governor-results`. These endpoints were
+accessible even though the webpage reader above was blocked. All three returned
+HTTP 200 and identified `brand: news`, `electionType: general`, election season
+2026, election date 2026-11-03, the matching office, and `updaterIntervalMs: 15000`.
+The observed payloads had zero votes: production pre-election data, not simulated
+results. All 435 House / 35 Senate / 36 Governor contests mapped successfully.
+
+Integration extends `scripts/results/nbc-provider.mjs` with the observed
+`nbc-national-v2` format. The registry contains explicit mapData-to-FEA mappings
+and `pollSeconds: 15`; an explicit `NBC_POLL_SECONDS` operator override still
+wins. Three national requests run concurrently. Conditional ETag/Last-Modified
+requests, error backoff, last-good persistence, deltas, history and existing call
+controls remain in use. No frontend NBC requests, forecast inputs, credentials
+or new storage service were added.
+
+Reference inspected: [romainhedouin/USA-elections-predictor, nbc_api.py](https://github.com/romainhedouin/USA-elections-predictor/blob/main/nbc_api.py).
+Only endpoint/schema/geographic behavior was consulted. No prediction/model code
+or party-level candidate aggregation was imported. Every candidate retains an
+individual observed vote count. House at-large NBC district 01 maps to FEA AL.
+The US party rollup and states without a configured race are excluded. Florida
+and Ohio Senate's observed `P`-coded entries are accepted only with the exact
+special-election route, configured exception, general national header and Nov. 3
+date. Other primary payloads remain rejected.
+
+Live NBC candidate lists take precedence over older local rosters, including
+before votes arrive. Conservative alias reconciliation retains known identities;
+ambiguous identities quarantine the race. Added/missing/party-different names
+are recorded in admin diagnostics as `rosterMismatchCount` and up to 100
+`rosterMismatches`. The first observed capture had 254 race-level differences
+(including missing local write-ins and changed party labels); this is not an
+assertion that every difference is a ballot error. Static reviewed provenance
+is preserved. Recovery validates the persisted provider mapping and roster,
+so a newer NBC candidate does not prevent restart. Manual calls are checked
+against the current recovered race roster.
+
+Totals must equal the sum of safe, nonnegative candidate vote integers. Malformed
+races and missing office/race payloads are quarantined independently. Backward
+timestamps, whole-race zeroing, drops below half an existing total of at least
+100 votes, and established candidate counts resetting to zero are held for
+review. Small downward corrections remain allowed. These guards are descriptive
+safety checks, not predictions; a genuinely large correction requires operator
+review. Last-good votes/calls survive outage and local controller restart.
+
+National feeds do not provide county results here. Existing county geometry,
+history and demographics remain available; previously stored county returns are
+preserved rather than erased by a national update. Separate county/unit feed
+activation is outside this national-feed change.
+
+**Calls:** `projection.verified` remains false. `isWinner`, map winner styling,
+and unverified callStatus codes never become an NBC Decision Desk projection.
+Live votes work; NBC automatic projection publication still requires a verified
+call contract. Existing FEA manual calls, overrides and pending-call controls are
+preserved. An unverified national heartbeat cannot retract an existing call.
+
+Validation: small zero-vote real-schema fixtures; wrong election/office/state,
+malformed/duplicate candidates, total mismatch, invalid JSON, HTTP 500, timeout,
+empty/partial payloads, 304 reuse, reset guards, small corrections, outage,
+controller restart and recovery, zero-vote provider roster, manual calls and
+unchanged-race delta tests. Actual isolated server HTTP checks returned CONNECTED
+and 506 contests with 15-second refresh; real House/Senate/Governor detail APIs
+and the public board were checked. An actual isolated server process restart with
+NBC unavailable retained all 506 real zero-vote race rosters and a delay warning.
+Small positive-vote recovery and call preservation were tested with isolated
+synthetic fixtures, not manufactured public election results.
+Live Render restart/redeploy/storage was not tested by this work.

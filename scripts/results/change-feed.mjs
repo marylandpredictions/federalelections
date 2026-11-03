@@ -65,8 +65,13 @@ export function publicRace(race) {
   return result;
 }
 export function publicProvider(provider = {}) {
+  const safe=value=>{try{const u=new URL(value);return u.protocol==='https:'&&['www.nbcnews.com','nbcnews.com'].includes(u.hostname)&&!u.port&&!u.username&&!u.password?u.href:null;}catch{return null;}};
+  const pages=Object.fromEntries(['house','senate','governor'].flatMap(office=>{const url=safe(provider.publicResultsPages?.[office]);return url?[[office,url]]:[];}));
+  const url=safe(provider.publicResultsUrl);
   return {
     name: provider.name,
+    ...(url?{publicResultsUrl:url}:{}),
+    ...(Object.keys(pages).length?{publicResultsPages:pages}:{}),
     status: provider.status,
     stale: provider.stale,
     lastUpstreamUpdate: provider.lastUpstreamUpdate || null,

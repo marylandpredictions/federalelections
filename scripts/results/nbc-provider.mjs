@@ -18,7 +18,7 @@ function timestamp(value) {
 }
 function candidate(raw) {
   const name =
-    raw.name || [raw.firstName, raw.lastName].filter(Boolean).join(" ");
+    raw.name?.trim() || [raw.firstName, raw.lastName].filter(Boolean).join(" ");
   const votes = Number(raw.votes ?? 0);
   if (genericName(name) || !Number.isSafeInteger(votes) || votes < 0)
     throw new Error("Invalid NBC candidate");
@@ -29,6 +29,7 @@ function candidate(raw) {
       GOP: "R",
       REP: "R",
       IND: "I",
+      OTH: "O", OTHER: "O", UDC: "NP",
       LIB: "L",
       GRN: "G",
       DEMOCRATIC: "D",
@@ -50,7 +51,52 @@ function candidate(raw) {
     winner: false,
   };
 }
+// National Firecracker payload observed publicly on 2026-11-03. The mapData
+// values carry race candidates; tableData and the US entry are party rollups.
+export function parseNbcNational(data,source,catalogue,{onInvalid}={}) {
+  const codes={house:'H',senate:'S',governor:'G'},office=source.office;
+  if(!codes[office]||data?.brand!=='news'||data.electionDate!=='2026-11-03'||String(data.electionSeason)!=='2026'||data.electionType!=='general'||data.office!==office||data.officeCode!==codes[office]||data.enableLivePreview===true)
+    throw Error('Not the production NBC 2026 general-election national office feed');
+  if(!data.mapData||typeof data.mapData!=='object'||Array.isArray(data.mapData)||!Object.keys(data.mapData).length)throw Error('NBC national mapData missing or empty');
+  const updated=timestamp(data.currentTime||data.lastModified);if(!updated)throw Error('NBC national timestamp missing');
+  const rows=[],ids=new Set();
+  for(const mapping of source.races||[]){try{
+    const local=catalogue.find(r=>r.id===mapping.feaRaceId),entry=data.mapData[mapping.providerRaceId],t=entry?.tooltip;
+    if(!local||local.type!==office||ids.has(local.id))throw Error('Unknown or duplicate national race mapping');ids.add(local.id);
+    const special=office==='senate'&&mapping.specialElection===true&&['FL','OH'].includes(local.state)&&entry?.href===`/politics/2026-special-elections/${local.state==='FL'?'florida':'ohio'}-senate-results`;
+    if(!entry||entry.stateCode!==local.state||entry.stateCode==='US'||entry.votingToday!==true||!t||t.officeCode!==codes[office]||!(t.electionTypeCode==='G'||special&&t.electionTypeCode==='P')||!Array.isArray(t.candidates)||!t.candidates.length)throw Error('NBC national race missing or geography/office mismatch');
+    if(office==='house'){
+      if(!/^\d{4}$/.test(String(mapping.providerRaceId)))throw Error('Invalid House district GEOID');
+      const number=Number(String(mapping.providerRaceId).slice(-2)),atLarge=/^(AL|0)$/i.test(String(local.district));
+      if(number!==(atLarge?1:Number(local.district)))throw Error('NBC national House district mismatch');
+    }else if(![local.state,local.state+'~P'].includes(String(mapping.providerRaceId)))throw Error('NBC national state key mismatch');
+    const additions=[],partyChanges=[];
+    const candidates=t.candidates.map(raw=>{
+      if(typeof raw.name!=='string'||raw.name.trim().length>180||typeof raw.party!=='string'||!raw.party.trim())throw Error('NBC candidate identity missing or malformed');
+      if(!['number','string'].includes(typeof raw.votes)||raw.votes===null||raw.votes===undefined||typeof raw.votes==='boolean'||(typeof raw.votes==='string'&&!/^\d+$/.test(raw.votes)))throw Error('NBC candidate vote count missing or malformed');
+      const incoming=candidate(raw);let normalized;
+      try{normalized=matchBallotCandidate(incoming,local.candidates);}
+      catch(error){
+        // The live provider roster is authoritative for this observed national
+        // schema. Do not retain obsolete local primary candidates or fabricate
+        // zeros for missing names. Ambiguous aliases still require review.
+        if(!error.message.startsWith('Unknown provider candidate:')&&!error.message.startsWith('Provider party mismatch:'))throw error;
+        normalized=incoming;if(error.message.startsWith('Provider party mismatch:'))partyChanges.push(incoming.name);else additions.push(incoming.name);
+      }
+      return {...normalized,providerName:incoming.name,writeIn:normalized.writeIn||/write[ -]?ins?/i.test(incoming.name)};
+    });
+    if(candidates.length>50||new Set(candidates.map(c=>c.id)).size!==candidates.length||new Set(candidates.map(c=>c.name.toLocaleLowerCase())).size!==candidates.length)throw Error('Duplicate or implausible national candidates');
+    const total=candidates.reduce((n,c)=>n+c.votes,0);
+    if(!Number.isSafeInteger(total)||!Number.isSafeInteger(t.totalVote)||total!==t.totalVote)throw Error('NBC race total does not match candidate votes');
+    const missing=(local.candidates||[]).filter(c=>!candidates.some(k=>k.name===c.name)).map(c=>c.name);
+    for(const c of candidates)c.percent=total?c.votes/total*100:0;
+    rows.push({...local,provider:'NBC',source:'NBC News',sourceUrl:source.url,providerRaceId:String(mapping.providerRaceId),providerScope:'national',providerCallVerified:false,electionDate:'2026-11-03',candidateStatus:'Live candidates and vote totals via NBC News',candidates,expectedVotePercent:percent(t.percentIn),estimatedVoteReporting:percent(t.percentIn),reportingPercent:null,percentReporting:null,lastUpdated:updated,updatedAt:updated,status:'uncalled',providerCall:null,counties:[],providerRosterReview:{added:additions,missing,partyChanges}});
+  }catch(error){if(!onInvalid)throw error;onInvalid({race:mapping.feaRaceId,reason:error.message});}}
+  if(!rows.length)throw Error('No healthy mapped NBC national races');return rows;
+}
+
 export function parseNbcResults(data, source, catalogue, {onInvalid}={}) {
+  if(source.format==='nbc-national-v2')return parseNbcNational(data,source,catalogue,{onInvalid});
   if (!data || !Array.isArray(data.races) || !data.races.length)
     throw new Error("NBC races array missing or empty");
   if(onInvalid){
@@ -206,6 +252,7 @@ export class NbcProvider {
         signal: AbortSignal.timeout(this.timeoutMs),
         redirect: "error",
         headers: { Accept: "application/json",
+          'User-Agent':'FEA-Election-Results/1.0 (+https://github.com/marylandpredictions/federalelections)',
           ...(cached?.etag ? {"If-None-Match":cached.etag} : {}),
           ...(cached?.modified ? {"If-Modified-Since":cached.modified} : {}) },
       });
@@ -214,6 +261,7 @@ export class NbcProvider {
       if(response.status === 304 && !cached) throw new Error("NBC 304 without a validated cached response");
       const body = response.status === 304 ? cached.body : await response.text();
       if (body.length > 20000000) throw new Error("NBC payload exceeds limit");
+      if(source.format==='nbc-national-v2'&&url.pathname!==`/firecracker/api/v2/national-results/2026-elections/${source.office}-results`)throw Error('National office endpoint mismatch');
       rows.push(...parseNbcResults(JSON.parse(body), source, catalogue,{onInvalid:issue=>this.quarantined.push(issue)}));
       if(response.status !== 304 && Buffer.byteLength(body)<=16*1024*1024) {
         if(cached)this.httpCacheBytes-=Buffer.byteLength(cached.body);
