@@ -53,6 +53,21 @@ function candidate(raw) {
 }
 // National Firecracker payload observed publicly on 2026-11-03. The mapData
 // values carry race candidates; tableData and the US entry are party rollups.
+export function nationalProjection(tooltip,source,candidates,updated) {
+  if(source.projection?.verified!==true||source.projection?.contract!=='nbc-firecracker-call-status-v1')return {providerCallVerified:false,providerCall:null};
+  // NBC's public production application defines P="Projected winner", W="Winner".
+  // isWinner alone is insufficient: require the race's explicit call code too.
+  const code=tooltip.callStatusCode;
+  if(typeof code!=='string'||!['','C','E','P','W','A','Z'].includes(code)||!tooltip.candidates.every(c=>typeof c.isWinner==='boolean'))return {providerCallVerified:false,providerCall:null};
+  const winners=tooltip.candidates.map((c,i)=>c.isWinner?i:-1).filter(i=>i>=0);
+  if(code==='A'||code==='Z')return {providerCallVerified:false,providerCall:null};
+  if(['P','W'].includes(code)){
+    if(winners.length!==1)throw Error('NBC explicit projection requires exactly one winner');
+    return {providerCallVerified:true,providerCall:{candidate:candidates[winners[0]].name,provider:'NBC',status:'projected',providerTimestamp:null}};
+  }
+  if(winners.length)throw Error('NBC winner flag conflicts with uncalled status');
+  return {providerCallVerified:true,providerCall:null};
+}
 export function parseNbcNational(data,source,catalogue,{onInvalid}={}) {
   const codes={house:'H',senate:'S',governor:'G'},office=source.office;
   if(!codes[office]||data?.brand!=='news'||data.electionDate!=='2026-11-03'||String(data.electionSeason)!=='2026'||data.electionType!=='general'||data.office!==office||data.officeCode!==codes[office]||data.enableLivePreview===true)
@@ -90,7 +105,7 @@ export function parseNbcNational(data,source,catalogue,{onInvalid}={}) {
     if(!Number.isSafeInteger(total)||!Number.isSafeInteger(t.totalVote)||total!==t.totalVote)throw Error('NBC race total does not match candidate votes');
     const missing=(local.candidates||[]).filter(c=>!candidates.some(k=>k.name===c.name)).map(c=>c.name);
     for(const c of candidates)c.percent=total?c.votes/total*100:0;
-    rows.push({...local,provider:'NBC',source:'NBC News',sourceUrl:source.url,providerRaceId:String(mapping.providerRaceId),providerScope:'national',providerCallVerified:false,electionDate:'2026-11-03',candidateStatus:'Live candidates and vote totals via NBC News',candidates,expectedVotePercent:percent(t.percentIn),estimatedVoteReporting:percent(t.percentIn),reportingPercent:null,percentReporting:null,lastUpdated:updated,updatedAt:updated,status:'uncalled',providerCall:null,counties:[],providerRosterReview:{added:additions,missing,partyChanges}});
+    rows.push({...local,provider:'NBC',source:'NBC News',sourceUrl:source.url,providerRaceId:String(mapping.providerRaceId),providerScope:'national',providerCallVerified:false,electionDate:'2026-11-03',candidateStatus:'Live candidates and vote totals via NBC News',candidates,expectedVotePercent:percent(t.percentIn),estimatedVoteReporting:percent(t.percentIn),reportingPercent:null,percentReporting:null,lastUpdated:updated,updatedAt:updated,status:'uncalled',...nationalProjection(t,source,candidates,updated),counties:[],providerRosterReview:{added:additions,missing,partyChanges}});
   }catch(error){if(!onInvalid)throw error;onInvalid({race:mapping.feaRaceId,reason:error.message});}}
   if(!rows.length)throw Error('No healthy mapped NBC national races');return rows;
 }

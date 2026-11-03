@@ -8,7 +8,7 @@ import {summaryVariableName} from './census-summary.mjs';
 const base='https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/';
 // ACS 2024 district estimates describe the 119th Congress, not redrawn 2026
 // districts. Keep old-boundary context explicit; never average county medians.
-export const changedStates = new Set(['AL','CA','FL','LA','MO','NC','OH','TN','TX','UT']);
+export const changedStates = new Set(['AL','CA','FL','LA','NC','OH','TN','TX','UT']);
 export async function buildHouseDemographics({cache='.runtime/source-audit'}={}) {
   mkdirSync(cache,{recursive:true});
   const provenance=[];
@@ -59,7 +59,7 @@ export async function buildHouseDemographics({cache='.runtime/source-audit'}={})
   const bytes=JSON.stringify(output),hash=createHash('sha256').update(bytes).digest('hex').slice(0,12),file=`data/results/district-demographics.${hash}.json.gz`;
   writeFileSync(file,gzipSync(bytes,{level:9}));
   writeFileSync('data/results/district-demographics.min.json',bytes+'\n');
-  writeFileSync('data/results/district-geography.json',JSON.stringify({schemaVersion:1,congress:119,method:'Exact hashes of the displayed Census county-within-CD119 geography. Changed-state districts are not certified as 2026 matches.',changeReviewSource:'https://www.the-downballot.com/p/the-downballot-releases-presidential',reviewRequiredStates:[...changedStates],districts:districtGeography},null,2)+'\n');
+  if(!existsSync('data/results/district-geography.json')||JSON.parse(readFileSync('data/results/district-geography.json','utf8')).congress!==120)writeFileSync('data/results/district-geography.json',JSON.stringify({schemaVersion:1,congress:119,method:'Exact hashes of the displayed Census county-within-CD119 geography. Changed-state districts are not certified as 2026 matches.',changeReviewSource:'https://www.the-downballot.com/p/the-downballot-releases-presidential',reviewRequiredStates:[...changedStates],districts:districtGeography},null,2)+'\n');
   const manifest=JSON.parse(readFileSync('data/results/demographics.json','utf8'));manifest.districtFile=file;
   writeFileSync('data/results/demographics.json',JSON.stringify(manifest)+'\n');
   console.log(`House demographics: 435 profiles; ${Object.values(districts).filter(r=>r.boundaryStatus==='current-comparable').length} current-comparable, ${Object.values(districts).filter(r=>r.boundaryStatus==='historical-boundaries').length} explicitly historical-boundary profiles.`);

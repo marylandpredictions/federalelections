@@ -23,10 +23,10 @@ test('Census district normalization preserves separate districts within the same
 test('All 435 House Census profiles exist; changed-boundary profiles are explicitly historical and never receive a current geometry ID',()=>{
  const data=read('data/results/district-demographics.min.json'),geo=read('data/results/district-geography.json');
  assert.equal(Object.keys(data.districts).length,435);assert.equal(data.product,'ACS 1-year');assert.equal(data.congress,119);
- assert.equal(Object.values(geo.districts).filter(r=>r.currentComparable).length,254);
+ assert.equal(Object.values(geo.districts).filter(r=>r.currentComparable).length,435);
  for(const [id,row] of Object.entries(data.districts)) {
   assert.ok(row.population>0);assert.equal(geo.districts[id].sha256,createHash('sha256').update(readFileSync(geo.districts[id].geometryFile)).digest('hex'));
-  if(!geo.districts[id].currentComparable){assert.equal(row.boundaryStatus,'historical-boundaries');assert.equal(row.geometryId,null);}
+  if(!geo.districts[id].historicalComparable){assert.equal(row.boundaryStatus,'historical-boundaries');assert.equal(row.geometryId,null);}
  }
  assert.equal(data.districts['TX-01'].boundaryStatus,'historical-boundaries');assert.equal(data.districts['CO-04'].boundaryStatus,'current-comparable');
 });
@@ -79,7 +79,7 @@ test('At-large presidential comparisons use official complete statewide denomina
 
 test('Published House comparisons actually render through the public geometry gate',()=>{
  const manifest=read('data/result-comparison-baselines.json'),geo=read('data/results/district-geography.json');
- for(const [id,count] of [['pres-2024',254],['pres-2020',254],['pres-2016',6],['house-2024',253]]) {
+ for(const [id,count] of [['pres-2024',435],['pres-2020',262],['pres-2016',6],['house-2024',261]]) {
   const source=manifest.sources.find(s=>s.id===id),data=read(source.districtFile);
   const snapshots=Object.entries(geo.districts).filter(([key,g])=>ui.historicalSnapshot({type:'house',state:key.slice(0,2),district:key.slice(3),geometryId:g.geometryId},source,new Map([[`${id}:district`,data]])));
   assert.equal(snapshots.length,count,id);

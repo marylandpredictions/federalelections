@@ -95,6 +95,7 @@ window.FEAEnhanceBoard = function (Page) {
       ? this.liveRaceIndex
       : (await this.safeJson("data/election-night-races.json"))?.races || [];
     const geography=comparisons?.geographyFile?await this.safeJson(comparisons.geographyFile):null;
+    this.districtGeography=geography;
     const races = catalogue.map((race) => {
       const row=normalizeElectionRace(race),geo=row.type==='house'?geography?.districts?.[FEAResultsUI.districtId(row)]:null;
       if(geo?.currentComparable)row.geometryId=geo.geometryId;
@@ -268,7 +269,7 @@ window.FEAEnhanceBoard = function (Page) {
   p.loadHouseFeatures = async function () {
     if (!this.houseFeatures) {
       const geo = await this.safeJson(
-        this.mapAssets?.house || "data/house-districts-119.geojson",
+        this.mapAssets?.house || "data/house-districts-2026.geojson",
       );
       this.houseFeatures =
         geo?.type === "Topology"
@@ -913,7 +914,7 @@ window.FEAEnhanceBoard = function (Page) {
     const total = FEADesk.total(row);
     const reporting=row.expectedVotePercent??row.estimatedVoteReporting;
     const statusInk=window.FEADeskTheme?.foreground(window.FEADeskTheme.resolved.tokens.watch)||'#172638';
-    const status=`<div class="desk-result-status" style="--status-ink:${statusInk}"><span>${call?projectionSource(call)+' PROJECTS':total?'Counting':'Awaiting results'}</span>${total&&Number.isFinite(reporting)?`<strong>${percent(reporting)}<small> expected vote in</small></strong><i aria-hidden="true" style="--reporting:${Math.max(0,Math.min(100,reporting))}%"></i>`:''}</div>`;
+    const status=`<div class="desk-result-status${!total&&!call?' is-awaiting':''}" style="--status-ink:${statusInk}"><span>${call?projectionSource(call)+' PROJECTS':total?'Counting':'Awaiting results'}</span>${total&&Number.isFinite(reporting)?`<strong>${percent(reporting)}<small> expected vote in</small></strong><i aria-hidden="true" style="--reporting:${Math.max(0,Math.min(100,reporting))}%"></i>`:''}</div>`;
     const max=Math.max(0,...(row.candidates||[]).map(c=>c.votes)),tied=(row.candidates||[]).filter(c=>c.votes===max).length>1;
     return `${status}<table class="selected-race-table"><thead><tr><th>Candidate</th><th>Votes</th><th>Vote %</th></tr></thead><tbody>${[
       ...(row.candidates || []),

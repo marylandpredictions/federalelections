@@ -76,7 +76,7 @@ export function expandComparisons() {
    if(!geo||(!atLarge&&!r[`total${year}`]))continue;
    const d=atLarge?.demVotes??number(r[`d${year}`]),rep=atLarge?.repVotes??number(r[`r${year}`]),total=atLarge?.totalVotes??number(r[`total${year}`]);
    if(![d,rep,total].every(Number.isSafeInteger)||total<=0||d<0||rep<0||d+rep>total)throw Error('Malformed district presidential totals');
-   districts.push({id:r.district,state:r.district.slice(0,2),year,demVotes:d,repVotes:rep,totalVotes:total,geographyVerified:geo.currentComparable,geometryId:geo.geometryId,valid:true,...(atLarge?{sourceNote:'At-large district equals the state; official FEC statewide total, including write-ins.'}:{})});
+   districts.push({id:r.district,state:r.district.slice(0,2),year,demVotes:d,repVotes:rep,totalVotes:total,geographyVerified:(year===2024&&districtSource.sourceSha256===geography.presidential2024Verification?.sourceSha256) || (geo.historicalComparable ?? geo.currentComparable),geometryId:geo.geometryId,valid:true,...(atLarge?{sourceNote:'At-large district equals the state; official FEC statewide total, including write-ins.'}:{})});
   }
   write(`data/baselines/pres-${year}-districts.json`,{...districtSource,...(year===2016?{source:'Official FEC statewide returns for at-large congressional districts',sourceUrl:official.sourceUrl}:{}),year,districts});
   const s=manifest.sources.find(s=>s.id===`pres-${year}`);s.appliesTo=['senate','governor','house'];s.districtFile=`data/baselines/pres-${year}-districts.json`;s.countyReferenceCompatible=true;
@@ -89,7 +89,7 @@ export function expandComparisons() {
   const rows=clerk.house[id];
   if(!rows?.length) {if(!['FL-20','OK-03'].includes(id))throw Error(`Unexpected missing Clerk race ${id}`);continue;}
   const candidates=rows.map(r=>({name:r.name,party:historicalParty(r.partyLabel),partyLabel:r.partyLabel,votes:r.votes}));
-  house.push(resultRow(candidates,{id,state:id.slice(0,2),year:2024,baselineRace:`2024 House${id==='AK-AL'?' · First-choice votes':id==='ME-02'?' · Final ranked-choice round':''}`,round:id==='AK-AL'?'first-choice':id==='ME-02'?'final-ranked-choice':'general',geographyVerified:geo.currentComparable,geometryId:geo.geometryId}));
+  house.push(resultRow(candidates,{id,state:id.slice(0,2),year:2024,baselineRace:`2024 House${id==='AK-AL'?' · First-choice votes':id==='ME-02'?' · Final ranked-choice round':''}`,round:id==='AK-AL'?'first-choice':id==='ME-02'?'final-ranked-choice':'general',geographyVerified:geo.historicalComparable ?? geo.currentComparable,geometryId:geo.geometryId}));
  }
  write('data/results/comparisons/house-2024-districts.json',{source:clerk.source.authority,sourceUrl:clerk.source.url,marginBasis:'all-votes',districts:house});
  const houseSource=manifest.sources.find(s=>s.id==='house-2024');Object.assign(houseSource,{status:'available',districtFile:'data/results/comparisons/house-2024-districts.json',marginBasis:'all-votes',sourceUrls:[clerk.source.url]});delete houseSource.unavailableReason;

@@ -75,10 +75,10 @@
 
   const geometryCache = new Map();
   const houseMapSource = {
-    url: "/data/maps/yapms/usa-house-2026153-blank.svg",
+    url: "/data/maps/house-2026.svg?v=20261103-cd120-2",
     viewBox: "0 0 800 501",
-    scale: 0.85,
-    translateY: 67.6945
+    scale: 1,
+    translateY: 0
   };
 
   function normalizeRating(value) {
@@ -618,7 +618,7 @@
           <button type="button" data-map-action="reset">Reset</button>
         </div>
         <div class="prediction-map-tooltip" hidden></div>
-        <svg class="prediction-shape-svg prediction-yapms-house-svg" viewBox="${houseMapSource.viewBox}" role="img" aria-label="House FEA Ratings map" data-map-build="yapms-2026153-fea1"></svg>
+        <svg class="prediction-shape-svg prediction-yapms-house-svg" viewBox="${houseMapSource.viewBox}" role="img" aria-label="House FEA Ratings map" data-map-build="census-2026-verified"></svg>
       </div>
       ${makeLegend()}
     `;

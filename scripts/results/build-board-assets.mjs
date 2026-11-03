@@ -46,7 +46,7 @@ export function buildBoardAssets(root = process.cwd()) {
     "states",
     compact(read("data/result-us-states.geojson")),
   );
-  const originalHouse = compact(read("data/house-districts-119.geojson"));
+  const originalHouse = compact(read("data/house-districts-2026.geojson"));
   const weighted = presimplify(topology({ districts: originalHouse }));
   const displayHouse = quantize(
     // topojson-simplify quantiles sort DESCENDING: .05 retains the top 5%.

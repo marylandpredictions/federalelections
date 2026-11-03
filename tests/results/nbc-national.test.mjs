@@ -5,7 +5,7 @@ import {ResultsChangeFeed,publicProvider} from '../../scripts/results/change-fee
 const fixtures=JSON.parse(readFileSync('tests/fixtures/nbc-national-2026.json')).offices;
 const catalogue=JSON.parse(readFileSync('data/election-night-races.json')).races;
 const config=JSON.parse(readFileSync('data/results-provider.json'));
-const sources=config.sources.filter(s=>s.format==='nbc-national-v2').map(s=>({...s,races:s.races.filter(m=>Object.hasOwn(fixtures[s.office].mapData,m.providerRaceId))}));
+const sources=config.sources.filter(s=>s.format==='nbc-national-v2').map(s=>({...s,projection:{verified:false},races:s.races.filter(m=>Object.hasOwn(fixtures[s.office].mapData,m.providerRaceId))}));
 const clone=x=>structuredClone(x),source=office=>sources.find(s=>s.office===office);
 function batch(data,key,votes=[100,50]){const t=data.mapData[key].tooltip;t.candidates.forEach((c,i)=>c.votes=votes[i]||0);t.totalVote=t.candidates.reduce((n,c)=>n+c.votes,0);return data;}
 test('Observed NBC 2026 national samples map House at-large, House districts, Senate specials and governors without projections',()=>{
@@ -30,12 +30,13 @@ test('National provider isolates invalid JSON/500/timeout/empty office payloads 
  let calls=0;const provider=new NbcProvider({sources:[source('house')],fetchImpl:async(url,options)=>{if(calls++){assert.equal(options.headers['If-None-Match'],'sample');return new Response(null,{status:304});}return new Response(JSON.stringify(fixtures.house),{headers:{etag:'sample'}});}});
  assert.deepEqual(await provider.fetchResults(catalogue),await provider.fetchResults(catalogue));
 });
-async function runtime(t){
+async function runtime(t,verified=false){
+ const activeSources=verified?sources.map(s=>({...s,projection:{verified:true,contract:'nbc-firecracker-call-status-v1'}})):sources;
  const root=await mkdtemp(join(tmpdir(),'fea-national-'));t.after(()=>rm(root,{recursive:true,force:true}));await mkdir(join(root,'data'));await mkdir(join(root,'disk'));
  const ids=new Set(sources.flatMap(s=>s.races.map(m=>m.feaRaceId))),local=catalogue.filter(r=>ids.has(r.id));
- await writeFile(join(root,'data/election-night-races.json'),JSON.stringify({races:local}));await writeFile(join(root,'data/results-provider.json'),JSON.stringify({...config,sources}));await writeFile(join(root,'data/result-calls.json'),JSON.stringify({races:{}}));
+ await writeFile(join(root,'data/election-night-races.json'),JSON.stringify({races:local}));await writeFile(join(root,'data/results-provider.json'),JSON.stringify({...config,sources:activeSources}));await writeFile(join(root,'data/result-calls.json'),JSON.stringify({races:{}}));
  let clock=Math.max(...Object.values(fixtures).map(d=>Date.parse(d.currentTime))),outage=false,reads=0;const data=clone(fixtures);
- const provider=new NbcProvider({sources,fetchImpl:async url=>{reads++;if(outage)throw Error('upstream offline');const office=String(url).match(/(house|senate|governor)-results$/)[1];return new Response(JSON.stringify(data[office]));}});
+ const provider=new NbcProvider({sources:activeSources,fetchImpl:async url=>{reads++;if(outage)throw Error('upstream offline');const office=String(url).match(/(house|senate|governor)-results$/)[1];return new Response(JSON.stringify(data[office]));}});
  const options={root,storageDir:join(root,'disk'),provider,now:()=>clock};const control=await new ResultsControl(options).init();
  return {control,options,data,advance(){clock+=61000;for(const d of Object.values(data))d.currentTime=new Date(clock).toISOString();},outage(){outage=true;},recover(){outage=false;},get reads(){return reads;}};
 }
@@ -60,4 +61,17 @@ test('Public transport carries only safe NBC page links and unchanged races need
  x.advance();await x.control.poll();feed.update(x.control.results());assert.equal(feed.changes(a.version).races.length,0);
  const metadata=publicProvider({publicResultsPages:{house:config.publicResultsPages.house,senate:'javascript:bad',private:'secret'},publicResultsUrl:'https://evil.example',adminToken:'secret'});
  assert.deepEqual(metadata.publicResultsPages,{house:config.publicResultsPages.house});assert.equal(metadata.adminToken,undefined);assert.equal(metadata.publicResultsUrl,undefined);
+});
+
+
+test('National NBC projection passes through pending, public publish, withdrawal hold and explicit retraction without leaking pending calls',async t=>{
+ const x=await runtime(t,true),raceId='house-DE-AL',tooltip=x.data.house.mapData['1001'].tooltip;
+ tooltip.callStatusCode='P';tooltip.candidates.forEach((c,i)=>c.isWinner=i===0);
+ await x.control.poll();
+ const visible=()=>x.control.results().groups.flatMap(g=>g.races).find(r=>r.id===raceId);
+ assert.equal(visible().calls.length,0);assert.equal(x.control.state(raceId).callState,'NBC_PENDING');
+ await x.control.action({action:'publish',raceId});assert.equal(visible().calls.length,1);assert.equal(visible().calls[0].provider,'NBC');
+ x.advance();tooltip.callStatusCode='C';tooltip.candidates.forEach(c=>c.isWinner=false);await x.control.poll();
+ assert.equal(x.control.state(raceId).callState,'NBC_HELD');assert.equal(visible().calls.length,1);
+ await x.control.action({action:'manual',raceId,calls:[]});assert.equal(visible().calls.length,0);
 });

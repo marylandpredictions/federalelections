@@ -310,7 +310,7 @@ test("Optimized House topology preserves every source feature and a nonzero sele
     topology = JSON.parse(gunzipSync(readFileSync(manifest.house)));
   const decoded = feature(topology, topology.objects.districts).features,
     source = JSON.parse(
-      readFileSync("data/house-districts-119.geojson"),
+      readFileSync("data/house-districts-2026.geojson"),
     ).features;
   assert.deepEqual(
     decoded.map((f) => f.properties.id).sort(),

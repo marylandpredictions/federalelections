@@ -1334,7 +1334,7 @@ class ElectionNightPage {
 
   async loadHouseFeatures() {
     if (!this.houseFeatures) {
-      const districts = await this.safeJson("data/house-districts-119.geojson");
+      const districts = await this.safeJson("data/house-districts-2026.geojson");
       this.houseFeatures = districts?.features || [];
     }
     return this.houseFeatures;
@@ -1353,7 +1353,7 @@ class ElectionNightPage {
     if (!id) return [];
     if (this.districtCountyFeatures.has(id)) return this.districtCountyFeatures.get(id) || [];
     if (!this.districtCountyFeaturePromises.has(id)) {
-      const request = this.safeJson(`data/maps/congress/119/${id}.json`)
+      const request = this.safeJson(this.districtGeography?.districts?.[id]?.geometryFile || `data/maps/congress/119/${id}.json`)
         .then((detail) => {
           const features = detail?.features || [];
           this.districtCountyFeatures.set(id, features);

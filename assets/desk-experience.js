@@ -111,6 +111,8 @@ window.FEACompleteBoard = function (Page) {
     );
     document.body.dataset.initialOwnTransferBytes=String(this.loadEvidence.navigationTransferBytes+this.loadEvidence.resources.reduce((sum,r)=>sum+r.transfer,0));
     this.pollSchedule = await this.safeJson("data/results/poll-closes.json");
+    // Optional context must never block live result refresh or a race opening.
+    this.safeJson('data/results/polling-reference.json').then(data=>{this.pollingReference=data;if(this.currentRace)this.renderFocusedRace(this.currentRace);}).catch(()=>{});
     this.updatePollClock();
     this.clockTimer = setInterval(() => {
       if (!document.hidden) this.updatePollClock();
@@ -807,9 +809,21 @@ window.FEACompleteBoard = function (Page) {
       );
     original.focused.call(this, race);
     if (!race) return;
+    if(this.completedRaceId!==race.id){
+      this.completedRaceId=race.id;
+      if(!matchMedia('(prefers-reduced-motion: reduce)').matches)content.animate?.([{opacity:.45,transform:'translateY(5px)'},{opacity:1,transform:'none'}],{duration:180,easing:'ease-out'});
+    }
+    const polling=this.pollingReference?.races?.[race.id];
+    if(this.focusedPanelTab==='results'&&polling&&polling.candidates.every(c=>race.candidates?.some(k=>k.name===c.name))){
+      const aside=document.createElement('aside');aside.className='desk-polling-reference';
+      const link=document.createElement('a');link.href='https://votehub.com/polls/api/';link.target='_blank';link.rel='noopener';link.textContent='Race-wide polling reference · VoteHub data';aside.append(link);
+      const values=document.createElement('strong');values.textContent=polling.candidates.map(c=>`${c.name} ${c.percent.toFixed(1)}%`).join(' · ');aside.append(values);
+      const note=document.createElement('small');note.textContent=`FEA simple average · ${polling.pollCount} pollsters · latest poll ${polling.latestPoll} · as of ${this.pollingReference.asOf}. Not a prediction.`;aside.append(note);
+      const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='How this average is calculated';details.append(summary,document.createTextNode(this.pollingReference.method));aside.append(details);content.append(aside);
+    }
     if(race.geometryReviewRequired) {
       const warning=document.createElement('p');warning.className='desk-geometry-warning';
-      warning.textContent='Earlier district outline shown · 2026 boundaries need verification. Historical district comparisons stay unavailable.';
+      warning.textContent='Current district boundaries are unavailable. Historical district comparisons are paused.';
       content.prepend(warning);
     }
     if((T.current.presentation==='broadcast'||document.body.classList.contains('night-tv'))&&this.lockedCounty) {
