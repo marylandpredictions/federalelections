@@ -118,8 +118,8 @@
       R: "#ff2a4f",
     }),
     make("nbc-big-board", "NBC Big Board", "light", "#174b91", {
-      D: "#008cdb",
-      R: "#eb263b",
+      D: "#0078c9",
+      R: "#cb1839",
       I: "#8b57b5",
       O: "#d59119",
     }, {
@@ -194,6 +194,12 @@
   };
   const foreground = (bg) =>
     contrast("#ffffff", bg) > contrast("#101828", bg) ? "#ffffff" : "#101828";
+  function readableColor(color,background,min=4.5){
+    if(contrast(color,background)>=min)return color;
+    const target=foreground(background);
+    for(let i=1;i<=20;i++){const adjusted=mix(color,target,i/20);if(contrast(adjusted,background)>=min)return adjusted;}
+    return target;
+  }
   function resolve(input, systemDark = true) {
     const t = validate(input),
       mode = t.mode === "system" ? (systemDark ? "dark" : "light") : t.mode,
@@ -294,8 +300,9 @@
       // Upgrade the untouched earlier NBC palette. Custom colors and saved
       // custom themes keep their exact values.
       if(x.current?.id==='nbc-big-board'&&x.current.partyColors?.D==='#0078bd'&&x.current.partyColors?.R==='#c8203f')
-        x.current={...x.current,partyColors:{...x.current.partyColors,D:'#008cdb',R:'#eb263b'}};
+        x.current={...x.current,partyColors:{...x.current.partyColors,D:'#0078c9',R:'#cb1839'}};
       if(x.current?.id==='nbc-big-board'){
+        if(x.current.partyColors?.D==='#008cdb'&&x.current.partyColors?.R==='#eb263b')x.current={...x.current,partyColors:{...x.current.partyColors,D:'#0078c9',R:'#cb1839'}};
         const advanced={...x.current.advanced};
         for(const [name,oldValue,newValue] of [['board-bg','#e1e3e5','#1c2c44'],['map-bg','#e1e3e5','#1c2c44'],['map-neutral','#b7c2ce','#858c9a']])
           if(advanced[name]===oldValue)advanced[name]=newValue;
@@ -368,6 +375,7 @@
     mix,
     contrast,
     foreground,
+    readableColor,
     candidateColor,
     read,
     apply,

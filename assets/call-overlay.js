@@ -12,7 +12,7 @@
   theme=T.presets.find(t=>t.id===params.get('theme'))||theme;T.apply(theme);
   root.innerHTML=`<section class="broadcast-overlay-stage"><div id="broadcast-info-panel" class="broadcast-info-panel"></div><div id="broadcast-call-slot" class="broadcast-call-slot fea-projections" aria-live="polite"></div><small id="broadcast-queue"></small><div id="broadcast-health" class="broadcast-health" role="status"></div><div class="broadcast-ticker-shell"><div class="broadcast-ticker-brand"><img src="assets/img/FEA_White.webp" alt="Federal Elections Analysis"><strong>ELECTION NIGHT</strong></div><div class="broadcast-ticker-viewport"><div id="broadcast-ticker-track" class="broadcast-ticker-track"></div></div><div id="broadcast-ticker-clock"></div></div>${preview?'<div class="broadcast-preview">PREVIEW · SIMULATED RESULTS · NOT LIVE</div>':''}</section>`;
   const node=id=>document.getElementById(id);
-  function renderCallCard(event){return `<article class="projection-toast ${event.correction?'is-correction':''}" style="--party-accent:${esc(Card.accent(event))}">${Card.content(event,{interactive:false})}</article>`;}
+  function renderCallCard(event){return `<article class="projection-toast ${event.correction?'is-correction':''}" style="--party-accent:${esc(Card.accent(event))};--projection-ink:${esc(T.foreground?.(Card.accent(event))||'#ffffff')}">${Card.content(event,{interactive:false})}</article>`;}
   function renderQueueCount(){node('broadcast-queue').textContent=queue.pending.length?`+${queue.pending.length} projection${queue.pending.length===1?'':'s'} queued`:'';}
   function showActive(){
     clearTimeout(callTimer);

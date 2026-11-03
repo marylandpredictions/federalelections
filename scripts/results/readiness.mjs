@@ -104,8 +104,8 @@ export async function readiness(control, root, {storageEnvironment=process.env}=
   add('Storage configuration',storageConfig.issues.length?'FAIL':'PASS',storageConfig.issues.join(' ')||'No configuration-level ephemeral-path conflict detected; hosted durability remains unverified.');
   add(
     "Provider",
-    h.stale ? "WARNING" : "PASS",
-    h.error || h.status || "See feed health.",
+    h.stale || h.primaryConnection==='failed' ? "WARNING" : "PASS",
+    h.primaryConnection==='failed'?'NBC is unavailable. Secondary vote data does not resume NBC call automation.':h.error || h.status || "See feed health.",
   );
   const publicRaces=control.results().groups.flatMap((g)=>g.races||[]);
   add(

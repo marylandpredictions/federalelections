@@ -24,8 +24,14 @@ test('Shared Census profiles preserve facts layout and county/district source sc
 test('NBC palette refresh upgrades old defaults while preserving customized and saved themes',()=>{
  const preset=Theme.presets.find(p=>p.id==='nbc-big-board'),old={...preset,advanced:{...preset.advanced,'map-bg':'#e1e3e5','board-bg':'#e1e3e5','map-neutral':'#b7c2ce'},partyColors:{D:'#0078bd',R:'#c8203f',I:'#8b57b5',O:'#d59119'}};
  const read=current=>Theme.read({getItem:()=>JSON.stringify({schemaVersion:1,current,saved:[]})}).current;
- assert.equal(read(old).partyColors.D,'#008cdb');assert.equal(read(old).partyColors.R,'#eb263b');
+ assert.equal(read(old).partyColors.D,'#0078c9');assert.equal(read(old).partyColors.R,'#cb1839');
  assert.equal(read(old).advanced['map-bg'],'#1c2c44');assert.equal(read({...old,advanced:{...old.advanced,'map-bg':'#445566'}}).advanced['map-bg'],'#445566');
  assert.equal(read({...old,id:'custom-nbc'}).partyColors.D,'#0078bd');
  assert.deepEqual(read({...old,partyColors:{...old.partyColors,D:'#123456'}}).partyColors,{...old.partyColors,D:'#123456'});
+});
+test('Broadcast numeric ink remains readable for extreme custom party colors without changing the map palette',()=>{
+ for(const background of ['#e8ebef','#20334a'])for(const color of ['#ffffff','#ffff00','#00ffff','#000000','#0078c9','#cb1839']){
+  const ink=Theme.readableColor(color,background);assert.ok(Theme.contrast(ink,background)>=4.5,`${color} on ${background}`);
+  if(Theme.contrast(color,background)>=4.5)assert.equal(ink,color);
+ }
 });

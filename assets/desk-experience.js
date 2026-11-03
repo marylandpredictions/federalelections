@@ -42,6 +42,14 @@ window.FEACompleteBoard = function (Page) {
     lock: p.lockCounty,
   };
   p.init = async function () {
+    // A permanent reserved row prevents a delayed-feed notice from changing
+    // map dimensions or covering the masthead, menus, race card or navigation.
+    const notice=document.getElementById('results-provider-status');
+    if(notice&&!document.getElementById('desk-status-rail')){
+      const rail=document.createElement('footer');rail.id='desk-status-rail';
+      const label=document.createElement('span');label.id='desk-feed-label';label.textContent='Reported results';
+      notice.classList.remove('board-delay');notice.classList.add('feed-notice');rail.append(label,notice);document.body.append(rail);document.body.classList.add('has-status-rail');
+    }
     this.outlineMode = 'next';
     try { if (localStorage.getItem('feaDeskOutlines.v1') === 'watch') this.outlineMode = 'watch'; } catch {}
     const outlineSelect=document.getElementById('desk-outline-mode');
@@ -134,6 +142,9 @@ window.FEACompleteBoard = function (Page) {
   };
   p.renderProviderStatus = function (provider) {
     original.status.call(this, provider);
+    const notice=document.getElementById('results-provider-status'),feedLabel=document.getElementById('desk-feed-label');
+    if(notice)notice.title=notice.textContent;
+    if(feedLabel)feedLabel.textContent=this.isLabPage&&this.query.get('live')!=='true'?'SIMULATED RESULTS':provider?.fallbackRaceCount?'NBC News · CivicAPI fallback active':'Reported results · NBC News';
     let link=document.getElementById('desk-nbc-results');
     const pages=provider?.publicResultsPages||this.publicProvider?.publicResultsPages;
     const page=pages?.[this.selectedMode]||provider?.publicResultsUrl||this.publicProvider?.publicResultsUrl;
@@ -637,6 +648,7 @@ window.FEACompleteBoard = function (Page) {
       const index=document.getElementById('desk-race-index')?.getBoundingClientRect();
       if(index?.width)extent[0][0]=Math.min(width*.36,index.right+24);
     }
+    if(T.current.presentation==='broadcast'&&innerWidth>900){const rail=document.querySelector('.election-map-controls')?.getBoundingClientRect();extent[1][0]=Math.max(extent[0][0]+80,width-Math.max(136,(rail?.width||104)+32));}
     return extent;
   };
   p.reframeComparison = function () {
@@ -770,7 +782,7 @@ window.FEACompleteBoard = function (Page) {
     const sources = (this.comparisonManifest?.sources || []).filter(s=>s.id!=='live'&&s.appliesTo?.includes(race.type));
     this.pastColumnIds ||= [sources.find(s=>s.status==='available')?.id || sources[0]?.id].filter(Boolean);
     const current = this.lockedCounty ? county || {candidates:[]} : this.panelData(race);
-    const total = FEADesk.total(current), candidates=[...(current.candidates||[])].sort((a,b)=>(b.votes||0)-(a.votes||0));
+    const total = FEADesk.total(current), order=c=>({D:0,R:1,I:2}[c.partyCode||c.party]??3), candidates=[...(current.candidates||[])].sort((a,b)=>T.current.presentation==='broadcast'?order(a)-order(b)||(b.votes||0)-(a.votes||0):(b.votes||0)-(a.votes||0));
     const votes = party => candidates.filter(c=>(c.partyCode||c.party)===party).reduce((n,c)=>n+(c.votes||0),0);
     const liveMargin=total?(votes('D')-votes('R'))/total*100:null;
     const column=(heading,subtitle,snapshot,isCurrent=false)=>{
@@ -849,6 +861,10 @@ window.FEACompleteBoard = function (Page) {
     );
     pin.setAttribute("aria-pressed", String(this.pinnedIds.includes(race.id)));
     this.renderPastMargins(race);
+    if(T.current.presentation==='broadcast')for(const node of content.querySelectorAll('.selected-race-table tr,.comparison-candidate')){
+      const color=node.style.getPropertyValue('--candidate-color').trim();
+      if(/^#[\da-f]{6}$/i.test(color))node.style.setProperty('--broadcast-value-ink',T.readableColor(color,'#e8ebef'));
+    }
     if (this.focusedPanelTab === "counties" && !this.lockedCounty) {
       const data=this.panelData(race),rows = [...(data.counties || [])],sortLabel=data.localReporting?'Sort towns / cities':'Sort counties';
       const select = document.createElement("label");
@@ -1018,8 +1034,9 @@ window.FEACompleteBoard = function (Page) {
     this.renderPresentationShell();
   };
   p.renderPresentationShell = function () {
+    const search=document.querySelector('.election-map-search');if(search)search.placeholder=T.current.presentation==='broadcast'?'Find race':'Find race or candidate';
     const heading=document.getElementById('desk-edition-title');
-    if(heading) heading.textContent=this.currentRace?label(this.currentRace):`${this.selectedMode==='house'?'House':this.selectedMode==='senate'?'Senate':'Governor'} Election Results`;
+    if(heading) heading.textContent=T.current.presentation==='broadcast'?(this.currentRace?STATE_NAMES[this.currentRace.state]:`${this.selectedMode==='house'?'House':this.selectedMode==='senate'?'Senate':'Governor'} Results`):(this.currentRace?label(this.currentRace):`${this.selectedMode==='house'?'House':this.selectedMode==='senate'?'Senate':'Governor'} Election Results`);
     const index=document.getElementById('desk-race-index'); if(!index)return;
     const focusRace=index.contains(document.activeElement)?document.activeElement.closest('[data-index-race]')?.dataset.indexRace:null;
     const races=this.modeRaces(),watched=races.filter(r=>r.watch?.watch||r.watch?.tossup);

@@ -2043,9 +2043,10 @@ class ElectionNightPage {
     const pad = Number.isFinite(options.pad) ? options.pad : 24;
     const header = document.querySelector('.board-top-controls')?.getBoundingClientRect();
     const controls = document.querySelector('.election-map-controls')?.getBoundingClientRect();
-    const frame = {left:pad, right:viewBox.width-pad,
+    const sideRail=controls&&controls.height>controls.width*1.3&&controls.left>svgRect.left+svgRect.width*.6;
+    const frame = {left:pad, right:sideRail?Math.min(viewBox.width-pad,(controls.left-svgRect.left)*scaleX-12):viewBox.width-pad,
       top:Math.max(pad, ((header?.bottom || 68)-svgRect.top)*scaleY+12),
-      bottom:Math.min(viewBox.height-pad, ((controls?.top || svgRect.bottom)-svgRect.top)*scaleY-12)};
+      bottom:sideRail?viewBox.height-pad:Math.min(viewBox.height-pad, ((controls?.top || svgRect.bottom)-svgRect.top)*scaleY-12)};
     const width=Math.max(1,bounds.x1-bounds.x0),height=Math.max(1,bounds.y1-bounds.y0);
     const raceBox={left:bounds.x0*transform.k+transform.x,right:bounds.x1*transform.k+transform.x,top:bounds.y0*transform.k+transform.y,bottom:bounds.y1*transform.k+transform.y};
     const overlaps = raceBox.left<panelBox.right+16 && raceBox.right>panelBox.left-16 && raceBox.top<panelBox.bottom+16 && raceBox.bottom>panelBox.top-16;
@@ -2237,7 +2238,8 @@ class ElectionNightPage {
     let x = event.clientX + 14;
     let y = event.clientY + 18;
     if (x + rect.width > window.innerWidth - 12) x = event.clientX - rect.width - 14;
-    if (y + rect.height > window.innerHeight - 12) y = Math.max(12, window.innerHeight - rect.height - 12);
+    const bottom=Math.min(window.innerHeight,document.querySelector('.election-night-page')?.getBoundingClientRect().bottom||window.innerHeight);
+    if (y + rect.height > bottom - 12) y = Math.max(12, bottom - rect.height - 12);
     tooltip.style.left = `${Math.max(12, x)}px`;
     tooltip.style.top = `${Math.max(12, y)}px`;
   }

@@ -70,6 +70,7 @@ export function publicProvider(provider = {}) {
   const url=safe(provider.publicResultsUrl);
   return {
     name: provider.name,
+    fallbackRaceCount: Math.max(0,Math.min(506,Number(provider.fallbackRaceCount)||0)),
     ...(url?{publicResultsUrl:url}:{}),
     ...(Object.keys(pages).length?{publicResultsPages:pages}:{}),
     status: provider.status,

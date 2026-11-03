@@ -1,0 +1,168 @@
+/* NBC's on-air board uses a continuous light results sheet beside a dark map,
+   not the rounded, separated cards of its consumer results website. Keep FEA
+   branding, no portraits, and all shared result/call semantics. */
+body.results-board.has-status-rail { --feed-rail-height:calc(28px + env(safe-area-inset-bottom,0px));display:grid;grid-template-rows:minmax(0,1fr) var(--feed-rail-height);height:100dvh; }
+.results-board.has-status-rail .election-night-page { height:100%;min-height:0; }
+.results-board #desk-status-rail { position:relative;display:flex;align-items:center;gap:16px;min-width:0;padding:0 14px;background:var(--panel-bg);color:var(--text-secondary);border-top:1px solid var(--panel-border);font:11px/1.3 Arial,sans-serif;z-index:1;overflow:hidden; }
+.results-board #desk-feed-label { flex:0 0 auto;font-weight:700; }
+.results-board #desk-status-rail { padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box; }
+.results-board.has-status-rail #board-menu { max-height:calc(100dvh - var(--feed-rail-height,28px) - 90px);overflow-y:auto; }
+.results-board #desk-status-rail #results-provider-status { position:static!important;inset:auto!important;max-width:none!important;min-width:0;flex:1;margin:0;padding:0;border:0;border-radius:0;background:none;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:inherit;box-shadow:none; }
+.results-board[data-presentation="broadcast"] {
+ --broadcast-paper:color-mix(in srgb,var(--panel-bg) 8%,#ffffff);
+ --broadcast-ink:#151922;
+ --broadcast-rule:color-mix(in srgb,var(--panel-border) 55%,#c0c2c6);
+ --broadcast-muted:#4c5058;
+ --broadcast-soft:color-mix(in srgb,var(--panel-bg) 12%,#ffffff);
+ --broadcast-tools-width:104px;
+}
+.results-board[data-presentation="broadcast"] #desk-masthead { height:64px;padding:8px 20px;gap:16px;background:var(--broadcast-paper);color:var(--broadcast-ink);border:0;border-bottom:2px solid var(--broadcast-rule);box-shadow:none; }
+.results-board[data-presentation="broadcast"] #desk-masthead .desk-publication { padding-right:14px;border-right:2px solid var(--broadcast-rule); }
+.results-board[data-presentation="broadcast"] #desk-masthead strong { font:800 clamp(30px,3.2vw,58px)/1 var(--reference-condensed);letter-spacing:-.025em; }
+.results-board[data-presentation="broadcast"] #desk-masthead .desk-edition-note { color:var(--broadcast-muted);font-size:11px;visibility:visible!important; }
+.results-board[data-presentation="broadcast"]:has(.desk-lab-tools) #desk-masthead .desk-edition-note { display:none; }
+.results-board[data-presentation="broadcast"] .board-overflow { top:12px;right:14px; }
+.results-board[data-presentation="broadcast"] #board-menu-button { background:var(--broadcast-paper);color:var(--broadcast-ink);border:1px solid var(--broadcast-rule);border-radius:3px;width:42px;height:40px; }
+.results-board[data-presentation="broadcast"] .election-focus-panel {
+ --panel-bg:var(--broadcast-paper);--race-window-bg:var(--broadcast-paper);
+ --panel-raised:var(--broadcast-soft);--control-bg:var(--broadcast-soft);--hover-bg:#dfe3e8;
+ --text-primary:var(--broadcast-ink);--text-secondary:var(--broadcast-muted);--text-muted:var(--broadcast-muted);
+ --panel-border:var(--broadcast-rule);--chart-grid:#c8cbd1;--chart-axis:#4c5058;
+ padding:0;background:var(--broadcast-paper);color:var(--broadcast-ink);border:1px solid var(--broadcast-rule);border-top:0;border-radius:2px;box-shadow:0 3px 12px #0003;
+}
+.results-board[data-presentation="broadcast"] .focused-card-head { min-height:34px;margin:0;padding:6px 12px;background:var(--broadcast-soft);border-bottom:1px solid var(--broadcast-rule);gap:6px; }
+.results-board[data-presentation="broadcast"] .focused-card-head :is(.focused-pill,button) { padding:4px 7px;font:700 10px/1.2 Arial,sans-serif;color:var(--broadcast-ink);background:transparent;border:1px solid var(--broadcast-rule);border-radius:2px;box-shadow:none;min-height:26px; }
+.results-board[data-presentation="broadcast"] .focused-card-head .focused-close { margin-left:auto;font-size:22px;min-width:30px; }
+.results-board[data-presentation="broadcast"] #focused-race-title { margin:0;padding:12px 14px 8px;border:0;font:800 clamp(25px,2.5vw,44px)/1 var(--reference-condensed);color:var(--broadcast-ink);text-transform:uppercase; }
+.results-board[data-presentation="broadcast"] #focused-race-content { padding:0 12px 12px;scrollbar-color:#a8adb5 transparent; }
+.results-board[data-presentation="broadcast"] .desk-tabs { margin:0 0 10px;border:0;border-bottom:1px solid var(--broadcast-rule);gap:0; }
+.results-board[data-presentation="broadcast"] .desk-tabs button { padding:9px 10px;min-height:34px;border:0;border-bottom:3px solid transparent;color:var(--broadcast-muted);background:transparent;font:700 11px/1 Arial,sans-serif;box-shadow:none;border-radius:0; }
+.results-board[data-presentation="broadcast"] .desk-tabs button[aria-selected="true"] { color:var(--broadcast-ink);background:transparent;border-bottom-color:var(--selection);box-shadow:none; }
+.results-board[data-presentation="broadcast"] .desk-preelection { padding:8px 0 12px;color:var(--broadcast-muted);font-size:11px; }
+.results-board[data-presentation="broadcast"] .desk-preelection strong { color:var(--broadcast-ink);font-size:13px; }
+.results-board[data-presentation="broadcast"] .desk-result-status { padding:6px 0 10px;border:0; }
+.results-board[data-presentation="broadcast"] .desk-result-status > span { background:transparent;color:var(--broadcast-ink);padding:0;font-size:17px; }
+.results-board[data-presentation="broadcast"] .desk-result-status strong { color:var(--broadcast-ink);font-size:29px;border-bottom:3px solid var(--selection); }
+.results-board[data-presentation="broadcast"] .desk-result-status i { display:none; }
+.results-board[data-presentation="broadcast"] .selected-race-table { display:table;table-layout:fixed;width:100%;border-collapse:collapse;border-spacing:0; }
+.results-board[data-presentation="broadcast"] .selected-race-table thead { position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden; }
+.results-board[data-presentation="broadcast"] .selected-race-table tbody { display:table-row-group; }
+.results-board[data-presentation="broadcast"] .selected-race-table tr { display:grid;grid-template-columns:minmax(0,1fr) minmax(100px,31%);grid-template-rows:1fr auto;gap:0;min-height:112px;padding:0;border:0;border-bottom:2px solid var(--broadcast-rule);border-radius:0!important;background:var(--broadcast-paper); }
+.results-board[data-presentation="broadcast"] .selected-race-table td:first-child { display:flex;flex-direction:column;justify-content:center;grid-row:1/3;grid-column:1;padding:15px 12px;background:var(--candidate-color);color:var(--candidate-ink); }
+.results-board[data-presentation="broadcast"] .selected-race-table td:first-child strong { color:var(--candidate-ink);font:800 clamp(25px,2.4vw,46px)/1 var(--reference-condensed); }
+.results-board[data-presentation="broadcast"] .selected-race-table td:first-child small { margin-top:7px;color:var(--candidate-ink);font-size:10px; }
+.results-board[data-presentation="broadcast"] .selected-race-table td:last-child { grid-column:2;grid-row:1;align-self:end;background:var(--broadcast-paper);color:var(--broadcast-value-ink,var(--candidate-color));padding:8px 9px 1px;font:800 clamp(39px,4.2vw,74px)/1 var(--reference-condensed); }
+.results-board[data-presentation="broadcast"] .selected-race-table td:nth-child(2) { grid-column:2;grid-row:2;background:var(--broadcast-paper);color:var(--broadcast-ink);padding:3px 9px 12px;border:0;font:600 clamp(17px,1.5vw,27px)/1.1 var(--reference-condensed); }
+.results-board[data-presentation="broadcast"] .selected-race-table tbody tr:hover { background:var(--broadcast-paper)!important;box-shadow:none; }
+.results-board[data-presentation="broadcast"] .selected-race-table tr.is-projected td:first-child { box-shadow:inset 4px 0 var(--selection); }
+.results-board[data-presentation="broadcast"] .winner-check { background:var(--selection);color:#111; }
+.results-board[data-presentation="broadcast"] .desk-leader-tag { display:inline-block;padding:3px 5px;margin:6px 0 0;background:var(--broadcast-paper);color:var(--broadcast-ink)!important;font:700 10px/1 Arial,sans-serif;vertical-align:middle;border:0; }
+.results-board[data-presentation="broadcast"] .race-facts { margin-top:12px;border-top:1px solid var(--broadcast-rule); }
+.results-board[data-presentation="broadcast"] .race-facts>div { padding:8px 0; }
+.results-board[data-presentation="broadcast"] .race-facts dt { color:var(--broadcast-muted);font-size:10px; }
+.results-board[data-presentation="broadcast"] .race-facts dd { color:var(--broadcast-ink);font-size:15px; }
+.results-board[data-presentation="broadcast"] #desk-past-margins { background:var(--broadcast-paper); }
+.results-board[data-presentation="broadcast"] #desk-past-margins .comparison-heading { padding:4px 0 8px!important;border-bottom:1px solid var(--broadcast-rule); }
+.results-board[data-presentation="broadcast"] .comparison-workspace { grid-template-columns:minmax(0,1fr) 52px; }
+.results-board[data-presentation="broadcast"] .comparison-matrix { grid-template-columns:minmax(0,1.6fr) repeat(calc(var(--comparison-columns) - 1),minmax(0,1fr)); }
+.results-board[data-presentation="broadcast"] #desk-past-margins .comparison-column>header { min-height:62px;padding:8px 5px;background:var(--broadcast-soft);color:var(--broadcast-ink);border-bottom:2px solid var(--broadcast-rule); }
+.results-board[data-presentation="broadcast"] .comparison-year { font-size:28px; }
+.results-board[data-presentation="broadcast"] .comparison-column { border-radius:0;box-shadow:none;border:0;border-right:1px solid var(--broadcast-rule); }
+.results-board[data-presentation="broadcast"] .comparison-column { container-type:inline-size; }
+.results-board[data-presentation="broadcast"] #desk-past-margins .comparison-column>header { height:82px;min-height:82px;box-sizing:border-box; }
+.results-board[data-presentation="broadcast"] .comparison-candidate { border-radius:0!important;min-height:126px;border-bottom:1px solid var(--broadcast-rule);padding:10px 7px; }
+.results-board[data-presentation="broadcast"] .comparison-current .comparison-candidate { display:grid;grid-template-columns:minmax(0,1fr) 34%;grid-template-rows:auto 1fr auto;gap:0;align-items:center; }
+.results-board[data-presentation="broadcast"] .comparison-current .comparison-candidate { padding:0; }
+.results-board[data-presentation="broadcast"] .comparison-current .comparison-candidate small { grid-column:1;grid-row:1;background:transparent;padding:0 5px; }
+.results-board[data-presentation="broadcast"] .comparison-current .comparison-candidate strong { grid-column:1;grid-row:2/4;font:800 clamp(23px,2.2vw,46px)/1 var(--reference-condensed);padding:6px 5px; }
+.results-board[data-presentation="broadcast"] .comparison-current .comparison-candidate b { grid-column:2;grid-row:1/3;background:var(--broadcast-paper);color:var(--broadcast-value-ink,var(--candidate-color));font:800 clamp(36px,3.8vw,70px)/1 var(--reference-condensed);padding:10px 5px 2px;align-self:stretch;align-content:center; }
+.results-board[data-presentation="broadcast"] .comparison-current .comparison-candidate>span { grid-column:2;grid-row:3;background:var(--broadcast-paper);color:var(--broadcast-ink);font:600 clamp(13px,1.3vw,24px)/1.1 var(--reference-condensed);padding:4px 5px 9px; }
+.results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate { background:var(--broadcast-paper);color:var(--broadcast-value-ink,var(--candidate-color));min-height:126px; }
+.results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate.is-history-leader { background:var(--candidate-color);color:var(--candidate-ink); }
+.results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate strong { font-size:clamp(21px,2vw,38px); }
+.results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate b { font-size:clamp(38px,3.6vw,68px); }
+.results-board[data-presentation="broadcast"] .comparison-candidate { height:142px;min-height:142px!important;box-sizing:border-box; }
+.results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate strong { font-size:clamp(18px,12cqw,38px); }
+.results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate b { font-size:clamp(32px,22cqw,68px); }
+.results-board[data-presentation="broadcast"] .comparison-column footer { padding:9px 7px;border-top:1px solid var(--broadcast-rule); }
+.results-board[data-presentation="broadcast"] .comparison-column footer strong { font:800 22px/1 var(--reference-condensed); }
+.results-board[data-presentation="broadcast"] #desk-past-margins .comparison-context { background:transparent;color:var(--broadcast-muted);font-size:10px; }
+.results-board[data-presentation="broadcast"] .comparison-rail { gap:3px;padding:0 3px 0 5px; }
+.results-board[data-presentation="broadcast"] .comparison-rail button { min-height:42px;padding:5px 2px;background:var(--broadcast-soft);color:var(--broadcast-ink);border:1px solid var(--broadcast-rule);font:800 19px/1 var(--reference-condensed); }
+.results-board[data-presentation="broadcast"] .comparison-rail button[aria-pressed="true"] { background:var(--broadcast-ink);color:var(--broadcast-paper);border-left:3px solid var(--selection); }
+.results-board[data-presentation="broadcast"] .desk-polling-reference { font-family:Arial,sans-serif; }
+.results-board[data-presentation="broadcast"] .more-projections { pointer-events:auto;min-height:38px;padding:8px;background:var(--broadcast-paper);color:var(--broadcast-ink);border:1px solid var(--broadcast-rule);font-weight:700;border-radius:2px; }
+.results-board[data-presentation="broadcast"] .election-map-tooltip {
+ --panel-bg:var(--broadcast-paper);--text-primary:var(--broadcast-ink);--text-secondary:var(--broadcast-muted);--text-muted:var(--broadcast-muted);--tooltip-bg:var(--broadcast-paper);
+ background:var(--broadcast-paper);color:var(--broadcast-ink);border:1px solid var(--broadcast-rule);border-radius:2px;box-shadow:0 3px 12px #0003;
+}
+.results-board[data-presentation="broadcast"] .map-context-shape.is-dimmed-context { fill:var(--board-bg)!important;opacity:.78;stroke:color-mix(in srgb,var(--state-border) 28%,transparent); }
+.results-board[data-presentation="broadcast"] .map-background-road { opacity:.15; }
+@media(min-width:901px) {
+ .results-board[data-presentation="broadcast"] .board-top-controls { top:76px;left:18px;right:18px;transform:none;width:auto;display:grid;grid-template-columns:minmax(0,1fr) 280px;align-items:center;gap:24px; }
+ .results-board[data-presentation="broadcast"] .election-mode-toggle { order:2;display:flex;width:100%;background:transparent;border:1px solid var(--panel-border); }
+ .results-board[data-presentation="broadcast"] .election-mode-toggle button { flex:1;padding:10px 6px;min-height:42px;font:800 17px/1 var(--reference-condensed); }
+ .results-board[data-presentation="broadcast"] .election-chamber-board { order:1;background:transparent;border:0;box-shadow:none;padding:0;min-height:60px; }
+ .results-board[data-presentation="broadcast"] .election-chamber-labels strong { font:800 36px/1 var(--reference-condensed); }
+ .results-board[data-presentation="broadcast"] .election-chamber-bar { height:8px; }
+ .results-board[data-presentation="broadcast"] .election-focus-panel { left:18px!important;right:auto!important;top:158px!important;bottom:14px!important;width:min(39vw,610px);max-width:calc(100% - 160px);max-height:calc(100% - 172px)!important;height:calc(100% - 172px); }
+ .results-board[data-presentation="broadcast"].has-history-comparison .election-focus-panel { width:min(61vw,1260px)!important; }
+ .results-board.night-tv[data-presentation="broadcast"] .election-focus-panel { width:min(43vw,1500px)!important;top:158px!important;height:calc(100% - 172px)!important;max-height:calc(100% - 172px)!important;padding:0; }
+ .results-board.night-tv[data-presentation="broadcast"].has-history-comparison .election-focus-panel { width:min(63vw,2400px)!important; }
+ .results-board[data-presentation="broadcast"] .election-map-controls { left:auto!important;right:14px!important;top:190px;bottom:auto!important;display:grid;grid-template-columns:1fr;width:var(--broadcast-tools-width);max-width:var(--broadcast-tools-width);max-height:calc(100% - 250px);overflow-y:auto;gap:5px;padding:0;border:0;background:transparent; }
+ .results-board[data-presentation="broadcast"] .election-map-controls :is(select,input,button) { width:100%;min-width:0;min-height:36px;margin:0;padding:6px 5px;font:700 12px/1.2 Arial,sans-serif;border:1px solid var(--panel-border);border-radius:1px; }
+ .results-board[data-presentation="broadcast"] .election-map-controls>span { display:none; }
+ .results-board[data-presentation="broadcast"] .election-comparison-control { display:block;width:100%; }
+ .results-board[data-presentation="broadcast"] .election-comparison-control>span { display:none; }
+ .results-board[data-presentation="broadcast"] .comparison-heading { display:none!important; }
+ .results-board[data-presentation="broadcast"] #desk-masthead .desk-edition-note { margin-right:52px; }
+ .results-board[data-presentation="broadcast"] #night-controls { top:148px;left:auto;right:134px;bottom:auto;max-width:300px; }
+ .results-board[data-presentation="broadcast"] #desk-map-legend { top:auto;bottom:34px;left:auto;right:134px;max-width:45vw;font-size:9px; }
+ .results-board[data-presentation="broadcast"] #desk-poll-clock { top:auto;bottom:12px;left:auto;right:134px;max-width:44vw;font-size:10px; }
+ .results-board[data-presentation="broadcast"] #desk-history-map-note { top:190px;right:134px;max-width:28vw;background:var(--panel-bg); }
+ .results-board[data-presentation="broadcast"] #desk-race-index { top:158px;left:18px;width:290px;max-height:calc(100% - 220px);background:var(--broadcast-paper);color:var(--broadcast-ink);border:0;border-radius:0;box-shadow:none; }
+ .results-board[data-presentation="broadcast"] #desk-race-index :is(h2,strong,span) { color:var(--broadcast-ink); }
+ .results-board[data-presentation="broadcast"] #desk-race-index :is(p,small) { color:var(--broadcast-muted); }
+ .results-board[data-presentation="broadcast"] #desk-race-index button { color:var(--broadcast-ink);border-color:var(--broadcast-rule); }
+ .results-board[data-presentation="broadcast"] #desk-pins { top:auto;bottom:64px;left:auto;right:134px;max-width:40vw; }
+ .results-board[data-presentation="broadcast"] #projection-alerts,
+ .results-board[data-presentation="broadcast"] .has-focused-race #projection-alerts { top:auto;bottom:74px;right:calc(var(--broadcast-tools-width) + 28px);left:auto;width:min(340px,28vw);max-height:calc(100% - 180px);overflow:auto; }
+ .results-board.night-tv[data-presentation="broadcast"] { --broadcast-tools-width:clamp(104px,6vw,220px); }
+ .results-board.night-tv.has-status-rail[data-presentation="broadcast"] { --feed-rail-height:clamp(28px,2.2vw,70px);grid-template-rows:minmax(0,1fr) var(--feed-rail-height); }
+ .results-board.night-tv[data-presentation="broadcast"] #desk-status-rail { font-size:clamp(11px,.95vw,32px); }
+ .results-board.night-tv[data-presentation="broadcast"] .selected-race-table tr { min-height:clamp(126px,9vw,300px); }
+ .results-board.night-tv[data-presentation="broadcast"] .selected-race-table td:first-child strong { font-size:clamp(32px,2.8vw,106px); }
+ .results-board.night-tv[data-presentation="broadcast"] .selected-race-table td:last-child { font-size:clamp(48px,5.2vw,178px); }
+ .results-board.night-tv[data-presentation="broadcast"] .selected-race-table td:nth-child(2) { font-size:clamp(24px,2.2vw,80px); }
+ .results-board.night-tv[data-presentation="broadcast"] .comparison-candidate { height:clamp(142px,10vw,340px);min-height:clamp(142px,10vw,340px)!important; }
+ .results-board.night-tv[data-presentation="broadcast"] .comparison-candidate strong { font-size:clamp(26px,2.4vw,90px)!important; }
+ .results-board.night-tv[data-presentation="broadcast"] .comparison-candidate b { font-size:clamp(44px,4.6vw,170px)!important; }
+ .results-board.night-tv[data-presentation="broadcast"] .election-map-controls :is(select,input,button) { min-height:clamp(36px,3vw,90px);font-size:clamp(12px,1.1vw,32px); }
+ .results-board.night-tv[data-presentation="broadcast"] :is(#night-controls,#desk-map-legend,#desk-poll-clock,#desk-history-map-note,#desk-pins) { right:calc(var(--broadcast-tools-width) + 32px); }
+}
+@media(max-width:900px) {
+ .results-board[data-presentation="broadcast"] #projection-alerts,
+ .results-board[data-presentation="broadcast"] .sheet-expanded #projection-alerts { top:136px;bottom:auto;left:8px;right:8px;width:auto;max-width:none;max-height:min(260px,calc(100% - 180px));display:grid;overflow:auto; }
+ .results-board[data-presentation="broadcast"] #board-menu-button { width:44px;height:44px; }
+ .results-board[data-presentation="broadcast"] .focused-card-head button { min-width:44px;min-height:44px; }
+ .results-board[data-presentation="broadcast"] .focused-card-head .focused-close { min-width:44px;min-height:44px; }
+ .results-board[data-presentation="broadcast"] .desk-tabs button { min-height:44px; }
+ .results-board[data-presentation="broadcast"] #desk-masthead { height:56px;padding:8px 12px; }
+ .results-board[data-presentation="broadcast"] #desk-masthead strong { font-size:30px; }
+ .results-board[data-presentation="broadcast"] #desk-masthead .desk-edition-note { display:none; }
+ .results-board[data-presentation="broadcast"] .selected-race-table tr { min-height:96px; }
+ .results-board[data-presentation="broadcast"] .selected-race-table td:first-child strong { font-size:27px; }
+ .results-board[data-presentation="broadcast"] .selected-race-table td:last-child { font-size:44px; }
+ .results-board[data-presentation="broadcast"] .comparison-candidate { min-height:112px!important; }
+ .results-board[data-presentation="broadcast"] .comparison-current .comparison-candidate { display:flex;flex-direction:column;align-items:stretch;padding:9px; }
+ .results-board[data-presentation="broadcast"] .comparison-current .comparison-candidate :is(small,strong,b,span) { padding:4px 0;background:transparent;color:var(--candidate-ink);text-align:left; }
+ .results-board[data-presentation="broadcast"] .comparison-current .comparison-candidate strong { font-size:23px; }
+ .results-board[data-presentation="broadcast"] .comparison-current .comparison-candidate b { font-size:39px; }
+ .results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate strong { font-size:22px; }
+ .results-board[data-presentation="broadcast"] .comparison-column:not(.comparison-current) .comparison-candidate b { font-size:39px; }
+ .results-board[data-presentation="broadcast"] .comparison-matrix { grid-template-columns:repeat(var(--comparison-columns),minmax(0,1fr)); }
+}
+@media(max-width:480px) {
+ .results-board #desk-status-rail { padding:0 8px;gap:8px;font-size:10px; }
+ .results-board #desk-feed-label { max-width:116px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+}

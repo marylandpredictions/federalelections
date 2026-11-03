@@ -68,12 +68,28 @@ roster no longer matches. VoteHub is credited with its CC BY 4.0 API source link
 
 ## CivicAPI
 
-The official documentation describes a public results API requiring attribution,
-but the public race endpoint returned HTTP 403 here. No election/date, district,
-candidate, timestamp or call-source contract could be verified. It is therefore
-**not enabled as an automatic fallback**. The existing last-good NBC snapshot
-and recovery behavior remain in effect. Mixing unverified data on Election Day
-would be less safe than retaining known results during an outage.
+CivicAPI is enabled as the secondary vote source, with 506 explicit unique race
+IDs verified against its November 3 election listing. The public Node client
+successfully fetched both that listing and a full Colorado Senate response.
+The real response matched NBC's current ballot roster. The configuration retains
+NBC as primary; no CivicAPI calls are made while NBC covers every race.
+
+During an NBC outage, requests are staggered (24 races per poll, six concurrent,
+10-second request window, at least 60 seconds between attempts per race), with
+watch races prioritized. Each full race must match its office, date, state,
+district, source ID/name, and known ballot. Test/disputed data, invalid votes,
+missing candidates, and stale positive results are rejected. A source switch
+cannot reduce an already reported candidate's vote total. Missing/rejected data
+retains the last-good snapshot. A widespread outage therefore fills secondary
+coverage gradually rather than requesting 506 race details simultaneously.
+
+CivicAPI winner flags never make or release NBC projections. NBC call automation
+is degraded during a primary outage. Existing published calls stay intact and
+retain their original attribution. CivicAPI's generic reporting percentage is
+not relabeled as NBC expected-vote or precinct reporting. Active fallback races
+are attributed to CivicAPI in their detail panel and feed-status row. Restart
+recovery and NBC catch-up were verified locally with isolated fixtures; live
+Render connectivity/durability remains unverified.
 
 ## Browser evidence and limits
 

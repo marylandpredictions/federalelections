@@ -1,3 +1,4 @@
+import {ResultsProvider} from './civic-provider.mjs';
 import { readFile, writeFile, rename, mkdir,readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { NbcProvider } from "./nbc-provider.mjs";
@@ -79,7 +80,7 @@ export class ResultsControl {
       this.config={sources:[]};
     }
     if(!this.pollSecondsConfigured&&this.config.pollSeconds!==undefined)this.pollSeconds=numberSetting(this.config.pollSeconds,45,15);
-    this.provider ||= new NbcProvider(this.config);
+    this.provider ||= this.config.fallback?.enabled ? new ResultsProvider(this.config) : new NbcProvider(this.config);
     // Read the committed envelope first: its matching calls are authoritative.
     // Truncated runtime must fail clearly rather than publish the seed as zeros.
     const savedRuntime=await readStateFile(this.storage.state,undefined);
@@ -117,11 +118,13 @@ export class ResultsControl {
     for(const local of this.catalogue){
       const raw=this.runtime.races[local.id],state=this.calls.races[local.id];
       const national=raw?.providerScope==='national'&&raw.provider==='NBC'&&raw.electionDate==='2026-11-03'&&this.config.sources.some(source=>source.format==='nbc-national-v2'&&source.url===raw.sourceUrl&&source.races.some(m=>m.feaRaceId===local.id&&String(m.providerRaceId)===raw.providerRaceId));
+      const civic=raw?.providerScope==='civic-fallback'&&raw.provider==='CivicAPI'&&raw.electionDate==='2026-11-03'&&this.config.fallback?.enabled&&this.config.fallback.races?.some(m=>m.feaRaceId===local.id&&String(m.civicRaceId)===raw.providerRaceId&&raw.sourceUrl===`https://civicapi.org/api/v2/race/${m.civicRaceId}`);
+      const trusted=national||civic;
       if(raw){
-        if(national&&raw.candidates.some(c=>genericName(c.name)))throw Error('Invalid saved NBC candidate for '+local.id);
-        if(!national)raw.candidates=raw.candidates.map(c=>matchBallotCandidate(c,local.candidates));
+        if(trusted&&raw.candidates.some(c=>genericName(c.name)))throw Error('Invalid saved NBC candidate for '+local.id);
+        if(!trusted)raw.candidates=raw.candidates.map(c=>matchBallotCandidate(c,local.candidates));
       }
-      const callRoster=national?raw.candidates:local.candidates;
+      const callRoster=trusted?raw.candidates:local.candidates;
       for(const call of state?.calls||[]){
         try{call.candidate=matchBallotCandidate({name:call.candidate},callRoster).name;}
         catch(error){throw Error('Invalid saved call for '+local.id+': '+error.message);}
@@ -194,7 +197,7 @@ export class ResultsControl {
       h.lastAttempt = new Date(this.now()).toISOString();
       try {
         if(this.configurationError)throw Error(this.configurationError);
-        const incoming = await this.provider.fetchResults(this.catalogue);
+        const incoming = await this.provider.fetchResults(this.catalogue,{lastGood:this.runtime.races});
         if (!Array.isArray(incoming) || !incoming.length)
           throw Error("Provider returned no normalized races");
         const seen = new Set(),races=[],quarantined=[...(this.provider.quarantined||[])];
@@ -222,9 +225,12 @@ export class ResultsControl {
           if((this.runtime.races[r.id]?.candidates||[]).some(c=>c.votes>0)&&!r.candidates.some(c=>c.votes>0))throw Error('Unexpected zero-vote reset; last-good race retained for review');
           const prior=this.runtime.races[r.id],oldTotal=(prior?.candidates||[]).reduce((n,c)=>n+c.votes,0),newTotal=r.candidates.reduce((n,c)=>n+c.votes,0);
           if(!Number.isSafeInteger(newTotal))throw Error('Unsafe total vote count');
+          // Independent result streams can arrive in a different order. A
+          // provider switch must never roll any already reported votes back.
+          if(prior?.provider&&r.provider&&prior.provider!==r.provider&&(newTotal<oldTotal||prior.candidates.some(c=>c.votes>(r.candidates.find(n=>n.name===c.name)?.votes||0))))throw Error('Source switch is behind last-good vote totals; retained newer results');
           if(oldTotal>=100&&newTotal<oldTotal*.5)throw Error('Suspicious partial vote reset; last-good race retained for review');
           if((prior?.candidates||[]).some(c=>c.votes>=100&&r.candidates.some(k=>k.name===c.name&&k.votes===0)))throw Error('Candidate vote reset; last-good race retained for review');
-          if(r.providerScope==='national'&&prior?.counties?.length)r.counties=prior.counties;
+          if(['national','civic-fallback'].includes(r.providerScope)&&prior?.counties?.length)r.counties=prior.counties;
           races.push(r);
           } catch(error){quarantined.push({race:r?.id||'Unknown',reason:error.message});}
         }
@@ -233,7 +239,9 @@ export class ResultsControl {
         if(!races.length)throw Error('No healthy normalized provider races; last-good snapshot retained');
         h.rosterMismatchCount=races.filter(r=>r.providerRosterReview&&Object.values(r.providerRosterReview).some(v=>v.length)).length;
         h.rosterMismatches=races.filter(r=>r.providerRosterReview&&Object.values(r.providerRosterReview).some(v=>v.length)).slice(0,100).map(r=>({race:r.id,...r.providerRosterReview}));
-        h.lastHealthyRaceIds=races.map(r=>r.id);
+        h.primaryConnection=this.provider.primaryConnection||'connected';h.primaryError=this.provider.primaryError||null;
+        h.lastHealthyRaceIds=races.filter(r=>r.provider!=='CivicAPI').map(r=>r.id);
+        h.fallbackRaceCount=races.filter(r=>r.provider==='CivicAPI').length;
         if(quarantined.length&&quarantineChanged)console.warn(JSON.stringify({event:'invalid-race-quarantined',races:h.quarantined}));
         let changed = false;
         for (const r of races) {
@@ -316,6 +324,7 @@ export class ResultsControl {
             }
           }
         }
+        h.fallbackRaceCount=Object.values(this.runtime.races).filter(r=>r.provider==='CivicAPI').length;
         const timestamps = races
           .map((r) => Date.parse(r.lastUpdated || ""))
           .filter(Number.isFinite);
@@ -345,7 +354,7 @@ export class ResultsControl {
         this.now() +
         Math.min(
           600000,
-          this.pollSeconds * 1000 * 2 ** Math.min(this.failures, 4),
+          this.pollSeconds * 1000 * (this.provider.retrySoon?1:2 ** Math.min(this.failures, 4)),
         );
       await this.acceptExpired();
       await this.save();
@@ -383,7 +392,7 @@ export class ResultsControl {
                 : "CONNECTED",
       automation: state.calls.automation.paused
         ? "PAUSED"
-        : stale || this.persistenceError || this.recoveryWarning || h.connection !== "connected"
+        : stale || this.persistenceError || this.recoveryWarning || h.connection !== "connected" || h.primaryConnection === "failed"
           ? "DEGRADED"
           : "ACTIVE",
       pollSeconds: this.pollSeconds,
@@ -576,7 +585,7 @@ export class ResultsControl {
         ...(details ? { counties: counties || [] } : {}),
         type: base.type,
         electionName: base.electionName,
-        candidateStatus: raw.providerScope==='national'?raw.candidateStatus:base.candidateStatus,
+        candidateStatus: ['national','civic-fallback'].includes(raw.providerScope)?raw.candidateStatus:base.candidateStatus,
         rosterVerified: base.rosterVerified,
         rosterReviewed: base.rosterReviewed,
         rosterIncomplete: base.rosterIncomplete,
@@ -585,7 +594,7 @@ export class ResultsControl {
         callState: s.callState || "UNCALLED",
         calls,
         status: calls.length ? "called" : "uncalled",
-        candidates: (raw.providerScope==='national' || (raw.candidates || []).some(c=>Number(c.votes)>0) || calls.length ? raw.candidates : base.candidates || []).filter(c=>!genericName(c.name)&&!c.placeholder).map((c) => {
+        candidates: (['national','civic-fallback'].includes(raw.providerScope) || (raw.candidates || []).some(c=>Number(c.votes)>0) || calls.length ? raw.candidates : base.candidates || []).filter(c=>!genericName(c.name)&&!c.placeholder).map((c) => {
           const call = calls.find((k) => k.candidate === c.name);
           const identity = (base.candidates || []).find(k => (k.id && c.id && k.id === c.id) || k.name === c.name || k.aliases?.includes(c.name));
           return {
@@ -609,10 +618,10 @@ export class ResultsControl {
       generatedAt: new Date(this.now()).toISOString(),
       refreshSeconds: this.pollSeconds,
       provider: {
-        name: "NBC News",
+        name: this.health().fallbackRaceCount ? "NBC News / CivicAPI" : "NBC News",
         ...this.health(),
         attribution:
-          "Vote data via NBC when available. Projections attributed to NBC; manual calls attributed to FEA.",
+          "Vote data via NBC News, with CivicAPI as a secondary source where indicated. Projections attributed to NBC; manual calls attributed to FEA.",
       },
       groups: ["house", "senate", "governor"].map((type) => ({
         state: type,

@@ -919,7 +919,7 @@ window.FEAEnhanceBoard = function (Page) {
     return `${status}<table class="selected-race-table"><thead><tr><th>Candidate</th><th>Votes</th><th>Vote %</th></tr></thead><tbody>${[
       ...(row.candidates || []),
     ]
-      .sort((a, b) => b.votes - a.votes)
+      .sort((a,b)=>window.FEADeskTheme?.current.presentation==='broadcast'?(({D:0,R:1,I:2}[party(a)]??3)-({D:0,R:1,I:2}[party(b)]??3)||b.votes-a.votes):b.votes-a.votes)
       .map(
         (c) =>
           `<tr class="${call?.candidate === c.name ? "is-projected" : ""}" style="--candidate-color:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)};--candidate-ink:${window.FEADeskTheme?.foreground(window.FEADeskTheme.candidateColor(c,row.candidates))||'#ffffff'}"><td><span class="selected-party-rail" style="background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></span><strong>${esc(c.name)} ${!call&&total&&c.votes===max?`<span class="desk-leader-tag">${tied?"Tied":"Leading"}</span>`:""} ${call?.candidate === c.name ? '<span class="winner-check" aria-label="Projected winner">✓</span>' : ""}</strong><small>${esc(c.partyLabels?.length?c.partyLabels.join(" / "):partyLabel(party(c)))}${c.writeIn?" · Write-in":""}${c.ballotStatus?" · "+esc(c.ballotStatus):""}</small>${total?`<span class="desk-candidate-track" aria-hidden="true"><i data-bar-id="${esc(c.id||c.name)}" style="width:${Math.max(0,Math.min(100,c.votes/total*100))}%;background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></i></span>`:''}</td><td data-number="${esc(c.name)}-votes">${total ? fmt(c.votes) : "—"}</td><td data-number="${esc(c.name)}-share">${total ? percent((c.votes / total) * 100) : "—"}</td></tr>`,
@@ -1002,7 +1002,7 @@ window.FEAEnhanceBoard = function (Page) {
           m.turnout !== null ? percent(m.turnout) : null,
         ],
       ],
-    )}${m.batchShares.length ? `<div class="vote-batch"><small>Votes added in latest update</small>${m.batchShares.map((c) => `<span>${esc(c.name)} <b>${percent(c.share)}</b></span>`).join("")}</div>` : ""}</details>${data.provider === "NBC" ? '<p class="race-attribution">Results via NBC News</p>' : ""}`;
+    )}${m.batchShares.length ? `<div class="vote-batch"><small>Votes added in latest update</small>${m.batchShares.map((c) => `<span>${esc(c.name)} <b>${percent(c.share)}</b></span>`).join("")}</div>` : ""}</details>${data.provider === "NBC" ? '<p class="race-attribution">Results via NBC News</p>' : data.provider === 'CivicAPI' ? '<p class="race-attribution">Vote totals via <a href="https://www.civicapi.org/results/elections/november-3-2026" target="_blank" rel="noopener">CivicAPI</a> · Secondary source. NBC calls remain separate. County detail stays at its last verified update.</p>' : ""}`;
   };
   p.countyMarkup = function (race, county) {
     if (!FEADesk.total(county))
@@ -1385,7 +1385,7 @@ window.FEAEnhanceBoard = function (Page) {
   p.renderProjectionQueue = function () {
     const host = document.getElementById("projection-alerts");
     if (!host) return;
-    const limit = innerWidth <= 600 || (innerWidth <= 1100 && innerHeight <= 500) ? 1 : 3;
+    const limit = window.FEADeskTheme?.current?.presentation==='broadcast' || innerWidth <= 600 || (innerWidth <= 1100 && innerHeight <= 500) ? 1 : 3;
     // Keep existing cards and timers; a burst never restarts their dismissal clocks.
     const visible = new Set(this.alertQueue.slice(0, limit).map((e) => e.key));
     for (const card of [...host.querySelectorAll(".projection-toast")])
@@ -1402,6 +1402,7 @@ window.FEAEnhanceBoard = function (Page) {
       card.dataset.raceId = event.race.id;
       card.innerHTML = FEAProjectionCard.content(event);
       card.style.setProperty('--party-accent',FEAProjectionCard.accent(event));
+      card.style.setProperty('--projection-ink',FEADeskTheme.foreground(FEAProjectionCard.accent(event)));
       const dismiss = () => {
         clearTimeout(card._timer);
         this.alertQueue = this.alertQueue.filter((e) => e.key !== event.key);

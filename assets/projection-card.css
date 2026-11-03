@@ -55,3 +55,10 @@
 .results-board #projection-alerts { font-size:14px; }
 @media(max-width:600px){.results-board #projection-alerts{font-size:13px}}
 @media(max-width:1100px) and (max-height:500px){.results-board #projection-alerts{font-size:11px}}
+
+/* Broadcast call strip, shared verbatim by Results and the OBS browser source. */
+[data-presentation="broadcast"] .fea-projections .projection-toast { --call-paper:color-mix(in srgb,var(--panel-bg) 8%,#fff);background:var(--call-paper);color:#151922;border:0;border-top:5px solid var(--party-accent);border-radius:2px;box-shadow:0 3px 12px #0004; }
+[data-presentation="broadcast"] .fea-projections .projection-toast>small { color:#151922;font:800 clamp(14px,1vw,32px)/1 'FEA Condensed','Arial Narrow',Arial,sans-serif; }
+[data-presentation="broadcast"] .fea-projections .projection-toast>h3 { color:#151922;font:800 clamp(24px,1.6vw,52px)/1 'FEA Condensed','Arial Narrow',Arial,sans-serif;text-transform:uppercase; }
+[data-presentation="broadcast"] .fea-projections .projection-toast>strong { display:block;background:var(--party-accent);color:var(--projection-ink,#fff);padding:12px;font:800 clamp(28px,2vw,68px)/1.1 'FEA Condensed','Arial Narrow',Arial,sans-serif;text-transform:uppercase; }
+[data-presentation="broadcast"] .fea-projections .projection-toast button { color:#151922;background:var(--call-paper);border-color:#a6aab3; }
