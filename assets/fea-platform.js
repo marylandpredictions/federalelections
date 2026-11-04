@@ -431,108 +431,182 @@
     for (const field of [year,state]) field.addEventListener('change',()=>void render());
     await render();
   }
-  async function labStory(data, sources) {
-    const list = rows(data).filter(race => race.type === 'senate');
-    const baseline = sources.find(source => source.id === 'senate-last');
-    const benchmarks = await historical(list, baseline).catch(() => new Map());
-    const stats = list.map(race => {
-      const current = votes(race.candidates);
-      return {race, margin: current.margin, total: current.total,
-        gap: FEAResultsUI.candidateLead(race.candidates, current.total)?.margin,
-        shift: current.margin - (benchmarks.get(race.id)?.margin ?? NaN)};
-    });
-    const reported = stats.filter(row => row.total > 0);
-    const compared = reported.filter(row => Number.isFinite(row.shift));
-    const closest = reported.filter(row => Number.isFinite(row.gap)).sort((a,b) => a.gap-b.gap).slice(0,5);
-    const shifts = [...compared].sort((a,b) => b.shift-a.shift);
-    const toward = value => `${Math.abs(value).toFixed(1)} pts toward ${value > 0 ? 'D' : 'R'}`;
-    const chapters = [
-      {title:'Senate returns', key:'Color shows the reported Democratic–Republican margin.', rows:[], metric:'margin', value:row=>row.margin},
-      {title:'Closest reported races', key:'Highlighted states have one of the five smallest gaps between the top two candidates.', rows:closest, metric:'margin', value:row=>row.margin, label:row=>`${row.gap.toFixed(1)} pt gap`},
-      {title:'Shifts toward Democrats', key:`${compared.length} of ${list.length} contests have a verified comparison and reported votes.`, rows:shifts.filter(row=>row.shift>0).slice(0,5), metric:'swing', value:row=>row.shift>0 ? row.shift : NaN, label:row=>toward(row.shift)},
-      {title:'Shifts toward Republicans', key:`${compared.length} of ${list.length} contests have a verified comparison and reported votes.`, rows:shifts.filter(row=>row.shift<0).reverse().slice(0,5), metric:'swing', value:row=>row.shift<0 ? row.shift : NaN, label:row=>toward(row.shift)}
-    ];
-    $('story-coverage').textContent = `${reported.length} of ${list.length} Senate contests have reported votes in this snapshot.`;
+  function labBars(entries, label, select) {
+    if (!entries.length) return '<p>No qualifying data for this selection.</p>';
+    const scale = Math.max(...entries.map(row=>Math.abs(row.value)),1);
+    const list = document.createElement('ol');
+    list.className = 'lab-bars';
+    list.setAttribute('aria-label',label);
+    list.innerHTML = entries.map(({race,value,reading,partyColor}) =>
+      `<li><button type="button">${escape(title(race))}</button><strong>${escape(reading)}</strong><span class="lab-bar-track" aria-hidden="true"><i style="width:${100*Math.abs(value)/scale}%" class="${partyColor ? value<0?'lab-bar-r':'lab-bar-d' : ''}"></i></span></li>`).join('');
+    list.querySelectorAll('button').forEach((button,i)=>button.onclick=()=>select(entries[i].race));
+    return list;
+  }
+  function labStory(sources, controls) {
+    const {office,lens,raceSelect,unit} = controls;
     const sections = [...document.querySelectorAll('.story-chapter')];
-    const maps = new Map();
-    let active = -1;
-    async function show(index) {
-      if (index === active) return;
-      active = index;
-      const chapter = chapters[index];
-      const target = $('story-map');
-      $('story-step').textContent = `Senate / 0${index+1} of 04`;
-      $('story-map-title').textContent = chapter.title;
-      $('story-key').textContent = chapter.key;
-      $('story-ranking').innerHTML = chapter.rows.map(row => `<li><a href="${raceUrl(row.race.id)}">${escape(title(row.race))}</a><strong>${chapter.label(row)}</strong></li>`).join('');
-      if (index > 0 && !chapter.rows.length) $('story-ranking').innerHTML = '<li>No qualifying races in this snapshot.</li>';
-      sections.forEach((section,i) => section.classList.toggle('is-current', i === index));
-      if (!maps.has(index)) {
-        const stage = document.createElement('div');
-        const values = new Map(stats.map(row => [row.race.id,chapter.value(row)]));
-        maps.set(index,map(stage,list,values,'senate',null,chapter.title,undefined,chapter.metric).then(()=>{
-          if (index === 1) {
-            const focus = new Set(closest.map(row=>raceUrl(row.race.id)));
-            stage.querySelectorAll('svg a').forEach(link=>link.classList.toggle('story-muted', !focus.has(link.getAttribute('href'))));
-          }
-          return stage;
-        }).catch(()=>{
-          stage.textContent = 'Map unavailable. Race rankings are shown below.';
-          return stage;
-        }));
-      }
-      // Keep the map and its heading in sync even when scrolling faster than geometry loads.
-      target.replaceChildren();
-      const stage = await maps.get(index);
-      if (active === index) target.replaceChildren(stage);
+    const headings = ['National returns','Margin shifts','Closest reported races','Local vote margins','Historical benchmarks'];
+    const visual = $('story-visual');
+    const selectRace = race => {
+      raceSelect.value = race.id;
+      raceSelect.dispatchEvent(new Event('change'));
+    };
+    for (const [id, field] of [['story-office',office],['story-baseline',lens],['story-race',raceSelect],['story-history-race',raceSelect],['story-unit',unit]]) {
+      $(id).onchange = () => {
+        field.value = $(id).value;
+        field.dispatchEvent(new Event('change'));
+      };
     }
-    let pending = false;
-    function update() {
-      if (pending) return;
-      pending = true;
-      requestAnimationFrame(() => {
-        pending = false;
-        const readingLine = innerHeight * (innerWidth <= 760 ? .78 : .52);
+    $('story-local-race').onchange = () => {
+      if ($('story-local-race').value) selectRace({id:$('story-local-race').value});
+    };
+    let chapter = -1, stats = [], renderId = 0;
+    const output = (target, content) => {
+      if (typeof content === 'string') target.innerHTML = content;
+      else target.replaceChildren(content);
+    };
+    function sync() {
+      for (const [id, field] of [['story-office',office],['story-baseline',lens],['story-race',raceSelect],['story-history-race',raceSelect],['story-unit',unit]]) {
+        $(id).innerHTML = field.innerHTML;
+        $(id).value = field.value;
+        $(id).disabled = field.disabled;
+      }
+      const selected = stats.find(({race})=>race.id===raceSelect.value)?.race;
+      // The national feed may omit county metadata even when detail has local votes.
+      $('story-local-race').innerHTML = options([['','Choose a race'],...stats.map(({race})=>[race.id,title(race)])],selected?.id);
+      const called = stats.filter(({race})=>race.calls?.length);
+      const counts = ['D','R'].map(code=>called.filter(({race})=>race.candidates.some(c=>party(c)===code&&c.name===race.calls[0]?.candidate)).length);
+      $('story-coverage').textContent = `${stats.filter(row=>row.current.total>0).length} of ${stats.length} reporting · ${called.length} called (D ${counts[0]}, R ${counts[1]}, other or unclassified ${called.length-counts[0]-counts[1]}).`;
+      const availableShifts = stats.filter(row=>Number.isFinite(row.swing));
+      const source = sources.find(item=>item.id===lens.value);
+      $('story-shift-note').textContent = `${availableShifts.length} of ${stats.length} races can be compared. ${source?.id.startsWith('pres-')?'This is a cross-office comparison with presidential returns.':''}`;
+      $('story-swing-data').innerHTML = table(['Race ID','Reference','2026 D / R / all votes','Prior D / R / all votes','Change or exclusion'],stats.map(({race,current,past,history,swing,reason})=>
+        `<tr><td>${escape(race.id)}</td><td>${escape(past?.label || (source ? compareName(source) : 'Unavailable'))}</td><td>${[current.d,current.r,current.total].map(number).join(' / ')}</td><td>${history ? [history.d,history.r,past.total].map(number).join(' / ') : '—'}</td><td>${reason ? escape(reason) : points(swing)}</td></tr>`).join(''),'Inputs to the swing calculation')+
+        (source?.sourceUrls||[]).filter(url=>/^https:\/\//.test(url)).map((url,i)=>`<a href="${escape(url)}">Historical source ${i+1}</a> `).join('');
+      const row = stats.find(item=>item.race===selected);
+      $('story-race-data').innerHTML = row ? `<p class="fea-note">${status(selected)}${Number.isFinite(row.current.gap) ? ` · Top-two gap ${number(row.current.gap)} votes (${row.current.gapPoints.toFixed(2)} points)` : ''}${Number.isFinite(selected.reportingPercent)?` · ${selected.reportingPercent}% reporting (feed estimate)`:''}</p>${candidateTable(selected)}<p><a href="${boardUrl(selected)}">Open this race on the Results Board →</a></p>` : '<p>Choose a race to see candidate votes, shares, and call status.</p>';
+    }
+    async function show(index) {
+      chapter = index;
+      const revision = ++renderId;
+      sections.forEach((section,i)=>section.classList.toggle('is-current',i===index));
+      document.querySelectorAll('.lab-chapter-nav a').forEach((link,i)=>{
+        if (i===index) link.setAttribute('aria-current','location'); else link.removeAttribute('aria-current');
+      });
+      $('story-step').textContent = `2026 / 0${index+1} · ${offices[office.value]}`;
+      $('story-map-title').textContent = headings[index];
+      $('story-key').textContent = '';
+      const selected = stats.find(row=>row.race.id===raceSelect.value)?.race;
+      const list = stats.map(row=>row.race);
+      if (index===2) {
+        const raw = $('story-close-sort').value==='votes';
+        const rank = row=>raw ? row.current.gap : row.current.gapPoints;
+        const entries = stats.filter(row=>Number.isFinite(rank(row))).sort((a,b)=>rank(a)-rank(b)).slice(0,8);
+        output(visual,labBars(entries.map(row=>({race:row.race,value:rank(row),reading:raw ? number(rank(row))+' votes' : rank(row).toFixed(2)+' pts'})),'Smallest top-two gaps',selectRace));
+        $('story-key').textContent = 'Shorter bars indicate closer races. Choose a bar label for candidate returns.';
+        return;
+      }
+      if (index===4) {
+        visual.textContent = selected ? 'Loading verified benchmarks…' : 'Choose a race in this chapter to see its timeline.';
+        if (!selected) return;
+        const benchmarks = $('story-history-scope').value==='office' ? sources.filter(s=>!s.id.startsWith('pres-')) : sources;
+        const html = await timeline(selected,benchmarks).catch(()=>'<p>Historical data unavailable.</p>');
+        if (revision===renderId) visual.innerHTML = html;
+        return;
+      }
+      if (index===3) {
+        visual.textContent = selected ? 'Loading local returns…' : 'Choose a race with local returns in this chapter.';
+        if (!selected) return;
+        try {
+          const detail = await get('/api/live-results/race?id='+encodeURIComponent(selected.id));
+          if (revision!==renderId) return;
+          $('story-local-data').innerHTML = contribution(detail,unit.value,controls.localSort.value);
+          if (!detail.counties?.some(county=>votes(county.candidates).total>0)) {
+            visual.textContent = 'The feed has no published local votes for this race.';
+            return;
+          }
+          const stage = document.createElement('div');
+          await localMap(detail,stage,id=>{
+            unit.value = id;
+            unit.dispatchEvent(new Event('change'));
+          },()=>revision===renderId);
+          if (revision===renderId) {
+            visual.replaceChildren(stage);
+            if (!stage.childNodes.length) visual.textContent='Local geometry is unavailable. Open the contribution data for the published vote breakdown.';
+          }
+        } catch { if (revision===renderId) visual.textContent='Local map unavailable. Check the published contribution table.'; }
+        return;
+      }
+      const swing = index===1;
+      if (swing && $('story-shift-view').value==='chart') {
+        const ranked = stats.filter(row=>Number.isFinite(row.swing)).sort((a,b)=>Math.abs(b.swing)-Math.abs(a.swing)).slice(0,8);
+        output(visual,labBars(ranked.map(({race,swing:value})=>({race,value,reading:points(value),partyColor:true})),'Largest absolute shifts',selectRace));
+        $('story-key').textContent = 'Positive values moved toward Democrats. Negative values moved toward Republicans.';
+        return;
+      }
+      const stage = document.createElement('div');
+      const values = new Map(stats.map(row=>[row.race.id,swing?row.swing:row.current.margin]));
+      try {
+        await map(stage,list,values,office.value,selectRace,headings[index],undefined,swing?'swing':'margin');
+        if (revision!==renderId) return;
+        if (selected) stage.querySelectorAll('svg a').forEach(link=>{
+          if (link.getAttribute('href')===raceUrl(selected.id)) link.classList.add('lab-selected-shape');
+        });
+        visual.replaceChildren(stage);
+        $('story-key').textContent = selected ? `${title(selected)} selected. Follow the chapters or continue in the workspace.` : 'Choose a race to carry it through the investigation.';
+      } catch { if (revision===renderId) visual.textContent='Map unavailable. The workspace provides the underlying race table.'; }
+    }
+    let queued = false;
+    function scroll() {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(()=>{
+        queued = false;
+        const line = innerWidth<=760 ? Math.min(innerHeight*.72,450) : innerHeight*.48;
         let index = 0;
-        sections.forEach((section,i) => { if (section.getBoundingClientRect().top <= readingLine) index = i; });
-        void show(index);
+        sections.forEach((section,i)=>{if(section.getBoundingClientRect().top<=line) index=i;});
+        if (index!==chapter) void show(index);
       });
     }
-    addEventListener('scroll', update, {passive:true});
-    addEventListener('resize', update);
-    update();
+    addEventListener('scroll',scroll,{passive:true});
+    addEventListener('resize',scroll);
+    for (const id of ['story-close-sort','story-shift-view','story-history-scope']) $(id).onchange=()=>void show(Math.max(0,chapter));
+    return {
+      update(rows) { stats=rows; sync(); if(chapter<0) scroll(); else void show(chapter); },
+      local() { sync(); if(chapter===3) void show(chapter); }
+    };
   }
   async function lab() {
-    const explorer = query.get('mode') === 'explorer' ||
-      (query.get('mode') !== 'story' && ['office','race','baseline','metric','unit','sort','local-sort'].some(key=>query.has(key)));
-    $(explorer ? 'lab-explorer' : 'lab-story').hidden = false;
-    $(explorer ? 'lab-explorer-link' : 'lab-story-link').setAttribute('aria-current','page');
     const [data,sources] = await Promise.all([get('/api/live-results'),comparison()]);
     $('lab-source').innerHTML=sourceNote(data);
-    if (!explorer) return labStory(data,sources);
     const all = rows(data);
     const office = $('lab-office'), lens = $('lab-lens'), raceSelect = $('lab-race'), metric = $('lab-metric'), unit = $('lab-unit'), localSort = $('lab-local-sort');
     if ([...localSort.options].some(option=>option.value===query.get('local-sort'))) localSort.value=query.get('local-sort');
     let revision = 0, localRevision = 0;
     office.innerHTML=options(Object.entries(offices),query.get('office') || 'senate');
     metric.value=['margin','swing','dem-share','rep-share'].includes(query.get('metric')) ? query.get('metric') : 'margin';
-    const sort = $('lab-sort');
+    const sort = $('lab-sort'), display = $('lab-display');
+    if (query.get('display')==='chart') display.value='chart';
+    const story = labStory(sources,{office,lens,raceSelect,unit,localSort});
     if (['race','value','votes'].includes(query.get('sort'))) sort.value=query.get('sort');
     function setFilters(preferred, baseline) {
       const list=all.filter(race=>race.type===office.value);
       raceSelect.innerHTML=options([['','Select a race'],...list.map(race=>[race.id,title(race)])],preferred);
       const available=sources.filter(source=>source.appliesTo.includes(office.value));
-      lens.innerHTML=options(available.map(source=>[source.id,compareName(source)]),baseline || 'pres-2024');
+      const defaults = {house:'house-2024',senate:'senate-last',governor:'governor-last'};
+      const chosen = available.some(source=>source.id===baseline) ? baseline : defaults[office.value];
+      lens.innerHTML=options(available.map(source=>[source.id,compareName(source)]),chosen);
     }
     function share() {
-      const params=new URLSearchParams({mode:'explorer',office:office.value,metric:metric.value});
+      const params=new URLSearchParams({office:office.value,metric:metric.value});
+      if (display.value==='chart') params.set('display','chart');
       if (sort.value !== 'race') params.set('sort',sort.value);
       if (lens.value) params.set('baseline',lens.value);
       if (raceSelect.value) params.set('race',raceSelect.value);
       if (!unit.disabled && unit.value) params.set('unit',unit.value);
       if (localSort.value!=='impact') params.set('local-sort',localSort.value);
-      history.replaceState(null,'','?'+params);
-      $('lab-share').href=location.href;
+      history.replaceState(null,'','?'+params+location.hash);
+      $('lab-share').href='?'+params+'#analysis-workspace';
     }
     async function local(race, desired, source) {
       const sequence=++localRevision;
@@ -582,8 +656,9 @@
             $('lab-detail').insertAdjacentHTML('beforeend',`<p class="fea-note">${escape(compareName(source))} · ${marginLabel(historicalRow.margin)} · Change ${points(current-historicalRow.margin)}</p>`);
           } catch {}
         };
-        unit.onchange=localSort.onchange=()=>{share();void renderLocal();};
+        unit.onchange=localSort.onchange=()=>{share();void renderLocal();story.local();};
         await renderLocal();
+        story.local();
       } catch {
         if (sequence===localRevision) $('lab-detail').textContent='Race details are unavailable.';
       }
@@ -605,15 +680,23 @@
       const benchmarks=await historical(list,source).catch(()=>new Map());
       if (sequence!==revision) return;
       const stats=list.map(race=>{
-        const current=votes(race.candidates), past=benchmarks.get(race.id);
-        const history=past ? votes(past.candidates) : null;
-        const leader=FEAResultsUI.candidateLead(race.candidates,current.total);
-        return {race,current,past,history,swing:current.margin-(past?.margin ?? NaN),lead:leader?.margin ?? NaN};
+        const current=FEALabAnalysis.contest(race.candidates), past=benchmarks.get(race.id);
+        const comparison=FEALabAnalysis.shift(current,past);
+        const history=past ? FEALabAnalysis.contest(past.candidates,past.total) : null;
+        return {race,current,past,history,swing:comparison.value,reason:comparison.reason,lead:current.gapPoints};
       });
+      story.update(stats);
       const metrics=new Map(stats.map(({race,current,swing})=>[race.id,view==='swing' ? swing : view==='margin' ? current.margin : current.total ? 100*current[view==='dem-share'?'d':'r']/current.total : NaN]));
       const palette=view==='dem-share'?['#e7eaf0','#2368ba']:view==='rep-share'?['#e7eaf0','#b84555']:undefined;
       const stage=document.createElement('div');
-      map(stage,list,metrics,office.value,race=>{raceSelect.value=race.id;raceSelect.focus();void render();},'Election explorer map',palette,view).then(()=>{
+      if (display.value==='chart') {
+        const entries = stats.map(row=>({race:row.race,value:metrics.get(row.race.id)}))
+          .filter(row=>Number.isFinite(row.value)).sort((a,b)=>Math.abs(b.value)-Math.abs(a.value)).slice(0,12);
+        const chart = labBars(entries.map(row=>({...row,reading:view.endsWith('-share')?row.value.toFixed(1)+'%':points(row.value),partyColor:!view.endsWith('-share')})),
+          'Largest values for the selected measure',race=>{raceSelect.value=race.id;void render();});
+        if (typeof chart==='string') $('lab-map').innerHTML=chart;
+        else $('lab-map').replaceChildren(chart);
+      } else map(stage,list,metrics,office.value,race=>{raceSelect.value=race.id;raceSelect.focus();void render();},'Election explorer map',palette,view).then(()=>{
         if(sequence===revision) {
           if (stage.childNodes.length) $('lab-map').replaceChildren(...stage.childNodes);
           else $('lab-map').textContent='Map unavailable. Use the race selector or table.';
@@ -650,8 +733,10 @@
     }
     setFilters(query.get('race'),query.get('baseline'));
     office.addEventListener('change',()=>{setFilters('',lens.value);void render();});
-    for(const control of [raceSelect,metric,lens]) control.addEventListener('change',()=>void render());
+    for(const control of [raceSelect,metric,lens,display]) control.addEventListener('change',()=>void render(unit.value));
+    $('lab-reset').onclick=()=>{office.value='senate';metric.value='margin';display.value='map';sort.value='race';localSort.value='impact';setFilters('','senate-last');void render();};
     await render(query.get('unit') || '');
+    if (!location.hash && (query.get('mode')==='explorer' || query.has('race'))) $('analysis-workspace').scrollIntoView();
   }
   const entry={home:homepage,elections,race:racePage,polling,search,lab,archive}[document.body.dataset.page];
   if(entry) entry().catch(error=>{
