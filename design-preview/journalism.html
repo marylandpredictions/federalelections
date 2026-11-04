@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Modern Data Journalism | FEA design preview</title>
+<script src="/assets/theme.js?v=20261030-features2"></script>
+<link rel="stylesheet" href="/assets/fea-platform.css?v=6">
+<link rel="stylesheet" href="/design-preview/preview.css?v=2">
+<script defer src="/assets/fea-shell.js?v=5"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<script defer src="/assets/night-awareness.js"></script>
+<script defer src="/assets/results-ui.js"></script>
+<script defer src="/assets/fea-lab-analysis.js?v=2"></script>
+<script defer src="/assets/fea-platform.js?v=14"></script>
+<script defer src="/design-preview/preview.js"></script>
+</head><body class="fea-site preview-journalism" data-page="home">
+<header class="fea-header" data-fea-header><a href="/">Federal Elections Analysis</a></header>
+<div class="preview-nav"><a href="/design-preview">← Design comparison</a><a href="/">Current homepage ↗</a></div><main id="main-content">
+<section class="journal-hero"><div class="journal-copy"><p class="fea-kicker">The 2026 midterms / The count</p><h1>How close is the count?</h1><p class="concept-dek">Follow the narrowest reported races, then trace the result across the country.</p><p id="journal-finding" class="journal-finding" role="status"></p></div>
+<div class="journal-figure"><div class="concept-map">
+  <div class="concept-map-toolbar"><label for="home-office">Office</label><select id="home-office"><option value="house">House</option><option value="senate">Senate</option><option value="governor">Governors</option></select><a id="home-board-link" href="/results">Full Results Board →</a></div>
+  <div class="concept-map-field"><div id="home-map" class="fea-map" aria-label="National reported margin map">Loading election map…</div><div class="concept-zoom" id="home-zoom" hidden role="group" aria-label="Map zoom"><button type="button" id="home-zoom-in" aria-label="Zoom in">+</button><button type="button" id="home-zoom-out" aria-label="Zoom out">−</button><button type="button" id="home-zoom-reset" aria-label="Reset map">↺</button></div></div>
+</div><p id="home-source" class="concept-source fea-note" data-load-status role="status">Loading results source…</p></div></section>
+<aside class="concept-tally" aria-label="National race calls"><p class="fea-kicker">Race calls &amp; reporting</p><div id="home-overview">Loading election totals…</div></aside>
+<div class="journal-dispatch"><div><p class="fea-kicker">The race desk</p><section class="concept-close"><h2 id="home-watch-title">Close races</h2><p id="home-watch-note" class="fea-note"></p><div id="home-watch">Loading reported margins…</div></section></div><section class="concept-calls"><h2>Latest calls</h2><ol id="home-calls"><li>Loading calls…</li></ol></section></div>
+<section class="concept-research"><div class="concept-heading"><h2>Follow the evidence</h2><a href="/election-history">Election archive →</a></div><div class="journal-research"><article class="concept-lab"><p class="fea-kicker">Election Lab</p><h3>The narrowest Senate margins</h3><p id="home-lab-preview">Compare reported margins and explore the local returns.</p><div id="home-lab-chart"></div><a href="/analysis-center">Investigate the returns →</a></article><div><article class="concept-bias"><p class="fea-kicker">Polling research</p><h3>Where Senate polls miss</h3><p>Largest estimated 2026 polling misses, in points.</p><div id="home-bias-preview"></div><a href="/features/polling-bias">Read the study →</a></article><article class="concept-maker"><p class="fea-kicker">Map Maker</p><h3>Draw a different outcome</h3><div id="home-maker-preview" aria-hidden="true"></div><a href="/features/map-maker">Build a scenario →</a></article></div></div></section>
+<section class="concept-stories"><div class="concept-heading"><div><p class="fea-kicker">Reporting &amp; opinion</p><h2>The latest from FEA</h2></div><a href="/articles">All coverage →</a></div><div id="home-research">Loading published articles…</div></section>
+</main><footer class="preview-footer"><a href="/"><img src="/assets/img/FEA_Icon.webp" alt="" width="48" height="40"><strong>Federal Elections Analysis</strong></a><nav aria-label="Footer"><a href="/results">Results</a><a href="/articles">Analysis</a><a href="/sources">Sources</a><a href="/about">About</a></nav></footer>
+</body></html>

@@ -1013,6 +1013,13 @@ async function serveStatic(request, response) {
   const privatePath = value => value.replace(/\\/g, '/').replace(/[. ]+(?=\/|$)/g, '').toLowerCase();
   const storageDirectory=privatePath(resultStorage(root).directory);
   const normalizedFile=privatePath(filePath);
+  const previewRoot = privatePath(resolve(root, "design-preview"));
+  if ((process.env.NODE_ENV === "production" || process.env.RENDER === "true") &&
+      (normalizedFile === previewRoot + ".html" || normalizedFile.startsWith(previewRoot + "/"))) {
+    response.writeHead(404, { "Content-Type": "text/plain", "Cache-Control": "no-store" });
+    response.end("Not found");
+    return;
+  }
   if(privatePath(decodedPath)==='/data/result-calls.json'||normalizedFile===privatePath(callsPath)||normalizedFile.startsWith(storageDirectory+'/')){
     response.writeHead(404,{'Content-Type':'text/plain','Cache-Control':'no-store'});response.end('Not found');return;
   }
