@@ -29,6 +29,20 @@
     return node;
   };
   const cell = (text, className = '') => {const node = document.createElement('td'); node.textContent = text; node.className = className; return node;};
+  const filter = document.getElementById('bias-table-filter');
+  if (filter) {
+    const entries = [...document.querySelectorAll('[aria-labelledby="all-states-title"] tbody tr')];
+    filter.addEventListener('input',()=>{
+      const term = filter.value.trim().toLowerCase();
+      let count = 0;
+      for (const row of entries) {
+        const state = row.querySelector('a[data-state]');
+        row.hidden = !state.textContent.toLowerCase().includes(term) && state.dataset.state.toLowerCase() !== term;
+        if (!row.hidden) count++;
+      }
+      document.getElementById('bias-table-count').textContent = term ? (count===1 ? '1 state matches.' : `${count} states match.`) : '';
+    });
+  }
   async function start() {
     const response = await Promise.all(['/data/features/polling-bias.json?v=20261030-1', '/data/features/polling-bias-map.json?v=20261030-geometry3'].map(async url => {
       const r = await fetch(url); if (!r.ok) throw Error('Data unavailable'); return r.json();

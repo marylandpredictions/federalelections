@@ -3,17 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Federal Elections Analysis — 2026 Election Coverage </title>
-  <meta name="description" content="Federal Elections Analysis is a hub for electoral insight, top-tier data, and a deep dive into the elections that decide the future of this country. Follow our election-night results, videos, and articles.">
+  <title>Federal Elections Analysis — Election Results and Research</title>
+  <meta name="description" content="Explore U.S. election results, historical returns, original research, and coverage from Federal Elections Analysis.">
   <meta property="og:image" content="/assets/img/FEA_Icon.webp">
   <link rel="icon" href="assets/img/FEA_Icon.webp" type="image/webp">
   <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
   <script src="assets/theme.js?v=20261030-features2"></script>
   <link rel="stylesheet" href="assets/wiki.css?v=20261030-features1">
-  <link rel="stylesheet" href="/assets/classic-home.css?v=6">
+  <link rel="stylesheet" href="/assets/classic-home.css?v=7">
 </head>
-<body>
+<!-- Editorial controls: set data-election-phase to election-night, post-election, or
+     between-elections. The feed does not certify the end of a reporting cycle.
+     Update data-election-label with the featured election. An optional
+     data-featured-article slug overrides the newest published article. -->
+<body data-election-phase="election-night" data-election-label="2026 general election">
       <header class="site-header">
     <a class="brand" href="/">
       <img class="brand-mark" src="assets/img/FEA_Icon.webp" alt="Federal Elections Analysis">
@@ -35,13 +39,14 @@
         <p class="kicker">Federal Elections Analysis</p>
         <h1 id="page-title">Analysis on your screen.</h1>
         <p class="lede">Election coverage, reporting, and analysis from the FEA team.</p>
-        <div class="hero-actions"><a class="button-link" href="/results">2026 election results →</a><a class="button-link" href="/videos">Watch our coverage</a></div>
+        <div class="hero-actions"><a class="button-link" href="/results">Election results →</a><a class="button-link" href="/videos">Watch our coverage</a></div>
       </div>
       <aside class="home-results-brief" aria-labelledby="home-results-title">
-        <p class="kicker">2026 general election</p>
+        <p class="kicker" id="home-election-label">2026 general election</p>
         <h2 id="home-results-title">National results</h2>
         <div id="home-results-lines"><p>Loading reported results…</p></div>
         <p class="meta" id="home-results-source" role="status"></p>
+        <div id="home-cycle-links" hidden><p>Explore election history and investigate the results behind it.</p><ul><li><a href="/election-history">Election archive</a></li><li><a href="/analysis-center">Election Lab</a></li></ul></div>
       </aside>
     </section>
 
@@ -78,7 +83,7 @@
           <p class="meta" id="home-notable-note">By reported vote-share gap.</p>
           <ul id="home-notable-races"><li>Loading race margins…</li></ul>
         </div>
-        <div><h3>Recent calls</h3>
+        <div><h3 id="home-calls-title">Recent calls</h3>
           <ul id="home-recent-calls"><li>Loading public race calls…</li></ul>
         </div>
       </div>
@@ -116,7 +121,8 @@
   </footer>
 
   <script src="/assets/fea-lab-analysis.js?v=2" defer></script>
-  <script src="/assets/classic-home.js?v=4" defer></script>
-  <script src="assets/wiki.js?v=classic-home3"></script>
+  <script src="/assets/home-cycle.js?v=1" defer></script>
+  <script src="/assets/classic-home.js?v=5" defer></script>
+  <script src="assets/wiki.js?v=classic-home4"></script>
 </body>
 </html>

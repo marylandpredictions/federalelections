@@ -17,6 +17,19 @@
     if (code === 'D' || code === 'R') element.classList.add(code === 'D' ? 'home-dem' : 'home-rep');
     return element;
   }
+  const phase = FEAHomeCycle.phase(document.body.dataset.electionPhase);
+  $('home-results-title').textContent = phase.title;
+  if (!phase.updates) {
+    $('home-election-label').textContent = 'Explore the record';
+    $('home-results-lines').hidden = true;
+    $('home-cycle-links').hidden = false;
+    $('home-updates-title').closest('section').hidden = true;
+    return;
+  }
+  $('home-election-label').textContent = document.body.dataset.electionLabel || 'Featured election';
+  $('home-updates-title').textContent = phase.updates;
+  $('home-calls-title').textContent = phase.calls;
+  if (!phase.poll) $('home-cycle-links').hidden = false;
   let loaded = false;
   let refreshing = false;
   async function refresh() {
@@ -26,7 +39,8 @@
       const response = await fetch('/api/live-results',{signal:AbortSignal.timeout(12000)});
       if (!response.ok) throw new Error('Results unavailable');
       const data = await response.json();
-      const races = (data.groups || []).flatMap(group=>group.races || []);
+      const races = (data.groups || []).flatMap(group=>group.races || []).map(race=>
+        race.calls?.length && !FEAHomeCycle.called(race) ? {...race,calls:[]} : race);
       if (!races.length) throw new Error('No results in snapshot');
       const rows = races.map(race=>({race,current:FEALabAnalysis.contest(race.candidates)}));
       const all = FEALabAnalysis.findings(rows);
@@ -58,10 +72,7 @@
       const updated = new Date(data.provider?.lastUpstreamUpdate || data.updatedAt || data.generatedAt);
       const stamp = Number.isFinite(+updated) ? dateFormat.format(updated)+' ET' : '';
       $('home-results-source').textContent = [`${all.reported} of ${rows.length} races reporting`,data.provider?.name || 'FEA results',stamp,data.provider?.stale ? 'Updates may be delayed' : ''].filter(Boolean).join(' · ');
-      const open = all.close.filter(({race})=>!race.calls?.length);
-      const selected = (open.length ? open : all.close).slice(0,4);
-      const recent = races.flatMap(race=>(race.calls || []).slice(0,1).map(call=>({race,call,time:Date.parse(call.calledAt)})))
-        .filter(({time})=>Number.isFinite(time)).sort((a,b)=>b.time-a.time).slice(0,4);
+      const {unresolved,selected,recent} = FEAHomeCycle.raceUpdates(all.close,races);
       $('home-recent-calls').replaceChildren(...(recent.length ? recent.map(({race,call,time})=>{
         const item = document.createElement('li');
         const winner = race.candidates.find(candidate=>candidate.name===call.candidate);
@@ -76,10 +87,11 @@
         item.append(raceLink(race),name,meta);
         return item;
       }) : [node('li','No timestamped calls in this snapshot.')]));
-      $('home-notable-title').textContent = open.length ? 'Closest uncalled races' : 'Closest reported races';
+      $('home-notable-title').textContent = unresolved ? 'Closest uncalled races' : 'Closest called results';
+      $('home-notable-note').textContent = unresolved ? 'By reported vote-share gap. Races below 25% of expected votes are omitted when an estimate is available.' : 'By reported vote-share gap among called races.';
       loaded = true;
       if (!selected.length) {
-        $('home-notable-races').replaceChildren(node('li','No races with two candidates reporting votes in this snapshot.'));
+        $('home-notable-races').replaceChildren(node('li',unresolved ? 'No uncalled races have a usable margin at this stage of reporting.' : 'No called races have a usable top-two gap in this snapshot.'));
         return;
       }
       $('home-notable-races').replaceChildren(...selected.map(({race,current})=>{
@@ -103,7 +115,7 @@
         }
         const expected = race.expectedVotePercent ?? race.estimatedVoteReporting;
         const status = race.calls?.length ? 'Called' : 'Uncalled';
-        const progress = Number.isFinite(expected) && expected >= 0 && expected <= 100 ? ` · ${expected}% expected vote in` : '';
+        const progress = Number.isFinite(expected) && expected >= 0 && expected <= 100 ? ` · ${expected}% expected vote in` : ' · Expected vote unavailable';
         item.append(raceLink(race),candidates,bar,node('small',reading+' · '+status+progress));
         return item;
       }));
@@ -121,6 +133,8 @@
     }
   }
   void refresh();
-  setInterval(refresh,60000);
-  document.addEventListener('visibilitychange',refresh);
+  if (phase.poll) {
+    setInterval(refresh,60000);
+    document.addEventListener('visibilitychange',refresh);
+  }
 })();

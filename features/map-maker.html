@@ -23,7 +23,7 @@
 <script defer src="/assets/map-maker-detail.js?v=20261101-display1"></script>
 <script defer src="/assets/map-maker-theme.js?v=20261101-yapms2"></script>
 <script defer src="/assets/map-maker.js?v=20261101-yapms3"></script>
-  <link rel="stylesheet" href="/assets/fea-consistency.css?v=1">
+  <link rel="stylesheet" href="/assets/fea-consistency.css?v=2">
 </head><body class="results-board map-maker">
 <header id="desk-masthead"><a class="desk-publication" href="/" aria-label="FEA home"><img src="/assets/img/FEA_Icon.webp" alt="Federal Elections Analysis" width="104" height="44"></a><strong>Map maker</strong><span class="desk-edition-note">Your scenario · Not live results</span></header>
 <button type="button" id="maker-draw-button" class="maker-draw-button" aria-label="Draw on map" aria-pressed="false" aria-controls="maker-draw-tools" title="Draw on map"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16-1 5 5-1L20 8l-4-4L4 16ZM14 6l4 4M3 21l5-1"/></svg></button>
@@ -38,7 +38,7 @@
 <div id="maker-palette" role="group" aria-label="Paint rating"></div>
 <label class="maker-drag"><input type="checkbox" id="maker-drag"> Paint by dragging</label>
 <div class="maker-actions"><button type="button" id="maker-undo">Undo</button><button type="button" id="maker-redo">Redo</button><button type="button" id="maker-clear">Clear office</button></div>
-<details class="maker-file-tools"><summary>Find, save & download</summary><label>Find a race<select id="maker-race" aria-label="Find a race"></select></label><button type="button" id="maker-apply">Apply rating to selected race</button><label>Map title<input id="maker-title" maxlength="80" value="My 2026 election map"></label><button type="button" id="maker-image">Download PNG</button><button type="button" id="maker-save">Save scenario file</button><label class="maker-upload">Open FEA / YAPms file<input type="file" id="maker-open" accept="application/json,.json,.yapms"></label><p>Ratings save on this browser. Use a scenario file to move your map to another device.</p></details>
+<details class="maker-file-tools"><summary>Find a race or manage files</summary><label>Find a race<select id="maker-race" aria-label="Find a race"></select></label><button type="button" id="maker-apply">Apply rating to selected race</button><label>Map title<input id="maker-title" maxlength="80" value="My 2026 election map"></label><button type="button" id="maker-image">Export image (PNG)</button><button type="button" id="maker-save">Export editable scenario</button><label class="maker-upload">Import FEA or YAPms scenario<input type="file" id="maker-open" accept="application/json,.json,.yapms"></label><p>Ratings save in this browser. Export an editable scenario to reopen it here or move it to another device. A PNG is a shareable image.</p></details>
 </aside>
 <section class="maker-map-region" aria-label="Your ratings map"><div id="maker-map"><p role="status">Loading map maker…</p></div><section class="maker-detail-map" id="maker-detail-map" aria-label="Race geography" hidden><button id="maker-county-reset" type="button">Reset county zoom</button><div id="maker-county-map"></div></section><aside id="focused-race-panel" class="election-focus-panel election-focus-overlay" aria-labelledby="focused-race-title" hidden>
 <div class="focused-card-head"><span class="focused-pill">Your scenario</span><span id="focused-race-rating" class="focused-pill focused-pill-light"></span><button class="focused-close" id="maker-detail-close" type="button" aria-label="Back to national map">×</button></div>

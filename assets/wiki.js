@@ -2972,7 +2972,8 @@ function articleLeadImageMarkup(article, className = "article-lead-image") {
 }
 
 function featuredHomeArticle(list) {
-  return list.find(article => article.featured) || list[0];
+  const slug = document.body.dataset.featuredArticle;
+  return (slug && list.find(article => article.slug === slug)) || list[0];
 }
 
 function renderTopArticle() {

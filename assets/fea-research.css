@@ -133,3 +133,11 @@ body:has(.bias-page) { background: var(--fea-bg); }
   padding:clamp(16px,2.8vw,36px);
   margin-block:1.5rem 2rem;
 }
+
+#story-visual[aria-busy="true"] { opacity:.76; }
+@media(prefers-reduced-motion:no-preference) { #story-visual { transition:opacity 150ms ease; } }
+.lab-chapter-nav a { padding:.25rem 0; text-underline-offset:.25em; }
+.bias-table-filter { margin:.65rem 0; display:flex; flex-wrap:wrap; gap:.3rem 1rem; align-items:baseline; }
+.bias-table-filter label { display:flex; flex-wrap:wrap; gap:.45rem; align-items:baseline; }
+.bias-table-filter input { max-width:100%; min-height:2.5rem; padding:.35rem .55rem; border:1px solid var(--line); border-radius:4px; background:var(--paper); color:var(--ink); font:inherit; }
+.bias-table-filter p { margin:0; color:var(--muted); }

@@ -534,6 +534,13 @@
       $('story-race-data').innerHTML = row ? `<p class="fea-note">${status(selected)}${Number.isFinite(row.current.gap) ? ` · Top-two gap ${number(row.current.gap)} votes (${row.current.gapPoints.toFixed(2)} points)` : ''}${Number.isFinite(selected.reportingPercent)?` · ${selected.reportingPercent}% reporting (feed estimate)`:''}</p>${candidateTable(selected)}<p><a href="${boardUrl(selected)}">Open this race on the Results Board →</a></p>` : '<p>Choose a race to see candidate votes, shares, and call status.</p>';
     }
     async function show(index) {
+      visual.setAttribute('aria-busy','true');
+      const render = renderChapter(index);
+      const current = renderId;
+      try { await render; }
+      finally { if (current===renderId) visual.setAttribute('aria-busy','false'); }
+    }
+    async function renderChapter(index) {
       chapter = index;
       const revision = ++renderId;
       sections.forEach((section,i)=>section.classList.toggle('is-current',i===index));
