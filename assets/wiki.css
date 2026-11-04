@@ -9658,3 +9658,19 @@ body {
 .article-filters { display:flex; flex-wrap:wrap; gap:12px 20px; }
 .article-filters label { display:grid; gap:4px; min-width:0; font-weight:650; }
 .article-filters :is(input,select) { max-width:100%; padding:.45rem .6rem; border:1px solid var(--line); border-radius:4px; background:var(--paper); color:var(--ink); font:inherit; }
+
+/* Extend the classic FEA background across reading pages, including long views. */
+:root[data-theme="light"] body:not(.results-board) {
+  background:
+    radial-gradient(ellipse at 0% 5%, rgb(54 126 242 / .32), transparent 63%),
+    radial-gradient(ellipse at 100% 20%, rgb(239 82 140 / .27), transparent 61%),
+    linear-gradient(145deg,#dce6ff,#e9e9f8 57%,#f4e4f0);
+  background-attachment:fixed;
+}
+:root[data-theme="dark"] body:not(.results-board) {
+  background:
+    radial-gradient(ellipse at 0% 3%, rgb(47 145 255 / .25), transparent 64%),
+    radial-gradient(ellipse at 100% 15%, rgb(255 64 110 / .20), transparent 62%),
+    linear-gradient(145deg,#060d21,#090c17 57%,#180916);
+  background-attachment:fixed;
+}

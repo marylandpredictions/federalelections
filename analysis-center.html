@@ -10,9 +10,9 @@
   <meta property="og:image" content="/assets/img/capitol-detail.webp">
   <link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
   <script src="/assets/theme.js?v=20261030-features2"></script>
-  <link rel="stylesheet" href="/assets/wiki.css?v=20261030-features1">
+  <link rel="stylesheet" href="/assets/wiki.css?v=classic-gradient3">
   <link rel="stylesheet" href="/assets/fea-platform.css?v=6">
-  <link rel="stylesheet" href="/assets/fea-research.css?v=6">
+  <link rel="stylesheet" href="/assets/fea-research.css?v=8">
   <script defer src="/assets/results-ui.js"></script><script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script><script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script><script defer src="/assets/night-awareness.js"></script><script defer src="/assets/fea-lab-analysis.js?v=2"></script><script defer src="/assets/fea-platform.js?v=15"></script>
   <link rel="stylesheet" href="/assets/fea-consistency.css?v=1">
 </head>
@@ -35,10 +35,10 @@
 
     <p class="fea-crumb"><a href="/">Home</a> / Research &amp; Tools / Election Lab</p>
     <header class="research-hero">
-      <p class="fea-kicker">FEA Atlas / 2026 election analysis</p>
+      <p class="fea-kicker">FEA research · 2026 election analysis</p>
       <h1>Election Lab</h1>
       <p class="fea-intro">Follow the 2026 returns from the national picture to the races and reporting units that shaped it. Your selections carry through to the analysis workspace.</p>
-      <p><a class="fea-button" href="#analysis-workspace">Skip to analysis workspace ↓</a> <a href="#chapter-shifts">Comparisons and methodology</a></p>
+      <div class="lab-intro-actions"><a class="button-link" href="#chapter-returns">Follow the returns ↓</a><a class="button-link" href="#analysis-workspace">Open workspace</a><a href="#chapter-shifts">Comparisons and methodology</a></div>
       <p id="lab-source" class="fea-note" data-load-status role="status">Loading election data…</p>
     </header>
     <nav class="lab-chapter-nav" aria-label="Election Lab chapters">
@@ -46,8 +46,8 @@
     </nav>
     <div id="lab-story" class="lab-story">
       <figure class="story-stage" aria-labelledby="story-map-title">
-        <p class="fea-kicker" id="story-step">2026 / Returns</p>
-        <h2 id="story-map-title">The national picture</h2>
+        <figcaption class="lab-stage-head"><p class="fea-kicker" id="story-step">2026 / Returns</p>
+        <h2 id="story-map-title">The national picture</h2></figcaption>
         <div id="story-visual" aria-busy="true">Loading election data…</div>
         <p id="story-key" class="fea-note"></p>
       </figure>
@@ -64,7 +64,7 @@
       <h2 id="workspace-title" tabindex="-1">Analysis workspace</h2>
       <p>Carry the race and comparison you selected into the workspace, or start fresh.</p>
       <button type="button" id="lab-reset">Reset selections</button>
-    <section class="fea-section" aria-labelledby="map-title"><h2 id="map-title">Choose what the map shows</h2><p>Pick an office and a measure. Select a race to see its history and local returns below.</p>
+    <section class="fea-section lab-workbench" aria-labelledby="map-title"><div class="lab-workbench-controls"><h3 id="map-title">Build a view</h3>
       <div class="fea-filter">
         <label>Office<select id="lab-office"><option>Senate</option></select></label>
         <label>Color the map by<select id="lab-metric"><option value="margin">Democratic vs. Republican margin</option><option value="swing">Change from past election</option><option value="dem-share">Democratic vote share</option><option value="rep-share">Republican vote share</option></select></label>
@@ -72,12 +72,13 @@
         <label>Sort the map table<select id="lab-sort"><option value="race">Race order</option><option value="value">Highest map value</option><option value="votes">Most reported votes</option></select></label>
         <label>Inspect a race<select id="lab-race"><option>Select a race</option></select></label>
         <label>Filter by race, state or candidate <input type="search" id="lab-search" maxlength="80" placeholder="e.g. Ohio or Sherrod Brown"></label>
-        <a class="fea-button" id="lab-share" href="/analysis-center">Link to this view</a>
-      </div>
-      <label>Visualization <select id="lab-display"><option value="map">Map</option><option value="chart">Ranked chart</option></select></label>
+        <label>Visualization <select id="lab-display"><option value="map">Map</option><option value="chart">Ranked chart</option></select></label>
+        <a class="button-link" id="lab-share" href="/analysis-center">Link to this view</a>
+      </div></div>
+      <div class="lab-workbench-output">
       <p id="lab-filter-status" class="fea-note" role="status"></p>
       <div id="lab-map" class="fea-map" role="region" aria-label="Election map">Loading map…</div>
-      <details><summary>Browse the map data as a table</summary><div id="lab-table"></div></details>
+      <details><summary>Browse the map data as a table</summary><div id="lab-table"></div></details></div>
     </section>
     <details class="fea-section"><summary>Compare with past results</summary><p class="fea-note">Shares use all reported votes. Reported vote differences are available for verified same-office benchmarks and can change as counting continues.</p><div id="lab-comparison"></div></details>
     <section class="fea-section fea-split">

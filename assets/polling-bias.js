@@ -7,7 +7,7 @@
   function color(value) {
     if (!Number.isFinite(value)) return '#b2b6c0';
     const amount = Math.min(Math.abs(value) / 7, 1);
-    const neutral = [231, 233, 240], end = value >= 0 ? [28, 82, 157] : [180, 49, 64];
+    const neutral = [231, 233, 240], end = value >= 0 ? [35, 104, 186] : [184, 69, 85];
     return '#' + neutral.map((v, i) => Math.round(v + (end[i] - v) * amount).toString(16).padStart(2, '0')).join('');
   }
   function labelColor(fill) {
