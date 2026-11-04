@@ -7,8 +7,9 @@
 <script src="/assets/theme.js?v=20261030-features2"></script>
 <link rel="stylesheet" href="/assets/wiki.css?v=20261030-features1">
 <link rel="stylesheet" href="/assets/polling-bias.css?v=20261030-accessible2">
-<script defer src="/assets/polling-bias.js?v=20261030-accessible3"></script>
+<script defer src="/assets/polling-bias.js?v=atlas1"></script>
   <link rel="stylesheet" href="/assets/fea-platform.css?v=5">
+  <link rel="stylesheet" href="/assets/fea-research.css?v=1">
   <script defer src="/assets/fea-shell.js?v=5"></script>
 </head><body>
 <header class="site-header">
@@ -26,14 +27,24 @@
     </div>
   </header>
 <main class="bias-page">
-<header class="bias-hero"><p class="kicker">Features / Polling research</p>
-<h1>State-by-state polling biases.</h1>
-<p class="lede">Which party might Senate polls make look stronger than the result? Explore FEA’s estimates for 2026, then see what happened in past elections.</p>
+<header class="bias-hero research-hero"><p class="fea-kicker">FEA Atlas / Polling research</p>
+<h1>Where Senate polls <em>miss.</em></h1>
+<p class="lede">A polling miss is the gap between the margin in the polls and the margin on Election Day. FEA uses Senate races from 2014 through 2024, plus a regional starting point for each state, to estimate which party polls might overstate in 2026.</p>
 <p class="bias-source">Source: <a href="https://docs.google.com/spreadsheets/d/1_jm2C7nYv4MRVhPWf-_4Q1UCJzDU_liIJAhG7pUT-BQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer">FEA calculations ↗</a></p>
 <div class="bias-meta"><span><strong>50</strong> states</span><span><strong>135</strong> past Senate races</span><span><strong>835</strong> polls studied</span><span><strong>2014–2024</strong> election history</span></div>
 </header>
+<section class="bias-findings" aria-labelledby="bias-findings-title">
+  <div><p class="fea-kicker">01 / The national picture</p><h2 id="bias-findings-title">The largest estimated misses</h2>
+    <p id="bias-findings-summary" role="status">Loading the state estimates…</p>
+    <p class="fea-note">These are estimates of polling error in percentage points. Select a state to see the historical races and the confidence behind its estimate.</p>
+  </div>
+  <div class="bias-rankings">
+    <div><h3>Polls may overstate Democrats</h3><ol id="bias-ranked-dem" class="research-ranking"></ol></div>
+    <div><h3>Polls may overstate Republicans</h3><ol id="bias-ranked-rep" class="research-ranking"></ol></div>
+  </div>
+</section>
 <section aria-label="Estimated state polling bias">
-<article class="bias-map-card"><div class="bias-map-heading"><div><p class="kicker">Looking ahead</p><h2>Estimated polling bias for 2026</h2></div><a href="#state-details">Choose a state ↓</a></div>
+<article class="bias-map-card"><div class="bias-map-heading"><div><p class="fea-kicker">02 / Explore the map</p><h2>Estimated polling bias for 2026</h2></div><a href="#state-details">Choose a state ↓</a></div>
 <p>The map shows one estimate: how much polls may overstate either party in 2026. Hover or focus on a state for a preview; select it to explore its history.</p>
 <div id="bias-map-prior" class="bias-map" aria-busy="true">Loading state map…</div>
 <aside id="bias-preview" class="bias-preview" role="tooltip" hidden><strong id="bias-preview-state"></strong><b id="bias-preview-value"></b><p id="bias-preview-meaning"></p><p id="bias-preview-evidence"></p><small>Select state to see past races</small></aside>

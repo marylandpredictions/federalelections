@@ -12,12 +12,12 @@
   <script src="/assets/theme.js?v=20261030-features2"></script>
   <link rel="stylesheet" href="/assets/fea-platform.css?v=5">
   <script defer src="/assets/fea-shell.js?v=5"></script>
-  <link rel="stylesheet" href="/assets/fea-home.css?v=5">
+  <link rel="stylesheet" href="/assets/fea-home.css?v=6">
   <script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
   <script defer src="/assets/night-awareness.js"></script>
   <script defer src="/assets/results-ui.js"></script>
-  <script defer src="/assets/fea-platform.js?v=8"></script>
+  <script defer src="/assets/fea-platform.js?v=9"></script>
 </head>
 <body class="fea-site" data-page="home">
   <header class="fea-header" data-fea-header><div class="fea-header-inner"><a href="/">Federal Elections Analysis</a><nav class="fea-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/results">Elections &amp; Results</a><a href="/features/map-maker">Maps</a><a href="/analysis-center">Research &amp; Tools</a><a href="/articles">Analysis</a><a href="/about">About</a></nav></div></header>
@@ -77,9 +77,9 @@
       <div id="home-watch" class="home-watch">Loading featured races…</div>
     </section>
 
-    <section class="home-closer">
-      <div><h2>Go beyond the totals</h2><p>Compare election margins and see which counties shaped the result.</p></div>
-      <a class="fea-button" href="/analysis-center">Open Election Lab →</a>
+    <section class="home-closer home-research-previews" aria-label="Featured research">
+      <a href="/analysis-center"><span class="fea-kicker">01 / Guided story</span><h2>Election Lab</h2><p id="home-lab-preview">Follow the Senate returns from the national map to the closest races.</p><strong>Read the story →</strong></a>
+      <a href="/features/polling-bias"><span class="fea-kicker">02 / Polling research</span><h2>Where Senate polls miss</h2><p>Largest estimated 2026 polling misses</p><div id="home-bias-preview"></div><strong>Explore the estimates →</strong></a>
     </section>
   </main>
   <footer class="fea-footer" data-fea-footer><div class="fea-footer-inner"><a href="/about">Federal Elections Analysis</a><a href="/sources">Sources</a><a href="/contact">Contact</a></div></footer>

@@ -34,6 +34,30 @@
       const r = await fetch(url); if (!r.ok) throw Error('Data unavailable'); return r.json();
     }));
     const [data, geometry] = response, states = new Map(data.states.map(state => [state.abbr, state]));
+    const ranked = data.states.filter(state => Number.isFinite(state.prior))
+      .sort((a,b) => Math.abs(b.prior) - Math.abs(a.prior));
+    const democrats = ranked.filter(state => state.prior > 0);
+    const republicans = ranked.filter(state => state.prior < 0);
+    document.getElementById('bias-findings-summary').textContent =
+      `FEA’s 2026 estimate leans toward overstating Democrats in ${democrats.length} states and Republicans in ${republicans.length}.`;
+    const scale = Math.abs(ranked[0]?.prior) || 1;
+    for (const [id, entries] of [['dem', democrats], ['rep', republicans]]) {
+      const host = document.getElementById('bias-ranked-' + id);
+      for (const state of entries.slice(0,4)) {
+        const row = document.createElement('li'), link = document.createElement('a');
+        const reading = document.createElement('strong'), track = document.createElement('span');
+        link.href = '#state-details';
+        link.dataset.state = state.abbr;
+        link.textContent = state.state;
+        reading.textContent = partyNumber(state.prior);
+        reading.className = partyClass(state.prior);
+        track.className = 'bias-rank-track ' + partyClass(state.prior);
+        track.style.setProperty('--rank-width', 100 * Math.abs(state.prior) / scale + '%');
+        track.setAttribute('aria-hidden', 'true');
+        row.append(link, reading, track);
+        host.append(row);
+      }
+    }
     function select(abbr, scroll = false) {
       const state = states.get(abbr); if (!state) return;
       document.getElementById('bias-state').value = abbr;
@@ -144,6 +168,7 @@
     select(states.has(requested) ? requested : 'AL');
   }
   start().catch(() => {
+    document.getElementById('bias-findings-summary').textContent = 'Rankings could not load. See the state table below.';
     for (const host of document.querySelectorAll('.bias-map')) {host.textContent = 'The map could not load. All state priors are listed below, and the source spreadsheet contains the full data.'; host.setAttribute('aria-busy', 'false');}
     document.getElementById('bias-detail-loading').textContent = 'State detail could not load. Please refresh or open the source spreadsheet.';
   });

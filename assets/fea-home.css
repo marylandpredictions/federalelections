@@ -71,3 +71,12 @@
   .home-results,.home-tools,.home-watch { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
   .home-map-controls a { margin-inline-start:0; }
 }
+
+.home-research-previews { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; gap:2rem; }
+.home-research-previews a { border-top:2px solid var(--fea-accent); padding-top:1rem; text-decoration:none; }
+.home-research-previews a:hover h2 { text-decoration:underline; }
+.home-research-previews p { color:var(--fea-muted); }
+#home-bias-preview { display:flex; flex-wrap:wrap; gap:.35rem 1rem; font: .8rem var(--fea-mono); margin-bottom:.75rem; }
+#home-bias-preview .preview-dem { color:var(--fea-d); }
+#home-bias-preview .preview-rep { color:var(--fea-r); }
+@media (max-width:650px) { .home-research-previews { grid-template-columns:1fr; } }
