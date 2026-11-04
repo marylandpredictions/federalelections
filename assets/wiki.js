@@ -1111,14 +1111,29 @@ async function renderHomeLatestVideo() {
       container.innerHTML = `<p class="meta">No public video found.</p>`;
       return;
     }
+    const published = Date.parse(video.published);
+    const date = Number.isFinite(published) ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "America/New_York" }).format(published) : "";
     container.innerHTML = `
-      <iframe src="https://www.youtube-nocookie.com/embed/${escapeHtml(video.id)}" title="${escapeHtml(video.title || "Federal Elections Analysis video")}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      <button type="button" class="home-video-play" aria-label="Play ${escapeHtml(video.title || "latest FEA video")}">
+        <img src="https://i.ytimg.com/vi/${encodeURIComponent(video.id)}/hqdefault.jpg" alt="" loading="lazy">
+        <span aria-hidden="true">▶</span>
+      </button>
       <div>
-        <span class="video-section-label video-section-label-upload">Latest upload</span>
+        <span class="meta">${date ? `Published ${escapeHtml(date)}` : "Latest upload"}</span>
         <h3><strong>${escapeHtml(video.title || "Federal Elections Analysis video")}</strong></h3>
         <p><a class="button-link" href="${escapeHtml(video.url || `https://www.youtube.com/watch?v=${video.id}`)}" target="_blank" rel="noreferrer">Watch on YouTube</a></p>
       </div>
     `;
+    const play = container.querySelector(".home-video-play");
+    play.addEventListener("click", () => {
+      const frame = document.createElement("iframe");
+      frame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(video.id)}?autoplay=1`;
+      frame.title = video.title || "Federal Elections Analysis video";
+      frame.allow = "autoplay; encrypted-media; picture-in-picture";
+      frame.allowFullscreen = true;
+      play.replaceWith(frame);
+      frame.focus();
+    });
   } catch {
     container.innerHTML = `<p class="meta">Video data unavailable.</p>`;
   }

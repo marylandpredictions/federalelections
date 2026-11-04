@@ -35,7 +35,10 @@
   padding-top: .65rem;
   border-top: 1px solid color-mix(in srgb, var(--dem) 40%, var(--line));
 }
-.home-tool-strip a { display: grid; gap: .2rem; padding: .3rem 0; text-decoration: none; }
+.home-tool-strip a { display:grid; grid-template-columns:auto minmax(0,1fr); align-content:start; gap:.25rem .65rem; height:100%; padding:.6rem .5rem; border-radius:6px; text-decoration:none; }
+.home-tool-strip svg { grid-row:span 2; width:1.65rem; height:1.65rem; fill:none; stroke:currentColor; stroke-width:1.65; stroke-linecap:round; stroke-linejoin:round; color:color-mix(in srgb,var(--dem) 62%,var(--ink)); }
+.home-tool-strip a:is(:hover,:focus-visible) { background:color-mix(in srgb,var(--dem) 9%,transparent); }
+.home-tool-strip strong { font-size:1.06rem; }
 .home-tool-strip a:hover strong { text-decoration: underline; }
 .home-tool-strip span { color: var(--muted); font-size: .88rem; }
 
@@ -72,21 +75,33 @@
 .home-supporting .home-article-list strong { font-size: clamp(1rem, 1.4vw, 1.3rem); line-height: 1.15; }
 
 .home-video-rail {
-  padding: clamp(16px, 2vw, 26px);
-  background: color-mix(in srgb, var(--paper) 94%, var(--dem));
-  border-inline-start: 3px solid var(--dem);
+  border-block:1px solid color-mix(in srgb,var(--dem) 30%,var(--line));
+  padding-block:clamp(14px,2vw,24px);
 }
 .home-video-rail .home-video-feature { grid-template-columns: minmax(0, 310px) minmax(0, 1fr); align-items: center; }
 .home-video-rail .home-video-feature h3 { font-size: clamp(1.1rem, 2vw, 1.7rem); margin: .35rem 0 .6rem; }
 .home-video-rail .video-section-label { margin: 0; }
-.home-video-rail .home-video-feature p { margin: 0; }
+.home-video-rail .home-video-feature p { margin: .35rem 0 0; }
+.home-video-rail iframe { display:block; }
 .home-updates { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1rem clamp(20px, 3vw, 44px); }
 .home-updates > div { border-top: 1px solid color-mix(in srgb, var(--dem) 40%, var(--line)); padding-top: .7rem; }
 .home-updates h3 { margin: 0 0 .3rem; }
-.home-updates li { padding: .45rem 0; }
-.home-updates li + li { border-top: 1px solid color-mix(in srgb, var(--line) 45%, transparent); }
-.home-updates li a { font-weight: 800; }
-.home-updates li :is(span,small) { display: block; color: var(--muted); font-size: .88rem; }
+.home-updates li { padding:.65rem 0; }
+.home-updates li + li { border-top:1px solid color-mix(in srgb,var(--line) 45%,transparent); }
+.home-updates li a { display:block; font-size:1.05rem; font-weight:850; text-decoration:none; }
+.home-updates li a:hover { text-decoration:underline; }
+.home-updates li small { display:block; color:var(--muted); font-size:.88rem; }
+.home-race-candidates { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.35rem .85rem; margin-top:.28rem; }
+.home-race-candidates > div { display:flex; justify-content:space-between; gap:.35rem; align-items:baseline; font-size:.92rem; }
+.home-race-candidates strong { white-space:nowrap; font-variant-numeric:tabular-nums; }
+.home-vote-bar { display:flex; height:5px; margin:.35rem 0 .28rem; background:color-mix(in srgb,var(--muted) 20%,transparent); border-radius:3px; overflow:hidden; }
+.home-vote-bar span { flex:none; background:var(--muted); }
+.home-vote-bar .home-dem { background:var(--dem); }
+.home-vote-bar .home-rep { background:var(--rep); }
+#home-recent-calls li { position:relative; padding-inline-start:.9rem; border-inline-start:1px solid color-mix(in srgb,var(--dem) 35%,var(--line)); }
+#home-recent-calls li:has(a)::before { content:""; position:absolute; left:-3px; top:1.15rem; width:5px; height:5px; border-radius:50%; background:var(--dem); }
+#home-recent-calls strong { font-size:.94rem; }
+.home-coverage .meta,.home-supporting .home-article-list span,#home-results-source { font-size:.84rem; }
 
 @media (max-width: 700px) {
   .home-hero-shell { grid-template-columns: minmax(0, 1fr); }
@@ -97,4 +112,13 @@
 @media (max-width: 560px) {
   .home-coverage, .home-video-rail .home-video-feature, .home-updates { grid-template-columns: minmax(0, 1fr); }
   .home-supporting { margin-top: 1.1rem; }
+  .home-race-candidates { grid-template-columns:1fr; gap:.18rem; }
 }
+.home-video-play {
+  position:relative; display:grid; place-items:center; width:100%; aspect-ratio:16/9;
+  padding:0; border:1px solid var(--line); border-radius:6px; overflow:hidden;
+  background:var(--paper); color:white; cursor:pointer;
+}
+.home-video-play img { position:absolute; width:100%; height:100%; object-fit:cover; }
+.home-video-play span { position:relative; background:#000c; border-radius:50%; padding:.55rem .72rem; }
+.home-video-play:is(:hover,:focus-visible) span { background:var(--dem); }
