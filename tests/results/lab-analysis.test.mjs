@@ -29,4 +29,35 @@ test('Lab separates missing, one-party, and inconsistent historical returns', ()
   }
   assert.ok(Number.isNaN(lab.contest(candidates(100,0)).gap));
   assert.ok(Number.isNaN(lab.contest(candidates(0,0)).margin));
+  const rankedChoice = lab.shift(current,{candidates:candidates(60,40),total:100,margin:20,round:'first-choice'});
+  assert.ok(Number.isNaN(rankedChoice.value));
+  assert.match(rankedChoice.reason,/round is not verified/);
+});
+
+test('Snapshot findings distinguish the closest race by votes from the closest by share', () => {
+  const rows = [
+    {race:{id:'large',candidates:[{name:'Winner',party:'R'}],calls:[{candidate:'Winner'}]},current:lab.contest(candidates(5050,4950)),swing:-12},
+    {race:{id:'small',candidates:[]},current:lab.contest(candidates(55,45)),swing:3},
+    {race:{id:'missing',candidates:[]},current:lab.contest(candidates(0,0)),swing:NaN}
+  ];
+  const snapshot = lab.findings(rows);
+  assert.equal(snapshot.close[0].race.id,'large');
+  assert.equal(snapshot.closeVotes[0].race.id,'small');
+  assert.equal(snapshot.swings[0].race.id,'large');
+  assert.deepEqual(snapshot.calls,{D:0,R:1,other:0});
+  assert.equal(snapshot.reported,2);
+  assert.equal(snapshot.withinTwo,1);
+});
+
+test('Local findings use published vote edges and skip unreported units', () => {
+  const local = lab.localFindings([
+    {name:'East',candidates:candidates(60,20,20)},
+    {name:'West',candidates:candidates(30,50)},
+    {name:'Unreported',candidates:candidates(0,0)}
+  ]);
+  assert.equal(local.rows.length,2);
+  assert.equal(local.votes,180);
+  assert.equal(local.edge,20);
+  assert.equal(local.dem.county.name,'East');
+  assert.equal(local.rep.county.name,'West');
 });

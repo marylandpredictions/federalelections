@@ -106,3 +106,16 @@ body:has(.bias-page) { background: var(--fea-bg); }
   .story-chapter { transition: none; }
   .lab-bar-track i { animation:none; }
 }
+
+.lab-finding { font-weight:650; border-inline-start:3px solid var(--fea-accent); padding-inline-start:.75rem; }
+#story-visual { height:clamp(15rem,52vh,32rem); }
+#story-visual > div:has(svg) { height:100%; display:flex; flex-direction:column; }
+#story-visual > div > svg { flex:1; min-height:0; }
+.lab-dot-track { display:block; position:relative; grid-column:1/-1; height:.8rem; margin-inline:.45rem; background:linear-gradient(to right,transparent 49.8%,var(--fea-muted) 49.8% 50.2%,transparent 50.2%); border-bottom:1px solid var(--fea-line); }
+.lab-dot-track i { position:absolute; top:.05rem; width:.65rem; height:.65rem; border-radius:50%; transform:translateX(-50%); background:var(--fea-accent); }
+.lab-dot-track .lab-bar-d { background:var(--fea-d); }
+.lab-dot-track .lab-bar-r { background:var(--fea-r); }
+.lab-dot-track .bias-poll-dot { z-index:1; background:transparent; border:2px solid var(--fea-ink); }
+.lab-dot-track .bias-result-dot { width:.47rem; height:.47rem; top:.14rem; }
+#lab-search { min-width:0; max-width:100%; }
+@media (max-width:760px) { #story-visual { height:min(29vh,14rem); min-height:0; } }

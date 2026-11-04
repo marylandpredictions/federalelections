@@ -7,9 +7,9 @@
 <script src="/assets/theme.js?v=20261030-features2"></script>
 <link rel="stylesheet" href="/assets/wiki.css?v=20261030-features1">
 <link rel="stylesheet" href="/assets/polling-bias.css?v=20261030-accessible2">
-<script defer src="/assets/polling-bias.js?v=atlas1"></script>
+<script defer src="/assets/polling-bias.js?v=atlas2"></script>
   <link rel="stylesheet" href="/assets/fea-platform.css?v=5">
-  <link rel="stylesheet" href="/assets/fea-research.css?v=1">
+  <link rel="stylesheet" href="/assets/fea-research.css?v=4">
   <script defer src="/assets/fea-shell.js?v=5"></script>
 </head><body>
 <header class="site-header">
@@ -57,8 +57,9 @@
 <div id="bias-detail-content" hidden><p class="bias-reading" id="bias-reading"></p>
 <dl class="bias-stats"><div><dt>2026 estimated miss</dt><dd id="bias-prior"></dd></div><div><dt>Evidence confidence</dt><dd id="bias-confidence"></dd></div><div><dt>Past races studied</dt><dd id="bias-races"></dd></div><div><dt>Polls studied</dt><dd id="bias-polls"></dd></div></dl>
 <h3>What happened in past Senate races?</h3><p class="bias-table-guide">Under “Polling average” and “Actual result,” <strong>D</strong> means a Democratic lead and <strong>R</strong> a Republican lead. The <strong>polling miss</strong> column shows which party the polls made look too strong. Blue means Democrats; red means Republicans.</p>
-<p class="bias-swipe">Swipe the table sideways to compare the polling average with the result →</p><div class="bias-table-wrap" role="region" aria-label="Past polls compared with results; scroll horizontally if needed" tabindex="0"><table class="bias-table"><caption>Polls compared with actual results · margins in percentage points</caption><thead><tr><th scope="col">Election</th><th scope="col">Polling miss</th><th scope="col">Polling average</th><th scope="col">Actual result</th><th scope="col">Polls studied</th></tr></thead><tbody id="bias-race-rows"></tbody></table></div>
-<p id="bias-no-races" class="bias-footnote" hidden></p>
+<h3>Where the polls and results diverged</h3><p id="bias-chart-summary" class="bias-footnote" hidden></p><ol id="bias-history-chart" class="lab-bars" aria-label="Historical polling and election margins"></ol>
+<details><summary>View race-by-race evidence</summary><p class="bias-swipe">Swipe the table sideways to compare the polling average with the result →</p><div class="bias-table-wrap" role="region" aria-label="Past polls compared with results; scroll horizontally if needed" tabindex="0"><table class="bias-table"><caption>Polls compared with actual results · margins in percentage points</caption><thead><tr><th scope="col">Election</th><th scope="col">Polling miss</th><th scope="col">Polling average</th><th scope="col">Actual result</th><th scope="col">Polls studied</th></tr></thead><tbody id="bias-race-rows"></tbody></table></div>
+</details><p id="bias-no-races" class="bias-footnote" hidden></p>
 <p class="bias-example"><strong>For example:</strong> if polls show <span class="bias-positive">D by 5</span> but the result is <span class="bias-positive">D by 2</span>, the polling miss is <span class="bias-positive">D by 3</span> — Democrats looked 3 points stronger in the polls than in the result.</p>
 <details class="bias-calculations"><summary>More about the calculation</summary>
 <p>The map is FEA’s adjusted estimate for 2026. The historical average below describes past polling errors before that adjustment. These are different measures, so only the 2026 estimate appears on the map.</p>
@@ -119,6 +120,7 @@
 <tr><th scope="row"><a href="#state-details" data-state="WI">Wisconsin</a></th><td class="bias-negative">R by 0.08</td><td>High</td><td>4</td><td>36</td></tr>
 <tr><th scope="row"><a href="#state-details" data-state="WY">Wyoming</a></th><td class="bias-positive">D by 0.17</td><td>Very low</td><td>1</td><td>2</td></tr></tbody></table></div></section>
 <section class="bias-section bias-method" aria-labelledby="bias-method-title"><h2 id="bias-method-title">A little context</h2><h3>This is about polling accuracy</h3><p>A state can lean strongly Republican and still have a Democratic polling bias, or the other way around. The color shows which party polls may overstate, not which party is expected to win the state.</p><h3>Some states have much less evidence</h3><p>The estimates use Senate polling and election results from 2014 through 2024. A large estimated miss can come from a small sample. Oklahoma has no usable Democratic-versus-Republican Senate race in this dataset, so its estimate relies on its region and has very low confidence.</p>
+<h3>Evaluating the 2026 estimates</h3><p>The 2026 estimates are pre-election figures. The separate 2026 polling reference uses a different window and poll selection method from this study. A like-for-like evaluation needs polling reconstructed with this study’s rules and verified election returns.</p>
 <div class="bias-source-panel"><h3>Source</h3><p><a href="https://docs.google.com/spreadsheets/d/1_jm2C7nYv4MRVhPWf-_4Q1UCJzDU_liIJAhG7pUT-BQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer">FEA calculations ↗</a></p><p>Explore the full calculations in the spreadsheet, or <a href="/data/features/polling-bias.json">download the underlying data</a>. This page presents a published set of estimates; it does not automatically refresh when the spreadsheet changes.</p></div></section>
 <noscript><p>JavaScript is needed for the map and selected-state history. The complete state table and FEA calculations link remain available above.</p></noscript>
 </main><footer class="site-footer">

@@ -72,7 +72,31 @@
       };
       for (const [key, value] of Object.entries(values)) document.getElementById('bias-' + key).textContent = value;
       for (const [id, value] of [['prior',state.prior],['raw',state.raceCount ? state.rawBias : null],['division',state.divisionPrior]]) document.getElementById('bias-' + id).className = partyClass(value);
-      document.getElementById('bias-reading').textContent = `${plainBias(state.prior)} in ${state.state}, according to FEA’s 2026 estimate. This describes possible polling error, not who will win.`;
+      const largest = [...state.races].filter(race=>Number.isFinite(race.bias))
+        .sort((a,b)=>Math.abs(b.bias)-Math.abs(a.bias))[0];
+      document.getElementById('bias-reading').textContent = `${plainBias(state.prior)} in ${state.state}, according to FEA’s 2026 estimate.` +
+        (largest ? ` The largest observed miss in the state’s sample was ${partyNumber(largest.bias)} in ${largest.year}. The estimate draws on ${state.raceCount} historical ${state.raceCount===1?'race':'races'} and the regional starting point.` : ' The estimate draws on the regional starting point because this state has no usable race in the sample.');
+      const chart = document.getElementById('bias-history-chart');
+      chart.replaceChildren();
+      const extent = Math.max(10,...state.races.flatMap(race=>[race.pollMargin,race.actualMargin]).filter(Number.isFinite).map(Math.abs));
+      for (const race of state.races.filter(race=>Number.isFinite(race.pollMargin)&&Number.isFinite(race.actualMargin))) {
+        const row = document.createElement('li'), year = document.createElement('strong'), values = document.createElement('span');
+        year.textContent = race.year;
+        values.textContent = `Polls ${partyNumber(race.pollMargin)} · Result ${partyNumber(race.actualMargin)}`;
+        const track = document.createElement('span');
+        track.className = 'lab-dot-track';
+        track.setAttribute('aria-hidden','true');
+        for (const [className, value] of [['bias-poll-dot',race.pollMargin],['bias-result-dot',race.actualMargin]]) {
+          const dot = document.createElement('i');
+          dot.className = className;
+          dot.style.left = 50 + 50 * value / extent + '%';
+          track.append(dot);
+        }
+        row.append(year,values,track);
+        chart.append(row);
+      }
+      document.getElementById('bias-chart-summary').hidden = !chart.children.length;
+      document.getElementById('bias-chart-summary').textContent = `Hollow marker = polling average. Filled marker = election result. The center line is even, with Republican margins to its left and Democratic margins to its right. Scale: ±${extent.toFixed(1)} points.`;
       const body = document.getElementById('bias-race-rows'), calculationRows = document.getElementById('bias-calculation-rows');
       body.replaceChildren(); calculationRows.replaceChildren();
       const totalWeight = state.races.reduce((sum, race) => sum + race.weight, 0);
