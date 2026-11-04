@@ -12,33 +12,59 @@
   <script src="/assets/theme.js?v=20261030-features2"></script>
   <link rel="stylesheet" href="/assets/fea-platform.css?v=3">
   <script defer src="/assets/fea-shell.js?v=3"></script>
-  <script defer src="/assets/results-ui.js"></script><script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script><script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script><script defer src="/assets/night-awareness.js"></script><script defer src="/assets/fea-platform.js?v=4"></script>
+  <link rel="stylesheet" href="/assets/fea-home.css?v=1">
+  <script defer src="/assets/fea-platform.js?v=5"></script>
 </head>
 <body class="fea-site" data-page="home">
   <header class="fea-header" data-fea-header><div class="fea-header-inner"><a href="/">Federal Elections Analysis</a><nav class="fea-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/elections">Elections</a><a href="/polling">Polling</a><a href="/data-lab">Data Lab</a><a href="/articles">Analysis</a><a href="/about">About</a></nav></div></header>
   <main id="main-content" class="fea-main">
 
-    <section class="fea-hero" aria-labelledby="home-title">
-      <div><p class="fea-kicker">Federal Elections Analysis · Election coverage</p>
-      <h1 id="home-title">The 2026 midterms</h1>
-      <p class="fea-intro">Track reported returns, explore the races that shaped the midterms, and compare them with past elections.</p>
-      <div class="fea-actions"><a class="fea-button fea-primary" href="/results">Results board →</a><a class="fea-button" href="/analysis-center">Election Lab</a></div></div>
-      <div><div id="home-map" class="fea-map"><p class="fea-note">Loading reported House margins…</p></div><p class="fea-note">2026 House · Reported Democratic–Republican margin</p></div>
+    <section class="home-lead" aria-labelledby="home-title">
+      <div class="home-feature">
+        <img src="/assets/img/hero-senate.webp" alt="" fetchpriority="high">
+        <span class="home-tag">Featured coverage</span>
+        <div class="home-feature-copy">
+          <h1 id="home-title">The 2026 midterms</h1>
+          <p>Explore the races shaping Congress and statehouses, with reported returns and comparisons to past elections.</p>
+          <a class="fea-button fea-primary" href="/results">Explore election results →</a>
+        </div>
+      </div>
+      <div id="home-overview" class="home-results" aria-label="National results overview">
+        <p class="fea-note">Loading election results…</p>
+      </div>
     </section>
-    <section class="fea-section" aria-labelledby="overview-title">
-      <p class="fea-kicker">National overview</p><h2 id="overview-title">Races called by office</h2>
-      <p id="home-source" class="fea-note" data-load-status role="status">Loading election data…</p>
-      <div id="home-overview" class="fea-grid"></div>
-      <p class="fea-note">Counts cover seats on the 2026 ballot.</p>
+
+    <section class="home-tools" aria-labelledby="home-tools-title">
+      <div><h2 id="home-tools-title">Explore FEA tools</h2><p>Election data, maps, and analysis.</p></div>
+      <a href="/features/map-maker"><span aria-hidden="true">◇</span><strong>FEA Atlas</strong><small>Build and export election scenarios.</small></a>
+      <a href="/analysis-center?metric=swing"><span aria-hidden="true">↗</span><strong>Election Lab</strong><small>Compare results and historical swings.</small></a>
+      <a href="/polling"><span aria-hidden="true">▥</span><strong>Polling Center</strong><small>Browse FEA’s polling references.</small></a>
+      <a href="/election-history"><span aria-hidden="true">◷</span><strong>Election Archive</strong><small>Explore past presidential returns.</small></a>
     </section>
-    <section class="fea-section fea-split">
-      <div><p class="fea-kicker">Explore the data</p><h2>From returns to context</h2>
-      <div class="fea-card"><div class="fea-row"><a href="/elections">Election directory →</a><small>Find a House, Senate, or governor contest.</small></div>
-      <div class="fea-row"><a href="/features/map-maker">FEA Atlas →</a><small>Build and export a custom election scenario.</small></div>
-      <div class="fea-row"><a href="/analysis-center?metric=swing">Swing Laboratory →</a><small>Compare reported margins with verified historical benchmarks.</small></div>
-      <div class="fea-row"><a href="/polling">Polling Center →</a><small>Review eligible 2026 race averages and historical polling bias.</small></div></div></div>
-      <div><p class="fea-kicker">From FEA</p><h2>Latest research</h2><div class="fea-card"><div id="home-research">Loading published articles…</div><p><a href="/articles">All analysis</a> · <a href="/videos">Video coverage</a></p></div></div>
+
+    <div class="home-editorial">
+      <section aria-labelledby="home-stories-title">
+        <div class="home-heading"><h2 id="home-stories-title">Top stories</h2><a href="/articles">All analysis →</a></div>
+        <div id="home-research" class="home-stories">Loading published articles…</div>
+      </section>
+      <aside class="home-panel home-feed" aria-labelledby="home-feed-title">
+        <div class="home-heading"><h2 id="home-feed-title">Recent race calls</h2></div>
+        <ol id="home-calls"><li>Loading published calls…</li></ol>
+        <a href="/results">Open the results board →</a>
+      </aside>
+    </div>
+
+    <section class="home-watch-section" aria-labelledby="home-watch-title">
+      <div class="home-heading"><h2 id="home-watch-title">Races to watch</h2><a href="/elections">View all races →</a></div>
+      <p class="fea-note">Selected from FEA’s election-night watchlist. Vote shares reflect reported returns.</p>
+      <div id="home-watch" class="home-watch">Loading featured races…</div>
     </section>
+
+    <section class="home-closer">
+      <div><h2>Go beyond the totals</h2><p>Compare election margins and see which counties shaped the result.</p></div>
+      <a class="fea-button" href="/analysis-center">Open Election Lab →</a>
+    </section>
+    <p id="home-source" class="fea-note" data-load-status role="status">Loading results source…</p>
 
   </main>
   <footer class="fea-footer" data-fea-footer><div class="fea-footer-inner"><a href="/about">Federal Elections Analysis</a><a href="/sources">Sources</a><a href="/contact">Contact</a></div></footer>

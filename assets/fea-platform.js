@@ -123,26 +123,67 @@
     container.replaceChildren(svg.node(),legend);
   }
   async function homepage() {
-    const articles = get('/data/articles.json').then(data => {
-      $('home-research').innerHTML = [...data].sort((a,b) => b.date.localeCompare(a.date)).slice(0,4).map(article =>
-        `<div class="fea-row"><a href="/article?slug=${encodeURIComponent(article.slug)}">${escape(article.title)}</a><small>${escape(article.date)} · ${escape(article.author || 'FEA')}</small></div>`
-      ).join('') || '<p>No published articles available.</p>';
+    const stories = get('/data/articles.json').then(articles => {
+      const ordered = [...articles].sort((a,b) => b.date.localeCompare(a.date));
+      const featured = ordered.find(article => article.featured) || ordered[0];
+      const card = (article, lead = false) => {
+        const image = typeof article.image === 'string' ? article.image : article.image?.url;
+        const photo = /^assets\/img\/[a-z0-9_.-]+$/i.test(image || '')
+          ? `<img src="/${escape(image)}" alt="" loading="lazy">` : '';
+        return `<a class="home-story${photo ? '' : ' home-story-text'}" href="/article?slug=${encodeURIComponent(article.slug)}">${photo}<span class="home-story-copy"><small>${escape(article.date)}</small><h3>${escape(article.title)}</h3>${lead ? `<p>${escape(article.dek || '')}</p>` : ''}<small>${escape(article.author || 'FEA')}</small></span></a>`;
+      };
+      $('home-research').innerHTML = featured
+        ? card(featured,true) + `<div class="home-story-stack">${ordered.filter(article => article !== featured).slice(0,3).map(article => card(article)).join('')}</div>`
+        : '<p>No published articles available.</p>';
     }).catch(() => { $('home-research').textContent = 'The article list could not load.'; });
-    const data = await get('/api/live-results');
-    const list = rows(data);
-    $('home-overview').innerHTML = Object.entries(offices).map(([office,label]) => {
-      const races = list.filter(race => race.type === office);
-      const called = races.filter(race => race.calls?.length);
-      const count = code => called.filter(race => {
-        const winner = race.candidates.find(candidate => candidate.name === race.calls[0]?.candidate);
-        return winner && party(winner) === code;
-      }).length;
-      const d = count('D'), r = count('R');
-      return `<article class="fea-card"><h3><a href="/elections?office=${office}">${label}</a></h3><div class="fea-number"><span class="fea-d">${d} D</span> <span class="fea-r">${r} R</span></div><div class="fea-bar" aria-hidden="true"><span style="width:${100*d/(races.length||1)}%"></span><span style="width:${100*r/(races.length||1)}%"></span></div><p class="fea-note">${called.length} called of ${races.length} contests · ${called.length-d-r} other calls</p></article>`;
-    }).join('');
-    $('home-source').innerHTML = sourceNote(data);
-    const house = list.filter(race => race.type === 'house');
-    await Promise.all([articles,map($('home-map'),house,new Map(house.map(race => [race.id,votes(race.candidates).margin])),'house',null,'Reported House margins').catch(() => { $('home-map').textContent='Map unavailable. Open the results board for race details.'; })]);
+    try {
+      const data = await get('/api/live-results');
+      const list = rows(data);
+      if (!list.length) throw new Error('No results available');
+      const reporting = list.filter(race => votes(race.candidates).total > 0).length;
+      const calledCount = list.filter(race => race.calls?.length).length;
+      const panels = Object.entries(offices).map(([office,label]) => {
+        const races = list.filter(race => race.type === office);
+        const called = races.filter(race => race.calls?.length);
+        const count = code => called.filter(race => {
+          const winner = race.candidates.find(candidate => candidate.name === race.calls[0]?.candidate);
+          return winner && party(winner) === code;
+        }).length;
+        const d = count('D'), r = count('R');
+        return `<article class="home-panel"><h3>${label} races called</h3><div class="home-metric"><span class="fea-d">${d} D</span><span class="fea-r">${r} R</span></div><div class="fea-bar" aria-hidden="true"><span style="width:${100*d/(races.length||1)}%"></span><span style="width:${100*r/(races.length||1)}%"></span></div><p class="fea-note">${called.length} of ${races.length} on the ballot${called.length>d+r ? ` · ${called.length-d-r} other` : ''}</p><a href="/elections?office=${office}">View ${label.toLowerCase()} races →</a></article>`;
+      });
+      panels.push(`<article class="home-panel"><h3>National reporting</h3><div class="home-metric">${reporting}<small class="fea-note">of ${list.length} races</small></div><div class="fea-bar" aria-hidden="true"><span style="width:${100*reporting/list.length}%"></span></div><p class="fea-note">${calledCount} races called</p><a href="/elections">Browse all results →</a></article>`);
+      $('home-overview').innerHTML = panels.join('');
+      $('home-source').innerHTML = sourceNote(data);
+      const calls = list.flatMap(race => (race.calls || []).map(call => ({race,call,time:Date.parse(call.calledAt)})))
+        .filter(entry => Number.isFinite(entry.time)).sort((a,b) => b.time-a.time).slice(0,5);
+      $('home-calls').innerHTML = calls.length ? calls.map(({race,call}) =>
+        `<li><time datetime="${escape(call.calledAt)}">${escape(stamp(call.calledAt))}</time><a href="${raceUrl(race.id)}">${escape(title(race))}</a><div>${escape(call.candidate)} · ${escape(call.provider || call.source || 'FEA')}</div></li>`
+      ).join('') : '<li>No timestamped race calls in this snapshot.</li>';
+      try {
+        const watch = await get('/data/election-night-watchlist.json');
+        const featured = list.filter(race => watch.races?.[race.id]?.watch || watch.races?.[race.id]?.tossup)
+          .map(race => {
+            const total = votes(race.candidates).total;
+            const leading = [...race.candidates].filter(c => c.votes>0).sort((a,b)=>b.votes-a.votes).slice(0,2);
+            const gap = total && leading.length===2 ? (leading[0].votes-leading[1].votes)/total : Infinity;
+            return {race,total,leading,gap};
+          }).sort((a,b) => Number(!!a.race.calls?.length)-Number(!!b.race.calls?.length) || a.gap-b.gap);
+        const diverse = Object.keys(offices).map(office => featured.find(entry => entry.race.type===office)).filter(Boolean);
+        const selected = [...diverse,...featured.filter(entry => !diverse.includes(entry))].slice(0,4);
+        $('home-watch').innerHTML = selected.length ? selected.map(({race,total,leading}) =>
+          `<article class="home-panel"><p class="fea-note">${escape(offices[race.type])} · ${status(race)}</p><h3>${escape(title(race))}</h3>${total ? `<ul>${leading.map(candidate => `<li><span>${escape(candidate.name)}</span><strong>${(100*candidate.votes/total).toFixed(1)}%</strong></li>`).join('')}</ul>` : '<p class="fea-note">Awaiting reported votes.</p>'}<a href="${raceUrl(race.id)}">View race →</a></article>`
+        ).join('') : '<p>No watchlist races in this snapshot.</p>';
+      } catch {
+        $('home-watch').textContent = 'The watchlist could not load.';
+      }
+    } catch {
+      $('home-overview').innerHTML = '<p class="fea-note">Results unavailable. <a href="/results">Open the results board</a>.</p>';
+      $('home-source').textContent = 'Reported returns could not load.';
+      $('home-calls').innerHTML = '<li>Published calls could not load.</li>';
+      $('home-watch').textContent = 'Featured race results could not load.';
+    }
+    await stories;
   }
   async function elections() {
     const data = await get('/api/live-results');
