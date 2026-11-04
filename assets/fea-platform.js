@@ -148,19 +148,29 @@
     $('home-zoom').hidden = false;
   }
   async function homepage() {
-    if ($('home-bias-preview')) get('/data/features/polling-bias.json?v=20261030-1').then(data=>{
-      const top = data.states.filter(state=>Number.isFinite(state.prior))
-        .sort((a,b)=>Math.abs(b.prior)-Math.abs(a.prior)).slice(0,3);
-      $('home-bias-preview').innerHTML = top.map(state=>`<span>${escape(state.abbr)} <b class="${state.prior>0?'preview-dem':'preview-rep'}">${marginLabel(state.prior)}</b></span>`).join('');
+    const gapLabel = value => value === 0 ? 'Tied' : value < .01 ? '<0.01 pts' : value.toFixed(2)+' pts';
+    function previewBars(target, entries, read) {
+      const scale = Math.max(1,...entries.map(entry=>Math.abs(entry.value)));
+      $(target).innerHTML = entries.map(entry=>`<div class="home-preview-row"><span>${escape(entry.name)}</span><strong>${escape(read(entry.value))}</strong><span class="home-preview-track" aria-hidden="true"><i class="${entry.party || ''}" style="width:${100*Math.abs(entry.value)/scale}%"></i></span></div>`).join('');
+    }
+    get('/data/features/polling-bias.json?v=20261030-1').then(data=>{
+      const entries = data.states.filter(state=>Number.isFinite(state.prior))
+        .sort((a,b)=>Math.abs(b.prior)-Math.abs(a.prior)).slice(0,3)
+        .map(state=>({name:state.state,value:state.prior,party:state.prior>0?'home-bar-d':'home-bar-r'}));
+      previewBars('home-bias-preview',entries,marginLabel);
+    }).catch(()=>{ $('home-bias-preview').textContent = 'State estimates are available in the full study.'; });
+    const maker = $('home-maker-preview');
+    map(maker,[],new Map(),'senate',null,'United States scenario canvas').then(()=>{
+      maker.querySelector('.fea-legend')?.remove();
     }).catch(()=>{});
     const stories = get('/data/articles.json').then(articles => {
       const ordered = [...articles].sort((a,b) => b.date.localeCompare(a.date));
-      const featured = ordered.find(article => article.featured) || ordered[0];
+      const featured = ordered[0];
       const card = (article, lead = false) => {
         const image = typeof article.image === 'string' ? article.image : article.image?.url;
         const photo = /^assets\/img\/[a-z0-9_.-]+$/i.test(image || '')
-          ? `<img src="/${escape(image)}" alt="" loading="lazy">` : '';
-        return `<a class="home-story${photo ? '' : ' home-story-text'}" href="/article?slug=${encodeURIComponent(article.slug)}">${photo}<span class="home-story-copy"><small>${escape(article.date)}</small><h3>${escape(article.title)}</h3>${lead ? `<p>${escape(article.dek || '')}</p>` : ''}<small>${escape(article.author || 'FEA')}</small></span></a>`;
+          ? `<img src="/${escape(image)}" alt="${escape(article.image?.alt || '')}" loading="lazy">` : '';
+        return `<a class="home-story${photo ? '' : ' home-story-text'}" href="/article?slug=${encodeURIComponent(article.slug)}">${photo}<span class="home-story-copy"><time datetime="${escape(article.date)}">${escape(article.date)}</time><h3>${escape(article.title)}</h3>${lead ? `<p>${escape(article.dek || '')}</p>` : ''}<small>${escape(article.author || 'FEA')}</small></span></a>`;
       };
       $('home-research').innerHTML = featured
         ? card(featured,true) + `<div class="home-story-stack">${ordered.filter(article => article !== featured).slice(0,3).map(article => card(article)).join('')}</div>`
@@ -170,10 +180,11 @@
       const data = await get('/api/live-results');
       const list = rows(data);
       if (!list.length) throw new Error('No results available');
-      const senate = list.filter(race=>race.type==='senate');
-      const senateReporting = senate.filter(race=>votes(race.candidates).total>0).length;
-      if ($('home-lab-preview') && senate.length) {
-        $('home-lab-preview').textContent = `${senateReporting} of ${senate.length} Senate contests have reported votes. See where margins shifted, which contests stayed close, and how local votes shaped the result.`;
+      const ranked = FEALabAnalysis.findings(list.map(race=>({race,current:FEALabAnalysis.contest(race.candidates)}))).close;
+      const senate = ranked.filter(row=>row.race.type==='senate').slice(0,3);
+      if (senate.length) {
+        $('home-lab-preview').textContent = 'The tightest reported Senate contests by percentage points. Compare vote margins, historical benchmarks and local returns.';
+        previewBars('home-lab-chart',senate.map(row=>({name:title(row.race),value:row.current.gapPoints})),gapLabel);
       }
       const reporting = list.filter(race => votes(race.candidates).total > 0).length;
       const calledCount = list.filter(race => race.calls?.length).length;
@@ -185,22 +196,26 @@
           return winner && party(winner) === code;
         }).length;
         const d = count('D'), r = count('R');
-        return `<article class="home-panel"><h3>${label} races called</h3><div class="home-metric"><span class="fea-d">${d} D</span><span class="fea-r">${r} R</span></div><div class="fea-bar" aria-hidden="true"><span style="width:${100*d/(races.length||1)}%"></span><span style="width:${100*r/(races.length||1)}%"></span></div><p class="fea-note">${called.length} of ${races.length} on the ballot${called.length>d+r ? ` · ${called.length-d-r} other` : ''}</p><a href="/elections?office=${office}">View ${label.toLowerCase()} races →</a></article>`;
+        return `<article class="home-panel" data-home-office="${office}"><h3>${label}</h3><div class="home-metric"><span class="fea-d">${d} D</span><span class="fea-r">${r} R</span></div><div class="fea-bar" aria-hidden="true"><span style="width:${100*d/(races.length||1)}%"></span><span style="width:${100*r/(races.length||1)}%"></span></div><p class="fea-note">${called.length} of ${races.length} called${called.length>d+r ? ` · ${called.length-d-r} other` : ''}</p><a href="/results?office=${office}">View ${label.toLowerCase()} results →</a></article>`;
       });
       panels.push(`<article class="home-panel"><h3>National reporting</h3><div class="home-metric">${reporting}<small class="fea-note">of ${list.length} races</small></div><div class="fea-bar" aria-hidden="true"><span style="width:${100*reporting/list.length}%"></span></div><p class="fea-note">${calledCount} races called</p><a href="/elections">Browse all results →</a></article>`);
       $('home-overview').innerHTML = panels.join('');
-      $('home-source').innerHTML = sourceNote(data);
+      $('home-source').innerHTML = sourceNote({...data,updatedAt:data.updatedAt || data.generatedAt});
       let mapRevision = 0;
       const mapOffice = $('home-office');
       async function renderHomeMap() {
         const revision = ++mapRevision;
         $('home-zoom').hidden = true;
         const office = mapOffice.value;
+        $('home-board-link').href = '/results?' + new URLSearchParams({office});
+        document.querySelectorAll("[data-home-office]").forEach(panel=>panel.classList.toggle("is-selected",panel.dataset.homeOffice===office));
         const races = list.filter(race => race.type === office);
         const stage = document.createElement('div');
         try {
           await map(stage,races,new Map(races.map(race => [race.id,votes(race.candidates).margin])),office,null,offices[office]+' reported margins');
           if (revision !== mapRevision) return;
+          const legend = stage.querySelector('.fea-legend');
+          legend.prepend(document.createTextNode('Reported vote margin'));
           $('home-map').replaceChildren(...stage.childNodes);
           enableHomeMapZoom();
         } catch {
@@ -214,23 +229,13 @@
       $('home-calls').innerHTML = calls.length ? calls.map(({race,call}) =>
         `<li><time datetime="${escape(call.calledAt)}">${escape(stamp(call.calledAt))}</time><a href="${raceUrl(race.id)}">${escape(title(race))}</a><div>${escape(call.candidate)} · ${escape(call.provider || call.source || 'FEA')}</div></li>`
       ).join('') : '<li>No timestamped race calls in this snapshot.</li>';
-      try {
-        const watch = await get('/data/election-night-watchlist.json');
-        const featured = list.filter(race => watch.races?.[race.id]?.watch || watch.races?.[race.id]?.tossup)
-          .map(race => {
-            const total = votes(race.candidates).total;
-            const leading = [...race.candidates].filter(c => c.votes>0).sort((a,b)=>b.votes-a.votes).slice(0,2);
-            const gap = total && leading.length===2 ? (leading[0].votes-leading[1].votes)/total : Infinity;
-            return {race,total,leading,gap};
-          }).sort((a,b) => Number(!!a.race.calls?.length)-Number(!!b.race.calls?.length) || a.gap-b.gap);
-        const diverse = Object.keys(offices).map(office => featured.find(entry => entry.race.type===office)).filter(Boolean);
-        const selected = [...diverse,...featured.filter(entry => !diverse.includes(entry))].slice(0,4);
-        $('home-watch').innerHTML = selected.length ? selected.map(({race,total,leading}) =>
-          `<article class="home-panel"><p class="fea-note">${escape(offices[race.type])} · ${status(race)}</p><h3>${escape(title(race))}</h3>${total ? `<ul>${leading.map(candidate => `<li><span>${escape(candidate.name)}</span><strong>${(100*candidate.votes/total).toFixed(1)}%</strong></li>`).join('')}</ul>` : '<p class="fea-note">Awaiting reported votes.</p>'}<a href="${raceUrl(race.id)}">View race →</a></article>`
-        ).join('') : '<p>No watchlist races in this snapshot.</p>';
-      } catch {
-        $('home-watch').textContent = 'The watchlist could not load.';
-      }
+      const uncalled = ranked.filter(({race})=>!race.calls?.length);
+      const selected = (uncalled.length ? uncalled : ranked).slice(0,4);
+      $('home-watch-title').textContent = uncalled.length ? 'Closest uncalled races' : 'Closest reported races';
+      $('home-watch-note').textContent = 'Ranked by the reported percentage-point gap between the top two candidates. The gap can change as votes arrive.';
+      $('home-watch').innerHTML = selected.length ? selected.map(({race,current}) =>
+        `<article class="home-panel"><p class="fea-note">${escape(offices[race.type])} · ${status(race)}</p><h3><a href="${raceUrl(race.id)}">${escape(title(race))}</a></h3><ul>${current.ranked.slice(0,2).map(candidate => `<li><span>${escape(candidate.name)}</span><strong>${(100*candidate.votes/current.total).toFixed(1)}%</strong></li>`).join('')}</ul><strong class="home-gap">${escape(gapLabel(current.gapPoints))}${current.gap ? ' apart' : ''}</strong></article>`
+      ).join('') : '<p>No contests have two candidates with reported votes in this snapshot.</p>';
     } catch {
       $('home-map').textContent = 'Reported map data unavailable.';
       $('home-overview').innerHTML = '<p class="fea-note">Results unavailable. <a href="/results">Open the results board</a>.</p>';
