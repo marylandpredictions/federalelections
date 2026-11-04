@@ -10,6 +10,8 @@
     element.href = href;
     return element;
   };
+  const raceLink = race => link('/results?'+new URLSearchParams({office:race.type,race:race.id}),race.title || race.electionName || race.id);
+  const dateFormat = new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',dateStyle:'medium',timeStyle:'short'});
   try {
     const response = await fetch('/api/live-results',{signal:AbortSignal.timeout(12000)});
     if (!response.ok) throw new Error('Results unavailable');
@@ -36,10 +38,17 @@
     });
     $('home-results-lines').replaceChildren(...lines);
     const updated = new Date(data.provider?.lastUpstreamUpdate || data.updatedAt || data.generatedAt);
-    const stamp = Number.isFinite(+updated) ? new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',dateStyle:'medium',timeStyle:'short'}).format(updated)+' ET' : '';
+    const stamp = Number.isFinite(+updated) ? dateFormat.format(updated)+' ET' : '';
     $('home-results-source').textContent = [`${all.reported} of ${rows.length} races reporting`,data.provider?.name || 'FEA results',stamp,data.provider?.stale ? 'Updates may be delayed' : ''].filter(Boolean).join(' · ');
     const open = all.close.filter(({race})=>!race.calls?.length);
     const selected = (open.length ? open : all.close).slice(0,4);
+    const recent = races.flatMap(race=>(race.calls || []).map(call=>({race,call,time:Date.parse(call.calledAt)})))
+      .filter(({time})=>Number.isFinite(time)).sort((a,b)=>b.time-a.time).slice(0,4);
+    $('home-recent-calls').replaceChildren(...(recent.length ? recent.map(({race,call,time})=>{
+      const item = document.createElement('li');
+      item.append(raceLink(race),node('span',[call.candidate,call.provider || call.source,dateFormat.format(time)+' ET'].filter(Boolean).join(' · ')));
+      return item;
+    }) : [node('li','No timestamped calls in this snapshot.')]));
     $('home-notable-title').textContent = open.length ? 'Closest uncalled races' : 'Closest reported races';
     if (!selected.length) {
       $('home-notable-races').replaceChildren(node('li','No races with two candidates reporting votes in this snapshot.'));
@@ -47,15 +56,15 @@
     }
     $('home-notable-races').replaceChildren(...selected.map(({race,current})=>{
       const item = document.createElement('li');
-      const name = race.title || race.electionName || race.id;
       const gap = current.gapPoints;
       const reading = gap===0 ? 'Tied' : gap<.01 ? 'Less than 0.01 points apart' : `${gap.toFixed(2)} points apart`;
       const pair = current.ranked.slice(0,2).map(c=>`${c.name} ${(100*c.votes/current.total).toFixed(1)}%`).join(' · ');
-      item.append(link('/results?'+new URLSearchParams({office:race.type,race:race.id}),name),node('span',pair),node('small',reading+(race.calls?.length?' · Called':' · Uncalled')));
+      item.append(raceLink(race),node('span',pair),node('small',reading+(race.calls?.length?' · Called':' · Uncalled')));
       return item;
     }));
   } catch {
     $('home-results-lines').replaceChildren(node('p','Reported results are unavailable.'));
     $('home-notable-races').replaceChildren(node('li','Race margins are unavailable.'));
+    $('home-recent-calls').replaceChildren(node('li','Public calls are unavailable.'));
   }
 })();

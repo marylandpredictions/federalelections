@@ -11,7 +11,7 @@
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
   <script src="assets/theme.js?v=20261030-features2"></script>
   <link rel="stylesheet" href="assets/wiki.css?v=20261030-features1">
-  <link rel="stylesheet" href="/assets/classic-home.css?v=2">
+  <link rel="stylesheet" href="/assets/classic-home.css?v=3">
 </head>
 <body>
       <header class="site-header">
@@ -46,7 +46,7 @@
     </section>
 
     <section class="home-tool-strip" aria-labelledby="home-tools-heading">
-      <div class="home-section-head"><span>Explore FEA</span><h2 id="home-tools-heading">Election tools</h2></div>
+      <h2 class="home-heading" id="home-tools-heading">Explore FEA</h2>
       <ul>
         <li><a href="/features/map-maker"><strong>Map Maker</strong><span>Build and share a scenario</span></a></li>
         <li><a href="/features/polling-bias"><strong>State Polling Bias</strong><span>Compare polls with past results</span></a></li>
@@ -56,7 +56,7 @@
     </section>
 
     <section class="home-coverage" aria-labelledby="home-writing-title">
-      <div class="home-section-head"><span>Articles</span><h2 id="home-writing-title">Latest writing</h2></div>
+      <h2 class="home-heading" id="home-writing-title">Latest analysis</h2>
       <article class="article-teaser" id="top-article" aria-labelledby="top-article-title">
         <p class="meta">Loading the featured article…</p>
       </article>
@@ -64,17 +64,24 @@
         <div id="home-article-list" class="home-article-list"></div>
         <a href="/articles">All articles →</a>
       </aside>
-      <aside class="home-video-rail" aria-labelledby="home-video-title">
-        <p class="kicker">From the channel</p>
-        <h2 id="home-video-title">Latest video</h2>
-        <div id="home-latest-video" class="home-video-feature"><p class="meta">Loading the latest video…</p></div>
-      </aside>
     </section>
 
-    <section class="home-notable" aria-labelledby="home-notable-title">
-      <div class="home-section-head"><span>The count</span><h2 id="home-notable-title">Notable races</h2></div>
-      <p class="meta" id="home-notable-note">Closest contests by reported percentage-point gap.</p>
-      <ul id="home-notable-races"><li>Loading race margins…</li></ul>
+    <section class="home-video-rail" aria-labelledby="home-video-title">
+      <h2 class="home-heading" id="home-video-title">Latest coverage</h2>
+      <div id="home-latest-video" class="home-video-feature"><p class="meta">Loading the latest video…</p></div>
+    </section>
+
+    <section class="home-notable" aria-labelledby="home-updates-title">
+      <h2 class="home-heading" id="home-updates-title">Election updates</h2>
+      <div class="home-updates">
+        <div><h3 id="home-notable-title">Close races</h3>
+          <p class="meta" id="home-notable-note">By reported vote-share gap.</p>
+          <ul id="home-notable-races"><li>Loading race margins…</li></ul>
+        </div>
+        <div><h3>Recent calls</h3>
+          <ul id="home-recent-calls"><li>Loading public race calls…</li></ul>
+        </div>
+      </div>
     </section>
 
   </main>
@@ -109,7 +116,7 @@
   </footer>
 
   <script src="/assets/fea-lab-analysis.js?v=2" defer></script>
-  <script src="/assets/classic-home.js?v=1" defer></script>
+  <script src="/assets/classic-home.js?v=2" defer></script>
   <script src="assets/wiki.js?v=classic-home1"></script>
 </body>
 </html>
