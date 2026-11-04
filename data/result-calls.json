@@ -1,56 +1,6 @@
 {
-  "description": "Federal Elections Analysis published race calls and persistent election-night control state. NBC projections publish only through the configured grace/override workflow; manual FEA calls remain authoritative.",
-  "_howToUse": {
-    "fileToEdit": "data/result-calls.json",
-    "candidateNameRule": "Candidate names must match the candidate name in data/live-results.json exactly. Use raceIdGuide below to find the race, then copy the candidate name exactly.",
-    "singleWinnerExample": {
-      "races": {
-        "ga-sen-r-runoff-2026": {
-          "calls": [
-            {
-              "candidate": "Mike Collins",
-              "status": "projected",
-              "calledAt": "2026-06-16T21:15:00-04:00"
-            }
-          ]
-        }
-      }
-    },
-    "runoffOrPrimaryExample": {
-      "races": {
-        "al-sen-r-runoff-2026": {
-          "calls": [
-            {
-              "candidate": "Barry Moore",
-              "status": "winner",
-              "calledAt": "2026-06-16T21:30:00-05:00"
-            }
-          ]
-        }
-      }
-    },
-    "statusOptions": {
-      "winner": "Use for a final or certain single-winner call. Label shown: Winner.",
-      "projected": "Use for a single-winner projection before the result is final. Label shown: Projected winner.",
-      "advances": "Use for top-two/open-primary candidates who are projected to advance. Label shown: Advances.",
-      "advanced": "Use when a top-two/open-primary advance is final. Label shown: Advanced to general election."
-    },
-    "optionalLabel": "You can add a custom label field to any call if exact wording is needed.",
-    "optionalCalledAt": "Add calledAt in ISO format. The OBS overlay uses this to decide which call is newest.",
-    "obsOverlay": "For livestreams, add call-overlay.html as an OBS Browser Source. Suggested size: 1920x300, transparent background enabled. It checks this file automatically.",
-    "important": "Use the authenticated election-night admin for calls, holds and overrides. Do not manually add a candidate unless FEA is intentionally calling that race. Historical primary calls remain archived in this file; general-election automation uses the current catalogue.",
-    "automaticCalls": "NBC source, callState, publishAt and manualOverride are managed by the control service. Return to NBC auto through the admin to clear an override."
-  },
-  "raceIdGuide": {
-    "al-sen-r-runoff-2026": "Alabama Senate Republican Runoff",
-    "ga-gov-r-runoff-2026": "Georgia Governor Republican Runoff",
-    "ga-sen-r-runoff-2026": "Georgia Senate Republican Runoff",
-    "ga-house-11-r-runoff-2026": "Georgia US House 11 Republican Runoff",
-    "dc-mayor-d-2026": "District of Columbia Mayor Democratic Primary",
-    "dc-delegate-d-2026": "District of Columbia Delegate Democratic Primary",
-    "ok-gov-r-2026": "Oklahoma Governor Republican Primary",
-    "ok-house-1-r-2026": "Oklahoma US House 1 Republican Primary"
-  },
+  "version": 1,
+  "description": "Published projections only. Pending decisions, overrides, audit and results history require durable server storage.",
   "races": {
     "al-sen-r-runoff-2026": {
       "calls": [
@@ -124,9 +74,5452 @@
           "calledAt": "2026-06-17T03:56:06.020Z"
         }
       ]
+    },
+    "senate-OH": {
+      "calls": [
+        {
+          "candidate": "Sherrod Brown",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:10:38.078Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-KY-5": {
+      "calls": [
+        {
+          "candidate": "Hal Rogers",
+          "status": "projected",
+          "calledAt": "2026-11-03T23:52:47.449Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-KY-3": {
+      "calls": [
+        {
+          "candidate": "Morgan McGarvey",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:00:47.751Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-10": {
+      "calls": [
+        {
+          "candidate": "Maxwell Frost",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:01:19.758Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-VA": {
+      "calls": [
+        {
+          "candidate": "Mark Warner",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:01:19.758Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-20": {
+      "calls": [
+        {
+          "candidate": "Debbie Wasserman Schultz",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:08:16.004Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-24": {
+      "calls": [
+        {
+          "candidate": "Oliver Gilbert",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:08:32.011Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-19": {
+      "calls": [
+        {
+          "candidate": "Jim Schwartzel",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:13:36.181Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-5": {
+      "calls": [
+        {
+          "candidate": "Nikema Williams",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:20:32.428Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-13": {
+      "calls": [
+        {
+          "candidate": "Jasmine Clark",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:21:04.445Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-4": {
+      "calls": [
+        {
+          "candidate": "Hank Johnson",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:21:52.480Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-6": {
+      "calls": [
+        {
+          "candidate": "Lucy McBath",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:23:34.215Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-23": {
+      "calls": [
+        {
+          "candidate": "Lois Frankel",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:30:50.505Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-GA": {
+      "calls": [
+        {
+          "candidate": "Jon Ossoff",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:31:55.539Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-6": {
+      "calls": [
+        {
+          "candidate": "Randy Fine",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:32:11.542Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-5": {
+      "calls": [
+        {
+          "candidate": "John Rutherford",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:32:43.561Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-17": {
+      "calls": [
+        {
+          "candidate": "Greg Steube",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:38:54.883Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-3": {
+      "calls": [
+        {
+          "candidate": "Joyce Beatty",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:39:58.964Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-11": {
+      "calls": [
+        {
+          "candidate": "Joe Strada",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:42:32.092Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-8": {
+      "calls": [
+        {
+          "candidate": "Mike Haridopolos",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:43:52.103Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-VT-AL": {
+      "calls": [
+        {
+          "candidate": "Becca Balint",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:44:40.116Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-12": {
+      "calls": [
+        {
+          "candidate": "Gus M. Bilirakis",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:45:28.182Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-14": {
+      "calls": [
+        {
+          "candidate": "Kathy Castor",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:48:41.605Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-VA-9": {
+      "calls": [
+        {
+          "candidate": "Morgan Griffith",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:48:41.605Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-28": {
+      "calls": [
+        {
+          "candidate": "Carlos Gimenez",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:49:50.618Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-15": {
+      "calls": [
+        {
+          "candidate": "Laurel Lee",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:52:20.027Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-VA-8": {
+      "calls": [
+        {
+          "candidate": "Donald Beyer",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:53:26.164Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-11": {
+      "calls": [
+        {
+          "candidate": "Shontel Brown",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:53:43.197Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-2": {
+      "calls": [
+        {
+          "candidate": "Sanford Bishop Jr.",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:56:59.554Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-VA-3": {
+      "calls": [
+        {
+          "candidate": "Bobby Scott",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:57:32.630Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-KY-1": {
+      "calls": [
+        {
+          "candidate": "James Comer Jr.",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:59:00.680Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-VA-4": {
+      "calls": [
+        {
+          "candidate": "Jennifer McClellan",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:59:00.680Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-VA-10": {
+      "calls": [
+        {
+          "candidate": "Suhas Subramanyam",
+          "status": "projected",
+          "calledAt": "2026-11-04T00:59:33.710Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-DE": {
+      "calls": [
+        {
+          "candidate": "Chris Coons",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:01:16.998Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-IL": {
+      "calls": [
+        {
+          "candidate": "Juliana Stratton",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:01:16.998Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-IL": {
+      "calls": [
+        {
+          "candidate": "JB Pritzker",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:01:16.998Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-MD": {
+      "calls": [
+        {
+          "candidate": "Wes Moore",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:01:16.998Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-MA": {
+      "calls": [
+        {
+          "candidate": "Maura Healey",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:01:16.998Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MA-2": {
+      "calls": [
+        {
+          "candidate": "James McGovern",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:01:33.004Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MA-5": {
+      "calls": [
+        {
+          "candidate": "Katherine Clark",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:01:33.004Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MA-7": {
+      "calls": [
+        {
+          "candidate": "Ayanna Pressley",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:01:33.004Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-MA": {
+      "calls": [
+        {
+          "candidate": "Ed Markey",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:01:33.004Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-NJ": {
+      "calls": [
+        {
+          "candidate": "Cory Booker",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:01:33.004Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-RI": {
+      "calls": [
+        {
+          "candidate": "Jack Reed",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:01:33.004Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-PA": {
+      "calls": [
+        {
+          "candidate": "Josh Shapiro",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:01:49.023Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-25": {
+      "calls": [
+        {
+          "candidate": "Jared Moskowitz",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:07:12.951Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-33": {
+      "calls": [
+        {
+          "candidate": "Colin Allred",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:07:28.977Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-22": {
+      "calls": [
+        {
+          "candidate": "Pia Dandiya",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:10:30.629Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-30": {
+      "calls": [
+        {
+          "candidate": "Frederick Haynes",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:10:47.656Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NJ-8": {
+      "calls": [
+        {
+          "candidate": "Rob Menendez",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:13:46.631Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-SC-6": {
+      "calls": [
+        {
+          "candidate": "Jim Clyburn",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:13:46.632Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-21": {
+      "calls": [
+        {
+          "candidate": "Brian Mast",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:14:34.471Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-16": {
+      "calls": [
+        {
+          "candidate": "Sydney Gruters",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:16:30.881Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-3": {
+      "calls": [
+        {
+          "candidate": "Kat Cammack",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:16:47.213Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NJ-1": {
+      "calls": [
+        {
+          "candidate": "Donald Norcross",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:17:05.242Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NJ-10": {
+      "calls": [
+        {
+          "candidate": "LaMonica McIver",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:18:11.428Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NJ-12": {
+      "calls": [
+        {
+          "candidate": "Adam Hamawy",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:19:18.612Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-18": {
+      "calls": [
+        {
+          "candidate": "Christian Menefee",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:19:35.598Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NJ-11": {
+      "calls": [
+        {
+          "candidate": "Analilia Mejia",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:20:24.778Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-NH": {
+      "calls": [
+        {
+          "candidate": "Chris Pappas",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:21:45.206Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-9": {
+      "calls": [
+        {
+          "candidate": "Andrew Clyde",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:22:17.432Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NC-12": {
+      "calls": [
+        {
+          "candidate": "Alma Adams",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:22:33.462Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NJ-9": {
+      "calls": [
+        {
+          "candidate": "Nellie Pou",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:23:05.685Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NC-4": {
+      "calls": [
+        {
+          "candidate": "Valerie Foushee",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:23:05.686Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NC-2": {
+      "calls": [
+        {
+          "candidate": "Deborah Ross",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:23:21.835Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-NC": {
+      "calls": [
+        {
+          "candidate": "Roy Cooper",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:24:26.028Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-4": {
+      "calls": [
+        {
+          "candidate": "Aaron Bean",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:25:47.548Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-7": {
+      "calls": [
+        {
+          "candidate": "Lizzie Fletcher",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:25:47.548Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NH-1": {
+      "calls": [
+        {
+          "candidate": "Stefany Shaheen",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:26:37.820Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IN-7": {
+      "calls": [
+        {
+          "candidate": "André Carson",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:27:58.025Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-2": {
+      "calls": [
+        {
+          "candidate": "Brendan Boyle",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:29:18.414Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-3": {
+      "calls": [
+        {
+          "candidate": "Chris Rabb",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:29:18.414Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-8": {
+      "calls": [
+        {
+          "candidate": "Austin Scott",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:31:26.871Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-SC-3": {
+      "calls": [
+        {
+          "candidate": "Sheri Biggs",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:31:26.872Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-5": {
+      "calls": [
+        {
+          "candidate": "Mary Gay Scanlon",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:32:05.177Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-RI-1": {
+      "calls": [
+        {
+          "candidate": "Gabe Amo",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:32:21.502Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-RI-2": {
+      "calls": [
+        {
+          "candidate": "Seth Magaziner",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:32:37.530Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-1": {
+      "calls": [
+        {
+          "candidate": "Jimmy Patronis",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:33:09.894Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MO-1": {
+      "calls": [
+        {
+          "candidate": "Wesley Bell",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:33:09.894Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-FL": {
+      "calls": [
+        {
+          "candidate": "Ashley B. Moody",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:33:25.884Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-RI": {
+      "calls": [
+        {
+          "candidate": "Helena Foulkes",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:33:42.011Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NJ-3": {
+      "calls": [
+        {
+          "candidate": "Herb Conaway",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:35:40.270Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MI-12": {
+      "calls": [
+        {
+          "candidate": "Rashida Tlaib",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:36:18.395Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NJ-6": {
+      "calls": [
+        {
+          "candidate": "Frank Pallone Jr.",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:36:34.631Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-12": {
+      "calls": [
+        {
+          "candidate": "Summer Lee",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:37:45.912Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IN-3": {
+      "calls": [
+        {
+          "candidate": "Marlin A. Stutzman",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:40:34.043Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-WV": {
+      "calls": [
+        {
+          "candidate": "Shelley Moore Capito",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:40:48.782Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-VA-7": {
+      "calls": [
+        {
+          "candidate": "Eugene Vindman",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:41:20.817Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NC-11": {
+      "calls": [
+        {
+          "candidate": "Jamie Ager",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:45:43.773Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-KY-2": {
+      "calls": [
+        {
+          "candidate": "Brett Guthrie",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:46:37.933Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-KY-4": {
+      "calls": [
+        {
+          "candidate": "Ed Gallrein",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:46:54.926Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-2": {
+      "calls": [
+        {
+          "candidate": "Austin Rogers",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:47:36.099Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MI-11": {
+      "calls": [
+        {
+          "candidate": "Jeremy Moss",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:49:40.971Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-4": {
+      "calls": [
+        {
+          "candidate": "Madeleine Dean",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:49:40.971Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-DE-AL": {
+      "calls": [
+        {
+          "candidate": "Sarah McBride",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:49:57.195Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-8": {
+      "calls": [
+        {
+          "candidate": "Melissa Bean",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:51:03.993Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-VA-11": {
+      "calls": [
+        {
+          "candidate": "James Walkinshaw",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:51:03.993Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OK-2": {
+      "calls": [
+        {
+          "candidate": "Josh Brecheen",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:51:35.426Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OK-3": {
+      "calls": [
+        {
+          "candidate": "Frank Lucas",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:51:52.421Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-KS-3": {
+      "calls": [
+        {
+          "candidate": "Sharice Davids",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:52:47.851Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-20": {
+      "calls": [
+        {
+          "candidate": "Joaquin Castro",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:52:47.851Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-5": {
+      "calls": [
+        {
+          "candidate": "Mike Quigley",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:53:52.716Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-9": {
+      "calls": [
+        {
+          "candidate": "Daniel K. Biss",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:53:52.716Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-2": {
+      "calls": [
+        {
+          "candidate": "David Taylor",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:53:52.716Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-4": {
+      "calls": [
+        {
+          "candidate": "Jim Jordan",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:54:40.965Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-2": {
+      "calls": [
+        {
+          "candidate": "Donna Miller",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:56:16.279Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-7": {
+      "calls": [
+        {
+          "candidate": "La Shawn Ford",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:56:49.646Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-14": {
+      "calls": [
+        {
+          "candidate": "Clay Fuller",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:57:37.853Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-1": {
+      "calls": [
+        {
+          "candidate": "Jonathan Jackson",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:58:28.230Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MI-6": {
+      "calls": [
+        {
+          "candidate": "Debbie Dingell",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:59:50.173Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-SC-7": {
+      "calls": [
+        {
+          "candidate": "Russell Fry",
+          "status": "projected",
+          "calledAt": "2026-11-04T01:59:50.174Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WI-2": {
+      "calls": [
+        {
+          "candidate": "Mark Pocan",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:01:27.796Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-CO": {
+      "calls": [
+        {
+          "candidate": "John Hickenlooper",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:01:27.796Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-NM": {
+      "calls": [
+        {
+          "candidate": "Ben Ray Luján",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:01:27.796Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-WY": {
+      "calls": [
+        {
+          "candidate": "Harriet Hageman",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:01:27.796Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-CO": {
+      "calls": [
+        {
+          "candidate": "Phil Weiser",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:01:27.796Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-NY": {
+      "calls": [
+        {
+          "candidate": "Kathy Hochul",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:01:27.796Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-CT": {
+      "calls": [
+        {
+          "candidate": "Ned Lamont",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:01:44.124Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-WY": {
+      "calls": [
+        {
+          "candidate": "Eric Barlow",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:01:44.124Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IN-9": {
+      "calls": [
+        {
+          "candidate": "Erin Houchin",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:02:55.567Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-17": {
+      "calls": [
+        {
+          "candidate": "Chris Deluzio",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:03:11.580Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-3": {
+      "calls": [
+        {
+          "candidate": "Brian Jack",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:03:48.844Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-8": {
+      "calls": [
+        {
+          "candidate": "Hakeem Jeffries",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:04:22.933Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-9": {
+      "calls": [
+        {
+          "candidate": "Yvette D. Clarke",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:04:22.933Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-14": {
+      "calls": [
+        {
+          "candidate": "Alexandria Ocasio-Cortez",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:04:22.933Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-12": {
+      "calls": [
+        {
+          "candidate": "Micah Lasher",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:05:00.641Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-16": {
+      "calls": [
+        {
+          "candidate": "Veronica Escobar",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:05:00.641Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-5": {
+      "calls": [
+        {
+          "candidate": "Gregory W. Meeks",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:05:16.673Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-6": {
+      "calls": [
+        {
+          "candidate": "Grace Meng",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:05:16.673Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-13": {
+      "calls": [
+        {
+          "candidate": "Emilia Sykes",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:05:16.673Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-GA": {
+      "calls": [
+        {
+          "candidate": "Keisha Lance Bottoms",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:05:16.673Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-13": {
+      "calls": [
+        {
+          "candidate": "Darializa Avila Chevalier",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:06:43.348Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-4": {
+      "calls": [
+        {
+          "candidate": "Patty Garcia",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:07:00.359Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-10": {
+      "calls": [
+        {
+          "candidate": "Brad Lander",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:07:00.359Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-13": {
+      "calls": [
+        {
+          "candidate": "Nikki Budzinski",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:08:21.689Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CO-1": {
+      "calls": [
+        {
+          "candidate": "Melat Kiros",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:08:37.136Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-15": {
+      "calls": [
+        {
+          "candidate": "Ritchie Torres",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:08:54.311Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WV-1": {
+      "calls": [
+        {
+          "candidate": "Carol Miller",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:09:33.839Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-FL": {
+      "calls": [
+        {
+          "candidate": "Byron Donalds",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:10:42.660Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-7": {
+      "calls": [
+        {
+          "candidate": "Claire Valdez",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:11:00.118Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-VA-6": {
+      "calls": [
+        {
+          "candidate": "Ben Cline",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:13:09.699Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MD-8": {
+      "calls": [
+        {
+          "candidate": "Jamie Raskin",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:15:02.706Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NJ-5": {
+      "calls": [
+        {
+          "candidate": "Josh Gottheimer",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:15:34.771Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-13": {
+      "calls": [
+        {
+          "candidate": "John Joyce",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:15:50.809Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-6": {
+      "calls": [
+        {
+          "candidate": "Chrissy Houlahan",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:16:40.217Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-12": {
+      "calls": [
+        {
+          "candidate": "Mike Bost",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:18:36.542Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NJ-4": {
+      "calls": [
+        {
+          "candidate": "Christopher Smith",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:19:07.431Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WV-2": {
+      "calls": [
+        {
+          "candidate": "Riley Moore",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:20:38.238Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-KY": {
+      "calls": [
+        {
+          "candidate": "Andy Barr",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:20:15.331Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AR-1": {
+      "calls": [
+        {
+          "candidate": "Rick Crawford",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:21:08.791Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AR-4": {
+      "calls": [
+        {
+          "candidate": "Bruce Westerman",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:21:08.791Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OK-4": {
+      "calls": [
+        {
+          "candidate": "Tom Cole",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:25:52.001Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-34": {
+      "calls": [
+        {
+          "candidate": "Vicente Gonzalez Jr.",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:25:52.001Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IN-8": {
+      "calls": [
+        {
+          "candidate": "Mark Messmer",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:26:16.377Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MD-5": {
+      "calls": [
+        {
+          "candidate": "Adrian Boafo",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:27:19.260Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-29": {
+      "calls": [
+        {
+          "candidate": "Sylvia Garcia",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:27:50.128Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-14": {
+      "calls": [
+        {
+          "candidate": "Lauren Underwood",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:28:43.530Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MD-3": {
+      "calls": [
+        {
+          "candidate": "Sarah Elfreth",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:28:43.531Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MD-7": {
+      "calls": [
+        {
+          "candidate": "Kweisi Mfume",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:28:43.531Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-3": {
+      "calls": [
+        {
+          "candidate": "Delia Ramirez",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:29:38.068Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AL-4": {
+      "calls": [
+        {
+          "candidate": "Robert Aderholt",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:29:54.234Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-11": {
+      "calls": [
+        {
+          "candidate": "Nicole Malliotakis",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:30:42.650Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CO-6": {
+      "calls": [
+        {
+          "candidate": "Jason Crow",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:35:21.889Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-7": {
+      "calls": [
+        {
+          "candidate": "Rich McCormick",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:37:18.747Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MD-4": {
+      "calls": [
+        {
+          "candidate": "Glenn Ivey",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:37:18.748Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-6": {
+      "calls": [
+        {
+          "candidate": "Michael Rulli",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:37:18.748Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CO-2": {
+      "calls": [
+        {
+          "candidate": "Joe Neguse",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:37:18.748Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-OK": {
+      "calls": [
+        {
+          "candidate": "Kevin Hern",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:38:22.803Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MD-6": {
+      "calls": [
+        {
+          "candidate": "April McClain Delaney",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:39:00.329Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-15": {
+      "calls": [
+        {
+          "candidate": "Glenn Thompson",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:39:00.329Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NJ-7": {
+      "calls": [
+        {
+          "candidate": "Rebecca Bennett",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:40:57.105Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-25": {
+      "calls": [
+        {
+          "candidate": "Joseph Morelle",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:41:48.697Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CO-8": {
+      "calls": [
+        {
+          "candidate": "Manny Rutinel",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:41:48.697Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MA-1": {
+      "calls": [
+        {
+          "candidate": "Richard Neal",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:42:26.347Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-18": {
+      "calls": [
+        {
+          "candidate": "Pat Ryan",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:44:50.210Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-12": {
+      "calls": [
+        {
+          "candidate": "Troy Balderson",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:44:50.210Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-8": {
+      "calls": [
+        {
+          "candidate": "Paige Cognetti",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:44:50.210Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-11": {
+      "calls": [
+        {
+          "candidate": "Bill Foster",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:47:14.979Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MO-4": {
+      "calls": [
+        {
+          "candidate": "Mark Alford",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:47:14.979Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MO-8": {
+      "calls": [
+        {
+          "candidate": "Jason Smith",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:47:57.768Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WI-4": {
+      "calls": [
+        {
+          "candidate": "Gwen Moore",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:47:57.768Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-15": {
+      "calls": [
+        {
+          "candidate": "Mary Miller",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:49:35.632Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-19": {
+      "calls": [
+        {
+          "candidate": "Josh Riley",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:49:35.632Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-TN": {
+      "calls": [
+        {
+          "candidate": "Bill Hagerty",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:49:22.233Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-17": {
+      "calls": [
+        {
+          "candidate": "Eric Sorensen",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:50:34.393Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MD-2": {
+      "calls": [
+        {
+          "candidate": "Johnny Olszewski Jr.",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:50:34.393Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MS-2": {
+      "calls": [
+        {
+          "candidate": "Bennie Thompson",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:50:34.393Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MS-4": {
+      "calls": [
+        {
+          "candidate": "Mike Ezell",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:50:34.393Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-22": {
+      "calls": [
+        {
+          "candidate": "John Mannion",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:50:34.393Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MO-7": {
+      "calls": [
+        {
+          "candidate": "Eric Burlison",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:51:05.702Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NM-3": {
+      "calls": [
+        {
+          "candidate": "Teresa Leger Fernandez",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:51:05.702Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-1": {
+      "calls": [
+        {
+          "candidate": "Nathaniel Moran",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:51:05.702Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CT-4": {
+      "calls": [
+        {
+          "candidate": "Jim Himes",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:51:20.456Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-LA-2": {
+      "calls": [
+        {
+          "candidate": "Troy A. Carter Sr.",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:52:58.440Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MO-6": {
+      "calls": [
+        {
+          "candidate": "Chris Stigall",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:52:58.440Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-SC-4": {
+      "calls": [
+        {
+          "candidate": "William Timmons",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:52:58.440Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IN-6": {
+      "calls": [
+        {
+          "candidate": "Jefferson Shreve",
+          "status": "projected",
+          "calledAt": "2026-11-04T02:55:33.215Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IN-1": {
+      "calls": [
+        {
+          "candidate": "Frank Mrvan",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:00:02.224Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MO-5": {
+      "calls": [
+        {
+          "candidate": "Emanuel Cleaver",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:00:33.673Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-26": {
+      "calls": [
+        {
+          "candidate": "Timothy M. Kennedy",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:00:33.673Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-SC": {
+      "calls": [
+        {
+          "candidate": "Annie Andrews",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:00:49.525Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-KY-6": {
+      "calls": [
+        {
+          "candidate": "Zach Dembo",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:01:54.606Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TN-1": {
+      "calls": [
+        {
+          "candidate": "Diana Harshbarger",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:01:54.606Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-ND-AL": {
+      "calls": [
+        {
+          "candidate": "Julie Fedorchak",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:04:36.319Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-5": {
+      "calls": [
+        {
+          "candidate": "Bob Latta",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:05:24.706Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-14": {
+      "calls": [
+        {
+          "candidate": "David Joyce",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:07:12.942Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-AL": {
+      "calls": [
+        {
+          "candidate": "Barry Moore",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:11:29.250Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-20": {
+      "calls": [
+        {
+          "candidate": "Paul Tonko",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:11:45.360Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AZ-3": {
+      "calls": [
+        {
+          "candidate": "Yassamin Ansari",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:11:45.361Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AZ-4": {
+      "calls": [
+        {
+          "candidate": "Greg Stanton",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:11:45.361Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-10": {
+      "calls": [
+        {
+          "candidate": "Houston Gaines",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:13:33.716Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MS-1": {
+      "calls": [
+        {
+          "candidate": "Trent Kelly",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:13:33.716Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AZ-7": {
+      "calls": [
+        {
+          "candidate": "Adelita Grijalva",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:14:38.860Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-AR": {
+      "calls": [
+        {
+          "candidate": "Sarah Huckabee Sanders",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:14:38.860Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CO-7": {
+      "calls": [
+        {
+          "candidate": "Brittany Pettersen",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:14:54.895Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-10": {
+      "calls": [
+        {
+          "candidate": "Janelle Stelson",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:15:27.209Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AL-3": {
+      "calls": [
+        {
+          "candidate": "Mike Rogers",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:16:33.734Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WI-5": {
+      "calls": [
+        {
+          "candidate": "Scott Fitzgerald",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:18:25.086Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-7": {
+      "calls": [
+        {
+          "candidate": "Bob Brooks",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:18:41.473Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-9": {
+      "calls": [
+        {
+          "candidate": "Dan Meuser",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:19:33.114Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-SC-5": {
+      "calls": [
+        {
+          "candidate": "Wes Climer",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:20:38.699Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-1": {
+      "calls": [
+        {
+          "candidate": "Greg Landsman",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:29:34.416Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-11": {
+      "calls": [
+        {
+          "candidate": "John Cowan",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:30:08.807Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MA-3": {
+      "calls": [
+        {
+          "candidate": "Lori Trahan",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:30:08.807Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AL-7": {
+      "calls": [
+        {
+          "candidate": "Terri Sewell",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:30:08.807Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MA-6": {
+      "calls": [
+        {
+          "candidate": "Dan Koh",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:31:14.135Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-VA-2": {
+      "calls": [
+        {
+          "candidate": "Elaine Luria",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:31:14.136Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MA-9": {
+      "calls": [
+        {
+          "candidate": "Bill Keating",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:31:46.447Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-ME-1": {
+      "calls": [
+        {
+          "candidate": "Chellie Pingree",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:32:02.125Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-16": {
+      "calls": [
+        {
+          "candidate": "George Latimer",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:34:00.929Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MS-3": {
+      "calls": [
+        {
+          "candidate": "Michael Guest",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:34:32.941Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CT-3": {
+      "calls": [
+        {
+          "candidate": "Rosa L. DeLauro",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:35:22.646Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-AR": {
+      "calls": [
+        {
+          "candidate": "Tom Cotton",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:37:25.252Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MI-13": {
+      "calls": [
+        {
+          "candidate": "Donavan McKinney",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:37:44.090Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NE-3": {
+      "calls": [
+        {
+          "candidate": "Adrian Smith",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:38:32.229Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-6": {
+      "calls": [
+        {
+          "candidate": "Sean Casten",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:39:03.027Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-SD-AL": {
+      "calls": [
+        {
+          "candidate": "Marty J. Jackley",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:40:07.616Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TN-3": {
+      "calls": [
+        {
+          "candidate": "Chuck Fleischmann",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:40:07.616Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-24": {
+      "calls": [
+        {
+          "candidate": "Claudia Tenney",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:41:03.033Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TN-2": {
+      "calls": [
+        {
+          "candidate": "Tim Burchett",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:41:55.558Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WI-6": {
+      "calls": [
+        {
+          "candidate": "Glenn Grothman",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:41:55.558Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MA-4": {
+      "calls": [
+        {
+          "candidate": "Jake Auchincloss",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:42:39.545Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-14": {
+      "calls": [
+        {
+          "candidate": "Guy Reschenthaler",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:43:31.253Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-19": {
+      "calls": [
+        {
+          "candidate": "Tom Sell",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:43:31.253Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-15": {
+      "calls": [
+        {
+          "candidate": "Don Leonard",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:44:13.510Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-3": {
+      "calls": [
+        {
+          "candidate": "Thomas Suozzi",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:46:22.686Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-LA-4": {
+      "calls": [
+        {
+          "candidate": "\"Mike\" Johnson",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:46:54.918Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NH-2": {
+      "calls": [
+        {
+          "candidate": "Maggie Goodlander",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:46:54.919Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MI-3": {
+      "calls": [
+        {
+          "candidate": "Hillary Scholten",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:48:49.324Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MA-8": {
+      "calls": [
+        {
+          "candidate": "Stephen Lynch",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:49:05.363Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-OH": {
+      "calls": [
+        {
+          "candidate": "Amy Acton",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:49:53.680Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-16": {
+      "calls": [
+        {
+          "candidate": "Darin LaHood",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:50:25.685Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IL-10": {
+      "calls": [
+        {
+          "candidate": "Brad Schneider",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:50:58.098Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-VT": {
+      "calls": [
+        {
+          "candidate": "Phil Scott",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:50:58.098Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MI-2": {
+      "calls": [
+        {
+          "candidate": "John Moolenaar",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:52:52.987Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-TX": {
+      "calls": [
+        {
+          "candidate": "James Talarico",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:53:56.982Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-VA-1": {
+      "calls": [
+        {
+          "candidate": "Shannon Taylor",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:55:17.186Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-37": {
+      "calls": [
+        {
+          "candidate": "Greg Casar",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:55:33.232Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-NM": {
+      "calls": [
+        {
+          "candidate": "Deb Haaland",
+          "status": "projected",
+          "calledAt": "2026-11-04T03:56:21.817Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AL-2": {
+      "calls": [
+        {
+          "candidate": "Shomari Figures",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:00:23.900Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-11": {
+      "calls": [
+        {
+          "candidate": "Lloyd Smucker",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:01:12.312Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-OR": {
+      "calls": [
+        {
+          "candidate": "Jeff Merkley",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:01:28.360Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-CA": {
+      "calls": [
+        {
+          "candidate": "Xavier Becerra",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:01:28.361Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-WI": {
+      "calls": [
+        {
+          "candidate": "David Crowley",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:02:49.547Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-LA-1": {
+      "calls": [
+        {
+          "candidate": "Steve Scalise",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:03:21.746Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-23": {
+      "calls": [
+        {
+          "candidate": "Nick Langworthy",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:04:42.087Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NC-13": {
+      "calls": [
+        {
+          "candidate": "Paul Barringer",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:04:42.087Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CT-2": {
+      "calls": [
+        {
+          "candidate": "Joe Courtney",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:07:22.989Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-16": {
+      "calls": [
+        {
+          "candidate": "Mike Kelly",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:08:28.704Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-UT-1": {
+      "calls": [
+        {
+          "candidate": "Ben McAdams",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:08:28.704Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-TX": {
+      "calls": [
+        {
+          "candidate": "Gina Hinojosa",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:08:43.508Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-KS-4": {
+      "calls": [
+        {
+          "candidate": "Ron Estes",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:08:59.567Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CT-1": {
+      "calls": [
+        {
+          "candidate": "Luke Bronin",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:08:59.567Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-FL-18": {
+      "calls": [
+        {
+          "candidate": "Scott Franklin",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:10:52.004Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-LA-3": {
+      "calls": [
+        {
+          "candidate": "\"Clay\" Higgins",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:10:52.004Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MO-3": {
+      "calls": [
+        {
+          "candidate": "Bob Onder",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:11:26.012Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IA-4": {
+      "calls": [
+        {
+          "candidate": "Chris McGowan",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:13:28.881Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-IA": {
+      "calls": [
+        {
+          "candidate": "Rob Sand",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:13:28.881Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MO-2": {
+      "calls": [
+        {
+          "candidate": "Fred Wellman",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:15:37.385Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WA-7": {
+      "calls": [
+        {
+          "candidate": "Pramila Jayapal",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:17:16.368Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OR-3": {
+      "calls": [
+        {
+          "candidate": "Maxine Dexter",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:18:07.723Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WA-3": {
+      "calls": [
+        {
+          "candidate": "Marie Gluesenkamp Perez",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:19:13.737Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-KS-1": {
+      "calls": [
+        {
+          "candidate": "Tracey Mann",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:20:52.976Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WA-9": {
+      "calls": [
+        {
+          "candidate": "Adam Smith",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:20:52.977Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-KS": {
+      "calls": [
+        {
+          "candidate": "Adam Hamilton",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:21:24.969Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MT-2": {
+      "calls": [
+        {
+          "candidate": "Troy Downing",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:21:57.591Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IN-4": {
+      "calls": [
+        {
+          "candidate": "Jim Baird",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:22:13.550Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WA-6": {
+      "calls": [
+        {
+          "candidate": "Emily Randall",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:23:16.386Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WA-10": {
+      "calls": [
+        {
+          "candidate": "Marilyn Strickland",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:23:16.386Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OR-1": {
+      "calls": [
+        {
+          "candidate": "Suzanne Bonamici",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:23:31.587Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-52": {
+      "calls": [
+        {
+          "candidate": "Juan Vargas",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:24:05.184Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-46": {
+      "calls": [
+        {
+          "candidate": "Lou Correa",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:24:21.957Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-50": {
+      "calls": [
+        {
+          "candidate": "Scott Peters",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:24:44.016Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-IA": {
+      "calls": [
+        {
+          "candidate": "Josh Turek",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:24:44.016Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-24": {
+      "calls": [
+        {
+          "candidate": "Salud Carbajal",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:25:18.109Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-33": {
+      "calls": [
+        {
+          "candidate": "Pete Aguilar",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:25:36.777Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WA-2": {
+      "calls": [
+        {
+          "candidate": "Rick Larsen",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:28:39.022Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MN-7": {
+      "calls": [
+        {
+          "candidate": "Michelle Fischbach",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:28:55.051Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WI-8": {
+      "calls": [
+        {
+          "candidate": "Tony Wied",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:29:59.636Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WI-7": {
+      "calls": [
+        {
+          "candidate": "Michael Alfonso",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:32:44.067Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-15": {
+      "calls": [
+        {
+          "candidate": "Bobby Pulido",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:33:19.478Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MI-5": {
+      "calls": [
+        {
+          "candidate": "Tim Walberg",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:33:36.501Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-SC": {
+      "calls": [
+        {
+          "candidate": "Alan Wilson",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:33:52.799Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NC-9": {
+      "calls": [
+        {
+          "candidate": "Richard Ojeda",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:35:49.457Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NC-6": {
+      "calls": [
+        {
+          "candidate": "Cyril Jefferson",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:36:37.729Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-43": {
+      "calls": [
+        {
+          "candidate": "Maxine Waters",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:37:10.009Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NC-14": {
+      "calls": [
+        {
+          "candidate": "Lakesha Womack",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:39:34.605Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-44": {
+      "calls": [
+        {
+          "candidate": "Nanette Barragán",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:39:50.937Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IA-3": {
+      "calls": [
+        {
+          "candidate": "Sarah Trone Garriott",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:40:42.192Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-SD": {
+      "calls": [
+        {
+          "candidate": "Mike Rounds",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:41:34.363Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-SD": {
+      "calls": [
+        {
+          "candidate": "Larry Rhoden",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:42:38.745Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NC-1": {
+      "calls": [
+        {
+          "candidate": "Don Davis",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:43:10.943Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WA-1": {
+      "calls": [
+        {
+          "candidate": "Suzan DelBene",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:43:10.944Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-36": {
+      "calls": [
+        {
+          "candidate": "Ted Lieu",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:43:10.944Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IN-5": {
+      "calls": [
+        {
+          "candidate": "J.D. Ford",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:44:41.522Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-9": {
+      "calls": [
+        {
+          "candidate": "Josh Harder",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:44:41.523Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-35": {
+      "calls": [
+        {
+          "candidate": "Norma Torres",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:44:57.571Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-8": {
+      "calls": [
+        {
+          "candidate": "John Garamendi",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:45:30.069Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-30": {
+      "calls": [
+        {
+          "candidate": "Laura Friedman",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:46:03.264Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-28": {
+      "calls": [
+        {
+          "candidate": "Judy Chu",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:46:20.225Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NE-2": {
+      "calls": [
+        {
+          "candidate": "Denise Powell",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:49:02.060Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MI-9": {
+      "calls": [
+        {
+          "candidate": "Lisa McClain",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:49:34.644Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WY-AL": {
+      "calls": [
+        {
+          "candidate": "Chuck Gray",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:49:34.644Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-10": {
+      "calls": [
+        {
+          "candidate": "Mark DeSaulnier",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:50:07.822Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-15": {
+      "calls": [
+        {
+          "candidate": "Kevin Mullin",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:50:23.967Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-32": {
+      "calls": [
+        {
+          "candidate": "Brad Sherman",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:50:23.967Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-OK": {
+      "calls": [
+        {
+          "candidate": "Mike Mazzei",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:50:23.967Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-2": {
+      "calls": [
+        {
+          "candidate": "Jared Huffman",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:50:56.132Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AR-3": {
+      "calls": [
+        {
+          "candidate": "Steve Womack",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:51:29.687Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-31": {
+      "calls": [
+        {
+          "candidate": "Gil Cisneros",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:51:45.961Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-27": {
+      "calls": [
+        {
+          "candidate": "George Whitesides",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:54:13.750Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AL-5": {
+      "calls": [
+        {
+          "candidate": "Dale Strong",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:54:29.868Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-19": {
+      "calls": [
+        {
+          "candidate": "Jimmy Panetta",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:55:03.581Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-41": {
+      "calls": [
+        {
+          "candidate": "Linda Sánchez",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:56:40.304Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TN-6": {
+      "calls": [
+        {
+          "candidate": "Johnny Garrett",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:57:12.375Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-38": {
+      "calls": [
+        {
+          "candidate": "Hilda Solis",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:57:12.375Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-1": {
+      "calls": [
+        {
+          "candidate": "Mike McGuire",
+          "status": "projected",
+          "calledAt": "2026-11-04T04:58:00.588Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-12": {
+      "calls": [
+        {
+          "candidate": "Rick Allen",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.081Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-ID-1": {
+      "calls": [
+        {
+          "candidate": "Russ Fulcher",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.081Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IA-2": {
+      "calls": [
+        {
+          "candidate": "Lindsay James",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-KS-2": {
+      "calls": [
+        {
+          "candidate": "Derek Schmidt",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MN-2": {
+      "calls": [
+        {
+          "candidate": "Matt Little",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MN-3": {
+      "calls": [
+        {
+          "candidate": "Kelly Morrison",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MN-4": {
+      "calls": [
+        {
+          "candidate": "Betty McCollum",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MN-5": {
+      "calls": [
+        {
+          "candidate": "Ilhan Omar",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NM-1": {
+      "calls": [
+        {
+          "candidate": "Melanie Stansbury",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NM-2": {
+      "calls": [
+        {
+          "candidate": "Gabriel Vasquez",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-7": {
+      "calls": [
+        {
+          "candidate": "Brian Poindexter",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OK-1": {
+      "calls": [
+        {
+          "candidate": "Mark Tedford",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OR-4": {
+      "calls": [
+        {
+          "candidate": "Val Hoyle",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OR-5": {
+      "calls": [
+        {
+          "candidate": "Janelle Bynum",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-PA-1": {
+      "calls": [
+        {
+          "candidate": "Bob Harvie",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TN-5": {
+      "calls": [
+        {
+          "candidate": "Charlie Hatcher",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-13": {
+      "calls": [
+        {
+          "candidate": "Ronny L. Jackson",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-14": {
+      "calls": [
+        {
+          "candidate": "Randy Weber",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-28": {
+      "calls": [
+        {
+          "candidate": "Henry Cuellar",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-35": {
+      "calls": [
+        {
+          "candidate": "Johnny Garcia",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-UT-3": {
+      "calls": [
+        {
+          "candidate": "Celeste Maloy",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WA-8": {
+      "calls": [
+        {
+          "candidate": "Kim Schrier",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WI-1": {
+      "calls": [
+        {
+          "candidate": "Mitchell Berman",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-WI-3": {
+      "calls": [
+        {
+          "candidate": "Rebecca Cooke",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AL-1": {
+      "calls": [
+        {
+          "candidate": "Jerry Carl",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AL-6": {
+      "calls": [
+        {
+          "candidate": "Gary Palmer",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-3": {
+      "calls": [
+        {
+          "candidate": "Ami Bera",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-12": {
+      "calls": [
+        {
+          "candidate": "Lateefah Simon",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-16": {
+      "calls": [
+        {
+          "candidate": "Sam Liccardo",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-18": {
+      "calls": [
+        {
+          "candidate": "Zoe Lofgren",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-20": {
+      "calls": [
+        {
+          "candidate": "Vince Fong",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-21": {
+      "calls": [
+        {
+          "candidate": "Jim Costa",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-25": {
+      "calls": [
+        {
+          "candidate": "Raul Ruiz",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-26": {
+      "calls": [
+        {
+          "candidate": "Jacqui Irwin",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-37": {
+      "calls": [
+        {
+          "candidate": "Sydney Kamlager-Dove",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-39": {
+      "calls": [
+        {
+          "candidate": "Mark Takano",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-42": {
+      "calls": [
+        {
+          "candidate": "Robert Garcia",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-49": {
+      "calls": [
+        {
+          "candidate": "Mike Levin",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.082Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-51": {
+      "calls": [
+        {
+          "candidate": "Sara Jacobs",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.083Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-LA": {
+      "calls": [
+        {
+          "candidate": "Julia Letlow",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.083Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-MN": {
+      "calls": [
+        {
+          "candidate": "Peggy Flanagan",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.083Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-HI": {
+      "calls": [
+        {
+          "candidate": "Josh Green",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.083Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-ID": {
+      "calls": [
+        {
+          "candidate": "Brad Little",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.083Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-ME": {
+      "calls": [
+        {
+          "candidate": "Hannah Pingree",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.083Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-MN": {
+      "calls": [
+        {
+          "candidate": "Amy Klobuchar",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:38:06.083Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-TN": {
+      "calls": [
+        {
+          "candidate": "Marsha Blackburn",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:44:28.083Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IN-2": {
+      "calls": [
+        {
+          "candidate": "Rudy Yakym",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:45:15.031Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OR-2": {
+      "calls": [
+        {
+          "candidate": "Cliff Bentz",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:45:48.051Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-21": {
+      "calls": [
+        {
+          "candidate": "Mark Teixeira",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:45:48.051Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TN-8": {
+      "calls": [
+        {
+          "candidate": "David Kustoff",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:46:20.288Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-17": {
+      "calls": [
+        {
+          "candidate": "Ro Khanna",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:46:20.288Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-11": {
+      "calls": [
+        {
+          "candidate": "August Pfluger",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:46:37.290Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-31": {
+      "calls": [
+        {
+          "candidate": "John Carter",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:46:37.290Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-4": {
+      "calls": [
+        {
+          "candidate": "Pat Fallon",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:47:09.420Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-8": {
+      "calls": [
+        {
+          "candidate": "Warren Davidson",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:49:01.925Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-ME": {
+      "calls": [
+        {
+          "candidate": "Troy Jackson",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:49:17.995Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-GA-1": {
+      "calls": [
+        {
+          "candidate": "Jim Kingston",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:50:22.623Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-26": {
+      "calls": [
+        {
+          "candidate": "Brandon Gill",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:51:10.999Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NC-8": {
+      "calls": [
+        {
+          "candidate": "Mark Harris",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:52:47.776Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NC-10": {
+      "calls": [
+        {
+          "candidate": "Pat Harrigan",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:53:03.764Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AR-2": {
+      "calls": [
+        {
+          "candidate": "French Hill",
+          "status": "projected",
+          "calledAt": "2026-11-04T05:57:53.810Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OK-5": {
+      "calls": [
+        {
+          "candidate": "Stephanie Bice",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:02:47.237Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-23": {
+      "calls": [
+        {
+          "candidate": "Katy Padilla Stout",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:03:53.124Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-10": {
+      "calls": [
+        {
+          "candidate": "Chris Gober",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:04:09.362Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-29": {
+      "calls": [
+        {
+          "candidate": "Luz Rivas",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:06:35.102Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-17": {
+      "calls": [
+        {
+          "candidate": "Pete Sessions",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:12:15.675Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-8": {
+      "calls": [
+        {
+          "candidate": "Jessica Hart Steinmann",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:14:07.757Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MN-6": {
+      "calls": [
+        {
+          "candidate": "Tom Emmer",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:19:30.572Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-24": {
+      "calls": [
+        {
+          "candidate": "Beth Van Duyne",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:20:18.606Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-HI-2": {
+      "calls": [
+        {
+          "candidate": "Jill Tokuda",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:20:35.932Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-AZ": {
+      "calls": [
+        {
+          "candidate": "Katie Hobbs",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:20:34.612Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-HI-1": {
+      "calls": [
+        {
+          "candidate": "Ed Case",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:24:21.630Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TN-7": {
+      "calls": [
+        {
+          "candidate": "Matt Van Epps",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:24:21.630Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-45": {
+      "calls": [
+        {
+          "candidate": "Derek Tran",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:24:53.666Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OR-6": {
+      "calls": [
+        {
+          "candidate": "Andrea Salinas",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:26:21.213Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-IA-1": {
+      "calls": [
+        {
+          "candidate": "Christina Bohannan",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:26:53.232Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-UT-4": {
+      "calls": [
+        {
+          "candidate": "Mike Kennedy",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:31:15.114Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MI-8": {
+      "calls": [
+        {
+          "candidate": "Kristen McDonald Rivet",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:31:45.878Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-ID": {
+      "calls": [
+        {
+          "candidate": "Jim Risch",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:33:22.251Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-AZ-9": {
+      "calls": [
+        {
+          "candidate": "Paul Gosar",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:33:38.256Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-AL": {
+      "calls": [
+        {
+          "candidate": "Tommy Tuberville",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:37:39.049Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-MT": {
+      "calls": [
+        {
+          "candidate": "Kurt Alme",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:38:59.412Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-36": {
+      "calls": [
+        {
+          "candidate": "Brian Babin",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:46:27.831Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-NH": {
+      "calls": [
+        {
+          "candidate": "Kelly Ayotte",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:46:27.831Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-25": {
+      "calls": [
+        {
+          "candidate": "Roger Williams",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:55:03.063Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-3": {
+      "calls": [
+        {
+          "candidate": "Keith Self",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:55:35.374Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-12": {
+      "calls": [
+        {
+          "candidate": "Craig Goldman",
+          "status": "projected",
+          "calledAt": "2026-11-04T06:56:23.531Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-5": {
+      "calls": [
+        {
+          "candidate": "Tom McClintock",
+          "status": "projected",
+          "calledAt": "2026-11-04T07:02:16.647Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-6": {
+      "calls": [
+        {
+          "candidate": "Richard Pan",
+          "status": "projected",
+          "calledAt": "2026-11-04T07:02:16.647Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-ID-2": {
+      "calls": [
+        {
+          "candidate": "Mike Simpson",
+          "status": "projected",
+          "calledAt": "2026-11-04T07:03:36.754Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-6": {
+      "calls": [
+        {
+          "candidate": "Jake Ellzey",
+          "status": "projected",
+          "calledAt": "2026-11-04T07:36:00.640Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MN-8": {
+      "calls": [
+        {
+          "candidate": "Pete Stauber",
+          "status": "projected",
+          "calledAt": "2026-11-04T07:36:32.730Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-OH-9": {
+      "calls": [
+        {
+          "candidate": "Marcy Kaptur",
+          "status": "projected",
+          "calledAt": "2026-11-04T07:42:29.219Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-NE": {
+      "calls": [
+        {
+          "candidate": "Jim Pillen",
+          "status": "projected",
+          "calledAt": "2026-11-04T07:54:46.087Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NV-1": {
+      "calls": [
+        {
+          "candidate": "Dina Titus",
+          "status": "projected",
+          "calledAt": "2026-11-04T08:09:11.097Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NV-4": {
+      "calls": [
+        {
+          "candidate": "Steven Horsford",
+          "status": "projected",
+          "calledAt": "2026-11-04T08:09:43.157Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NV-3": {
+      "calls": [
+        {
+          "candidate": "Susie Lee",
+          "status": "projected",
+          "calledAt": "2026-11-04T08:11:03.200Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-NE": {
+      "calls": [
+        {
+          "candidate": "Pete Ricketts",
+          "status": "projected",
+          "calledAt": "2026-11-04T08:28:43.855Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-OR": {
+      "calls": [
+        {
+          "candidate": "Tina Kotek",
+          "status": "projected",
+          "calledAt": "2026-11-04T08:50:10.535Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "governor-NV": {
+      "calls": [
+        {
+          "candidate": "Aaron Ford",
+          "status": "projected",
+          "calledAt": "2026-11-04T09:48:24.559Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-9": {
+      "calls": [
+        {
+          "candidate": "Leticia Gutierrez",
+          "status": "projected",
+          "calledAt": "2026-11-04T16:37:46.764Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NY-4": {
+      "calls": [
+        {
+          "candidate": "Laura Gillen",
+          "status": "projected",
+          "calledAt": "2026-11-04T16:38:02.769Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-38": {
+      "calls": [
+        {
+          "candidate": "Jon Bonck",
+          "status": "projected",
+          "calledAt": "2026-11-04T16:39:06.832Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-22": {
+      "calls": [
+        {
+          "candidate": "Trever Nehls",
+          "status": "projected",
+          "calledAt": "2026-11-04T16:40:58.898Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-22": {
+      "calls": [
+        {
+          "candidate": "Randy Villegas",
+          "status": "projected",
+          "calledAt": "2026-11-04T16:44:59.148Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-13": {
+      "calls": [
+        {
+          "candidate": "Adam Gray",
+          "status": "projected",
+          "calledAt": "2026-11-04T16:46:03.144Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-34": {
+      "calls": [
+        {
+          "candidate": "Angela Gonzales-Torres",
+          "status": "projected",
+          "calledAt": "2026-11-04T18:12:58.191Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-MI-4": {
+      "calls": [
+        {
+          "candidate": "Sean McCann",
+          "status": "projected",
+          "calledAt": "2026-11-04T18:14:02.280Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NV-2": {
+      "calls": [
+        {
+          "candidate": "Teresa Benitez-Thompson",
+          "status": "projected",
+          "calledAt": "2026-11-04T19:08:35.078Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-48": {
+      "calls": [
+        {
+          "candidate": "Marni von Wilpert",
+          "status": "projected",
+          "calledAt": "2026-11-04T19:15:36.780Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-CA-47": {
+      "calls": [
+        {
+          "candidate": "Dave Min",
+          "status": "projected",
+          "calledAt": "2026-11-04T19:17:44.869Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-5": {
+      "calls": [
+        {
+          "candidate": "Lance Gooden",
+          "status": "projected",
+          "calledAt": "2026-11-04T21:40:36.795Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-2": {
+      "calls": [
+        {
+          "candidate": "Steve Toth",
+          "status": "projected",
+          "calledAt": "2026-11-04T21:42:44.854Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-32": {
+      "calls": [
+        {
+          "candidate": "Jace Yarbrough",
+          "status": "projected",
+          "calledAt": "2026-11-04T21:45:09.010Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-NE-1": {
+      "calls": [
+        {
+          "candidate": "Mike Flood",
+          "status": "projected",
+          "calledAt": "2026-11-04T21:46:29.044Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "house-TX-27": {
+      "calls": [
+        {
+          "candidate": "Michael Cloud",
+          "status": "projected",
+          "calledAt": "2026-11-04T22:16:22.703Z",
+          "provider": "NBC",
+          "source": "nbc-auto",
+          "providerTimestamp": null
+        }
+      ]
+    },
+    "senate-MS": {
+      "calls": [
+        {
+          "candidate": "Scott Colom",
+          "status": "projected",
+          "calledAt": "2026-11-04T23:51:59.032Z",
+          "source": "fea-manual"
+        }
+      ]
     }
-  },
-  "automation": {
-    "paused": false
   }
 }
