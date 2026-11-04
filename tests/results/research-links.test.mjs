@@ -32,3 +32,23 @@ test('research links point to the state and only supported archive context', () 
   assert.equal(links.archive('OH','2020'), '/election-history?year=2020&state=OH');
   assert.equal(url(links.lab(ohio,{section:'lab-benchmarks'})).hash, '#lab-benchmarks');
 });
+
+test('shared Lab links restore compatible filters and decode search text', () => {
+  const sources = [{id:'senate-last',appliesTo:['senate']},{id:'house-2024',appliesTo:['house']}];
+  const path = url(links.lab(ohio, {baseline:'senate-last',unit:'39049'}));
+  for (const [key,value] of Object.entries({metric:'swing',display:'chart',sort:'votes',find:'Brown & Moreno + Ohio'})) {
+    path.searchParams.set(key,value);
+  }
+  assert.deepEqual(links.labView(url(path.href).searchParams,races,sources),{
+    race:ohio,office:'senate',baseline:'senate-last',unit:'39049',
+    metric:'swing',display:'chart',sort:'votes',find:'Brown & Moreno + Ohio'
+  });
+  assert.equal(path.searchParams.get('find'),'Brown & Moreno + Ohio');
+});
+
+test('incompatible shared baselines, units without a race, and invalid views fall back', () => {
+  const params = new URLSearchParams('office=house&race=senate-OH&baseline=senate-last&unit=39049&metric=forecast&display=unknown&sort=invalid');
+  assert.deepEqual(links.labView(params,races,[{id:'senate-last',appliesTo:['senate']}]),{
+    race:undefined,office:'house',baseline:'',unit:'',metric:'margin',display:'map',sort:'race',find:''
+  });
+});

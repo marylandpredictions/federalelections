@@ -1,6 +1,10 @@
 (function (root) {
   const code = candidate => candidate.partyCode || candidate.party;
   const valid = candidate => Number.isSafeInteger(candidate.votes) && candidate.votes >= 0;
+  const publicCall = race => {
+    const call = race.calls?.[0];
+    return call?.candidate && !call.retracted ? call : null;
+  };
   function contest(candidates = [], totalOverride) {
     const ranked = candidates.filter(valid).sort((a,b) => b.votes-a.votes);
     const sum = ranked.reduce((n,c) => n+c.votes,0);
@@ -33,8 +37,10 @@
     const close = ordered(row=>row.current.gapPoints);
     const swings = ordered(row=>Math.abs(row.swing),true);
     const calls = {D:0,R:0,other:0};
-    for (const {race} of rows.filter(row=>row.race.calls?.length)) {
-      const winner = race.candidates.find(candidate=>candidate.name===race.calls[0].candidate);
+    for (const {race} of rows) {
+      const call = publicCall(race);
+      if (!call) continue;
+      const winner = race.candidates.find(candidate=>candidate.name===call.candidate);
       const party = winner && code(winner);
       calls[party==='D'||party==='R'?party:'other']++;
     }
@@ -50,7 +56,7 @@
       edge:rows.reduce((sum,row)=>sum+row.d-row.r,0),
       dem:sorted.find(row=>row.d>row.r), rep:sorted.reverse().find(row=>row.r>row.d)};
   }
-  const api = {contest,shift,findings,localFindings};
+  const api = {contest,shift,findings,localFindings,publicCall};
   if (typeof module !== 'undefined') module.exports = api;
   else root.FEALabAnalysis = api;
 })(globalThis);

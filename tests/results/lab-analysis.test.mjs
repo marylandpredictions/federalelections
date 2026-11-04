@@ -6,6 +6,17 @@ const candidates = (d,r,i=0) => [
   {party:'D',votes:d}, {party:'R',votes:r}, {party:'I',votes:i}
 ];
 
+test('national counts ignore a retracted winner and count the current corrected call', () => {
+  const field = [{name:'D candidate',party:'D',votes:45},{name:'R candidate',party:'R',votes:55}];
+  const row = (id,calls) => ({race:{id,candidates:field,calls},current:lab.contest(field)});
+  const result = lab.findings([
+    row('senate-AA',[{candidate:'D candidate',retracted:true}]),
+    row('senate-BB',[{candidate:'R candidate'},{candidate:'D candidate',retracted:true}])
+  ]);
+  assert.deepEqual(result.calls,{D:0,R:1,other:0});
+  assert.equal(result.reported,2);
+});
+
 test('Lab uses all votes for party margins and ranks the actual top two candidates', () => {
   const result = lab.contest(candidates(35,20,45));
   assert.equal(result.margin,15);

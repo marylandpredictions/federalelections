@@ -12,8 +12,8 @@
   <script src="/assets/theme.js?v=20261030-features2"></script>
   <link rel="stylesheet" href="/assets/wiki.css?v=classic-gradient3">
   <link rel="stylesheet" href="/assets/fea-platform.css?v=6">
-  <link rel="stylesheet" href="/assets/fea-research.css?v=11">
-  <script defer src="/assets/results-ui.js"></script><script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script><script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script><script defer src="/assets/night-awareness.js"></script><script defer src="/assets/fea-lab-analysis.js?v=2"></script><script defer src="/assets/research-links.js?v=1"></script><script defer src="/assets/fea-platform.js?v=16"></script>
+  <link rel="stylesheet" href="/assets/fea-research.css?v=12">
+  <script defer src="/assets/results-ui.js"></script><script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script><script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script><script defer src="/assets/night-awareness.js"></script><script defer src="/assets/fea-lab-analysis.js?v=3"></script><script defer src="/assets/research-links.js?v=2"></script><script defer src="/assets/fea-platform.js?v=17"></script>
   <link rel="stylesheet" href="/assets/fea-consistency.css?v=1">
 </head>
 <body class="fea-site" data-page="lab">
@@ -34,7 +34,7 @@
   <main id="main-content" class="fea-main">
 
     <p class="fea-crumb"><a href="/">Home</a> / Research &amp; Tools / Election Lab</p>
-    <header class="research-hero">
+    <header class="research-hero" id="midterm-retrospective">
       <p class="fea-kicker">FEA research · 2026 election analysis</p>
       <h1>Election Lab</h1>
       <p class="fea-intro">Follow the 2026 returns from the national picture to the races and reporting units that shaped it. Your selections carry through to the analysis workspace.</p>
@@ -49,28 +49,21 @@
         <figcaption class="lab-stage-head"><p class="fea-kicker" id="story-step">2026 / Returns</p>
         <h2 id="story-map-title">The national picture</h2></figcaption>
         <div id="story-visual" aria-busy="true">Loading election data…</div>
-        <p id="story-key" class="fea-note"></p>
+        <p id="story-key" class="fea-note"></p><p id="story-loading" class="fea-note" role="status" hidden>Updating graphic…</p>
       </figure>
       <div class="story-copy">
-        <section id="chapter-returns" class="story-chapter"><p class="fea-kicker">01 / The national picture</p><h2>What happened?</h2><p>How much of the national picture is settled? Switch offices to see where the reported margins and race calls stand.</p><label>Office <select id="story-office"></select></label><p id="story-coverage" class="lab-finding"></p><p id="story-national-detail"></p><p><a href="/results">Open the live Results Board →</a></p></section>
+        <section id="chapter-returns" class="story-chapter"><p class="fea-kicker">01 / 2026 midterm retrospective</p><h2>How much of the election has been called?</h2><p>Start with the races on the ballot across all three offices. Switch to the margin map to see where Democrats or Republicans lead in reported votes.</p><label>Office <select id="story-office"></select></label><label>Show <select id="story-returns-view"><option value="calls">Public calls by office</option><option value="map">Reported margin map</option></select></label><p id="story-coverage" class="lab-finding"></p><p id="story-national-detail"></p><p><a href="/results">Open the live Results Board →</a></p></section>
         <section id="chapter-shifts" class="story-chapter"><p class="fea-kicker">02 / Compare elections</p><h2>Where did margins move?</h2><p>The largest shift can come from a place the gaining party still trails. Change the reference election to see which movements stand out.</p><label>Reference election <select id="story-baseline"></select></label><label>Show <select id="story-shift-view"><option value="chart">Ranked shifts</option><option value="map">Shift map</option></select></label><p id="story-shift-note" class="lab-finding"></p><p id="story-shift-method" class="fea-note"></p><details><summary>View swing data and exclusions</summary><div id="story-swing-data"></div></details></section>
         <section id="chapter-close" class="story-chapter"><p class="fea-kicker">03 / Battlegrounds</p><h2>How close was the vote?</h2><p>A race that is closest by votes can rank differently by vote share. Switch the ranking to see where the two measures agree.</p><label>Rank by <select id="story-close-sort"><option value="points">Smallest percentage-point gap</option><option value="votes">Smallest vote gap</option></select></label><label>Inspect a race <select id="story-race"></select></label><p id="story-close-finding" class="lab-finding"></p><div id="story-race-data"></div></section>
-        <section id="chapter-local" class="story-chapter"><p class="fea-kicker">04 / Geography</p><h2>Where did the votes come from?</h2><p>Compare local margins and see how reporting units contributed to the race-wide vote difference. Local data can cover fewer ballots than the race-wide feed.</p><label>Race to inspect <select id="story-local-race"></select></label><label>Reporting unit <select id="story-unit" disabled><option>All reporting units</option></select></label><p id="story-local-finding" class="lab-finding"></p><details><summary>View local contribution data</summary><div id="story-local-data"></div></details></section>
+        <section id="chapter-local" class="story-chapter"><p class="fea-kicker">04 / Geography</p><h2>Where did the votes come from?</h2><p>A populous reporting unit can contribute more votes to the race-wide margin than a smaller unit with a wider percentage gap. Local data can cover fewer ballots than the race-wide feed.</p><label>Race to inspect <select id="story-local-race"></select></label><label>Show <select id="story-local-view"><option value="chart">Largest local vote differences</option><option value="map">Local margin map</option></select></label><label>Reporting unit <select id="story-unit" disabled><option>All reporting units</option></select></label><p id="story-local-finding" class="lab-finding"></p><details><summary>View local contribution data</summary><div id="story-local-data"></div></details></section>
         <section id="chapter-history" class="story-chapter"><p class="fea-kicker">05 / Historical perspective</p><h2>Put the result in context</h2><p>Read the 2026 result alongside available benchmarks for the selected geography. Presidential returns are a separate contest. A single change in margin cannot establish a lasting trend.</p><label>Race <select id="story-history-race"></select></label><label>Benchmarks <select id="story-history-scope"><option value="all">All verified benchmarks</option><option value="office">Same office only</option></select></label><p><a href="/election-history">Explore the election archive →</a></p></section>
       </div>
     </div>
-    <section class="fea-section" id="midterm-retrospective" aria-labelledby="midterm-title">
-      <p class="fea-kicker">2026 midterm retrospective</p>
-      <h2 id="midterm-title">What the reported returns show</h2>
-      <p>Follow the evidence from the national count to individual races. The numbers below use the current results snapshot and can change as counting continues.</p>
-      <div id="lab-retrospective"></div>
-      <h3>Where comparable races moved most</h3>
-      <div id="lab-retrospective-shifts" aria-live="polite">Loading historical benchmarks…</div>
-    </section>
     <section id="analysis-workspace" aria-labelledby="workspace-title">
       <p class="fea-kicker">06 / Independent investigation</p>
       <h2 id="workspace-title" tabindex="-1">Analysis workspace</h2>
       <p>Carry the race and comparison you selected into the workspace, or start fresh.</p>
+      <p id="lab-selection" class="lab-finding" role="status"></p>
       <nav id="lab-related" class="research-context-links" aria-label="Explore the selected race" hidden></nav>
       <button type="button" id="lab-reset">Reset selections</button>
     <section class="fea-section lab-workbench" aria-labelledby="map-title"><div class="lab-workbench-controls"><h3 id="map-title">Build a view</h3>
@@ -95,7 +88,7 @@
       <div id="lab-map" class="fea-map" role="region" aria-label="Election map">Loading map…</div>
       <details><summary>Browse the map data as a table</summary><div id="lab-table"></div></details></div>
     </section>
-    <details class="fea-section"><summary>Compare with past results</summary><p class="fea-note">Shares use all reported votes. Reported vote differences are available for verified same-office benchmarks and can change as counting continues.</p><div id="lab-comparison"></div></details>
+    <details class="fea-section" id="lab-compare-evidence"><summary>Compare with past results</summary><p class="fea-note">Shares use all reported votes. Reported vote differences are available for verified same-office benchmarks and can change as counting continues.</p><div id="lab-comparison"></div></details>
     <section class="fea-section fea-split">
       <div><h2>Where the votes came from</h2><p class="fea-note">See how individual reporting units contribute to the overall Democratic–Republican vote difference.</p><div class="fea-filter"><label>Reporting unit<select id="lab-unit" disabled><option>All reporting units</option></select></label><label>Rank by<select id="lab-local-sort"><option value="impact">Largest contribution</option><option value="leader">Favors leading candidate</option><option value="opponent">Favors opponent</option><option value="votes">Most votes</option></select></label></div><div id="lab-local-map" class="fea-map fea-local-map"></div><div id="lab-detail"></div></div>
       <div id="lab-benchmarks"><h2>Historical benchmarks</h2><div id="lab-timeline"></div></div>
