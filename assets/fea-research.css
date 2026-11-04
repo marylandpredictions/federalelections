@@ -119,3 +119,17 @@ body:has(.bias-page) { background: var(--fea-bg); }
 .lab-dot-track .bias-result-dot { width:.47rem; height:.47rem; top:.14rem; }
 #lab-search { min-width:0; max-width:100%; }
 @media (max-width:760px) { #story-visual { height:min(29vh,14rem); min-height:0; } }
+
+/* Research pages use a ruled figure and a quieter reading column. */
+.research-hero {
+  background:var(--fea-paper);
+  border-top:4px solid var(--fea-cobalt);
+  padding:clamp(18px,3vw,44px);
+}
+.story-stage { border-top:3px solid var(--fea-pink); }
+#story-visual,.bias-page .bias-map { background:var(--fea-map-field); }
+.bias-page .bias-findings {
+  background:var(--fea-editorial);
+  padding:clamp(16px,2.8vw,36px);
+  margin-block:1.5rem 2rem;
+}

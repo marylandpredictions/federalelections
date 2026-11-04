@@ -229,3 +229,33 @@ body:has(> .fea-header) .fea-filter :is(input,select) {
   background-position: top;
   background-repeat: no-repeat;
 }
+
+/* Atlas surfaces use the same tonal hierarchy in both reading modes. */
+:root {
+  --fea-editorial:#e9e5dc;
+  --fea-map-field:#e6ecee;
+}
+:root[data-theme="dark"] {
+  --fea-editorial:#101b2e;
+  --fea-map-field:#172b43;
+}
+.fea-header a,.fea-header summary { text-underline-offset:.24em; }
+.fea-header :is(a,summary):focus-visible { outline-offset:4px; }
+.fea-site :is(h1,h2), .fea-about h1, .fea-analysis h1 { text-wrap:balance; }
+.fea-site :is(p,.fea-note) { overflow-wrap:break-word; }
+.fea-analysis .compact-page-head,.fea-about .page-grid > .image-panel {
+  background:var(--fea-paper);
+  border:0;
+  border-top:4px solid var(--fea-cobalt);
+  padding:clamp(20px,4vw,58px);
+}
+.fea-analysis .compact-page-head h1,.fea-about .page-grid h1 {
+  font-size:clamp(2.7rem,6vw,6rem);
+  max-width:15ch;
+  line-height:.99;
+}
+.fea-analysis .compact-page-head > p:last-child,.fea-about .page-grid .lede { max-width:54ch; }
+.fea-analysis #articles-list { gap:clamp(18px,3vw,42px); }
+.fea-analysis #articles-list .article-card:first-child h2 { font-size:clamp(1.55rem,3.25vw,3rem); }
+.fea-about .page-grid > .odds-panel,.fea-about .team-member-grid > div { background:var(--fea-editorial); border:0; border-top:1px solid var(--fea-line); }
+.fea-about .team-panel { border:0; border-top:3px solid var(--fea-pink); }

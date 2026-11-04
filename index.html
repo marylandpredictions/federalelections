@@ -10,30 +10,31 @@
   <meta property="og:image" content="/assets/img/capitol-detail.webp">
   <link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
   <script src="/assets/theme.js?v=20261030-features2"></script>
-  <link rel="stylesheet" href="/assets/fea-platform.css?v=5">
+  <link rel="stylesheet" href="/assets/fea-platform.css?v=6">
   <script defer src="/assets/fea-shell.js?v=5"></script>
-  <link rel="stylesheet" href="/assets/fea-home.css?v=7">
+  <link rel="stylesheet" href="/assets/fea-home.css?v=9">
   <script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
   <script defer src="/assets/night-awareness.js"></script>
   <script defer src="/assets/results-ui.js"></script>
   <script defer src="/assets/fea-lab-analysis.js?v=2"></script>
-  <script defer src="/assets/fea-platform.js?v=13"></script>
+  <script defer src="/assets/fea-platform.js?v=14"></script>
 </head>
 <body class="fea-site" data-page="home">
   <header class="fea-header" data-fea-header><div class="fea-header-inner"><a href="/">Federal Elections Analysis</a><nav class="fea-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/results">Elections &amp; Results</a><a href="/features/map-maker">Maps</a><a href="/analysis-center">Research &amp; Tools</a><a href="/articles">Analysis</a><a href="/about">About</a></nav></div></header>
   <main id="main-content" class="fea-main">
 
+    <section class="home-atlas" aria-labelledby="home-title">
     <header class="home-edition">
       <div>
-        <p class="fea-kicker">FEA Atlas <span class="home-edition-slash">/</span> 2026 general election</p>
+        <p class="fea-kicker">FEA Atlas <span class="home-edition-slash">/</span> Election atlas 2026</p>
         <h1 id="home-title">The midterms, <em>mapped.</em></h1>
       </div>
       <p>Explore the returns, the races still unresolved, and the research behind the numbers.</p>
     </header>
-    <section class="home-lead" aria-labelledby="home-title">
+    <div class="home-lead">
       <div class="home-map-feature">
-        <p class="fea-kicker">The national map</p>
+        <p class="fea-kicker home-plate-label"><span>01</span> National returns</p>
         <div class="home-map-controls"><label for="home-office">Show results for</label><select id="home-office"><option value="house">House</option><option value="senate">Senate</option><option value="governor">Governors</option></select><a id="home-board-link" href="/results">Open full results →</a></div>
         <div class="home-map-window">
           <div id="home-map" class="fea-map" aria-label="National reported margin map">Loading election map…</div>
@@ -45,11 +46,12 @@
         </div>
       </div>
       <aside class="home-ledger" aria-labelledby="home-ledger-title">
-        <p class="fea-kicker">National returns</p>
+        <p class="fea-kicker home-plate-label"><span>02</span> National tally</p>
         <h2 id="home-ledger-title">Race calls</h2>
         <div id="home-overview" class="home-results"><p class="fea-note">Loading election results…</p></div>
         <p id="home-source" class="fea-note" data-load-status role="status">Loading results source…</p>
       </aside>
+    </div>
     </section>
 
     <div class="home-election-followup">
@@ -71,11 +73,11 @@
         <div class="home-projects">
           <article class="home-project home-project-lead">
             <div><p class="fea-kicker">01 / Interactive analysis</p><h3>Election Lab</h3><p id="home-lab-preview">Follow the returns from national shifts to close races and local vote margins.</p><a href="/analysis-center">Explore the analysis →</a></div>
-            <div id="home-lab-chart" aria-label="Closest reported Senate contests"></div>
+            <figure class="home-research-figure"><figcaption class="fea-kicker">Senate / Closest reported margins</figcaption><div id="home-lab-chart"></div></figure>
           </article>
-          <article class="home-project">
-            <p class="fea-kicker">02 / Polling research</p><h3>Where Senate polls miss</h3><p>Largest estimated polling misses for 2026, in points.</p>
-            <div id="home-bias-preview"></div><a href="/features/polling-bias">Explore the estimates →</a>
+          <article class="home-project home-project-bias">
+            <div><p class="fea-kicker">02 / Polling research</p><h3>Where Senate polls miss</h3><p>Largest estimated polling misses for 2026, in points.</p><a href="/features/polling-bias">Explore the estimates →</a></div>
+            <div id="home-bias-preview"></div>
           </article>
           <article class="home-project home-project-maker">
             <div><p class="fea-kicker">03 / Map Maker</p><h3>Draw your own scenario</h3><p>Assign race ratings and export your own House, Senate or governor map.</p><a href="/features/map-maker">Open Map Maker →</a></div>

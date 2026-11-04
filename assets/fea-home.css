@@ -122,3 +122,77 @@
   .home-footer .fea-footer-inner { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .home-footer-brand { grid-column: 1 / -1; }
 }
+
+/* The national map and its tally share one atlas plate. */
+.fea-site[data-page="home"] { --home-inset:clamp(16px,2.65vw,44px); }
+.home-atlas {
+  background:var(--fea-paper);
+  border-top:4px solid var(--fea-cobalt);
+  padding:var(--home-inset) var(--home-inset) 0;
+}
+.home-edition {
+  grid-template-columns:minmax(0,1fr) minmax(0,26ch);
+  align-items:end;
+  padding-bottom:clamp(16px,2vw,30px);
+}
+.fea-site .home-edition h1 { font-size:clamp(2.7rem,5.9vw,6rem); line-height:.97; }
+.home-edition > p { line-height:1.5; }
+.home-lead { grid-template-columns:minmax(0,3.45fr) minmax(240px,1fr); padding-bottom:var(--home-inset); }
+.home-plate-label { display:flex; align-items:center; gap:.65rem; }
+.home-plate-label span { color:var(--fea-muted); border-inline-end:1px solid var(--fea-line); padding-inline-end:.65rem; }
+#home-map { border:0; background:var(--fea-map-field); }
+#home-map path { stroke:var(--fea-map-field); }
+#home-map svg { max-height:620px; }
+#home-map .fea-legend { background:var(--fea-paper); border-color:var(--fea-line); padding-inline:0; }
+.home-ledger { background:transparent; border-top:0; border-inline-start:1px solid var(--fea-line); padding:0 0 0 clamp(14px,1.6vw,25px); }
+.home-ledger h2 { margin-bottom:8px; }
+.home-results .home-panel { padding-block:9px; }
+.home-results .home-panel p { margin-bottom:.15rem; }
+.home-metric { font-size:clamp(1.35rem,2.45vw,2.35rem); }
+.home-election-followup { border:0; padding-block:clamp(26px,3vw,52px); }
+
+/* The research section reads as a lead feature and two shorter briefs. */
+.home-research-band { background:var(--fea-editorial); }
+.home-projects { grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:0 var(--home-gap); }
+.home-project-lead {
+  grid-column:1; grid-row:span 2; display:flex; flex-direction:column; align-items:stretch;
+  justify-content:space-between; gap:1.6rem; padding:clamp(18px,2.8vw,42px);
+  background:var(--fea-paper);
+}
+.home-project-lead h3 { font-size:clamp(2rem,4vw,4rem); }
+.home-research-figure { margin:0; border-top:1px solid var(--fea-line); padding-top:1rem; }
+.home-project-bias,.home-project-maker { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); align-items:center; gap:clamp(14px,2vw,30px); }
+.home-project-bias { padding-top:18px; }
+#home-maker-preview svg { max-height:145px; }
+.home-editorial { max-width:1420px; }
+.home-stories { grid-template-columns:minmax(0,1.65fr) minmax(0,1fr); }
+.home-stories > .home-story img { aspect-ratio:1.9; }
+.home-stories > .home-story h3 { max-width:24ch; font-size:clamp(1.7rem,3.2vw,3.25rem); }
+.home-story-stack { border-inline-start:1px solid var(--fea-line); padding-inline-start:clamp(14px,2.2vw,34px); }
+.home-story-stack .home-story { padding-block:16px; }
+.home-footer { background:var(--fea-paper); }
+.home-footer .fea-footer-inner { padding-block:clamp(28px,4vw,64px); }
+@media (prefers-reduced-motion:no-preference) {
+  .home-project a,.home-heading a,.home-zoom button { transition:color 150ms ease,background-color 150ms ease; }
+}
+@media (max-width:900px) {
+  .home-projects { grid-template-columns:1fr; }
+  .home-project-lead { grid-column:auto; grid-row:auto; margin-bottom:14px; }
+}
+@media (max-width:800px) {
+  .home-edition,.home-lead { grid-template-columns:1fr; }
+  .home-ledger { border-inline-start:0; border-top:1px solid var(--fea-line); padding:14px 0 0; }
+}
+@media (max-width:530px) {
+  .home-atlas { margin-inline:calc(-1 * var(--home-gutter)); }
+  .home-project-bias,.home-project-maker,.home-stories { grid-template-columns:1fr; }
+  .home-story-stack { border-inline-start:0; padding-inline-start:0; }
+}
+
+.home-story-stack { align-self:start; }
+.home-feed li:only-child { grid-column:1 / -1; }
+@media (max-width:530px) {
+  .home-atlas { padding-inline:var(--home-gutter); }
+  .home-map-controls { column-gap:.5rem; }
+  .home-map-controls a { flex-basis:100%; }
+}
