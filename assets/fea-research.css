@@ -203,3 +203,6 @@ body:has(.bias-page) { background: var(--fea-bg); }
 @media(max-width:440px) {
   .bias-map-layout .bias-rankings { grid-template-columns:1fr; }
 }
+
+/* Keep the viewport as the scroll container for the sticky chapter graphic. */
+.fea-site[data-page="lab"] { overflow-x:clip; }
