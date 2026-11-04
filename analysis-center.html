@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026 Election Lab | Federal Elections Analysis</title>
+  <meta name="description" content="Compare 2026 reported returns with verified historical election data and explore geographic contributions.">
+  <meta property="og:title" content="2026 Election Lab | FEA">
+  <meta property="og:description" content="Compare 2026 reported returns with verified historical election data and explore geographic contributions.">
+  <meta property="og:image" content="/assets/img/capitol-detail.webp">
+  <link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
+  <script src="/assets/theme.js?v=20261030-features2"></script>
+  <link rel="stylesheet" href="/assets/fea-platform.css?v=3">
+  <script defer src="/assets/fea-shell.js?v=3"></script>
+  <script defer src="/assets/results-ui.js"></script><script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script><script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script><script defer src="/assets/night-awareness.js"></script><script defer src="/assets/fea-platform.js?v=4"></script>
+</head>
+<body class="fea-site" data-page="lab">
+  <header class="fea-header" data-fea-header><div class="fea-header-inner"><a href="/">Federal Elections Analysis</a><nav class="fea-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/elections">Elections</a><a href="/polling">Polling</a><a href="/data-lab">Data Lab</a><a href="/articles">Analysis</a><a href="/about">About</a></nav></div></header>
+  <main id="main-content" class="fea-main">
+
+    <p class="fea-crumb"><a href="/">Home</a> / <a href="/data-lab">Data Lab</a> / Election Lab</p>
+    <p class="fea-kicker">2026 Post-election Analysis Center</p><h1>Election Lab</h1>
+    <p class="fea-intro">Explore reported returns and compare them with past elections. Cross-office comparisons describe differences between contests. They do not measure how individual voters changed their votes.</p>
+    <p id="lab-source" class="fea-note" data-load-status role="status">Loading election data…</p>
+    <section class="fea-section" aria-labelledby="map-title"><h2 id="map-title">National Election Explorer</h2>
+      <div class="fea-filter">
+        <label>Office<select id="lab-office"><option>Senate</option></select></label>
+        <label>Map metric<select id="lab-metric"><option value="margin">Reported D–R margin</option><option value="swing">Swing from baseline</option><option value="dem-share">Democratic vote share</option><option value="rep-share">Republican vote share</option></select></label>
+        <label>Historical baseline<select id="lab-lens"><option>Loading…</option></select></label>
+        <label>Race<select id="lab-race"><option>Select a race</option></select></label>
+        <a class="fea-button" id="lab-share" href="/analysis-center">Link to this view</a>
+      </div>
+      <div id="lab-map" class="fea-map" role="region" aria-label="Election map">Loading map…</div>
+      <details><summary>Browse the map data as a table</summary><div id="lab-table"></div></details>
+    </section>
+    <section class="fea-section"><h2>Swing Laboratory</h2><p class="fea-note">Shares use all reported votes. Reported vote differences are available for verified same-office benchmarks and can change as counting continues.</p><div id="lab-comparison"></div></section>
+    <section class="fea-section fea-split">
+      <div><h2>Anatomy of a Victory</h2><p class="fea-note">See how individual reporting units contribute to the overall Democratic–Republican vote difference.</p><div class="fea-filter"><label>Reporting unit<select id="lab-unit" disabled><option>All reporting units</option></select></label></div><div id="lab-local-map" class="fea-map fea-local-map"></div><div id="lab-detail"></div></div>
+      <div><h2>Historical benchmarks</h2><div id="lab-timeline"></div></div>
+    </section>
+    <section class="fea-section"><h2>Election discoveries</h2><p class="fea-note">Rankings use the reported returns and baseline selected above. Rankings may change as results arrive.</p><div id="lab-discoveries" class="fea-grid"></div></section>
+
+  </main>
+  <footer class="fea-footer" data-fea-footer><div class="fea-footer-inner"><a href="/about">Federal Elections Analysis</a><a href="/sources">Sources</a><a href="/contact">Contact</a></div></footer>
+</body>
+</html>

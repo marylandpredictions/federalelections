@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026 Election Directory | Federal Elections Analysis</title>
+  <meta name="description" content="Find 2026 House, Senate and governor results by race, office or state.">
+  <meta property="og:title" content="2026 Election Directory | FEA">
+  <meta property="og:description" content="Find 2026 House, Senate and governor results by race, office or state.">
+  <meta property="og:image" content="/assets/img/capitol-detail.webp">
+  <link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
+  <script src="/assets/theme.js?v=20261030-features2"></script>
+  <link rel="stylesheet" href="/assets/fea-platform.css?v=3">
+  <script defer src="/assets/fea-shell.js?v=3"></script>
+  <script defer src="/assets/fea-platform.js?v=4"></script>
+</head>
+<body class="fea-site" data-page="elections">
+  <header class="fea-header" data-fea-header><div class="fea-header-inner"><a href="/">Federal Elections Analysis</a><nav class="fea-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/elections">Elections</a><a href="/polling">Polling</a><a href="/data-lab">Data Lab</a><a href="/articles">Analysis</a><a href="/about">About</a></nav></div></header>
+  <main id="main-content" class="fea-main">
+
+    <p class="fea-crumb"><a href="/">Home</a> / Elections</p>
+    <p class="fea-kicker">Election archive</p><h1>2026 elections</h1>
+    <p class="fea-intro">Browse races by office or state. Open a race for candidate totals, geographic contributions, historical benchmarks and available polling references.</p>
+    <div class="fea-actions"><a class="fea-button fea-primary" href="/results">Results board</a><a class="fea-button" href="/analysis-center">Historical comparisons</a><a class="fea-button" href="/election-history">Presidential archive</a></div>
+    <section class="fea-section">
+      <h2>Find a race</h2>
+      <div class="fea-filter"><label>Office<select id="race-office"><option>All offices</option></select></label><label>State<select id="race-state"><option>All states</option></select></label><label>Race or candidate<input id="race-find" type="search" autocomplete="off"></label></div>
+      <p id="election-source" class="fea-note" data-load-status>Loading reported returns…</p><p id="race-count" class="fea-note" aria-live="polite"></p>
+      <div id="election-list"></div>
+    </section>
+
+  </main>
+  <footer class="fea-footer" data-fea-footer><div class="fea-footer-inner"><a href="/about">Federal Elections Analysis</a><a href="/sources">Sources</a><a href="/contact">Contact</a></div></footer>
+</body>
+</html>

@@ -2994,7 +2994,13 @@ function renderHomeArticleList() {
 function renderArticlesList() {
   const container = document.getElementById("articles-list");
   if (!container) return;
-  const list = sortedArticles();
+  const field = document.getElementById("article-find");
+  const authors = document.getElementById("article-author");
+  const query = field?.value.trim().toLowerCase() || "";
+  const list = sortedArticles().filter(article =>
+    (!authors?.value || article.author === authors.value) &&
+    (!query || [article.title, article.dek, article.author].some(value => String(value || "").toLowerCase().includes(query)))
+  );
   container.innerHTML = list.length ? list.map((article) => `
     <article class="article-card">
       ${articleLeadImageMarkup(article, "article-card-image")}
@@ -3002,7 +3008,7 @@ function renderArticlesList() {
       <h2><a href="${articleUrl(article)}">${escapeHtml(article.title)}</a></h2>
       <p>${escapeHtml(article.dek || "")}</p>
     </article>
-  `).join("") : `<article class="article-card"><h2>No articles yet.</h2><p>Published writing will appear here once articles are added.</p></article>`;
+  `).join("") : `<article class="article-card"><h2>No matching articles.</h2><p>Published writing will appear here once articles are added.</p></article>`;
 }
 
 function renderArticlePage() {
@@ -3784,6 +3790,15 @@ function renderLoadError(error) {
 async function init() {
   installInteractionDismiss();
   articles = await loadArticles();
+  const articleAuthors = document.getElementById("article-author");
+  if (articleAuthors) {
+    const authors = [...new Set(articles.map(article => article.author).filter(Boolean))].sort();
+    for (const author of authors) articleAuthors.add(new Option(author, author));
+    articleAuthors.addEventListener("change", renderArticlesList);
+    document.getElementById("article-find")?.addEventListener("input", renderArticlesList);
+    renderArticlesList();
+    return;
+  }
   if (document.getElementById("countdown-title")) {
     renderHomeLatestVideo(); renderTopArticle(); renderHomeArticleList();
     return;

@@ -3,124 +3,44 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Federal Elections Analysis — 2026 Election Coverage </title>
-  <meta name="description" content="Federal Elections Analysis is a hub for electoral insight, top-tier data, and a deep dive into the elections that decide the future of this country. Follow our election-night results, videos, and articles.">
-  <meta property="og:image" content="https://media.discordapp.net/attachments/1382924914482348064/1509778504353447998/FEA_40.png?ex=6a1a6a4d&is=6a1918cd&hm=6b77c0e3215672cbf44ea62d2fc2c9e4d907031812e13de98aeedc34dd23b5e1&=&format=webp&quality=lossless&width=2452&height=1380">
-  <link rel="icon" href="assets/img/FEA_Icon.webp" type="image/webp">
-  <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
-  <script src="assets/theme.js?v=20261030-features2"></script>
-  <link rel="stylesheet" href="assets/wiki.css?v=20261030-features1">
+  <title>2026 Midterm Results and Analysis | Federal Elections Analysis</title>
+  <meta name="description" content="Explore the 2026 midterms with reported election results, polling references, historical benchmarks and FEA research.">
+  <meta property="og:title" content="2026 Midterm Results and Analysis | FEA">
+  <meta property="og:description" content="Explore the 2026 midterms with reported election results, polling references, historical benchmarks and FEA research.">
+  <meta property="og:image" content="/assets/img/capitol-detail.webp">
+  <link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
+  <script src="/assets/theme.js?v=20261030-features2"></script>
+  <link rel="stylesheet" href="/assets/fea-platform.css?v=3">
+  <script defer src="/assets/fea-shell.js?v=3"></script>
+  <script defer src="/assets/results-ui.js"></script><script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script><script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script><script defer src="/assets/night-awareness.js"></script><script defer src="/assets/fea-platform.js?v=4"></script>
 </head>
-<body>
-      <header class="site-header">
-    <a class="brand" href="/">
-      <img class="brand-mark" src="assets/img/FEA_Icon.webp" alt="Federal Elections Analysis">
-      <span><strong>Federal Elections Analysis</strong><small style="font-weight: 700;">Election analysis</small></span>
-    </a>
-    <nav class="site-nav" aria-label="Primary navigation"><a class="active" href="/">Home</a><a href="/results">Results</a><a href="/videos">Videos</a><a href="/articles">Articles</a><details class="nav-dropdown"><summary>Features</summary><div class="nav-dropdown-menu"><a href="/features/polling-bias">State polling bias</a><a href="/features/map-maker">Map maker</a></div></details></nav>
-    <div class="site-nav-right">
-      <a href="https://gofund.me/50724cf21" target="_blank" rel="noopener" class="donate-button">$ Donate</a>
-      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
-        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
-        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A8.5 8.5 0 1 1 11.21 3 6.5 6.5 0 0 0 21 12.79Z"></path></svg>
-      </button>
-    </div>
-  </header>
+<body class="fea-site" data-page="home">
+  <header class="fea-header" data-fea-header><div class="fea-header-inner"><a href="/">Federal Elections Analysis</a><nav class="fea-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/elections">Elections</a><a href="/polling">Polling</a><a href="/data-lab">Data Lab</a><a href="/articles">Analysis</a><a href="/about">About</a></nav></div></header>
+  <main id="main-content" class="fea-main">
 
-  <main>
-    <section class="home-hero-shell" aria-labelledby="page-title">
-      <div class="hero-main home-hero">
-        <p class="kicker">Federal Elections Analysis</p>
-        <h1 id="page-title">Analysis on your screen.</h1>
-        <p class="lede">Election coverage, reporting, and analysis from the FEA team.</p>
-        <div class="hero-actions"><a class="button-link" href="/results">2026 election results →</a><a class="button-link" href="/videos">Watch our coverage</a></div>
-      </div>
-      <aside class="election-countdown" aria-labelledby="countdown-title">
-        <p class="kicker" id="countdown-title">2026 General Election</p>
-        <div class="countdown-digits" id="countdown-digits"><div><strong id="countdown-days">—</strong><span>Days</span></div><div><strong id="countdown-hours">—</strong><span>Hours</span></div><div><strong id="countdown-minutes">—</strong><span>Minutes</span></div></div>
-        <p id="countdown-message">Election Day • November 3, 2026</p>
-        <a class="button-link" href="/results">View results →</a>
-      </aside>
+    <section class="fea-hero" aria-labelledby="home-title">
+      <div><p class="fea-kicker">Federal Elections Analysis · Election coverage</p>
+      <h1 id="home-title">The 2026 midterms</h1>
+      <p class="fea-intro">Track reported returns, explore the races that shaped the midterms, and compare them with past elections.</p>
+      <div class="fea-actions"><a class="fea-button fea-primary" href="/results">Results board →</a><a class="fea-button" href="/analysis-center">Election Lab</a></div></div>
+      <div><div id="home-map" class="fea-map"><p class="fea-note">Loading reported House margins…</p></div><p class="fea-note">2026 House · Reported Democratic–Republican margin</p></div>
     </section>
-
-    <div class="home-section-head">
-      <span>Latest video</span>
-      <h2>Newest analysis from the channel</h2>
-    </div>
-    <section class="text-panel home-latest-video" aria-label="Latest Federal Elections Analysis video">
-      <div id="home-latest-video" class="home-video-feature">
-        <p class="meta">Latest video will appear here.</p>
-      </div>
+    <section class="fea-section" aria-labelledby="overview-title">
+      <p class="fea-kicker">National overview</p><h2 id="overview-title">Races called by office</h2>
+      <p id="home-source" class="fea-note" data-load-status role="status">Loading election data…</p>
+      <div id="home-overview" class="fea-grid"></div>
+      <p class="fea-note">Counts cover seats on the 2026 ballot.</p>
     </section>
-
-    <div class="home-section-head">
-      <span>Articles</span>
-      <h2>Latest writing</h2>
-    </div>
-    <section class="dashboard-grid home-news-grid" aria-label="Latest articles">
-      <article class="chart-panel article-teaser" id="top-article" aria-labelledby="top-article-title">
-        <p class="meta">No articles yet.</p>
-      </article>
-      <aside class="chart-panel">
-        <span class="chart-label">More articles</span>
-        <div id="home-article-list" class="home-article-list"></div>
-        <p><a class="button-link" href="articles.html">See all articles</a></p>
-      </aside>
-    </section>
-    <div class="home-section-head">
-      <span>Federal Elections Analysis</span>
-      <h2>Team hub</h2>
-    </div>
-    <section class="team-action-grid" aria-label="Team pages">
-      <a class="forecast-overview-card" href="videos.html">
-        <span>Media</span>
-        <strong>Videos</strong>
-      </a>
-      <a class="forecast-overview-card" href="about.html">
-        <span>Info</span>
-        <strong>About us</strong>
-      </a>
-      <a class="forecast-overview-card" href="contact.html">
-        <span>Contact</span>
-        <strong>Contact us</strong>
-      </a>
+    <section class="fea-section fea-split">
+      <div><p class="fea-kicker">Explore the data</p><h2>From returns to context</h2>
+      <div class="fea-card"><div class="fea-row"><a href="/elections">Election directory →</a><small>Find a House, Senate, or governor contest.</small></div>
+      <div class="fea-row"><a href="/features/map-maker">FEA Atlas →</a><small>Build and export a custom election scenario.</small></div>
+      <div class="fea-row"><a href="/analysis-center?metric=swing">Swing Laboratory →</a><small>Compare reported margins with verified historical benchmarks.</small></div>
+      <div class="fea-row"><a href="/polling">Polling Center →</a><small>Review eligible 2026 race averages and historical polling bias.</small></div></div></div>
+      <div><p class="fea-kicker">From FEA</p><h2>Latest research</h2><div class="fea-card"><div id="home-research">Loading published articles…</div><p><a href="/articles">All analysis</a> · <a href="/videos">Video coverage</a></p></div></div>
     </section>
 
   </main>
-
-  <footer class="site-footer">
-    <div>
-      <strong>Federal Elections Analysis</strong>
-      <p>Election coverage, public analysis, and team updates.</p>
-    </div>
-    <nav class="footer-columns" aria-label="Footer navigation">
-      <section class="footer-link-group" aria-label="Site links">
-        <strong>Site</strong>
-        <a href="/">Home</a>
-        <a href="/videos">Videos</a>
-        <a href="/results">Results</a>
-        <a href="/articles">Articles</a>
-      </section>
-      <section class="footer-link-group" aria-label="Forecast links">
-        <strong>Ratings</strong>
-        <a href="/predictions/2026/senate">Senate</a>
-        <a href="/predictions/2026/house">House</a>
-        <a href="/predictions/2026/governor">Governors</a>
-      </section>
-      <section class="footer-link-group" aria-label="Other links">
-        <strong>Other</strong>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
-        <a href="/terms">Terms</a>
-        <a href="/privacy">Privacy</a>
-      </section>
-    </nav>
-  </footer>
-
-  <script src="assets/countdown.js?v=20261027-night-final"></script>
-  <script src="assets/wiki.js?v=20260721-ratings"></script>
+  <footer class="fea-footer" data-fea-footer><div class="fea-footer-inner"><a href="/about">Federal Elections Analysis</a><a href="/sources">Sources</a><a href="/contact">Contact</a></div></footer>
 </body>
 </html>
-
-
