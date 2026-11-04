@@ -14,6 +14,20 @@ test('Observed NBC 2026 national samples map House at-large, House districts, Se
  assert.ok(parseNbcNational(fixtures.senate,source('senate'),catalogue).some(r=>r.id==='senate-OH'));
  const d=clone(fixtures.senate);d.mapData.OH.tooltip.candidates[0].isWinner=true;d.mapData.OH.tooltip.callStatusCode='W';assert.equal(parseNbcNational(d,source('senate'),catalogue).find(r=>r.id==='senate-OH').providerCall,null);
 });
+test('NBC keeps publishing vote totals and explicit projections after votingToday clears overnight',()=>{
+ for(const s of sources){
+  const d=clone(fixtures[s.office]),key=s.races[0].providerRaceId;
+  d.currentTime='2026-11-04T05:35:34Z';
+  for(const m of s.races)d.mapData[m.providerRaceId].votingToday=false;
+  batch(d,key,[120,80]);
+  const t=d.mapData[key].tooltip;t.callStatusCode='P';t.candidates.forEach((c,i)=>c.isWinner=i===0);
+  const rows=parseNbcNational(d,{...s,projection:{verified:true,contract:'nbc-firecracker-call-status-v1'}},catalogue);
+  const r=rows.find(r=>r.id===s.races[0].feaRaceId);
+  assert.equal(rows.length,s.races.length);
+  assert.equal(r.candidates.reduce((n,c)=>n+c.votes,0),200);
+  assert.equal(r.providerCall.candidate,r.candidates[0].name);
+ }
+});
 test('National identity/schema, geography, raw totals, candidate duplicates, malformed votes and special-election scope fail closed',()=>{
  const s=source('house');for(const mutate of [d=>d.electionDate='2024-11-05',d=>d.electionType='primary',d=>d.office='senate',d=>d.brand='other',d=>d.enableLivePreview=true,d=>d.mapData={},d=>d.currentTime='bad',d=>d.mapData['1001'].stateCode='TX',d=>d.mapData['1001'].tooltip.totalVote=2,d=>d.mapData['1001'].tooltip.percentIn=101,d=>d.mapData['1001'].tooltip.candidates[0].votes=-1,d=>delete d.mapData['1001'].tooltip.candidates[0].votes,d=>d.mapData['1001'].tooltip.candidates[0].votes=true,d=>d.mapData['1001'].tooltip.candidates[0].votes=[],d=>d.mapData['1001'].tooltip.candidates[0].name='Republican',d=>d.mapData['1001'].tooltip.candidates.push(clone(d.mapData['1001'].tooltip.candidates[0]))]){const d=clone(fixtures.house);mutate(d);assert.throws(()=>parseNbcNational(d,s,catalogue));}
  const wrong=clone(s);wrong.races[0].feaRaceId='house-DE-AL';wrong.races[0].providerRaceId='4804';assert.throws(()=>parseNbcNational(fixtures.house,wrong,catalogue));

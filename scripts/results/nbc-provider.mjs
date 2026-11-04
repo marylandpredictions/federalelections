@@ -79,7 +79,9 @@ export function parseNbcNational(data,source,catalogue,{onInvalid}={}) {
     const local=catalogue.find(r=>r.id===mapping.feaRaceId),entry=data.mapData[mapping.providerRaceId],t=entry?.tooltip;
     if(!local||local.type!==office||ids.has(local.id))throw Error('Unknown or duplicate national race mapping');ids.add(local.id);
     const special=office==='senate'&&mapping.specialElection===true&&['FL','OH'].includes(local.state)&&entry?.href===`/politics/2026-special-elections/${local.state==='FL'?'florida':'ohio'}-senate-results`;
-    if(!entry||entry.stateCode!==local.state||entry.stateCode==='US'||entry.votingToday!==true||!t||t.officeCode!==codes[office]||!(t.electionTypeCode==='G'||special&&t.electionTypeCode==='P')||!Array.isArray(t.candidates)||!t.candidates.length)throw Error('NBC national race missing or geography/office mismatch');
+    // votingToday is a calendar flag. It clears after midnight ET even while
+    // NBC continues reporting this exact election, so it cannot identify a race.
+    if(!entry||entry.stateCode!==local.state||entry.stateCode==='US'||!t||t.officeCode!==codes[office]||!(t.electionTypeCode==='G'||special&&t.electionTypeCode==='P')||!Array.isArray(t.candidates)||!t.candidates.length)throw Error('NBC national race missing or geography/office mismatch');
     if(office==='house'){
       if(!/^\d{4}$/.test(String(mapping.providerRaceId)))throw Error('Invalid House district GEOID');
       const number=Number(String(mapping.providerRaceId).slice(-2)),atLarge=/^(AL|0)$/i.test(String(local.district));
