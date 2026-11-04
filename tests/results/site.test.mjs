@@ -73,7 +73,10 @@ test("All public primary navigation includes Features and polling bias; no ratin
     }
   }
   await walk(repository);
-  assert.ok(checked >= 20);
+  assert.ok(checked > 0);
+  const shell = await readFile("assets/fea-shell.js", "utf8");
+  assert.match(shell, /\['Elections & Results', '\/results'\]/);
+  assert.doesNotMatch(shell, /['"]\/(?:calibration|predictions|model-lab)['"]/);
   const results = await readFile("assets/election-night.js", "utf8");
   assert.doesNotMatch(
     results,

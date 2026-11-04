@@ -122,6 +122,24 @@
     if (isShare) legend.textContent = (metric === 'dem-share' ? 'Democratic' : 'Republican') + ' share of all votes. Darker color indicates a higher share. Gray indicates unavailable data.';
     container.replaceChildren(svg.node(),legend);
   }
+  function enableHomeMapZoom() {
+    const svg = d3.select('#home-map svg');
+    const viewport = svg.append('g');
+    for (const shape of svg.node().querySelectorAll(':scope > path, :scope > a')) {
+      viewport.node().appendChild(shape);
+    }
+    const zoom = d3.zoom()
+      .scaleExtent([1,8])
+      .translateExtent([[0,0],[720,440]])
+      .clickDistance(5)
+      .filter(event => event.type === 'wheel' ? event.ctrlKey || event.metaKey : !event.button)
+      .on('zoom', event => viewport.attr('transform',event.transform));
+    svg.call(zoom);
+    $('home-zoom-in').onclick = () => svg.call(zoom.scaleBy,1.5);
+    $('home-zoom-out').onclick = () => svg.call(zoom.scaleBy,1/1.5);
+    $('home-zoom-reset').onclick = () => svg.call(zoom.transform,d3.zoomIdentity);
+    $('home-zoom').hidden = false;
+  }
   async function homepage() {
     const stories = get('/data/articles.json').then(articles => {
       const ordered = [...articles].sort((a,b) => b.date.localeCompare(a.date));
@@ -159,12 +177,15 @@
       const mapOffice = $('home-office');
       async function renderHomeMap() {
         const revision = ++mapRevision;
+        $('home-zoom').hidden = true;
         const office = mapOffice.value;
         const races = list.filter(race => race.type === office);
         const stage = document.createElement('div');
         try {
           await map(stage,races,new Map(races.map(race => [race.id,votes(race.candidates).margin])),office,null,offices[office]+' reported margins');
-          if (revision === mapRevision) $('home-map').replaceChildren(...stage.childNodes);
+          if (revision !== mapRevision) return;
+          $('home-map').replaceChildren(...stage.childNodes);
+          enableHomeMapZoom();
         } catch {
           if (revision === mapRevision) $('home-map').textContent = 'Map unavailable. Open the results board for the full view.';
         }
@@ -315,13 +336,12 @@
     const results = await Promise.allSettled([get('/data/election-night-races.json'),get('/data/articles.json')]);
     const index = [
       ['Presidential election archive','Historical results','/election-history','2016 2020 2024 statewide'],
-      ['2026 Midterm elections','Election cycle','/elections','house senate governors archive'],
+      ['2026 Midterm elections','Election cycle','/results','house senate governors archive'],
       ['Election Results Board','Election results','/results','returns'],
       ['Map Maker','Maps','/features/map-maker','scenarios map'],
       ['Election Lab','Post-election analysis','/analysis-center','swing historical'],
       ['State polling bias','Research tool','/features/polling-bias','polling'],
       ['Unofficial polling reference','Unweighted reference','/polling','polls'],
-      ['FEA ratings archive','Ratings','/predictions','forecast'],
       ...(results[0].value?.races || []).map(race=>[title(race),'2026 race',raceUrl(race.id),race.id+' '+race.candidates.map(c=>c.name).join(' ')]),
       ...(results[1].value || []).map(article=>[article.title,'Article','/article?slug='+encodeURIComponent(article.slug),article.author||''])
     ];
@@ -329,7 +349,7 @@
     field.value=query.get('q') || '';
     const render = () => {
       const terms=field.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
-      const found=terms.length ? index.filter(item=>terms.every(term=>item.join(' ').toLowerCase().includes(term))) : index.slice(0,8);
+      const found=terms.length ? index.filter(item=>terms.every(term=>item.join(' ').toLowerCase().includes(term))) : index.slice(0,7);
       $('search-count').textContent=terms.length ? `${found.length} matches${found.length>60?' · showing first 60':''}` : 'Browse popular destinations';
       $('search-results').innerHTML=found.slice(0,60).map(([name,kind,url])=>`<div class="fea-row"><a href="${escape(url)}">${escape(name)}</a><small>${escape(kind)}</small></div>`).join('') || '<p>No results found.</p>';
     };

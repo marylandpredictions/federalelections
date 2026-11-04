@@ -956,28 +956,23 @@ async function handleAdmin(request, response, url) {
 async function serveStatic(request, response) {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
   let requestedPath = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
-  const predictionRedirects = new Map([
+  const legacyRedirects = new Map([
     ["/data-lab", "/analysis-center"],
     ["/data-lab.html", "/analysis-center"],
-    ["/senate", "/predictions/2026/senate"],
-    ["/senate.html", "/predictions/2026/senate"],
-    ["/house", "/predictions/2026/house"],
-    ["/house.html", "/predictions/2026/house"],
-    ["/governor", "/predictions/2026/governor"],
-    ["/governor.html", "/predictions/2026/governor"],
-    ["/president", "/predictions"],
-    ["/president.html", "/predictions"],
-    ["/predictions/2028/president", "/predictions"],
-    ["/predictions/2028/president.html", "/predictions"],
-    ["/methodology", "/predictions"],
-    ["/methodology.html", "/predictions"],
-    ["/predictions/methodology", "/predictions"],
-    ["/predictions-methodology", "/predictions"],
-    ["/predictions-methodology.html", "/predictions"]
+    ["/senate", "/results?office=senate"],
+    ["/senate.html", "/results?office=senate"],
+    ["/house", "/results?office=house"],
+    ["/house.html", "/results?office=house"],
+    ["/governor", "/results?office=governor"],
+    ["/governor.html", "/results?office=governor"],
+    ["/president", "/election-history"],
+    ["/president.html", "/election-history"],
+    ["/methodology", "/sources"],
+    ["/methodology.html", "/sources"]
   ]);
-  if (predictionRedirects.has(url.pathname)) {
+  if (legacyRedirects.has(url.pathname)) {
     response.writeHead(302, {
-      "Location": predictionRedirects.get(url.pathname),
+      "Location": legacyRedirects.get(url.pathname),
       "Cache-Control": "no-store"
     });
     response.end();

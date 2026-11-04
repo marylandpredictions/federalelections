@@ -1,21 +1,18 @@
 (() => {
   const sections = [
-    ['Home', '/'], ['Elections & Results', '/elections'], ['Maps', '/features/map-maker'],
+    ['Home', '/'], ['Elections & Results', '/results'], ['Maps', '/features/map-maker'],
     ['Research & Tools', '/analysis-center'], ['Analysis', '/articles'], ['About', '/about']
   ];
   const research = [
     ['State Polling Bias','/features/polling-bias','FEA’s state-by-state polling error research'],
-    ['Election Lab','/analysis-center','Explore swings, local returns and historical benchmarks'],
-    ['Model Lab','/model-lab','Examine FEA’s forecast experiments'],
-    ['FEA Ratings Archive','/predictions','Browse published race ratings'],
-    ['Calibration','/calibration','Review model performance']
+    ['Election Lab','/analysis-center','Explore swings, local returns and historical benchmarks']
   ];
   const path = location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
   const current = path === '/' || path === '/index' ? '/'
     : /map-maker/.test(path) ? '/features/map-maker'
-    : /polling|data-lab|model-lab|analysis-center|calibration|predictions/.test(path) ? '/analysis-center'
+    : /polling|data-lab|analysis-center/.test(path) ? '/analysis-center'
     : /article|videos/.test(path) ? '/articles'
-    : /about|contact|sources|terms|privacy/.test(path) ? '/about' : '/elections';
+    : /about|contact|sources|terms|privacy/.test(path) ? '/about' : '/results';
   const nav = sections.map(([name,url]) => {
     if (url === '/analysis-center') {
       return `<details class="fea-research"><summary${url===current?' class="fea-current"':''}>${name}</summary><div class="fea-research-menu">${research.map(([label,href,description])=>`<a href="${href}"><strong>${label}</strong><small>${description}</small></a>`).join('')}</div></details>`;
