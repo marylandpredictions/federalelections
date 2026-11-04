@@ -828,9 +828,9 @@ window.FEACompleteBoard = function (Page) {
     const polling=this.pollingReference?.races?.[race.id];
     if(this.focusedPanelTab==='results'&&polling&&polling.candidates.every(c=>race.candidates?.some(k=>k.name===c.name))){
       const aside=document.createElement('aside');aside.className='desk-polling-reference';
-      const link=document.createElement('a');link.href='https://votehub.com/polls/api/';link.target='_blank';link.rel='noopener';link.textContent='Race-wide polling reference · VoteHub data';aside.append(link);
+      const link=document.createElement('a');link.href='https://votehub.com/polls/api/';link.target='_blank';link.rel='noopener';link.textContent='Unofficial polling reference · VoteHub data';aside.append(link);
       const values=document.createElement('strong');values.textContent=polling.candidates.map(c=>`${c.name} ${c.percent.toFixed(1)}%`).join(' · ');aside.append(values);
-      const note=document.createElement('small');note.textContent=`FEA simple average · ${polling.pollCount} pollsters · latest poll ${polling.latestPoll} · as of ${this.pollingReference.asOf}. Not a prediction.`;aside.append(note);
+      const note=document.createElement('small');note.textContent=`Unweighted poll average · ${polling.pollCount} pollsters · latest poll ${polling.latestPoll} · as of ${this.pollingReference.asOf}. Not a prediction.`;aside.append(note);
       const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='How this average is calculated';details.append(summary,document.createTextNode(this.pollingReference.method));aside.append(details);content.append(aside);
     }
     if(race.geometryReviewRequired) {

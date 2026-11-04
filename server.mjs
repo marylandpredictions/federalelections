@@ -957,6 +957,8 @@ async function serveStatic(request, response) {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
   let requestedPath = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
   const predictionRedirects = new Map([
+    ["/data-lab", "/analysis-center"],
+    ["/data-lab.html", "/analysis-center"],
     ["/senate", "/predictions/2026/senate"],
     ["/senate.html", "/predictions/2026/senate"],
     ["/house", "/predictions/2026/house"],

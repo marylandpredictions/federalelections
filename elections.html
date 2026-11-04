@@ -10,12 +10,12 @@
   <meta property="og:image" content="/assets/img/capitol-detail.webp">
   <link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
   <script src="/assets/theme.js?v=20261030-features2"></script>
-  <link rel="stylesheet" href="/assets/fea-platform.css?v=3">
-  <script defer src="/assets/fea-shell.js?v=3"></script>
-  <script defer src="/assets/fea-platform.js?v=4"></script>
+  <link rel="stylesheet" href="/assets/fea-platform.css?v=4">
+  <script defer src="/assets/fea-shell.js?v=4"></script>
+  <script defer src="/assets/fea-platform.js?v=6"></script>
 </head>
 <body class="fea-site" data-page="elections">
-  <header class="fea-header" data-fea-header><div class="fea-header-inner"><a href="/">Federal Elections Analysis</a><nav class="fea-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/elections">Elections</a><a href="/polling">Polling</a><a href="/data-lab">Data Lab</a><a href="/articles">Analysis</a><a href="/about">About</a></nav></div></header>
+  <header class="fea-header" data-fea-header><div class="fea-header-inner"><a href="/">Federal Elections Analysis</a><nav class="fea-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/elections">Elections &amp; Results</a><a href="/features/map-maker">Maps</a><a href="/analysis-center">Research &amp; Tools</a><a href="/articles">Analysis</a><a href="/about">About</a></nav></div></header>
   <main id="main-content" class="fea-main">
 
     <p class="fea-crumb"><a href="/">Home</a> / Elections</p>
@@ -24,7 +24,8 @@
     <div class="fea-actions"><a class="fea-button fea-primary" href="/results">Results board</a><a class="fea-button" href="/analysis-center">Historical comparisons</a><a class="fea-button" href="/election-history">Presidential archive</a></div>
     <section class="fea-section">
       <h2>Find a race</h2>
-      <div class="fea-filter"><label>Office<select id="race-office"><option>All offices</option></select></label><label>State<select id="race-state"><option>All states</option></select></label><label>Race or candidate<input id="race-find" type="search" autocomplete="off"></label></div>
+      <div class="fea-filter"><label>Office<select id="race-office"><option>All offices</option></select></label><label>State<select id="race-state"><option>All states</option></select></label><label>Race or candidate<input id="race-find" type="search" autocomplete="off"></label><label>Call status<select id="race-status"><option value="">All races</option><option value="called">Called</option><option value="uncalled">Uncalled</option><option value="reporting">Uncalled with votes</option></select></label><label>Sort by<select id="race-sort"><option value="state">State and office</option><option value="closest">Closest top-two margin</option><option value="votes">Most reported votes</option><option value="recent">Most recently called</option></select></label></div>
+      <div id="race-summary" class="fea-result-summary" aria-label="Filtered results summary"></div>
       <p id="election-source" class="fea-note" data-load-status>Loading reported returns…</p><p id="race-count" class="fea-note" aria-live="polite"></p>
       <div id="election-list"></div>
     </section>

@@ -10,24 +10,25 @@
   <meta property="og:image" content="/assets/img/capitol-detail.webp">
   <link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
   <script src="/assets/theme.js?v=20261030-features2"></script>
-  <link rel="stylesheet" href="/assets/fea-platform.css?v=3">
-  <script defer src="/assets/fea-shell.js?v=3"></script>
-  <link rel="stylesheet" href="/assets/fea-home.css?v=1">
-  <script defer src="/assets/fea-platform.js?v=5"></script>
+  <link rel="stylesheet" href="/assets/fea-platform.css?v=4">
+  <script defer src="/assets/fea-shell.js?v=4"></script>
+  <link rel="stylesheet" href="/assets/fea-home.css?v=2">
+  <script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+  <script defer src="/assets/night-awareness.js"></script>
+  <script defer src="/assets/results-ui.js"></script>
+  <script defer src="/assets/fea-platform.js?v=6"></script>
 </head>
 <body class="fea-site" data-page="home">
-  <header class="fea-header" data-fea-header><div class="fea-header-inner"><a href="/">Federal Elections Analysis</a><nav class="fea-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/elections">Elections</a><a href="/polling">Polling</a><a href="/data-lab">Data Lab</a><a href="/articles">Analysis</a><a href="/about">About</a></nav></div></header>
+  <header class="fea-header" data-fea-header><div class="fea-header-inner"><a href="/">Federal Elections Analysis</a><nav class="fea-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/elections">Elections &amp; Results</a><a href="/features/map-maker">Maps</a><a href="/analysis-center">Research &amp; Tools</a><a href="/articles">Analysis</a><a href="/about">About</a></nav></div></header>
   <main id="main-content" class="fea-main">
 
     <section class="home-lead" aria-labelledby="home-title">
-      <div class="home-feature">
-        <img src="/assets/img/hero-senate.webp" alt="" fetchpriority="high">
-        <span class="home-tag">Featured coverage</span>
-        <div class="home-feature-copy">
-          <h1 id="home-title">The 2026 midterms</h1>
-          <p>Explore the races shaping Congress and statehouses, with reported returns and comparisons to past elections.</p>
-          <a class="fea-button fea-primary" href="/results">Explore election results →</a>
-        </div>
+      <div class="home-map-feature">
+        <p class="fea-kicker">2026 general election</p>
+        <h1 id="home-title">The midterms, mapped</h1>
+        <div class="home-map-controls"><label for="home-office">Map office</label><select id="home-office"><option value="house">House</option><option value="senate">Senate</option><option value="governor">Governors</option></select><a href="/results">Open results board →</a></div>
+        <div id="home-map" class="fea-map" aria-label="National reported margin map">Loading election map…</div>
       </div>
       <div id="home-overview" class="home-results" aria-label="National results overview">
         <p class="fea-note">Loading election results…</p>
@@ -38,7 +39,7 @@
       <div><h2 id="home-tools-title">Explore FEA tools</h2><p>Election data, maps, and analysis.</p></div>
       <a href="/features/map-maker"><span aria-hidden="true">◇</span><strong>FEA Atlas</strong><small>Build and export election scenarios.</small></a>
       <a href="/analysis-center?metric=swing"><span aria-hidden="true">↗</span><strong>Election Lab</strong><small>Compare results and historical swings.</small></a>
-      <a href="/polling"><span aria-hidden="true">▥</span><strong>Polling Center</strong><small>Browse FEA’s polling references.</small></a>
+      <a href="/features/polling-bias"><span aria-hidden="true">▥</span><strong>State Polling Bias</strong><small>See where polls missed the result, state by state.</small></a>
       <a href="/election-history"><span aria-hidden="true">◷</span><strong>Election Archive</strong><small>Explore past presidential returns.</small></a>
     </section>
 

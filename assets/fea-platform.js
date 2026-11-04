@@ -155,6 +155,22 @@
       panels.push(`<article class="home-panel"><h3>National reporting</h3><div class="home-metric">${reporting}<small class="fea-note">of ${list.length} races</small></div><div class="fea-bar" aria-hidden="true"><span style="width:${100*reporting/list.length}%"></span></div><p class="fea-note">${calledCount} races called</p><a href="/elections">Browse all results →</a></article>`);
       $('home-overview').innerHTML = panels.join('');
       $('home-source').innerHTML = sourceNote(data);
+      let mapRevision = 0;
+      const mapOffice = $('home-office');
+      async function renderHomeMap() {
+        const revision = ++mapRevision;
+        const office = mapOffice.value;
+        const races = list.filter(race => race.type === office);
+        const stage = document.createElement('div');
+        try {
+          await map(stage,races,new Map(races.map(race => [race.id,votes(race.candidates).margin])),office,null,offices[office]+' reported margins');
+          if (revision === mapRevision) $('home-map').replaceChildren(...stage.childNodes);
+        } catch {
+          if (revision === mapRevision) $('home-map').textContent = 'Map unavailable. Open the results board for the full view.';
+        }
+      }
+      mapOffice.addEventListener('change',renderHomeMap);
+      void renderHomeMap();
       const calls = list.flatMap(race => (race.calls || []).map(call => ({race,call,time:Date.parse(call.calledAt)})))
         .filter(entry => Number.isFinite(entry.time)).sort((a,b) => b.time-a.time).slice(0,5);
       $('home-calls').innerHTML = calls.length ? calls.map(({race,call}) =>
@@ -178,6 +194,7 @@
         $('home-watch').textContent = 'The watchlist could not load.';
       }
     } catch {
+      $('home-map').textContent = 'Reported map data unavailable.';
       $('home-overview').innerHTML = '<p class="fea-note">Results unavailable. <a href="/results">Open the results board</a>.</p>';
       $('home-source').textContent = 'Reported returns could not load.';
       $('home-calls').innerHTML = '<li>Published calls could not load.</li>';
@@ -189,22 +206,41 @@
     const data = await get('/api/live-results');
     const all = rows(data);
     const office = $('race-office'), state = $('race-state'), find = $('race-find');
+    const sort = $('race-sort'), filter = $('race-status');
+    const searchable = all.map(race => {
+      const result = votes(race.candidates);
+      const candidates = [...race.candidates].sort((a,b)=>b.votes-a.votes);
+      return {race,result,leader:candidates[0],lead: candidates.length>1 && result.total ? (candidates[0].votes-candidates[1].votes)/result.total : Infinity,
+        calledAt: Math.max(0,...(race.calls || []).map(call=>Date.parse(call.calledAt)||0)),
+        search:[title(race),race.id,race.state,offices[race.type],...candidates.map(c=>c.name)].join(' ').toLowerCase()};
+    });
     office.innerHTML = options([['','All offices'],...Object.entries(offices)],query.get('office'));
-    state.innerHTML = options([['','All states'],...[...new Set(all.map(race => race.state))].sort().map(s => [s,s])],query.get('state'));
+    state.innerHTML = options([['','All states'],...[...new Set(all.map(race => race.state))].sort().map(code => [code,code])],query.get('state'));
     $('election-source').innerHTML = sourceNote(data);
     find.value = query.get('q') || '';
+    for (const [field,key] of [[sort,'sort'],[filter,'status']]) {
+      const value = query.get(key);
+      if ([...field.options].some(option=>option.value===value)) field.value=value;
+    }
     const render = () => {
       const params = new URLSearchParams();
-      if (office.value) params.set('office',office.value);
-      if (state.value) params.set('state',state.value);
-      if (find.value.trim()) params.set('q',find.value.trim());
+      for (const [key,value] of [['office',office.value],['state',state.value],['q',find.value.trim()],['sort',sort.value==='state'?'':sort.value],['status',filter.value]]) if (value) params.set(key,value);
       history.replaceState(null,'',params.size ? '?'+params : location.pathname);
-      const needle = find.value.trim().toLowerCase();
-      const list = all.filter(race => (!office.value || office.value === race.type) && (!state.value || state.value === race.state) && (!needle || [title(race),race.id,...race.candidates.map(c => c.name)].some(value => value.toLowerCase().includes(needle))));
-      $('race-count').textContent = `${list.length} contests`;
-      $('election-list').innerHTML = list.length ? raceList(list) : '<p>No races match these filters.</p>';
+      const terms = find.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      const list = searchable.filter(({race,result,search}) => {
+        if ((office.value && office.value!==race.type) || (state.value && state.value!==race.state) || !terms.every(term=>search.includes(term))) return false;
+        const called = !!race.calls?.length;
+        return !filter.value || (filter.value==='called' ? called : !called && (filter.value!=='reporting' || result.total>0));
+      });
+      const order = {state:(a,b)=>a.race.state.localeCompare(b.race.state)||title(a.race).localeCompare(title(b.race),undefined,{numeric:true}),closest:(a,b)=>a.lead-b.lead,votes:(a,b)=>b.result.total-a.result.total,recent:(a,b)=>b.calledAt-a.calledAt};
+      list.sort(order[sort.value]);
+      const called = list.filter(({race})=>race.calls?.length).length;
+      const reporting = list.filter(({result})=>result.total>0).length;
+      $('race-summary').innerHTML = [[list.length,'Contests'],[called,'Called'],[list.length-called,'Uncalled'],[reporting,'With reported votes']].map(([value,label])=>`<div><strong>${value}</strong><span>${label}</span></div>`).join('');
+      $('race-count').textContent = `${list.length} matching contests`;
+      $('election-list').innerHTML = list.length ? table(['Race','Status','Top vote share','Votes','D–R margin'],list.map(({race,result,leader})=>`<tr><td><a href="${raceUrl(race.id)}">${escape(title(race))}</a><small>${escape(race.state)} · ${escape(offices[race.type])}</small></td><td><span class="fea-result-status${race.calls?.length?' is-called':''}">${status(race)}</span></td><td>${result.total ? `<strong>${(100*leader.votes/result.total).toFixed(1)}%</strong><small>${escape(leader.name)}</small>` : '—'}</td><td>${result.total?number(result.total):'—'}</td><td>${marginLabel(result.margin)}</td></tr>`).join(''),'Filtered election results') : '<p>No races match these filters.</p>';
     };
-    for (const control of [office,state,find]) control.addEventListener('input',render);
+    for (const control of [office,state,find,sort,filter]) control.addEventListener('input',render);
     render();
   }
   function candidateTable(race) {
@@ -213,7 +249,7 @@
     if (!list.length) return '<p>Candidate returns unavailable.</p>';
     return table(['Candidate','Party','Votes','Share'],list.map(candidate => `<tr><td>${escape(candidate.name)}${race.calls?.some(call => call.candidate === candidate.name) ? ' <small>· Called</small>' : ''}</td><td>${escape(party(candidate))}</td><td>${total ? number(candidate.votes) : '—'}</td><td>${total ? (100*candidate.votes/total).toFixed(1)+'%' : '—'}</td></tr>`).join(''),'Candidate results');
   }
-  function contribution(race, selected = '') {
+  function contribution(race, selected = '', order = 'impact') {
     const counties = race.counties || [];
     const candidates = [...race.candidates].sort((a,b) => b.votes-a.votes);
     const called = candidates.find(candidate => race.calls?.some(call => call.candidate === candidate.name));
@@ -225,7 +261,7 @@
       const localVotes = name => county.candidates.find(candidate => candidate.name === name)?.votes || 0;
       const edge = pair ? localVotes(first.name) - localVotes(second.name) : result.d - result.r;
       return {county,result,edge};
-    }).filter(row => row.result.total > 0).sort((a,b) => Math.abs(b.edge)-Math.abs(a.edge));
+    }).filter(row => row.result.total > 0).sort((a,b) => order==='votes' ? b.result.total-a.result.total : order==='leader' ? b.edge-a.edge : order==='opponent' ? a.edge-b.edge : Math.abs(b.edge)-Math.abs(a.edge));
     if (!ranked.length) return '<p>No local votes have been published for this race in the existing feed.</p>';
     const visible = selected ? ranked.filter(row => row.county.fips === selected) : ranked;
     const coverage = ranked.reduce((sum,row) => sum+row.result.total,0);
@@ -255,7 +291,7 @@
       }).catch(() => { $('race-history').textContent = 'Historical data could not load.'; }),
       get('/data/results/polling-reference.json').then(data => {
         const row = data.races[race.id];
-        $('race-poll').innerHTML = row ? pollingTable([[race.id,row]]) + pollingNote(data) : '<p>No eligible FEA polling average for this race.</p>';
+        $('race-poll').innerHTML = row ? pollingTable([[race.id,row]]) + pollingNote(data) : '<p>No eligible unweighted polling reference for this race.</p>';
       }).catch(() => { $('race-poll').textContent = 'Polling data could not load.'; })
     ]);
   }
@@ -269,7 +305,7 @@
   }
   const pollingNote = data => `<p class="fea-note">${escape(data.method)} · As of ${escape(data.asOf)} · <a href="https://votehub.com/polls/api/">VoteHub public polling data</a> · ${escape(data.license)}</p>`;
   function pollingTable(entries) {
-    return table(['Race','Candidate averages','Pollsters','Latest poll'],entries.map(([id,row])=>`<tr><td><a href="${raceUrl(id)}">${escape(id)}</a></td><td>${row.candidates.map(c=>escape(c.name)+' '+escape(c.percent)+'%').join(' · ')}</td><td>${number(row.pollCount)}</td><td>${escape(row.latestPoll)}</td></tr>`).join(''),'FEA polling reference');
+    return table(['Race','Candidate averages','Pollsters','Latest poll'],entries.map(([id,row])=>`<tr><td><a href="${raceUrl(id)}">${escape(id)}</a></td><td>${row.candidates.map(c=>escape(c.name)+' '+escape(c.percent)+'%').join(' · ')}</td><td>${number(row.pollCount)}</td><td>${escape(row.latestPoll)}</td></tr>`).join(''),'Unofficial polling reference');
   }
   async function polling() {
     const data = await get('/data/results/polling-reference.json');
@@ -281,10 +317,10 @@
       ['Presidential election archive','Historical results','/election-history','2016 2020 2024 statewide'],
       ['2026 Midterm elections','Election cycle','/elections','house senate governors archive'],
       ['Election Results Board','Election results','/results','returns'],
-      ['FEA Atlas','Map Maker','/features/map-maker','scenarios map'],
+      ['Map Maker','Maps','/features/map-maker','scenarios map'],
       ['Election Lab','Post-election analysis','/analysis-center','swing historical'],
       ['State polling bias','Research tool','/features/polling-bias','polling'],
-      ['Polling Center','Polling','/polling','averages'],
+      ['Unofficial polling reference','Unweighted reference','/polling','polls'],
       ['FEA ratings archive','Ratings','/predictions','forecast'],
       ...(results[0].value?.races || []).map(race=>[title(race),'2026 race',raceUrl(race.id),race.id+' '+race.candidates.map(c=>c.name).join(' ')]),
       ...(results[1].value || []).map(article=>[article.title,'Article','/article?slug='+encodeURIComponent(article.slug),article.author||''])
@@ -361,7 +397,8 @@
   async function lab() {
     const [data,sources] = await Promise.all([get('/api/live-results'),comparison()]);
     const all = rows(data);
-    const office = $('lab-office'), lens = $('lab-lens'), raceSelect = $('lab-race'), metric = $('lab-metric'), unit = $('lab-unit');
+    const office = $('lab-office'), lens = $('lab-lens'), raceSelect = $('lab-race'), metric = $('lab-metric'), unit = $('lab-unit'), localSort = $('lab-local-sort');
+    if ([...localSort.options].some(option=>option.value===query.get('local-sort'))) localSort.value=query.get('local-sort');
     let revision = 0, localRevision = 0;
     office.innerHTML=options(Object.entries(offices),query.get('office') || 'senate');
     metric.value=['margin','swing','dem-share','rep-share'].includes(query.get('metric')) ? query.get('metric') : 'margin';
@@ -377,6 +414,7 @@
       if (lens.value) params.set('baseline',lens.value);
       if (raceSelect.value) params.set('race',raceSelect.value);
       if (!unit.disabled && unit.value) params.set('unit',unit.value);
+      if (localSort.value!=='impact') params.set('local-sort',localSort.value);
       history.replaceState(null,'','?'+params);
       $('lab-share').href=location.href;
     }
@@ -384,6 +422,7 @@
       const sequence=++localRevision;
       unit.disabled=true;
       unit.onchange=null;
+      localSort.onchange=null;
       $('lab-local-map').replaceChildren();
       unit.innerHTML=options([['','All reporting units']], '');
       $('lab-detail').textContent=race ? 'Loading race details…' : 'Choose a race on the map or in the race selector.';
@@ -406,7 +445,7 @@
         });
         const renderLocal=async () => {
           const selected=unit.value;
-          $('lab-detail').innerHTML=contribution(detail,selected);
+          $('lab-detail').innerHTML=contribution(detail,selected,localSort.value);
           if (!selected) return;
           const county=detail.counties.find(row=>row.fips===selected);
           if (!county) return;
@@ -427,7 +466,7 @@
             $('lab-detail').insertAdjacentHTML('beforeend',`<p class="fea-note">${escape(compareName(source))} · ${marginLabel(historicalRow.margin)} · Change ${points(current-historicalRow.margin)}</p>`);
           } catch {}
         };
-        unit.onchange=()=>{share();void renderLocal();};
+        unit.onchange=localSort.onchange=()=>{share();void renderLocal();};
         await renderLocal();
       } catch {
         if (sequence===localRevision) $('lab-detail').textContent='Race details are unavailable.';
@@ -470,7 +509,10 @@
       const valid=stats.filter(row=>Number.isFinite(row.swing));
       const compared=selected ? valid.filter(row=>row.race.id===selected.id) : valid;
       const sameOffice=source && !source.id.startsWith('pres-');
-      $('lab-comparison').innerHTML=`<p class="fea-note">${escape(source ? compareName(source) : 'No historical baseline')} · ${valid.length} of ${list.length} contests with reported votes and verified comparison geography.</p>`+
+      const swingChart = selected && compared.length ? compared.map(({current,past,history}) =>
+        `<div class="fea-swing-chart" aria-label="Vote share comparison">${[[compareName(source),history,past.total],['2026 reported',current,current.total]].map(([label,result,total])=>`<div><strong>${escape(label)}</strong><span>D ${(result.d/total*100).toFixed(1)}% · R ${(result.r/total*100).toFixed(1)}%</span><div class="fea-bar" aria-hidden="true"><span style="width:${result.d/total*100}%"></span><span style="width:${result.r/total*100}%"></span></div></div>`).join('')}</div>`
+      ).join('') : '';
+      $('lab-comparison').innerHTML=`<p class="fea-note">${escape(source ? compareName(source) : 'No historical baseline')} · ${valid.length} of ${list.length} contests with reported votes and verified comparison geography.</p>`+swingChart+
         (compared.length ? table(['Race','Historical D–R','2026 D–R','Swing','D share Δ','R share Δ',...(sameOffice?['Reported vote Δ']:[])],compared.map(({race,current,past,history,swing})=>`<tr><td><a href="${raceUrl(race.id)}">${escape(title(race))}</a></td><td>${marginLabel(past.margin)}</td><td>${marginLabel(current.margin)}</td><td>${points(swing)}</td><td>${points(100*(current.d/current.total-history.d/past.total))}</td><td>${points(100*(current.r/current.total-history.r/past.total))}</td>${sameOffice?`<td>${number(current.total-past.total)}</td>`:''}</tr>`).join(''),'Swing and vote-share comparisons') : '<p>No verified comparison for this selection.</p>')+
         (source?.sourceUrls?.length ? '<p class="fea-note">Historical sources · '+source.sourceUrls.filter(url=>/^https:\/\//.test(url)).map((url,i)=>`<a href="${escape(url)}">Source ${i+1}</a>`).join(' · ')+'</p>' : '');
       const closest=stats.filter(row=>Number.isFinite(row.lead)).sort((a,b)=>a.lead-b.lead).slice(0,5);

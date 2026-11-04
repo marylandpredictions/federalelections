@@ -1,15 +1,27 @@
 (() => {
   const sections = [
-    ['Home', '/'], ['Elections', '/elections'], ['Polling', '/polling'],
-    ['Data Lab', '/data-lab'], ['Analysis', '/articles'], ['About', '/about']
+    ['Home', '/'], ['Elections & Results', '/elections'], ['Maps', '/features/map-maker'],
+    ['Research & Tools', '/analysis-center'], ['Analysis', '/articles'], ['About', '/about']
+  ];
+  const research = [
+    ['State Polling Bias','/features/polling-bias','FEA’s state-by-state polling error research'],
+    ['Election Lab','/analysis-center','Explore swings, local returns and historical benchmarks'],
+    ['Model Lab','/model-lab','Examine FEA’s forecast experiments'],
+    ['FEA Ratings Archive','/predictions','Browse published race ratings'],
+    ['Calibration','/calibration','Review model performance']
   ];
   const path = location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
   const current = path === '/' || path === '/index' ? '/'
-    : /polling/.test(path) ? '/polling'
-    : /data-lab|map-maker|model-lab|analysis-center/.test(path) ? '/data-lab'
-    : /article|analysis|videos/.test(path) ? '/articles'
+    : /map-maker/.test(path) ? '/features/map-maker'
+    : /polling|data-lab|model-lab|analysis-center|calibration|predictions/.test(path) ? '/analysis-center'
+    : /article|videos/.test(path) ? '/articles'
     : /about|contact|sources|terms|privacy/.test(path) ? '/about' : '/elections';
-  const nav = sections.map(([name, url]) => `<a href="${url}"${url === current ? ' aria-current="page"' : ''}>${name}</a>`).join('');
+  const nav = sections.map(([name,url]) => {
+    if (url === '/analysis-center') {
+      return `<details class="fea-research"><summary${url===current?' class="fea-current"':''}>${name}</summary><div class="fea-research-menu">${research.map(([label,href,description])=>`<a href="${href}"><strong>${label}</strong><small>${description}</small></a>`).join('')}</div></details>`;
+    }
+    return `<a href="${url}"${url===current?' aria-current="page"':''}>${name}</a>`;
+  }).join('');
   const header = document.querySelector('[data-fea-header], header.site-header');
   if (!header) return;
   header.className = 'fea-header';
@@ -42,6 +54,17 @@
       toggle.focus();
     }
   });
-  const footer = document.querySelector('[data-fea-footer]');
-  if (footer) footer.innerHTML = `<div class="fea-footer-inner"><strong>Federal Elections Analysis</strong><nav aria-label="Site information"><a href="/sources">Sources</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://gofund.me/50724cf21" target="_blank" rel="noopener">Donate</a></nav></div>`;
+  const researchMenu = header.querySelector('.fea-research');
+  document.addEventListener('click', event => {
+    if (!researchMenu.contains(event.target)) researchMenu.open = false;
+  });
+  researchMenu.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || !researchMenu.open) return;
+    event.stopPropagation();
+    researchMenu.open = false;
+    researchMenu.querySelector('summary').focus();
+  });
+  const footer = document.querySelector('[data-fea-footer], .site-footer');
+  if (footer) footer.className = 'fea-footer';
+  if (footer) footer.innerHTML = `<div class="fea-footer-inner"><strong>Federal Elections Analysis</strong><nav aria-label="Site information"><a href="/features/polling-bias">State Polling Bias</a><a href="/videos">Videos</a><a href="/sources">Sources</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://gofund.me/50724cf21" target="_blank" rel="noopener">Donate</a></nav></div>`;
 })();
