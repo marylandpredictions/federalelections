@@ -56,8 +56,11 @@
 #home-map { border:0; background:var(--fea-soft); border-radius:5px; }
 #home-map svg { max-height:330px; }
 @media(min-width:901px) { .home-lead { grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); } }
-.home-zoom { display:flex; gap:6px; margin-bottom:8px; }
+.home-map-window { position:relative; }
+.home-zoom { position:absolute; top:8px; right:8px; display:grid; gap:3px; }
 .home-zoom[hidden] { display:none; }
-.home-zoom button { min-width:36px; min-height:36px; color:var(--fea-ink); background:var(--fea-paper); border:1px solid var(--fea-line); border-radius:5px; padding:4px 8px; font:inherit; cursor:pointer; }
-#home-map svg { overflow:hidden; cursor:grab; }
+.home-zoom button { width:26px; height:26px; color:var(--fea-ink); background:var(--fea-paper); border:1px solid var(--fea-line); border-radius:4px; padding:0; font:inherit; line-height:1; cursor:pointer; }
+.home-zoom button:hover { background:var(--fea-soft); }
+@media (pointer:coarse) { .home-zoom button { width:34px; height:34px; } }
+#home-map svg { overflow:hidden; cursor:grab; user-select:none; }
 #home-map svg:active { cursor:grabbing; }

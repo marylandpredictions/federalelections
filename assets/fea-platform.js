@@ -125,14 +125,19 @@
   function enableHomeMapZoom() {
     const svg = d3.select('#home-map svg');
     const viewport = svg.append('g');
-    for (const shape of svg.node().querySelectorAll(':scope > path, :scope > a')) {
+    // The homepage map is a pan-and-zoom preview. Keep the tooltips on
+    // each path, but leave race selection to the results board.
+    for (const link of svg.node().querySelectorAll(':scope > a')) {
+      link.replaceWith(...link.childNodes);
+    }
+    for (const shape of svg.node().querySelectorAll(':scope > path')) {
       viewport.node().appendChild(shape);
     }
     const zoom = d3.zoom()
       .scaleExtent([1,8])
       .translateExtent([[0,0],[720,440]])
       .clickDistance(5)
-      .filter(event => event.type === 'wheel' ? event.ctrlKey || event.metaKey : !event.button)
+      .filter(event => !event.button)
       .on('zoom', event => viewport.attr('transform',event.transform));
     svg.call(zoom);
     $('home-zoom-in').onclick = () => svg.call(zoom.scaleBy,1.5);

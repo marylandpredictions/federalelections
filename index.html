@@ -12,12 +12,12 @@
   <script src="/assets/theme.js?v=20261030-features2"></script>
   <link rel="stylesheet" href="/assets/fea-platform.css?v=4">
   <script defer src="/assets/fea-shell.js?v=5"></script>
-  <link rel="stylesheet" href="/assets/fea-home.css?v=3">
+  <link rel="stylesheet" href="/assets/fea-home.css?v=4">
   <script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
   <script defer src="/assets/night-awareness.js"></script>
   <script defer src="/assets/results-ui.js"></script>
-  <script defer src="/assets/fea-platform.js?v=7"></script>
+  <script defer src="/assets/fea-platform.js?v=8"></script>
 </head>
 <body class="fea-site" data-page="home">
   <header class="fea-header" data-fea-header><div class="fea-header-inner"><a href="/">Federal Elections Analysis</a><nav class="fea-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/results">Elections &amp; Results</a><a href="/features/map-maker">Maps</a><a href="/analysis-center">Research &amp; Tools</a><a href="/articles">Analysis</a><a href="/about">About</a></nav></div></header>
@@ -28,12 +28,14 @@
         <p class="fea-kicker">2026 general election</p>
         <h1 id="home-title">The midterms, mapped</h1>
         <div class="home-map-controls"><label for="home-office">Map office</label><select id="home-office"><option value="house">House</option><option value="senate">Senate</option><option value="governor">Governors</option></select><a href="/results">Open results board →</a></div>
-        <div id="home-zoom" class="home-zoom" role="group" aria-label="Map zoom" hidden>
-          <button type="button" id="home-zoom-in" aria-label="Zoom in">+</button>
-          <button type="button" id="home-zoom-out" aria-label="Zoom out">−</button>
-          <button type="button" id="home-zoom-reset">Reset map</button>
+        <div class="home-map-window">
+          <div id="home-map" class="fea-map" aria-label="National reported margin map">Loading election map…</div>
+          <div id="home-zoom" class="home-zoom" role="group" aria-label="Map zoom" hidden>
+            <button type="button" id="home-zoom-in" aria-label="Zoom in" title="Zoom in">+</button>
+            <button type="button" id="home-zoom-out" aria-label="Zoom out" title="Zoom out">−</button>
+            <button type="button" id="home-zoom-reset" aria-label="Reset map" title="Reset map">↺</button>
+          </div>
         </div>
-        <div id="home-map" class="fea-map" aria-label="National reported margin map">Loading election map…</div>
       </div>
       <div id="home-overview" class="home-results" aria-label="National results overview">
         <p class="fea-note">Loading election results…</p>
