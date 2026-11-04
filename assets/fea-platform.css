@@ -1,24 +1,27 @@
 :root {
-  --fea-bg: #f6f8fb;
-  --fea-paper: #fff;
-  --fea-ink: #132239;
-  --fea-muted: #52647b;
-  --fea-line: #d5deea;
-  --fea-accent: #1755a4;
-  --fea-soft: #e9eff7;
+  --fea-bg: #f4f2ed;
+  --fea-paper: #fffcf6;
+  --fea-ink: #10213a;
+  --fea-muted: #495a70;
+  --fea-line: #cecfd1;
+  --fea-accent: #164fa6;
+  --fea-soft: #e6e9eb;
   --fea-d: #175bb0;
   --fea-r: #ab3444;
   --fea-max: 1240px;
+  --fea-cobalt: #337cf4;
+  --fea-pink: #f14a83;
+  --fea-mono: ui-monospace, Consolas, monospace;
   --fea-serif: Georgia, 'Times New Roman', serif;
 }
 :root[data-theme="dark"] {
-  --fea-bg: #0b1321;
-  --fea-paper: #111e31;
+  --fea-bg: #0b1426;
+  --fea-paper: #121f35;
   --fea-ink: #edf3fc;
   --fea-muted: #a7b7ce;
   --fea-line: #304158;
-  --fea-accent: #93bfff;
-  --fea-soft: #1c2b41;
+  --fea-accent: #9bbfff;
+  --fea-soft: #182d4b;
   --fea-d: #83b8ff;
   --fea-r: #ff9fa9;
 }
@@ -184,4 +187,45 @@ body:has(> .fea-header) .fea-filter :is(input,select) {
   .fea-result-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .fea-analysis #articles-list,.fea-swing-chart { grid-template-columns:1fr; }
   .fea-header-inner { gap:6px; }
+}
+/* Atlas typography, datelines and editorial rules. */
+.fea-site { --fea-max:1360px; }
+.fea-header { background:#0b1426; border-bottom:0; }
+.fea-header::after { content:""; display:block; height:3px; background:linear-gradient(90deg,#337cf4 0 82%,#f14a83 82%); }
+.fea-brand { font-size:.98rem; letter-spacing:-.015em; }
+.fea-brand-sub { color:#f2a7c1; }
+.fea-nav a[aria-current] { background:transparent; box-shadow:inset 0 -2px #f14a83; border-radius:0; }
+.fea-site h1,.fea-about h1,.fea-analysis h1 { font-family:var(--fea-serif); font-weight:700; letter-spacing:-.055em; }
+.fea-site h2 { font-family:var(--fea-serif); }
+.fea-kicker,.fea-crumb,.fea-legend,.fea-result-status { font-family:var(--fea-mono); }
+.fea-kicker { letter-spacing:.1em; font-size:.76rem; }
+.fea-crumb { padding-bottom:10px; border-bottom:1px solid var(--fea-line); }
+.fea-table table { font-size:.95rem; }
+.fea-table :is(td,th) { padding:11px 12px; }
+.fea-table td:not(:first-child),.fea-result-summary strong { font-family:var(--fea-mono); }
+.fea-table th { font-size:.76rem; text-transform:uppercase; letter-spacing:.035em; }
+.fea-site[data-page="lab"] #lab-map { background:var(--fea-soft); }
+.fea-site[data-page="lab"] #lab-map svg { max-height:540px; }
+.fea-site[data-page="lab"] .fea-section { border-top:2px solid var(--fea-line); }
+.fea-site[data-page="lab"] #lab-discoveries .fea-card { border:0; border-inline-start:2px solid var(--fea-accent); background:transparent; }
+.fea-analysis #articles-list .article-card { border:0; border-top:1px solid var(--fea-line); background:transparent; padding-inline:0; }
+.fea-analysis #articles-list .article-card:first-child { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); column-gap:26px; align-content:start; }
+.fea-analysis #articles-list .article-card:first-child img { grid-row:1/5; width:100%; aspect-ratio:16/10; max-height:none; }
+.fea-analysis #articles-list .article-card:first-child > :not(img) { grid-column:2; }
+.fea-analysis #articles-list h2,body:has(> .fea-header) #article-page h1 { font-family:var(--fea-serif); }
+.fea-about .page-grid > article { border:0; border-top:3px solid var(--fea-accent); background:transparent; }
+.fea-footer { border-top:3px solid var(--fea-accent); }
+.fea-footer-inner { padding-block:22px; }
+@media(max-width:670px) {
+  .fea-analysis #articles-list .article-card:first-child { display:block; }
+  .fea-table :is(td,th) { padding:8px; }
+}
+
+/* The Atlas signature on the standard desks; specialty presentations own their styling. */
+.results-board:not([data-presentation="broadcast"], [data-presentation="editorial"], [data-presentation="yapms"]) #desk-status-rail,
+.map-maker:not([data-presentation="broadcast"], [data-presentation="editorial"], [data-presentation="yapms"]) #desk-masthead {
+  background-image: linear-gradient(90deg, var(--fea-cobalt) 0 72%, var(--fea-pink) 72%);
+  background-size: 100% 2px;
+  background-position: top;
+  background-repeat: no-repeat;
 }

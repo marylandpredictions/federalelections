@@ -10,9 +10,9 @@
   <meta property="og:image" content="/assets/img/capitol-detail.webp">
   <link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
   <script src="/assets/theme.js?v=20261030-features2"></script>
-  <link rel="stylesheet" href="/assets/fea-platform.css?v=4">
+  <link rel="stylesheet" href="/assets/fea-platform.css?v=5">
   <script defer src="/assets/fea-shell.js?v=5"></script>
-  <link rel="stylesheet" href="/assets/fea-home.css?v=4">
+  <link rel="stylesheet" href="/assets/fea-home.css?v=5">
   <script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
   <script defer src="/assets/night-awareness.js"></script>
@@ -23,10 +23,16 @@
   <header class="fea-header" data-fea-header><div class="fea-header-inner"><a href="/">Federal Elections Analysis</a><nav class="fea-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/results">Elections &amp; Results</a><a href="/features/map-maker">Maps</a><a href="/analysis-center">Research &amp; Tools</a><a href="/articles">Analysis</a><a href="/about">About</a></nav></div></header>
   <main id="main-content" class="fea-main">
 
+    <header class="home-edition">
+      <div>
+        <p class="fea-kicker">FEA Atlas <span class="home-edition-slash">/</span> 2026 general election</p>
+        <h1 id="home-title">The midterms, <em>mapped.</em></h1>
+      </div>
+      <p>Reported returns across the country, from congressional districts to governor’s races.</p>
+    </header>
     <section class="home-lead" aria-labelledby="home-title">
       <div class="home-map-feature">
-        <p class="fea-kicker">2026 general election</p>
-        <h1 id="home-title">The midterms, mapped</h1>
+        <p class="fea-kicker">National map <span class="home-edition-slash">/</span> Democratic–Republican margin</p>
         <div class="home-map-controls"><label for="home-office">Map office</label><select id="home-office"><option value="house">House</option><option value="senate">Senate</option><option value="governor">Governors</option></select><a href="/results">Open results board →</a></div>
         <div class="home-map-window">
           <div id="home-map" class="fea-map" aria-label="National reported margin map">Loading election map…</div>
@@ -37,17 +43,20 @@
           </div>
         </div>
       </div>
-      <div id="home-overview" class="home-results" aria-label="National results overview">
-        <p class="fea-note">Loading election results…</p>
-      </div>
+      <aside class="home-ledger" aria-labelledby="home-ledger-title">
+        <p class="fea-kicker">National returns</p>
+        <h2 id="home-ledger-title">The tally</h2>
+        <div id="home-overview" class="home-results"><p class="fea-note">Loading election results…</p></div>
+        <p id="home-source" class="fea-note" data-load-status role="status">Loading results source…</p>
+      </aside>
     </section>
 
     <section class="home-tools" aria-labelledby="home-tools-title">
-      <div><h2 id="home-tools-title">Explore FEA tools</h2><p>Election data, maps, and analysis.</p></div>
-      <a href="/features/map-maker"><span aria-hidden="true">◇</span><strong>FEA Atlas</strong><small>Build and export election scenarios.</small></a>
-      <a href="/analysis-center?metric=swing"><span aria-hidden="true">↗</span><strong>Election Lab</strong><small>Compare results and historical swings.</small></a>
-      <a href="/features/polling-bias"><span aria-hidden="true">▥</span><strong>State Polling Bias</strong><small>See where polls missed the result, state by state.</small></a>
-      <a href="/election-history"><span aria-hidden="true">◷</span><strong>Election Archive</strong><small>Explore past presidential returns.</small></a>
+      <div><p class="fea-kicker">Fieldwork</p><h2 id="home-tools-title">Explore the Atlas</h2><p>Build a map, check the polls, or trace how a race changed.</p></div>
+      <a href="/features/map-maker"><span aria-hidden="true">01</span><strong>FEA Atlas</strong><small>Build and export election scenarios.</small></a>
+      <a href="/analysis-center?metric=swing"><span aria-hidden="true">02</span><strong>Election Lab</strong><small>Compare results and historical swings.</small></a>
+      <a href="/features/polling-bias"><span aria-hidden="true">03</span><strong>State Polling Bias</strong><small>See where polls missed the result, state by state.</small></a>
+      <a href="/election-history"><span aria-hidden="true">04</span><strong>Election Archive</strong><small>Explore past presidential returns.</small></a>
     </section>
 
     <div class="home-editorial">
@@ -72,8 +81,6 @@
       <div><h2>Go beyond the totals</h2><p>Compare election margins and see which counties shaped the result.</p></div>
       <a class="fea-button" href="/analysis-center">Open Election Lab →</a>
     </section>
-    <p id="home-source" class="fea-note" data-load-status role="status">Loading results source…</p>
-
   </main>
   <footer class="fea-footer" data-fea-footer><div class="fea-footer-inner"><a href="/about">Federal Elections Analysis</a><a href="/sources">Sources</a><a href="/contact">Contact</a></div></footer>
 </body>
