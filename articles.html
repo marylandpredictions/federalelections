@@ -9,11 +9,9 @@
   <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
   <script src="assets/theme.js?v=20261030-features2"></script>
-  <link rel="stylesheet" href="assets/wiki.css?v=20261030-features1">
-  <link rel="stylesheet" href="/assets/fea-platform.css?v=6">
-  <script defer src="/assets/fea-shell.js?v=5"></script>
+  <link rel="stylesheet" href="assets/wiki.css?v=classic-articles1">
 </head>
-<body class="fea-analysis">
+<body>
   <header class="site-header">
     <a class="brand" href="/">
       <img class="brand-mark" src="assets/img/FEA_Icon.webp" alt="Federal Elections Analysis">
@@ -24,7 +22,7 @@
       <a href="/results">Results</a>
       <a href="/videos">Videos</a>
       <a class="active" href="/articles">Articles</a>
-    <details class="nav-dropdown"><summary>Features</summary><div class="nav-dropdown-menu"><a href="/features/polling-bias">State polling bias</a><a href="/features/map-maker">Map maker</a></div></details></nav>
+    <details class="nav-dropdown"><summary>Features</summary><div class="nav-dropdown-menu"><a href="/analysis-center">Election Lab</a><a href="/features/polling-bias">State polling bias</a><a href="/features/map-maker">Map maker</a></div></details></nav>
     <div class="site-nav-right">
       <a href="https://gofund.me/50724cf21" target="_blank" rel="noopener" class="donate-button">$ Donate</a>
       <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
@@ -36,12 +34,11 @@
 
   <main>
     <section class="text-panel image-panel compact-page-head">
-      <p class="kicker">FEA research and commentary</p>
+      <p class="kicker">Articles</p>
       <h1>Analysis</h1>
-      <p>Browse published FEA articles by author or topic. For the latest reported returns, visit the <a href="/elections">election directory</a>.</p>
     </section>
 
-    <div class="fea-filter"><label>Topic or keyword<input id="article-find" type="search"></label><label>Author<select id="article-author"><option value="">All authors</option></select></label></div>
+    <div class="text-panel article-filters"><label>Topic or keyword<input id="article-find" type="search"></label><label>Author<select id="article-author"><option value="">All authors</option></select></label></div>
     <section id="articles-list" class="article-list" aria-label="Article list"></section>
   </main>
 

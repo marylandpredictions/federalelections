@@ -9655,3 +9655,6 @@ body {
   .site-nav { gap: 0; }
   .site-nav > a, .site-nav > .nav-dropdown > summary { padding-inline: 4px; font-size: .74rem; }
 }
+.article-filters { display:flex; flex-wrap:wrap; gap:12px 20px; }
+.article-filters label { display:grid; gap:4px; min-width:0; font-weight:650; }
+.article-filters :is(input,select) { max-width:100%; padding:.45rem .6rem; border:1px solid var(--line); border-radius:4px; background:var(--paper); color:var(--ink); font:inherit; }
