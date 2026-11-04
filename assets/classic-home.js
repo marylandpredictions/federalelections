@@ -17,6 +17,37 @@
     if (code === 'D' || code === 'R') element.classList.add(code === 'D' ? 'home-dem' : 'home-rep');
     return element;
   }
+  async function showBiasPreview() {
+    const response = await fetch('/data/features/polling-bias.json?v=20261030-1', {
+      signal: AbortSignal.timeout(8000)
+    });
+    if (!response.ok) return;
+    const data = await response.json();
+    const ranked = data.states.filter(state => Number.isFinite(state.prior))
+      .sort((a, b) => Math.abs(b.prior) - Math.abs(a.prior));
+    const entries = [
+      ...ranked.filter(state => state.prior < 0).slice(0, 2),
+      ...ranked.filter(state => state.prior > 0).slice(0, 2)
+    ].sort((a, b) => Math.abs(b.prior) - Math.abs(a.prior));
+    if (!entries.length) return;
+    const scale = Math.abs(entries[0].prior);
+    $('home-bias-rows').replaceChildren(...entries.map(({state, prior}) => {
+      const party = prior < 0 ? 'R' : 'D';
+      const row = node('li', '');
+      const track = node('span', '');
+      track.className = 'home-bias-track';
+      track.setAttribute('aria-hidden', 'true');
+      const bar = partyTone(node('i', ''), party);
+      bar.style.width = 50 * Math.abs(prior) / scale + '%';
+      track.append(bar);
+      row.append(node('span', state), track,
+        partyTone(node('strong', `${party} ${Math.abs(prior).toFixed(1)} pts`), party));
+      return row;
+    }));
+    $('home-bias-preview').hidden = false;
+  }
+  showBiasPreview().catch(() => {});
+
   const phase = FEAHomeCycle.phase(document.body.dataset.electionPhase);
   $('home-results-title').textContent = phase.title;
   if (!phase.updates) {

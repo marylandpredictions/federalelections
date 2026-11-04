@@ -11,7 +11,7 @@
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
   <script src="assets/theme.js?v=20261030-features2"></script>
   <link rel="stylesheet" href="assets/wiki.css?v=classic-gradient3">
-  <link rel="stylesheet" href="/assets/classic-home.css?v=7">
+  <link rel="stylesheet" href="/assets/classic-home.css?v=8">
 </head>
 <!-- Editorial controls: set data-election-phase to election-night, post-election, or
      between-elections. The feed does not certify the end of a reporting cycle.
@@ -71,6 +71,20 @@
       </aside>
     </section>
 
+    <section class="home-research-feature" aria-labelledby="home-research-title">
+      <div>
+        <p class="kicker">Original FEA research</p>
+        <h2 id="home-research-title">Where have polls missed?</h2>
+        <p>FEA uses Senate polling and results from 2014–2024 to estimate which party polls might overstate in each state. The estimate measures polling error, separate from who is ahead.</p>
+        <a class="button-link" href="/features/polling-bias">Explore state polling bias →</a>
+      </div>
+      <figure id="home-bias-preview" hidden>
+        <figcaption>Largest estimated 2026 misses in each direction</figcaption>
+        <div class="home-bias-axis" aria-hidden="true"><div><span>R</span><span>0</span><span>D</span></div></div>
+        <ol id="home-bias-rows"></ol>
+      </figure>
+    </section>
+
     <section class="home-video-rail" aria-labelledby="home-video-title">
       <h2 class="home-heading" id="home-video-title">Latest coverage</h2>
       <div id="home-latest-video" class="home-video-feature"><p class="meta">Loading the latest video…</p></div>
@@ -122,7 +136,7 @@
 
   <script src="/assets/fea-lab-analysis.js?v=2" defer></script>
   <script src="/assets/home-cycle.js?v=1" defer></script>
-  <script src="/assets/classic-home.js?v=5" defer></script>
+  <script src="/assets/classic-home.js?v=6" defer></script>
   <script src="assets/wiki.js?v=classic-home4"></script>
 </body>
 </html>
