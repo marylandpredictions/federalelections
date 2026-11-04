@@ -43,7 +43,15 @@
           total.append(count);
         }
         if (calls.other) total.append(node('span',`${calls.other} other`));
-        line.append(link('/results?office='+office,label),total,node('small',`${calls.D+calls.R+calls.other} of ${officeRows.length} called`));
+        const bar = node('div','');
+        bar.className = 'home-vote-bar home-call-bar';
+        bar.setAttribute('aria-hidden','true');
+        for (const [code,count] of Object.entries(calls)) {
+          const segment = partyTone(node('span',''),code);
+          segment.style.width = (100*count/(officeRows.length || 1))+'%';
+          bar.append(segment);
+        }
+        line.append(link('/results?office='+office,label),total,bar,node('small',`${calls.D+calls.R+calls.other} of ${officeRows.length} races called`));
         return line;
       });
       $('home-results-lines').replaceChildren(...lines);

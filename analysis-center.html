@@ -10,13 +10,27 @@
   <meta property="og:image" content="/assets/img/capitol-detail.webp">
   <link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
   <script src="/assets/theme.js?v=20261030-features2"></script>
+  <link rel="stylesheet" href="/assets/wiki.css?v=20261030-features1">
   <link rel="stylesheet" href="/assets/fea-platform.css?v=6">
   <link rel="stylesheet" href="/assets/fea-research.css?v=5">
-  <script defer src="/assets/fea-shell.js?v=5"></script>
   <script defer src="/assets/results-ui.js"></script><script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script><script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script><script defer src="/assets/night-awareness.js"></script><script defer src="/assets/fea-lab-analysis.js?v=2"></script><script defer src="/assets/fea-platform.js?v=12"></script>
+  <link rel="stylesheet" href="/assets/fea-consistency.css?v=1">
 </head>
 <body class="fea-site" data-page="lab">
-  <header class="fea-header" data-fea-header><div class="fea-header-inner"><a href="/">Federal Elections Analysis</a><nav class="fea-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/results">Elections &amp; Results</a><a href="/features/map-maker">Maps</a><a href="/analysis-center">Research &amp; Tools</a><a href="/articles">Analysis</a><a href="/about">About</a></nav></div></header>
+  <header class="site-header">
+    <a class="brand" href="/">
+      <img class="brand-mark" src="/assets/img/FEA_Icon.webp" alt="Federal Elections Analysis">
+      <span><strong>Federal Elections Analysis</strong><small style="font-weight: 700;">Election analysis</small></span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/results">Results</a><a href="/videos">Videos</a><a href="/articles">Articles</a><details class="nav-dropdown"><summary>Features</summary><div class="nav-dropdown-menu"><a href="/analysis-center">Election Lab</a><a href="/features/polling-bias">State polling bias</a><a href="/features/map-maker">Map maker</a></div></details></nav>
+    <div class="site-nav-right">
+      <a href="https://gofund.me/50724cf21" target="_blank" rel="noopener" class="donate-button">$ Donate</a>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A8.5 8.5 0 1 1 11.21 3 6.5 6.5 0 0 0 21 12.79Z"></path></svg>
+      </button>
+    </div>
+  </header>
   <main id="main-content" class="fea-main">
 
     <p class="fea-crumb"><a href="/">Home</a> / Research &amp; Tools / Election Lab</p>
@@ -76,6 +90,33 @@
     <noscript><p>Enable JavaScript to explore the data or visit the <a href="/results">results board</a>.</p></noscript>
 
   </main>
-  <footer class="fea-footer" data-fea-footer><div class="fea-footer-inner"><a href="/about">Federal Elections Analysis</a><a href="/sources">Sources</a><a href="/contact">Contact</a></div></footer>
+  <footer class="site-footer">
+    <div>
+      <strong>Federal Elections Analysis</strong>
+      <p>Election coverage, public analysis, and team updates.</p>
+    </div>
+    <nav class="footer-columns" aria-label="Footer navigation">
+      <section class="footer-link-group" aria-label="Site links">
+        <strong>Site</strong>
+        <a href="/">Home</a>
+        <a href="/videos">Videos</a>
+        <a href="/results">Results</a>
+        <a href="/articles">Articles</a>
+      </section>
+      <section class="footer-link-group" aria-label="Research links">
+        <strong>Research</strong>
+        <a href="/analysis-center">Election Lab</a>
+        <a href="/features/polling-bias">State polling bias</a>
+        <a href="/features/map-maker">Map maker</a>
+      </section>
+      <section class="footer-link-group" aria-label="Other links">
+        <strong>Other</strong>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        <a href="/terms">Terms</a>
+        <a href="/privacy">Privacy</a>
+      </section>
+    </nav>
+  </footer>
 </body>
 </html>

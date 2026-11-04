@@ -1,0 +1,62 @@
+/* Match the original publication chrome while preserving the research layouts. */
+.fea-site[data-page="lab"], .fea-site[data-page="elections"] {
+  --fea-bg:#beccf7;
+  --fea-paper:#f8faff;
+  --fea-soft:#e6edff;
+  --fea-map-field:#e6edff;
+  --fea-ink:#000e38;
+  --fea-muted:#34456e;
+  --fea-line:#8294be;
+  --fea-accent:#254f9f;
+  --fea-serif:"Telegraf","Segoe UI",sans-serif;
+  font-family:var(--fea-serif);
+}
+[data-theme="dark"] .fea-site:is([data-page="lab"],[data-page="elections"]) {
+  --fea-bg:#080d1d;
+  --fea-paper:#131f3a;
+  --fea-soft:#172542;
+  --fea-map-field:#172542;
+  --fea-ink:#f2f5ff;
+  --fea-muted:#bac9e7;
+  --fea-line:#46577d;
+  --fea-accent:#a6c3ff;
+}
+.fea-site :is(.fea-filter,.story-chapter) :is(select,input) {
+  min-height:2.55rem;
+  border:1px solid var(--fea-line);
+  border-radius:6px;
+  padding:.35rem .55rem;
+  color:var(--fea-ink);
+  background:var(--fea-paper);
+  font:inherit;
+}
+.fea-site :is(.fea-filter,.story-chapter) :is(select,input):focus-visible,
+.bias-page :is(select,summary):focus-visible,
+.results-board :is(#board-menu,.maker-file-tools,.maker-actions) :is(button,a,select,input,summary):focus-visible,
+.maker-file-tools summary:focus-visible {
+  outline:2px solid var(--focus,var(--fea-accent,#9dbdff));
+  outline-offset:2px;
+}
+.fea-site[data-page="lab"] .research-hero { padding-block:clamp(1.1rem,2.8vw,2.5rem); }
+.fea-site[data-page="lab"] .story-chapter p { line-height:1.6; }
+.fea-site[data-page="lab"] .lab-finding { background:var(--fea-paper); padding:.55rem .7rem; }
+.fea-site[data-page="lab"] #story-visual { max-height:60vh; }
+.fea-site[data-page="elections"] .fea-filter { padding:.75rem; background:var(--fea-paper); gap:.7rem; }
+.fea-site[data-page="elections"] #election-source { color:var(--fea-muted); line-height:1.5; }
+.bias-page { --fea-serif:"Telegraf","Segoe UI",sans-serif; }
+.bias-page .research-hero { background:transparent; border-top:0; padding:0 0 1rem; }
+.bias-page .bias-findings { background:var(--paper-2); }
+.bias-page #bias-confidence { font-size:clamp(1.03rem,1.7vw,1.3rem); }
+.bias-page .bias-table :is(th,td) { padding:.6rem .7rem; }
+.bias-page .bias-method p { max-width:75ch; }
+#article-page :is(p,li) { line-height:1.65; }
+#article-page .article-hero-image { object-position:center; }
+#articles-list .article-card h2 { text-wrap:balance; }
+#articles-list .article-card .meta { line-height:1.45; }
+.fea-organization .text-panel p { max-width:74ch; line-height:1.65; }
+.results-board #board-menu :is(button,a,label) { min-height:2.1rem; }
+.map-maker .maker-file-tools label { line-height:1.35; }
+.map-maker .maker-file-tools :is(select,input,button) { min-height:2rem; }
+@media (pointer:coarse) {
+  .results-board #board-menu :is(button,a,label), .map-maker .maker-file-tools :is(select,input,button) { min-height:2.6rem; }
+}

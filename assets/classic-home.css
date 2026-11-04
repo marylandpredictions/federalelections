@@ -122,3 +122,18 @@
 .home-video-play img { position:absolute; width:100%; height:100%; object-fit:cover; }
 .home-video-play span { position:relative; background:#000c; border-radius:50%; padding:.55rem .72rem; }
 .home-video-play:is(:hover,:focus-visible) span { background:var(--dem); }
+
+.home-result-line > a { text-underline-offset:.2em; }
+.home-result-line strong { font-size:clamp(1.1rem,1.7vw,1.45rem); }
+.home-call-bar { grid-column:1 / -1; margin:.15rem 0; }
+#home-results-source { text-transform:none; line-height:1.5; }
+.home-video-rail .home-video-feature { grid-template-columns:minmax(0,clamp(320px,32vw,450px)) minmax(0,36rem); gap:clamp(18px,3vw,42px); }
+.home-video-rail .home-video-feature h3 { text-wrap:balance; }
+.home-video-rail .meta { font-size:.9rem; }
+.home-video-rail .home-video-feature p { margin-top:.7rem; }
+@media(max-width:760px) {
+  .home-video-rail .home-video-feature { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+}
+@media(max-width:560px) {
+  .home-video-rail .home-video-feature { grid-template-columns:minmax(0,1fr); }
+}
