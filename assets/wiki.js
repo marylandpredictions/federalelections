@@ -2956,6 +2956,10 @@ function articleLeadImageMarkup(article, className = "article-lead-image") {
   return `<img class="${className}" src="${escapeHtml(url)}" alt="${escapeHtml(image.alt || article.title || "Article image")}" loading="lazy">`;
 }
 
+function featuredHomeArticle(list) {
+  return list.find(article => article.featured) || list[0];
+}
+
 function renderTopArticle() {
   const container = document.getElementById("top-article");
   if (!container) return;
@@ -2968,7 +2972,7 @@ function renderTopArticle() {
     `;
     return;
   }
-  const article = sortedArticles().find((item) => item.featured) || sortedArticles()[0];
+  const article = featuredHomeArticle(sortedArticles());
   container.innerHTML = `
     ${articleLeadImageMarkup(article, "article-teaser-image")}
     <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections Analysis")}</p>
@@ -2981,7 +2985,9 @@ function renderTopArticle() {
 function renderHomeArticleList() {
   const container = document.getElementById("home-article-list");
   if (!container) return;
-  const list = sortedArticles().slice(0, 6);
+  const ordered = sortedArticles();
+  const featured = featuredHomeArticle(ordered);
+  const list = ordered.filter(article => article.slug !== featured?.slug).slice(0, 2);
   container.innerHTML = list.length ? list.map((article) => `
     <a href="${articleUrl(article)}">
       ${articleLeadImageMarkup(article, "home-article-thumb")}
@@ -3799,7 +3805,7 @@ async function init() {
     renderArticlesList();
     return;
   }
-  if (document.getElementById("countdown-title")) {
+  if (document.getElementById("top-article")) {
     renderHomeLatestVideo(); renderTopArticle(); renderHomeArticleList();
     return;
   }

@@ -11,6 +11,7 @@
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
   <script src="assets/theme.js?v=20261030-features2"></script>
   <link rel="stylesheet" href="assets/wiki.css?v=20261030-features1">
+  <link rel="stylesheet" href="/assets/classic-home.css?v=2">
 </head>
 <body>
       <header class="site-header">
@@ -36,55 +37,44 @@
         <p class="lede">Election coverage, reporting, and analysis from the FEA team.</p>
         <div class="hero-actions"><a class="button-link" href="/results">2026 election results →</a><a class="button-link" href="/videos">Watch our coverage</a></div>
       </div>
-      <aside class="election-countdown" aria-labelledby="countdown-title">
-        <p class="kicker" id="countdown-title">2026 General Election</p>
-        <div class="countdown-digits" id="countdown-digits"><div><strong id="countdown-days">—</strong><span>Days</span></div><div><strong id="countdown-hours">—</strong><span>Hours</span></div><div><strong id="countdown-minutes">—</strong><span>Minutes</span></div></div>
-        <p id="countdown-message">Election Day • November 3, 2026</p>
-        <a class="button-link" href="/results">View results →</a>
+      <aside class="home-results-brief" aria-labelledby="home-results-title">
+        <p class="kicker">2026 general election</p>
+        <h2 id="home-results-title">National results</h2>
+        <div id="home-results-lines"><p>Loading reported results…</p></div>
+        <p class="meta" id="home-results-source" role="status"></p>
       </aside>
     </section>
 
-    <div class="home-section-head">
-      <span>Latest video</span>
-      <h2>Newest analysis from the channel</h2>
-    </div>
-    <section class="text-panel home-latest-video" aria-label="Latest Federal Elections Analysis video">
-      <div id="home-latest-video" class="home-video-feature">
-        <p class="meta">Latest video will appear here.</p>
-      </div>
+    <section class="home-tool-strip" aria-labelledby="home-tools-heading">
+      <div class="home-section-head"><span>Explore FEA</span><h2 id="home-tools-heading">Election tools</h2></div>
+      <ul>
+        <li><a href="/features/map-maker"><strong>Map Maker</strong><span>Build and share a scenario</span></a></li>
+        <li><a href="/features/polling-bias"><strong>State Polling Bias</strong><span>Compare polls with past results</span></a></li>
+        <li><a href="/analysis-center"><strong>Election Lab</strong><span>Investigate margins and shifts</span></a></li>
+        <li><a href="/results"><strong>Results Board</strong><span>Explore the full election map</span></a></li>
+      </ul>
     </section>
 
-    <div class="home-section-head">
-      <span>Articles</span>
-      <h2>Latest writing</h2>
-    </div>
-    <section class="dashboard-grid home-news-grid" aria-label="Latest articles">
-      <article class="chart-panel article-teaser" id="top-article" aria-labelledby="top-article-title">
-        <p class="meta">No articles yet.</p>
+    <section class="home-coverage" aria-labelledby="home-writing-title">
+      <div class="home-section-head"><span>Articles</span><h2 id="home-writing-title">Latest writing</h2></div>
+      <article class="article-teaser" id="top-article" aria-labelledby="top-article-title">
+        <p class="meta">Loading the featured article…</p>
       </article>
-      <aside class="chart-panel">
-        <span class="chart-label">More articles</span>
+      <aside class="home-supporting" aria-label="More articles">
         <div id="home-article-list" class="home-article-list"></div>
-        <p><a class="button-link" href="articles.html">See all articles</a></p>
+        <a href="/articles">All articles →</a>
+      </aside>
+      <aside class="home-video-rail" aria-labelledby="home-video-title">
+        <p class="kicker">From the channel</p>
+        <h2 id="home-video-title">Latest video</h2>
+        <div id="home-latest-video" class="home-video-feature"><p class="meta">Loading the latest video…</p></div>
       </aside>
     </section>
-    <div class="home-section-head">
-      <span>Federal Elections Analysis</span>
-      <h2>Team hub</h2>
-    </div>
-    <section class="team-action-grid" aria-label="Team pages">
-      <a class="forecast-overview-card" href="videos.html">
-        <span>Media</span>
-        <strong>Videos</strong>
-      </a>
-      <a class="forecast-overview-card" href="about.html">
-        <span>Info</span>
-        <strong>About us</strong>
-      </a>
-      <a class="forecast-overview-card" href="contact.html">
-        <span>Contact</span>
-        <strong>Contact us</strong>
-      </a>
+
+    <section class="home-notable" aria-labelledby="home-notable-title">
+      <div class="home-section-head"><span>The count</span><h2 id="home-notable-title">Notable races</h2></div>
+      <p class="meta" id="home-notable-note">Closest contests by reported percentage-point gap.</p>
+      <ul id="home-notable-races"><li>Loading race margins…</li></ul>
     </section>
 
   </main>
@@ -118,7 +108,8 @@
     </nav>
   </footer>
 
-  <script src="assets/countdown.js?v=20261027-night-final"></script>
-  <script src="assets/wiki.js?v=20260721-ratings"></script>
+  <script src="/assets/fea-lab-analysis.js?v=2" defer></script>
+  <script src="/assets/classic-home.js?v=1" defer></script>
+  <script src="assets/wiki.js?v=classic-home1"></script>
 </body>
 </html>
