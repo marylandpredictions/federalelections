@@ -12,8 +12,8 @@
   <script src="/assets/theme.js?v=20261030-features2"></script>
   <link rel="stylesheet" href="/assets/wiki.css?v=classic-gradient3">
   <link rel="stylesheet" href="/assets/fea-platform.css?v=6">
-  <link rel="stylesheet" href="/assets/fea-research.css?v=10">
-  <script defer src="/assets/results-ui.js"></script><script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script><script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script><script defer src="/assets/night-awareness.js"></script><script defer src="/assets/fea-lab-analysis.js?v=2"></script><script defer src="/assets/fea-platform.js?v=15"></script>
+  <link rel="stylesheet" href="/assets/fea-research.css?v=11">
+  <script defer src="/assets/results-ui.js"></script><script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script><script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script><script defer src="/assets/night-awareness.js"></script><script defer src="/assets/fea-lab-analysis.js?v=2"></script><script defer src="/assets/research-links.js?v=1"></script><script defer src="/assets/fea-platform.js?v=16"></script>
   <link rel="stylesheet" href="/assets/fea-consistency.css?v=1">
 </head>
 <body class="fea-site" data-page="lab">
@@ -59,20 +59,35 @@
         <section id="chapter-history" class="story-chapter"><p class="fea-kicker">05 / Historical perspective</p><h2>Put the result in context</h2><p>Read the 2026 result alongside available benchmarks for the selected geography. Presidential returns are a separate contest. A single change in margin cannot establish a lasting trend.</p><label>Race <select id="story-history-race"></select></label><label>Benchmarks <select id="story-history-scope"><option value="all">All verified benchmarks</option><option value="office">Same office only</option></select></label><p><a href="/election-history">Explore the election archive →</a></p></section>
       </div>
     </div>
+    <section class="fea-section" id="midterm-retrospective" aria-labelledby="midterm-title">
+      <p class="fea-kicker">2026 midterm retrospective</p>
+      <h2 id="midterm-title">What the reported returns show</h2>
+      <p>Follow the evidence from the national count to individual races. The numbers below use the current results snapshot and can change as counting continues.</p>
+      <div id="lab-retrospective"></div>
+      <h3>Where comparable races moved most</h3>
+      <div id="lab-retrospective-shifts" aria-live="polite">Loading historical benchmarks…</div>
+    </section>
     <section id="analysis-workspace" aria-labelledby="workspace-title">
       <p class="fea-kicker">06 / Independent investigation</p>
       <h2 id="workspace-title" tabindex="-1">Analysis workspace</h2>
       <p>Carry the race and comparison you selected into the workspace, or start fresh.</p>
+      <nav id="lab-related" class="research-context-links" aria-label="Explore the selected race" hidden></nav>
       <button type="button" id="lab-reset">Reset selections</button>
     <section class="fea-section lab-workbench" aria-labelledby="map-title"><div class="lab-workbench-controls"><h3 id="map-title">Build a view</h3>
       <div class="fea-filter">
+        <fieldset><legend>Geography</legend>
         <label>Office<select id="lab-office"><option>Senate</option></select></label>
-        <label>Color the map by<select id="lab-metric"><option value="margin">Democratic vs. Republican margin</option><option value="swing">Change from past election</option><option value="dem-share">Democratic vote share</option><option value="rep-share">Republican vote share</option></select></label>
-        <label>Compare with<select id="lab-lens"><option>Loading…</option></select></label>
-        <label>Sort the map table<select id="lab-sort"><option value="race">Race order</option><option value="value">Highest map value</option><option value="votes">Most reported votes</option></select></label>
         <label>Inspect a race<select id="lab-race"><option>Select a race</option></select></label>
         <label>Filter by race, state or candidate <input type="search" id="lab-search" maxlength="80" placeholder="e.g. Ohio or Sherrod Brown"></label>
+        </fieldset>
+        <fieldset><legend>Measure and comparison</legend>
+        <label>Color the map by<select id="lab-metric"><option value="margin">Democratic vs. Republican margin</option><option value="swing">Change from past election</option><option value="dem-share">Democratic vote share</option><option value="rep-share">Republican vote share</option></select></label>
+        <label>Compare with<select id="lab-lens"><option>Loading…</option></select></label>
+        </fieldset>
+        <fieldset><legend>Display</legend>
         <label>Visualization <select id="lab-display"><option value="map">Map</option><option value="chart">Ranked chart</option></select></label>
+        <label>Sort the map table<select id="lab-sort"><option value="race">Race order</option><option value="value">Highest map value</option><option value="votes">Most reported votes</option></select></label>
+        </fieldset>
         <a class="button-link" id="lab-share" href="/analysis-center">Link to this view</a>
       </div></div>
       <div class="lab-workbench-output">
@@ -83,7 +98,7 @@
     <details class="fea-section"><summary>Compare with past results</summary><p class="fea-note">Shares use all reported votes. Reported vote differences are available for verified same-office benchmarks and can change as counting continues.</p><div id="lab-comparison"></div></details>
     <section class="fea-section fea-split">
       <div><h2>Where the votes came from</h2><p class="fea-note">See how individual reporting units contribute to the overall Democratic–Republican vote difference.</p><div class="fea-filter"><label>Reporting unit<select id="lab-unit" disabled><option>All reporting units</option></select></label><label>Rank by<select id="lab-local-sort"><option value="impact">Largest contribution</option><option value="leader">Favors leading candidate</option><option value="opponent">Favors opponent</option><option value="votes">Most votes</option></select></label></div><div id="lab-local-map" class="fea-map fea-local-map"></div><div id="lab-detail"></div></div>
-      <div><h2>Historical benchmarks</h2><div id="lab-timeline"></div></div>
+      <div id="lab-benchmarks"><h2>Historical benchmarks</h2><div id="lab-timeline"></div></div>
     </section>
     <details class="fea-section"><summary>See race rankings</summary><p class="fea-note">Rankings use the reported returns and baseline selected above. Rankings may change as results arrive.</p><div id="lab-discoveries" class="fea-grid"></div></details>
     <p><a href="/features/map-maker">Build a scenario</a> · <a href="/articles">Read FEA analysis</a> · <a href="/features/polling-bias">Explore polling bias</a></p>

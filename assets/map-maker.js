@@ -159,6 +159,12 @@
     document.addEventListener('click',e=>{if(!e.target.closest('.board-overflow')){$('board-menu').hidden=true;$('maker-menu-button').setAttribute('aria-expanded','false');}});
     document.addEventListener('keydown',e=>{if(ink.enabled)return;if(e.key==='Escape'){$('board-menu').hidden=true;$('maker-menu-button').setAttribute('aria-expanded','false');}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!e.target.closest('input,select,textarea,dialog')){e.preventDefault();e.shiftKey?$('maker-redo').click():$('maker-undo').click();}});
     document.addEventListener('fea-desk-theme',()=>{palette();sync();detail.refresh();ink.sync();});
+    const requested=FEAResearchLinks.findRace(new URLSearchParams(location.search),races);
+    if(requested)model.state.office=requested.type;
     palette();await render();
+    if(requested && map && generation===1){
+      $('maker-race').value=requested.id;
+      $('maker-race').dispatchEvent(new Event('change'));
+    }
   }catch{status('The map maker could not start. Reload to try again.');}
 })();

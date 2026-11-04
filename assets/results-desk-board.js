@@ -885,9 +885,14 @@ window.FEAEnhanceBoard = function (Page) {
     if (this.focusedPanelTab === "demographics")
       body =
         '<div id="desk-demographics"><p class="desk-hint">Loading Census estimates…</p></div>';
+    const labUrl = window.FEAResearchLinks?.lab(race, {
+      baseline: this.isComparisonActive() ? this.comparisonMode : '',
+      unit: county?.fips
+    });
     content.innerHTML =
       tabbar +
-      `<section id="desk-panel-view" role="tabpanel" aria-label="${esc(this.focusedPanelTab)}">${body}</section>`;
+      `<section id="desk-panel-view" role="tabpanel" aria-label="${esc(this.focusedPanelTab)}">${body}</section>` +
+      (labUrl ? `<p class="desk-hint"><a href="${esc(labUrl)}">Analyze this race in Election Lab →</a></p>` : "");
     if (sameView) content.scrollTop = oldScroll;
     this.lastRenderedTab = this.focusedPanelTab;
     const callKey = FEADesk.callFingerprint(data);

@@ -48,6 +48,29 @@
       const r = await fetch(url); if (!r.ok) throw Error('Data unavailable'); return r.json();
     }));
     const [data, geometry] = response, states = new Map(data.states.map(state => [state.abbr, state]));
+    let senate = new Map();
+    let selectedState;
+    const links = root.FEAResearchLinks;
+    function related(abbr) {
+      const race = senate.get(abbr);
+      const targets = [[links.archive(abbr), 'State presidential archive']];
+      if (race) targets.unshift(
+        [links.results(race), '2026 Senate results'],
+        [links.lab(race,{section:'lab-benchmarks'}), 'Senate historical benchmarks']
+      );
+      document.getElementById('bias-related').replaceChildren(...targets.map(([href, label]) => {
+        const link = document.createElement('a');
+        link.href = href;
+        link.textContent = label;
+        return link;
+      }));
+    }
+    fetch('/data/election-night-races.json', {signal: AbortSignal.timeout(8000)})
+      .then(response => response.ok ? response.json() : null)
+      .then(catalogue => {
+        senate = new Map((catalogue?.races || []).filter(race => race.type === 'senate').map(race => [race.state, race]));
+        if (selectedState) related(selectedState);
+      }).catch(() => {});
     const ranked = data.states.filter(state => Number.isFinite(state.prior))
       .sort((a,b) => Math.abs(b.prior) - Math.abs(a.prior));
     const democrats = ranked.filter(state => state.prior > 0);
@@ -72,8 +95,11 @@
         host.append(row);
       }
     }
-    function select(abbr, scroll = false) {
+    function select(abbr, scroll = false, updateUrl = true) {
       const state = states.get(abbr); if (!state) return;
+      selectedState = abbr;
+      related(abbr);
+      if (updateUrl) root.history.replaceState(null, '', links.bias(abbr));
       document.getElementById('bias-state').value = abbr;
       document.getElementById('bias-state-name').textContent = state.state;
       document.getElementById('bias-division-name').textContent = state.division;
@@ -203,7 +229,7 @@
     });
     document.getElementById('bias-state').addEventListener('change', event => select(event.target.value));
     const requested = new URLSearchParams(root.location.search).get('state')?.toUpperCase();
-    select(states.has(requested) ? requested : 'AL');
+    select(states.has(requested) ? requested : 'AL', false, false);
   }
   start().catch(() => {
     document.getElementById('bias-findings-summary').textContent = 'Rankings could not load. See the state table below.';

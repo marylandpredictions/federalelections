@@ -207,6 +207,20 @@ body:has(.bias-page) { background: var(--fea-bg); }
 /* Keep the viewport as the scroll container for the sticky chapter graphic. */
 .fea-site[data-page="lab"] { overflow-x:clip; }
 
+.research-context-links { display:flex; flex-wrap:wrap; gap:.2rem 1.15rem; margin-block:.55rem 1rem; }
+.research-context-links[hidden] { display:none; }
+.research-context-links a { display:inline-flex; align-items:center; min-height:2.45rem; text-underline-offset:.2em; }
+.research-context-links a:focus-visible { outline:2px solid currentColor; outline-offset:3px; }
+.lab-workbench-controls fieldset { min-width:0; display:grid; gap:.5rem; margin:0; padding:.5rem 0; border:0; border-top:1px solid var(--fea-line); }
+.lab-workbench-controls legend { font-weight:800; padding-inline-end:.45rem; }
+#midterm-retrospective :is(th,td) { text-align:start; }
+#lab-benchmarks { scroll-margin-top:1rem; }
+@media(max-width:760px) {
+  .lab-workbench-controls .fea-filter:has(fieldset) { grid-template-columns:minmax(0,1fr); }
+  .lab-workbench-controls fieldset { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .lab-workbench-controls fieldset label:has(input) { grid-column:1/-1; }
+}
+
 /* Pair a quiet reading column with a larger, clearly framed figure. */
 .lab-story { gap:clamp(1.5rem,4vw,4rem); }
 .story-stage { box-shadow:0 14px 36px color-mix(in srgb,var(--fea-bg) 65%,transparent); }

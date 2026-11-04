@@ -368,7 +368,10 @@
     $('polling-table').innerHTML = pollingNote(data) + pollingTable(Object.entries(data.races));
   }
   async function search() {
-    const results = await Promise.allSettled([get('/data/election-night-races.json'),get('/data/articles.json')]);
+    const results = await Promise.allSettled([get('/data/election-night-races.json'),get('/data/articles.json'),get('/data/features/polling-bias.json?v=20261030-1')]);
+    const links = FEAResearchLinks;
+    const stateRows = results[2].value?.states || [];
+    const stateNames = new Map(stateRows.map(state=>[state.abbr,state.state]));
     const index = [
       ['Presidential election archive','Historical results','/election-history','2016 2020 2024 statewide'],
       ['2026 Midterm elections','Election cycle','/results','house senate governors archive'],
@@ -377,7 +380,11 @@
       ['Election Lab','Post-election analysis','/analysis-center','swing historical'],
       ['State polling bias','Research tool','/features/polling-bias','polling'],
       ['Unofficial polling reference','Unweighted reference','/polling','polls'],
-      ...(results[0].value?.races || []).map(race=>[title(race),'2026 race',raceUrl(race.id),race.id+' '+race.candidates.map(c=>c.name).join(' ')]),
+      ...stateRows.flatMap(({abbr,state})=>[
+        [state+' presidential returns','Historical results',links.archive(abbr),abbr+' 2016 2020 2024'],
+        [state+' Senate polling bias','Original research',links.bias(abbr),abbr]
+      ]),
+      ...(results[0].value?.races || []).map(race=>[title(race),'2026 race',links.results(race),[race.id,stateNames.get(race.state),...race.candidates.map(c=>c.name)].join(' ')]),
       ...(results[1].value || []).map(article=>[article.title,'Article','/article?slug='+encodeURIComponent(article.slug),article.author||''])
     ];
     const field = $('site-search');
@@ -645,10 +652,42 @@
     const [data,sources] = await Promise.all([get('/api/live-results'),comparison()]);
     $('lab-source').innerHTML=sourceNote(data);
     const all = rows(data);
+    const links = FEAResearchLinks;
+    const defaults = {house:'house-2024',senate:'senate-last',governor:'governor-last'};
+    const summaries = Object.entries(offices).map(([type, label]) => {
+      const races = all.filter(race => race.type === type);
+      const {reported,calls,close,withinTwo} = FEALabAnalysis.findings(
+        races.map(race => ({race,current:FEALabAnalysis.contest(race.candidates)}))
+      );
+      const closest = close[0]?.race;
+      return `<tr><th scope="row">${label}</th><td>${reported} of ${races.length}</td><td>${calls.D} D · ${calls.R} R${calls.other ? ' · '+calls.other+' other or unclassified' : ''}</td><td>${withinTwo} of ${close.length}${closest ? ` · <a href="${escape(links.lab(closest,{section:'chapter-close'}))}">${escape(title(closest))}</a>` : ''}</td></tr>`;
+    });
+    $('lab-retrospective').innerHTML = table(
+      ['Office','Races with usable returns','Public calls','Within 2 points · closest race'],
+      summaries.join(''),'2026 reported returns by office'
+    ) + '<p class="fea-note">Closeness is the gap between the top two candidates among races with votes for at least two candidates. The calls count covers races on the 2026 ballot.</p>';
+    void Promise.all(Object.entries(offices).map(async ([type,label]) => {
+      const races = all.filter(race => race.type === type);
+      const source = sources.find(item => item.id === defaults[type]);
+      const snapshots = await historical(races,source).catch(() => new Map());
+      const {swings,towardD,towardR} = FEALabAnalysis.findings(races.map(race => {
+        const current = FEALabAnalysis.contest(race.candidates);
+        const past = snapshots.get(race.id);
+        return {race,current,past,swing:FEALabAnalysis.shift(current,past).value};
+      }));
+      const top = swings[0];
+      return `<tr><th scope="row">${label}</th><td>${swings.length} of ${races.length}</td><td>${towardD} toward D · ${towardR} toward R</td><td>${top ? `<a href="${escape(links.lab(top.race,{baseline:source.id,section:'chapter-shifts'}))}">${escape(title(top.race))}</a> · ${Math.abs(top.swing).toFixed(1)} pts toward ${top.swing > 0 ? 'D' : top.swing < 0 ? 'R' : 'neither party'}<br><small>${escape(top.past.label || compareName(source))}</small>` : 'No verified comparison'}</td></tr>`;
+    })).then(shifts => {
+      $('lab-retrospective-shifts').innerHTML = table(
+        ['Office','Comparable races','Direction of change','Largest absolute shift'],
+        shifts.join(''),'Same-office changes in reported D–R margin'
+      ) + '<p class="fea-note">Each shift is the change in Democratic minus Republican share of all votes. The comparison requires verified geography and usable votes for both parties. Previous same-office elections vary by contest.</p>';
+    });
     const office = $('lab-office'), lens = $('lab-lens'), raceSelect = $('lab-race'), metric = $('lab-metric'), unit = $('lab-unit'), localSort = $('lab-local-sort');
     if ([...localSort.options].some(option=>option.value===query.get('local-sort'))) localSort.value=query.get('local-sort');
     let revision = 0, localRevision = 0;
-    office.innerHTML=options(Object.entries(offices),query.get('office') || 'senate');
+    const requested = links.findRace(query, all);
+    office.innerHTML=options(Object.entries(offices),requested?.type || (Object.hasOwn(offices,query.get('office')) ? query.get('office') : 'senate'));
     metric.value=['margin','swing','dem-share','rep-share'].includes(query.get('metric')) ? query.get('metric') : 'margin';
     const sort = $('lab-sort'), display = $('lab-display'), search = $('lab-search');
     search.value = (query.get('find') || '').slice(0,80);
@@ -659,7 +698,6 @@
       const list=all.filter(race=>race.type===office.value);
       raceSelect.innerHTML=options([['','Select a race'],...list.map(race=>[race.id,title(race)])],preferred);
       const available=sources.filter(source=>source.appliesTo.includes(office.value));
-      const defaults = {house:'house-2024',senate:'senate-last',governor:'governor-last'};
       const chosen = available.some(source=>source.id===baseline) ? baseline : defaults[office.value];
       lens.innerHTML=options(available.map(source=>[source.id,compareName(source)]),chosen);
     }
@@ -674,6 +712,26 @@
       if (localSort.value!=='impact') params.set('local-sort',localSort.value);
       history.replaceState(null,'','?'+params+location.hash);
       $('lab-share').href='?'+params+'#analysis-workspace';
+      const race = all.find(row => row.id === raceSelect.value);
+      const related = $('lab-related');
+      related.hidden = !race;
+      related.replaceChildren();
+      if (!race) return;
+      const source = sources.find(item => item.id === lens.value);
+      const archiveYear = source?.id.match(/^pres-(2016|2020|2024)$/)?.[1] || '2024';
+      const destinations = [
+        [links.results(race, unit.disabled ? '' : unit.value),'View race results'],
+        ['#lab-benchmarks','Historical benchmarks'],
+        [links.maker(race),'Open geography in Map Maker'],
+        ...(race.type === 'house' ? [] : [[links.archive(race.state,archiveYear),'State presidential archive']]),
+        ...(race.type === 'senate' ? [[links.bias(race.state),'Senate polling-bias research']] : [])
+      ];
+      for (const [url,label] of destinations) {
+        const link = document.createElement('a');
+        link.href = url;
+        link.textContent = label;
+        related.append(link);
+      }
     }
     async function local(race, desired, source) {
       const sequence=++localRevision;
@@ -805,12 +863,14 @@
         discovery('Largest shifts toward D',swings.filter(row=>row.swing>0).slice(0,5),row=>points(row.swing))+
         discovery('Largest shifts toward R',swings.filter(row=>row.swing<0).reverse().slice(0,5),row=>points(row.swing));
     }
-    setFilters(query.get('race'),query.get('baseline'));
+    setFilters(requested?.id,query.get('baseline'));
     office.addEventListener('change',()=>{setFilters('',lens.value);void render();});
     for(const control of [raceSelect,metric,lens,display,search]) control.addEventListener('change',()=>void render(unit.value));
     $('lab-reset').onclick=()=>{office.value='senate';metric.value='margin';display.value='map';search.value='';sort.value='race';localSort.value='impact';setFilters('','senate-last');void render();};
     await render(query.get('unit') || '');
-    if (!location.hash && (query.get('mode')==='explorer' || query.has('race'))) $('analysis-workspace').scrollIntoView();
+    const landing = document.getElementById(location.hash.slice(1));
+    if (requested && landing) landing.scrollIntoView();
+    else if (!location.hash && (query.get('mode')==='explorer' || requested)) $('analysis-workspace').scrollIntoView();
   }
   const entry={home:homepage,elections,race:racePage,polling,search,lab,archive}[document.body.dataset.page];
   if(entry) entry().catch(error=>{
