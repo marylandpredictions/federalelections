@@ -488,7 +488,11 @@ window.FEAEnhanceBoard = function (Page) {
           );
           if (detail?.id === race.id && Array.isArray(detail.candidates)) {
             const latestVersion=(this.liveRaceIndex||[]).find(r=>r.id===race.id)?.version||race.version;
-            if((!this.isLabPage||this.query.get('live')==='true')&&latestVersion&&detail.version!==latestVersion){
+            // First-open county hydration advances the server race version.
+            // Accept that causal successor only if no newer client summary
+            // has arrived; ordinary out-of-order detail responses still lose.
+            const countySuccessor=detail.countyHydratedFromVersion===latestVersion&&Array.isArray(detail.counties)&&detail.counties.length>0;
+            if((!this.isLabPage||this.query.get('live')==='true')&&latestVersion&&detail.version!==latestVersion&&!countySuccessor){
               const lastGood=this.liveRaceDetails.get(race.id)||cached;
               if(lastGood?.version!==latestVersion&&this.currentRace?.id===race.id)this.detailRetryID=race.id;
               return lastGood||null;

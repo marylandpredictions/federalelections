@@ -409,14 +409,20 @@ async function handleLiveResultRace(request, response, url) {
   const id=url.searchParams.get("id"),fips=url.searchParams.get("county");
   if(!isValidRaceId(id) || (fips && !/^(?:\d{5}|\d{10})$/.test(fips))){sendJson(response,400,{error:"Invalid race or county"});return;}
   await currentPublicResults();
+  const countyHydratedFromVersion=resultsFeed.current.races.get(id)?.version;
+  const countyHydrated=process.env.RESULTS_MODE!=="legacy-primary"&&(await (await getResultsControl()).loadCountyResults(id));
+  if(countyHydrated){
+    liveResultsCache=null;await currentPublicResults();
+  }
   const race=resultsFeed.current.races.get(id);
   if(!race){sendJson(response,404,{error:"Unknown race"});return;}
   if(request.headers["if-none-match"]==='"'+race.version+'"'){sendLive(request,response,{},'"'+race.version+'"');return;}
   if(fips){sendLive(request,response,{raceId:id,fips,version:race.version,voteHistory:countyHistory.read(id,fips)},'"'+race.version+':'+fips+'"');return;}
   const detail=await buildRaceResultDetailWithHistory(id,{persist:true});
+  countyHistory.record(detail);
   // Provider/private control details are not part of public detail.
   delete detail.providerCall; delete detail.callState; delete detail.sourceUrl; delete detail.providerRaceId;
-  sendLive(request,response,{...detail,version:race.version},'"'+race.version+'"');
+  sendLive(request,response,{...detail,version:race.version,...(countyHydratedFromVersion&&countyHydratedFromVersion!==race.version&&detail.counties?.length?{countyHydratedFromVersion}:{})},'"'+race.version+'"');
 }
 
 async function refreshPersistedLiveResults(raceId = "") {

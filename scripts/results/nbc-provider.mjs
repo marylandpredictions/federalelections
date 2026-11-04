@@ -105,7 +105,8 @@ export function parseNbcNational(data,source,catalogue,{onInvalid}={}) {
     if(!Number.isSafeInteger(total)||!Number.isSafeInteger(t.totalVote)||total!==t.totalVote)throw Error('NBC race total does not match candidate votes');
     const missing=(local.candidates||[]).filter(c=>!candidates.some(k=>k.name===c.name)).map(c=>c.name);
     for(const c of candidates)c.percent=total?c.votes/total*100:0;
-    rows.push({...local,provider:'NBC',source:'NBC News',sourceUrl:source.url,providerRaceId:String(mapping.providerRaceId),providerScope:'national',providerCallVerified:false,electionDate:'2026-11-03',candidateStatus:'Live candidates and vote totals via NBC News',candidates,expectedVotePercent:percent(t.percentIn),estimatedVoteReporting:percent(t.percentIn),reportingPercent:null,percentReporting:null,lastUpdated:updated,updatedAt:updated,status:'uncalled',...nationalProjection(t,source,candidates,updated),counties:[],providerRosterReview:{added:additions,missing,partyChanges}});
+    const page=typeof entry.href==='string'&&/^\/politics\/2026-(?:special-)?elections\/[a-z0-9-]+-results$/.test(entry.href)?'https://www.nbcnews.com'+entry.href:null;
+    rows.push({...local,provider:'NBC',source:'NBC News',sourceUrl:source.url,providerPageUrl:page,providerRaceId:String(mapping.providerRaceId),providerScope:'national',providerCallVerified:false,electionDate:'2026-11-03',candidateStatus:'Live candidates and vote totals via NBC News',candidates,expectedVotePercent:percent(t.percentIn),estimatedVoteReporting:percent(t.percentIn),reportingPercent:null,percentReporting:null,lastUpdated:updated,updatedAt:updated,status:'uncalled',...nationalProjection(t,source,candidates,updated),counties:[],providerRosterReview:{added:additions,missing,partyChanges}});
   }catch(error){if(!onInvalid)throw error;onInvalid({race:mapping.feaRaceId,reason:error.message});}}
   if(!rows.length)throw Error('No healthy mapped NBC national races');return rows;
 }

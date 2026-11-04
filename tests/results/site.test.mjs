@@ -98,6 +98,7 @@ test("HTTP integration: admin auth, calls, detail and summary refresh, no foreca
     "scripts/results/history.mjs",
     "scripts/results/nbc-provider.mjs",
     "scripts/results/civic-provider.mjs",
+    "scripts/results/nbc-counties.mjs",
     "admin.html",
     "index.html",
     "results.html",

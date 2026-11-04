@@ -1,4 +1,5 @@
 import {ResultsProvider} from './civic-provider.mjs';
+import {NbcCountyProvider} from './nbc-counties.mjs';
 import { readFile, writeFile, rename, mkdir,readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { NbcProvider } from "./nbc-provider.mjs";
@@ -7,6 +8,7 @@ import { createHash } from "node:crypto";
 import { resultStorage } from './storage.mjs';
 import { auditRosters } from './roster-audit.mjs';
 import {readStateFile,validateCalls,validateRuntime} from './recovery.mjs';
+const resultFingerprint = r => createHash('sha256').update(JSON.stringify([r.candidates,r.expectedVotePercent,r.reportingPercent,r.providerCall,(r.counties||[]).map(({lastUpdated,...c})=>c)])).digest('hex');
 const numberSetting = (value, fallback, min) =>
   Number.isFinite(Number(value)) && Number(value) >= min
     ? Number(value)
@@ -30,12 +32,14 @@ export class ResultsControl {
     root = process.cwd(),
     now = () => Date.now(),
     provider,
+    countyProvider,
     graceSeconds = process.env.NBC_CALL_GRACE_SECONDS,
     pollSeconds = process.env.NBC_POLL_SECONDS,
     staleSeconds = process.env.NBC_STALE_SECONDS,
     storageDir = process.env.RESULTS_STORAGE_DIR,
   } = {}) {
     Object.assign(this, { root, now, provider });
+    this.countyProvider=countyProvider||new NbcCountyProvider({now,root});
     this.storage=resultStorage(root,storageDir);
     this.graceSeconds = numberSetting(graceSeconds, 30, 0);
     this.pollSecondsConfigured=pollSeconds!==undefined;
@@ -189,6 +193,23 @@ export class ResultsControl {
       throw error;
     }
   }
+  async loadCountyResults(id) {
+    const raw=this.runtime.races[id];
+    if(!raw)return false;
+    const counties=await this.countyProvider.fetchCounties(raw);
+    if(!counties?.length)return false;
+    return this.serial(async()=>{
+      const current=this.runtime.races[id];
+      if(current.provider!==raw.provider||current.providerPageUrl!==raw.providerPageUrl)return false;
+      if(counties.some(c=>Date.parse(current.counties?.find(old=>old.fips===c.fips)?.lastUpdated||'')>Date.parse(c.lastUpdated)))return false;
+      // A concurrently finishing poll may already have applied this exact batch.
+      const next={...current,counties},signature=resultFingerprint(next);
+      if(signature===current._signature)return false;
+      this.runtime.races[id]={...next,_signature:signature};
+      this.runtime.health.countyErrors=Object.fromEntries(this.countyProvider.errors);
+      await this.save();return true;
+    });
+  }
   async poll() {
     if (this.now() < this.nextPoll) return;
     return this.serial(async () => {
@@ -200,6 +221,10 @@ export class ResultsControl {
         const incoming = await this.provider.fetchResults(this.catalogue,{lastGood:this.runtime.races});
         if (!Array.isArray(incoming) || !incoming.length)
           throw Error("Provider returned no normalized races");
+        // Only race details actually opened by public clients request county feeds.
+        for(const r of incoming)if(!r.counties?.length&&this.runtime.races[r.id]?.counties?.length)r.counties=this.runtime.races[r.id].counties;
+        await this.countyProvider.refresh(incoming);
+        h.countyErrors=Object.fromEntries(this.countyProvider.errors);
         const seen = new Set(),races=[],quarantined=[...(this.provider.quarantined||[])];
         const duplicates=new Set(incoming.filter((r,i)=>incoming.findIndex(k=>k?.id===r?.id)!==i).map(r=>r?.id));
         for (const r of incoming) {
@@ -230,7 +255,7 @@ export class ResultsControl {
           if(prior?.provider&&r.provider&&prior.provider!==r.provider&&(newTotal<oldTotal||prior.candidates.some(c=>c.votes>(r.candidates.find(n=>n.name===c.name)?.votes||0))))throw Error('Source switch is behind last-good vote totals; retained newer results');
           if(oldTotal>=100&&newTotal<oldTotal*.5)throw Error('Suspicious partial vote reset; last-good race retained for review');
           if((prior?.candidates||[]).some(c=>c.votes>=100&&r.candidates.some(k=>k.name===c.name&&k.votes===0)))throw Error('Candidate vote reset; last-good race retained for review');
-          if(['national','civic-fallback'].includes(r.providerScope)&&prior?.counties?.length)r.counties=prior.counties;
+          if(['national','civic-fallback'].includes(r.providerScope)&&!r.counties?.length&&prior?.counties?.length)r.counties=prior.counties;
           races.push(r);
           } catch(error){quarantined.push({race:r?.id||'Unknown',reason:error.message});}
         }
@@ -247,17 +272,7 @@ export class ResultsControl {
         for (const r of races) {
           const prior = this.runtime.races[r.id];
           // Fetch time is deliberately excluded: a successful request is not a new result.
-          const signature = createHash("sha256")
-            .update(
-              JSON.stringify([
-                r.candidates,
-                r.expectedVotePercent,
-                r.reportingPercent,
-                r.providerCall,
-                r.counties,
-              ]),
-            )
-            .digest("hex");
+          const signature = resultFingerprint(r);
           if (signature !== prior?._signature) changed = true;
           this.runtime.races[r.id] = { ...r, _signature: signature };
           if (r.providerCall) {
