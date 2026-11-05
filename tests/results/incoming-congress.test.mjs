@@ -7,6 +7,19 @@ const read = path => JSON.parse(readFileSync(path,'utf8'));
 const config = read('data/features/incoming-congress-120.json');
 const catalogue = read('data/features/map-maker-races.json').races;
 
+test('The 120th Congress uses an election-specific recorded snapshot',()=>{
+  assert.match(config.archive,/\/2026-11-03-congress\.json$/);
+  const archive = read(config.archive.slice(1));
+  assert.equal(archive.electionDate,config.electionDate);
+  assert.match(archive.sourceCommit,/^[a-f0-9]{40}$/);
+  assert.ok(Number.isFinite(Date.parse(archive.generatedAt)));
+  assert.ok(archive.provider.attribution);
+  const snapshot = model.historicalSnapshot(archive,catalogue,config);
+  assert.equal(snapshot.races.length,470);
+  assert.ok(snapshot.coverage.senate.unresolved>0);
+  assert.equal(snapshot.coverage.senate.complete,false);
+});
+
 test('Historical mode requires a complete, dated congressional snapshot with real votes',()=>{
   const rows = catalogue.filter(entry=>entry.type==='senate'||entry.type==='house').map(entry=>({
     ...entry,electionDate:config.electionDate,candidates:[{name:'Fixture candidate',votes:0}]

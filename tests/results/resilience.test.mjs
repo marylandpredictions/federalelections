@@ -60,6 +60,7 @@ test("Deployment candidate CLI blocks corrupted names and missing summary priori
   for (const file of [
     "data/election-night-races.json",
     "data/live-results.json",
+    "data/results-provider.json",
     "data/results/reviewed-ballots-2026.json",
     "data/results/louisiana-ballot-2026.json",
     "data/results/candidate-summary-priorities.json",

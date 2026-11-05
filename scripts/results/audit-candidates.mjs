@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { auditRosters } from "./roster-audit.mjs";
+import { reviewPublicRoster } from "./public-roster-audit.mjs";
 export function auditCandidateFiles(root = process.cwd()) {
   const read = (p) => JSON.parse(readFileSync(join(root, p), "utf8"));
   const races = read("data/election-night-races.json").races;
@@ -44,44 +45,35 @@ export function auditCandidateFiles(root = process.cwd()) {
   const priorities = read(
     "data/results/candidate-summary-priorities.json",
   ).races;
-  const signature = (rows) =>
-    JSON.stringify(
-      rows
-        .map((c) => [
-          c.name,
-          String(c.partyCode || c.party || "").toUpperCase(),
-        ])
-        .sort((a, b) => a[0].localeCompare(b[0])),
-    );
+  const config = read("data/results-provider.json");
+  const byId = new Map(snapshot.map(race=>[race.id,race]));
+  report.publicRosterDifferences = [];
   if (
     snapshot.length !== 506 ||
     new Set(snapshot.map((r) => r.id)).size !== 506
   )
     issue("Public snapshot", "Expected 506 unique public races");
   for (const race of races) {
-    const rows = [
-      race,
-      snapshot.find((r) => r.id === race.id),
-      read("data/live-results-races/" + race.id + ".json"),
-    ];
-    for (const row of rows) {
-      if (
-        !row ||
-        row.candidates.some((c) => c.placeholder) ||
-        signature(row.candidates) !== signature(race.candidates)
-      ) {
-        issue(
-          race.id,
-          "Public snapshot roster or party differs from reviewed catalogue",
-        );
-        continue;
-      }
-      const ids = row.candidates.filter((c) => c.id).map((c) => String(c.id));
-      if (new Set(ids).size !== ids.length)
-        issue(race.id, "Duplicate public candidate IDs");
+    const summary = byId.get(race.id);
+    const detail = read("data/live-results-races/" + race.id + ".json");
+    const diagnostics = {race:race.id};
+    for (const [kind,row] of Object.entries({summary,detail})) {
+      const review = reviewPublicRoster(race,row,config);
+      if (review.issues.length || review.differences.length) diagnostics[kind] = review;
+      for (const message of review.issues) issue(race.id,`${kind}: ${message}`);
+    }
+    if (summary?.detailVersion !== detail.detailVersion)
+      diagnostics.parity = "Summary and detail versions differ";
+    else if (JSON.stringify(summary?.candidates)!==JSON.stringify(detail.candidates) ||
+             JSON.stringify(summary?.calls)!==JSON.stringify(detail.calls))
+      diagnostics.parity = "Summary and detail disagree on candidate votes, identities or calls at the same version";
+    if (diagnostics.parity)
+      issue(race.id,diagnostics.parity);
+    if (diagnostics.summary || diagnostics.detail || diagnostics.parity) report.publicRosterDifferences.push(diagnostics);
+    for (const row of [race,summary,detail]) {
       for (const name of priorities.find((p) => p.id === race.id)?.candidates ||
         [])
-        if (!row.candidates.some((c) => c.name === name && c.summaryVisible))
+        if (!row?.candidates?.some((c) => c.name === name && c.summaryVisible))
           issue(
             race.id,
             "Prominent candidate missing from compact summary: " + name,
@@ -111,7 +103,8 @@ if (
   import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
   const report = auditCandidateFiles();
-  console.log(JSON.stringify(report, null, 2));
+  const {publicRosterDifferences,...summary} = report;
+  console.log(JSON.stringify(process.argv.includes('--diagnostics') ? report : summary, null, 2));
   if (!report.passed) {
     if (process.env.ALLOW_UNREVIEWED_RESULTS_ROSTER === "1")
       console.error(

@@ -97,6 +97,7 @@ test("HTTP integration: admin auth, calls, detail and summary refresh, no foreca
     "scripts/results/roster-audit.mjs",
     "scripts/results/readiness.mjs",
     "scripts/results/audit-candidates.mjs",
+    "scripts/results/public-roster-audit.mjs",
     "scripts/results/candidate-roster.mjs",
     "scripts/results/change-feed.mjs",
     "scripts/results/history.mjs",

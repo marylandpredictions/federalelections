@@ -233,12 +233,13 @@
     if (!response.ok) throw Error('Chamber data unavailable');
     return response.json();
   };
-  Promise.all([get('/data/features/map-maker-races.json'),get('/data/features/incoming-congress-120.json'),
-    phase.archive ? get('/data/live-results.json') : null])
-    .then(([data,terms,archive])=>{
+  Promise.all([get('/data/features/map-maker-races.json'),get('/data/features/incoming-congress-120.json')])
+    .then(async ([data,terms])=>{
       catalogue=data.races;
       config=terms;
       if (phase.archive) {
+        const archive = await get(config.archive);
+        if (archive.electionDate!==config.electionDate) throw Error('Wrong historical election');
         snapshot=module.historicalSnapshot(archive,catalogue,config);
         if (!snapshot) throw Error('No reliable historical snapshot');
         content.forEach(node=>{node.hidden=false;});

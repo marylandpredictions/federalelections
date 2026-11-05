@@ -51,7 +51,7 @@ test('Observed vote drops use raw totals for 55/45 and multi-candidate batches, 
 test('Readiness validates schedule content, referenced demographics/geometry and OBS dependencies; never certifies a local disk as Render verified',async t=>{
  const root=await mkdtemp(join(tmpdir(),'fea-selftest-'));t.after(()=>rm(root,{recursive:true,force:true}));
  await mkdir(join(root,'data'),{recursive:true});await mkdir(join(root,'assets'));
- for(const file of ['data/results','data/election-night-races.json','data/live-results.json','data/live-results-races','call-overlay.html'])await cp(file,join(root,file),{recursive:true});
+ for(const file of ['data/results','data/election-night-races.json','data/live-results.json','data/live-results-races','data/results-provider.json','call-overlay.html'])await cp(file,join(root,file),{recursive:true});
  for(const file of ['desk-theme.js','night-awareness.js','night-awareness-board.js','results-desk-board.js','results-desk.js','results-ui.js','desk-appearance.js','projection-card.js','projection-card.css','overlay-model.js','call-overlay.js','call-overlay.css'])await cp('assets/'+file,join(root,'assets',file));
  const catalogue=JSON.parse(await readFile('data/election-night-races.json','utf8')).races;
  const control={storage:{directory:join(root,'disk'),durable:true},health:()=>({stale:false,status:'CONNECTED'}),results:()=>({groups:[{races:catalogue}]}),visible:{runtime:{races:{'senate-OH':{}}}},adminSnapshot:()=>({rosterAudit:{reviewed:0,total:0,placeholders:0,issues:[]}})};
