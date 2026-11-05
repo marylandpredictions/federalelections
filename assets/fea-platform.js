@@ -35,6 +35,8 @@
   }
   const status = race => race.calls?.[0]?.candidate && !race.calls[0].retracted ? 'Called' : votes(race.candidates).total ? 'Reporting' : 'Awaiting returns';
   const marginLabel = value => Number.isFinite(value) ? value === 0 ? 'Even' : `${value > 0 ? 'D' : 'R'} +${Math.abs(value).toFixed(1)}` : 'Unavailable';
+  const swingLabel = value => !Number.isFinite(value) ? 'Unavailable' :
+    value === 0 ? 'No change' : `${Math.abs(value).toFixed(1)} pts toward ${value > 0 ? 'D' : 'R'}`;
   const stamp = value => Number.isFinite(Date.parse(value)) ? new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short',timeZone:'America/New_York'}).format(new Date(value)) + ' ET' : 'Time unavailable';
   function sourceNote(data) {
     return `Preliminary reported returns · ${escape(data.provider?.name || 'FEA results')} · ${escape(stamp(data.provider?.lastUpstreamUpdate || data.updatedAt))}${data.provider?.stale ? ' · Updates may be delayed' : ''}`;
@@ -48,7 +50,7 @@
   function raceList(list, metrics = new Map(), metric = 'margin') {
     return table(['Race','Status','Votes',metric === 'swing' ? 'Swing' : 'D–R margin'], list.map(race => {
       const result = votes(race.candidates);
-      return `<tr><td><a href="${raceUrl(race.id)}">${escape(title(race))}</a></td><td>${status(race)}</td><td>${number(result.total)}</td><td>${marginLabel(metric === 'swing' ? metrics.get(race.id) : result.margin)}</td></tr>`;
+      return `<tr><td><a href="${raceUrl(race.id)}">${escape(title(race))}</a></td><td>${status(race)}</td><td>${number(result.total)}</td><td>${metric === 'swing' ? swingLabel(metrics.get(race.id)) : marginLabel(result.margin)}</td></tr>`;
     }).join(''), 'Election results');
   }
   function compareName(source) {
@@ -663,8 +665,8 @@
       const swing = index===1;
       if (swing && $('story-shift-view').value==='chart') {
         const ranked = findings.swings.slice(0,8);
-        output(visual,labBars(ranked.map(({race,swing:value})=>({race,value,reading:points(value),partyColor:true})),'Largest absolute shifts',selectRace));
-        $('story-key').textContent = 'Positive values moved toward Democrats. Negative values moved toward Republicans.';
+        output(visual,labBars(ranked.map(({race,swing:value})=>({race,value,reading:swingLabel(value),partyColor:value!==0,selected:race===selected})),'Largest absolute shifts',selectRace));
+        $('story-key').textContent = 'Bars show the size of the change in Democratic minus Republican vote share.';
         return;
       }
       const values = new Map(stats.map(row=>[row.race.id,swing?row.swing:row.current.margin]));
