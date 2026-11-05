@@ -42,6 +42,21 @@
   const element = (tag,text) => Object.assign(document.createElement(tag),{textContent:text});
   const link = (href,text) => Object.assign(element('a',text),{href});
   const raceLink = race => link('/results?'+new URLSearchParams({office:race.type,race:race.id}),race.electionName || race.title || race.id);
+  function tone(node,code) {
+    node.dataset.party = code==='D'||code==='R' ? code : 'other';
+    return node;
+  }
+  function bar(segments,total) {
+    const track = element('div','');
+    track.className = 'home-party-bar';
+    track.setAttribute('aria-hidden','true');
+    for (const [code,value] of segments) {
+      const segment = tone(element('span',''),code);
+      segment.style.width = (total ? 100*value/total : 0)+'%';
+      track.append(segment);
+    }
+    return track;
+  }
   const date = new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',dateStyle:'medium',timeStyle:'short'});
   const publish = detail => document.dispatchEvent(new CustomEvent('fea-home-results',{detail}));
   let busy = false, lastSource = '';
@@ -59,8 +74,11 @@
       publish({races,provider:data.provider,updatedAt});
       $('home-results-lines').replaceChildren(...Object.entries(totals).map(([office,total])=>{
         const row = element('div','');
-        const counts = `${total.D} D · ${total.R} R${total.other ? ' · '+total.other+' other' : ''}`;
-        row.append(link('/results?office='+office,offices[office]),element('strong',counts),
+        const counts = element('strong','');
+        counts.append(tone(element('span',total.D+' D'),'D'),' · ',tone(element('span',total.R+' R'),'R'));
+        if (total.other) counts.append(' · '+total.other+' other');
+        row.append(link('/results?office='+office,offices[office]),counts,
+          bar([['D',total.D],['other',total.other],['R',total.R]],total.called+total.open),
           element('small',`${total.called} called · ${total.open} outstanding`));
         return row;
       }));
@@ -71,10 +89,14 @@
       $('home-results-source').textContent = lastSource;
       $('home-notable-races').replaceChildren(...(close.length ? close.map(({race,candidates,total,gap})=>{
         const item = element('li','');
-        const shares = candidates.map(c=>`${c.name} ${(100*c.votes/total).toFixed(1)}%`).join(' · ');
+        const shares = element('span','');
+        for (const [index,candidate] of candidates.entries()) {
+          if (index) shares.append(' · ');
+          shares.append(tone(element('span',`${candidate.name} ${(100*candidate.votes/total).toFixed(1)}%`),party(candidate)));
+        }
         const margin = gap===0 ? 'Tied' : gap<.01 ? 'Less than 0.01 points apart' : gap.toFixed(2)+' points apart';
         const reporting = expected(race);
-        item.append(raceLink(race),element('span',shares),element('small',margin+
+        item.append(raceLink(race),shares,bar(candidates.map(c=>[party(c),c.votes]),total),element('small',margin+
           (reporting===null ? ' · Expected vote unavailable' : ` · ${reporting}% expected vote in`)));
         return item;
       }) : [element('li','No uncalled races with a usable margin in this update.')]));
@@ -85,7 +107,7 @@
         const source = call.provider || (/^nbc-/.test(call.source || '') ? 'NBC' : 'FEA');
         const meta = element('small',source+' · ');
         meta.append(timeLabel);
-        item.append(raceLink(race),element('span',winner.name+(party(winner) ? ' ('+party(winner)+')' : '')),meta);
+        item.append(raceLink(race),tone(element('span',winner.name+(party(winner) ? ' ('+party(winner)+')' : '')),party(winner)),meta);
         return item;
       }) : [element('li','No timestamped published calls in this update.')]));
     } catch {
@@ -104,8 +126,16 @@
     const ranked = states.filter(row=>Number.isFinite(row.prior)).sort((a,b)=>Math.abs(b.prior)-Math.abs(a.prior));
     const entries = [...ranked.filter(row=>row.prior>0).slice(0,2),...ranked.filter(row=>row.prior<0).slice(0,2)];
     if (!entries.length) return;
-    $('home-bias-rows').replaceChildren(...entries.map(row=>element('li',
-      `${row.state} · ${row.prior>0?'D':'R'} ${Math.abs(row.prior).toFixed(1)} pts`)));
+    const scale = Math.max(...entries.map(row=>Math.abs(row.prior)));
+    $('home-bias-rows').replaceChildren(...entries.map(row=>{
+      const item = element('li','');
+      const code = row.prior>0?'D':'R';
+      const track = bar([[code,Math.abs(row.prior)]],scale*2);
+      track.classList.add('home-bias-bar');
+      track.dataset.direction = code;
+      item.append(element('span',row.state),track,tone(element('strong',`${code} ${Math.abs(row.prior).toFixed(1)} pts`),code));
+      return item;
+    }));
     $('home-bias-preview').hidden = false;
   }
   if (document.body.dataset.electionPhase==='between-elections') {

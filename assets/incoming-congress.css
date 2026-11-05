@@ -23,6 +23,9 @@
 .incoming-totals { margin:1.35rem 0 1rem; padding-block:.8rem; border-block:1px solid var(--stage-line); }
 .incoming-totals button { display:inline-flex; align-items:baseline; gap:.45rem; }
 .incoming-totals strong { font-size:clamp(1.3rem,2.65vw,2.4rem); line-height:1; color:var(--ink); }
+.incoming-totals :is([data-group="D"],[data-group="R"],[data-group="I"],[data-group="O"]) strong {
+  color:color-mix(in srgb,var(--seat-color) 65%,var(--ink));
+}
 .incoming-totals p,.incoming-tools label { font-size:.9rem; color:var(--stage-muted); }
 .incoming-tools label { display:flex; align-items:center; gap:.4rem; min-width:0; }
 .incoming-tools select { color:var(--stage-ink); max-width:100%; }

@@ -7,6 +7,16 @@
 .home-national-results #home-results-lines a { color:#fff; }
 .home-national-results #home-results-lines small { grid-column:1/-1; color:#beccf7; }
 .home-national-results #home-results-source { font-size:.84rem; }
+.home-national-results #home-results-lines .home-party-bar { grid-column:1/-1; }
+.home-national-results .home-party-bar > [data-party="R"] { margin-inline-start:auto; }
+.home-national-results [data-party="D"] { color:#8bc5ff; }
+.home-national-results [data-party="R"] { color:#ffadb5; }
+.home-update-grid [data-party="D"],#home-bias-rows [data-party="D"] { color:color-mix(in srgb,var(--dem) 65%,var(--ink)); }
+.home-update-grid [data-party="R"],#home-bias-rows [data-party="R"] { color:color-mix(in srgb,var(--rep) 65%,var(--ink)); }
+.home-party-bar { display:flex; height:.38rem; overflow:hidden; border-radius:3px; background:color-mix(in srgb,var(--muted) 25%,transparent); }
+.home-party-bar > span { flex:none; background:var(--muted); }
+.home-party-bar > [data-party="D"] { background:var(--dem); }
+.home-party-bar > [data-party="R"] { background:var(--rep); }
 .home-explore,.home-research { margin-block:1.25rem; }
 .home-explore { display:flex; flex-wrap:wrap; align-items:center; gap:.65rem 1.25rem; }
 .home-explore h2 { margin:0; }
@@ -16,5 +26,11 @@
 .home-update-grid li { display:grid; gap:.18rem; padding:.55rem 0; border-bottom:1px solid var(--line); }
 .home-update-grid li:last-child { border-bottom:0; }
 .home-update-grid li small { color:var(--muted); }
-#home-bias-rows { display:flex; flex-wrap:wrap; gap:.3rem 1rem; padding:0; list-style:none; }
+#home-bias-rows { display:grid; gap:.35rem; max-width:34rem; padding:0; list-style:none; }
+#home-bias-rows li { display:grid; grid-template-columns:minmax(0,1fr) minmax(3rem,1fr) auto; gap:.55rem; align-items:center; }
+.home-bias-bar { position:relative; }
+.home-bias-bar::after { content:""; position:absolute; inset:0 auto 0 50%; border-left:1px solid var(--ink); }
+.home-bias-bar > span { position:absolute; height:100%; }
+.home-bias-bar[data-direction="D"] > span { right:50%; }
+.home-bias-bar[data-direction="R"] > span { left:50%; }
 @media(max-width:650px) { .home-update-grid { grid-template-columns:minmax(0,1fr); } }
