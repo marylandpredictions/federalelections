@@ -3,6 +3,7 @@ import { genericName, matchBallotCandidate } from './candidate-roster.mjs';
 const party = candidate => candidate.partyCode || candidate.party || '';
 const describe = candidate => ({
   id:candidate.id, name:candidate.name, party:party(candidate), votes:candidate.votes,
+  ...(candidate.providerName ? {providerName:candidate.providerName} : {}),
 });
 const aggregate = /^(?:total\s+)?write[ -]?ins?$/i;
 

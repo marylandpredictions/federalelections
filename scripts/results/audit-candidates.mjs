@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { auditRosters } from "./roster-audit.mjs";
+import { auditRosters, ballotKey } from "./roster-audit.mjs";
+import { genericName } from "./candidate-roster.mjs";
 import { reviewPublicRoster } from "./public-roster-audit.mjs";
 export function auditCandidateFiles(root = process.cwd()) {
   const read = (p) => JSON.parse(readFileSync(join(root, p), "utf8"));
@@ -9,7 +10,8 @@ export function auditCandidateFiles(root = process.cwd()) {
   const reviewed = read("data/results/reviewed-ballots-2026.json"),
     official = read("data/results/louisiana-ballot-2026.json");
   const sourceRows = [...reviewed.races, ...official.races];
-  const report = auditRosters(races, new Map(sourceRows.map((r) => [r.id, r]))),
+  const sourcesById = new Map(sourceRows.map((r) => [r.id, r]));
+  const report = auditRosters(races, sourcesById),
     issue = (race, message) => report.issues.push({ race, message });
   if (
     reviewed.electionDate !== "2026-11-03" ||
@@ -54,11 +56,38 @@ export function auditCandidateFiles(root = process.cwd()) {
   )
     issue("Public snapshot", "Expected 506 unique public races");
   for (const race of races) {
+    // Audit evidence explains a recorded provider spelling without changing
+    // the live provider's canonical names or existing projection fingerprints.
+    const auditRoster = {...race,candidates:race.candidates.map(candidate=>{
+      const sourceCandidate = sourcesById.get(race.id)?.candidates?.find(row=>row.name===candidate.name);
+      if (!sourceCandidate?.providerAuditAliases) return candidate;
+      if (!Array.isArray(sourceCandidate.providerAuditAliases)) {
+        issue(race.id,"Malformed provider alias evidence for "+candidate.name);
+        return candidate;
+      }
+      const aliases = [...(candidate.aliases || [])];
+      for (const evidence of sourceCandidate.providerAuditAliases) {
+        if (typeof evidence?.name!=='string' || genericName(evidence.name) || !/^https:\/\//.test(evidence.source || '') ||
+            race.candidates.some(other=>other!==candidate && [other.name,...(other.aliases || [])].some(name=>ballotKey(name)===ballotKey(evidence.name)))) {
+          issue(race.id,"Invalid or conflicting provider alias evidence for "+candidate.name);
+          continue;
+        }
+        aliases.push(evidence.name);
+      }
+      return {...candidate,aliases};
+    })};
     const summary = byId.get(race.id);
     const detail = read("data/live-results-races/" + race.id + ".json");
     const diagnostics = {race:race.id};
     for (const [kind,row] of Object.entries({summary,detail})) {
-      const review = reviewPublicRoster(race,row,config);
+      const review = reviewPublicRoster(auditRoster,row,config);
+      for (const difference of review.differences.filter(d=>d.kind==='verified-alias')) {
+        const evidence = sourcesById.get(race.id)?.candidates?.find(c=>c.name===difference.reviewed)?.providerAuditAliases;
+        if (Array.isArray(evidence)) {
+          const source = evidence.find(entry=>entry?.name===(difference.candidate.providerName || difference.candidate.name));
+          if (source) difference.source = source.source;
+        }
+      }
       if (review.issues.length || review.differences.length) diagnostics[kind] = review;
       for (const message of review.issues) issue(race.id,`${kind}: ${message}`);
     }

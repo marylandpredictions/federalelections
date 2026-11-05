@@ -4,9 +4,21 @@ import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import {genericName} from '../../scripts/results/candidate-roster.mjs';
 import {reviewPublicRoster} from '../../scripts/results/public-roster-audit.mjs';
+import {auditCandidateFiles} from '../../scripts/results/audit-candidates.mjs';
 import {parseHouseLists,parseDirectory,parseGeneralTable} from '../../scripts/results/ballot-review.mjs';
 const read=p=>JSON.parse(readFileSync(p));
 const desk=createRequire(import.meta.url)('../../assets/results-desk.js');
+test('Source-backed audit aliases explain saved calls without renaming live candidates',()=>{
+ const audit=auditCandidateFiles();
+ const record=audit.publicRosterDifferences.find(r=>r.race==='house-TN-3');
+ const alias=record.summary.differences.find(d=>d.candidate.name==='Chuck Fleischmann');
+ assert.equal(alias.kind,'verified-alias');
+ assert.equal(alias.reviewed,'Charles J. Fleischmann');
+ assert.equal(alias.called,true);
+ assert.equal(alias.source,'https://clerk.house.gov/members/F000459');
+ const catalogue=read('data/election-night-races.json').races;
+ assert.ok(!catalogue.find(r=>r.id==='house-TN-3').candidates.find(c=>c.name===alias.reviewed).aliases?.includes('Chuck Fleischmann'));
+});
 test('Saved summary and detail records agree on candidates, votes and calls at the same version',()=>{
  const catalogue=new Map(read('data/election-night-races.json').races.map(r=>[r.id,r]));
  const snapshot=read('data/live-results.json').groups.flatMap(g=>g.races);
