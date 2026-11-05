@@ -12,6 +12,7 @@
   <script src="assets/theme.js?v=20261030-features2"></script>
   <link rel="stylesheet" href="assets/wiki.css?v=classic-gradient3-qa1">
   <link rel="stylesheet" href="/assets/classic-home.css?v=8">
+  <link rel="stylesheet" href="/assets/incoming-congress.css?v=6">
 </head>
 <!-- Editorial controls: set data-election-phase to election-night, post-election, or
      between-elections. The feed does not certify the end of a reporting cycle.
@@ -58,6 +59,44 @@
         <li><a href="/analysis-center"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6m-5 0v7l-5 8a2 2 0 002 3h10a2 2 0 002-3l-5-8V3m-6 12h8"/></svg><strong>Election Lab</strong><span>Investigate margins and shifts</span></a></li>
         <li><a href="/results"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 16v-3m4 3V8m4 8v-5"/></svg><strong>Results Board</strong><span>Explore the full election map</span></a></li>
       </ul>
+    </section>
+
+    <section class="incoming-congress" id="incoming-congress" aria-labelledby="incoming-title">
+      <header class="incoming-header">
+        <div><p class="kicker" id="incoming-election">2026 midterms · 120th Congress</p>
+          <h2 id="incoming-title">Incoming Congress</h2>
+          <p>Explore the balance of power, seat by seat.</p></div>
+        <div class="incoming-switch" role="group" aria-label="Chamber">
+          <button type="button" data-chamber="senate" aria-pressed="true">Senate</button>
+          <button type="button" data-chamber="house" aria-pressed="false">House</button>
+        </div>
+      </header>
+      <div class="incoming-totals" id="incoming-totals" aria-label="Seat totals"></div>
+      <div class="incoming-tools">
+        <label>Arrange seats by <select id="incoming-order"><option value="party">Party</option><option value="margin">Winning margin within party</option><option value="state">State within party</option></select></label>
+        <label>Find a seat <select id="incoming-find"><option value="">Choose a seat</option></select></label>
+        <label class="incoming-check"><input type="checkbox" id="incoming-close"> Highlight called races within 2 points</label>
+      </div>
+      <div class="incoming-stage">
+        <div class="incoming-graphic">
+          <svg id="incoming-chart" viewBox="0 0 900 362" role="img" aria-labelledby="incoming-chart-title incoming-chart-desc">
+            <title id="incoming-chart-title">Incoming Congress seat composition</title>
+            <desc id="incoming-chart-desc">Select individual seats using Find a seat. Seat order illustrates the composition of the chamber.</desc>
+            <defs>
+              <mask id="incoming-guide-clearance" maskUnits="userSpaceOnUse" x="0" y="0" width="900" height="362">
+                <rect width="900" height="362" fill="white"/>
+                <g id="incoming-guide-cutouts" fill="black"></g>
+              </mask>
+            </defs>
+            <g id="incoming-zones" aria-hidden="true"></g>
+            <g id="incoming-guides" aria-hidden="true" mask="url(#incoming-guide-clearance)"></g>
+            <g id="incoming-seats" aria-hidden="true"></g>
+          </svg>
+          <p id="incoming-hover" aria-hidden="true"></p>
+        </div>
+        <aside id="incoming-detail" aria-label="Selected seat" aria-live="polite"><h3>Explore a seat</h3><p>Choose a block or use the seat picker to inspect the results.</p></aside>
+      </div>
+      <footer class="incoming-footer"><p id="incoming-source" role="status">Loading seat data…</p><a id="incoming-results" href="/results?office=senate">Open Results Board →</a></footer>
     </section>
 
     <section class="home-coverage" aria-labelledby="home-writing-title">
@@ -136,7 +175,9 @@
 
   <script src="/assets/fea-lab-analysis.js?v=2" defer></script>
   <script src="/assets/home-cycle.js?v=1" defer></script>
-  <script src="/assets/classic-home.js?v=6" defer></script>
+  <script src="/assets/incoming-congress-model.js?v=4" defer></script>
+  <script src="/assets/incoming-congress.js?v=6" defer></script>
+  <script src="/assets/classic-home.js?v=7" defer></script>
   <script src="assets/wiki.js?v=classic-home4"></script>
 </body>
 </html>
