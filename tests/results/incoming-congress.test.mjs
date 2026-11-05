@@ -14,12 +14,23 @@ test('Historical mode requires a complete, dated congressional snapshot with rea
   rows[0].candidates[0].votes=1;
   const provider = {name:'Fixture',lastUpstreamUpdate:'2026-11-04T04:00:00Z',stale:true};
   const archive = (races,source=provider)=>model.historicalSnapshot({groups:[{races}],provider:source},catalogue,config);
-  assert.equal(archive(rows).races.length,470);
+  const partial = archive(rows);
+  assert.equal(partial.races.length,470);
+  const office = rows[0].type;
+  const contests = office==='house' ? 435 : 35;
+  assert.deepEqual(partial.coverage[office],{contests,reported:1,called:0,unresolved:contests,unavailable:0,complete:false});
+  const settled = rows.map(row=>({...row,candidates:[{name:'Fixture candidate',votes:1}],
+    calls:[{candidate:'Fixture candidate',status:'projected'}]}));
+  assert.equal(archive(settled).coverage[office].complete,true);
+  settled[0].calls[0].candidate='Unknown call target';
+  assert.equal(archive(settled).coverage[office].unavailable,1);
+  assert.equal(archive(settled).coverage[office].complete,false);
   assert.equal(archive(rows.slice(1)),null);
   assert.equal(archive([...rows.slice(1),rows[1]]),null);
   assert.equal(archive(rows,{...provider,lastUpstreamUpdate:'2024-11-06T04:00:00Z'}),null);
   assert.equal(archive([{...rows[0],electionDate:'2024-11-05'},...rows.slice(1)]),null);
   assert.equal(archive([{...rows[0],candidates:{}},...rows.slice(1)]),null);
+  assert.equal(archive([{...rows[0],candidates:[{name:'Bad total',votes:-1}]},...rows.slice(1)]),null);
   assert.equal(archive([{...rows[0],candidates:[]},...rows.slice(1)]),null);
 });
 const race = {

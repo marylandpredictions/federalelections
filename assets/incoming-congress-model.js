@@ -2,6 +2,15 @@
   const order = ['D','I','O','uncalled','missing','vacant','R'];
   const party = candidate => candidate?.partyCode || candidate?.party;
   const section = seat => seat.status==='continuing' && seat.caucus==='D' ? 'D' : seat.group;
+  function historicalCoverage(seats) {
+    const contests = seats.filter(seat=>seat.status!=='continuing');
+    const reported = contests.filter(seat=>seat.total>0).length;
+    const called = contests.filter(seat=>seat.status==='called').length;
+    const unresolved = contests.filter(seat=>seat.status==='uncalled').length;
+    const unavailable = contests.length-called-unresolved;
+    return {contests:contests.length,reported,called,unresolved,unavailable,
+      complete:contests.length>0 && called===contests.length && reported===contests.length};
+  }
   function historicalSnapshot(data, catalogue, config) {
     const races = Array.isArray(data?.groups)
       ? data.groups.flatMap(group=>Array.isArray(group?.races) ? group.races : [])
@@ -17,10 +26,16 @@
       expected.some(entry=>{
         const race = byId.get(entry.id);
         return !race || race.type!==entry.type || race.state!==entry.state || race.electionDate!==config.electionDate ||
-          !Array.isArray(race.candidates) || race.candidates.some(candidate=>!candidate || typeof candidate.name!=='string') ||
+          !Array.isArray(race.candidates) || !race.candidates.length ||
+          race.candidates.some(candidate=>typeof candidate?.name!=='string' || !candidate.name.trim() ||
+            !Number.isSafeInteger(candidate.votes) || candidate.votes<0) ||
+          !Number.isSafeInteger(race.candidates.reduce((sum,candidate)=>sum+candidate.votes,0)) ||
           (race.calls!=null && !Array.isArray(race.calls));
       }) || !congressional.some(race=>race.candidates.some(candidate=>Number.isSafeInteger(candidate.votes) && candidate.votes>0))) return null;
-    return {races:congressional,provider:data.provider,updatedAt:recorded};
+    const coverage = Object.fromEntries(['senate','house'].map(office=>[
+      office,historicalCoverage(composition(office,catalogue,config,congressional).seats)
+    ]));
+    return {races:congressional,provider:data.provider,updatedAt:recorded,coverage};
   }
   function composition(office, catalogue, config, results) {
     const live = new Map(results.filter(race=>race.type===office).map(race=>[race.id,race]));

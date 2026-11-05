@@ -189,11 +189,14 @@
     select(selected);
     applyFilter();
     const stamp = Date.parse(snapshot?.provider?.lastUpstreamUpdate || snapshot?.updatedAt || '');
+    const coverage = snapshot?.coverage?.[office];
     const text = [!complete ? `Partial composition · ${seats.length} mapped seats` : `${seats.length} seats`,
       snapshot?.provider?.name,
       Number.isFinite(stamp) ? (phase.archive ? 'Recorded ' : 'Feed updated ')+date.format(stamp)+' ET' : '',
       !phase.archive && (delayed || snapshot?.provider?.stale) ? 'Updates may be delayed' : '',
       !snapshot ? (delayed ? 'Election returns unavailable' : 'Loading election returns…') : phase.chamber+' · Reported returns and public calls',
+      coverage ? (coverage.complete ? 'All contests reported and called in this snapshot' : 'Partial election record') : '',
+      coverage ? `${coverage.reported}/${coverage.contests} contests with votes · ${coverage.called} called · ${coverage.unresolved} unresolved · ${coverage.unavailable} unavailable` : '',
       office==='senate' ? 'Outlined groups are continuing seats' : '',
       {margin:'Lighter seats nearer the center have narrower reported winning margins (≤2, ≤5, ≤10, over 10 pts)',
         state:'Seats sorted by state within each section'}[mode],
