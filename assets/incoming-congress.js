@@ -17,7 +17,9 @@
   };
   const link = (href,text) => Object.assign(el('a',text),{href});
   const resultHref = seat => '/results?'+new URLSearchParams({office,race:seat?.race?.id || ''});
-  const reading = seat => seat.winner?.name || seat.name || (seat.ranked?.[0]?.votes ? seat.ranked[0].name+' leads' : '');
+  const reading = seat => seat.winner?.name || seat.name || (seat.status==='uncalled'
+    ? seat.tied ? 'Tied in reported votes' : seat.leader ? seat.leader.name+' leads' : ''
+    : '');
   const description = seat => [seat.title,reading(seat),seat.status==='continuing'?'Continuing':labels[seat.group]].filter(Boolean).join(' · ');
   function seatSize() {
     const senate = office==='senate';
@@ -65,6 +67,14 @@
     guides.replaceChildren(...outlines);
   }
   function showDetail(seat) {
+    const focused = detail.contains(document.activeElement) ? document.activeElement.closest('a')?.href : '';
+    renderDetail(seat);
+    if (focused && !detail.contains(document.activeElement)) {
+      const replacement = [...detail.querySelectorAll('a')].find(anchor=>anchor.href===focused);
+      (replacement || picker).focus({preventScroll:true});
+    }
+  }
+  function renderDetail(seat) {
     const key = JSON.stringify(seat);
     if (key===detailKey) return;
     detailKey = key;
@@ -92,8 +102,8 @@
       if (seat.gap!==null) detail.append(el('p',`Reported winning margin · ${seat.margin.toFixed(2)} points · ${number.format(seat.gap)} votes`));
     } else if (seat.status==='uncalled' && seat.total) {
       const [first,second] = seat.ranked;
-      if (first.votes===second?.votes) detail.append(el('p','Tied in reported votes.'));
-      else detail.append(el('p',first.name+' leads the reported count.'));
+      if (seat.tied) detail.append(el('p','Tied in reported votes.'));
+      else detail.append(el('p',seat.leader.name+' leads the reported count.'));
       if (second?.votes>0) detail.append(el('p',`Current top-two gap · ${(100*(first.votes-second.votes)/seat.total).toFixed(2)} points`));
     } else if (seat.status==='uncalled') detail.append(el('p','Awaiting reported votes.'));
     if (seat.total) {
@@ -130,6 +140,7 @@
     const totals = $('incoming-totals');
     const entries = Object.entries(counts).filter(([key,value])=>['D','R','I','uncalled'].includes(key) || value);
     if (totals.dataset.key!==JSON.stringify(entries)) {
+      const focusedGroup = totals.contains(document.activeElement) ? document.activeElement.dataset.group : '';
       totals.dataset.key = JSON.stringify(entries);
       totals.replaceChildren(...entries.map(([key,value])=>{
         const button = el('button','');
@@ -139,6 +150,10 @@
         button.onclick = () => { filter = filter===key ? '' : key; applyFilter(); };
         return button;
       }),el('p',`${config.majority[office]} seats for an outright majority${office==='senate'?' · 50–50 ties may be broken by the vice president':''}`));
+      if (focusedGroup) {
+        const replacement = [...totals.querySelectorAll('button')].find(button=>button.dataset.group===focusedGroup);
+        (replacement || picker).focus({preventScroll:true});
+      }
     }
     if (drawnOffice!==office) {
       drawnOffice = office;

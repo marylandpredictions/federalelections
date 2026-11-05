@@ -12,6 +12,8 @@
       const votes = race?.candidates?.filter(candidate=>Number.isSafeInteger(candidate.votes) && candidate.votes>=0) || [];
       const ranked = [...votes].sort((a,b)=>b.votes-a.votes);
       const total = ranked.reduce((sum,candidate)=>sum+candidate.votes,0);
+      const tied = total>0 && ranked[0].votes===ranked[1]?.votes;
+      const leader = total>0 && !tied ? ranked[0] : null;
       const runner = ranked.find(candidate=>candidate!==winner);
       const gap = winner && runner && runner.votes>0 && winner.votes>=runner.votes && total>0
         ? winner.votes-runner.votes : null;
@@ -21,7 +23,7 @@
         id:entry.id,state:entry.state,title:race?.title || race?.electionName || (office==='house' ? entry.state+'-'+entry.district : entry.state+' Senate'),
         status,group:winner ? (['D','R','I'].includes(code) ? code : 'O') : status,
         special:office==='senate' && config.specialSenateRaces.includes(entry.id),
-        race,winner,call,ranked,total,gap,margin:gap===null ? null : 100*gap/total
+        race,winner,call,ranked,total,tied,leader,gap,margin:gap===null ? null : 100*gap/total
       };
     });
     if (office==='senate') for (const term of config.continuing) {

@@ -12,6 +12,20 @@ const race = {
   calls:[{candidate:'First',status:'projected'}]
 };
 
+test('An uncalled tie has no leader and later returns update the same seat',()=>{
+  const current = candidates=>model.composition('senate',catalogue,config,[{...race,calls:[],candidates}])
+    .seats.find(seat=>seat.id===race.id);
+  const tied = current([{name:'First',party:'I',votes:50},{name:'Second',party:'R',votes:50}]);
+  assert.equal(tied.status,'uncalled');
+  assert.equal(tied.tied,true);
+  assert.equal(tied.leader,null);
+  const updated = current([{name:'First',party:'I',votes:50},{name:'Second',party:'R',votes:60}]);
+  assert.equal(updated.id,tied.id);
+  assert.equal(updated.tied,false);
+  assert.equal(updated.leader.name,'Second');
+  assert.equal(updated.winner,null);
+});
+
 test('Every arrangement keeps party blocks and anchors continuing seats on the outside',()=>{
   const seats = [
     {id:'d-1',state:'AZ',group:'D',status:'called',margin:2},
