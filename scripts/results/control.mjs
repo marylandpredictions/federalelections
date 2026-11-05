@@ -250,9 +250,17 @@ export class ResultsControl {
           if((this.runtime.races[r.id]?.candidates||[]).some(c=>c.votes>0)&&!r.candidates.some(c=>c.votes>0))throw Error('Unexpected zero-vote reset; last-good race retained for review');
           const prior=this.runtime.races[r.id],oldTotal=(prior?.candidates||[]).reduce((n,c)=>n+c.votes,0),newTotal=r.candidates.reduce((n,c)=>n+c.votes,0);
           if(!Number.isSafeInteger(newTotal))throw Error('Unsafe total vote count');
-          // Independent result streams can arrive in a different order. A
-          // provider switch must never roll any already reported votes back.
-          if(prior?.provider&&r.provider&&prior.provider!==r.provider&&(newTotal<oldTotal||prior.candidates.some(c=>c.votes>(r.candidates.find(n=>n.name===c.name)?.votes||0))))throw Error('Source switch is behind last-good vote totals; retained newer results');
+          // A recovered NBC feed may omit a fallback-only minor or aggregate
+          // write-in row. Keep the total and shared candidate rollback checks.
+          if(prior?.provider&&r.provider&&prior.provider!==r.provider){
+            const returningToNbc=prior.provider==='CivicAPI'&&r.provider==='NBC';
+            const regressed=prior.candidates.some(candidate=>{
+              const next=r.candidates.find(c=>c.name===candidate.name);
+              if(next)return next.votes<candidate.votes;
+              return candidate.votes>0&&(!returningToNbc||['D','R'].includes(candidate.partyCode||candidate.party));
+            });
+            if(newTotal<oldTotal||regressed)throw Error('Source switch is behind last-good vote totals; retained newer results');
+          }
           if(oldTotal>=100&&newTotal<oldTotal*.5)throw Error('Suspicious partial vote reset; last-good race retained for review');
           if((prior?.candidates||[]).some(c=>c.votes>=100&&r.candidates.some(k=>k.name===c.name&&k.votes===0)))throw Error('Candidate vote reset; last-good race retained for review');
           if(['national','civic-fallback'].includes(r.providerScope)&&!r.counties?.length&&prior?.counties?.length)r.counties=prior.counties;
