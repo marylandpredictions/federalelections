@@ -6,6 +6,22 @@ import model from '../../assets/incoming-congress-model.js';
 const read = path => JSON.parse(readFileSync(path,'utf8'));
 const config = read('data/features/incoming-congress-120.json');
 const catalogue = read('data/features/map-maker-races.json').races;
+
+test('Historical mode requires a complete, dated congressional snapshot with real votes',()=>{
+  const rows = catalogue.filter(entry=>entry.type==='senate'||entry.type==='house').map(entry=>({
+    ...entry,electionDate:config.electionDate,candidates:[{name:'Fixture candidate',votes:0}]
+  }));
+  rows[0].candidates[0].votes=1;
+  const provider = {name:'Fixture',lastUpstreamUpdate:'2026-11-04T04:00:00Z',stale:true};
+  const archive = (races,source=provider)=>model.historicalSnapshot({groups:[{races}],provider:source},catalogue,config);
+  assert.equal(archive(rows).races.length,470);
+  assert.equal(archive(rows.slice(1)),null);
+  assert.equal(archive([...rows.slice(1),rows[1]]),null);
+  assert.equal(archive(rows,{...provider,lastUpstreamUpdate:'2024-11-06T04:00:00Z'}),null);
+  assert.equal(archive([{...rows[0],electionDate:'2024-11-05'},...rows.slice(1)]),null);
+  assert.equal(archive([{...rows[0],candidates:{}},...rows.slice(1)]),null);
+  assert.equal(archive([{...rows[0],candidates:[]},...rows.slice(1)]),null);
+});
 const race = {
   id:'senate-OH',type:'senate',
   candidates:[{name:'First',party:'I',votes:55},{name:'Second',party:'R',votes:35},{name:'Third',party:'D',votes:10}],

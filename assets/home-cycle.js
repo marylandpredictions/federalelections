@@ -1,8 +1,8 @@
 (function (root) {
   const phases = {
-    'election-night': {title:'National results', updates:'Election updates', calls:'Recent calls', poll:true},
-    'post-election': {title:'Election recap', updates:'The closest contests', calls:'Latest published calls', poll:false},
-    'between-elections': {title:'Research and archives', updates:'', calls:'', poll:false}
+    'election-night': {title:'National results', updates:'Election updates', calls:'Recent calls', poll:true, chamber:'Election-night results'},
+    'post-election': {title:'Election recap', updates:'The closest contests', calls:'Latest published calls', poll:false, chamber:'Post-election returns'},
+    'between-elections': {title:'Research and archives', updates:'', calls:'', poll:false, chamber:'Historical snapshot', archive:true}
   };
 
   function phase(value) {
@@ -10,6 +10,10 @@
   }
 
   const called = race => Boolean(race.calls?.[0]?.candidate && !race.calls[0].retracted);
+  function shouldPoll(value, snapshot) {
+    return phase(value).poll || (value==='post-election' && snapshot?.provider?.stale===false &&
+      snapshot.races.some(race=>!called(race)));
+  }
   function raceUpdates(ranked, races) {
     const unresolved = races.some(race=>!called(race));
     // A known low expected-vote estimate makes a partial margin too early to feature.
@@ -34,7 +38,7 @@
     };
   }
 
-  const api = {phase,raceUpdates,called};
+  const api = {phase,shouldPoll,raceUpdates,called};
   if (typeof module !== 'undefined') module.exports = api;
   else root.FEAHomeCycle = api;
 })(globalThis);

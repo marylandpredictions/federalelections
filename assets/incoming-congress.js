@@ -1,9 +1,12 @@
 (() => {
   const $ = id => document.getElementById(id);
-  if (!FEAHomeCycle.phase(document.body.dataset.electionPhase).updates) return;
+  const phase = FEAHomeCycle.phase(document.body.dataset.electionPhase);
   const module = FEAIncomingCongress;
   const chart = $('incoming-chart'), layer = $('incoming-seats'), detail = $('incoming-detail');
   const picker = $('incoming-find'), hover = $('incoming-hover'), status = $('incoming-source');
+  const content = ['.incoming-switch','.incoming-totals','.incoming-tools','.incoming-stage']
+    .map(selector=>document.querySelector(selector));
+  if (phase.archive) content.forEach(node=>{node.hidden=true;});
   const number = new Intl.NumberFormat('en-US');
   const date = new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short',timeZone:'America/New_York'});
   const labels = {D:'Democratic',R:'Republican',I:'Independent',O:'Other',uncalled:'Uncalled',missing:'Unavailable',vacant:'Vacant'};
@@ -103,9 +106,9 @@
     } else if (seat.status==='uncalled' && seat.total) {
       const [first,second] = seat.ranked;
       if (seat.tied) detail.append(el('p','Tied in reported votes.'));
-      else detail.append(el('p',seat.leader.name+' leads the reported count.'));
-      if (second?.votes>0) detail.append(el('p',`Current top-two gap · ${(100*(first.votes-second.votes)/seat.total).toFixed(2)} points`));
-    } else if (seat.status==='uncalled') detail.append(el('p','Awaiting reported votes.'));
+      else detail.append(el('p',seat.leader.name+(phase.archive ? ' led in this snapshot.' : ' leads the reported count.')));
+      if (second?.votes>0) detail.append(el('p',`${phase.archive ? 'Recorded' : 'Current'} top-two gap · ${(100*(first.votes-second.votes)/seat.total).toFixed(2)} points`));
+    } else if (seat.status==='uncalled') detail.append(el('p',phase.archive ? 'No votes were reported in this snapshot.' : 'Awaiting reported votes.'));
     if (seat.total) {
       const list = el('ul','');
       list.className = 'incoming-candidates';
@@ -149,7 +152,7 @@
         button.append(el('strong',value),el('span',labels[key]));
         button.onclick = () => { filter = filter===key ? '' : key; applyFilter(); };
         return button;
-      }),el('p',`${config.majority[office]} seats for an outright majority${office==='senate'?' · 50–50 ties may be broken by the vice president':''}`));
+      }),el('p',`${config.majority[office]} seats for a majority of the full chamber${office==='senate'?' · The vice president can break a tied vote':''}`));
       if (focusedGroup) {
         const replacement = [...totals.querySelectorAll('button')].find(button=>button.dataset.group===focusedGroup);
         (replacement || picker).focus({preventScroll:true});
@@ -188,9 +191,9 @@
     const stamp = Date.parse(snapshot?.provider?.lastUpstreamUpdate || snapshot?.updatedAt || '');
     const text = [!complete ? `Partial composition · ${seats.length} mapped seats` : `${seats.length} seats`,
       snapshot?.provider?.name,
-      Number.isFinite(stamp) ? 'Feed updated '+date.format(stamp)+' ET' : '',
-      delayed || snapshot?.provider?.stale ? 'Updates may be delayed' : '',
-      !snapshot ? (delayed ? 'Election returns unavailable' : 'Loading election returns…') : 'Reported returns and public calls',
+      Number.isFinite(stamp) ? (phase.archive ? 'Recorded ' : 'Feed updated ')+date.format(stamp)+' ET' : '',
+      !phase.archive && (delayed || snapshot?.provider?.stale) ? 'Updates may be delayed' : '',
+      !snapshot ? (delayed ? 'Election returns unavailable' : 'Loading election returns…') : phase.chamber+' · Reported returns and public calls',
       office==='senate' ? 'Outlined groups are continuing seats' : '',
       {margin:'Lighter seats nearer the center have narrower reported winning margins (≤2, ≤5, ≤10, over 10 pts)',
         state:'Seats sorted by state within each section'}[mode],
@@ -217,6 +220,7 @@
     render();
   });
   document.addEventListener('fea-home-results',({detail:result})=>{
+    if (phase.archive) return;
     delayed = Boolean(result.unavailable);
     if (!delayed) snapshot = result;
     render();
@@ -226,7 +230,19 @@
     if (!response.ok) throw Error('Chamber data unavailable');
     return response.json();
   };
-  Promise.all([get('/data/features/map-maker-races.json'),get('/data/features/incoming-congress-120.json')])
-    .then(([data,terms])=>{ catalogue=data.races; config=terms; render(); })
-    .catch(()=>{ status.textContent='Seat data could not load. The Results Board remains available.'; });
+  Promise.all([get('/data/features/map-maker-races.json'),get('/data/features/incoming-congress-120.json'),
+    phase.archive ? get('/data/live-results.json') : null])
+    .then(([data,terms,archive])=>{
+      catalogue=data.races;
+      config=terms;
+      if (phase.archive) {
+        snapshot=module.historicalSnapshot(archive,catalogue,config);
+        if (!snapshot) throw Error('No reliable historical snapshot');
+        content.forEach(node=>{node.hidden=false;});
+      }
+      render();
+    })
+    .catch(()=>{ status.textContent=phase.archive
+      ? 'A usable historical snapshot of the 2026 congressional returns is unavailable.'
+      : 'Seat data could not load. The Results Board remains available.'; });
 })();

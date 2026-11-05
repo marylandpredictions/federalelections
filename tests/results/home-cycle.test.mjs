@@ -26,6 +26,16 @@ test('Live selection omits known early margins and does not treat no-vote races 
   assert.deepEqual(cycle.raceUpdates(rank(finished),[finished]).selected,rank(finished));
 });
 
+test('The chamber refreshes through election night and fresh unresolved post-election returns', () => {
+  const fresh = {provider:{stale:false},races:[race('unresolved',90)]};
+  const settled = {...fresh,races:[race('resolved',100,call('Winner','2026-11-04T04:00:00Z'))]};
+  assert.equal(cycle.shouldPoll('election-night'),true);
+  assert.equal(cycle.shouldPoll('post-election',fresh),true);
+  assert.equal(cycle.shouldPoll('post-election',settled),false);
+  assert.equal(cycle.shouldPoll('post-election',{...fresh,provider:{stale:true}}),false);
+  assert.equal(cycle.shouldPoll('between-elections',fresh),false);
+});
+
 test('Call feed uses current public calls, deduplicates races and omits retractions', () => {
   const original = race('same',90,call('Original','2026-11-04T03:00:00Z'));
   const corrected = race('same',90,call('Corrected','2026-11-04T04:00:00Z'));

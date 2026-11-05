@@ -48,7 +48,8 @@
   }
   showBiasPreview().catch(() => {});
 
-  const phase = FEAHomeCycle.phase(document.body.dataset.electionPhase);
+  const phaseName = document.body.dataset.electionPhase;
+  const phase = FEAHomeCycle.phase(phaseName);
   const publishSnapshot = detail => document.dispatchEvent(new CustomEvent('fea-home-results',{detail}));
   $('home-results-title').textContent = phase.title;
   if (!phase.updates) {
@@ -56,7 +57,6 @@
     $('home-results-lines').hidden = true;
     $('home-cycle-links').hidden = false;
     $('home-updates-title').closest('section').hidden = true;
-    $('incoming-congress').hidden = true;
     return;
   }
   $('home-election-label').textContent = document.body.dataset.electionLabel || 'Featured election';
@@ -65,6 +65,7 @@
   if (!phase.poll) $('home-cycle-links').hidden = false;
   let loaded = false;
   let refreshing = false;
+  let latest;
   async function refresh() {
     if (refreshing || document.hidden || document.activeElement?.closest('#home-results-lines, .home-updates')) return;
     refreshing = true;
@@ -75,7 +76,8 @@
       const races = (data.groups || []).flatMap(group=>group.races || []).map(race=>
         race.calls?.length && !FEAHomeCycle.called(race) ? {...race,calls:[]} : race);
       if (!races.length) throw new Error('No results in snapshot');
-      publishSnapshot({races,provider:data.provider,updatedAt:data.updatedAt || data.generatedAt});
+      latest = {races,provider:data.provider,updatedAt:data.updatedAt || data.generatedAt};
+      publishSnapshot(latest);
       const rows = races.map(race=>({race,current:FEALabAnalysis.contest(race.candidates)}));
       const all = FEALabAnalysis.findings(rows);
       const labels = {house:'House',senate:'Senate',governor:'Governors'};
@@ -168,8 +170,6 @@
     }
   }
   void refresh();
-  if (phase.poll) {
-    setInterval(refresh,60000);
-    document.addEventListener('visibilitychange',refresh);
-  }
+  setInterval(()=>{if (FEAHomeCycle.shouldPoll(phaseName,latest)) void refresh();},60000);
+  document.addEventListener('visibilitychange',refresh);
 })();

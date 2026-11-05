@@ -2,6 +2,26 @@
   const order = ['D','I','O','uncalled','missing','vacant','R'];
   const party = candidate => candidate?.partyCode || candidate?.party;
   const section = seat => seat.status==='continuing' && seat.caucus==='D' ? 'D' : seat.group;
+  function historicalSnapshot(data, catalogue, config) {
+    const races = Array.isArray(data?.groups)
+      ? data.groups.flatMap(group=>Array.isArray(group?.races) ? group.races : [])
+      : [];
+    const expected = catalogue.filter(race=>['senate','house'].includes(race.type));
+    const congressional = races.filter(race=>['senate','house'].includes(race?.type));
+    const byId = new Map(congressional.map(race=>[race.id,race]));
+    const recorded = data?.provider?.lastUpstreamUpdate || data?.generatedAt;
+    const timestamp = Date.parse(recorded);
+    if (!data?.provider?.name || !Number.isFinite(timestamp) || timestamp<Date.parse(config.electionDate) ||
+      expected.length!==config.expected.house+config.expected.senate-config.continuing.reduce((sum,term)=>sum+term.seats.length,0) ||
+      byId.size!==expected.length || congressional.length!==expected.length ||
+      expected.some(entry=>{
+        const race = byId.get(entry.id);
+        return !race || race.type!==entry.type || race.state!==entry.state || race.electionDate!==config.electionDate ||
+          !Array.isArray(race.candidates) || race.candidates.some(candidate=>!candidate || typeof candidate.name!=='string') ||
+          (race.calls!=null && !Array.isArray(race.calls));
+      }) || !congressional.some(race=>race.candidates.some(candidate=>Number.isSafeInteger(candidate.votes) && candidate.votes>0))) return null;
+    return {races:congressional,provider:data.provider,updatedAt:recorded};
+  }
   function composition(office, catalogue, config, results) {
     const live = new Map(results.filter(race=>race.type===office).map(race=>[race.id,race]));
     const seats = catalogue.filter(race=>race.type===office).map(entry=>{
@@ -69,7 +89,7 @@
       return {x:450+radius*Math.cos(angle),y:340-.70*radius*Math.sin(angle),angle};
     })).sort((a,b)=>b.angle-a.angle || a.y-b.y);
   }
-  const api = {composition,arrange,layout,section};
+  const api = {composition,arrange,layout,section,historicalSnapshot};
   if (typeof module==='object' && module.exports) module.exports=api;
   else root.FEAIncomingCongress=api;
 })(globalThis);
