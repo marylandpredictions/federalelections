@@ -5,6 +5,7 @@ import { createServer } from "node:http";
 import { getResultsControl } from "./scripts/results/control.mjs";
 import {resultStorage,assertStorageConfiguration} from './scripts/results/storage.mjs';
 import {readiness} from './scripts/results/readiness.mjs';
+import {openLiveProbability} from './scripts/results/probability-live.mjs';
 import { createWriteStream } from "node:fs";
 import { mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
 import { dirname, extname, join, resolve } from "node:path";
@@ -50,6 +51,7 @@ const rateLimitMs = 60_000;
 const rateLimit = new Map();
 const resultsFeed = new ResultsChangeFeed();
 const countyHistory = new CountyHistory(root);
+const liveProbability = await openLiveProbability(resultStorage(root));
 const wireCache = new Map();
 let wireCacheBytes = 0;
 function compressBody(body, encoding, etag) {
@@ -1096,6 +1098,26 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
   };
   await refresh();
   setInterval(refresh, 1000).unref();
+  if (liveProbability.races.size) {
+    let probabilityRunning = false;
+    setInterval(async () => {
+      if (probabilityRunning) return;
+      probabilityRunning = true;
+      const id = liveProbability.nextRace();
+      try {
+        const health = control.health();
+        if (health.connection !== 'connected' || health.persistenceError ||
+            !health.lastHealthyRaceIds?.includes(id)) {
+          await liveProbability.update(id);
+          return;
+        }
+        await control.loadCountyResults(id);
+        const race = control.results({details: true}).groups.flatMap(group => group.races).find(row => row.id === id);
+        await liveProbability.update(id, race);
+      } catch (error) { console.warn(`Win probability update failed for ${id}: ${error.message}`); }
+      finally { probabilityRunning = false; }
+    }, 15000).unref();
+  }
 }
 
 createServer(async (request, response) => {
@@ -1112,6 +1134,13 @@ createServer(async (request, response) => {
   }
   if (url.pathname === "/api/live-results/race") {
     await handleLiveResultRace(request, response, url);
+    return;
+  }
+  if (url.pathname === "/api/live-results/probability") {
+    const id = url.searchParams.get("id");
+    if (request.method !== "GET") sendJson(response, 405, {error: "Method not allowed"});
+    else if (!isValidRaceId(id)) sendJson(response, 400, {error: "Invalid race"});
+    else sendJson(response, 200, liveProbability.view(id));
     return;
   }
   if (url.pathname.startsWith("/api/admin/")) {

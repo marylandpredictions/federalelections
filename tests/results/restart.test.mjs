@@ -30,6 +30,9 @@ async function verify(server,raw){
  const full=await(await fetch(server.url+'/api/live-results')).json(),race=full.groups.flatMap(g=>g.races).find(r=>r.id===raw.id);assert.equal(race.candidates[0].votes,100);assert.equal(race.calls[0].candidate,raw.candidates[0].name);assert.equal(full.provider.stale,true);
  const admin=await(await fetch(server.url+'/api/admin/results-control',{headers:{'x-admin-secret':'isolated-restart-test'}})).json();assert.ok(admin.states[raw.id].manualOverride);assert.ok(admin.audit.length);assert.ok((await(await fetch(server.url+'/api/live-results/race?id='+raw.id)).json()).voteHistory.length);assert.ok((await(await fetch(server.url+'/api/live-results/race?id='+raw.id+'&county=39001')).json()).voteHistory.length);
  const heartbeat=await fetch(server.url+'/api/results-version',{headers:{'If-None-Match':'"'+full.version+'"'}});assert.equal(heartbeat.status,304);
+ const forecast=await fetch(server.url+'/api/live-results/probability?id='+raw.id);
+ assert.equal(forecast.status,200);assert.equal((await forecast.json()).status,'unavailable');
+ assert.equal((await fetch(server.url+'/api/live-results/probability?id=bad%2Fid')).status,400);
 }
 test('Operational restart/redeploy: separate storage retains calls, override, audit, history and last-good votes with provider unavailable',async t=>{
  const f=await fixture(t);let server=await start(t,f.app,f.disk);await verify(server,f.raw);await server.stop();server=await start(t,f.app,f.disk);await verify(server,f.raw);await server.stop();const second=join(f.root,'checkout-b');await cp(f.app,second,{recursive:true});server=await start(t,second,f.disk);await verify(server,f.raw);await server.stop();

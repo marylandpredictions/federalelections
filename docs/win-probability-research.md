@@ -1,0 +1,103 @@
+# FEA win probability research
+
+The Results Board Trends tab requests the regular model's race-wide series. With no reviewed release installed, the endpoint returns unavailable. Historical replay, observed vote history and published race calls remain separate from the live series. Research output stays in private results storage.
+
+## 2026 evidence review
+
+- The repository has 506 current-format 2026 race detail files. At inspection, none contained a positive-vote history point or reporting-unit data. The other detail files with histories are in legacy formats and cannot be treated as 2026 feeds.
+- The local sparse county store contained 1,573 rows in 1,513 files across 15 race directories. The first local capture was November 4 at 08:41 UTC. Eight races had some records by 11:00 UTC that morning. Missing units in these logs can mean uncaptured data and must remain unknown.
+- The public FEA race API returned observed race-level timelines for Ohio Senate (161 points), Michigan Senate (218), Georgia governor (218), and Maine House District 2 (248). These were samples, not a census. The API also returned reporting-unit detail, but the current unit returns cannot be applied retroactively to the race timelines.
+- The frozen congressional archive is one later snapshot. The repository also contains provider captures, which are candidate evidence for an as-of reconstruction after timestamps and coverage have been validated. A complete set of matched as-of unit counts, explicit unit completion, and pre-election unit forecasts was not established for any race.
+- The checked-in v4 forecast adapter is explicitly marked `BLOCK_PUBLISH`. It does not supply validated race-wide and geographic distributions suitable for initializing this model. Older election returns can help estimate priors, but are not candidate-specific forecasts.
+- The reviewed civicAPI documentation describes real-time results. No verified public NBC or civicAPI archive was established that supplies the missing as-of unit evidence. Provider access and historical data coverage remain separate from model validation.
+
+## Research model
+
+### Regular-model input audit
+
+`node scripts/results/probability-inputs.mjs [ohio-table.csv]` inventories the historical geography. All 506 races have a 2024 presidential reference on their race geography (435 House, 35 Senate, 36 governor). House district references match FEA's current geometry IDs. Forty-four races have exactly reconciled whole-county data across multiple reporting units: two at-large House races, 21 Senate, and 21 governor.
+
+For a redistricted-state pilot, export the `Table` tab from the [Downballot Ohio workbook](https://docs.google.com/spreadsheets/d/13Eo-aFP037lDWPJ9gWgB3ak_P3ROB4R9i_mnnDOXWM4/edit). The importer matched 103 county portions to all 88 county FIPS codes and all 15 current Ohio districts. It checks uniqueness and reconciles Democratic, Republican, and overall vote counts to the district references within one vote per field, allowing for export rounding. Thirteen districts span multiple reporting units and pass the geography requirement for this model. The remaining two have one unit. Record the input digest and geometry ID with any prior generated using these rows. These historical estimates do not establish that live provider reporting units have the same coverage.
+
+The separate legacy forecast release in commit `4b2845d76040aa258d8e92f07567bccf2d4bcf3a` was committed November 2, 2026 at 20:50:34 UTC. The confirmed named D/R matchup and margin matched the current roster for 338 House, 13 Senate, and 12 governor races. The release status was degraded for House, normal for Senate, and partial for governor. Only five matches also had an exactly two-candidate roster and reconciled geography under the current builder. A matched D/R margin is a candidate center for research. It does not establish third-party shares, reporting-unit turnout, boundary compatibility of the legacy forecast inputs, or live calibration.
+
+The regular adapter reads the existing Results Board detail format and requires NBC race and reporting-unit returns. It abstains during a CivicAPI fallback. In a live NBC Ohio Senate sample it found 98% expected vote in and 88 county rows. The four reported candidates match after reconciling Redpath and Levy's name variants, but the capture has no rows for the three reviewed write-in candidates. [Clark County's official returns](https://liveresults.boe.ohio.gov/ENR/clarkohenr/20/en/Index_20.html) include a positive aggregate write-in count, so substituting zeros would be unsafe. Candidate identity, missing write-in coverage, and county-to-race reconciliation are independent checks.
+
+Live detail for OH-02, OH-06, OH-08, OH-12 and OH-14 passed the candidate-by-candidate race-to-county reconciliation. NBC estimated 97.7% to 98.1% of the vote in. Ohio's official XML was generated at 09:06:14 UTC on November 4 and explicitly marked unofficial and partial. All 88 county records with outstanding-ballot fields showed every precinct reporting. Every one still had outstanding provisional or military and overseas absentee ballots. The figures describe whole counties, including counties split by district lines. No dated proof of completion was established for those reporting units. [Ohio Secretary of State's results portal](https://liveresults.ohiosos.gov/Home/Index)
+
+Each draw holds the reported vote counts fixed. It samples remaining turnout from unit lognormal turnout priors with a common shock, then allocates the outstanding vote with a logistic-normal share model. Completed reporting units update statewide and regional log-ratio swing using a normal hierarchical approximation. The observation variance includes a between-unit floor. Partial units contribute their counted votes, and only completed units inform the geographic swing fit. Every region must contain a completed unit with votes before the engine produces an estimate. This is a coverage check, and it cannot correct systematic differences between completed and outstanding units.
+
+The simulator supports plurality contests with two to twelve named candidates. Margins are for a fixed candidate pair declared before replay. Votes are allocated continuously in the simulation, which approximates the remaining count without adding per-ballot noise. The default is 20,000 draws per distinct supported input. Finite-run endpoints are smoothed unless every unit has been explicitly marked complete. Tied outcomes split a draw among tied candidates. The interval is the simulated 10th to 90th percentile, pending empirical coverage validation.
+
+The default `full-coverage` method still abstains if any region lacks a completed unit. The experimental `partial-pool` method allows missing regional completion evidence when at least two distinct regions have completed units. An unobserved region borrows the statewide posterior and retains its regional variance. Both methods require as-of candidate counts for the full geography and reconciliation to the race totals. The `frozen-baseline` comparator preserves reported votes and documented completion, then uses pre-election distributions alone for the remaining ballots. This isolates the value added by the completed-unit swing update. The DDHQ election-night paper supports using completed units to learn swings. The FEA fallback itself still needs held-out validation.
+
+## External archive verification
+
+The [Elections Archive capture manifest](https://github.com/electarchive/live-forecast/blob/main/frames/manifest.json) contains timestamped capture entries for 2020, 2022, and 2024. Its holdout group includes Senate races and four 2022 governor races. It contains no House or 2026 entries. The upstream project’s scores apply to its own model.
+
+The November 9, 2022 03:21:26 UTC Arizona governor capture was retrieved and verified against the manifest checksum after decompression. Its 15 county rows reconciled to 1,052,492 statewide votes. The payload supplied no independently verified county completion flags. Its expected-vote and precinct fields were excluded from completion decisions. This establishes one usable observed count artifact, with separate prior and completion evidence still needed before it becomes an eligible forecast checkpoint.
+
+For 2026, the [California Secretary of State media portal](https://media.sos.ca.gov/) provides official results feeds and separate unprocessed-ballot reporting. Its current files need to be paired with archived copies to reconstruct earlier checkpoints. The [Pushbuild 2026 export](https://github.com/pushbuild/us-2026-election-results) is a secondary collection of state feeds as of November 4 at 12:11 p.m. ET. It is a possible later checkpoint where its county coverage and state source reconcile. It does not recover the sequence of earlier reports.
+
+Use `node scripts/results/probability-capture.mjs <response-body> <capture-metadata.json>` for a statewide NYT capture. Metadata supplies `sha256`, `at`, `source`, `raceId`, `nytId`, and `electionDate`. The importer checks the decoded checksum, as-of timestamp, FIPS IDs, candidate identities, and county-to-state totals. It does not reinterpret a statewide county return as a House district return.
+
+The configurable variances are research defaults. Ballot modes, selection bias within regions, ranked-choice transfers, official canvass and certification, and geographic or candidate mappings require separately validated inputs. Completion is an independent as-of source assertion. Precinct reporting percentages and provider calls do not substitute for it.
+
+## Running a replay
+
+Run `node scripts/results/probability-replay.mjs <frozen-race-bundle.json>`. A bundle supplies:
+
+- `prior` with `raceId`, `office`, `rule: "plurality"`, `electionDate`, `availableAt`, `source`, stable `candidateIds`, a two-ID `marginCandidateIds` array, and a complete `units` array. Each unit has `id`, `region`, `turnout`, `turnoutLogSd`, and candidate-keyed `shares`. The prior must be frozen before the election date.
+- `snapshots` in strictly increasing observed-time order. Each has `raceId`, `at`, `sourceUpdatedAt`, `source`, candidate-keyed race `totals`, and all reporting `units`. Every unit supplies `id`, `availableAt`, `complete`, and candidate-keyed integer `votes`. A complete unit must include its `completionSource`. A decrease in counts or reversal of a completion flag requires `correctionSource`.
+- Optional `settings` for research simulations. All timestamps must include the time zone. Source timestamps must be backed by contemporaneous artifacts. For a genuinely observed zero, include explicit evidence of zero. A missing unit is not zero.
+
+Research points are stored under `win-probability/reconstructed/<model-version>/<method>/<race-id>/` inside the configured results storage. The replay preserves corrections as new points, skips unchanged input, and rejects conflicting writes at an existing timestamp. `scoreProbabilityReplay` takes outcomes separately after simulation and returns multiclass Brier score, log loss, margin error, interval coverage, and probability reliability bins using one point per race and reporting-stage decile.
+
+Run `node scripts/results/probability-benchmark.mjs <holdout-bundles.json> <certified-outcomes.json>` with `{policy,bundles}` and separately held truth keyed by `electionDate:raceId`. Truth supplies `winner`, `margin`, `marginCandidateIds`, `totalVotes`, and `source`. The policy predeclares `method`, `frozenAt`, `holdoutDates`, `cohorts` (office and stage decile), `minimumRaces`, `minimumCycles`, `coverageTolerance`, and model `settings`. It reports matched and available checkpoints and compares paired Brier score, log loss, margin error, and 80% coverage. Retrospective reporting strata use final totals solely for evaluation. A successful screen still requires independent review of actual preregistration, provenance, calibration, and performance uncertainty. A date in a JSON file alone does not establish preregistration.
+
+## Live publication
+
+Before activation, verify immutable source vintages, race and reporting-unit joins, completion and turnout by ballot mode, and calibration on held-out elections. Install `probability-release.json` at the root of the private results disk only after independent review. It contains the original benchmark `policy`, its `benchmark` report, `reviewedBy`, `reviewedAt`, and up to 12 race IDs under `races` with their frozen `prior` and matching `roster`. The worker verifies the policy digest, model version, method and reported cohort results. Reviewers must independently reproduce the benchmark, verify the input and outcome digests, and check its applicability to each approved race.
+
+Provide verified completion notices in `win-probability/completion/<race-id>.json` keyed by reporting-unit ID. Each notice matches the race, election, unit, reported vote count, and dated source. A count regression is withheld unless `win-probability/corrections/<race-id>.json` has a dated correction source, the preceding `previousInputHash`, and `snapshotHash` for the new normalized snapshot with its observation `at` field omitted. Corrections append rather than overwrite points.
+
+Restart to load a release. The server checks one approved race every 15 seconds and runs the regular simulator off the request thread. It retains up to 240 distinct points per approved race on the mounted disk, with a stale status during outages. Back up the private probability release, evidence, and history separately from the existing election runtime archive. No 2026 odds were approved or reconstructed from later totals.
+
+## Held-out turnout study
+
+The turnout-only experiment tested whether an archived provider estimate of total votes improves on a simple historical anchor. The anchor uses the previous presidential turnout for presidential-year Senate races, floored at the reported count. For the separate midterm stress check it uses 2018 Senate turnout in the same state. A log-scale blend fitted on eight 2020 Senate races put 0.768 weight on the provider estimate. Neither the 2022 stress outcomes nor the 2024 holdout outcomes set that weight.
+
+| Evaluation | Races | Historical anchor | Provider alone | Blend |
+| --- | ---: | ---: | ---: | ---: |
+| 2024 first-capture holdout | 2 | 0.0053 | 0.0279 | 0.0202 |
+| 2022 midterm stress check | 6 | 0.0819 | 0.1237 | 0.1033 |
+| 2022 second-capture sensitivity check | 4 | 0.0605 | 0.0913 | 0.0637 |
+| 2024 later-capture sensitivity check | 1 | 0.0114 | 0.0676 | 0.0546 |
+
+Scores are mean absolute log errors, where lower is better. The 2024 first-capture group is Michigan and Pennsylvania. The latter was captured on November 8, several days into the count. Arizona is reported separately because the archive redirected to a later capture. Wisconsin and Texas did not yield eligible first captures. The blend improved on the provider alone but lost to the historical anchor in each of these comparisons. This is an exploratory result on turnout. It does not establish reliable performance for the anchor itself or skill in forecasting winners, and the blend is excluded from the live model.
+
+Run `node scripts/results/probability-turnout-study.mjs <archive-manifest.json> <capture-directory>` from the repository root. Supply the archive response for each regular Senate race as `<manifest-race-key>.body`. Verify the decoded response against the manifest. The script logs omissions, retains the captured timestamp and earlier source update timestamp, and keeps later redirected captures out of the primary holdout. The report records source-backed final controls separately from the model inputs.
+
+## Sparse D/R fallback trials
+
+Three additional research alternatives use the same checksum-verified archive and eight 2020 training races. They keep the reported D/R counts fixed and sample the remaining head-to-head votes. One leaves the historical center unchanged, one estimates a historical batch offset, and one shrinks the observed margin towards the prior. All three preserve the empirical pairing of turnout and share errors. The comparison prior uses pre-election historical partisanship and 2020 final-margin errors. It is a research benchmark, separate from the full-coverage FEA model.
+
+| Method | 2024 Brier | 2024 log loss | 2024 mean absolute margin error (points) |
+| --- | ---: | ---: | ---: |
+| Frozen prior | 0.361 | 0.987 | 3.86 |
+| No live swing | 0.262 | 0.718 | 0.88 |
+| Historical batch offset | 0.262 | 0.718 | 1.49 |
+| Shrunken live margin | 0.312 | 0.819 | 1.13 |
+| Training-fold combination | 0.250 | 0.693 | — |
+| Reporting-weighted combination | 0.177 | 0.545 | — |
+| 50/50 | 0.250 | 0.693 | — |
+
+Michigan and Pennsylvania are the only eligible races in the primary 2024 cohort. The D/R target excludes independent and third-party wins. These methods remain offline, and races with inadequate 2026 evidence still have no probability timeline.
+
+The training-fold combination compares single methods and fixed convex weights of 25%, 50%, and 75% on leave-one-race-out predictions from the eight 2020 training races. It selected 25% frozen prior and 75% no live swing. The reporting-weighted combination instead gives the no-live-swing estimate weight equal to the provider's estimated fraction counted. This rule used no evaluation outcomes to set weights. Its 0.177 Brier score beats 50/50 on Michigan and Pennsylvania. Those two outcomes had already been examined in previous trials. This improvement is exploratory.
+
+The expanded midterm test uses checksum-matched [archive captures](https://github.com/electarchive/live-forecast/blob/main/frames/manifest.json). Four first captures are eligible for the D/R comparison: Florida, Maryland, New York, and Wisconsin. Four additional races had zero recorded votes in the first snapshot, so their second captures are scored separately: Arizona, Nevada, Ohio, and Pennsylvania. The reporting-weighted blend scored 0.0834 and 0.0537 Brier on the respective cohorts. The best individual methods scored 0.0401 and 0.0278. The counted leader in all eight captures ultimately won, limiting what these midterm tests say about comebacks. To rerun the second-capture check, supply the manifest's second snapshot as `<manifest-race-key>.next.body`. Maryland's D/R truth comes from the [state canvass](https://elections.maryland.gov/elections/archive/2022/General_Results/gen_detail_results_2022_4_1.html).
+
+The reporting-weighted blend scored 0.1856 on the single redirected 2024 Arizona capture. The frozen-prior and batch-offset methods each scored 0.0772. Arizona's truth comes from the [state canvass](https://azmemory.azlibrary.gov/assets/displaypdf/326457). The sensitivity checks do not establish interval calibration or justify publishing historical odds where returns are sparse.
+
+Two checksum-verified late captures, Texas and Wisconsin, were separately scored at 99% expected vote in. Both were later captures, and the candidates already ahead also finished ahead in both. The combination had a Brier score of 0.0347 versus 0.0154 for the batch-offset method. This adds a late-count sensitivity check and leaves the earlier comparison unchanged.
