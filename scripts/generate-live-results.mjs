@@ -969,10 +969,16 @@ function normalizeRegionResults(regionResults, race, externalEstimate = null) {
   }).sort((a, b) => a.name.localeCompare(b.name));
 }
 
+function voteHistoryProvider(provider) {
+  return provider === "NBC" || provider === "CivicAPI" ? provider : undefined;
+}
+
 function voteHistoryPoint(race) {
+  const provider = voteHistoryProvider(race.provider);
   return {
     at: new Date().toISOString(),
     sourceUpdatedAt: isoDate(race.lastUpdated) || "",
+    ...(provider ? { provider } : {}),
     expectedVotePercent: race.expectedVotePercent ?? race.estimatedVoteReporting ?? null,
     precinctReporting: race.reportingPercent ?? race.percentReporting ?? null,
     candidates: (race.candidates || []).map((candidate) => ({
@@ -986,7 +992,7 @@ function voteHistoryPoint(race) {
   };
 }
 
-function voteHistorySignature(point) { return resultSignature(point); }
+function voteHistorySignature(point) { return JSON.stringify([point.provider || null, resultSignature(point)]); }
 
 function voteHistoryTotalVotes(point) {
   return (point?.candidates || []).reduce((sum, candidate) => sum + Number(candidate.votes || 0), 0);
@@ -1017,6 +1023,7 @@ function voteHistoryFromCivicDetail(detail) {
     return {
       at: isoDate(entry.at || entry.timestamp || entry.time || entry.updated_at || entry.last_updated) || "",
       sourceUpdatedAt: isoDate(entry.sourceUpdatedAt || entry.last_updated || entry.updated_at) || "",
+      provider: "CivicAPI",
       reporting: Number(entry.reporting ?? entry.percent_reporting ?? entry.estimatedVoteReporting ?? 0),
       candidates: Array.isArray(candidates) ? candidates.map(normalizeHistoryCandidate).filter((candidate) => candidate.name) : []
     };
@@ -1029,16 +1036,18 @@ function mergeVoteHistory(...histories) {
     for (const point of Array.isArray(history) ? history : []) {
       const at = isoDate(point.at || point.updatedAt || point.timestamp || point.time);
       if (!at) continue;
+      const provider = voteHistoryProvider(point.provider);
       const normalized = {
         at,
         sourceUpdatedAt: isoDate(point.sourceUpdatedAt) || "",
+        ...(provider ? { provider } : {}),
         expectedVotePercent: point.expectedVotePercent ?? point.estimatedVoteReporting ?? null,
         precinctReporting: point.precinctReporting ?? null,
         ...(point.reporting != null ? {legacyReporting:point.reporting} : {}),
         candidates: (point.candidates || []).map(normalizeHistoryCandidate).filter((candidate) => candidate.name)
       };
       if (!normalized.candidates.length) continue;
-      byKey.set(at.slice(0, 19), normalized);
+      byKey.set(JSON.stringify([at.slice(0, 19), provider]), normalized);
     }
   }
   return [...byKey.values()].sort((a, b) => new Date(a.at) - new Date(b.at));
