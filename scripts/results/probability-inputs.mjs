@@ -18,6 +18,17 @@ const voteFields=['demVotes','repVotes','totalVotes'];
 const reconciles=(rows,reference,tolerance=0)=>Boolean(reference) &&
   voteFields.every(field=>Math.abs(rows.reduce((sum,row)=>sum+row[field],0)-reference[field])<=tolerance);
 
+// Known exceptions to the regular model's 2026 plurality assumption.
+export function probabilityRule(raceId,electionDate) {
+  if (electionDate!=='2026-11-03') return null;
+  if (/^(?:house|senate|governor)-AK(?:-|$)/.test(raceId) ||
+      /^(?:house|senate)-ME(?:-|$)/.test(raceId)) return 'ranked-choice';
+  if (/^(?:house|senate|governor)-GA(?:-|$)/.test(raceId) ||
+      /^house-LA-/.test(raceId)) return 'majority-runoff';
+  if (raceId==='governor-VT') return 'legislative-contingency';
+  return 'plurality';
+}
+
 export function probabilityGeographyBasis(geography) {
   const rows=geography.countyReferences, reference=geography.reference;
   if (!reference || rows.length<2) return null;
@@ -114,6 +125,7 @@ export function readGeographicReferences(root=process.cwd(),{ohioDistrictCsv}={}
     const statewide=!key || key.endsWith('-AL');
     const portions=ohio.get(key);
     return {raceId:race.id,office:race.type,state:race.state,reference:reference || null,
+      rule:probabilityRule(race.id,race.electionDate || race.date),candidateCount:race.candidates.length,
       referenceSource:key?district.sourceUrl:state.sourceUrl,
       countySource:portions?.source || county.sourceUrl,countyReferences:portions?.rows || (statewide?counties.get(race.state)||[]:[]),
       ...(!key && differences.has(race.state)?{countyAggregationDifference:differences.get(race.state)}:{}),
@@ -132,7 +144,8 @@ export function buildCountyProbabilityPrior(geography,forecast) {
     /^[a-f0-9]{64}$/.test(geography.districtCountySource?.sha256 || '');
   requireInput((district || geography?.geographicScope==='statewide') && validReference(geography.reference) &&
     geography.countyReferences?.length>=2 && geography.countySource &&
-    forecast?.raceId===geography.raceId && forecast.rule==='plurality','No compatible county baseline');
+    forecast?.raceId===geography.raceId && forecast.rule==='plurality' &&
+    probabilityRule(geography.raceId,forecast.electionDate)==='plurality','No compatible county baseline');
   requireInput(typeof forecast.source==='string' && forecast.source.trim() &&
     /^\d{4}-\d{2}-\d{2}$/.test(forecast.electionDate) &&
     dateTime(forecast.availableAt)<dateTime(forecast.electionDate+'T00:00:00Z') &&
@@ -264,6 +277,8 @@ if (process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href) {
   console.log(JSON.stringify(Object.fromEntries(['house','senate','governor'].map(office=>{
     const rows=races.filter(race=>race.office===office);
     return [office,{races:rows.length,matchedRaceReference:rows.filter(race=>race.reference).length,
+      knownNonPluralityRaces:rows.filter(race=>race.rule!=='plurality').map(race=>({id:race.raceId,rule:race.rule})),
+      singleCandidateRosters:rows.filter(race=>race.candidateCount===1).map(race=>race.raceId),
       hasCountyReferences:rows.filter(race=>race.countyReferences.length).length,
       reconciledMultiUnitReferences:rows.filter(race=>probabilityGeographyBasis(race)==='all-votes').length,
       additionalTwoPartyReferences:rows.filter(race=>probabilityGeographyBasis(race)==='two-party-votes').length}];

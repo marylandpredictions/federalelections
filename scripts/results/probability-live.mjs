@@ -2,13 +2,17 @@ import {mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {Worker, isMainThread, parentPort, workerData} from 'node:worker_threads';
-import {normalizeProbabilitySnapshot} from './probability-inputs.mjs';
+import {normalizeProbabilitySnapshot, probabilityRule} from './probability-inputs.mjs';
 import {modelVersion, simulateWinProbability} from './win-probability.mjs';
 
 const maxPoints = 240;
+const maxRaces = 506;
 const maxAgeMs = 5 * 60 * 1000;
 const digest = /^[a-f0-9]{64}$/;
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+
+const evidenceHash = snapshot => hash(snapshot.units.map(unit =>
+  [unit.id, unit.complete, Object.entries(unit.votes).sort()]).sort(([a],[b])=>a.localeCompare(b)));
 
 export function validateProbabilityRelease(release) {
   const {benchmark, policy, races, reviewedBy, reviewedAt} = release || {};
@@ -20,10 +24,12 @@ export function validateProbabilityRelease(release) {
       !benchmark.cohorts?.length || benchmark.cohorts.some(row =>
         row.status !== 'passes-screen' || row.cycles < 2 || row.races < 2) ||
       typeof reviewedBy !== 'string' || !reviewedBy.trim() || !Number.isFinite(Date.parse(reviewedAt)) ||
-      !entries.length || entries.length > 12 ||
+      !entries.length || entries.length > maxRaces ||
       entries.some(([id, {prior, roster}]) => !/^[\w-]{1,100}$/.test(id) ||
         prior?.raceId !== id || !Array.isArray(roster) ||
-        !Array.isArray(prior.candidateIds) || !Array.isArray(prior.units) ||
+        prior.rule !== 'plurality' || probabilityRule(id, prior.electionDate) !== prior.rule ||
+        !Array.isArray(prior.candidateIds) || prior.candidateIds.length < 2 || prior.candidateIds.length > 12 ||
+        !Array.isArray(prior.units) || prior.units.length < 2 || prior.units.length > 400 ||
         roster.length !== prior.candidateIds.length ||
         new Set(roster.map(row => row.id)).size !== roster.length ||
         roster.some(row => !prior.candidateIds.includes(row.id) || typeof row.name !== 'string' || !row.name.trim()) ||
@@ -62,6 +68,7 @@ export class LiveProbability {
     this.simulate = simulate;
     this.races = new Map();
     this.cursor = 0;
+    this.hydrationCursor = 0;
   }
 
   async load(release) {
@@ -73,18 +80,47 @@ export class LiveProbability {
       const recovered = state?.identity === identity && state.snapshot?.raceId === id &&
         Array.isArray(state.points) && state.points.length <= maxPoints;
       this.races.set(id, {config, identity, settings: {...release.policy.settings, method: 'full-coverage'}, points: recovered ? state.points : [],
-        snapshot: recovered ? state.snapshot : undefined, available: false, reason: 'Waiting for a verified NBC update.'});
+        snapshot: recovered ? state.snapshot : undefined,
+        evidence: recovered ? evidenceHash(state.snapshot) : null,
+        available: false, reason: 'Waiting for a verified NBC update.'});
     }
   }
 
-  nextRace() {
+  nextRaces(limit) {
     const ids = [...this.races.keys()];
-    return ids.length ? ids[this.cursor++ % ids.length] : undefined;
+    const batch = Array.from({length: Math.min(limit, ids.length)}, () => ids[this.cursor++ % ids.length]);
+    return batch;
+  }
+
+  nextCountyRace() {
+    const ids = [...this.races.keys()];
+    return ids.length ? ids[this.hydrationCursor++ % ids.length] : undefined;
+  }
+
+  async updateBatch(detailFor, onError) {
+    const batch = this.nextRaces(12);
+    await Promise.all([0, 1].map(async slot => {
+      for (let index = slot; index < batch.length; index += 2) {
+        const id = batch[index];
+        try {
+          await this.update(id, await detailFor(id));
+          onError(id, null);
+        } catch (error) { onError(id, error); }
+      }
+    }));
   }
 
   view(id) {
     const race = this.races.get(id);
-    if (!race) return {status: 'unavailable', reason: 'FEA has no validated model for this race. The reported vote and margin charts are available above.'};
+    if (!race) {
+      const rule=probabilityRule(id,'2026-11-03');
+      const reasons={
+        'ranked-choice':'A forecast for this race needs a validated model of ranked-choice transfers.',
+        'majority-runoff':'A forecast for this race needs a validated model of the majority threshold and possible runoff.',
+        'legislative-contingency':'A forecast for this race must account for the legislature choosing the governor if no candidate wins a majority.',
+      };
+      return {status:'unavailable',reason:reasons[rule] || 'FEA has no validated model for this race. The reported vote and margin charts are available above.'};
+    }
     if (!race.points.length) return {status: 'waiting', reason: race.reason};
     const fresh = race.available && this.now() - Date.parse(race.snapshot.sourceUpdatedAt) <= maxAgeMs;
     return {status: fresh ? 'live' : 'stale', source: 'NBC News returns', modelVersion,
@@ -112,6 +148,11 @@ export class LiveProbability {
     const previous = race.snapshot;
     const units = new Map(snapshot.units.map(unit => [unit.id, unit]));
     if (previous && Date.parse(snapshot.sourceUpdatedAt) < Date.parse(previous.sourceUpdatedAt)) return;
+    const evidence = evidenceHash(snapshot);
+    if (race.evidence === evidence) {
+      Object.assign(race, {available: true, snapshot, reason: ''});
+      return;
+    }
     const regressed = previous?.units.some(unit => {
       const next = units.get(unit.id);
       return !next || unit.complete && !next.complete ||
@@ -132,9 +173,7 @@ export class LiveProbability {
     const point = await this.simulate(prior, snapshot, race.settings, last?.inputHash);
     if (point.status === 'unavailable') return;
     if (point.status === 'unchanged') {
-      race.snapshot = snapshot;
-      race.available = true;
-      race.reason = '';
+      Object.assign(race, {available: true, snapshot, evidence, reason: ''});
       return;
     }
     if (point.status !== 'research') return;
@@ -145,7 +184,7 @@ export class LiveProbability {
     const file = join(this.directory, id + '.json');
     await writeFile(file + '.tmp', JSON.stringify({identity: race.identity, snapshot, points}) + '\n');
     await rename(file + '.tmp', file);
-    Object.assign(race, {available: true, snapshot, points, reason: ''});
+    Object.assign(race, {available: true, snapshot, points, evidence, reason: ''});
   }
 }
 

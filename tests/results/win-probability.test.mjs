@@ -12,7 +12,7 @@ import {runProbabilityReplay,readProbabilityReplay,scoreProbabilityReplay} from 
 import {benchmarkProbability} from '../../scripts/results/probability-benchmark.mjs';
 import {readProbabilityCapture} from '../../scripts/results/probability-capture.mjs';
 import {compareSparsePairFallbacks,fitTurnoutWeight,evaluateTurnoutWeight} from '../../scripts/results/probability-turnout-study.mjs';
-import {buildCountyProbabilityPrior,evaluateRegularProbability,matchFrozenCandidateCenter,normalizeProbabilitySnapshot,probabilityGeographyBasis,readGeographicReferences} from '../../scripts/results/probability-inputs.mjs';
+import {buildCountyProbabilityPrior,evaluateRegularProbability,matchFrozenCandidateCenter,normalizeProbabilitySnapshot,probabilityGeographyBasis,probabilityRule,readGeographicReferences} from '../../scripts/results/probability-inputs.mjs';
 
 const settings={simulations:1200};
 const ids=['d','r','other'];
@@ -39,6 +39,17 @@ test('NBC No Labels code matches the reviewed ballot party without weakening par
   const roster=[{name:'Teri Hourihan',aliases:['Teri Ann Hourihan'],party:'No Labels Party'}];
   assert.equal(matchBallotCandidate({name:'Teri Ann Hourihan',partyCode:'NOL'},roster).name,'Teri Hourihan');
   assert.throws(()=>matchBallotCandidate({name:'Teri Ann Hourihan',partyCode:'I'},roster),/party mismatch/);
+});
+
+test('Election rules separate ranked-choice, runoff and legislative outcomes from plurality',()=>{
+  const date='2026-11-03';
+  assert.equal(probabilityRule('senate-AK',date),'ranked-choice');
+  assert.equal(probabilityRule('house-ME-2',date),'ranked-choice');
+  assert.equal(probabilityRule('governor-ME',date),'plurality');
+  assert.equal(probabilityRule('senate-GA',date),'majority-runoff');
+  assert.equal(probabilityRule('house-LA-1',date),'majority-runoff');
+  assert.equal(probabilityRule('governor-VT',date),'legislative-contingency');
+  assert.equal(probabilityRule('senate-OH',date),'plurality');
 });
 
 test('Geographic prior uses compatible reporting units and preserves a frozen candidate forecast',()=>{
@@ -135,6 +146,28 @@ test('Reviewed regular-model release runs off-thread, keeps history on restart, 
       cohorts:[{cohort:'senate:5',status:'passes-screen',cycles:2,races:8}]},races:{[raceId]:{prior,roster}}};
   assert.throws(()=>validateProbabilityRelease({...release,policy:{...policy,settings:{simulations:500}}}),/benchmark evidence/);
   assert.throws(()=>validateProbabilityRelease({...release,reviewedBy:''}),/benchmark evidence/);
+  const rankedId='senate-AK';
+  assert.throws(()=>validateProbabilityRelease({...release,races:{[rankedId]:{prior:{...prior,raceId:rankedId},roster}}}),/benchmark evidence/);
+  const nationalRelease={...release,races:Object.fromEntries(Array.from({length:506},(_,i)=>{
+    const raceId='senate-test-'+i;
+    return [raceId,{prior:{...prior,raceId},roster}];
+  }))};
+  const national=new LiveProbability(directory);
+  await national.load(nationalRelease);
+  const visited=[];
+  let active=0,peak=0;
+  for(let batch=0;batch<43;batch++) await national.updateBatch(async id=>{
+    visited.push(id);
+    peak=Math.max(peak,++active);
+    await Promise.resolve();
+    active--;
+    if (id==='senate-test-0') throw Error('One malformed source');
+  },(id,error)=>{
+    if(error) assert.equal(id,'senate-test-0');
+  });
+  assert.equal(new Set(visited.slice(0,506)).size,506);
+  assert.equal(peak,2);
+  assert.equal(national.nextCountyRace(),'senate-test-0');
   let now=Date.parse('2026-11-04T02:00:10Z');
   const updatedAt=new Date(now-1000).toISOString(),frozenDate=prior.electionDate;
   const rows=(d,r)=>roster.map((row,i)=>({...row,votes:i?r:d}));
@@ -153,7 +186,7 @@ test('Reviewed regular-model release runs off-thread, keeps history on restart, 
   assert.equal(first.status,'live');
   assert.equal(first.points.length,1);
   assert.ok(first.points[0].candidates.every(row=>row.probability>0 && row.probability<1));
-  const reloaded=new LiveProbability(directory,{now:()=>now});
+  const reloaded=new LiveProbability(directory,{now:()=>now,simulate:()=>assert.fail('Unchanged returns should not start a worker')});
   await reloaded.load(release);
   assert.equal(reloaded.view(raceId).status,'stale');
   await reloaded.update(raceId,detail,completion);

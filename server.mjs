@@ -1100,22 +1100,35 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
   setInterval(refresh, 1000).unref();
   if (liveProbability.races.size) {
     let probabilityRunning = false;
+    const probabilityErrors = new Map();
     setInterval(async () => {
       if (probabilityRunning) return;
       probabilityRunning = true;
-      const id = liveProbability.nextRace();
       try {
         const health = control.health();
-        if (health.connection !== 'connected' || health.persistenceError ||
-            !health.lastHealthyRaceIds?.includes(id)) {
-          await liveProbability.update(id);
-          return;
-        }
-        await control.loadCountyResults(id);
-        const race = control.results({details: true}).groups.flatMap(group => group.races).find(row => row.id === id);
-        await liveProbability.update(id, race);
-      } catch (error) { console.warn(`Win probability update failed for ${id}: ${error.message}`); }
-      finally { probabilityRunning = false; }
+        const healthy = new Set(health.connection === 'connected' && !health.persistenceError ? health.lastHealthyRaceIds : []);
+        await liveProbability.updateBatch(id => healthy.has(id) ? control.results({details: true, raceId: id}).groups
+          .find(group => group.races.length)?.races[0] : undefined, (id, error) => {
+          if (!error) probabilityErrors.delete(id);
+          else if (probabilityErrors.get(id) !== error.message) {
+            console.warn(`Win probability update failed for ${id}: ${error.message}`);
+            probabilityErrors.set(id, error.message);
+          }
+        });
+      } finally { probabilityRunning = false; }
+    }, 1000).unref();
+    // Keep the probability job from turning 506 races into an upstream burst.
+    // Details already loaded by board users are processed by the batch above.
+    let hydrationRunning = false;
+    setInterval(async () => {
+      if (hydrationRunning) return;
+      const id = liveProbability.nextCountyRace();
+      const health = control.health();
+      if (health.connection !== 'connected' || health.persistenceError || !health.lastHealthyRaceIds?.includes(id)) return;
+      hydrationRunning = true;
+      try { await control.loadCountyResults(id, {watch: false}); }
+      catch (error) { console.warn(`Win probability county refresh failed for ${id}: ${error.message}`); }
+      finally { hydrationRunning = false; }
     }, 15000).unref();
   }
 }

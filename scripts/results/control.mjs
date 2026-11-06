@@ -193,10 +193,10 @@ export class ResultsControl {
       throw error;
     }
   }
-  async loadCountyResults(id) {
+  async loadCountyResults(id, options) {
     const raw=this.runtime.races[id];
     if(!raw)return false;
-    const counties=await this.countyProvider.fetchCounties(raw);
+    const counties=await this.countyProvider.fetchCounties(raw,options);
     if(!counties?.length)return false;
     return this.serial(async()=>{
       const current=this.runtime.races[id];
@@ -600,8 +600,9 @@ export class ResultsControl {
       "admin",
     );
   }
-  results({ details = false } = {}) {
-    const races = this.catalogue.map((base) => {
+  results({ details = false, raceId } = {}) {
+    const catalogue = raceId ? this.catalogue.filter(base => base.id === raceId) : this.catalogue;
+    const races = catalogue.map((base) => {
       const raw = this.visible.runtime.races[base.id] || base;
       const s = this.visible.calls.races[base.id] || {};
       const calls = (s.calls || []).map(call=>({...call,provider:call.provider==='NBC'||/^nbc-/.test(call.source||'')?'NBC':'FEA'}));
