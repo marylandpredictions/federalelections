@@ -25,7 +25,12 @@ test('All 435 House Census profiles exist; changed-boundary profiles are explici
  assert.equal(Object.keys(data.districts).length,435);assert.equal(data.product,'ACS 1-year');assert.equal(data.congress,119);
  assert.equal(Object.values(geo.districts).filter(r=>r.currentComparable).length,435);
  for(const [id,row] of Object.entries(data.districts)) {
-  assert.ok(row.population>0);assert.equal(geo.districts[id].sha256,createHash('sha256').update(readFileSync(geo.districts[id].geometryFile)).digest('hex'));
+  assert.ok(row.population>0);
+  const geography=geo.districts[id];
+  // Existing IDs record hashes from both LF and CRLF checkouts.
+  const lf=readFileSync(geography.geometryFile,'utf8').replaceAll('\r\n','\n');
+  const checkoutHashes=[lf,lf.replaceAll('\n','\r\n')].map(text=>createHash('sha256').update(text).digest('hex'));
+  assert.ok(checkoutHashes.includes(geography.sha256),`Geometry content changed for ${id}`);
   if(!geo.districts[id].historicalComparable){assert.equal(row.boundaryStatus,'historical-boundaries');assert.equal(row.geometryId,null);}
  }
  assert.equal(data.districts['TX-01'].boundaryStatus,'historical-boundaries');assert.equal(data.districts['CO-04'].boundaryStatus,'current-comparable');

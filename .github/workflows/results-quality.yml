@@ -28,6 +28,7 @@ jobs:
       - run: npm ci
       - run: npm run audit:results-candidates
       - run: npm run test:results | tee results-tests.log
+        shell: bash
       - run: npm run test:results-restart
       - run: npm run certify:results -- --test-log results-tests.log
         if: always()
