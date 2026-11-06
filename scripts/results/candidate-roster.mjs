@@ -1,5 +1,9 @@
 // Candidate identities are independent of probabilities and result calls.
 const identityKey = (value) => String(value || '').normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+const partyIdentity = value => {
+  const key = identityKey(value);
+  return key === 'nolabelsparty' ? 'nol' : key;
+};
 function identityForms(value) {
   const text=String(value || '').replace(/[“”]/g,'"');
   const variants=[text,text.replace(/"[^"]*"/g,' ')];
@@ -23,7 +27,7 @@ export function matchBallotCandidate(candidate, roster) {
   }
   if(matches.length!==1)throw Error((matches.length?'Ambiguous':'Unknown')+' provider candidate: '+candidate.name);
   const local=matches[0],party=local.partyCode||local.party;
-  if(party&&candidate.partyCode&&identityKey(party)!==identityKey(candidate.partyCode))throw Error('Provider party mismatch: '+candidate.name);
+  if(party&&candidate.partyCode&&partyIdentity(party)!==partyIdentity(candidate.partyCode))throw Error('Provider party mismatch: '+candidate.name);
   return {...candidate,name:local.name,...(party?{party,partyCode:party}:{}),...(local.writeIn?{writeIn:true}:{}),...(local.partyLabels?{partyLabels:local.partyLabels}:{})};
 }
 export const genericName = (v) =>

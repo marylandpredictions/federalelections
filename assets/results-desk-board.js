@@ -881,7 +881,7 @@ window.FEAEnhanceBoard = function (Page) {
         )
         .join(
           "",
-        )}</select></label><div id="desk-trend-chart"><p class="desk-hint">Loading observed history...</p></div><section id="desk-trend-detail" class="trend-detail" aria-label="Selected results update" role="status"></section>${!this.isLabPage && !this.lockedCounty && race.electionDate==='2026-11-03' ? '<section class="trend-detail" aria-labelledby="desk-win-probability-title"><h3 id="desk-win-probability-title">Live Win Probability</h3><div id="desk-win-probability"><p class="desk-hint">Checking forecast availability…</p></div></section>' : ''}`;
+        )}</select></label><div id="desk-trend-chart"><p class="desk-hint">Loading observed history...</p></div><section id="desk-trend-detail" class="trend-detail" aria-label="Selected results update" role="status"></section>${!this.isLabPage && !this.lockedCounty && race.electionDate==='2026-11-03' ? '<section class="desk-probability" aria-labelledby="desk-win-probability-title"><h3 id="desk-win-probability-title">Live win probability</h3><div id="desk-win-probability"><p class="desk-hint">Checking forecast availability…</p></div></section>' : ''}`;
     if (this.focusedPanelTab === "demographics")
       body =
         '<div id="desk-demographics"><p class="desk-hint">Loading Census estimates…</p></div>';
@@ -1087,35 +1087,53 @@ window.FEAEnhanceBoard = function (Page) {
       clearTimeout(probabilityTimer);
       probabilityTimer = setTimeout(() => void renderLiveProbability(race, container).catch(() => {}), 15000);
     }
-    const points = data?.points;
+    const candidates = data?.candidates || [];
+    const points = (data?.points || []).filter(point => Number.isFinite(Date.parse(point.at)) && candidates.length &&
+      candidates.every(candidate => point.candidates?.some(row => row.id === candidate.id &&
+        Number.isFinite(row.probability) && row.probability >= 0 && row.probability <= 1)));
     const latest = points?.at(-1);
     if (!latest) {
-      container.innerHTML = `<p class="desk-hint">${esc(data?.reason || 'Live probability is temporarily unavailable.')}</p>`;
+      const label = data?.status === 'waiting' ? 'Waiting for inputs' : 'Forecast unavailable';
+      container.innerHTML = `<p class="desk-probability-state"><strong>${label}</strong>
+        <span>${esc(data?.reason || 'The forecast could not be loaded. Reported results are still available above.')}</span></p>`;
       return;
     }
-    const start = Date.parse(points[0].at), span = Math.max(1, Date.parse(latest.at) - start);
-    const x = point => points.length === 1 ? 275 : 42 + 450 * (Date.parse(point.at) - start) / span;
-    const y = probability => 20 + 120 * (1 - probability);
-    const grid = [1, .75, .5, .25, 0].map(value =>
-      `<text x="35" y="${y(value) + 4}" text-anchor="end">${100 * value}%</text><path d="M42 ${y(value)}H492" stroke="currentColor" opacity=".23"/>`).join('');
-    const series = data.candidates.map(candidate => {
-      const ink = window.FEADeskTheme?.candidateColor(candidate, data.candidates) || color(candidate);
-      const values = points.map(point => point.candidates.find(row => row.id === candidate.id).probability);
-      const line = values.map((value, i) => `${i ? 'L' : 'M'}${x(points[i])} ${y(value)}`).join(' ');
-      return `<path d="${line}" stroke="${esc(ink)}" fill="none" stroke-width="2"/><circle cx="${x(latest)}" cy="${y(values.at(-1))}" r="3" fill="${esc(ink)}"/>`;
-    }).join('');
+    const series = candidates.map(candidate => ({
+      ...candidate,
+      ink: window.FEADeskTheme?.candidateColor(candidate, candidates) || color(candidate),
+      value: point => point.candidates.find(row => row.id === candidate.id).probability,
+    }));
     const label = value => value === 0 ? '0%' : value === 1 ? '100%' : value < .001 ? '&lt;0.1%' : value > .999 ? '&gt;99.9%' : percent(value * 100);
-    const summaries = data.candidates.map(candidate => {
-      const value = latest.candidates.find(row => row.id === candidate.id);
-      return `<li><span>${esc(candidate.name)}</span><strong>${label(value.probability)}</strong></li>`;
-    }).join('');
-    const status = data.status === 'stale' ? 'Delayed · Last available estimate' : 'FEA model estimate';
-    const axis = points.length > 1
-      ? `<text x="42" y="156">${esc(time(points[0].at))}</text><text x="492" y="156" text-anchor="end">${esc(time(latest.at))}</text>`
-      : '';
-    container.innerHTML = `<p class="desk-hint">${status} · ${esc(time(latest.at))} · NBC News vote returns</p>
-      <svg width="100%" viewBox="0 0 500 164" role="img" aria-label="Candidate win probability over time" style="color:inherit;font-size:10px;fill:currentColor">${grid}${series}${axis}</svg>
-      <ul>${summaries}</ul><p class="desk-hint">Model estimate separate from any race projection or call.</p>`;
+    const summaries = [...series].sort((a, b) => b.value(latest) - a.value(latest)).map(candidate =>
+      `<li><span><i aria-hidden="true" style="--probability-ink:${esc(candidate.ink)}"></i>${esc(candidate.name)}</span><strong>${label(candidate.value(latest))}</strong></li>`).join('');
+    const status = data.status === 'stale' ? 'Delayed · Last available estimate' : 'Latest model estimate';
+    const dateLabel = at => new Date(at).toLocaleDateString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric'});
+    container.innerHTML = `<div class="trend-summary"><div><small>${status}</small><strong>Chance of winning</strong></div><span>${esc(dateLabel(latest.at))}<br>${esc(time(latest.at))}</span></div>
+      ${data.status === 'stale' && data.reason ? `<p class="desk-hint">${esc(data.reason)}</p>` : ''}
+      <ul class="desk-probability-candidates">${summaries}</ul><div class="desk-probability-chart"></div>
+      <p class="desk-hint">FEA model estimate using NBC News returns. Race calls are shown separately.</p>`;
+    if (points.length < 2) return;
+    const width = Math.max(210, container.clientWidth), height = 182;
+    const y = d3.scaleLinear().domain([0,1]).range([height - 30, 12]);
+    const x = d3.scaleTime().domain(d3.extent(points, point => new Date(point.at))).range([43, width - 14]);
+    const ticks = [0,.25,.5,.75,1];
+    const longRange = Date.parse(latest.at) - Date.parse(points[0].at) >= 86400000;
+    const svg = d3.select(container.querySelector('.desk-probability-chart')).append('svg')
+      .attr('viewBox', `0 0 ${width} ${height}`).attr('role','img')
+      .attr('aria-label', `Estimated chance of winning across ${points.length} model updates`);
+    svg.append('g').attr('class','trend-grid').selectAll('line').data(ticks).join('line')
+      .attr('x1',43).attr('x2',width - 14).attr('y1',y).attr('y2',y);
+    svg.append('g').attr('class','chart-axis').attr('transform','translate(43,0)')
+      .call(d3.axisLeft(y).tickValues(ticks).tickSize(0).tickPadding(8).tickFormat(d3.format('.0%')));
+    svg.append('g').attr('class','chart-axis').attr('transform',`translate(0,${height - 30})`)
+      .call(d3.axisBottom(x).ticks(width > 400 ? 4 : 2).tickSize(0).tickPadding(8)
+        .tickFormat(at => longRange ? dateLabel(at) : time(at.toISOString()).replace(' ET','')));
+    for (const candidate of series) {
+      svg.append('path').datum(points).attr('class','desk-probability-line').attr('stroke',candidate.ink)
+        .attr('d',d3.line().x(point => x(new Date(point.at))).y(point => y(candidate.value(point))));
+      svg.append('circle').attr('class','trend-latest-dot').attr('cx',x(new Date(latest.at)))
+        .attr('cy',y(candidate.value(latest))).attr('r',3.5).attr('stroke',candidate.ink);
+    }
   }
   p.renderTrendChart = async function () {
     const revision=this.trendRenderRevision=(this.trendRenderRevision||0)+1;

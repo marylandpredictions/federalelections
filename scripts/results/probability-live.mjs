@@ -73,7 +73,7 @@ export class LiveProbability {
       const recovered = state?.identity === identity && state.snapshot?.raceId === id &&
         Array.isArray(state.points) && state.points.length <= maxPoints;
       this.races.set(id, {config, identity, settings: {...release.policy.settings, method: 'full-coverage'}, points: recovered ? state.points : [],
-        snapshot: recovered ? state.snapshot : undefined, available: false});
+        snapshot: recovered ? state.snapshot : undefined, available: false, reason: 'Waiting for a verified NBC update.'});
     }
   }
 
@@ -84,10 +84,11 @@ export class LiveProbability {
 
   view(id) {
     const race = this.races.get(id);
-    if (!race) return {status: 'unavailable', reason: 'A validated live forecast is unavailable for this race.'};
-    if (!race.points.length) return {status: 'waiting', reason: 'Waiting for verified reporting-unit returns.'};
+    if (!race) return {status: 'unavailable', reason: 'FEA has no validated model for this race. The reported vote and margin charts are available above.'};
+    if (!race.points.length) return {status: 'waiting', reason: race.reason};
     const fresh = race.available && this.now() - Date.parse(race.snapshot.sourceUpdatedAt) <= maxAgeMs;
     return {status: fresh ? 'live' : 'stale', source: 'NBC News returns', modelVersion,
+      ...(fresh?{}:{reason:race.reason || 'No recent verified NBC update.'}),
       candidates: race.config.roster.map(({id, name, party, partyCode}) => ({id, name, party: partyCode || party})),
       points: race.points};
   }
@@ -96,12 +97,15 @@ export class LiveProbability {
     const race = this.races.get(id);
     if (!race) return;
     race.available = false;
+    race.reason = 'Waiting for a verified NBC update.';
     if (detail?.id !== id || detail.provider !== 'NBC' || detail.providerStale === true ||
         !detail.counties?.length || detail.counties.some(unit => unit.source !== 'NBC News')) return;
     const now = this.now(), at = new Date(now).toISOString();
     const {prior, roster} = race.config;
     completion ??= await readJson(join(this.completionDirectory, id + '.json')) || {};
+    race.reason = 'The NBC candidate and county returns need to reconcile before the next estimate.';
     const snapshot = normalizeProbabilitySnapshot(detail, roster, {at, source: 'NBC News', completion});
+    race.reason = 'The NBC update is delayed.';
     if (snapshot.electionDate !== prior.electionDate ||
         now - Date.parse(snapshot.sourceUpdatedAt) > maxAgeMs ||
         snapshot.units.some(unit => !unit.complete && now - Date.parse(unit.availableAt) > maxAgeMs)) return;
@@ -114,8 +118,10 @@ export class LiveProbability {
         Object.entries(unit.votes).some(([key, votes]) => next.votes[key] < votes);
     });
     const last = race.points.at(-1);
+    race.reason = 'Waiting for verified county completion in the areas the model uses.';
     let correctionSource;
     if (regressed) {
+      race.reason = 'A change to previously reported votes needs review.';
       const correction = await readJson(join(this.correctionDirectory, id + '.json'));
       const {at: observedAt, ...reported} = snapshot;
       if (correction?.previousInputHash !== last.inputHash || correction?.snapshotHash !== hash(reported) ||
@@ -128,6 +134,7 @@ export class LiveProbability {
     if (point.status === 'unchanged') {
       race.snapshot = snapshot;
       race.available = true;
+      race.reason = '';
       return;
     }
     if (point.status !== 'research') return;
@@ -138,7 +145,7 @@ export class LiveProbability {
     const file = join(this.directory, id + '.json');
     await writeFile(file + '.tmp', JSON.stringify({identity: race.identity, snapshot, points}) + '\n');
     await rename(file + '.tmp', file);
-    Object.assign(race, {available: true, snapshot, points});
+    Object.assign(race, {available: true, snapshot, points, reason: ''});
   }
 }
 

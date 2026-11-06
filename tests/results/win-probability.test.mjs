@@ -5,13 +5,14 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {gzipSync} from 'node:zlib';
+import {matchBallotCandidate} from '../../scripts/results/candidate-roster.mjs';
 import {modelVersion,simulateWinProbability} from '../../scripts/results/win-probability.mjs';
 import {LiveProbability,validateProbabilityRelease} from '../../scripts/results/probability-live.mjs';
 import {runProbabilityReplay,readProbabilityReplay,scoreProbabilityReplay} from '../../scripts/results/probability-replay.mjs';
 import {benchmarkProbability} from '../../scripts/results/probability-benchmark.mjs';
 import {readProbabilityCapture} from '../../scripts/results/probability-capture.mjs';
 import {compareSparsePairFallbacks,fitTurnoutWeight,evaluateTurnoutWeight} from '../../scripts/results/probability-turnout-study.mjs';
-import {buildCountyProbabilityPrior,evaluateRegularProbability,matchFrozenCandidateCenter,normalizeProbabilitySnapshot,readGeographicReferences} from '../../scripts/results/probability-inputs.mjs';
+import {buildCountyProbabilityPrior,evaluateRegularProbability,matchFrozenCandidateCenter,normalizeProbabilitySnapshot,probabilityGeographyBasis,readGeographicReferences} from '../../scripts/results/probability-inputs.mjs';
 
 const settings={simulations:1200};
 const ids=['d','r','other'];
@@ -34,6 +35,12 @@ const middle=snapshot(10,[[750,200,50,true],[200,750,50,true],[0,0,0,false]]);
 const late=snapshot(20,[[750,200,50,true],[200,750,50,true],[4010,3990,100,false]]);
 const final=snapshot(30,[[750,200,50,true],[200,750,50,true],[4510,4490,200,true]]);
 
+test('NBC No Labels code matches the reviewed ballot party without weakening party checks',()=>{
+  const roster=[{name:'Teri Hourihan',aliases:['Teri Ann Hourihan'],party:'No Labels Party'}];
+  assert.equal(matchBallotCandidate({name:'Teri Ann Hourihan',partyCode:'NOL'},roster).name,'Teri Hourihan');
+  assert.throws(()=>matchBallotCandidate({name:'Teri Ann Hourihan',partyCode:'I'},roster),/party mismatch/);
+});
+
 test('Geographic prior uses compatible reporting units and preserves a frozen candidate forecast',()=>{
   const {races}=readGeographicReferences();
   const geography=races.find(race=>race.raceId==='house-ND-1' || race.raceId==='house-ND-AL');
@@ -46,6 +53,23 @@ test('Geographic prior uses compatible reporting units and preserves a frozen ca
   assert.equal(result.units.reduce((sum,unit)=>sum+unit.turnout,0),forecast.turnout);
   assert.ok(Math.abs(result.units.reduce((sum,unit)=>sum+unit.turnout*unit.shares.d,0)/forecast.turnout-.48)<1e-9);
   assert.throws(()=>buildCountyProbabilityPrior({...geography,countyReferences:geography.countyReferences.slice(1)},forecast),/reconcile/);
+  const alternate=races.find(race=>race.raceId==='senate-AL');
+  assert.equal(probabilityGeographyBasis(alternate),'two-party-votes');
+  const alternatePrior=buildCountyProbabilityPrior(alternate,{...forecast,raceId:alternate.raceId,
+    regions:Object.fromEntries(alternate.countyReferences.map(row=>[row.fips,'test-region']))});
+  assert.equal(alternatePrior.geographyBasis,'two-party-votes');
+  assert.equal(alternatePrior.units.reduce((sum,unit)=>sum+unit.turnout,0),forecast.turnout);
+  const [first,...other]=alternate.countyReferences;
+  assert.equal(probabilityGeographyBasis({...alternate,countyReferences:[{...first,demVotes:first.demVotes-1},...other]}),null);
+  const multi={...forecast,candidates:[{id:'d',party:'D',share:.47},{id:'r',party:'R',share:.49},{id:'l',party:'L',share:.04}]};
+  assert.throws(()=>buildCountyProbabilityPrior(geography,multi),/Missing frozen county shares/);
+  multi.otherUnitShares=Object.fromEntries(geography.countyReferences.map(row=>[row.fips,{l:.04}]));
+  const multiPrior=buildCountyProbabilityPrior(geography,multi);
+  assert.deepEqual(multiPrior.candidateIds,['d','r','l']);
+  for (const candidate of multi.candidates)
+    assert.ok(Math.abs(multiPrior.units.reduce((sum,unit)=>sum+unit.turnout*unit.shares[candidate.id],0)/multi.turnout-candidate.share)<1e-9);
+  multi.otherUnitShares[geography.countyReferences[0].fips]={l:.06};
+  assert.throws(()=>buildCountyProbabilityPrior(geography,multi),/do not reconcile/);
   assert.throws(()=>readGeographicReferences(process.cwd(),{ohioDistrictCsv:'ShortName,CD,Harris,Trump,Total\nBad,1,1,1,2'}),/Unmapped/);
 });
 
@@ -123,6 +147,7 @@ test('Reviewed regular-model release runs off-thread, keeps history on restart, 
   await live.load(release);
   await live.update(raceId,detail);
   assert.equal(live.view(raceId).status,'waiting');
+  assert.match(live.view(raceId).reason,/completion/);
   await live.update(raceId,detail,completion);
   const first=live.view(raceId);
   assert.equal(first.status,'live');
@@ -136,6 +161,7 @@ test('Reviewed regular-model release runs off-thread, keeps history on restart, 
   await reloaded.update(raceId,{...detail,provider:'CivicAPI'},completion);
   assert.equal(reloaded.view(raceId).status,'stale');
   assert.deepEqual(reloaded.view(raceId).points,first.points);
+  assert.match(reloaded.view(raceId).reason,/verified NBC update/);
 });
 
 test('Regional completion guard and large outstanding county outweigh an unrepresentative early lead',()=>{

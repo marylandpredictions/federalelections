@@ -18,6 +18,20 @@ const voteFields=['demVotes','repVotes','totalVotes'];
 const reconciles=(rows,reference,tolerance=0)=>Boolean(reference) &&
   voteFields.every(field=>Math.abs(rows.reduce((sum,row)=>sum+row[field],0)-reference[field])<=tolerance);
 
+export function probabilityGeographyBasis(geography) {
+  const rows=geography.countyReferences, reference=geography.reference;
+  if (!reference || rows.length<2) return null;
+  if (reconciles(rows,reference,geography.districtCountySource?1:0)) return 'all-votes';
+  // Statewide FEC controls and published county returns sometimes differ
+  // only in the number of other votes. Use two-party geographic weights
+  // only when both major-party counts still reconcile exactly.
+  const difference=geography.countyAggregationDifference;
+  if (geography.geographicScope==='statewide' && difference &&
+      voteFields.every(field=>rows.reduce((sum,row)=>sum+row[field],0)-reference[field]===(difference[field] ?? 0)) &&
+      !difference.demVotes && !difference.repVotes) return 'two-party-votes';
+  return null;
+}
+
 export function matchFrozenCandidateCenter(race,forecast,{availableAt,source}) {
   const row=forecast?.row, election=race.electionDate || race.date;
   const cutoff=dateTime(election+'T00:00:00Z');
@@ -81,6 +95,7 @@ export function readGeographicReferences(root=process.cwd(),{ohioDistrictCsv}={}
   const geometry=read('data/results/district-geography.json');
   const catalogue=read('data/election-night-races.json').races;
   const stateRows=new Map(state.states.filter(validReference).map(row=>[row.state,row]));
+  const differences=new Map((state.countyAggregationDifferences || []).map(row=>[row.state,row.countyMinusOfficial]));
   const districtRows=new Map(district.districts.filter(validReference).filter(row=>{
     const boundary=geometry.districts[row.id];
     return row.geographyVerified && boundary?.currentComparable && boundary.geometryId===row.geometryId;
@@ -101,6 +116,7 @@ export function readGeographicReferences(root=process.cwd(),{ohioDistrictCsv}={}
     return {raceId:race.id,office:race.type,state:race.state,reference:reference || null,
       referenceSource:key?district.sourceUrl:state.sourceUrl,
       countySource:portions?.source || county.sourceUrl,countyReferences:portions?.rows || (statewide?counties.get(race.state)||[]:[]),
+      ...(!key && differences.has(race.state)?{countyAggregationDifference:differences.get(race.state)}:{}),
       ...(portions?{districtCountySource:{sha256:portions.sha256,geometryId:portions.geometryId}}:{}),
       geographicScope:statewide?'statewide':'district'};
   });
@@ -123,26 +139,38 @@ export function buildCountyProbabilityPrior(geography,forecast) {
     Number.isSafeInteger(forecast.turnout) && forecast.turnout>=geography.countyReferences.length &&
     Number.isFinite(forecast.turnoutLogSd) && forecast.turnoutLogSd>0 && forecast.turnoutLogSd<=1,
   'Missing frozen turnout or forecast provenance');
-  const pair=forecast.candidates;
-  const dem=pair?.find(c=>displayParty(c)==='D'), rep=pair?.find(c=>displayParty(c)==='R');
-  requireInput(pair?.length===2 && dem && rep && dem.id!==rep.id &&
-    pair.every(c=>typeof c.id==='string' && /^[\w-]{1,100}$/.test(c.id) && c.share>0 && c.share<1) &&
-    Math.abs(dem.share+rep.share-1)<1e-6,'County re-centering requires a frozen two-candidate forecast');
+  const candidates=forecast.candidates;
+  const democrats=candidates?.filter(c=>displayParty(c)==='D'), republicans=candidates?.filter(c=>displayParty(c)==='R');
+  requireInput(candidates?.length>=2 && candidates.length<=12 && democrats.length===1 && republicans.length===1 &&
+    candidates.every(c=>typeof c.id==='string' && /^[\w-]{1,100}$/.test(c.id) && c.share>0 && c.share<1) &&
+    new Set(candidates.map(c=>c.id)).size===candidates.length &&
+    Math.abs(candidates.reduce((sum,c)=>sum+c.share,0)-1)<1e-6,'County re-centering requires a complete frozen candidate forecast');
+  const [dem]=democrats, [rep]=republicans;
+  const other=candidates.filter(c=>c!==dem && c!==rep);
   const countyRows=geography.countyReferences;
-  const historicTotal=countyRows.reduce((sum,row)=>sum+row.totalVotes,0);
+  const geographyBasis=probabilityGeographyBasis(geography);
   requireInput(new Set(countyRows.map(row=>row.fips)).size===countyRows.length &&
     countyRows.every(row=>validReference(row) && row.state===geography.state &&
       /^[\w-]{1,100}$/.test(forecast.regions?.[row.fips] || '')) &&
-    reconciles(countyRows,geography.reference,district?1:0),
+    geographyBasis,
   'County references do not fully reconcile to the race geography');
+  const geographicVotes=row=>geographyBasis==='two-party-votes'?row.demVotes+row.repVotes:row.totalVotes;
+  const historicTotal=countyRows.reduce((sum,row)=>sum+geographicVotes(row),0);
   const allocated=countyRows.map(row=>{
-    const amount=forecast.turnout*row.totalVotes/historicTotal;
-    return {row,turnout:Math.floor(amount),fraction:amount%1,logOdds:Math.log(row.demVotes/row.repVotes)};
+    const amount=forecast.turnout*geographicVotes(row)/historicTotal;
+    const profile=forecast.otherUnitShares?.[row.fips];
+    const shares=Object.fromEntries(other.map(candidate=>[candidate.id,profile?.[candidate.id]]));
+    const majorShare=1-Object.values(shares).reduce((sum,share)=>sum+share,0);
+    requireInput(majorShare>0 && Object.values(shares).every(share=>Number.isFinite(share) && share>0),
+      'Missing frozen county shares for additional candidates');
+    return {row,turnout:Math.floor(amount),fraction:amount%1,logOdds:Math.log(row.demVotes/row.repVotes),shares,majorShare};
   });
   const remaining=forecast.turnout-allocated.reduce((sum,unit)=>sum+unit.turnout,0);
   for (const unit of [...allocated].sort((a,b)=>b.fraction-a.fraction || a.row.fips.localeCompare(b.row.fips)).slice(0,remaining)) unit.turnout++;
   requireInput(allocated.every(unit=>unit.turnout>0),'Expected turnout leaves a unit without a prior');
-  const share=(unit,shift)=>1/(1+Math.exp(-unit.logOdds-shift));
+  requireInput(other.every(candidate=>Math.abs(allocated.reduce((sum,unit)=>sum+unit.turnout*unit.shares[candidate.id],0)/
+    forecast.turnout-candidate.share)<1e-6),'Additional candidate county shares do not reconcile to the race forecast');
+  const share=(unit,shift)=>unit.majorShare/(1+Math.exp(-unit.logOdds-shift));
   let low=-60, high=60;
   for (let i=0;i<60;i++) {
     const shift=(low+high)/2;
@@ -152,12 +180,14 @@ export function buildCountyProbabilityPrior(geography,forecast) {
   }
   return {raceId:geography.raceId,office:geography.office,rule:forecast.rule,electionDate:forecast.electionDate,
     availableAt:forecast.availableAt,source:forecast.source+'; geographic reference: '+geography.countySource,
+    geographyBasis,
     ...(district?{districtCountySource:geography.districtCountySource}:{}),
-    candidateIds:[dem.id,rep.id],marginCandidateIds:[dem.id,rep.id],
+    candidateIds:[dem.id,rep.id,...other.map(candidate=>candidate.id)],marginCandidateIds:[dem.id,rep.id],
     units:allocated.map(unit=>{
       const d=share(unit,(low+high)/2);
+      requireInput(d>0 && d<unit.majorShare,'The frozen county shares exceed numeric precision');
       return {id:unit.row.fips,region:forecast.regions[unit.row.fips],turnout:unit.turnout,
-        turnoutLogSd:forecast.turnoutLogSd,shares:{[dem.id]:d,[rep.id]:1-d}};
+        turnoutLogSd:forecast.turnoutLogSd,shares:{[dem.id]:d,[rep.id]:unit.majorShare-d,...unit.shares}};
     })};
 }
 
@@ -235,7 +265,7 @@ if (process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href) {
     const rows=races.filter(race=>race.office===office);
     return [office,{races:rows.length,matchedRaceReference:rows.filter(race=>race.reference).length,
       hasCountyReferences:rows.filter(race=>race.countyReferences.length).length,
-      reconciledMultiUnitReferences:rows.filter(race=>race.countyReferences.length>=2 &&
-        reconciles(race.countyReferences,race.reference,race.districtCountySource?1:0)).length}];
+      reconciledMultiUnitReferences:rows.filter(race=>probabilityGeographyBasis(race)==='all-votes').length,
+      additionalTwoPartyReferences:rows.filter(race=>probabilityGeographyBasis(race)==='two-party-votes').length}];
   })),null,2));
 }
