@@ -82,6 +82,10 @@ test('Geographic prior uses compatible reporting units and preserves a frozen ca
   multi.otherUnitShares[geography.countyReferences[0].fips]={l:.06};
   assert.throws(()=>buildCountyProbabilityPrior(geography,multi),/do not reconcile/);
   assert.throws(()=>readGeographicReferences(process.cwd(),{ohioDistrictCsv:'ShortName,CD,Harris,Trump,Total\nBad,1,1,1,2'}),/Unmapped/);
+  const duplicatedSplit=['County,ShortName,CD,Harris,Trump,Total',
+    'Deaf Smith,DeafSmith,19,10,20,30',',Split E/A/P Votes,,,,',
+    'Deaf Smith,DeafSmith,19,0,2,2','Deaf Smith,DeafSmith,19,0,2,2'].join('\n');
+  assert.throws(()=>readGeographicReferences(process.cwd(),{texasDistrictCsv:duplicatedSplit}),/duplicate split ballot row/);
 });
 
 test('NBC expected vote metadata never supplies a completion notice',()=>{
