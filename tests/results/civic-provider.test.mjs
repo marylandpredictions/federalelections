@@ -32,11 +32,12 @@ test('Secondary source respects Retry-After and does not continue requests durin
  clock+=61000;await assert.rejects(()=>provider.fetchResults([local]));assert.equal(requests,1);
  clock+=61000;assert.equal((await provider.fetchResults([local]))[0].provider,'CivicAPI');assert.equal(requests,2);
 });
-test('CivicAPI cannot release pending NBC calls; last-good fallback votes and published calls recover after restart',async t=>{
+test('CivicAPI cannot release pending calls and yields to valid NBC counts after restart',async t=>{
  const root=await mkdtemp(join(tmpdir(),'fea-civic-'));t.after(()=>rm(root,{recursive:true,force:true}));await mkdir(join(root,'data'));
  await writeFile(join(root,'data/election-night-races.json'),JSON.stringify({races:[local]}));await writeFile(join(root,'data/results-provider.json'),JSON.stringify(config));await writeFile(join(root,'data/result-calls.json'),'{"races":{}}');
- let clock=Date.parse('2026-11-03T18:00:00Z'),outage=false,civicOffline=false,caughtUp=false,recovering=false;
- const primary={async fetchResults(){if(outage)throw Error('NBC offline');return [{...local,candidates:local.candidates.map((c,i)=>({...c,votes:caughtUp?(i===0?55:i===1?50:0):recovering?(i===0?54:i===1?51:0):0})),provider:'NBC',providerRaceId:'CO',providerCallVerified:true,providerCall:{candidate:local.candidates[0].name,status:'projected'},lastUpdated:new Date(clock).toISOString()}];}};
+ const firstNbc=Date.parse('2026-11-03T18:00:00Z');
+ let clock=firstNbc,nbcAt=firstNbc,nbcVotes=[40,30],outage=false,civicOffline=false;
+ const primary={async fetchResults(){if(outage)throw Error('NBC offline');return [{...local,candidates:local.candidates.map((c,i)=>({...c,votes:nbcVotes[i]||0})),provider:'NBC',providerRaceId:'CO',providerCallVerified:true,providerCall:{candidate:local.candidates[0].name,status:'projected'},lastUpdated:new Date(nbcAt).toISOString()}];}};
  const provider=new ResultsProvider(config,{primary,now:()=>clock,fetchImpl:async()=>{if(civicOffline)throw Error('Civic offline');const raw=structuredClone(fixture);raw.last_updated=new Date(clock).toISOString();raw.candidates[0].votes=55;raw.candidates[1].votes=45;raw.candidates.push({candidate_id:987654,name:"Write-in",party:"Write-In",votes:3});return new Response(JSON.stringify(raw));}});
  const options={root,storageDir:join(root,'disk'),provider,now:()=>clock,graceSeconds:30,pollSeconds:15};const control=await new ResultsControl(options).init();await control.poll();
  const race=c=>c.results().groups.flatMap(g=>g.races)[0];assert.equal(control.state(local.id).callState,'NBC_PENDING');assert.equal(race(control).calls.length,0);
@@ -44,8 +45,14 @@ test('CivicAPI cannot release pending NBC calls; last-good fallback votes and pu
  await control.action({action:'publish',raceId:local.id});assert.equal(race(control).calls[0].provider,'NBC');
  const restarted=await new ResultsControl(options).init();assert.equal(race(restarted).candidates.reduce((n,c)=>n+c.votes,0),103);assert.equal(race(restarted).calls[0].provider,'NBC');
  civicOffline=true;provider.cache.clear();clock+=61000;await restarted.poll();assert.equal(race(restarted).candidates.reduce((n,c)=>n+c.votes,0),103);assert.equal(race(restarted).calls.length,1);
- outage=false;recovering=true;clock+=61000;await restarted.poll();assert.equal(race(restarted).provider,'CivicAPI');assert.equal(race(restarted).candidates.reduce((n,c)=>n+c.votes,0),103);assert.ok(restarted.health().quarantined.some(r=>/Source switch is behind/.test(r.reason)));
- caughtUp=true;clock+=61000;await restarted.poll();assert.equal(race(restarted).provider,'NBC');assert.equal(race(restarted).candidates.reduce((n,c)=>n+c.votes,0),105);assert.equal(restarted.health().fallbackRaceCount,0);
+ outage=false;nbcAt=firstNbc-1000;nbcVotes=[54,45];clock+=61000;await restarted.poll();
+ assert.equal(race(restarted).provider,'CivicAPI');assert.ok(restarted.health().quarantined.some(r=>/Regressed provider timestamp/.test(r.reason)));
+ nbcAt=firstNbc+30000;nbcVotes=[0,0];clock+=150000;await restarted.poll();
+ assert.equal(race(restarted).provider,'CivicAPI');assert.ok(restarted.health().quarantined.some(r=>/zero-vote reset/.test(r.reason)));
+ nbcVotes=[54,45];clock+=180000;await restarted.poll();
+ assert.equal(race(restarted).provider,'NBC');assert.equal(race(restarted).candidates.reduce((n,c)=>n+c.votes,0),99);
+ assert.equal(race(restarted).calls[0].provider,'NBC');assert.equal(restarted.health().fallbackRaceCount,0);
+ assert.equal(Object.hasOwn(race(restarted),'_lastNbcVotes'),false);
 });
 
 

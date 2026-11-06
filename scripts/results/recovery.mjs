@@ -11,7 +11,12 @@ export function validateCalls(calls){
 }
 export function validateRuntime(runtime){
   if(!object(runtime)||!object(runtime.races)||runtime.schemaVersion!==undefined&&runtime.schemaVersion!==1||runtime.health!==undefined&&!object(runtime.health)||runtime.audit!==undefined&&!Array.isArray(runtime.audit))throw Error('Invalid saved runtime schema');
-  for(const[id,race]of Object.entries(runtime.races||{}))if(!object(race)||race.id!==id||!Array.isArray(race.candidates)||!race.candidates.length||race.candidates.some(c=>!object(c)||typeof c.name!=='string'||!Number.isSafeInteger(c.votes)||c.votes<0))throw Error('Invalid saved result: '+id);
+  const validCandidates=rows=>Array.isArray(rows)&&rows.length&&rows.every(c=>object(c)&&typeof c.name==='string'&&Number.isSafeInteger(c.votes)&&c.votes>=0);
+  for(const[id,race]of Object.entries(runtime.races||{})){
+    if(!object(race)||race.id!==id||!validCandidates(race.candidates))throw Error('Invalid saved result: '+id);
+    const checkpoint=race._lastNbcVotes;
+    if(checkpoint!==undefined&&(!object(checkpoint)||!validCandidates(checkpoint.candidates)))throw Error('Invalid saved NBC checkpoint: '+id);
+  }
   if(runtime.committedCalls)validateCalls(runtime.committedCalls);
   return runtime;
 }

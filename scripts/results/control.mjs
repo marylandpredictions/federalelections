@@ -8,7 +8,7 @@ import { createHash } from "node:crypto";
 import { resultStorage } from './storage.mjs';
 import { auditRosters } from './roster-audit.mjs';
 import {readStateFile,validateCalls,validateRuntime} from './recovery.mjs';
-const resultFingerprint = r => createHash('sha256').update(JSON.stringify([r.candidates,r.expectedVotePercent,r.reportingPercent,r.providerCall,(r.counties||[]).map(({lastUpdated,...c})=>c)])).digest('hex');
+const resultFingerprint = r => createHash('sha256').update(JSON.stringify([r.provider,r.candidates,r.expectedVotePercent,r.reportingPercent,r.providerCall,(r.counties||[]).map(({lastUpdated,...c})=>c)])).digest('hex');
 const numberSetting = (value, fallback, min) =>
   Number.isFinite(Number(value)) && Number(value) >= min
     ? Number(value)
@@ -245,24 +245,27 @@ export class ResultsControl {
           )
             throw Error("Provider call candidate missing");
           seen.add(r.id);
-          const before=Date.parse(this.runtime.races[r.id]?.lastUpdated||''),after=Date.parse(r.lastUpdated||'');
+          const prior=this.runtime.races[r.id];
+          const returningToNbc=prior?.provider==='CivicAPI'&&r.provider==='NBC';
+          // The feeds can have different clocks and include different vote batches.
+          const voteBaseline=returningToNbc?prior._lastNbcVotes||prior:prior;
+          const before=Date.parse(returningToNbc?prior._lastNbcVotes?.lastUpdated:prior?.lastUpdated),after=Date.parse(r.lastUpdated);
           if(Number.isFinite(before)&&Number.isFinite(after)&&after<before)throw Error('Regressed provider timestamp; last-good race retained');
           if((this.runtime.races[r.id]?.candidates||[]).some(c=>c.votes>0)&&!r.candidates.some(c=>c.votes>0))throw Error('Unexpected zero-vote reset; last-good race retained for review');
-          const prior=this.runtime.races[r.id],oldTotal=(prior?.candidates||[]).reduce((n,c)=>n+c.votes,0),newTotal=r.candidates.reduce((n,c)=>n+c.votes,0);
+          const oldTotal=(prior?.candidates||[]).reduce((n,c)=>n+c.votes,0),newTotal=r.candidates.reduce((n,c)=>n+c.votes,0);
+          const baselineTotal=voteBaseline===prior?oldTotal:voteBaseline.candidates.reduce((n,c)=>n+c.votes,0);
           if(!Number.isSafeInteger(newTotal))throw Error('Unsafe total vote count');
-          // A recovered NBC feed may omit a fallback-only minor or aggregate
-          // write-in row. Keep the total and shared candidate rollback checks.
-          if(prior?.provider&&r.provider&&prior.provider!==r.provider){
-            const returningToNbc=prior.provider==='CivicAPI'&&r.provider==='NBC';
+          if(prior?.provider&&r.provider&&prior.provider!==r.provider&&!returningToNbc){
             const regressed=prior.candidates.some(candidate=>{
               const next=r.candidates.find(c=>c.name===candidate.name);
               if(next)return next.votes<candidate.votes;
-              return candidate.votes>0&&(!returningToNbc||['D','R'].includes(candidate.partyCode||candidate.party));
+              return candidate.votes>0;
             });
             if(newTotal<oldTotal||regressed)throw Error('Source switch is behind last-good vote totals; retained newer results');
           }
-          if(oldTotal>=100&&newTotal<oldTotal*.5)throw Error('Suspicious partial vote reset; last-good race retained for review');
-          if((prior?.candidates||[]).some(c=>c.votes>=100&&r.candidates.some(k=>k.name===c.name&&k.votes===0)))throw Error('Candidate vote reset; last-good race retained for review');
+          const resetBaseline=Math.max(oldTotal,baselineTotal);
+          if(resetBaseline>=100&&newTotal<resetBaseline*.5)throw Error('Suspicious partial vote reset; last-good race retained for review');
+          if((voteBaseline?.candidates||[]).some(c=>c.votes>=100&&r.candidates.some(k=>k.name===c.name&&k.votes===0)))throw Error('Candidate vote reset; last-good race retained for review');
           if(['national','civic-fallback'].includes(r.providerScope)&&!r.counties?.length&&prior?.counties?.length)r.counties=prior.counties;
           races.push(r);
           } catch(error){quarantined.push({race:r?.id||'Unknown',reason:error.message});}
@@ -282,7 +285,10 @@ export class ResultsControl {
           // Fetch time is deliberately excluded: a successful request is not a new result.
           const signature = resultFingerprint(r);
           if (signature !== prior?._signature) changed = true;
-          this.runtime.races[r.id] = { ...r, _signature: signature };
+          const lastNbcVotes=r.provider==='CivicAPI'&&(prior?.provider==='NBC'
+            ? {lastUpdated:prior.lastUpdated,candidates:prior.candidates.map(({name,votes})=>({name,votes}))}
+            : prior?._lastNbcVotes);
+          this.runtime.races[r.id] = { ...r, _signature: signature, ...(lastNbcVotes?{_lastNbcVotes:lastNbcVotes}:{}) };
           if (r.providerCall) {
             if (!r.candidates.some((c) => c.name === r.providerCall.candidate))
               throw Error("Provider call candidate missing");
@@ -599,7 +605,7 @@ export class ResultsControl {
       const raw = this.visible.runtime.races[base.id] || base;
       const s = this.visible.calls.races[base.id] || {};
       const calls = (s.calls || []).map(call=>({...call,provider:call.provider==='NBC'||/^nbc-/.test(call.source||'')?'NBC':'FEA'}));
-      const { _signature, providerCall, counties, ...safe } = raw;
+      const { _signature, _lastNbcVotes, providerCall, counties, ...safe } = raw;
       return {
         ...safe,
         detailVersion: _signature || "",
