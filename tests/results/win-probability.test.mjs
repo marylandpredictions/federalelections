@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,rm} from 'node:fs/promises';
+import {mkdtemp,rm,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
@@ -86,6 +86,28 @@ test('Geographic prior uses compatible reporting units and preserves a frozen ca
     'Deaf Smith,DeafSmith,19,10,20,30',',Split E/A/P Votes,,,,',
     'Deaf Smith,DeafSmith,19,0,2,2','Deaf Smith,DeafSmith,19,0,2,2'].join('\n');
   assert.throws(()=>readGeographicReferences(process.cwd(),{texasDistrictCsv:duplicatedSplit}),/duplicate split ballot row/);
+});
+
+test('Nationwide workbook import checks district totals and isolates unmapped source districts',async t=>{
+  const directory=await mkdtemp(join(tmpdir(),'fea-probability-tables-'));
+  t.after(()=>rm(directory,{recursive:true,force:true}));
+  const {races}=readGeographicReferences();
+  const ny=races.find(row=>row.raceId==='house-NY-11').reference;
+  const mid=value=>Math.floor(value/2);
+  const first=[mid(ny.demVotes),mid(ny.repVotes),mid(ny.totalVotes)];
+  const second=[ny.demVotes,ny.repVotes,ny.totalVotes].map((votes,i)=>votes-first[i]);
+  await writeFile(join(directory,'NY.csv'),[
+    'County,ShortName,CD,Harris,Trump,Total',
+    'NYC - Staten Island,NYC_SI,11,'+first.join(','),
+    'NYC - Brooklyn (pt.),NYC_BK,11,'+second.join(','),
+    'Unmapped,Unmapped,12,1,1,2',
+  ].join('\n'));
+  const loaded=readGeographicReferences(process.cwd(),{districtTablesDir:directory});
+  const district=loaded.races.find(row=>row.raceId==='house-NY-11');
+  assert.equal(probabilityGeographyBasis(district),'all-votes');
+  assert.deepEqual(district.countyReferences.map(row=>row.fips),['36085','36047']);
+  assert.match(loaded.workbooks.NY.rejected['NY-12'],/Unmapped county/);
+  assert.equal(loaded.workbooks.CA.error,'Table export missing');
 });
 
 test('NBC expected vote metadata never supplies a completion notice',()=>{

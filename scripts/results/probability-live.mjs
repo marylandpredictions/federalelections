@@ -129,6 +129,16 @@ export class LiveProbability {
       points: race.points};
   }
 
+  coverage(catalogue) {
+    const counts = {live:0, stale:0, waiting:0, unavailable:0};
+    const races = catalogue.map(({id,type}) => {
+      const {status,reason} = this.view(id);
+      counts[status]++;
+      return {id,office:type,status,...(reason ? {reason} : {})};
+    });
+    return {total:races.length,counts,races};
+  }
+
   async update(id, detail, completion) {
     const race = this.races.get(id);
     if (!race) return;

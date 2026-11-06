@@ -1152,6 +1152,10 @@ createServer(async (request, response) => {
   if (url.pathname === "/api/live-results/probability") {
     const id = url.searchParams.get("id");
     if (request.method !== "GET") sendJson(response, 405, {error: "Method not allowed"});
+    else if (url.searchParams.get("coverage") === "1" && !id) {
+      const control = await getResultsControl();
+      sendJson(response, 200, liveProbability.coverage(control.catalogue));
+    }
     else if (!isValidRaceId(id)) sendJson(response, 400, {error: "Invalid race"});
     else sendJson(response, 200, liveProbability.view(id));
     return;

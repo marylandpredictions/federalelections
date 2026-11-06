@@ -32,6 +32,9 @@ async function verify(server,raw){
  const heartbeat=await fetch(server.url+'/api/results-version',{headers:{'If-None-Match':'"'+full.version+'"'}});assert.equal(heartbeat.status,304);
  const forecast=await fetch(server.url+'/api/live-results/probability?id='+raw.id);
  assert.equal(forecast.status,200);assert.equal((await forecast.json()).status,'unavailable');
+ const coverage=await(await fetch(server.url+'/api/live-results/probability?coverage=1')).json();
+ assert.equal(coverage.total,1);assert.equal(coverage.counts.unavailable,1);
+ assert.deepEqual(coverage.races.map(row=>row.id),[raw.id]);
  assert.equal((await fetch(server.url+'/api/live-results/probability?id=bad%2Fid')).status,400);
 }
 test('Operational restart/redeploy: separate storage retains calls, override, audit, history and last-good votes with provider unavailable',async t=>{

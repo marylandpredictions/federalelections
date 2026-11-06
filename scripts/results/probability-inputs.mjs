@@ -17,6 +17,14 @@ const districtWorkbooks={
   OH:{districts:15,counties:88,source:'https://docs.google.com/spreadsheets/d/13Eo-aFP037lDWPJ9gWgB3ak_P3ROB4R9i_mnnDOXWM4/edit'},
   TX:{districts:38,counties:254,source:'https://docs.google.com/spreadsheets/d/10OEwH1xjBSlzdjH2v8EoGxtZxAwg50G2CPQvi4P8ovQ/edit',splitBallots:true},
 };
+// Some publisher labels refer to a borough or an election authority
+// within a Census county. Keep these source partitions distinct while
+// aggregating their votes to the county's FIPS code.
+const workbookCountyAliases={
+  NY:{NYC_BX:'Bronx',NYC_BK:'Kings',NYC_MN:'New York',NYC_QN:'Queens',NYC_SI:'Richmond'},
+  IL:{CookChicago:'Cook',CookSuburban:'Cook','St. ClairEastStLouis':'St. Clair',
+    VermilionDanville:'Vermilion',WinnebagoRockford:'Winnebago'},
+};
 const voteFields=['demVotes','repVotes','totalVotes'];
 const reconciles=(rows,reference,tolerance=0)=>Boolean(reference) &&
   voteFields.every(field=>Math.abs(rows.reduce((sum,row)=>sum+row[field],0)-reference[field])<=tolerance);
@@ -66,60 +74,85 @@ export function matchFrozenCandidateCenter(race,forecast,{availableAt,source}) {
     projectedMargin:row.projectedMargin,twoCandidateRace:roster.length===2};
 }
 
-function districtCounties(state,csv,countyRows,districtRows) {
-  const workbook=districtWorkbooks[state];
-  const countyKey=value=>value?.toUpperCase().replace(/\s+/g,'');
+function districtCounties(state,csv,countyRows,districtRows,workbook=districtWorkbooks[state],partial=false) {
+  const countyKey=value=>value?.replace(/\s*\(pt\.\)\s*$/i,'').toUpperCase().replace(/[\s.'’-]+/g,'');
   const fipsByName=new Map(countyRows.map(row=>[countyKey(row.county),row.fips]));
   requireInput(fipsByName.size===workbook.counties,'Ambiguous or incomplete county index for '+state);
-  const rowsByDistrict=new Map(), countyPortions=new Map(), splitRows=new Set();
+  const rowsByDistrict=new Map(), countyPortions=new Map(), splitRows=new Set(), baseRows=new Set(), rejected=new Map();
   let section='base';
   for (const row of parseDelimited(csv)) {
-    if (row.ShortName?.trim()==='Split Counties' && !row.CD && !row.County && !row.Total) continue;
-    if (workbook.splitBallots && !row.CD && !row.Total) {
+    if (/^Split (?:Counties|County|Parishes)$/.test(row.ShortName?.trim()) && !row.CD && !row.County && !row.Total) continue;
+    if ((workbook.splitBallots || partial) && !row.CD && !row.Total) {
       if (row.ShortName==='Split E/A/P Votes' && section==='base') {section='split';continue;}
-      if (row.County==='Total E/A/P Votes' && section==='split') {section='control';continue;}
+      if ((row.County==='Total E/A/P Votes'||row.ShortName==='Total E/A/P Votes') && section==='split') {section='control';continue;}
     }
+    // Some state workbooks put county-only control rows after the split
+    // district rows without a separate heading. They have no district ID.
+    if (partial && section==='split' && !row.CD && row.ShortName && row.Total) section='control';
     if (section==='control' && !row.CD) continue; // County control totals, not additional ballots.
     const id=state+'-'+row.CD?.padStart(2,'0');
-    const fips=fipsByName.get(countyKey(row.ShortName));
+    const label=row.ShortName || row.County || row.Parish || row.Island;
+    const alias=partial && Object.hasOwn(workbookCountyAliases[state] || {},label) && workbookCountyAliases[state][label];
+    const fips=fipsByName.get(countyKey(alias || label));
     const key=id+':'+fips;
-    requireInput(districtRows.has(id) && fips && section!=='control','Unmapped '+state+' district county portion');
+    const sourceKey=alias ? key+':'+label : key;
+    requireInput(districtRows.has(id) && section!=='control','Unmapped '+state+' district county portion');
+    if (!fips && partial) {rejected.set(id,'Unmapped county: '+(row.ShortName || row.County || row.Parish || row.Island || 'unnamed'));continue;}
+    requireInput(fips,'Unmapped '+state+' district county portion');
     const votes=Object.fromEntries(['Harris','Trump','Total'].map((column,i)=>{
       const value=row[column]?.trim().replaceAll(',','');
       return [voteFields[i],/^\d+$/.test(value)?Number(value):NaN];
     }));
+    const validCounts=voteFields.every(field=>Number.isSafeInteger(votes[field])) &&
+      votes.demVotes+votes.repVotes<=votes.totalVotes;
+    if (!validCounts && partial) {rejected.set(id,'Invalid ballot counts for '+fips);continue;}
     if (section==='split') {
       const county=countyPortions.get(key);
-      requireInput(county && !splitRows.has(key) && voteFields.every(field=>Number.isSafeInteger(votes[field])) &&
-        votes.demVotes+votes.repVotes<=votes.totalVotes,'Invalid or duplicate split ballot row for '+key);
-      splitRows.add(key);
+      if ((!county || splitRows.has(sourceKey)) && partial) {rejected.set(id,'Unmatched or duplicate split ballot row for '+fips);continue;}
+      requireInput(county && !splitRows.has(sourceKey) && validCounts,'Invalid or duplicate split ballot row for '+key);
+      splitRows.add(sourceKey);
       for (const field of voteFields) county[field]+=votes[field];
       continue;
     }
     const county={state,fips,valid:true,...votes};
-    requireInput(!countyPortions.has(key) && validReference(county),'Invalid or duplicate district county returns for '+key);
+    const precinct=partial && row.Precinct?.trim();
+    const baseKey=JSON.stringify([sourceKey,precinct || null,precinct && (row.Town || row.Municipality || null)]);
+    if (partial && baseRows.has(baseKey)) {rejected.set(id,'Duplicate source row for '+fips);continue;}
+    requireInput(partial || !countyPortions.has(key) && validReference(county),'Invalid or duplicate district county returns for '+key);
+    baseRows.add(baseKey);
+    if (countyPortions.has(key)) {
+      const portion=countyPortions.get(key);
+      for (const field of voteFields) portion[field]+=votes[field];
+      continue;
+    }
     countyPortions.set(key,county);
     const district=rowsByDistrict.get(id)||[];
     district.push(county);
     rowsByDistrict.set(id,district);
   }
-  requireInput(rowsByDistrict.size===workbook.districts &&
+  requireInput(partial || rowsByDistrict.size===workbook.districts &&
     new Set([...countyPortions.values()].map(row=>row.fips)).size===workbook.counties &&
     (!workbook.splitBallots || section==='control' && splitRows.size>0),
   state+' workbook does not cover all current districts, counties and ballot sections');
   const sha256=createHash('sha256').update(csv).digest('hex');
-  for (const [id,rows] of rowsByDistrict) {
-    const reference=districtRows.get(id);
+  const accepted=new Map();
+  for (const [id,reference] of districtRows) {
+    if (reference.state!==state) continue;
+    const rows=rowsByDistrict.get(id) || [];
     // The published table exports rounded county portions. Require all
     // three sums to agree to within one vote with the district reference.
-    requireInput(reconciles(rows,reference,1),
-      state+' workbook totals do not match verified boundaries for '+id);
-    rowsByDistrict.set(id,{rows,source:workbook.source,sha256,geometryId:reference.geometryId});
+    const compatible=rows.length && rows.every(validReference) && reconciles(rows,reference,1);
+    if (partial && (rejected.has(id) || !compatible)) {
+      if (!rejected.has(id)) rejected.set(id,'County totals do not match the district reference or include an empty unit.');
+      continue;
+    }
+    requireInput(compatible,state+' workbook totals do not match verified boundaries for '+id);
+    accepted.set(id,{rows,source:workbook.source,sha256,geometryId:reference.geometryId});
   }
-  return rowsByDistrict;
+  return {accepted,rejected:Object.fromEntries(rejected)};
 }
 
-export function readGeographicReferences(root=process.cwd(),{ohioDistrictCsv,texasDistrictCsv}={}) {
+export function readGeographicReferences(root=process.cwd(),{ohioDistrictCsv,texasDistrictCsv,districtTablesDir}={}) {
   const read = path => JSON.parse(readFileSync(join(root,path),'utf8'));
   const state=read('data/baselines/pres-2024-states.json');
   const county=read('data/baselines/pres-2024-counties.json');
@@ -140,7 +173,25 @@ export function readGeographicReferences(root=process.cwd(),{ohioDistrictCsv,tex
     counties.set(row.state,rows);
   }
   const districtPortions=new Map(Object.entries({OH:ohioDistrictCsv,TX:texasDistrictCsv})
-    .filter(([,csv])=>csv!==undefined).flatMap(([code,csv])=>[...districtCounties(code,csv,counties.get(code),districtRows)]));
+    .filter(([,csv])=>csv!==undefined).flatMap(([code,csv])=>[...districtCounties(code,csv,counties.get(code),districtRows).accepted]));
+  const workbooks={};
+  if (districtTablesDir) {
+    const index=read('data/results/probability-district-workbooks.json').workbooks;
+    for (const [code,spreadsheet] of Object.entries(index)) {
+      const targets=[...districtRows.values()].filter(row=>row.state===code);
+      if (targets.length<=1) continue;
+      try {
+        const csv=readFileSync(join(districtTablesDir,code+'.csv'),'utf8');
+        const source='https://docs.google.com/spreadsheets/d/'+spreadsheet+'/edit';
+        const {accepted,rejected}=districtCounties(code,csv,counties.get(code)||[],districtRows,
+          {source,districts:targets.length,counties:counties.get(code)?.length || 0},true);
+        for (const [id,rows] of accepted) districtPortions.set(id,rows);
+        workbooks[code]={source,accepted:accepted.size,total:targets.length,rejected};
+      } catch(error) {
+        workbooks[code]={accepted:0,total:targets.length,error:error.code==='ENOENT'?'Table export missing':error.message};
+      }
+    }
+  }
   const races=catalogue.map(race=>{
     const key=race.type==='house'?districtKey(race):null;
     const reference=key?districtRows.get(key):stateRows.get(race.state);
@@ -154,14 +205,14 @@ export function readGeographicReferences(root=process.cwd(),{ohioDistrictCsv,tex
       ...(portions?{districtCountySource:{sha256:portions.sha256,geometryId:portions.geometryId}}:{}),
       geographicScope:statewide?'statewide':'district'};
   });
-  return {races};
+  return {races,workbooks};
 }
 
 // Use historical geography for *relative* differences. An independently
 // dated candidate forecast anchors the race's overall expected vote share.
 export function buildCountyProbabilityPrior(geography,forecast) {
   const district=geography?.geographicScope==='district' &&
-    geography.countySource===districtWorkbooks[geography.state]?.source && geography.reference?.geographyVerified &&
+    /^https:\/\/docs\.google\.com\/spreadsheets\/d\/[\w-]+\/edit$/.test(geography.countySource || '') && geography.reference?.geographyVerified &&
     geography.districtCountySource?.geometryId===geography.reference.geometryId &&
     /^[a-f0-9]{64}$/.test(geography.districtCountySource?.sha256 || '');
   requireInput((district || geography?.geographicScope==='statewide') && validReference(geography.reference) &&
@@ -295,11 +346,11 @@ export function evaluateRegularProbability(prior,detail,roster,{maxAgeMs,...capt
 
 if (process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href) {
   const [ohio,texas]=process.argv.slice(2);
-  const {races}=readGeographicReferences(process.cwd(),{
+  const {races,workbooks}=readGeographicReferences(process.cwd(),ohio==='--district-tables'?{districtTablesDir:texas}:{
     ohioDistrictCsv:ohio && ohio!=='-' ? readFileSync(ohio,'utf8') : undefined,
     texasDistrictCsv:texas ? readFileSync(texas,'utf8') : undefined,
   });
-  console.log(JSON.stringify(Object.fromEntries(['house','senate','governor'].map(office=>{
+  const summary=Object.fromEntries(['house','senate','governor'].map(office=>{
     const rows=races.filter(race=>race.office===office);
     return [office,{races:rows.length,matchedRaceReference:rows.filter(race=>race.reference).length,
       knownNonPluralityRaces:rows.filter(race=>race.rule!=='plurality').map(race=>({id:race.raceId,rule:race.rule})),
@@ -307,5 +358,9 @@ if (process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href) {
       hasCountyReferences:rows.filter(race=>race.countyReferences.length).length,
       reconciledMultiUnitReferences:rows.filter(race=>probabilityGeographyBasis(race)==='all-votes').length,
       additionalTwoPartyReferences:rows.filter(race=>probabilityGeographyBasis(race)==='two-party-votes').length}];
-  })),null,2));
+  }));
+  const inventory=races.map(race=>({id:race.raceId,office:race.office,rule:race.rule,
+    candidates:race.candidateCount,historicalBasis:probabilityGeographyBasis(race),
+    reportingUnits:race.countyReferences.length}));
+  console.log(JSON.stringify(ohio==='--district-tables'?{...summary,workbooks,races:inventory}:summary,null,2));
 }
