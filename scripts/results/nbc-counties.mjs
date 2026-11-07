@@ -13,13 +13,19 @@ export function nbcRacePage(value) {
   if(u.origin!=='https://www.nbcnews.com'||u.username||u.password||u.search||u.hash||!/^\/politics\/2026-(?:special-)?elections\/[a-z0-9-]+-results$/.test(u.pathname))throw Error('Invalid NBC race page');
   return u.href;
 }
+export function nbcCountyPage(race) {
+  if (race?.provider !== 'NBC' || race.providerScope !== 'national' || !race.providerPageUrl) return null;
+  try { return nbcRacePage(race.providerPageUrl); } catch { return null; }
+}
+const houseDistrict=value=>/^(AL|0)$/i.test(String(value))?1:Number(value);
 function validate(data,race) {
   if(data?.brand!=='news'||data.electionDate!=='2026-11-03'||String(data.electionSeason)!=='2026'||data.electionType!=='general'||data.stateAbbr!==race.state||data.enableLivePreview===true)throw Error('NBC county election identity mismatch');
-  const matching=data.races?.filter(r=>r.summary?.officeCode===officeCode[race.type]&&(race.type!=='house'||Number(r.summary.district)===(/^(AL|0)$/i.test(String(race.district))?1:Number(race.district))));
+  const district=houseDistrict(race.district);
+  const matching=data.races?.filter(r=>r.summary?.officeCode===officeCode[race.type]&&(race.type!=='house'||Number(r.summary.district)===district));
   if(matching?.length!==1)throw Error('NBC county race/district missing or ambiguous');
   // The rendered page uses true; its update API uses the literal "special".
   const r=matching[0],special=race.type==='senate'&&['FL','OH'].includes(race.state)&&[true,'special'].includes(data.isSpecial)&&new URL(race.providerPageUrl).pathname.startsWith('/politics/2026-special-elections/');
-  const expected=race.type==='house'?`2026-11-03~${race.state}${String(/^(AL|0)$/i.test(String(race.district))?1:Number(race.district)).padStart(3,'0')}~H`:`2026-11-03${special?'P':''}~${race.state}~${officeCode[race.type]}`;
+  const expected=race.type==='house'?`2026-11-03~${race.state}${String(district).padStart(3,'0')}~H`:`2026-11-03${special?'P':''}~${race.state}~${officeCode[race.type]}`;
   if(r.electionDate!=='2026-11-03'||r.summary.raceId!==expected||r.summary.electionTypeCode!==(special?'P':'G'))throw Error('NBC county race identity mismatch');
   return r;
 }
@@ -47,7 +53,7 @@ export function parseNbcCounties(data,race,{lookup=countyGeographies(data,race),
   const raw=validate(data,race),updated=Date.parse(data.currentTime||data.lastModified);
   if(!Number.isFinite(updated)||updated>Date.now()+120000)throw Error('Invalid NBC county timestamp');
   let map=raw.mapData;
-  if(race.type==='house')map=map?.[String(/^(AL|0)$/i.test(String(race.district))?1:Number(race.district)).padStart(2,'0')]?.counties;
+  if(race.type==='house')map=map?.[String(houseDistrict(race.district)).padStart(2,'0')]?.counties;
   if(!map||typeof map!=='object'||Array.isArray(map)||!Object.keys(map).length)throw Error('NBC county breakdown missing');
   if(Object.keys(map).length>5000)throw Error('Implausible NBC county count');
   // Resolve explicit full names first. For example "Lincoln plantation" and
@@ -88,8 +94,62 @@ export function parseNbcCounties(data,race,{lookup=countyGeographies(data,race),
   // Partial/malformed responses cannot erase previously published counties.
   return [...counties,...previous.filter(c=>!seen.has(c.fips))].sort((a,b)=>a.fips.localeCompare(b.fips));
 }
+
+// Some NBC town maps collapse identically named cities and towns into one
+// object key. The source's areas array retains both counts. They can still be
+// assigned to a county when every matching Census geography has that county.
+export function parseNbcCountyAggregates(data,race,{lookup=countyGeographies(data,race)}={}) {
+  const raw=validate(data,race),updated=Date.parse(data.currentTime||data.lastModified);
+  if(!Number.isFinite(updated)||updated>Date.now()+120000)throw Error('Invalid NBC county timestamp');
+  if(!['ME','MA','NH','CT','RI','VT'].includes(race.state)||!Array.isArray(raw.areas)||
+      !raw.areas.length||raw.areas.length>5000)throw Error('No supported municipal count array');
+  const byCounty=new Map(),names=new Map(race.candidates.map(c=>[c.name,c]));
+  for(const area of raw.areas){
+    const options=[...(lookup.get(normalize(area.name))||[])];
+    const counties=new Set(options.map(id=>id.slice(0,5)));
+    if(!options.length||counties.size!==1)throw Error('Municipality has no unique parent county: '+area.name);
+    const [id]=counties;
+    if(!/^\d{5}$/.test(id)||!id.startsWith(fips[race.state]))throw Error('Municipality county identity mismatch');
+    if(!Array.isArray(area.candidates)||!area.candidates.length)throw Error('Missing municipal candidate counts');
+    const votes=new Map();
+    for(const candidate of area.candidates){
+      const matched=matchBallotCandidate({name:candidate.name},race.candidates);
+      if(!Number.isSafeInteger(candidate.votes)||candidate.votes<0||votes.has(matched.name))
+        throw Error('Invalid or duplicate municipal candidate count');
+      votes.set(matched.name,candidate.votes);
+    }
+    if(votes.size!==names.size||[...names.keys()].some(name=>!votes.has(name))||
+        [...votes.values()].reduce((sum,value)=>sum+value,0)!==area.votes)
+      throw Error('Municipality count does not reconcile to its full ballot');
+    const total=byCounty.get(id)||new Map([...names.keys()].map(name=>[name,0]));
+    for(const [name,value] of votes){
+      const next=total.get(name)+value;
+      if(!Number.isSafeInteger(next))throw Error('Unsafe aggregated county votes');
+      total.set(name,next);
+    }
+    byCounty.set(id,total);
+  }
+  const expected=new Map();
+  for(const candidate of raw.summary.candidates){
+    const matched=matchBallotCandidate({name:candidate.name},race.candidates);
+    if(!Number.isSafeInteger(candidate.votes)||candidate.votes<0||expected.has(matched.name))
+      throw Error('Invalid municipal race summary');
+    expected.set(matched.name,candidate.votes);
+  }
+  if(expected.size!==names.size||[...names.keys()].some(name=>!expected.has(name)||
+      [...byCounty.values()].reduce((sum,county)=>sum+county.get(name),0)!==expected.get(name))||
+      [...expected.values()].reduce((sum,value)=>sum+value,0)!==raw.summary.votes)
+    throw Error('Municipality array does not reconcile to the race summary');
+  return [...byCounty].sort(([a],[b])=>a.localeCompare(b)).map(([id,votes])=>{
+    const total=[...votes.values()].reduce((sum,value)=>sum+value,0);
+    return {fips:id,type:'County',source:'NBC News',lastUpdated:new Date(updated).toISOString(),
+      estimatedVoteReporting:null,percentReporting:null,
+      candidates:[...votes].map(([name,count])=>({...names.get(name),votes:count,winner:false,isWinner:false,
+        percent:total?100*count/total:0}))};
+  });
+}
 export class NbcCountyProvider {
-  constructor({fetchImpl=fetch,now=()=>Date.now(),root=process.cwd()}={}) {Object.assign(this,{fetchImpl,now,root});this.cache=new Map();this.inflight=new Map();this.active=new Map();this.errors=new Map();this.running=0;this.localLookups=new Map();}
+  constructor({fetchImpl=fetch,now=()=>Date.now(),root=process.cwd()}={}) {Object.assign(this,{fetchImpl,now,root});this.cache=new Map();this.cacheLimit=64;this.inflight=new Map();this.active=new Map();this.errors=new Map();this.running=0;this.retryAt=0;this.localLookups=new Map();}
   async localFeatures(state) {
     if(!['ME','MA','NH','CT','RI','VT'].includes(state))return [];
     if(!this.localLookups.has(state))this.localLookups.set(state,(async()=>{
@@ -100,41 +160,77 @@ export class NbcCountyProvider {
     return this.localLookups.get(state);
   }
   watch(race){this.active.delete(race.id);this.active.set(race.id,this.now());while(this.active.size>64)this.active.delete(this.active.keys().next().value);}
+  modelCountiesFor(race) {
+    const cached=this.cache.get(race.id);
+    return cached?.page===nbcCountyPage(race)?cached.modelCounties:undefined;
+  }
   async read(url,json=false,cached) {
     const response=await this.fetchImpl(url,{signal:AbortSignal.timeout(6000),redirect:'error',headers:{Accept:json?'application/json':'text/html','User-Agent':'FEA-Election-Results/1.0 (+https://github.com/marylandpredictions/federalelections)',...(cached?.etag?{'If-None-Match':cached.etag}:{})}});
+    const retryAfter=response.headers?.get('retry-after');
+    if(response.status===429||(response.status===503&&retryAfter)){
+      const now=this.now(),until=/^\d+$/.test(retryAfter||'')?now+1000*Number(retryAfter):Date.parse(retryAfter);
+      this.retryAt=Math.max(this.retryAt,Number.isFinite(until)&&until>now?until:now+60000);
+    }
     if(response.status===304&&cached)return {unchanged:true};
     if(!response.ok)throw Error(`NBC county HTTP ${response.status}`);
     const body=await response.text();if(body.length>12000000)throw Error('NBC county payload too large');
     const data=json?JSON.parse(body):JSON.parse(body.match(/<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s)?.[1]||'null')?.props?.pageProps;
     return {data,etag:response.headers?.get('etag')};
   }
+  availableRequests() {
+    return this.now()<this.retryAt?0:4-this.running;
+  }
+  async fetchCountyBatch(races) {
+    const results=new Map();
+    let cursor=0;
+    await Promise.all(Array.from({length:Math.min(4,races.length)},async()=>{
+      while(cursor<races.length){
+        const race=races[cursor++],counties=await this.fetchCounties(race,{watch:false});
+        if(counties?.length)results.set(race.id,counties);
+      }
+    }));
+    return results;
+  }
   async fetchCounties(race,{watch=true}={}) {
     if(race.provider!=='NBC'||race.providerScope!=='national'||!race.providerPageUrl)return null;
-    if(watch)this.watch(race);const cached=this.cache.get(race.id);
+    const page=nbcCountyPage(race);
+    if(!page){this.errors.set(race.id,'Invalid NBC race page');return null;}
+    if(watch)this.watch(race);
+    const entry=this.cache.get(race.id),cached=entry?.page===page?entry:null;
     if(cached&&this.now()-cached.at<15000)return cached.counties;
-    if(this.inflight.has(race.id))return this.inflight.get(race.id);
+    const requestKey=JSON.stringify([race.id,page]);
+    if(this.inflight.has(requestKey))return this.inflight.get(requestKey);
     // Never turn arbitrary public detail requests into an unbounded upstream fan-out.
-    if(this.running>=4)return null;
-    const task=(async()=>{this.running++;try {
-      const page=nbcRacePage(race.providerPageUrl),result=await this.read(cached?.endpoint||page,!!cached?.endpoint,cached?.endpoint?cached:null);
+    if(!this.availableRequests())return null;
+    this.running++;
+    const task=Promise.resolve().then(async()=>{try {
+      const result=await this.read(cached?.endpoint||page,!!cached?.endpoint,cached?.endpoint?cached:null);
       if(result.unchanged){cached.at=this.now();this.errors.delete(race.id);return cached.counties;}
       const data=result.data;validate(data,race);
       const endpoint=new URL(data.updateUrl);
       if(endpoint.origin!=='https://www.nbcnews.com'||endpoint.username||endpoint.password||endpoint.search||endpoint.hash||endpoint.pathname!==new URL(page).pathname.replace('/politics/','/firecracker/api/v2/state-results/'))throw Error('NBC county updateUrl does not match public race page');
       const lookup=cached?.lookup||countyGeographies(data,race,await this.localFeatures(race.state)),issues=[];
       const counties=parseNbcCounties(data,race,{lookup,previous:race.counties,onInvalid:i=>issues.push(i)});
+      let modelCounties;
+      if(['ME','MA','NH','CT','RI','VT'].includes(race.state)){
+        try{modelCounties=parseNbcCountyAggregates(data,race,{lookup});}catch{/* Incomplete parent geography stays unavailable to the model. */}
+      }
       const error=issues.length?`${issues.length} reporting units retained/skipped: ${issues[0].reason}`:null;
       if(error)this.errors.set(race.id,error);else this.errors.delete(race.id);
       // Store normalized rows, never the multi-megabyte HTML/topology response.
-      this.cache.delete(race.id);this.cache.set(race.id,{at:this.now(),endpoint:endpoint.href,lookup,counties,etag:cached?.endpoint?result.etag:null});
-      while(this.cache.size>64)this.cache.delete(this.cache.keys().next().value);
+      this.cache.delete(race.id);this.cache.set(race.id,{page,at:this.now(),endpoint:endpoint.href,lookup,counties,modelCounties,etag:cached?.endpoint?result.etag:null});
+      while(this.cache.size>this.cacheLimit)this.cache.delete(this.cache.keys().next().value);
       return counties;
-    }catch(error){if(this.errors.get(race.id)!==error.message)console.warn(JSON.stringify({event:'county-provider-failed',race:race.id,reason:error.message}));this.errors.set(race.id,error.message);this.cache.set(race.id,{...(cached||{}),at:this.now(),counties:cached?.counties||race.counties||[]});while(this.cache.size>64)this.cache.delete(this.cache.keys().next().value);return null;}finally{this.running--;this.inflight.delete(race.id);}})();
-    this.inflight.set(race.id,task);return task;
+    }catch(error){if(this.errors.get(race.id)!==error.message)console.warn(JSON.stringify({event:'county-provider-failed',race:race.id,reason:error.message}));this.errors.set(race.id,error.message);this.cache.set(race.id,{...cached,page,at:this.now(),counties:cached?.counties||race.counties||[]});while(this.cache.size>this.cacheLimit)this.cache.delete(this.cache.keys().next().value);return null;}finally{this.running--;this.inflight.delete(requestKey);}});
+    this.inflight.set(requestKey,task);return task;
   }
   async refresh(races) {
     for(const [id,at]of this.active)if(this.now()-at>120000)this.active.delete(id);
     const wanted=races.filter(r=>this.active.has(r.id)).sort((a,b)=>(this.cache.get(a.id)?.at||0)-(this.cache.get(b.id)?.at||0)).slice(0,8);
-    let cursor=0;await Promise.all(Array.from({length:Math.min(4,wanted.length)},async()=>{while(cursor<wanted.length){const race=wanted[cursor++],counties=await this.fetchCounties(race,{watch:false});if(counties?.length)race.counties=counties;}}));
+    const batches=await this.fetchCountyBatch(wanted);
+    for(const race of wanted)if(batches.has(race.id)){
+      race.counties=batches.get(race.id);
+      race.probabilityCounties=this.modelCountiesFor(race);
+    }
   }
 }
