@@ -39,7 +39,7 @@ function candidate(raw) {
       'NO PARTY': 'NP',
     }[party] || party;
   return {
-    id: String(raw.candidateId ?? raw.id ?? name),
+    id: String(raw.candidateId ?? raw.id ?? raw.code ?? name),
     name,
     ...(Array.isArray(raw.partyLabels)?{partyLabels:raw.partyLabels.filter(p=>typeof p==='string').slice(0,8)}:{}),
     party: partyCode,

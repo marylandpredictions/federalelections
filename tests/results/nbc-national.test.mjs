@@ -14,6 +14,16 @@ test('Observed NBC 2026 national samples map House at-large, House districts, Se
  assert.ok(parseNbcNational(fixtures.senate,source('senate'),catalogue).some(r=>r.id==='senate-OH'));
  const d=clone(fixtures.senate);d.mapData.OH.tooltip.candidates[0].isWinner=true;d.mapData.OH.tooltip.callStatusCode='W';assert.equal(parseNbcNational(d,source('senate'),catalogue).find(r=>r.id==='senate-OH').providerCall,null);
 });
+test('NBC candidate codes preserve identity across a verified ballot-name variation',()=>{
+ const s=source('house'),d=clone(fixtures.house),key=s.races[0].providerRaceId;
+ d.mapData[key].tooltip.candidates[0].code=123456;
+ const parse=()=>parseNbcNational(d,s,catalogue).find(r=>r.id===s.races[0].feaRaceId).candidates[0];
+ const original=parse();
+ assert.equal(original.id,'123456');
+ d.mapData[key].tooltip.candidates[0].name=original.name.replace(/\s+/g,'  ');
+ assert.equal(parse().id,original.id);
+ assert.equal(parse().name,original.name);
+});
 test('NBC keeps publishing vote totals and explicit projections after votingToday clears overnight',()=>{
  for(const s of sources){
   const d=clone(fixtures[s.office]),key=s.races[0].providerRaceId;

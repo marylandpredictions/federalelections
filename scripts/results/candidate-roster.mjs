@@ -18,7 +18,7 @@ function identityForms(value) {
 // Conservative ballot reconciliation: never match by party or surname alone.
 export function matchBallotCandidate(candidate, roster) {
   if(!roster?.length)return candidate;
-  const names=c=>[c.name,...(c.aliases || [])];
+  const names=c=>[c.name,c.providerName,...(c.aliases || [])].filter(Boolean);
   const exact=roster.filter(c=>names(c).some(n=>identityKey(n)===identityKey(candidate.name)));
   let matches=exact;
   if(!matches.length){
@@ -28,7 +28,10 @@ export function matchBallotCandidate(candidate, roster) {
   if(matches.length!==1)throw Error((matches.length?'Ambiguous':'Unknown')+' provider candidate: '+candidate.name);
   const local=matches[0],party=local.partyCode||local.party;
   if(party&&candidate.partyCode&&partyIdentity(party)!==partyIdentity(candidate.partyCode))throw Error('Provider party mismatch: '+candidate.name);
-  return {...candidate,name:local.name,...(party?{party,partyCode:party}:{}),...(local.writeIn?{writeIn:true}:{}),...(local.partyLabels?{partyLabels:local.partyLabels}:{})};
+  return {...candidate,name:local.name,...(party?{party,partyCode:party}:{}),
+    ...(local.providerName?{providerName:local.providerName}:{}),
+    ...(local.aliases?{aliases:local.aliases}:{}),
+    ...(local.writeIn?{writeIn:true}:{}),...(local.partyLabels?{partyLabels:local.partyLabels}:{})};
 }
 export const genericName = (v) =>
   !String(v || "").trim() ||
