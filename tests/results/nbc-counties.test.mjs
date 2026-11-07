@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';import {join} from 'node:path';
-import {NbcCountyProvider,parseNbcCounties,parseNbcCountyAggregates,countyGeographies,nbcRacePage} from '../../scripts/results/nbc-counties.mjs';
+import {NbcCountyProvider,parseNbcCounties,parseNbcCountyAggregates,parseNbcNativeReportingUnits,countyGeographies,nbcRacePage} from '../../scripts/results/nbc-counties.mjs';
+import {normalizeProbabilitySnapshot} from '../../scripts/results/probability-inputs.mjs';
 import {ResultsControl} from '../../scripts/results/control.mjs';
 import {ResultsChangeFeed} from '../../scripts/results/change-feed.mjs';
 import vm from 'node:vm';
@@ -11,6 +12,94 @@ const samples=JSON.parse(readFileSync('tests/fixtures/nbc-counties-2026.json','u
 const clone=x=>structuredClone(x);
 function race(key){const p=samples[key],type=key==='house'?'house':'senate';return {id:`${type}-${p.stateAbbr}${type==='house'?'-4':''}`,state:p.stateAbbr,type,...(type==='house'?{district:4}:{}),provider:'NBC',providerScope:'national',providerPageUrl:p.clientUrl,candidates:p.races[0].summary.candidates.map(c=>({...c,id:String(c.code),partyCode:{dem:'D',gop:'R',lib:'L',ind:'I',other:'O'}[c.party],party:{dem:'D',gop:'R',lib:'L',ind:'I',other:'O'}[c.party],votes:0,isWinner:false,winner:false})),counties:[],providerCall:null,providerCallVerified:false};}
 function batch(data,votes){const a=Object.values(data.races[0].mapData)[0];a.candidates.forEach((c,i)=>c.votes=votes[i]||0);a.totalVote=a.candidates.reduce((n,c)=>n+c.votes,0);}
+function alaskaFixture(){
+ const p=clone(samples.co),r={...race('co'),id:'senate-AK',state:'AK',providerPageUrl:'https://www.nbcnews.com/politics/2026-elections/alaska-senate-results'};
+ p.stateAbbr='AK';p.stateName='Alaska';p.underlyingGeographies='legislativeDistricts';
+ p.clientUrl=r.providerPageUrl;p.updateUrl=r.providerPageUrl.replace('/politics/','/firecracker/api/v2/state-results/');
+ const raw=p.races[0];raw.summary.raceId='2026-11-03~AK~S';
+ raw.areas=Array.from({length:40},(_,i)=>{
+   const candidates=raw.summary.candidates.map((c,j)=>({...c,votes:(i+1)*(j+1)}));
+   return {name:'State House District '+(i+1),percentIn:75,votes:candidates.reduce((n,c)=>n+c.votes,0),candidates};
+ });
+ for(const candidate of raw.summary.candidates)candidate.votes=raw.areas.reduce((n,a)=>n+a.candidates.find(c=>c.name===candidate.name).votes,0);
+ raw.summary.votes=raw.summary.candidates.reduce((n,c)=>n+c.votes,0);
+ r.candidates=r.candidates.map(c=>({...c,votes:raw.summary.candidates.find(x=>x.name===c.name).votes}));
+ r.lastUpdated=p.currentTime;r.electionDate='2026-11-03';
+ return {p,r};
+}
+
+test('Alaska native units preserve all 40 state House districts without fabricated county IDs',()=>{
+ const {p,r}=alaskaFixture(),units=parseNbcNativeReportingUnits(p,r);
+ assert.equal(units.length,40);assert.equal(units[0].id,'AK-HD-01');assert.equal(units[39].id,'AK-HD-40');
+ assert.ok(units.every(unit=>!Object.hasOwn(unit,'fips')&&unit.reportingUnitType==='state-house-district'&&
+   unit.candidates.every(c=>!c.winner&&!c.isWinner)));
+ const ids=units.map(unit=>unit.id),detail={...r,reportingUnitScheme:'nbc-alaska-state-house-districts',counties:units};
+ const capture={at:p.currentTime,source:'NBC News',reportingUnitIds:ids};
+ const snapshot=normalizeProbabilitySnapshot(detail,r.candidates,capture);
+ assert.equal(snapshot.units.length,40);assert.ok(snapshot.units.every(u=>!u.complete));
+ assert.equal(Object.values(snapshot.totals).reduce((n,v)=>n+v,0),p.races[0].summary.votes);
+ assert.throws(()=>normalizeProbabilitySnapshot({...detail,state:'CO'},r.candidates,capture),/frozen Alaska/);
+ assert.throws(()=>normalizeProbabilitySnapshot(detail,r.candidates,{...capture,reportingUnitIds:ids.slice(1)}),/frozen Alaska/);
+ const fake=clone(detail);fake.counties[0].fips='02013';
+ assert.throws(()=>normalizeProbabilitySnapshot(fake,r.candidates,capture),/reporting-unit ID/);
+});
+
+test('Native Alaska counts reject omissions, duplicate districts, wrong identity and inconsistent ballots',()=>{
+ for(const change of [
+   p=>p.races[0].areas.pop(),p=>p.races[0].areas[1].name='State House District 1',
+   p=>p.races[0].areas[0].candidates.pop(),p=>p.races[0].areas[0].candidates[0].votes=-1,
+   p=>p.races[0].summary.votes++,p=>p.underlyingGeographies='counties',p=>p.electionDate='2024-11-05',
+ ]){const {p,r}=alaskaFixture();change(p);assert.throws(()=>parseNbcNativeReportingUnits(p,r));}
+});
+
+test('Alaska overseas absentee totals remain a separate non-county reporting unit',()=>{
+ const {p,r}=alaskaFixture(),raw=p.races[0];
+ const candidates=raw.summary.candidates.map((c,i)=>({...c,votes:i+1}));
+ raw.areas.push({name:'Overseas Absentee',percentIn:40,votes:candidates.reduce((sum,c)=>sum+c.votes,0),candidates});
+ for(const candidate of raw.summary.candidates)candidate.votes+=candidates.find(c=>c.name===candidate.name).votes;
+ raw.summary.votes=raw.summary.candidates.reduce((sum,c)=>sum+c.votes,0);
+ r.candidates=r.candidates.map(c=>({...c,votes:raw.summary.candidates.find(x=>x.name===c.name).votes}));
+ const units=parseNbcNativeReportingUnits(p,r),overseas=units.find(unit=>unit.id==='AK-OA');
+ assert.equal(units.length,41);assert.equal(overseas.reportingUnitType,'overseas-absentee');
+ assert.equal(overseas.estimatedVoteReporting,40);assert.equal(Object.hasOwn(overseas,'fips'),false);
+ const snapshot=normalizeProbabilitySnapshot({...r,counties:units,reportingUnitScheme:'nbc-alaska-state-house-districts'},r.candidates,
+   {at:p.currentTime,source:'NBC News',reportingUnitIds:units.map(unit=>unit.id)});
+ assert.equal(snapshot.units.length,41);assert.ok(snapshot.units.every(unit=>!unit.complete));
+ raw.areas[0].name='Overseas Absentee';
+ assert.throws(()=>parseNbcNativeReportingUnits(p,r),/duplicate Alaska/);
+});
+
+test('Native Alaska model inputs persist through restart/outage without leaking into public county geometry or deltas',async t=>{
+ const root=await mkdtemp(join(tmpdir(),'fea-native-units-'));
+ t.after(()=>rm(root,{recursive:true,force:true}));
+ await mkdir(join(root,'data'));await mkdir(join(root,'disk'));
+ const {p,r}=alaskaFixture();let now=Date.parse(p.currentTime),outage=false;
+ const cp=new NbcCountyProvider({now:()=>now,fetchImpl:async()=>{
+   if(outage)throw Error('offline');
+   return new Response(`<script id="__NEXT_DATA__">${JSON.stringify({props:{pageProps:p}})}</script>`);
+ }});
+ await writeFile(join(root,'data/election-night-races.json'),JSON.stringify({races:[r]}));
+ await writeFile(join(root,'data/results-provider.json'),'{"sources":[]}');
+ await writeFile(join(root,'data/result-calls.json'),'{"races":{}}');
+ const options={root,storageDir:join(root,'disk'),provider:{fetchResults:async()=>[clone(r)]},countyProvider:cp};
+ const control=await new ResultsControl(options).init();await control.poll();
+ const feed=new ResultsChangeFeed(),before=feed.update(control.results()).version;
+ assert.equal(await control.loadCountyResultsBatch([r.id]),true);
+ const ids=Array.from({length:40},(_,i)=>'AK-HD-'+String(i+1).padStart(2,'0'));
+ const input=control.probabilityResult(r.id,ids);
+ assert.equal(input.counties.length,40);assert.equal(input.reportingUnitScheme,'nbc-alaska-state-house-districts');
+ const snapshot=normalizeProbabilitySnapshot(input,r.candidates,{at:p.currentTime,source:'NBC News',reportingUnitIds:ids});
+ assert.equal(snapshot.units.length,40);
+ const publicRace=control.results({details:true}).groups.flatMap(g=>g.races)[0];
+ assert.equal(publicRace.counties.length,0);assert.equal(Object.hasOwn(publicRace,'probabilityUnits'),false);
+ assert.equal(feed.update(control.results()).version,before);
+ const restarted=await new ResultsControl(options).init();
+ assert.deepEqual(restarted.probabilityResult(r.id,ids),input);
+ outage=true;now+=16000;
+ assert.equal(await restarted.loadCountyResultsBatch([r.id]),false);
+ assert.deepEqual(restarted.probabilityResult(r.id,ids),input);
+ assert.equal(feed.update(restarted.results()).version,before);
+});
 test('Observed NBC pages supply exact county FIPS, district-only county portions, Senate specials and ME/MA/NH town GEOIDs',async()=>{
  const provider=new NbcCountyProvider();
  for(const key of Object.keys(samples)){const r=race(key),lookup=countyGeographies(samples[key],r,await provider.localFeatures(r.state)),rows=parseNbcCounties(samples[key],r,{lookup});assert.equal(rows.length,2,key);assert.equal(rows[0].fips.length,['me','ma','nh'].includes(key)?10:5);assert.ok(rows.every(c=>c.candidates.every(x=>!x.winner&&!x.isWinner)));}

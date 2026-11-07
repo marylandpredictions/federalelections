@@ -197,8 +197,8 @@ export class ResultsControl {
     const raw=this.runtime.races[id];
     if(!raw)return false;
     const counties=await this.countyProvider.fetchCounties(raw,options);
-    if(!counties?.length)return false;
-    return this.applyCountyResults([raw],new Map([[id,counties]]));
+    if(!counties?.length&&!this.countyProvider.modelUnitsFor?.(raw)?.length)return false;
+    return this.applyCountyResults([raw],new Map([[id,counties||[]]]));
   }
   countyPageFor(id) {
     return nbcCountyPage(this.runtime.races[id]);
@@ -207,9 +207,14 @@ export class ResultsControl {
     const raw=this.visible.runtime.races[id];
     if(!raw)return undefined;
     const countyPrior=reportingUnitIds?.length&&reportingUnitIds.every(id=>/^\d{5}$/.test(id));
-    return {id:raw.id,provider:raw.provider,electionDate:raw.electionDate,
+    const nativePrior=raw.state==='AK'&&Array.isArray(reportingUnitIds)&&
+      [40,41].includes(reportingUnitIds.length)&&new Set(reportingUnitIds).size===reportingUnitIds.length&&
+      reportingUnitIds.filter(id=>/^AK-HD-(?:0[1-9]|[1-3]\d|40)$/.test(id)).length===40&&
+      reportingUnitIds.every(id=>/^AK-HD-(?:0[1-9]|[1-3]\d|40)$/.test(id)||id==='AK-OA');
+    return {id:raw.id,state:raw.state,provider:raw.provider,electionDate:raw.electionDate,
+      ...(nativePrior?{reportingUnitScheme:'nbc-alaska-state-house-districts'}:{}),
       lastUpdated:raw.lastUpdated,expectedVotePercent:raw.expectedVotePercent,
-      candidates:raw.candidates,counties:countyPrior&&raw.probabilityCounties||raw.counties};
+      candidates:raw.candidates,counties:nativePrior?raw.probabilityUnits:countyPrior&&raw.probabilityCounties||raw.counties};
   }
   async loadCountyResultsBatch(ids) {
     const races=ids.map(id=>this.runtime.races[id]).filter(Boolean);
@@ -221,15 +226,19 @@ export class ResultsControl {
       let changed=false;
       for(const raw of races){
         const counties=batches.get(raw.id),current=this.runtime.races[raw.id];
-        if(!counties?.length||!current||current.provider!==raw.provider||current.providerScope!==raw.providerScope||current.providerPageUrl!==raw.providerPageUrl)continue;
+        const modelUnits=this.countyProvider.modelUnitsFor?.(raw);
+        if(!Array.isArray(counties)||!counties.length&&!modelUnits?.length||!current||current.provider!==raw.provider||current.providerScope!==raw.providerScope||current.providerPageUrl!==raw.providerPageUrl)continue;
+        const previousUnits=new Map(current.probabilityUnits?.map(unit=>[unit.id,unit]));
+        if(modelUnits?.some(unit=>Date.parse(previousUnits.get(unit.id)?.lastUpdated)>Date.parse(unit.lastUpdated)))continue;
         const previous=new Map(current.counties?.map(c=>[c.fips,c]));
         if(counties.some(c=>Date.parse(previous.get(c.fips)?.lastUpdated)>Date.parse(c.lastUpdated)))continue;
         // Keep units added by a poll that finished while this page was loading.
         const received=new Set(counties.map(c=>c.fips));
         const merged=[...counties,...[...previous.values()].filter(c=>!received.has(c.fips))].sort((a,b)=>a.fips.localeCompare(b.fips));
         const modelCounties=this.countyProvider.modelCountiesFor?.(raw);
-        const modelChanged=JSON.stringify(modelCounties)!==JSON.stringify(current.probabilityCounties);
-        const next={...current,counties:merged,probabilityCounties:modelCounties},signature=resultFingerprint(next);
+        const modelChanged=JSON.stringify(modelCounties)!==JSON.stringify(current.probabilityCounties)||
+          JSON.stringify(modelUnits)!==JSON.stringify(current.probabilityUnits);
+        const next={...current,counties:merged,probabilityCounties:modelCounties,probabilityUnits:modelUnits},signature=resultFingerprint(next);
         if(signature===current._signature&&!modelChanged&&(!refreshTimestamps||!counties.some(c=>c.lastUpdated!==previous.get(c.fips)?.lastUpdated)))continue;
         this.runtime.races[raw.id]={...next,_signature:signature};
         changed=true;
@@ -256,6 +265,8 @@ export class ResultsControl {
           const prior=this.runtime.races[r.id];
           if(r.provider==='NBC'&&r.providerPageUrl===prior?.providerPageUrl&&prior?.probabilityCounties)
             r.probabilityCounties=prior.probabilityCounties;
+          if(r.provider==='NBC'&&r.providerPageUrl===prior?.providerPageUrl&&prior?.probabilityUnits)
+            r.probabilityUnits=prior.probabilityUnits;
         }
         await this.countyProvider.refresh(incoming);
         h.countyErrors=Object.fromEntries(this.countyProvider.errors);
@@ -640,7 +651,7 @@ export class ResultsControl {
       const raw = this.visible.runtime.races[base.id] || base;
       const s = this.visible.calls.races[base.id] || {};
       const calls = (s.calls || []).map(call=>({...call,provider:call.provider==='NBC'||/^nbc-/.test(call.source||'')?'NBC':'FEA'}));
-      const { _signature, _lastNbcVotes, providerCall, counties, probabilityCounties, ...safe } = raw;
+      const { _signature, _lastNbcVotes, providerCall, counties, probabilityCounties, probabilityUnits, ...safe } = raw;
       return {
         ...safe,
         detailVersion: _signature || "",

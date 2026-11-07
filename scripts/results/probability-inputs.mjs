@@ -192,17 +192,33 @@ export function readGeographicReferences(root=process.cwd(),{ohioDistrictCsv,tex
       }
     }
   }
+  const officialTexas=read('data/results/probability-texas-official-county-sets.json').districts;
+  const countyReferenceIssues=new Map();
+  for (const [id,expected] of Object.entries(officialTexas)) {
+    const imported=districtPortions.get(id);
+    if (!imported) continue;
+    const found=new Set(imported.rows.map(row=>row.fips));
+    if (expected.length===found.size&&expected.every(fips=>found.has(fips))) continue;
+    const reason='Historical county portions do not match the official Texas district county set';
+    countyReferenceIssues.set(id,reason);
+    districtPortions.delete(id);
+    if (workbooks.TX?.rejected) {
+      workbooks.TX.accepted--;
+      workbooks.TX.rejected[id]=reason;
+    }
+  }
   const races=catalogue.map(race=>{
     const key=race.type==='house'?districtKey(race):null;
     const reference=key?districtRows.get(key):stateRows.get(race.state);
     const statewide=!key || key.endsWith('-AL');
-    const portions=districtPortions.get(key);
+    const portions=districtPortions.get(key),countyReferenceIssue=countyReferenceIssues.get(key);
     return {raceId:race.id,office:race.type,state:race.state,reference:reference || null,
       rule:probabilityRule(race.id,race.electionDate || race.date),candidateCount:race.candidates.length,
       referenceSource:key?district.sourceUrl:state.sourceUrl,
       countySource:portions?.source || county.sourceUrl,countyReferences:portions?.rows || (statewide?counties.get(race.state)||[]:[]),
       ...(!key && differences.has(race.state)?{countyAggregationDifference:differences.get(race.state)}:{}),
       ...(portions?{districtCountySource:{sha256:portions.sha256,geometryId:portions.geometryId}}:{}),
+      ...(countyReferenceIssue?{countyReferenceIssue}:{}),
       geographicScope:statewide?'statewide':'district'};
   });
   return {races,workbooks};
@@ -279,12 +295,13 @@ export function buildCountyProbabilityPrior(geography,forecast) {
 
 // Expected vote in is an estimate, including at 100%. A separate notice
 // with an as-of timestamp is required to mark a reporting unit complete.
-export function normalizeProbabilitySnapshot(detail,roster,{at,source,completion={}}) {
+export function normalizeProbabilitySnapshot(detail,roster,{at,source,completion={},reportingUnitIds}) {
   requireInput(detail?.id && Array.isArray(detail.counties) && detail.counties.length &&
     Number.isFinite(dateTime(at)) && typeof source==='string' && source.trim(),'Missing dated reporting-unit returns');
   const election=detail.electionDate || detail.date;
+  requireInput(Array.isArray(roster)&&roster.length>=2,'At least two named candidates are required by this probability model');
   const candidateIds=roster.map(candidate=>candidate.id);
-  requireInput(roster.length>=2 && candidateIds.every(id=>typeof id==='string' && /^[\w-]{1,100}$/.test(id)) &&
+  requireInput(candidateIds.every(id=>typeof id==='string' && /^[\w-]{1,100}$/.test(id)) &&
     new Set(candidateIds).size===candidateIds.length,'Missing stable race-specific candidate IDs');
   const byName=new Map(roster.map(candidate=>[candidate.name,candidate]));
   requireInput(byName.size===roster.length,'Duplicate names in frozen candidate roster');
@@ -306,20 +323,65 @@ export function normalizeProbabilitySnapshot(detail,roster,{at,source,completion
   }
   const sourceUpdatedAt=detail.lastUpdated || detail.updatedAt;
   requireInput(election && dateTime(sourceUpdatedAt)<=dateTime(at),'Invalid race date or provider timestamp');
-  const units=detail.counties.map(unit=>{
-    const id=unit.fips;
+  const native=detail.reportingUnitScheme!==undefined;
+  if(native)requireInput(detail.reportingUnitScheme==='nbc-alaska-state-house-districts'&&
+    detail.provider==='NBC'&&detail.state==='AK'&&election==='2026-11-03'&&
+    ['house-AK-AL','senate-AK','governor-AK'].includes(detail.id)&&
+    Array.isArray(reportingUnitIds)&&[40,41].includes(reportingUnitIds.length)&&new Set(reportingUnitIds).size===reportingUnitIds.length&&
+    reportingUnitIds.filter(id=>/^AK-HD-(?:0[1-9]|[1-3]\d|40)$/.test(id)).length===40&&
+    reportingUnitIds.every(id=>/^AK-HD-(?:0[1-9]|[1-3]\d|40)$/.test(id)||id==='AK-OA'),
+  'Native reporting-unit scheme does not match the frozen Alaska geography');
+  let units=detail.counties.map(unit=>{
+    const id=native?unit.id:unit.fips;
     const availableAt=unit.lastUpdated || unit.updatedAt;
-    requireInput(typeof id==='string' && /^(?:\d{5}|\d{10})$/.test(id) &&
+    requireInput(typeof id==='string' && (native
+      ?((/^AK-HD-(?:0[1-9]|[1-3]\d|40)$/.test(id)&&unit.reportingUnitType==='state-house-district')||
+        (id==='AK-OA'&&unit.reportingUnitType==='overseas-absentee'))&&unit.fips===undefined&&unit.source==='NBC News'
+      :/^(?:\d{5}|\d{10})$/.test(id)) &&
       dateTime(availableAt)<=dateTime(at),'Missing reporting-unit ID or as-of update');
-    const notice=Object.hasOwn(completion,id)?completion[id]:null;
     const votes=counts(unit.candidates);
-    if (notice) requireInput(notice.raceId===detail.id && notice.unitId===id &&
-      notice.electionDate===election && dateTime(notice.availableAt)<=dateTime(at) &&
-      notice.countedVotes===Object.values(votes).reduce((sum,count)=>sum+count,0) &&
-      typeof notice.source==='string' && notice.source.trim(),'Invalid reporting-unit completion evidence');
     const expected=unit.expectedVotePercent ?? unit.estimatedVoteReporting;
-    return {id,availableAt,complete:Boolean(notice),...(notice?{completionSource:notice.source}:{}),
+    return {id,availableAt,
       expectedVotePercent:Number.isFinite(expected)&&expected>=0&&expected<=100?expected:null,votes};
+  });
+  requireInput(new Set(units.map(unit=>unit.id)).size===units.length,'Duplicate reporting units');
+  if(reportingUnitIds){
+    requireInput(Array.isArray(reportingUnitIds)&&reportingUnitIds.length>=2&&
+      new Set(reportingUnitIds).size===reportingUnitIds.length,'Invalid expected reporting units');
+    if(reportingUnitIds.every(id=>/^\d{5}$/.test(id))){
+      const groups=new Map();
+      for(const unit of units){
+        const county=unit.id.slice(0,5),members=groups.get(county)||[];
+        requireInput(reportingUnitIds.includes(county),'Reporting unit falls outside the frozen county geography');
+        members.push(unit);
+        groups.set(county,members);
+      }
+      units=[...groups].map(([id,members])=>{
+        requireInput(members.length===1||members.every(unit=>unit.id.length===10),
+          'County totals overlap municipality returns');
+        const votes=Object.fromEntries(candidateIds.map(candidate=>[candidate,
+          members.reduce((sum,unit)=>sum+unit.votes[candidate],0)]));
+        const availableAt=members.reduce((oldest,unit)=>dateTime(unit.availableAt)<dateTime(oldest)?unit.availableAt:oldest,
+          members[0].availableAt);
+        // A source estimate remains an estimate after aggregation. Zero-vote
+        // units cannot supply a turnout denominator through their percentage.
+        const estimatedTotal=members.every(unit=>unit.expectedVotePercent>0&&Object.values(unit.votes).some(v=>v>0))
+          ?members.reduce((sum,unit)=>sum+Object.values(unit.votes).reduce((n,v)=>n+v,0)/(unit.expectedVotePercent/100),0):null;
+        const expectedVotePercent=members.length===1?members[0].expectedVotePercent:
+          estimatedTotal?Math.min(100,100*Object.values(votes).reduce((sum,count)=>sum+count,0)/estimatedTotal):null;
+        return {id,availableAt,votes,expectedVotePercent};
+      });
+    }
+    requireInput(units.length===reportingUnitIds.length&&units.every(unit=>reportingUnitIds.includes(unit.id)),
+      'Reporting units do not cover the frozen geography');
+  }
+  units=units.map(unit=>{
+    const notice=Object.hasOwn(completion,unit.id)?completion[unit.id]:null;
+    if(notice)requireInput(notice.raceId===detail.id&&notice.unitId===unit.id&&
+      notice.electionDate===election&&dateTime(notice.availableAt)<=dateTime(at)&&
+      notice.countedVotes===Object.values(unit.votes).reduce((sum,count)=>sum+count,0)&&
+      typeof notice.source==='string'&&notice.source.trim(),'Invalid reporting-unit completion evidence');
+    return {...unit,complete:Boolean(notice),...(notice?{completionSource:notice.source}:{})};
   });
   const totals=counts(detail.candidates);
   requireInput(new Set(units.map(unit=>unit.id)).size===units.length &&
@@ -335,7 +397,7 @@ export function evaluateRegularProbability(prior,detail,roster,{maxAgeMs,...capt
   if (detail?.provider!=='NBC' || detail.counties?.some(unit=>unit.source!=='NBC News'))
     return {status:'unavailable',reason:'Waiting for NBC race and reporting-unit returns'};
   if (detail?.providerStale===true) return {status:'unavailable',reason:'Provider reports delayed results'};
-  const snapshot=normalizeProbabilitySnapshot(detail,roster,capture);
+  const snapshot=normalizeProbabilitySnapshot(detail,roster,{...capture,reportingUnitIds:prior.units?.map(unit=>unit.id)});
   requireInput(snapshot.electionDate===prior.electionDate,'Results are for a different election');
   if (dateTime(snapshot.at)-dateTime(snapshot.sourceUpdatedAt)>maxAgeMs ||
       snapshot.units.some(unit=>!unit.complete && dateTime(snapshot.at)-dateTime(unit.availableAt)>maxAgeMs))

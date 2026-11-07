@@ -148,6 +148,57 @@ export function parseNbcCountyAggregates(data,race,{lookup=countyGeographies(dat
         percent:total?100*count/total:0}))};
   });
 }
+// Alaska's NBC feed uses state House districts. Retain their actual identity
+// for private model inputs; never invent Census FIPS codes or borough counts.
+export function parseNbcNativeReportingUnits(data,race) {
+  const raw=validate(data,race),updated=Date.parse(data.currentTime||data.lastModified);
+  if(race.state!=='AK'||data.underlyingGeographies!=='legislativeDistricts'||
+      !Array.isArray(raw.areas)||raw.areas.length<40||raw.areas.length>41||
+      !Number.isFinite(updated)||updated>Date.now()+120000)throw Error('Unsupported native reporting-unit source');
+  const roster=new Map(race.candidates.map(c=>[c.name,c]));
+  if(roster.size!==race.candidates.length)throw Error('Duplicate native ballot candidate');
+  const totals=new Map([...roster.keys()].map(name=>[name,0])),seen=new Set();
+  const units=raw.areas.map(area=>{
+    const match=/^State House District ([1-9]|[1-3]\d|40)$/.exec(area.name);
+    const overseas=area.name==='Overseas Absentee';
+    const id=overseas?'AK-OA':match?'AK-HD-'+match[1].padStart(2,'0'):null;
+    if(!id||seen.has(id))throw Error('Missing or duplicate Alaska state House district');
+    seen.add(id);
+    if(!Array.isArray(area.candidates)||area.candidates.length!==roster.size)throw Error('Native reporting unit has an incomplete ballot');
+    const votes=new Map();
+    for(const candidate of area.candidates){
+      const matched=matchBallotCandidate({name:candidate.name},race.candidates);
+      if(!Number.isSafeInteger(candidate.votes)||candidate.votes<0||votes.has(matched.name))
+        throw Error('Invalid native candidate count');
+      votes.set(matched.name,candidate.votes);
+    }
+    const total=[...votes.values()].reduce((sum,n)=>sum+n,0);
+    if(!Number.isSafeInteger(total)||total!==area.votes||[...roster.keys()].some(name=>!votes.has(name)))
+      throw Error('Native reporting-unit ballot does not reconcile');
+    for(const [name,count] of votes){
+      const next=totals.get(name)+count;
+      if(!Number.isSafeInteger(next))throw Error('Unsafe native reporting-unit count');
+      totals.set(name,next);
+    }
+    const percent=Number.isFinite(area.percentIn)&&area.percentIn>=0&&area.percentIn<=100?area.percentIn:null;
+    return {id,name:area.name,reportingUnitType:overseas?'overseas-absentee':'state-house-district',
+      source:'NBC News',lastUpdated:new Date(updated).toISOString(),estimatedVoteReporting:percent,
+      candidates:[...votes].map(([name,count])=>({...roster.get(name),votes:count,
+        winner:false,isWinner:false,percent:total?100*count/total:0}))};
+  });
+  if(Array.from({length:40},(_,i)=>'AK-HD-'+String(i+1).padStart(2,'0')).some(id=>!seen.has(id)))
+    throw Error('Missing or duplicate Alaska state House district');
+  const summary=new Map();
+  for(const candidate of raw.summary.candidates){
+    const matched=matchBallotCandidate({name:candidate.name},race.candidates);
+    if(!Number.isSafeInteger(candidate.votes)||candidate.votes<0||summary.has(matched.name))throw Error('Invalid native race summary');
+    summary.set(matched.name,candidate.votes);
+  }
+  if(summary.size!==roster.size||[...totals].some(([name,count])=>summary.get(name)!==count)||
+      [...totals.values()].reduce((sum,n)=>sum+n,0)!==raw.summary.votes)throw Error('Native reporting units do not reconcile to the race');
+  return units.sort((a,b)=>a.id.localeCompare(b.id));
+}
+
 export class NbcCountyProvider {
   constructor({fetchImpl=fetch,now=()=>Date.now(),root=process.cwd()}={}) {Object.assign(this,{fetchImpl,now,root});this.cache=new Map();this.cacheLimit=64;this.inflight=new Map();this.active=new Map();this.errors=new Map();this.running=0;this.retryAt=0;this.localLookups=new Map();}
   async localFeatures(state) {
@@ -163,6 +214,10 @@ export class NbcCountyProvider {
   modelCountiesFor(race) {
     const cached=this.cache.get(race.id);
     return cached?.page===nbcCountyPage(race)?cached.modelCounties:undefined;
+  }
+  modelUnitsFor(race) {
+    const cached=this.cache.get(race.id);
+    return cached?.page===nbcCountyPage(race)?cached.modelUnits:undefined;
   }
   async read(url,json=false,cached) {
     const response=await this.fetchImpl(url,{signal:AbortSignal.timeout(6000),redirect:'error',headers:{Accept:json?'application/json':'text/html','User-Agent':'FEA-Election-Results/1.0 (+https://github.com/marylandpredictions/federalelections)',...(cached?.etag?{'If-None-Match':cached.etag}:{})}});
@@ -186,7 +241,7 @@ export class NbcCountyProvider {
     await Promise.all(Array.from({length:Math.min(4,races.length)},async()=>{
       while(cursor<races.length){
         const race=races[cursor++],counties=await this.fetchCounties(race,{watch:false});
-        if(counties?.length)results.set(race.id,counties);
+        if(counties?.length||this.modelUnitsFor(race)?.length)results.set(race.id,counties||[]);
       }
     }));
     return results;
@@ -210,7 +265,8 @@ export class NbcCountyProvider {
       const endpoint=new URL(data.updateUrl);
       if(endpoint.origin!=='https://www.nbcnews.com'||endpoint.username||endpoint.password||endpoint.search||endpoint.hash||endpoint.pathname!==new URL(page).pathname.replace('/politics/','/firecracker/api/v2/state-results/'))throw Error('NBC county updateUrl does not match public race page');
       const lookup=cached?.lookup||countyGeographies(data,race,await this.localFeatures(race.state)),issues=[];
-      const counties=parseNbcCounties(data,race,{lookup,previous:race.counties,onInvalid:i=>issues.push(i)});
+      const modelUnits=race.state==='AK'?parseNbcNativeReportingUnits(data,race):undefined;
+      const counties=modelUnits?[]:parseNbcCounties(data,race,{lookup,previous:race.counties,onInvalid:i=>issues.push(i)});
       let modelCounties;
       if(['ME','MA','NH','CT','RI','VT'].includes(race.state)){
         try{modelCounties=parseNbcCountyAggregates(data,race,{lookup});}catch{/* Incomplete parent geography stays unavailable to the model. */}
@@ -218,7 +274,7 @@ export class NbcCountyProvider {
       const error=issues.length?`${issues.length} reporting units retained/skipped: ${issues[0].reason}`:null;
       if(error)this.errors.set(race.id,error);else this.errors.delete(race.id);
       // Store normalized rows, never the multi-megabyte HTML/topology response.
-      this.cache.delete(race.id);this.cache.set(race.id,{page,at:this.now(),endpoint:endpoint.href,lookup,counties,modelCounties,etag:cached?.endpoint?result.etag:null});
+      this.cache.delete(race.id);this.cache.set(race.id,{page,at:this.now(),endpoint:endpoint.href,lookup,counties,modelCounties,modelUnits,etag:cached?.endpoint?result.etag:null});
       while(this.cache.size>this.cacheLimit)this.cache.delete(this.cache.keys().next().value);
       return counties;
     }catch(error){if(this.errors.get(race.id)!==error.message)console.warn(JSON.stringify({event:'county-provider-failed',race:race.id,reason:error.message}));this.errors.set(race.id,error.message);this.cache.set(race.id,{...cached,page,at:this.now(),counties:cached?.counties||race.counties||[]});while(this.cache.size>this.cacheLimit)this.cache.delete(this.cache.keys().next().value);return null;}finally{this.running--;this.inflight.delete(requestKey);}});
@@ -231,6 +287,7 @@ export class NbcCountyProvider {
     for(const race of wanted)if(batches.has(race.id)){
       race.counties=batches.get(race.id);
       race.probabilityCounties=this.modelCountiesFor(race);
+      race.probabilityUnits=this.modelUnitsFor(race);
     }
   }
 }
