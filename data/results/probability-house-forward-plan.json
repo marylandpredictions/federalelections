@@ -1,0 +1,43 @@
+{
+  "status": "frozen research evaluation plan; not a probability release",
+  "purpose": "Evaluate candidate anchoring on additional archived House races without fitting to their outcomes",
+  "cycle": 2022,
+  "archiveIndexSha256": "ac89731edf1a54d213faf5d2eaa471d4252f05784e3b3e5797bca80ea832c5ee",
+  "indexedRaces": 399,
+  "selection": "First public archive-index capture per district during November 8-10; no selection using final outcomes",
+  "models": ["historical-only", "candidate-anchored", "candidate-and-uncertainty"],
+  "anchor": "Latest _deluxe forecast available in the verified September 24 pre-election archive",
+  "training": "2020 presidential count likelihood and 2016-to-2020 geographic variance; no 2022 outcome fitting",
+  "codeSha256": {
+    "scripts/results/probability-partial-state-study.py": "b7e2bd567251a67b1c3ee08c464fbdba686ae8764e8345e5716b4811617f7a11",
+    "scripts/results/probability-frozen-house-study.py": "f64891a03976144355fc8dc0807c776c59b4eb16dfc25a97653494f3fae2872c",
+    "scripts/results/probability-senate-county-frames.mjs": "506c816369e0749341e9296e1e91e786240c25898d1aaf808e77f17a9fc18269"
+  },
+  "previouslyInspected": [
+    "2022-al-house-2", "2022-al-house-3", "2022-al-house-5",
+    "2022-az-house-1", "2022-az-house-3", "2022-az-house-4", "2022-az-house-6",
+    "2022-ca-house-13", "2022-ca-house-22", "2022-co-house-3", "2022-de-house-1",
+    "2022-wa-house-3", "2022-wa-house-8", "2022-wy-house-1"
+  ],
+  "scope": "Conditional D/R component only; two identified major-party candidates, complete district-part geography, reconciled dated counts and certified outcome control",
+  "quarantine": [
+    "No reported votes", "Wrong election or district", "Unverified candidate identity",
+    "Incomplete geography or historical prior", "Unreconciled ballot totals",
+    "Source counts exceed certified candidate totals", "Winner outside named D/R component",
+    "Unsupported municipal or ranked-choice reporting geography"
+  ],
+  "report": [
+    "All eligible races and separately races not previously inspected",
+    "Equal-race Brier score, log loss, margin MAE and 80% interval coverage",
+    "Paired state-cluster bootstrap intervals; do not count districts within a state as independent",
+    "Reporting-stage cohorts and prior-competitive races (absolute frozen forecast margin at most 10 points)",
+    "False 95%-confidence forecasts and every quarantine reason",
+    "Comparison with frozen forecast candidate-win probabilities where identity and denominator reconcile"
+  ],
+  "limitations": [
+    "Retrospective race extension after inspecting 14 races; not independent-cycle preregistration",
+    "Archive timing may concentrate the sample late in counting",
+    "No parameter adjustment on the added cohort may be represented as held-out validation",
+    "Passing this study alone cannot authorize all-candidate, runoff or ranked-choice odds"
+  ]
+}
