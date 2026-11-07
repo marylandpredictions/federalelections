@@ -1,0 +1,47 @@
+{
+  "purpose": "Historical partial-count research. This manifest does not authorize probability publication.",
+  "sources": [
+    {
+      "year": 2020,
+      "authority": "MIT Election Data and Science Lab",
+      "url": "https://raw.githubusercontent.com/MEDSL/election_night2020/5becbf2c988522d5ed480e661ba5700f7e65b8fa/results/nyt_counties.csv",
+      "documentation": "https://github.com/MEDSL/election_night2020/blob/5becbf2c988522d5ed480e661ba5700f7e65b8fa/README.md",
+      "gitCommit": "5becbf2c988522d5ed480e661ba5700f7e65b8fa",
+      "gitBlob": "cea67c7573f67bc82f8b3c3c8ef3580d13144097",
+      "sha256": "41f87bb647f44afc6c998fedd8ef9a73fac103674bf793a6183cf0a2073de024",
+      "decodedBytes": 99615781,
+      "format": "csv",
+      "countyVoteTotalField": "votes",
+      "notes": "The separate total.votes column repeats state totals. Expected vote percentages remain estimates."
+    },
+    {
+      "year": 2024,
+      "authority": "MIT Election Data and Science Lab",
+      "doi": "10.7910/DVN/2CKSIK",
+      "url": "https://dataverse.harvard.edu/api/access/datafile/10988774",
+      "documentation": "https://dataverse.harvard.edu/api/access/datafile/10988775",
+      "fileId": 10988774,
+      "md5": "006fd66d300a0d585bc374e35019da65",
+      "decodedBytes": 1534777951,
+      "format": "csv",
+      "countyVoteTotalField": "total",
+      "notes": "The publisher warns of excess final county counts and reporting corrections. Evaluate against certified controls. New England identifiers are imputed and Alaska uses state House districts."
+    }
+  ],
+  "historicalCountyPriors": {
+    "url": "https://raw.githubusercontent.com/MEDSL/election_night2020/5becbf2c988522d5ed480e661ba5700f7e65b8fa/context/historical_elections/county_prez_wide.csv",
+    "gitBlob": "737df514457a9b2420d124641559b13c043f8da5",
+    "sha256": "96789fb50e0f8da118b6803053652be27d72963a5821817da1f0b0c4994b2976",
+    "decodedBytes": 1033001,
+    "trainingPriorYear": 2016,
+    "holdoutPriorYear": 2020
+  },
+  "timePolicy": "Preserve source timestamps. A timezone must be established before converting these records into UTC-dated live replay evidence.",
+  "corrected2024StateControls": {
+    "authority": "MIT Election Data and Science Lab",
+    "url": "https://dataverse.harvard.edu/api/access/datafile/10883470?format=original",
+    "sha256": "131ca71808573afec6dabddabe312b24d5172fa1ade837938836a7743cb908ee",
+    "decodedBytes": 5327985,
+    "notes": "Publisher repairs reporting artifacts at the state level. These controls check snapshot quality; certified final outcomes are separate."
+  }
+}
