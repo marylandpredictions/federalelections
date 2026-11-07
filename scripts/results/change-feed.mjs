@@ -31,6 +31,7 @@ export function publicRace(race) {
     "lastUpdated",
     "updatedAt",
     "provider",
+    "providerBallotAccounting",
     "detailVersion",
   ];
   const result = Object.fromEntries(

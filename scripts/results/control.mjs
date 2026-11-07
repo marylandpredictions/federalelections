@@ -8,7 +8,7 @@ import { createHash } from "node:crypto";
 import { resultStorage } from './storage.mjs';
 import { auditRosters } from './roster-audit.mjs';
 import {readStateFile,validateCalls,validateRuntime} from './recovery.mjs';
-const resultFingerprint = r => createHash('sha256').update(JSON.stringify([r.provider,r.candidates,r.expectedVotePercent,r.reportingPercent,r.providerCall,(r.counties||[]).map(({lastUpdated,...c})=>c)])).digest('hex');
+const resultFingerprint = r => createHash('sha256').update(JSON.stringify([r.provider,r.candidates,r.expectedVotePercent,r.reportingPercent,r.providerCall,r.providerBallotAccounting,(r.counties||[]).map(({lastUpdated,...c})=>c)])).digest('hex');
 const numberSetting = (value, fallback, min) =>
   Number.isFinite(Number(value)) && Number(value) >= min
     ? Number(value)
@@ -212,6 +212,7 @@ export class ResultsControl {
       reportingUnitIds.filter(id=>/^AK-HD-(?:0[1-9]|[1-3]\d|40)$/.test(id)).length===40&&
       reportingUnitIds.every(id=>/^AK-HD-(?:0[1-9]|[1-3]\d|40)$/.test(id)||id==='AK-OA');
     return {id:raw.id,state:raw.state,provider:raw.provider,electionDate:raw.electionDate,
+      ...(raw.providerBallotAccounting?{providerBallotAccounting:raw.providerBallotAccounting}:{}),
       ...(nativePrior?{reportingUnitScheme:'nbc-alaska-state-house-districts'}:{}),
       lastUpdated:raw.lastUpdated,expectedVotePercent:raw.expectedVotePercent,
       candidates:raw.candidates,counties:nativePrior?raw.probabilityUnits:countyPrior&&raw.probabilityCounties||raw.counties};

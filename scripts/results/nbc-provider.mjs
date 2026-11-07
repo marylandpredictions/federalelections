@@ -68,6 +68,22 @@ export function nationalProjection(tooltip,source,candidates,updated) {
   if(winners.length)throw Error('NBC winner flag conflicts with uncalled status');
   return {providerCallVerified:true,providerCall:null};
 }
+export function nbcRankedBallotAccounting(race,rule,totalBallots,candidates) {
+  if(!rule?.ballotAccounting)return undefined;
+  const authority='https://mobile.maine.gov/sos/news/maine-secretary-states-office-announces-congressional-district-2-race-will-proceed-ranked';
+  // A verified jurisdiction-specific ballot definition, not permission to
+  // forgive arbitrary result mismatches. Do not infer how unassigned ballots
+  // will transfer or treat their difference as a candidate's votes.
+  if(rule.ballotAccounting!=='maine-2026-cd2-rcv'||rule.ballotAccountingSource!==authority||
+      race.id!=='house-ME-2'||race.state!=='ME'||race.type!=='house'||Number(race.district)!==2)
+    throw Error('Unverified NBC ballot-accounting rule');
+  const assigned=candidates.reduce((sum,c)=>sum+c.votes,0);
+  if(!Number.isSafeInteger(assigned)||assigned<0||!Number.isSafeInteger(totalBallots)||totalBallots<assigned)
+    throw Error('NBC ballot total is smaller than candidate votes or malformed');
+  return {scheme:'ranked-choice-ballots',reportedBallots:totalBallots,candidateVotes:assigned,
+    ballotsOutsideCandidateTotals:totalBallots-assigned,verificationSource:authority};
+}
+
 export function parseNbcNational(data,source,catalogue,{onInvalid}={}) {
   const codes={house:'H',senate:'S',governor:'G'},office=source.office;
   if(!codes[office]||data?.brand!=='news'||data.electionDate!=='2026-11-03'||String(data.electionSeason)!=='2026'||data.electionType!=='general'||data.office!==office||data.officeCode!==codes[office]||data.enableLivePreview===true)
@@ -104,11 +120,21 @@ export function parseNbcNational(data,source,catalogue,{onInvalid}={}) {
     });
     if(candidates.length>50||new Set(candidates.map(c=>c.id)).size!==candidates.length||new Set(candidates.map(c=>c.name.toLocaleLowerCase())).size!==candidates.length)throw Error('Duplicate or implausible national candidates');
     const total=candidates.reduce((n,c)=>n+c.votes,0);
-    if(!Number.isSafeInteger(total)||!Number.isSafeInteger(t.totalVote)||total!==t.totalVote)throw Error('NBC race total does not match candidate votes');
+    const ballotAccounting=nbcRankedBallotAccounting(local,mapping,t.totalVote,candidates);
+    if(!Number.isSafeInteger(total)||!Number.isSafeInteger(t.totalVote)||!ballotAccounting&&total!==t.totalVote)throw Error('NBC race total does not match candidate votes');
+    if(ballotAccounting&&ballotAccounting.ballotsOutsideCandidateTotals>0){
+      const given=t.candidates.map(c=>percent(c.percentVote));
+      if(given.filter((value,i)=>value!==null&&candidates[i].votes>0).length<2||
+          given.some((value,i)=>value!==null&&Math.abs(value-100*candidates[i].votes/t.totalVote)>.11))
+        throw Error('NBC ranked-choice candidate percentages do not confirm its ballot denominator');
+    }
     const missing=(local.candidates||[]).filter(c=>!candidates.some(k=>k.name===c.name)).map(c=>c.name);
-    for(const c of candidates)c.percent=total?c.votes/total*100:0;
+    const denominator=ballotAccounting?.reportedBallots??total;
+    for(const c of candidates)c.percent=denominator?c.votes/denominator*100:0;
     const page=typeof entry.href==='string'&&/^\/politics\/2026-(?:special-)?elections\/[a-z0-9-]+-results$/.test(entry.href)?'https://www.nbcnews.com'+entry.href:null;
-    rows.push({...local,provider:'NBC',source:'NBC News',sourceUrl:source.url,providerPageUrl:page,providerRaceId:String(mapping.providerRaceId),providerScope:'national',providerCallVerified:false,electionDate:'2026-11-03',candidateStatus:'Live candidates and vote totals via NBC News',candidates,expectedVotePercent:percent(t.percentIn),estimatedVoteReporting:percent(t.percentIn),reportingPercent:null,percentReporting:null,lastUpdated:updated,updatedAt:updated,status:'uncalled',...nationalProjection(t,source,candidates,updated),counties:[],providerRosterReview:{added:additions,missing,partyChanges}});
+    rows.push({...local,provider:'NBC',source:'NBC News',sourceUrl:source.url,providerPageUrl:page,providerRaceId:String(mapping.providerRaceId),providerScope:'national',providerCallVerified:false,electionDate:'2026-11-03',candidateStatus:'Live candidates and vote totals via NBC News',candidates,
+      ...(ballotAccounting?{providerBallotAccounting:ballotAccounting}:{}),
+      expectedVotePercent:percent(t.percentIn),estimatedVoteReporting:percent(t.percentIn),reportingPercent:null,percentReporting:null,lastUpdated:updated,updatedAt:updated,status:'uncalled',...nationalProjection(t,source,candidates,updated),counties:[],providerRosterReview:{added:additions,missing,partyChanges}});
   }catch(error){if(!onInvalid)throw error;onInvalid({race:mapping.feaRaceId,reason:error.message});}}
   if(!rows.length)throw Error('No healthy mapped NBC national races');return rows;
 }

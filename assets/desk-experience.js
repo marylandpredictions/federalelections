@@ -782,7 +782,7 @@ window.FEACompleteBoard = function (Page) {
     const sources = (this.comparisonManifest?.sources || []).filter(s=>s.id!=='live'&&s.appliesTo?.includes(race.type));
     this.pastColumnIds ||= [sources.find(s=>s.status==='available')?.id || sources[0]?.id].filter(Boolean);
     const current = this.lockedCounty ? county || {candidates:[]} : this.panelData(race);
-    const total = FEADesk.total(current), order=c=>({D:0,R:1,I:2}[c.partyCode||c.party]??3), candidates=[...(current.candidates||[])].sort((a,b)=>T.current.presentation==='broadcast'?order(a)-order(b)||(b.votes||0)-(a.votes||0):(b.votes||0)-(a.votes||0));
+    const total = current.providerBallotAccounting?.reportedBallots ?? FEADesk.total(current), order=c=>({D:0,R:1,I:2}[c.partyCode||c.party]??3), candidates=[...(current.candidates||[])].sort((a,b)=>T.current.presentation==='broadcast'?order(a)-order(b)||(b.votes||0)-(a.votes||0):(b.votes||0)-(a.votes||0));
     const votes = party => candidates.filter(c=>(c.partyCode||c.party)===party).reduce((n,c)=>n+(c.votes||0),0);
     const liveMargin=total?(votes('D')-votes('R'))/total*100:null;
     const column=(heading,subtitle,snapshot,isCurrent=false)=>{

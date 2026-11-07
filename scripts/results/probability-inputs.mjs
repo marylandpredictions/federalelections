@@ -298,6 +298,8 @@ export function buildCountyProbabilityPrior(geography,forecast) {
 export function normalizeProbabilitySnapshot(detail,roster,{at,source,completion={},reportingUnitIds}) {
   requireInput(detail?.id && Array.isArray(detail.counties) && detail.counties.length &&
     Number.isFinite(dateTime(at)) && typeof source==='string' && source.trim(),'Missing dated reporting-unit returns');
+  requireInput(!(detail.providerBallotAccounting?.ballotsOutsideCandidateTotals>0),
+    'Ballots outside ranked-choice candidate totals require a ballot-aware probability model');
   const election=detail.electionDate || detail.date;
   requireInput(Array.isArray(roster)&&roster.length>=2,'At least two named candidates are required by this probability model');
   const candidateIds=roster.map(candidate=>candidate.id);

@@ -1,13 +1,62 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join} from 'node:path';
 import {parseNbcNational,NbcProvider} from '../../scripts/results/nbc-provider.mjs';import {ResultsControl} from '../../scripts/results/control.mjs';
-import {ResultsChangeFeed,publicProvider} from '../../scripts/results/change-feed.mjs';
+import {ResultsChangeFeed,publicProvider,publicRace} from '../../scripts/results/change-feed.mjs';
+import {normalizeProbabilitySnapshot} from '../../scripts/results/probability-inputs.mjs';
 const fixtures=JSON.parse(readFileSync('tests/fixtures/nbc-national-2026.json')).offices;
 const catalogue=JSON.parse(readFileSync('data/election-night-races.json')).races;
 const config=JSON.parse(readFileSync('data/results-provider.json'));
 const sources=config.sources.filter(s=>s.format==='nbc-national-v2').map(s=>({...s,projection:{verified:false},races:s.races.filter(m=>Object.hasOwn(fixtures[s.office].mapData,m.providerRaceId))}));
 const clone=x=>structuredClone(x),source=office=>sources.find(s=>s.office===office);
 function batch(data,key,votes=[100,50]){const t=data.mapData[key].tooltip;t.candidates.forEach((c,i)=>c.votes=votes[i]||0);t.totalVote=t.candidates.reduce((n,c)=>n+c.votes,0);return data;}
+
+function maineBallots(){
+ const mapping=clone(config.sources.find(s=>s.office==='house'&&s.format==='nbc-national-v2').races.find(r=>r.feaRaceId==='house-ME-2'));
+ const s={...source('house'),races:[mapping]},d=clone(fixtures.house);
+ d.mapData={'2302':{stateCode:'ME',href:'/politics/2026-elections/maine-house-results',tooltip:{officeCode:'H',electionTypeCode:'G',totalVote:341256,percentIn:97.8,callStatusCode:'C',candidates:[
+  {name:'Paul LePage',party:'GOP',code:1,votes:170265,percentVote:49.9,isWinner:false},
+  {name:'Matthew Dunlap',party:'DEM',code:2,votes:164845,percentVote:48.3,isWinner:false},
+  {name:'Gregory Ward',party:'OTH',code:3,votes:125,percentVote:0,isWinner:false},
+ ]}}};return {s,d};
+}
+test('Verified Maine ranked ballots preserve NBC denominator without inventing candidate votes or a majority',()=>{
+ const {s,d}=maineBallots(),r=parseNbcNational(d,s,catalogue)[0];
+ assert.equal(r.candidates.reduce((n,c)=>n+c.votes,0),335235);
+ assert.equal(r.providerBallotAccounting.reportedBallots,341256);
+ assert.equal(r.providerBallotAccounting.ballotsOutsideCandidateTotals,6021);
+ assert.ok(r.candidates[0].percent<50);
+ assert.equal(r.candidates[0].percent,170265/341256*100);
+ assert.equal(r.providerCall,null);assert.ok(r.candidates.every(c=>!c.isWinner));
+ assert.deepEqual(publicRace(r).providerBallotAccounting,r.providerBallotAccounting);
+ assert.throws(()=>normalizeProbabilitySnapshot({...r,counties:[{}]},r.candidates,
+  {at:r.lastUpdated,source:'NBC captured fixture'}),/ballot-aware probability model/);
+});
+test('Maine ballot exception rejects unverified rules, conflicting percentages and totals below named votes',()=>{
+ for(const mutate of [x=>delete x.s.races[0].ballotAccounting,x=>x.s.races[0].ballotAccountingSource='https://example.com',
+  x=>x.d.mapData['2302'].tooltip.totalVote=300000,x=>x.d.mapData['2302'].tooltip.candidates[0].percentVote=50.8,
+  x=>x.d.mapData['2302'].tooltip.candidates.forEach(c=>delete c.percentVote)]){
+  const x=maineBallots();mutate(x);assert.throws(()=>parseNbcNational(x.d,x.s,catalogue));
+ }
+});
+test('Maine ballot accounting survives public transport and a restart during provider outage',async t=>{
+ const {s,d}=maineBallots(),root=await mkdtemp(join(tmpdir(),'fea-maine-ballots-'));
+ t.after(()=>rm(root,{recursive:true,force:true}));await mkdir(join(root,'data'));await mkdir(join(root,'disk'));
+ await writeFile(join(root,'data/election-night-races.json'),JSON.stringify({races:catalogue.filter(r=>r.id==='house-ME-2')}));
+ await writeFile(join(root,'data/results-provider.json'),JSON.stringify({...config,sources:[s]}));
+ await writeFile(join(root,'data/result-calls.json'),JSON.stringify({races:{}}));
+ let offline=false;
+ const provider=new NbcProvider({sources:[s],fetchImpl:async()=>{if(offline)throw Error('offline');return new Response(JSON.stringify(d));}});
+ const options={root,storageDir:join(root,'disk'),provider,now:()=>Date.parse(d.currentTime)+1000};
+ const control=await new ResultsControl(options).init();await control.poll();
+ const race=c=>c.results().groups.flatMap(g=>g.races)[0];
+ assert.equal(race(control).provider,'NBC');
+ assert.equal(race(control).providerBallotAccounting.ballotsOutsideCandidateTotals,6021);
+ offline=true;const restarted=await new ResultsControl(options).init();await restarted.poll();
+ assert.equal(race(restarted).provider,'NBC');
+ assert.deepEqual(publicRace(race(restarted)).providerBallotAccounting,publicRace(race(control)).providerBallotAccounting);
+ assert.ok(race(restarted).candidates[0].percent<50);
+ assert.equal(restarted.probabilityResult('house-ME-2').providerBallotAccounting.reportedBallots,341256);
+});
 test('Observed NBC 2026 national samples map House at-large, House districts, Senate specials and governors without projections',()=>{
  for(const s of sources){const rows=parseNbcNational(fixtures[s.office],s,catalogue);assert.equal(rows.length,2);assert.ok(rows.every(r=>r.candidates.length&&r.candidates.every(c=>c.votes===0)&&r.providerCall===null&&r.providerCallVerified===false));}
  assert.equal(parseNbcNational(fixtures.house,source('house'),catalogue)[0].id,'house-DE-AL');
