@@ -1,7 +1,7 @@
 // County data comes from the updateUrl declared by NBC's public race page,
 // not the national party/race rollups. This adapter has no call authority.
 import {matchBallotCandidate, genericName} from './candidate-roster.mjs';
-import {percent} from './nbc-provider.mjs';
+import {percent,nbcReportingUnitBallotAccounting} from './nbc-provider.mjs';
 import {readFile} from 'node:fs/promises';
 import {gunzipSync} from 'node:zlib';
 import {resolve} from 'node:path';
@@ -82,13 +82,17 @@ export function parseNbcCounties(data,race,{lookup=countyGeographies(data,race),
     });
     if(new Set(candidates.map(c=>c.name)).size!==candidates.length)throw Error('Duplicate county candidates');
     const total=candidates.reduce((n,c)=>n+c.votes,0);
-    if(!Number.isSafeInteger(total)||total!==a.totalVote)throw Error('County total does not match candidate votes');
+    const ballotAccounting=nbcReportingUnitBallotAccounting(race,a.totalVote,candidates,a.candidates);
+    if(!Number.isSafeInteger(total)||!ballotAccounting&&total!==a.totalVote)throw Error('County total does not match candidate votes');
+    const denominator=ballotAccounting?.reportedBallots??total;
     const old=previous.find(c=>c.fips===id);
     if(old&&Date.parse(old.lastUpdated||'')>updated)throw Error('Regressed county timestamp');
     const oldTotal=(old?.candidates||[]).reduce((n,c)=>n+c.votes,0);
     if(oldTotal>0&&total===0||oldTotal>=100&&total<oldTotal*.5)throw Error('County vote reset; last good retained');
-    for(const c of candidates){if(old?.candidates?.some(p=>p.name===c.name&&p.votes>=100&&c.votes===0))throw Error('County candidate vote reset');c.percent=total?c.votes/total*100:0;}
-    counties.push({fips:id,name:a.raceName,type:id.length===10?'Town':'County',candidates,estimatedVoteReporting:percent(a.percentIn),percentReporting:null,lastUpdated:new Date(updated).toISOString(),source:'NBC News'});seen.add(id);
+    for(const c of candidates){if(old?.candidates?.some(p=>p.name===c.name&&p.votes>=100&&c.votes===0))throw Error('County candidate vote reset');c.percent=denominator?c.votes/denominator*100:0;}
+    counties.push({fips:id,name:a.raceName,type:id.length===10?'Town':'County',candidates,
+      ...(ballotAccounting?{providerBallotAccounting:ballotAccounting}:{}),
+      estimatedVoteReporting:percent(a.percentIn),percentReporting:null,lastUpdated:new Date(updated).toISOString(),source:'NBC News'});seen.add(id);
   }catch(error){onInvalid({county:key,reason:error.message});}
   if(!counties.length)throw Error('No healthy NBC county results');
   // Partial/malformed responses cannot erase previously published counties.

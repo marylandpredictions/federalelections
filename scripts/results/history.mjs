@@ -5,6 +5,7 @@ export const resultSignature = (row) =>
   JSON.stringify([
     row.expectedVotePercent ?? row.estimatedVoteReporting ?? null,
     row.reportingPercent ?? row.percentReporting ?? row.precinctReporting ?? null,
+    row.providerBallotAccounting ?? null,
     (row.candidates || [])
       .map((c) => [c.name, c.partyCode || c.party, c.votes])
       .sort((a, b) => a[0].localeCompare(b[0])),
@@ -13,6 +14,7 @@ export function historyPoint(row, at = new Date().toISOString()) {
   return {
     at,
     sourceUpdatedAt: row.lastUpdated || row.updatedAt || "",
+    ...(row.providerBallotAccounting?{providerBallotAccounting:row.providerBallotAccounting}:{}),
     expectedVotePercent:
       row.expectedVotePercent ?? row.estimatedVoteReporting ?? null,
     precinctReporting: row.reportingPercent ?? row.percentReporting ?? null,

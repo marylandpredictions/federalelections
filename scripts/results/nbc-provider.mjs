@@ -84,6 +84,20 @@ export function nbcRankedBallotAccounting(race,rule,totalBallots,candidates) {
     ballotsOutsideCandidateTotals:totalBallots-assigned,verificationSource:authority};
 }
 
+export function nbcReportingUnitBallotAccounting(race,totalBallots,candidates,rawCandidates) {
+  if(!race.providerBallotAccounting)return undefined;
+  if(race.providerBallotAccounting.scheme!=='ranked-choice-ballots')throw Error('Unknown reporting-unit ballot accounting');
+  const accounting=nbcRankedBallotAccounting(race,{ballotAccounting:'maine-2026-cd2-rcv',
+    ballotAccountingSource:race.providerBallotAccounting.verificationSource},totalBallots,candidates);
+  if(accounting.ballotsOutsideCandidateTotals>0){
+    if(!Array.isArray(rawCandidates)||rawCandidates.length!==candidates.length||rawCandidates.some((raw,i)=>{
+      const share=percent(raw.percentVote);
+      return share===null||Math.abs(share-100*candidates[i].votes/totalBallots)>.11;
+    }))throw Error('NBC local percentages do not confirm its ballot denominator');
+  }
+  return accounting;
+}
+
 export function parseNbcNational(data,source,catalogue,{onInvalid}={}) {
   const codes={house:'H',senate:'S',governor:'G'},office=source.office;
   if(!codes[office]||data?.brand!=='news'||data.electionDate!=='2026-11-03'||String(data.electionSeason)!=='2026'||data.electionType!=='general'||data.office!==office||data.officeCode!==codes[office]||data.enableLivePreview===true)

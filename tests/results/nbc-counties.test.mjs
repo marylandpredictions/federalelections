@@ -12,6 +12,27 @@ const samples=JSON.parse(readFileSync('tests/fixtures/nbc-counties-2026.json','u
 const clone=x=>structuredClone(x);
 function race(key){const p=samples[key],type=key==='house'?'house':'senate';return {id:`${type}-${p.stateAbbr}${type==='house'?'-4':''}`,state:p.stateAbbr,type,...(type==='house'?{district:4}:{}),provider:'NBC',providerScope:'national',providerPageUrl:p.clientUrl,candidates:p.races[0].summary.candidates.map(c=>({...c,id:String(c.code),partyCode:{dem:'D',gop:'R',lib:'L',ind:'I',other:'O'}[c.party],party:{dem:'D',gop:'R',lib:'L',ind:'I',other:'O'}[c.party],votes:0,isWinner:false,winner:false})),counties:[],providerCall:null,providerCallVerified:false};}
 function batch(data,votes){const a=Object.values(data.races[0].mapData)[0];a.candidates.forEach((c,i)=>c.votes=votes[i]||0);a.totalVote=a.candidates.reduce((n,c)=>n+c.votes,0);}
+test('Maine-2 municipal returns preserve verified ballot gaps and reject unrelated discrepancies',()=>{
+ const p=clone(samples.house),r={...race('house'),id:'house-ME-2',state:'ME',district:2,
+  providerPageUrl:'https://www.nbcnews.com/politics/2026-elections/maine-us-house-district-2-results',
+  providerBallotAccounting:{scheme:'ranked-choice-ballots',verificationSource:'https://mobile.maine.gov/sos/news/maine-secretary-states-office-announces-congressional-district-2-race-will-proceed-ranked'}};
+ // Synthetic counts and a format-valid fixture GEOID; not a geographic source.
+ const candidates=r.candidates.map((c,i)=>({...c,votes:i===0?60:i===1?35:0,percentVote:i===0?60:i===1?35:0}));
+ const unit={raceName:'Fixture town',totalVote:100,percentIn:95,candidates};
+ p.stateAbbr='ME';const raw=p.races[0];raw.summary.district=2;raw.summary.raceId='2026-11-03~ME002~H';
+ raw.mapData={'02':{counties:{'2300100100':unit}}};
+ const parsed=parseNbcCounties(p,r)[0];
+ assert.equal(parsed.providerBallotAccounting.reportedBallots,100);
+ assert.equal(parsed.providerBallotAccounting.ballotsOutsideCandidateTotals,5);
+ assert.equal(parsed.candidates[0].percent,60);
+ assert.equal(parsed.candidates.reduce((sum,c)=>sum+c.votes,0),95);
+ assert.ok(parsed.candidates.every(c=>!c.isWinner&&!c.winner));
+ for(const mutate of [()=>delete r.providerBallotAccounting,()=>unit.candidates[0].percentVote=63.2,()=>unit.totalVote=94]){
+  const saved=clone(r.providerBallotAccounting),before=clone(unit);mutate();const issues=[];
+  assert.throws(()=>parseNbcCounties(p,r,{onInvalid:e=>issues.push(e)}),/No healthy/);
+  assert.equal(issues.length,1);r.providerBallotAccounting=saved;Object.assign(unit,before);
+ }
+});
 function alaskaFixture(){
  const p=clone(samples.co),r={...race('co'),id:'senate-AK',state:'AK',providerPageUrl:'https://www.nbcnews.com/politics/2026-elections/alaska-senate-results'};
  p.stateAbbr='AK';p.stateName='Alaska';p.underlyingGeographies='legislativeDistricts';

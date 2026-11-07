@@ -978,6 +978,7 @@ function voteHistoryPoint(race) {
   return {
     at: new Date().toISOString(),
     sourceUpdatedAt: isoDate(race.lastUpdated) || "",
+    ...(race.providerBallotAccounting?{providerBallotAccounting:race.providerBallotAccounting}:{}),
     ...(provider ? { provider } : {}),
     expectedVotePercent: race.expectedVotePercent ?? race.estimatedVoteReporting ?? null,
     precinctReporting: race.reportingPercent ?? race.percentReporting ?? null,
@@ -1040,6 +1041,7 @@ function mergeVoteHistory(...histories) {
       const normalized = {
         at,
         sourceUpdatedAt: isoDate(point.sourceUpdatedAt) || "",
+        ...(point.providerBallotAccounting?{providerBallotAccounting:point.providerBallotAccounting}:{}),
         ...(provider ? { provider } : {}),
         expectedVotePercent: point.expectedVotePercent ?? point.estimatedVoteReporting ?? null,
         precinctReporting: point.precinctReporting ?? null,

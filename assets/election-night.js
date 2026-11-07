@@ -801,7 +801,7 @@ function countyTooltipMarkupClean(county, feature, descriptions, race, compariso
   const props = feature?.properties || {};
   const countyName = county?.name || props.countyName || props.NAME || "County";
   const description = countyDescriptionForFeature(feature, descriptions);
-  const countyTotal=(county?.candidates || []).reduce((sum,c)=>sum+(Number(c.votes) || 0),0);
+  const countyTotal=FEADesk.voteDenominator(county);
   const countyCandidates = countyTopCandidatesForElectionNight(county, 99).map(c=>({...c,percent:countyTotal>0?c.votes/countyTotal*100:NaN}));
   const fallbackCandidates = topCandidates(race, 99).map(c=>({...c,votes:NaN,percent:NaN}));
   const rows = countyTooltipRowsClean(countyCandidates.length ? countyCandidates : fallbackCandidates, race);

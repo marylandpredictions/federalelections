@@ -8,6 +8,7 @@ import { ResultsChangeFeed } from "../../scripts/results/change-feed.mjs";
 import {
   CountyHistory,
   resultSignature,
+  historyPoint,
 } from "../../scripts/results/history.mjs";
 import {
   normalizeDemographics,
@@ -19,6 +20,16 @@ import { feature } from "topojson-client";
 import vm from "node:vm";
 const require = createRequire(import.meta.url),
   desk = require("../../assets/results-desk.js");
+test('Ranked ballot shares retain the verified denominator while vote deltas count candidate votes',()=>{
+  const row={candidates:[{name:'R',party:'R',votes:170265},{name:'D',party:'D',votes:164845},{name:'Write-in',party:'I',votes:125}],
+    providerBallotAccounting:{scheme:'ranked-choice-ballots',reportedBallots:341256,candidateVotes:335235,ballotsOutsideCandidateTotals:6021}};
+  assert.equal(desk.total(row),335235);assert.equal(desk.voteDenominator(row),341256);
+  assert.ok(100*row.candidates[0].votes/desk.voteDenominator(row)<50);
+  assert.equal(desk.metrics(row).margin,100*(164845-170265)/341256);
+  assert.equal(desk.voteDenominator({...row,providerBallotAccounting:{...row.providerBallotAccounting,candidateVotes:1}}),335235);
+  assert.deepEqual(historyPoint(row).providerBallotAccounting,row.providerBallotAccounting);
+  assert.notEqual(resultSignature(row),resultSignature({...row,providerBallotAccounting:{...row.providerBallotAccounting,reportedBallots:341257,ballotsOutsideCandidateTotals:6022}}));
+});
 const candidates = (d = 55, r = 40) => [
   { name: "A", party: "D", votes: d },
   { name: "B", party: "R", votes: r },

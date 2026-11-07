@@ -5,6 +5,12 @@
       : null;
   const total = (row) =>
     (row?.candidates || []).reduce((sum, c) => sum + (finite(c.votes) || 0), 0);
+  function voteDenominator(row) {
+    const votes=total(row),a=row?.providerBallotAccounting;
+    return a?.scheme==='ranked-choice-ballots'&&Number.isSafeInteger(a.reportedBallots)&&
+      a.reportedBallots>=votes&&a.candidateVotes===votes&&
+      a.ballotsOutsideCandidateTotals===a.reportedBallots-votes?a.reportedBallots:votes;
+  }
   function metrics(row, previous, baseline) {
     const candidates = row?.candidates || [];
     const valid = (r) =>
@@ -16,7 +22,7 @@
     const partyTotal = p => { const list=candidates.filter(c=>(c.partyCode||c.party)===p); return list.length ? {votes:list.reduce((sum,c)=>sum+(finite(c.votes)||0),0)} : null; };
     const d = partyTotal("D"), r = partyTotal("R");
     const margin =
-      votes > 0 && d && r ? ((d.votes - r.votes) / votes) * 100 : null;
+      votes > 0 && d && r ? ((d.votes - r.votes) / voteDenominator(row)) * 100 : null;
     const expected = finite(
       row?.expectedVotePercent ?? row?.estimatedVoteReporting,
     );
@@ -175,6 +181,7 @@
     summaryCandidates,
     finite,
     total,
+    voteDenominator,
     metrics,
     callFingerprint,
     CallTracker,
