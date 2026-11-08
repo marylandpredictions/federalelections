@@ -150,18 +150,31 @@
   async function approvalCard() {
     const approve = $('home-approval-approve');
     const disapprove = $('home-approval-disapprove');
+    const net = $('home-approval-net');
+    const approveBar = $('home-approval-approve-bar');
+    const disapproveBar = $('home-approval-disapprove-bar');
     if (!approve || !disapprove) return;
     try {
-      const response = await fetch('/data/polling/trump-approval.json?v=20261108-3', {
+      const response = await fetch('/data/polling/trump-approval.json?v=20261108-5', {
         signal: AbortSignal.timeout(8000),
       });
       if (!response.ok) throw Error('Approval unavailable');
       const {current} = await response.json();
-      approve.textContent = `${Math.round(current.approve)}%`;
-      disapprove.textContent = `${Math.round(current.disapprove)}%`;
+      const approveValue = Math.round(current.approve);
+      const disapproveValue = Math.round(current.disapprove);
+      approve.textContent = `${approveValue}%`;
+      disapprove.textContent = `${disapproveValue}%`;
+      if (approveBar) approveBar.style.width = `${approveValue}%`;
+      if (disapproveBar) disapproveBar.style.width = `${disapproveValue}%`;
+      if (net) {
+        const signed = `${current.net > 0 ? '+' : ''}${current.net.toFixed(1)}`;
+        net.textContent = `Net ${signed}`;
+        net.className = `home-approval-net ${current.net >= 0 ? 'is-approve' : 'is-disapprove'}`;
+      }
     } catch {
       approve.textContent = '—';
       disapprove.textContent = '—';
+      if (net) net.textContent = 'Net —';
     }
   }
   approvalCard().catch(()=>{});

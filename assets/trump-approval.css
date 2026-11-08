@@ -1,14 +1,14 @@
 .approval-page {
-  --approve: #2f6fed;
-  --disapprove: #d6454a;
+  --approve: #12a454;
+  --disapprove: #e35d7a;
   max-width: 1180px;
   margin: 0 auto;
   padding: 48px clamp(16px, 4vw, 52px) 72px;
 }
 
 [data-theme="dark"] .approval-page {
-  --approve: #7eafff;
-  --disapprove: #ff8f97;
+  --approve: #3dd68c;
+  --disapprove: #ff8fa8;
 }
 
 .approval-hero {
@@ -20,7 +20,11 @@
   font-size: clamp(2.25rem, 5vw, 3.8rem);
   line-height: 1.05;
   letter-spacing: -.045em;
-  margin: 12px 0 18px;
+  margin: 12px 0 0;
+}
+
+.approval-page > .approval-source {
+  margin-top: 28px;
 }
 
 .approval-hero .lede {
