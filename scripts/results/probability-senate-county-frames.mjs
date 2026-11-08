@@ -20,13 +20,6 @@ if(office==='house'){
   for(const capture of JSON.parse(await readFile(houseManifestPath||'data/results/probability-house-capture-manifest.json','utf8')))
     entries.set(capture.file.replace(/\.body$/,''),{url:capture.source,captures:[[capture.at,capture.sha256]]});
 }
-// A separate, checksum-pinned archive cohort can extend cross-office tests.
-// This changes input discovery only; candidate/count/geography checks below
-// remain identical, and the published production model is unaffected.
-if(office!=='house'&&houseManifestPath){
-  for(const capture of JSON.parse(await readFile(houseManifestPath,'utf8')).filter(row=>row.office===office))
-    entries.set(capture.file.replace(/\.body$/,''),{url:capture.source,captures:[[capture.at,capture.sha256]]});
-}
 const baseline=JSON.parse(await readFile('data/baselines/pres-2020-counties.json','utf8'));
 const expected=new Map();
 for(const row of baseline.rows.filter(row=>row.valid)){
@@ -67,13 +60,8 @@ if(office==='governor'){
       !/^https:\/\/[^/]+\.gov\//.test(row.source)||/^(?:overvotes?|undervotes?|void|blank)$/i.test(row.alt_result_text.trim()))continue;
     const key=row.cycle+'-'+row.state_abbrev,contest=truth.get(key)||{ballot:new Map(),total:0};
     const count=Number(row.votes);
-    // Certified aggregate write-ins/none-of-the-above remain ballot counts,
-    // never invented named candidates. Unknown unnamed rows still quarantine.
-    const category=/^(?:write[- ]?ins?|scattering|other|none of these candidates)$/i.test(row.alt_result_text.trim())
-      ?'Ballot category: '+row.alt_result_text.trim():null;
-    const name=row.candidate_name||category;
-    if(!name||!row.votes||!Number.isSafeInteger(count)||count<0)contest.invalid=true;
-    contest.ballot.set(name,(contest.ballot.get(name)||0)+count);
+    if(!row.candidate_name||!row.votes||!Number.isSafeInteger(count)||count<0)contest.invalid=true;
+    contest.ballot.set(row.candidate_name,(contest.ballot.get(row.candidate_name)||0)+count);
     contest.total+=count;
     truth.set(key,contest);
   }

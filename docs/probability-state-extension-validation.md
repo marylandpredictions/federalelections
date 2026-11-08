@@ -49,6 +49,23 @@ median was D+4.72 with an 80% interval from R+1.06 to D+10.47, versus an actual
 R+3.23. This miss remains in every applicable score. It is not excluded or
 corrected with knowledge of the final outcome.
 
+That North Carolina snapshot also has 20 counties with zero votes/zero reporting.
+It is outside the existing production requirement of positive counts and a
+positive source estimate in every model area. It stays in the broad results
+above, with an additional exact-production-input cohort reported separately:
+
+| Exact production-input policy, newly inspected races | Senate | Governor |
+| --- | ---: | ---: |
+| Races / state clusters | 12 | 12 |
+| Model Brier score | .00754 | .000000110 |
+| Frozen prior Brier score | .01785 | .01907 |
+| 80% margin coverage | 83.3% | 75.0% |
+
+These are descriptive subgroup results, not permission to expand publication:
+only one Senate and three governor cases in this subgroup were prior-competitive.
+The missing-unit miss is also evidence against relaxing the production input
+rules without further validation.
+
 Governor results are encouraging but contain only three newly inspected
 prior-competitive cases. Neither sample certifies a full multicandidate win
 vector, major independent, ranked-choice transfer, runoff or legislative choice.
@@ -71,8 +88,8 @@ delegation is verified. This explains several remaining governor exclusions.
 With the archived inputs and pinned transcription in `.runtime`:
 
 ```text
-node scripts/results/probability-senate-county-frames.mjs .runtime senate data/results/probability-state-cohort-manifest.json .runtime/probability-state-extension-captures .runtime/probability-state-extension-senate-frames.json
-node scripts/results/probability-senate-county-frames.mjs .runtime governor data/results/probability-state-cohort-manifest.json .runtime/probability-state-extension-captures .runtime/probability-state-extension-governor-frames.json
+node scripts/results/probability-state-extension-frames.mjs .runtime senate data/results/probability-state-cohort-manifest.json .runtime/probability-state-extension-captures .runtime/probability-state-extension-senate-frames.json
+node scripts/results/probability-state-extension-frames.mjs .runtime governor data/results/probability-state-cohort-manifest.json .runtime/probability-state-extension-captures .runtime/probability-state-extension-governor-frames.json
 python scripts/results/probability-frozen-state-study.py senate
 python scripts/results/probability-frozen-state-study.py governor
 python scripts/results/probability-state-forward-score.py

@@ -27,6 +27,14 @@ is [-.02117, -.00521]. Its 80% margin interval covers 88.2% of outcomes, with no
 wrong forecasts above 95% confidence. Among 21 prior-competitive races, coverage
 is 76.2% and the Brier difference interval is [-.13275, -.04196].
 
+The release additionally requires evidence under its exact input policy: every
+model area has positive counts and a positive source reporting estimate. This
+leaves 136 newly inspected races across 29 states. Brier is .00461 versus .01575,
+80% coverage is 88.2%, and the paired state-cluster difference is
+[-.01940, -.00453]. Among 20 prior-competitive cases, coverage is 75.0% and the
+difference is [-.12584, -.03507]. No wrong 95%-confidence forecast occurs in
+either exact-input cohort. The broader research results remain visible.
+
 Single-county districts use their actual one reporting unit, without invented
 subdivisions. These were already included in the frozen evaluation. The
 descriptive subgroup diagnostic is retained in

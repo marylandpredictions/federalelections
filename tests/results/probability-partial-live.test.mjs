@@ -5,7 +5,7 @@ import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {LiveProbability,validateProbabilityRelease} from '../../scripts/results/probability-live.mjs';
 import {partialLiveModelVersion,simulatePartialProbability} from '../../scripts/results/probability-partial-adapter.mjs';
-import {partialReleaseEvidence} from '../../scripts/results/probability-partial-release.mjs';
+import {partialReleaseEvidence,validatePartialProbabilityRelease} from '../../scripts/results/probability-partial-release.mjs';
 import {normalizeProbabilitySnapshot,probabilityGeographyBasis} from '../../scripts/results/probability-inputs.mjs';
 
 function fixture(){
@@ -40,6 +40,16 @@ test('Partial release binds actual validation, calibration, implementation and s
   const copy=structuredClone(release);mutate(copy);assert.throws(()=>validateProbabilityRelease(copy),/Partial-count release/);
  }
 });
+test('Broader research scores cannot substitute for the exact production-input cohort',()=>{
+ const {release}=fixture();
+ for(const mutate of [e=>delete e.validation.cohorts['new-races']['production-inputs'],
+  e=>e.validation.cohorts['new-races']['production-inputs'].metrics['candidate-and-uncertainty'].false95=1,
+  e=>e.validation.cohorts['new-races']['production-inputs-prior-competitive'].metrics['candidate-and-uncertainty'].races=1]){
+   const evidence=partialReleaseEvidence();mutate(evidence);
+   assert.throws(()=>validatePartialProbabilityRelease(release,evidence),/exact production-input validation/);
+ }
+});
+
 test('Actual worker generates and persists partial estimates without requiring completed counties',async t=>{
  const x=fixture(),path=await directory(t),worker=new LiveProbability(path,{now:()=>x.now});
  await worker.load(x.release);await worker.update(x.id,x.detail);

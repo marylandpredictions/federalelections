@@ -21,7 +21,9 @@ for office in ('senate','governor'):
     cohorts={}
     for name,select in [('all',lambda r:True),('new',lambda r:not r['previouslyInspected']),
         ('supported-new',lambda r:not r['previouslyInspected'] and r['reported']>=25),
-        ('supported-new-competitive',lambda r:not r['previouslyInspected'] and r['reported']>=25 and abs(r['anchorMarginPoints'])<=10)]:
+        ('supported-new-competitive',lambda r:not r['previouslyInspected'] and r['reported']>=25 and abs(r['anchorMarginPoints'])<=10),
+        ('production-inputs-new',lambda r:not r['previouslyInspected'] and r['productionInputsEligible']),
+        ('production-inputs-new-competitive',lambda r:not r['previouslyInspected'] and r['productionInputsEligible'] and abs(r['anchorMarginPoints'])<=10)]:
         rows=[r for r in report['runs'] if select(r)]
         if not rows:
             cohorts[name]={'races':0};continue

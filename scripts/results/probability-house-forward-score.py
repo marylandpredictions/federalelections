@@ -75,6 +75,9 @@ def run(root, input_path, frames_path, output_path):
         frame=by_id[row["id"]]
         row["state"]=frame["state"]
         row["stage"]=frame["stage"]
+        row["productionInputsEligible"]=frame["reported"]>=25 and all(
+            unit["total"]>0 and unit.get("reported") is not None and 0<unit["reported"]<=100
+            for unit in frame["units"])
         anchor=anchors[f'{frame["state"]}-{frame["district"]}']
         for party in ("D","R"):
             if anchor["name_"+party+"1"]!=row["anchorNames"][party]:
@@ -94,6 +97,8 @@ def run(root, input_path, frames_path, output_path):
         groups={"all-stages":selected,"prior-competitive":[row for row in selected if abs(row["anchorMarginPoints"])<=10],
                 "supported-stages":[row for row in selected if row["stage"]!='1-24'],
                 "supported-prior-competitive":[row for row in selected if row["stage"]!='1-24' and abs(row["anchorMarginPoints"])<=10]}
+        groups["production-inputs"]=[row for row in selected if row["productionInputsEligible"]]
+        groups["production-inputs-prior-competitive"]=[row for row in selected if row["productionInputsEligible"] and abs(row["anchorMarginPoints"])<=10]
         groups.update({stage:[row for row in selected if row["stage"]==stage] for stage in ("1-24","25-59","60-89","90-99","100")})
         report["cohorts"][scope]={}
         for group,cohort in groups.items():

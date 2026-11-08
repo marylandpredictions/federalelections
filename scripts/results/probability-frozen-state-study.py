@@ -62,6 +62,7 @@ for frame in captured['frames']:
             'median':d-r,'interval80':[float(row['p10_netpartymargin']),float(row['p90_netpartymargin'])]}
         predictions['frozen-source']=prior
         report['runs'].append({'id':frame['id'],'state':frame['state'],'at':frame['at'],'reported':frame['reported'],
+            'productionInputsEligible':frame['reported']>=25 and all(u['total']>0 and u.get('reported') is not None and 0<u['reported']<=100 for u in frame['units']),
             'previouslyInspected':frame['id'] in plan['previouslyInspected'],
             'anchorMarginPoints':d-r,'anchorNames':frame['candidateControlNames'],
             'forecasts':predictions,'uncertainty':uncertainty,'truthMargin':frame['truthMargin'],'winnerD':frame['winnerD']})

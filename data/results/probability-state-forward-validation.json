@@ -2,7 +2,7 @@
   "status": "research-only; sample size and rule/candidate scope still require review",
   "offices": {
     "senate": {
-      "forecastSha256": "ccc6a9308f704eb46c7211acdc7fdc8dd855dc3b9428834d56508ab91d842404",
+      "forecastSha256": "978aff1f0fea4ff9195a528c53fc99173b6fb20d901614ec851831accfbcc669",
       "cohorts": {
         "all": {
           "metrics": {
@@ -187,6 +187,90 @@
             ]
           },
           "false95Ids": []
+        },
+        "production-inputs-new": {
+          "metrics": {
+            "historical-only": {
+              "races": 12,
+              "states": 12,
+              "brier": 0.007293492311335772,
+              "logLoss": 0.029320891021591803,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 1.332546837063896,
+              "coverage80": 0.75
+            },
+            "candidate-and-uncertainty": {
+              "races": 12,
+              "states": 12,
+              "brier": 0.007542099525172617,
+              "logLoss": 0.02996461494522173,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 1.236009231757899,
+              "coverage80": 0.8333333333333334
+            },
+            "frozen-source": {
+              "races": 12,
+              "states": 12,
+              "brier": 0.017851708299578887,
+              "logLoss": 0.06207290431435347,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 5.125533081660809,
+              "coverage80": 1.0
+            }
+          },
+          "paired": {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 12,
+            "draws": 5000,
+            "difference": -0.010309608774406263,
+            "interval95": [
+              -0.030079156204536155,
+              -1.9567189094066886e-05
+            ]
+          },
+          "false95Ids": []
+        },
+        "production-inputs-new-competitive": {
+          "metrics": {
+            "historical-only": {
+              "races": 1,
+              "states": 1,
+              "brier": 0.08752179778001609,
+              "logLoss": 0.3507508572334387,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 0.6163808101371365,
+              "coverage80": 1.0
+            },
+            "candidate-and-uncertainty": {
+              "races": 1,
+              "states": 1,
+              "brier": 0.09050460453800065,
+              "logLoss": 0.35787542427498226,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 0.6222523937903961,
+              "coverage80": 1.0
+            },
+            "frozen-source": {
+              "races": 1,
+              "states": 1,
+              "brier": 0.206093300625,
+              "logLoss": 0.6050905167396622,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 0.3555814766646914,
+              "coverage80": 1.0
+            }
+          },
+          "paired": {
+            "status": "too few independent state clusters"
+          },
+          "false95Ids": []
         }
       },
       "quarantined": [
@@ -241,7 +325,7 @@
       ]
     },
     "governor": {
-      "forecastSha256": "56b6ca281393054ec7efeccb5af44417cd7ff49525237b363c29623a4a1e4faf",
+      "forecastSha256": "71d98bab16e24e7336bba090a34b43ec9623906b97bd93aa8a0567262d1ae391",
       "cohorts": {
         "all": {
           "metrics": {
@@ -382,6 +466,98 @@
           "false95Ids": []
         },
         "supported-new-competitive": {
+          "metrics": {
+            "historical-only": {
+              "races": 3,
+              "states": 3,
+              "brier": 6.0412499250466174e-05,
+              "logLoss": 0.005196104700479139,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 0.3977623940153796,
+              "coverage80": 1.0
+            },
+            "candidate-and-uncertainty": {
+              "races": 3,
+              "states": 3,
+              "brier": 4.098360491869244e-07,
+              "logLoss": 0.0004334517501654881,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 0.18923517045915497,
+              "coverage80": 1.0
+            },
+            "frozen-source": {
+              "races": 3,
+              "states": 3,
+              "brier": 0.0762060612824124,
+              "logLoss": 0.30820019207680116,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 0.6705252519846683,
+              "coverage80": 1.0
+            }
+          },
+          "paired": {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": -0.07620565144636322,
+            "interval95": [
+              -0.10899901250399885,
+              -0.016090912503998803
+            ]
+          },
+          "false95Ids": []
+        },
+        "production-inputs-new": {
+          "metrics": {
+            "historical-only": {
+              "races": 12,
+              "states": 12,
+              "brier": 1.5110621813516307e-05,
+              "logLoss": 0.0013740149268695373,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 2.226576506619034,
+              "coverage80": 0.6666666666666666
+            },
+            "candidate-and-uncertainty": {
+              "races": 12,
+              "states": 12,
+              "brier": 1.0995601319649414e-07,
+              "logLoss": 0.00018335168929112437,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 1.980345438710528,
+              "coverage80": 0.75
+            },
+            "frozen-source": {
+              "races": 12,
+              "states": 12,
+              "brier": 0.01907216215973522,
+              "logLoss": 0.08010420073670484,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 5.0428122852185515,
+              "coverage80": 0.75
+            }
+          },
+          "paired": {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 12,
+            "draws": 5000,
+            "difference": -0.019072052203722028,
+            "interval95": [
+              -0.04495013671179882,
+              -3.4227864354533656e-05
+            ]
+          },
+          "false95Ids": []
+        },
+        "production-inputs-new-competitive": {
           "metrics": {
             "historical-only": {
               "races": 3,

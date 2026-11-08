@@ -39,6 +39,16 @@ export function validatePartialProbabilityRelease(release,evidence=partialReleas
   'new-race validation does not support the requested scope');
  check(supportedComparison?.interval95?.[1]<0&&competitiveComparison?.interval95?.[1]<0,
   'state-cluster comparisons do not establish skill in the supported scope');
+ // Publication also requires skill on the exact positive-count/percentage
+ // input policy, not just the broader research kernel's eligible stages.
+ const exact=cohorts?.['production-inputs'],exactClose=cohorts?.['production-inputs-prior-competitive'];
+ const x=exact?.metrics?.['candidate-and-uncertainty'],y=exactClose?.metrics?.['candidate-and-uncertainty'];
+ check(x?.races>=100&&x.states>=20&&y?.races>=20&&x.false95===0&&y.false95===0&&
+   x.coverage80>=.7&&x.coverage80<=.9&&y.coverage80>=.7&&y.coverage80<=.9&&
+   x.brier<exact.metrics['frozen-source']?.brier&&y.brier<exactClose.metrics['frozen-source']?.brier&&
+   [exact,exactClose].every(group=>group.paired?.some(row=>row.method==='candidate-and-uncertainty'&&
+     row.comparison==='frozen-source'&&row.interval95?.[1]<0)),
+  'exact production-input validation does not establish held-out skill');
  check(entries.length>0&&entries.length<=506,'missing or excessive races');
  const calibrationIdentity=objectHash(evidence.calibration);
  for(const [id,{prior,roster} ]of entries){
