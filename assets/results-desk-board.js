@@ -1106,11 +1106,14 @@ window.FEAEnhanceBoard = function (Page) {
     const label = value => value === 0 ? '0%' : value === 1 ? '100%' : value < .001 ? '&lt;0.1%' : value > .999 ? '&gt;99.9%' : percent(value * 100);
     const summaries = [...series].sort((a, b) => b.value(latest) - a.value(latest)).map(candidate =>
       `<li><span><i aria-hidden="true" style="--probability-ink:${esc(candidate.ink)}"></i>${esc(candidate.name)}</span><strong>${label(candidate.value(latest))}</strong></li>`).join('');
-    const status = data.status === 'stale' ? 'Delayed · Last available estimate' : 'Latest model estimate';
+    const conservative=data.inputMode==='race-total'||latest.inputMode==='race-total';
+    const status = data.status === 'stale' ? (conservative?'Delayed · Conservative estimate':'Delayed · Last available estimate') :
+      conservative?'Conservative model estimate':'Latest model estimate';
     const dateLabel = at => new Date(at).toLocaleDateString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric'});
     container.innerHTML = `<div class="trend-summary"><div><small>${status}</small><strong>Chance of winning</strong></div><span>${esc(dateLabel(latest.at))}<br>${esc(time(latest.at))}</span></div>
       ${data.status === 'stale' && data.reason ? `<p class="desk-hint">${esc(data.reason)}</p>` : ''}
       <ul class="desk-probability-candidates">${summaries}</ul><div class="desk-probability-chart"></div>
+      ${conservative?'<p class="desk-hint">Uses race totals and a pre-election prior. Uncertainty is conservative.</p>':''}
       <p class="desk-hint">FEA model estimate using NBC News returns. Race calls are shown separately.</p>`;
     if (points.length < 2) return;
     const width = Math.max(210, container.clientWidth), height = 182;

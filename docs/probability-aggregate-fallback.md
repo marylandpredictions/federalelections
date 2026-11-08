@@ -1,7 +1,8 @@
 # Race-total fallback research — November 8, 2026
 
 This fallback demonstrates descriptive predictive skill in the tests below.
-It is not yet wired into production. The 506-race publication objective remains
+It is now integrated into the runtime and the 146-race release configuration.
+The 506-race publication objective remains
 incomplete. The existing geographic model is preferred wherever validated
 inputs are available.
 
@@ -89,7 +90,7 @@ presidential-state component evidence, not an additional House election cycle.
 
 ## Next integration checks
 
-The JavaScript adapter now exists but remains unconnected to production.
+The JavaScript adapter now runs through the existing worker and persistence path.
 Five targeted tests exercise kernel agreement, source/rule/candidate failures,
 unchanged-input behavior and implementation revisions. A real-input replay of
 226 cases at 20,000 draws has maximum Python/JavaScript probability difference
@@ -99,12 +100,20 @@ skill. Local replay median time is 36.3 ms and p95 44.4 ms; these are not Render
 measurements. The summary is in
 `data/results/probability-aggregate-node-validation.json`.
 
-Before publication, still require the race-total input scheme in runtime,
-release evidence/hashes, fallback selection, persistence and end-to-end public
-checks. The proposed conservative adapter withholds estimates below 60% source
+Runtime tests verify the race-total scheme, bound release evidence, retention
+of the preferred geographic model, restart recovery, outage behavior, and
+rejection of extra candidates. Public board/API checks remain required after
+deployment. The conservative adapter withholds estimates below 60% source
 reporting because separate-cycle early-stage evidence is sparse. Keep the
 geographic model as the preferred path. Never publish a D/R conditional
 probability as a full multicandidate win probability.
+
+The initial integration adds 18 House and two governor races to the prior 126,
+including races withheld for disputed geographic priors: the fallback never
+uses those priors. Its separate source identities and checksums refer to the
+actual November 2 candidate forecast. Senate activation remains excluded from
+the release gate pending adequate evidence, even though the numerical component
+can be exercised in Senate research fixtures.
 
 ## Reproduction
 

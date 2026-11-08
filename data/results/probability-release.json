@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "modelVersion": "fea-live-partial-count-1",
-  "description": "Scoped partial-count House rollout. This is not certification of all 506 races.",
+  "description": "Scoped calibrated partial-count rollout with an independently tested race-total fallback. Not certification of all 506 races.",
   "policy": {
     "method": "calibrated-partial-count",
     "simulations": 20000,
@@ -10,20 +10,42 @@
   },
   "approval": {
     "kind": "automated-source-and-statistical-review",
-    "at": "2026-11-08T16:31:57.851Z",
+    "at": "2026-11-08T17:01:06.895Z",
     "performedBy": "Automated replay checks and Codex source review; no independent human review claimed"
   },
   "validationHash": "38e24ffd3d6a33e03e1a8c9537239691582a9c1c0a72f55621affc8a9a66f9cb",
   "calibrationHash": "bf37faa369b2dffc64c043b02dfb822ac9345ff2d127952b41d3377aa22629cd",
-  "implementationHash": "5df87cd875e9549d51c9e1f3763dfd0e0c70e3359a3abbb5c7b9330d6590907e",
+  "implementationHash": "7b94af2100f14fe7fd113f3608f2c7abf791704e561c3945111275f91fbc58d0",
   "priorSource": {
     "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
     "availableAt": "2026-11-02T20:50:34Z",
     "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970"
   },
+  "aggregateValidationHash": "91a6b72770f3ac1e303fe55f612f223c2f646c36d55a0365c61c3cf99d81872d",
+  "aggregatePriorSources": {
+    "house": {
+      "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+      "file": "data/house-forecast.json",
+      "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+      "availableAt": "2026-11-02T20:50:34Z"
+    },
+    "senate": {
+      "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+      "file": "data/forecast.json",
+      "sha256": "8b996dbe9fb903bee7c6664ab4472ba21823c3f7c55637c847929ff7426f75bd",
+      "availableAt": "2026-11-02T20:50:34Z"
+    },
+    "governor": {
+      "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+      "file": "data/governor-forecast.json",
+      "sha256": "5b50c22686788ab3c98f0ad15da6392e9746b5240681489c2ca9b56c3b4399f2",
+      "availableAt": "2026-11-02T20:50:34Z"
+    }
+  },
   "limitations": [
-    "House plurality elections with an exactly two-candidate Democratic/Republican field only",
+    "Exactly two-candidate Democratic/Republican plurality fields only; geographic path limited to House races",
     "At least 25% source-estimated reporting and positive counts/estimates in every model area",
+    "Race-total fallback requires at least 60% source reporting and has conservative intervals; House and governor only",
     "Evidence covers a new-race 2022 holdout, not a second independent House cycle",
     "Delayed NBC inputs are explicitly stale; provider failure cannot manufacture fresh estimates",
     "Other races remain unavailable pending their own validated model and input coverage"
@@ -8724,8 +8746,975 @@
           "providerName": "Jeff Belle"
         }
       ]
+    },
+    "house-FL-22": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-FL-22",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-449fd5cf5260b6a8f033c13c",
+          "fea-92f2a78143d0616671e76e3d"
+        ],
+        "parties": {
+          "fea-449fd5cf5260b6a8f033c13c": "D",
+          "fea-92f2a78143d0616671e76e3d": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 8.6976,
+        "units": [
+          {
+            "id": "race:house-FL-22",
+            "margin": -0.036000000000000004,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-449fd5cf5260b6a8f033c13c",
+          "name": "Pia Dandiya",
+          "party": "D",
+          "providerName": "Pia Dandiya"
+        },
+        {
+          "id": "fea-92f2a78143d0616671e76e3d",
+          "name": "Casey Askar",
+          "party": "R",
+          "providerName": "Casey Askar"
+        }
+      ]
+    },
+    "house-HI-2": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-HI-2",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-9d6e09140fe246a9bc3e2d56",
+          "fea-6bf6571fe63d85928213bbdc"
+        ],
+        "parties": {
+          "fea-9d6e09140fe246a9bc3e2d56": "D",
+          "fea-6bf6571fe63d85928213bbdc": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "race:house-HI-2",
+            "margin": 0.22149999999999997,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-9d6e09140fe246a9bc3e2d56",
+          "name": "Jill Tokuda",
+          "party": "D",
+          "providerName": "Jill Tokuda"
+        },
+        {
+          "id": "fea-6bf6571fe63d85928213bbdc",
+          "name": "Brenton Awa",
+          "party": "R",
+          "providerName": "Brenton Awa"
+        }
+      ]
+    },
+    "house-IL-12": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-IL-12",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-29ecfa8f52b0f9334a4f0e85",
+          "fea-1d3111e3451a408babf862d4"
+        ],
+        "parties": {
+          "fea-29ecfa8f52b0f9334a4f0e85": "D",
+          "fea-1d3111e3451a408babf862d4": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "race:house-IL-12",
+            "margin": -0.3431,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-1d3111e3451a408babf862d4",
+          "name": "Mike Bost",
+          "party": "R",
+          "providerName": "Mike Bost"
+        },
+        {
+          "id": "fea-29ecfa8f52b0f9334a4f0e85",
+          "name": "Julie Fortier",
+          "party": "D",
+          "providerName": "Julie Fortier"
+        }
+      ]
+    },
+    "house-IL-16": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-IL-16",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-169d3089b1d0780dc06617d8",
+          "fea-a1c3127c816b02486cc184f9"
+        ],
+        "parties": {
+          "fea-169d3089b1d0780dc06617d8": "D",
+          "fea-a1c3127c816b02486cc184f9": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "race:house-IL-16",
+            "margin": -0.1472,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-a1c3127c816b02486cc184f9",
+          "name": "Darin LaHood",
+          "party": "R",
+          "providerName": "Darin LaHood"
+        },
+        {
+          "id": "fea-169d3089b1d0780dc06617d8",
+          "name": "Paul Nolley",
+          "party": "D",
+          "providerName": "Paul Nolley"
+        }
+      ]
+    },
+    "house-IL-17": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-IL-17",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-23a14dea8da57c8ca4508197",
+          "fea-9efcd66a7ad1dab70fba3a6b"
+        ],
+        "parties": {
+          "fea-23a14dea8da57c8ca4508197": "D",
+          "fea-9efcd66a7ad1dab70fba3a6b": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 8.7532,
+        "units": [
+          {
+            "id": "race:house-IL-17",
+            "margin": 0.0705,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-23a14dea8da57c8ca4508197",
+          "name": "Eric Sorensen",
+          "party": "D",
+          "providerName": "Eric Sorensen"
+        },
+        {
+          "id": "fea-9efcd66a7ad1dab70fba3a6b",
+          "name": "Dillan Vancil",
+          "party": "R",
+          "providerName": "Dillan Vancil"
+        }
+      ]
+    },
+    "house-NH-1": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-NH-1",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-5510bcdb17c188db8f22893e",
+          "fea-b1ac167b3bb98c9d87271d13"
+        ],
+        "parties": {
+          "fea-5510bcdb17c188db8f22893e": "D",
+          "fea-b1ac167b3bb98c9d87271d13": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 8.579999999999998,
+        "units": [
+          {
+            "id": "race:house-NH-1",
+            "margin": 0.0757,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-5510bcdb17c188db8f22893e",
+          "name": "Stefany Shaheen",
+          "party": "D",
+          "providerName": "Stefany Shaheen"
+        },
+        {
+          "id": "fea-b1ac167b3bb98c9d87271d13",
+          "name": "Anthony DiLorenzo",
+          "party": "R",
+          "providerName": "Anthony DiLorenzo"
+        }
+      ]
+    },
+    "house-NM-3": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-NM-3",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-ddadb8a74f3a4f73f77160ba",
+          "fea-91e737118bf57bf96f31f8fc"
+        ],
+        "parties": {
+          "fea-ddadb8a74f3a4f73f77160ba": "D",
+          "fea-91e737118bf57bf96f31f8fc": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 8.5528,
+        "units": [
+          {
+            "id": "race:house-NM-3",
+            "margin": 0.0554,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-ddadb8a74f3a4f73f77160ba",
+          "name": "Teresa Leger Fernandez",
+          "party": "D",
+          "providerName": "Teresa Leger Fernandez"
+        },
+        {
+          "id": "fea-91e737118bf57bf96f31f8fc",
+          "name": "Martin Ruben Zamora",
+          "party": "R",
+          "providerName": "Martin Zamora"
+        }
+      ]
+    },
+    "house-OK-1": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-OK-1",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-d58d965e8c3b7b3a955e79e0",
+          "fea-a281485584782d152375d2a5"
+        ],
+        "parties": {
+          "fea-d58d965e8c3b7b3a955e79e0": "D",
+          "fea-a281485584782d152375d2a5": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "race:house-OK-1",
+            "margin": -0.1877,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-a281485584782d152375d2a5",
+          "name": "Mark Tedford",
+          "party": "R",
+          "providerName": "Mark Tedford"
+        },
+        {
+          "id": "fea-d58d965e8c3b7b3a955e79e0",
+          "name": "John Croisant",
+          "party": "D",
+          "providerName": "John Croisant"
+        }
+      ]
+    },
+    "house-OK-3": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-OK-3",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-955a3e0c726c3b29928510b4",
+          "fea-98a6f6bb4929026c0026d644"
+        ],
+        "parties": {
+          "fea-955a3e0c726c3b29928510b4": "D",
+          "fea-98a6f6bb4929026c0026d644": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "race:house-OK-3",
+            "margin": -0.36829999999999996,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-98a6f6bb4929026c0026d644",
+          "name": "Frank Lucas",
+          "party": "R",
+          "providerName": "Frank Lucas"
+        },
+        {
+          "id": "fea-955a3e0c726c3b29928510b4",
+          "name": "Suzie Byrd",
+          "party": "D",
+          "providerName": "Suzie Byrd"
+        }
+      ]
+    },
+    "house-PA-5": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-5",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-6d2c2a3fd2c937b7f6f96ab2",
+          "fea-41c6c02d7cbf8af68d9863ac"
+        ],
+        "parties": {
+          "fea-6d2c2a3fd2c937b7f6f96ab2": "D",
+          "fea-41c6c02d7cbf8af68d9863ac": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "race:house-PA-5",
+            "margin": 0.22649999999999998,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-6d2c2a3fd2c937b7f6f96ab2",
+          "name": "Mary Gay Scanlon",
+          "party": "D",
+          "providerName": "Mary Gay Scanlon"
+        },
+        {
+          "id": "fea-41c6c02d7cbf8af68d9863ac",
+          "name": "Nick Manganaro",
+          "party": "R",
+          "providerName": "Nick Manganaro"
+        }
+      ]
+    },
+    "house-SD-AL": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-SD-AL",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-92f040f0ccc52663599d4fe9",
+          "fea-1626b61b9aa9c7f29582ecbf"
+        ],
+        "parties": {
+          "fea-92f040f0ccc52663599d4fe9": "D",
+          "fea-1626b61b9aa9c7f29582ecbf": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "race:house-SD-AL",
+            "margin": -0.26539999999999997,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-1626b61b9aa9c7f29582ecbf",
+          "name": "Marty J. Jackley",
+          "party": "R",
+          "providerName": "Marty Jackley",
+          "aliases": [
+            "Marty Jackley"
+          ]
+        },
+        {
+          "id": "fea-92f040f0ccc52663599d4fe9",
+          "name": "Nicole Gronli",
+          "party": "D",
+          "providerName": "Nikki Gronli",
+          "aliases": [
+            "Nicole \"Nikki\" Gronli"
+          ]
+        }
+      ]
+    },
+    "house-TX-10": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-10",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-291868bd5b9d33b6db6d2539",
+          "fea-a6c5c5962f372b78b46565cb"
+        ],
+        "parties": {
+          "fea-291868bd5b9d33b6db6d2539": "D",
+          "fea-a6c5c5962f372b78b46565cb": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "race:house-TX-10",
+            "margin": -0.2014,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-a6c5c5962f372b78b46565cb",
+          "name": "Chris Gober",
+          "party": "R",
+          "providerName": "Chris Gober"
+        },
+        {
+          "id": "fea-291868bd5b9d33b6db6d2539",
+          "name": "Caitlin Rourk",
+          "party": "D",
+          "providerName": "Caitlin Rourk"
+        }
+      ]
+    },
+    "house-TX-14": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-14",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-e6f958be6550407169225ab3",
+          "fea-aaa3c5fc16b9bd7ae105d532"
+        ],
+        "parties": {
+          "fea-e6f958be6550407169225ab3": "D",
+          "fea-aaa3c5fc16b9bd7ae105d532": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "race:house-TX-14",
+            "margin": -0.2311,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-aaa3c5fc16b9bd7ae105d532",
+          "name": "Randy Weber",
+          "party": "R",
+          "providerName": "Randy Weber"
+        },
+        {
+          "id": "fea-e6f958be6550407169225ab3",
+          "name": "Thurman Bill Bartie",
+          "party": "D",
+          "providerName": "Thurman Bartie"
+        }
+      ]
+    },
+    "house-AL-6": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-AL-6",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-f6986b0ae30123470e1c5ed4",
+          "fea-a6a4b2b4fdf8bfd4504956ed"
+        ],
+        "parties": {
+          "fea-f6986b0ae30123470e1c5ed4": "D",
+          "fea-a6a4b2b4fdf8bfd4504956ed": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "race:house-AL-6",
+            "margin": -0.3079,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-a6a4b2b4fdf8bfd4504956ed",
+          "name": "Gary Palmer",
+          "party": "R",
+          "providerName": "Gary Palmer"
+        },
+        {
+          "id": "fea-f6986b0ae30123470e1c5ed4",
+          "name": "Maurice Mercer",
+          "party": "D",
+          "providerName": "Maurice Mercer"
+        }
+      ]
+    },
+    "house-CA-5": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-5",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-833f9584e41a7da040cf0ae0",
+          "fea-fc785d0383b75aa595a25f66"
+        ],
+        "parties": {
+          "fea-833f9584e41a7da040cf0ae0": "D",
+          "fea-fc785d0383b75aa595a25f66": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "race:house-CA-5",
+            "margin": -0.1016,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-fc785d0383b75aa595a25f66",
+          "name": "Tom McClintock",
+          "party": "R",
+          "providerName": "Tom McClintock"
+        },
+        {
+          "id": "fea-833f9584e41a7da040cf0ae0",
+          "name": "Michael Masuda",
+          "party": "D",
+          "providerName": "Michael Masuda"
+        }
+      ]
+    },
+    "house-CA-8": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-8",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-593919c999f0057785e1f8d5",
+          "fea-6692c61205d7eb0b0445e387"
+        ],
+        "parties": {
+          "fea-593919c999f0057785e1f8d5": "D",
+          "fea-6692c61205d7eb0b0445e387": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "race:house-CA-8",
+            "margin": 0.3179,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-593919c999f0057785e1f8d5",
+          "name": "John Garamendi",
+          "party": "D",
+          "providerName": "John Garamendi"
+        },
+        {
+          "id": "fea-6692c61205d7eb0b0445e387",
+          "name": "Rudy Recile",
+          "party": "R",
+          "providerName": "Rudy Recile"
+        }
+      ]
+    },
+    "house-CA-18": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-18",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-28076a0753de5f57c9638b9d",
+          "fea-e33978d400cebe05094226d6"
+        ],
+        "parties": {
+          "fea-28076a0753de5f57c9638b9d": "D",
+          "fea-e33978d400cebe05094226d6": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "race:house-CA-18",
+            "margin": 0.22149999999999997,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-28076a0753de5f57c9638b9d",
+          "name": "Zoe Lofgren",
+          "party": "D",
+          "providerName": "Zoe Lofgren"
+        },
+        {
+          "id": "fea-e33978d400cebe05094226d6",
+          "name": "Shane Lewis",
+          "party": "R",
+          "providerName": "Shane Lewis"
+        }
+      ]
+    },
+    "house-CA-49": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-49",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-64dcccedc9fa60752d98a296",
+          "fea-adfd906db1e01137b3c32234"
+        ],
+        "parties": {
+          "fea-64dcccedc9fa60752d98a296": "D",
+          "fea-adfd906db1e01137b3c32234": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/house-forecast.json",
+          "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 8.5192,
+        "units": [
+          {
+            "id": "race:house-CA-49",
+            "margin": 0.0581,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-64dcccedc9fa60752d98a296",
+          "name": "Mike Levin",
+          "party": "D",
+          "providerName": "Mike Levin"
+        },
+        {
+          "id": "fea-adfd906db1e01137b3c32234",
+          "name": "Armen Kurdian",
+          "party": "R",
+          "providerName": "Armen Kurdian"
+        }
+      ]
+    },
+    "governor-CA": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "governor-CA",
+        "office": "governor",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-55de3beab455fa985d6dd264",
+          "fea-4fc43a4260f6d760c68cd6b9"
+        ],
+        "parties": {
+          "fea-55de3beab455fa985d6dd264": "D",
+          "fea-4fc43a4260f6d760c68cd6b9": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/governor-forecast.json",
+          "sha256": "5b50c22686788ab3c98f0ad15da6392e9746b5240681489c2ca9b56c3b4399f2",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 9.11,
+        "units": [
+          {
+            "id": "race:governor-CA",
+            "margin": 0.1534,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-55de3beab455fa985d6dd264",
+          "name": "Xavier Becerra",
+          "party": "D",
+          "providerName": "Xavier Becerra"
+        },
+        {
+          "id": "fea-4fc43a4260f6d760c68cd6b9",
+          "name": "Steve Hilton",
+          "party": "R",
+          "providerName": "Steve Hilton"
+        }
+      ]
+    },
+    "governor-IA": {
+      "prior": {
+        "inputMode": "race-total",
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "governor-IA",
+        "office": "governor",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "fea-6a3f38d4069bcd7daba8545d",
+          "fea-cf8ce45d974198a7ce1d6196"
+        ],
+        "parties": {
+          "fea-6a3f38d4069bcd7daba8545d": "D",
+          "fea-cf8ce45d974198a7ce1d6196": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "anchorSource": {
+          "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+          "file": "data/governor-forecast.json",
+          "sha256": "5b50c22686788ab3c98f0ad15da6392e9746b5240681489c2ca9b56c3b4399f2",
+          "availableAt": "2026-11-02T20:50:34Z"
+        },
+        "marginSigmaPoints": 8.64,
+        "units": [
+          {
+            "id": "race:governor-IA",
+            "margin": 0.0018,
+            "weight": 1
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "fea-6a3f38d4069bcd7daba8545d",
+          "name": "Rob Sand",
+          "party": "D",
+          "providerName": "Rob Sand"
+        },
+        {
+          "id": "fea-cf8ce45d974198a7ce1d6196",
+          "name": "Zach Lahn",
+          "party": "R",
+          "providerName": "Zach Lahn"
+        }
+      ]
     }
   },
+  "aggregateInputAuditHash": "aabeee525e64230e82bf5a78004b2895e5bb7c31c17534b5fe2ffc7d84dca5c0",
   "inputAuditHash": "4db8c6556eda60db88043b293231cadc8b76c743a03825885f26ad70d94f49aa",
   "geographicCrosscheckHash": "5dba7b9ae6120603a5644d6b07cad858bd28a2c912ffdff095fbcda6e2cb6c57"
 }

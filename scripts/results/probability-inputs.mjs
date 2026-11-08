@@ -295,8 +295,8 @@ export function buildCountyProbabilityPrior(geography,forecast) {
 
 // Expected vote in is an estimate, including at 100%. A separate notice
 // with an as-of timestamp is required to mark a reporting unit complete.
-export function normalizeProbabilitySnapshot(detail,roster,{at,source,completion={},reportingUnitIds,allowSingleReportingUnit=false}) {
-  requireInput(detail?.id && Array.isArray(detail.counties) && detail.counties.length &&
+export function normalizeProbabilitySnapshot(detail,roster,{at,source,completion={},reportingUnitIds,allowSingleReportingUnit=false,aggregateRace=false}) {
+  requireInput(detail?.id && (aggregateRace || Array.isArray(detail.counties) && detail.counties.length) &&
     Number.isFinite(dateTime(at)) && typeof source==='string' && source.trim(),'Missing dated reporting-unit returns');
   requireInput(!(detail.providerBallotAccounting?.ballotsOutsideCandidateTotals>0),
     'Ballots outside ranked-choice candidate totals require a ballot-aware probability model');
@@ -325,6 +325,18 @@ export function normalizeProbabilitySnapshot(detail,roster,{at,source,completion
   }
   const sourceUpdatedAt=detail.lastUpdated || detail.updatedAt;
   requireInput(election && dateTime(sourceUpdatedAt)<=dateTime(at),'Invalid race date or provider timestamp');
+  if(aggregateRace){
+    const id='race:'+detail.id;
+    requireInput(detail.provider==='NBC'&&source==='NBC News'&&detail.reportingUnitScheme===undefined&&
+      election==='2026-11-03'&&probabilityRule(detail.id,election)==='plurality'&&
+      roster.length===2&&roster.some(c=>displayParty(c)==='D')&&roster.some(c=>displayParty(c)==='R')&&
+      Array.isArray(reportingUnitIds)&&reportingUnitIds.length===1&&reportingUnitIds[0]===id,
+    'Race-total input scheme does not match a complete NBC plurality ballot');
+    const totals=counts(detail.candidates),expected=detail.expectedVotePercent??detail.estimatedVoteReporting;
+    const expectedVotePercent=Number.isFinite(expected)&&expected>=0&&expected<=100?expected:null;
+    return {raceId:detail.id,electionDate:election,at,sourceUpdatedAt,source,totals,expectedVotePercent,
+      units:[{id,availableAt:sourceUpdatedAt,votes:{...totals},expectedVotePercent:expectedVotePercent,complete:false}]};
+  }
   const native=detail.reportingUnitScheme!==undefined;
   if(native)requireInput(detail.reportingUnitScheme==='nbc-alaska-state-house-districts'&&
     detail.provider==='NBC'&&detail.state==='AK'&&election==='2026-11-03'&&

@@ -101,6 +101,7 @@ test("HTTP integration: admin auth, calls, detail and summary refresh, no foreca
     "scripts/results/nbc-counties.mjs",
     "scripts/results/probability-live.mjs",
     "scripts/results/probability-partial-adapter.mjs",
+    "scripts/results/probability-aggregate-adapter.mjs",
     "scripts/results/probability-partial-release.mjs",
     "scripts/results/probability-partial-model.mjs",
     "scripts/results/probability-inputs.mjs",

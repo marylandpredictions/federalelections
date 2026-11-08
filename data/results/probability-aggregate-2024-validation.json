@@ -133,6 +133,58 @@
           -0.0022925343709185
         ]
       }
+    },
+    "60-100": {
+      "states": 23,
+      "frames": 29,
+      "metrics": {
+        "aggregate": {
+          "brier": 0.009898201627768654,
+          "logLoss": 0.055868236123781626,
+          "infiniteLogLossStates": 0,
+          "marginMae": 1.4038482182407195,
+          "coverage80": 1.0,
+          "false95Ids": []
+        },
+        "frozen-source": {
+          "brier": 0.06340992902013222,
+          "logLoss": 0.18957962020645458,
+          "infiniteLogLossStates": 0
+        }
+      },
+      "pairedBrierDifference": {
+        "difference": -0.05351172739236356,
+        "interval95": [
+          -0.09880446614305807,
+          -0.014644539560022278
+        ]
+      }
+    },
+    "60-100-prior-competitive": {
+      "states": 8,
+      "frames": 9,
+      "metrics": {
+        "aggregate": {
+          "brier": 0.028334465080589163,
+          "logLoss": 0.15495968213697736,
+          "infiniteLogLossStates": 0,
+          "marginMae": 1.3329250992415749,
+          "coverage80": 1.0,
+          "false95Ids": []
+        },
+        "frozen-source": {
+          "brier": 0.1815562759328801,
+          "logLoss": 0.5197330042431596,
+          "infiniteLogLossStates": 0
+        }
+      },
+      "pairedBrierDifference": {
+        "difference": -0.15322181085229092,
+        "interval95": [
+          -0.24229946991546403,
+          -0.0646289755229544
+        ]
+      }
     }
   },
   "quarantined": [

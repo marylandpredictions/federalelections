@@ -5,6 +5,7 @@ import {Worker, isMainThread, parentPort, workerData} from 'node:worker_threads'
 import {normalizeProbabilitySnapshot, probabilityRule} from './probability-inputs.mjs';
 import {maxReportingUnits, modelVersion, simulateWinProbability} from './win-probability.mjs';
 import {partialLiveModelVersion,simulatePartialProbability} from './probability-partial-adapter.mjs';
+import {simulateAggregateProbability} from './probability-aggregate-adapter.mjs';
 import {validatePartialProbabilityRelease} from './probability-partial-release.mjs';
 
 const maxPoints = 240;
@@ -43,7 +44,9 @@ export function validateProbabilityRelease(release) {
 
 if (!isMainThread) {
   const {prior, snapshot, settings, previousInputHash} = workerData;
-  parentPort.postMessage((settings.method==='calibrated-partial-count'?simulatePartialProbability:simulateWinProbability)(prior, snapshot, settings, previousInputHash));
+  parentPort.postMessage((settings.method==='calibrated-partial-count'?
+    prior.inputMode==='race-total'?simulateAggregateProbability:simulatePartialProbability:
+    simulateWinProbability)(prior, snapshot, settings, previousInputHash));
 }
 
 function runSimulation(prior, snapshot, settings, previousInputHash) {
@@ -113,7 +116,7 @@ export class LiveProbability {
   }
 
   nextCountyRaces(eligible, limit) {
-    const ids = [...this.races.keys()].filter(eligible);
+    const ids = [...this.races.keys()].filter(id=>this.races.get(id).config.prior.inputMode!=='race-total'&&eligible(id));
     return Array.from({length: Math.min(limit, ids.length)}, () => ids[this.hydrationCursor++ % ids.length]);
   }
   nextCountyRace(){return this.nextCountyRaces(()=>true,1)[0];}
@@ -145,6 +148,7 @@ export class LiveProbability {
     if (!race.points.length) return {status: 'waiting', reason: race.reason};
     const fresh = race.available && this.now() - Date.parse(race.snapshot.sourceUpdatedAt) <= maxAgeMs;
     return {status: fresh ? 'live' : 'stale', source: 'NBC News returns', modelVersion:this.liveModelVersion,
+      ...(race.config.prior.inputMode==='race-total'?{inputMode:'race-total'}:{}),
       ...(fresh?{}:{reason:race.reason || 'No recent verified NBC update.'}),
       candidates: race.config.roster.map(({id, name, party, partyCode}) => ({id, name, party: partyCode || party})),
       points: race.points};
@@ -165,15 +169,18 @@ export class LiveProbability {
     if (!race) return;
     race.available = false;
     race.reason = 'Waiting for a verified NBC update.';
+    const aggregate=race.config.prior.inputMode==='race-total';
     if (detail?.id !== id || detail.provider !== 'NBC' || detail.providerStale === true ||
-        !detail.counties?.length || detail.counties.some(unit => unit.source !== 'NBC News')) return;
+        !aggregate&&(!detail.counties?.length || detail.counties.some(unit => unit.source !== 'NBC News'))) return;
     const now = this.now(), at = new Date(now).toISOString();
     const {prior, roster} = race.config;
     completion ??= await readJson(join(this.completionDirectory, id + '.json')) || {};
-    race.reason = 'The NBC candidate and county returns need to reconcile before the next estimate.';
+    race.reason = aggregate?'The NBC ballot needs to reconcile before the next estimate.':
+      'The NBC candidate and county returns need to reconcile before the next estimate.';
     const snapshot = normalizeProbabilitySnapshot(detail, roster, {
       at, source: 'NBC News', completion, reportingUnitIds: prior.units.map(unit => unit.id),
       allowSingleReportingUnit:race.settings.method==='calibrated-partial-count',
+      aggregateRace:aggregate,
     });
     race.reason = 'The NBC update is delayed.';
     const age=Math.max(now-Date.parse(snapshot.sourceUpdatedAt),...snapshot.units.filter(unit=>!unit.complete).map(unit=>now-Date.parse(unit.availableAt)));

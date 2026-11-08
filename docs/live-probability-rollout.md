@@ -1,8 +1,9 @@
 # Live probability rollout — November 8, 2026
 
 The objective remains published, validated odds for all 506 races. The first
-scoped configuration initially contained 99 House races and now contains 126;
-the other 380 are not certified
+scoped configuration initially contained 99 House races and now contains 146
+races (144 House, two governor), including 20 race-total fallbacks. The other
+360 are not certified
 by this release. Configuration coverage is not proof that every configured race
 currently has fresh, reconciled NBC inputs. Check the public coverage API.
 
@@ -48,8 +49,10 @@ Only five new early-stage cases were available; early-stage publication remains
 disabled. The full all-stage results, including weaker early-stage performance,
 remain in `data/results/probability-house-forward-validation.json`.
 
-The public adapter is limited to an exactly two-candidate Democratic/Republican
-House plurality field. In that special case the tested D/R comparison is the
+The geographic adapter is limited to an exactly two-candidate Democratic/Republican
+House plurality field. A separately bound conservative race-total fallback now
+supports complete two-candidate House/governor plurality ballots at 60% or more
+source-estimated reporting. In these cases the tested D/R comparison is the
 entire candidate-win vector. It must not be applied to a multicandidate field,
 ranked-choice election, runoff, or governor's legislative contingency.
 
@@ -60,8 +63,10 @@ in commit `4b2845d76040aa258d8e92f07567bccf2d4bcf3a`. Those are priors, not fixe
 predictions. Live counts remain untouched. Historical geography must reconcile
 and the reviewed/local and NBC rosters must agree. Four otherwise eligible
 races were initially withheld because historical geographic sources disagree:
-AL-06, CA-08, CA-18 and TX-10. NM-03 is also withheld after identity reconciliation
-made it otherwise eligible. No neighboring geography or guessed turnout substitutes.
+AL-06, CA-08, CA-18 and TX-10. NM-03 also fails that geographic crosscheck after
+identity reconciliation made it otherwise eligible. These five races can use
+the separately validated race-total fallback, which consumes none of the
+disputed geographic prior. No neighboring geography or guessed turnout substitutes.
 
 Source and local names may differ by omitted middle names. Reconciliation still
 requires exact first/last names, compatible suffixes, one unique roster match,
@@ -117,7 +122,7 @@ The release compiler consumes the private reconciled-input inventory and
 geographic crosscheck. It strips live votes, calls and raw NBC responses:
 
 ```text
-node scripts/results/build-partial-probability-release.mjs .runtime/probability-real-partial-expanded-points.json .runtime/probability-nbc-prior-margin-audit.json data/results/probability-release.json
+node scripts/results/build-partial-probability-release.mjs .runtime/probability-real-partial-expanded-points.json .runtime/probability-nbc-prior-margin-audit.json data/results/probability-release.json .runtime/probability-aggregate-2026-audit.json
 ```
 
 Do not call the 506-race objective complete until production board and coverage

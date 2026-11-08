@@ -121,6 +121,124 @@
           }
         ],
         "false95Ids": []
+      },
+      "60-100": {
+        "metrics": {
+          "aggregate": {
+            "races": 151,
+            "states": 34,
+            "brier": 0.00902265170424005,
+            "logLoss": 0.03191674066145966,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.2832618973004597,
+            "coverage80": 0.9271523178807947
+          },
+          "geographic": {
+            "races": 151,
+            "states": 34,
+            "brier": 0.008064550214947909,
+            "logLoss": 0.026876012626813522,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.173204243856291,
+            "coverage80": 0.847682119205298
+          },
+          "frozen-source": {
+            "races": 151,
+            "states": 34,
+            "brier": 0.01923106097338973,
+            "logLoss": 0.0794145695548933,
+            "infiniteLogLossCases": 0,
+            "false95": 1,
+            "marginMae": 4.955896753384767,
+            "coverage80": 0.8543046357615894
+          }
+        },
+        "paired": [
+          {
+            "method": "aggregate",
+            "comparison": "geographic",
+            "stateClusters": 34,
+            "draws": 5000,
+            "difference": 0.0009581014892921445,
+            "interval95": [
+              -0.002207655340189655,
+              0.004335715881746321
+            ]
+          },
+          {
+            "method": "aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 34,
+            "draws": 5000,
+            "difference": -0.010208409269149678,
+            "interval95": [
+              -0.017937222632133015,
+              -0.003843350733195181
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "60-100-prior-competitive": {
+        "metrics": {
+          "aggregate": {
+            "races": 24,
+            "states": 15,
+            "brier": 0.025421766943018776,
+            "logLoss": 0.11085717817097085,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.2731837053176343,
+            "coverage80": 0.9166666666666666
+          },
+          "geographic": {
+            "races": 24,
+            "states": 15,
+            "brier": 0.012259815583374025,
+            "logLoss": 0.05521866943247943,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.2758897007329886,
+            "coverage80": 0.75
+          },
+          "frozen-source": {
+            "races": 24,
+            "states": 15,
+            "brier": 0.07977112825657647,
+            "logLoss": 0.30609461315136055,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 3.467408481477426,
+            "coverage80": 0.9166666666666666
+          }
+        },
+        "paired": [
+          {
+            "method": "aggregate",
+            "comparison": "geographic",
+            "stateClusters": 15,
+            "draws": 5000,
+            "difference": 0.013161951359644757,
+            "interval95": [
+              -0.00014833530929351827,
+              0.027574474174336942
+            ]
+          },
+          {
+            "method": "aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 15,
+            "draws": 5000,
+            "difference": -0.05434936131355766,
+            "interval95": [
+              -0.085963987328011,
+              -0.01907221419251137
+            ]
+          }
+        ],
+        "false95Ids": []
       }
     },
     "house": {
@@ -237,6 +355,124 @@
             "interval95": [
               -0.08838007898291997,
               -0.01970594680798993
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "60-100": {
+        "metrics": {
+          "aggregate": {
+            "races": 122,
+            "states": 31,
+            "brier": 0.009536846683131567,
+            "logLoss": 0.031536861086678775,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.20386765950031,
+            "coverage80": 0.9262295081967213
+          },
+          "geographic": {
+            "races": 122,
+            "states": 31,
+            "brier": 0.009228764682353518,
+            "logLoss": 0.029996125171637775,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.092400104395015,
+            "coverage80": 0.860655737704918
+          },
+          "frozen-source": {
+            "races": 122,
+            "states": 31,
+            "brier": 0.01784286398377612,
+            "logLoss": 0.07565730475602056,
+            "infiniteLogLossCases": 0,
+            "false95": 1,
+            "marginMae": 4.9161210941766464,
+            "coverage80": 0.860655737704918
+          }
+        },
+        "paired": [
+          {
+            "method": "aggregate",
+            "comparison": "geographic",
+            "stateClusters": 31,
+            "draws": 5000,
+            "difference": 0.0003080820007780496,
+            "interval95": [
+              -0.002780308192639041,
+              0.0032879449631160024
+            ]
+          },
+          {
+            "method": "aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 31,
+            "draws": 5000,
+            "difference": -0.008306017300644552,
+            "interval95": [
+              -0.015992760030702158,
+              -0.0013313137798646596
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "60-100-prior-competitive": {
+        "metrics": {
+          "aggregate": {
+            "races": 17,
+            "states": 12,
+            "brier": 0.024226704231592136,
+            "logLoss": 0.10131580378142974,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.4721034843317131,
+            "coverage80": 0.8823529411764706
+          },
+          "geographic": {
+            "races": 17,
+            "states": 12,
+            "brier": 0.011905764864882273,
+            "logLoss": 0.05462924121892942,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.5418454965645643,
+            "coverage80": 0.7058823529411765
+          },
+          "frozen-source": {
+            "races": 17,
+            "states": 12,
+            "brier": 0.07031301841532929,
+            "logLoss": 0.280219946430871,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.050501823253719,
+            "coverage80": 0.9411764705882353
+          }
+        },
+        "paired": [
+          {
+            "method": "aggregate",
+            "comparison": "geographic",
+            "stateClusters": 12,
+            "draws": 5000,
+            "difference": 0.012320939366709863,
+            "interval95": [
+              0.002647822071759963,
+              0.027730706809970824
+            ]
+          },
+          {
+            "method": "aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 12,
+            "draws": 5000,
+            "difference": -0.04608631418373715,
+            "interval95": [
+              -0.08538896185607428,
+              -0.004296194071948673
             ]
           }
         ],
@@ -361,6 +597,124 @@
           }
         ],
         "false95Ids": []
+      },
+      "60-100": {
+        "metrics": {
+          "aggregate": {
+            "races": 16,
+            "states": 16,
+            "brier": 0.01076869709041595,
+            "logLoss": 0.04482616687511102,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.4378621188593932,
+            "coverage80": 0.9375
+          },
+          "geographic": {
+            "races": 16,
+            "states": 16,
+            "brier": 0.005739778858865301,
+            "logLoss": 0.024778151902200368,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.5410883111254345,
+            "coverage80": 0.75
+          },
+          "frozen-source": {
+            "races": 16,
+            "states": 16,
+            "brier": 0.03110956243407467,
+            "logLoss": 0.11066465890025165,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 5.49369279280692,
+            "coverage80": 0.875
+          }
+        },
+        "paired": [
+          {
+            "method": "aggregate",
+            "comparison": "geographic",
+            "stateClusters": 16,
+            "draws": 5000,
+            "difference": 0.005028918231550649,
+            "interval95": [
+              -0.008680372503783592,
+              0.023723239755168338
+            ]
+          },
+          {
+            "method": "aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 16,
+            "draws": 5000,
+            "difference": -0.02034086534365872,
+            "interval95": [
+              -0.04475003304331896,
+              -0.0027795226967028425
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "60-100-prior-competitive": {
+        "metrics": {
+          "aggregate": {
+            "races": 4,
+            "states": 4,
+            "brier": 0.04291480236246292,
+            "logLoss": 0.17262461940663396,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.0229890315784949,
+            "coverage80": 1.0
+          },
+          "geographic": {
+            "races": 4,
+            "states": 4,
+            "brier": 0.022959085447457603,
+            "logLoss": 0.09881265260180246,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.9605684661541669,
+            "coverage80": 0.75
+          },
+          "frozen-source": {
+            "races": 4,
+            "states": 4,
+            "brier": 0.1226418953125,
+            "logLoss": 0.4144827625193607,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 3.086924201047749,
+            "coverage80": 0.75
+          }
+        },
+        "paired": [
+          {
+            "method": "aggregate",
+            "comparison": "geographic",
+            "stateClusters": 4,
+            "draws": 5000,
+            "difference": 0.019955716915005313,
+            "interval95": [
+              -0.034895480412016004,
+              0.09471740924760459
+            ]
+          },
+          {
+            "method": "aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 4,
+            "draws": 5000,
+            "difference": -0.07972709295003708,
+            "interval95": [
+              -0.13370508686425936,
+              -0.035243069679059734
+            ]
+          }
+        ],
+        "false95Ids": []
       }
     },
     "governor": {
@@ -481,6 +835,124 @@
           }
         ],
         "false95Ids": []
+      },
+      "60-100": {
+        "metrics": {
+          "aggregate": {
+            "races": 13,
+            "states": 13,
+            "brier": 0.002048150657810849,
+            "logLoss": 0.019593239792601542,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.8380690870447154,
+            "coverage80": 0.9230769230769231
+          },
+          "geographic": {
+            "races": 13,
+            "states": 13,
+            "brier": 1.022667815044322e-07,
+            "logLoss": 0.00017693886721742273,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.4787396237000912,
+            "coverage80": 0.8461538461538461
+          },
+          "frozen-source": {
+            "races": 13,
+            "states": 13,
+            "brier": 0.01763906169353597,
+            "logLoss": 0.07621340616541186,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.6672731989721825,
+            "coverage80": 0.7692307692307693
+          }
+        },
+        "paired": [
+          {
+            "method": "aggregate",
+            "comparison": "geographic",
+            "stateClusters": 13,
+            "draws": 5000,
+            "difference": 0.002048048391029344,
+            "interval95": [
+              1.899855366474608e-06,
+              0.005065739655354425
+            ]
+          },
+          {
+            "method": "aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 13,
+            "draws": 5000,
+            "difference": -0.01559091103572512,
+            "interval95": [
+              -0.03600091570529391,
+              -8.430463132699372e-05
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "60-100-prior-competitive": {
+        "metrics": {
+          "aggregate": {
+            "races": 3,
+            "states": 3,
+            "brier": 0.008869741748510922,
+            "logLoss": 0.08256837806415297,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.4795645225567062,
+            "coverage80": 1.0
+          },
+          "geographic": {
+            "races": 3,
+            "states": 3,
+            "brier": 4.098360491869244e-07,
+            "logLoss": 0.0004334517501654881,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.18923517045915497,
+            "coverage80": 1.0
+          },
+          "frozen-source": {
+            "races": 3,
+            "states": 3,
+            "brier": 0.0762060612824124,
+            "logLoss": 0.30820019207680116,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.6705252519846683,
+            "coverage80": 1.0
+          }
+        },
+        "paired": [
+          {
+            "method": "aggregate",
+            "comparison": "geographic",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": 0.008869331912461734,
+            "interval95": [
+              1.847261021700909e-05,
+              0.01645429762277898
+            ]
+          },
+          {
+            "method": "aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": -0.0673363195339015,
+            "interval95": [
+              -0.09339180382670281,
+              -0.016072439893781796
+            ]
+          }
+        ],
+        "false95Ids": []
       }
     },
     "house-not-previously-inspected": {
@@ -597,6 +1069,124 @@
             "interval95": [
               -0.09917696713938515,
               -0.02250884549171062
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "60-100": {
+        "metrics": {
+          "aggregate": {
+            "races": 115,
+            "states": 27,
+            "brier": 0.00358622406257818,
+            "logLoss": 0.015469922720097385,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.1423124154093878,
+            "coverage80": 0.9304347826086956
+          },
+          "geographic": {
+            "races": 115,
+            "states": 27,
+            "brier": 0.0017601510865506396,
+            "logLoss": 0.008237418093798297,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.0828006247076565,
+            "coverage80": 0.8608695652173913
+          },
+          "frozen-source": {
+            "races": 115,
+            "states": 27,
+            "brier": 0.010730094546919014,
+            "logLoss": 0.04929917431289605,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.816652471062271,
+            "coverage80": 0.8695652173913043
+          }
+        },
+        "paired": [
+          {
+            "method": "aggregate",
+            "comparison": "geographic",
+            "stateClusters": 27,
+            "draws": 5000,
+            "difference": 0.0018260729760275402,
+            "interval95": [
+              0.000263658153065452,
+              0.0043866935300724145
+            ]
+          },
+          {
+            "method": "aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 27,
+            "draws": 5000,
+            "difference": -0.007143870484340834,
+            "interval95": [
+              -0.014228954570144718,
+              -0.00033923295656289657
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "60-100-prior-competitive": {
+        "metrics": {
+          "aggregate": {
+            "races": 17,
+            "states": 12,
+            "brier": 0.024226704231592136,
+            "logLoss": 0.10131580378142974,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.4721034843317131,
+            "coverage80": 0.8823529411764706
+          },
+          "geographic": {
+            "races": 17,
+            "states": 12,
+            "brier": 0.011905764864882273,
+            "logLoss": 0.05462924121892942,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.5418454965645643,
+            "coverage80": 0.7058823529411765
+          },
+          "frozen-source": {
+            "races": 17,
+            "states": 12,
+            "brier": 0.07031301841532929,
+            "logLoss": 0.280219946430871,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.050501823253719,
+            "coverage80": 0.9411764705882353
+          }
+        },
+        "paired": [
+          {
+            "method": "aggregate",
+            "comparison": "geographic",
+            "stateClusters": 12,
+            "draws": 5000,
+            "difference": 0.012320939366709863,
+            "interval95": [
+              0.002647822071759963,
+              0.027730706809970824
+            ]
+          },
+          {
+            "method": "aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 12,
+            "draws": 5000,
+            "difference": -0.04608631418373715,
+            "interval95": [
+              -0.08538896185607428,
+              -0.004296194071948673
             ]
           }
         ],

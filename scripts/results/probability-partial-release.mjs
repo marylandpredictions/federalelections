@@ -10,17 +10,51 @@ const normalizedHash=path=>hash(readFileSync(new URL(path,import.meta.url),'utf8
 const validTime=value=>typeof value==='string'&&/T.*(?:Z|[+-]\d{2}:\d{2})$/.test(value)&&Number.isFinite(Date.parse(value));
 const check=(condition,message)=>{if(!condition)throw Error('Partial-count release: '+message);};
 
-export function partialReleaseEvidence(){
+export function partialReleaseEvidence({aggregate=false}={}){
  // Git normalizes line endings between Windows development and Linux hosting.
  // Bind the same JSON text, not the platform's newline convention.
  const validationBytes=readFileSync(new URL('../../data/results/probability-house-forward-validation.json',import.meta.url),'utf8').replace(/\r\n/g,'\n');
  const calibrationBytes=readFileSync(new URL('../../data/results/probability-partial-calibration.json',import.meta.url),'utf8').replace(/\r\n/g,'\n');
+ const aggregateEvidence=aggregate?Object.fromEntries(['probability-aggregate-validation.json','probability-aggregate-2024-validation.json','probability-aggregate-node-validation.json'].map(file=>
+   [file,JSON.parse(readFileSync(new URL('../../data/results/'+file,import.meta.url),'utf8'))])):undefined;
  return {validation:JSON.parse(validationBytes),validationHash:hash(validationBytes),
   calibration:JSON.parse(calibrationBytes).calibration,calibrationHash:hash(calibrationBytes),
-  implementationHash:objectHash(['./probability-partial-model.mjs','./probability-partial-adapter.mjs','./probability-partial-release.mjs','./probability-live.mjs','./probability-inputs.mjs','./candidate-roster.mjs','./nbc-counties.mjs'].map(normalizedHash))};
+  ...(aggregate?{aggregateEvidence,aggregateValidationHash:objectHash(aggregateEvidence)}:{}),
+  implementationHash:objectHash(['./probability-partial-model.mjs','./probability-partial-adapter.mjs','./probability-aggregate-adapter.mjs','./probability-partial-release.mjs','./probability-live.mjs','./probability-inputs.mjs','./candidate-roster.mjs','./nbc-counties.mjs'].map(normalizedHash))};
 }
 
-export function validatePartialProbabilityRelease(release,evidence=partialReleaseEvidence()){
+function validateAggregateEvidence(release,evidence){
+ check(release.aggregateValidationHash===evidence.aggregateValidationHash&&evidence.aggregateEvidence,
+   'race-total evidence is not bound to the release');
+ const a=evidence.aggregateEvidence['probability-aggregate-validation.json'];
+ const b=evidence.aggregateEvidence['probability-aggregate-2024-validation.json'];
+ const port=evidence.aggregateEvidence['probability-aggregate-node-validation.json'];
+ const house=a?.cohorts?.['house-not-previously-inspected'];
+ for(const [group,n]of [['60-100',100],['60-100-prior-competitive',15]]){
+  const row=house?.[group],m=row?.metrics?.aggregate;
+  check(m?.races>=n&&m.states>=(group==='60-100'?20:10)&&m.false95===0&&m.coverage80>=.7&&m.coverage80<=1&&
+   m.brier<row.metrics['frozen-source']?.brier&&row.paired?.some(p=>p.method==='aggregate'&&p.comparison==='frozen-source'&&p.interval95?.[1]<0),
+  'race-total held-out House skill is insufficient');
+ }
+ for(const [group,n]of [['60-100',20],['60-100-prior-competitive',5]]){
+  const row=b?.cohorts?.[group],m=row?.metrics?.aggregate;
+  check(row?.states>=n&&m?.false95Ids?.length===0&&m.coverage80>=.7&&m.coverage80<=1&&
+   m.brier<row.metrics['frozen-source']?.brier&&row.pairedBrierDifference?.interval95?.[1]<0,
+  'race-total different-cycle confirmation is insufficient');
+ }
+ check(port?.simulations===20000&&port.summary?.cases>=200&&port.monteCarloCheck?.comparisons>=200&&
+   port.monteCarloCheck.failures===0&&port.monteCarloCheck.minimumP>=port.monteCarloCheck.threshold,
+ 'race-total numerical port is not verified');
+ if(Object.values(release.races).some(c=>c.prior.inputMode==='race-total'&&c.prior.office==='governor')){
+  const row=a?.cohorts?.governor?.['60-100'],m=row?.metrics?.aggregate;
+  check(m?.races>=10&&m.false95===0&&m.coverage80>=.7&&m.brier<row.metrics['frozen-source']?.brier&&
+    row.paired?.some(p=>p.method==='aggregate'&&p.comparison==='frozen-source'&&p.interval95?.[1]<0),
+   'governor transfer evidence is insufficient');
+ }
+}
+
+export function validatePartialProbabilityRelease(release,evidence=partialReleaseEvidence({aggregate:
+  Object.values(release?.races||{}).some(c=>c.prior?.inputMode==='race-total')})){
  const {policy,approval,races}=release||{},entries=Object.entries(races||{});
  check(release?.modelVersion===partialLiveModelVersion&&policy?.method==='calibrated-partial-count', 'unknown model version or method');
  check(approval?.kind==='automated-source-and-statistical-review'&&validTime(approval.at)&&
@@ -50,10 +84,15 @@ export function validatePartialProbabilityRelease(release,evidence=partialReleas
      row.comparison==='frozen-source'&&row.interval95?.[1]<0)),
   'exact production-input validation does not establish held-out skill');
  check(entries.length>0&&entries.length<=506,'missing or excessive races');
+ const hasAggregate=entries.some(([,c])=>c.prior?.inputMode==='race-total');
+ if(hasAggregate)validateAggregateEvidence(release,evidence);
  const calibrationIdentity=objectHash(evidence.calibration);
  for(const [id,{prior,roster} ]of entries){
-  check(/^house-[A-Z]{2}-(?:AL|[1-9]\d?)$/.test(id)&&prior?.raceId===id&&prior.modelVersion===partialLiveModelVersion&&
-   prior.method===policy.method&&prior.office==='house'&&prior.electionDate==='2026-11-03'&&
+  const aggregate=prior?.inputMode==='race-total';
+  check((aggregate?/^(?:house-[A-Z]{2}-(?:AL|[1-9]\d?)|governor-[A-Z]{2})$/:/^house-[A-Z]{2}-(?:AL|[1-9]\d?)$/).test(id)&&
+   prior?.raceId===id&&prior.modelVersion===partialLiveModelVersion&&
+   prior.method===policy.method&&(aggregate?['house','governor'].includes(prior.office):prior.office==='house')&&
+   (prior.inputMode===undefined||aggregate)&&id.startsWith(prior.office+'-')&&prior.electionDate==='2026-11-03'&&
    prior.rule==='plurality'&&probabilityRule(id,prior.electionDate)==='plurality','race is outside the validated office or voting rule');
   check(Array.isArray(roster)&&roster.length===2&&Array.isArray(prior.candidateIds)&&prior.candidateIds.length===2&&
    new Set(prior.candidateIds).size===2&&prior.candidateIds.every(candidate=>typeof candidate==='string'&&/^[\w-]{1,100}$/.test(candidate))&&
@@ -63,12 +102,18 @@ export function validatePartialProbabilityRelease(release,evidence=partialReleas
    prior.parties?.[prior.candidateIds[0]]==='D'&&prior.parties?.[prior.candidateIds[1]]==='R',
   'race is not the declared two-candidate D/R field');
   check(validTime(prior.anchorAvailableAt)&&Date.parse(prior.anchorAvailableAt)<Date.parse(prior.electionDate+'T00:00:00Z')&&
-   validTime(prior.geographyAvailableAt)&&Date.parse(prior.geographyAvailableAt)<=Date.parse(approval.at), 'future or undated prior');
+   (aggregate||validTime(prior.geographyAvailableAt)&&Date.parse(prior.geographyAvailableAt)<=Date.parse(approval.at)), 'future or undated prior');
+  if(aggregate){
+   const s=prior.anchorSource;
+   check(s&&/^[a-f0-9]{40}$/.test(s.commit)&&/^[a-f0-9]{64}$/.test(s.sha256)&&s.availableAt===prior.anchorAvailableAt&&
+    s.file===(prior.office==='house'?'data/house-forecast.json':'data/governor-forecast.json')&&
+    objectHash(s)===objectHash(release.aggregatePriorSources?.[prior.office]),'unbound race-total candidate prior');
+  }
   check(Number.isFinite(prior.marginSigmaPoints)&&prior.marginSigmaPoints>0&&prior.marginSigmaPoints<100&&
    (prior.calibration===undefined||objectHash(prior.calibration)===calibrationIdentity),'unbound uncertainty or counting calibration');
   check(Array.isArray(prior.units)&&prior.units.length>0&&prior.units.length<=600&&
    new Set(prior.units.map(unit=>unit.id)).size===prior.units.length&&
-   prior.units.every(unit=>typeof unit.id==='string'&&/^[\w-]{1,100}$/.test(unit.id)&&Number.isFinite(unit.margin)&&Math.abs(unit.margin)<1&&
+   prior.units.every(unit=>typeof unit.id==='string'&&(aggregate?prior.units.length===1&&unit.id==='race:'+id&&unit.weight===1:/^[\w-]{1,100}$/.test(unit.id))&&Number.isFinite(unit.margin)&&Math.abs(unit.margin)<1&&
     Number.isFinite(unit.weight)&&unit.weight>0),'invalid geographic prior');
  }
  return entries.map(([id,{prior,roster}])=>[id,{prior:{...prior,calibration:evidence.calibration},roster}]);

@@ -19,7 +19,9 @@ for office in ('all','house','senate','governor','house-not-previously-inspected
     selected=[r for r in data['runs'] if office=='all' or r['office']==office or
         office=='house-not-previously-inspected' and r['office']=='house' and r['id'] not in inspected]
     result['cohorts'][office]={}
-    for name,rows in [('all',selected),('prior-competitive',[r for r in selected if abs(r['anchorMarginPoints'])<=10])]:
+    for name,rows in [('all',selected),('prior-competitive',[r for r in selected if abs(r['anchorMarginPoints'])<=10]),
+        ('60-100',[r for r in selected if r['reported']>=60]),
+        ('60-100-prior-competitive',[r for r in selected if r['reported']>=60 and abs(r['anchorMarginPoints'])<=10])]:
         if not rows:continue
         result['cohorts'][office][name]={'metrics':{m:scores.summarize(rows,m) for m in ('aggregate','geographic','frozen-source')},
             'paired':[scores.paired_brier(rows,'aggregate',m) for m in ('geographic','frozen-source')],

@@ -17,7 +17,8 @@ output={'status':'Research confirmation; not a production release',
     'cohorts':{},'quarantined':data['quarantined']}
 for name,select in [('all',lambda r:True),('prior-competitive',lambda r:abs(r['anchorMarginPoints'])<=10),
     ('25-59',lambda r:r['reported']<60),('60-89',lambda r:60<=r['reported']<90),
-    ('90-100',lambda r:r['reported']>=90)]:
+    ('90-100',lambda r:r['reported']>=90),('60-100',lambda r:r['reported']>=60),
+    ('60-100-prior-competitive',lambda r:r['reported']>=60 and abs(r['anchorMarginPoints'])<=10)]:
     rows=[r for r in data['runs'] if select(r)]
     if not rows:continue
     groups=defaultdict(list)
