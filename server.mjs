@@ -1107,8 +1107,12 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
       try {
         const health = control.health();
         const healthy = new Set(health.connection === 'connected' && !health.persistenceError ? health.lastHealthyRaceIds : []);
-        await liveProbability.updateBatch((id,prior) => healthy.has(id)
-          ? control.probabilityResult(id,prior.units.map(unit=>unit.id)) : undefined, (id, error) => {
+        await liveProbability.updateBatch((id,prior) => {
+          const aggregate=['race-total','race-total-multi','unopposed','majority-lock'].includes(prior.inputMode);
+          // Aggregate race-total paths only need the national ballot, not a healthy county page.
+          if (!aggregate && !healthy.has(id)) return undefined;
+          return control.probabilityResult(id,prior.units.map(unit=>unit.id));
+        }, (id, error) => {
           if (!error) probabilityErrors.delete(id);
           else if (probabilityErrors.get(id) !== error.message) {
             console.warn(`Win probability update failed for ${id}: ${error.message}`);
