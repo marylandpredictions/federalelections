@@ -89,11 +89,22 @@ presidential-state component evidence, not an additional House election cycle.
 
 ## Next integration checks
 
-Before publication, require a JavaScript implementation matching the research
-kernel, a distinct race-total input scheme, exact candidate/source/time checks,
-appropriate reporting-stage scope, release hashes and negative tests. Keep the
-geographic model as the preferred path. Never use this work to publish a D/R
-conditional probability as a full multicandidate win probability.
+The JavaScript adapter now exists but remains unconnected to production.
+Five targeted tests exercise kernel agreement, source/rule/candidate failures,
+unchanged-input behavior and implementation revisions. A real-input replay of
+226 cases at 20,000 draws has maximum Python/JavaScript probability difference
+.0140. None of 226 two-sided Fisher comparisons fails the Bonferroni threshold
+.05/226; minimum p is .005996. This checks the numerical port, not new forecast
+skill. Local replay median time is 36.3 ms and p95 44.4 ms; these are not Render
+measurements. The summary is in
+`data/results/probability-aggregate-node-validation.json`.
+
+Before publication, still require the race-total input scheme in runtime,
+release evidence/hashes, fallback selection, persistence and end-to-end public
+checks. The proposed conservative adapter withholds estimates below 60% source
+reporting because separate-cycle early-stage evidence is sparse. Keep the
+geographic model as the preferred path. Never publish a D/R conditional
+probability as a full multicandidate win probability.
 
 ## Reproduction
 
@@ -104,6 +115,7 @@ python scripts/results/probability-aggregate-study.py
 python scripts/results/probability-aggregate-score.py
 python scripts/results/probability-aggregate-2024-study.py
 python scripts/results/probability-aggregate-2024-score.py
+node scripts/results/probability-aggregate-node-replay.mjs .runtime
 ```
 
 See `data/results/probability-aggregate-forward-plan.json` for the frozen

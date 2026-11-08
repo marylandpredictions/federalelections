@@ -1,0 +1,29 @@
+{
+  "status": "Numerical port check only; not publication authorization",
+  "simulations": 20000,
+  "calibrationHash": "1cf43c67eeae158364e18cb572ec76ca126b21a8cf3ccc63a668dd4fa4b6b0f6",
+  "sources": [
+    {
+      "file": "probability-aggregate-study.json",
+      "sha256": "50df43bef465d0f3234e195c847a2c3c40d17c6c263cc5da939a826c4d50f680"
+    },
+    {
+      "file": "probability-aggregate-2024-study.json",
+      "sha256": "9ba5781d82eb90a012b11ae0f71ae6917d60b51e6df8c764e54881496a890ea2"
+    }
+  ],
+  "summary": {
+    "cases": 226,
+    "maximumProbabilityDifference": 0.014001519480114744,
+    "rootMeanSquareProbabilityDifference": 0.0023476555799855116,
+    "medianMs": 36.2546999999995,
+    "p95Ms": 44.410499999999956
+  },
+  "monteCarloCheck": {
+    "method": "Two-sided Fisher exact comparison of Monte Carlo win counts, Bonferroni family-wise 0.05",
+    "comparisons": 226,
+    "threshold": 0.00022123893805309737,
+    "minimumP": 0.005995524481111122,
+    "failures": 0
+  }
+}

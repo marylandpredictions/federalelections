@@ -83,6 +83,8 @@ for frame in frames:
         if not 0<pd+pr<=1.0001:raise ValueError('Invalid source win denominator')
         result['runs'].append({'id':frame['state']+'@'+frame['at'],'state':frame['state'],'at':frame['at'],
             'reported':reported,'anchorMarginPoints':100*center,'priorSigma':sd,
+            'kernelInput':{'id':'race-2024-'+frame['state'],'margin':center/pair,'marginSigmaPoints':sd*100,
+                **{k:frame[k] for k in ('d','r','total')},'reported':reported},
             'forecasts':{'aggregate':prediction,'frozen-source':{'probabilityD':pd/(pd+pr)}},
             'truthMargin':final['margin'],'winnerD':final['demVotes']>final['repVotes']})
     except (KeyError,ValueError) as error:

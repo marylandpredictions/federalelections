@@ -69,6 +69,9 @@ for office in ('house','senate','governor'):
                 'interval80':[float(row['p10_netpartymargin']),float(row['p90_netpartymargin'])]}
             output['runs'].append({'id':frame['id'],'office':office,'state':frame['state'],
                 'at':frame['at'],'reported':frame['reported'],'anchorMarginPoints':d-r,
+                'kernelInput':{'id':'race-'+frame['id'],'margin':(d-r)/(d+r),
+                    'marginSigmaPoints':uncertainty['approximatePairSd']*100,
+                    **{k:frame[k] for k in ('d','r','total','reported')}},
                 'forecasts':{'aggregate':prediction,'geographic':reference['forecasts']['candidate-and-uncertainty'],
                     'frozen-source':baseline},'truthMargin':frame['truthMargin'],'winnerD':frame['winnerD']})
         except (ValueError,KeyError) as error:output['quarantined'].append({'id':frame['id'],'reason':str(error)})
