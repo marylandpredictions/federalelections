@@ -1234,12 +1234,17 @@ body.results-board {
   box-sizing: border-box;
 }
 .results-board .county-heading h3,
-.results-board #desk-demographics h3 {
+.results-board #desk-demographics h3,
+.results-board #desk-probability-title,
+.results-board .desk-probability h3 {
   background: none;
   border: 0;
   box-shadow: none;
   padding: 0;
   color: var(--text-primary);
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 750;
 }
 
 @media (max-width: 600px) {

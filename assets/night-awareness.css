@@ -371,7 +371,7 @@
 .results-board #desk-trend-detail :is(small,footer) { color: var(--text-secondary); font-size: 13px; }
 .results-board #desk-trend-detail footer { padding-top: 8px; }
 .results-board :is(#focused-race-content,#night-drawer) { overflow-anchor: none; }
-.results-board[data-theme-preset="nyt-results"] :is(#focused-race-title,.appearance-dialog h2,#desk-probability-title) {
+.results-board[data-theme-preset="nyt-results"] :is(#focused-race-title,.appearance-dialog h2) {
   font-family: Georgia, 'Times New Roman', serif;
 }
 .results-board[data-map-labels="off"] :is(.night-geo-labels,.map-background-cities,.map-background-city) { display: none !important; }
@@ -406,14 +406,15 @@
 }
 .results-board .desk-probability h3,
 .results-board #desk-probability-title {
-  margin: 0;
-  padding: 0 0 10px;
+  margin: 0 0 10px;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  color: var(--text-primary);
   font: inherit;
   font-size: 1.05rem;
   font-weight: 750;
-  letter-spacing: -.02em;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--panel-border);
 }
 .results-board .desk-probability-state { display: grid; gap: 3px; margin: 0; font-size: .8rem; line-height: 1.5; }
 .results-board .desk-probability-state span { color: var(--text-secondary); }
