@@ -96,10 +96,10 @@ test('Deterministic output for the same inputHash seed', () => {
   assert.deepEqual(a.margin.interval80, b.margin.interval80);
 });
 
-test('Below-60% reporting returns unavailable', () => {
+test('Below-50% reporting returns unavailable', () => {
   const {prior, snapshot} = twoPartyInput();
-  snapshot.expectedVotePercent = 59;
-  snapshot.units[0].expectedVotePercent = 59;
+  snapshot.expectedVotePercent = 49;
+  snapshot.units[0].expectedVotePercent = 49;
   const result = simulateMultiAggregateProbability(prior, snapshot);
   assert.equal(result.status, 'unavailable');
 });

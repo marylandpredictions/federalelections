@@ -1,66 +1,64 @@
 {
-  "status": "Exploratory multi race-total evidence on aggregate study frames; no blanket release approval",
-  "modelVersion": "fea-live-multi-aggregate-1",
-  "label": "2022-aggregate-frames",
+  "status": "Exploratory multi-candidate evidence on previously inspected races; no release approval",
   "studySha256": "50df43bef465d0f3234e195c847a2c3c40d17c6c263cc5da939a826c4d50f680",
-  "planSha256": "290e724cf4548aad0894be8c2702c7f3c9e101017d0026543a02b8da1bf623d3",
-  "scoredRuns": 151,
+  "forecastSha256": "50df43bef465d0f3234e195c847a2c3c40d17c6c263cc5da939a826c4d50f680",
+  "modelVersion": "fea-live-multi-aggregate-1",
+  "shareConcentration": 40,
+  "simulations": 20000,
   "cohorts": {
     "all": {
       "all": {
         "metrics": {
-          "multi": {
-            "races": 151,
-            "states": 34,
-            "brier": 0.007544384850993378,
-            "logLoss": 0.025335570219427832,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.3318306576023695,
-            "coverage80": 0.8013245033112583
-          },
-          "aggregate": {
-            "races": 151,
-            "states": 34,
-            "brier": 0.009022651704240037,
-            "logLoss": 0.03191674066145964,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.28326189730046,
-            "coverage80": 0.9271523178807947
-          },
           "frozen-source": {
-            "races": 151,
-            "states": 34,
-            "brier": 0.019231060973389738,
-            "logLoss": 0.07941456955502577,
+            "races": 160,
+            "states": 35,
+            "brier": 0.017687041006039073,
+            "logLoss": 0.0756302727975359,
             "infiniteLogLossCases": 0,
             "false95": 1,
-            "marginMae": 4.955896753384765,
-            "coverage80": 0.8543046357615894
+            "marginMae": 4.799731446051067,
+            "coverage80": 0.86875
+          },
+          "multi": {
+            "races": 160,
+            "states": 35,
+            "brier": 0.011344661859375,
+            "logLoss": 0.03568178953582432,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.438314827661993,
+            "coverage80": 0.8125
+          },
+          "aggregate": {
+            "races": 160,
+            "states": 35,
+            "brier": 0.01875,
+            "logLoss": null,
+            "infiniteLogLossCases": 3,
+            "false95": 3
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
-            "stateClusters": 34,
+            "stateClusters": 35,
             "draws": 5000,
-            "difference": -0.011686676122396352,
+            "difference": -0.006342379146664067,
             "interval95": [
-              -0.025594058618754117,
-              -0.0014517412087841838
+              -0.019876204978923423,
+              0.007445821573535653
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
-            "stateClusters": 34,
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 35,
             "draws": 5000,
-            "difference": -0.0014782668532466723,
+            "difference": -0.007405338140625,
             "interval95": [
-              -0.010869308377246248,
-              0.004348721480634302
+              -0.02277340746666666,
+              0.004849104011627908
             ]
           }
         ],
@@ -68,58 +66,56 @@
       },
       "prior-competitive": {
         "metrics": {
-          "multi": {
-            "races": 24,
-            "states": 15,
-            "brier": 0.02837296833333333,
-            "logLoss": 0.1001650131002197,
+          "frozen-source": {
+            "races": 26,
+            "states": 16,
+            "brier": 0.07075116233299367,
+            "logLoss": 0.28511143616800233,
             "infiniteLogLossCases": 0,
             "false95": 0,
-            "marginMae": 1.1654566945513867,
-            "coverage80": 0.9583333333333334
+            "marginMae": 3.6430296469588512,
+            "coverage80": 0.9230769230769231
+          },
+          "multi": {
+            "races": 26,
+            "states": 16,
+            "brier": 0.05175764625,
+            "logLoss": 0.16040213868462663,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.5798067352495886,
+            "coverage80": 0.9615384615384616
           },
           "aggregate": {
-            "races": 24,
-            "states": 15,
-            "brier": 0.025421766943018783,
-            "logLoss": 0.11085717817097084,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.2731837053176343,
-            "coverage80": 0.9166666666666666
-          },
-          "frozen-source": {
-            "races": 24,
-            "states": 15,
-            "brier": 0.07977112825657648,
-            "logLoss": 0.30609461315136055,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 3.467408481477427,
-            "coverage80": 0.9166666666666666
+            "races": 26,
+            "states": 16,
+            "brier": 0.07692307692307693,
+            "logLoss": null,
+            "infiniteLogLossCases": 2,
+            "false95": 2
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
-            "stateClusters": 15,
+            "stateClusters": 16,
             "draws": 5000,
-            "difference": -0.05139815992324313,
+            "difference": -0.01899351608299366,
             "interval95": [
-              -0.08780642677625301,
-              -0.011818269437500004
+              -0.06799436629351548,
+              0.054371283417988685
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
-            "stateClusters": 15,
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 16,
             "draws": 5000,
-            "difference": 0.0029512013903145507,
+            "difference": -0.02516543067307692,
             "interval95": [
-              -0.006691029949136436,
-              0.014607446971085907
+              -0.10593550697916669,
+              0.024225724456521748
             ]
           }
         ],
@@ -127,58 +123,56 @@
       },
       "60-100": {
         "metrics": {
-          "multi": {
-            "races": 151,
-            "states": 34,
-            "brier": 0.007544384850993378,
-            "logLoss": 0.025335570219427832,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.3318306576023695,
-            "coverage80": 0.8013245033112583
-          },
-          "aggregate": {
-            "races": 151,
-            "states": 34,
-            "brier": 0.009022651704240037,
-            "logLoss": 0.03191674066145964,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.28326189730046,
-            "coverage80": 0.9271523178807947
-          },
           "frozen-source": {
-            "races": 151,
-            "states": 34,
-            "brier": 0.019231060973389738,
-            "logLoss": 0.07941456955502577,
+            "races": 148,
+            "states": 33,
+            "brier": 0.018228357475384125,
+            "logLoss": 0.07693587490573803,
             "infiniteLogLossCases": 0,
             "false95": 1,
-            "marginMae": 4.955896753384765,
-            "coverage80": 0.8543046357615894
+            "marginMae": 4.963637463133359,
+            "coverage80": 0.8581081081081081
+          },
+          "multi": {
+            "races": 148,
+            "states": 33,
+            "brier": 0.007697122922297297,
+            "logLoss": 0.025052869630828287,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.3416529938030726,
+            "coverage80": 0.7972972972972973
+          },
+          "aggregate": {
+            "races": 148,
+            "states": 33,
+            "brier": 0.013513513513513514,
+            "logLoss": null,
+            "infiniteLogLossCases": 2,
+            "false95": 2
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
-            "stateClusters": 34,
+            "stateClusters": 33,
             "draws": 5000,
-            "difference": -0.011686676122396352,
+            "difference": -0.010531234553086816,
             "interval95": [
-              -0.025594058618754117,
-              -0.0014517412087841838
+              -0.02587916200271064,
+              0.0006639059729316843
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
-            "stateClusters": 34,
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 33,
             "draws": 5000,
-            "difference": -0.0014782668532466723,
+            "difference": -0.005816390591216217,
             "interval95": [
-              -0.010869308377246248,
-              0.004348721480634302
+              -0.021078226578947368,
+              0.0063726689732142875
             ]
           }
         ],
@@ -186,58 +180,170 @@
       },
       "60-100-prior-competitive": {
         "metrics": {
-          "multi": {
-            "races": 24,
-            "states": 15,
-            "brier": 0.02837296833333333,
-            "logLoss": 0.1001650131002197,
+          "frozen-source": {
+            "races": 23,
+            "states": 14,
+            "brier": 0.07427885989273197,
+            "logLoss": 0.293094791256217,
             "infiniteLogLossCases": 0,
             "false95": 0,
-            "marginMae": 1.1654566945513867,
-            "coverage80": 0.9583333333333334
+            "marginMae": 3.6027053077736326,
+            "coverage80": 0.9130434782608695
+          },
+          "multi": {
+            "races": 23,
+            "states": 14,
+            "brier": 0.029248357282608696,
+            "logLoss": 0.09804041816912877,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.2222031688744028,
+            "coverage80": 0.9565217391304348
           },
           "aggregate": {
-            "races": 24,
-            "states": 15,
-            "brier": 0.025421766943018783,
-            "logLoss": 0.11085717817097084,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.2731837053176343,
-            "coverage80": 0.9166666666666666
-          },
-          "frozen-source": {
-            "races": 24,
-            "states": 15,
-            "brier": 0.07977112825657648,
-            "logLoss": 0.30609461315136055,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 3.467408481477427,
-            "coverage80": 0.9166666666666666
+            "races": 23,
+            "states": 14,
+            "brier": 0.043478260869565216,
+            "logLoss": null,
+            "infiniteLogLossCases": 1,
+            "false95": 1
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
-            "stateClusters": 15,
+            "stateClusters": 14,
             "draws": 5000,
-            "difference": -0.05139815992324313,
+            "difference": -0.04503050261012327,
             "interval95": [
-              -0.08780642677625301,
-              -0.011818269437500004
+              -0.08279240911062566,
+              -0.001620562902147149
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
-            "stateClusters": 15,
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 14,
             "draws": 5000,
-            "difference": 0.0029512013903145507,
+            "difference": -0.014229903586956517,
             "interval95": [
-              -0.006691029949136436,
-              0.014607446971085907
+              -0.094766667,
+              0.031228728026315794
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "50-100": {
+        "metrics": {
+          "frozen-source": {
+            "races": 160,
+            "states": 35,
+            "brier": 0.017687041006039073,
+            "logLoss": 0.0756302727975359,
+            "infiniteLogLossCases": 0,
+            "false95": 1,
+            "marginMae": 4.799731446051067,
+            "coverage80": 0.86875
+          },
+          "multi": {
+            "races": 160,
+            "states": 35,
+            "brier": 0.011344661859375,
+            "logLoss": 0.03568178953582432,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.438314827661993,
+            "coverage80": 0.8125
+          },
+          "aggregate": {
+            "races": 160,
+            "states": 35,
+            "brier": 0.01875,
+            "logLoss": null,
+            "infiniteLogLossCases": 3,
+            "false95": 3
+          }
+        },
+        "paired": [
+          {
+            "method": "multi-aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 35,
+            "draws": 5000,
+            "difference": -0.006342379146664067,
+            "interval95": [
+              -0.019876204978923423,
+              0.007445821573535653
+            ]
+          },
+          {
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 35,
+            "draws": 5000,
+            "difference": -0.007405338140625,
+            "interval95": [
+              -0.02277340746666666,
+              0.004849104011627908
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "50-100-prior-competitive": {
+        "metrics": {
+          "frozen-source": {
+            "races": 26,
+            "states": 16,
+            "brier": 0.07075116233299367,
+            "logLoss": 0.28511143616800233,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 3.6430296469588512,
+            "coverage80": 0.9230769230769231
+          },
+          "multi": {
+            "races": 26,
+            "states": 16,
+            "brier": 0.05175764625,
+            "logLoss": 0.16040213868462663,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.5798067352495886,
+            "coverage80": 0.9615384615384616
+          },
+          "aggregate": {
+            "races": 26,
+            "states": 16,
+            "brier": 0.07692307692307693,
+            "logLoss": null,
+            "infiniteLogLossCases": 2,
+            "false95": 2
+          }
+        },
+        "paired": [
+          {
+            "method": "multi-aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 16,
+            "draws": 5000,
+            "difference": -0.01899351608299366,
+            "interval95": [
+              -0.06799436629351548,
+              0.054371283417988685
+            ]
+          },
+          {
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 16,
+            "draws": 5000,
+            "difference": -0.02516543067307692,
+            "interval95": [
+              -0.10593550697916669,
+              0.024225724456521748
             ]
           }
         ],
@@ -247,58 +353,56 @@
     "house": {
       "all": {
         "metrics": {
-          "multi": {
-            "races": 122,
-            "states": 31,
-            "brier": 0.007315394979508196,
-            "logLoss": 0.023914267810095213,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.1360503268073194,
-            "coverage80": 0.819672131147541
-          },
-          "aggregate": {
-            "races": 122,
-            "states": 31,
-            "brier": 0.009536846683131563,
-            "logLoss": 0.031536861086678816,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.20386765950031,
-            "coverage80": 0.9262295081967213
-          },
           "frozen-source": {
-            "races": 122,
-            "states": 31,
-            "brier": 0.01784286398377612,
-            "logLoss": 0.07565730475618448,
+            "races": 131,
+            "states": 32,
+            "brier": 0.017618270267214412,
+            "logLoss": 0.0756714295597203,
             "infiniteLogLossCases": 0,
             "false95": 1,
-            "marginMae": 4.916121094176644,
-            "coverage80": 0.860655737704918
+            "marginMae": 4.72944758377679,
+            "coverage80": 0.8778625954198473
+          },
+          "multi": {
+            "races": 131,
+            "states": 32,
+            "brier": 0.01212177356870229,
+            "logLoss": 0.03757757327139579,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.2751463878769262,
+            "coverage80": 0.8320610687022901
+          },
+          "aggregate": {
+            "races": 131,
+            "states": 32,
+            "brier": 0.022900763358778626,
+            "logLoss": null,
+            "infiniteLogLossCases": 3,
+            "false95": 3
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
-            "stateClusters": 31,
+            "stateClusters": 32,
             "draws": 5000,
-            "difference": -0.010527469004267924,
+            "difference": -0.005496496698512125,
             "interval95": [
-              -0.027095406377766498,
-              0.0013260332279452435
+              -0.021790418368253777,
+              0.012390898993409406
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
-            "stateClusters": 31,
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 32,
             "draws": 5000,
-            "difference": -0.0022214517036233715,
+            "difference": -0.010778989790076335,
             "interval95": [
-              -0.01342851422485798,
-              0.004631116484459559
+              -0.03153097054347826,
+              0.003204250729166667
             ]
           }
         ],
@@ -306,58 +410,56 @@
       },
       "prior-competitive": {
         "metrics": {
-          "multi": {
-            "races": 17,
-            "states": 12,
-            "brier": 0.025595661764705884,
-            "logLoss": 0.09058160441258081,
+          "frozen-source": {
+            "races": 20,
+            "states": 14,
+            "brier": 0.0663218878092799,
+            "logLoss": 0.27177281153999383,
             "infiniteLogLossCases": 0,
             "false95": 0,
-            "marginMae": 1.4844446274030005,
-            "coverage80": 0.9411764705882353
+            "marginMae": 4.035753986872491,
+            "coverage80": 0.95
+          },
+          "multi": {
+            "races": 20,
+            "states": 14,
+            "brier": 0.056082098374999986,
+            "logLoss": 0.1738122490010185,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.927014026665437,
+            "coverage80": 0.95
           },
           "aggregate": {
-            "races": 17,
-            "states": 12,
-            "brier": 0.024226704231592136,
-            "logLoss": 0.10131580378142972,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.4721034843317131,
-            "coverage80": 0.8823529411764706
-          },
-          "frozen-source": {
-            "races": 17,
-            "states": 12,
-            "brier": 0.07031301841532929,
-            "logLoss": 0.280219946430871,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 4.050501823253719,
-            "coverage80": 0.9411764705882353
+            "races": 20,
+            "states": 14,
+            "brier": 0.1,
+            "logLoss": null,
+            "infiniteLogLossCases": 2,
+            "false95": 2
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
-            "stateClusters": 12,
+            "stateClusters": 14,
             "draws": 5000,
-            "difference": -0.0447173566506234,
+            "difference": -0.010239789434279898,
             "interval95": [
-              -0.08889682733778771,
-              0.008308142249999996
+              -0.06889756338833884,
+              0.0838148912930876
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
-            "stateClusters": 12,
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 14,
             "draws": 5000,
-            "difference": 0.0013689575331137435,
+            "difference": -0.04391790162500001,
             "interval95": [
-              -0.006627471815827267,
-              0.013979062379233291
+              -0.1401352563157895,
+              0.01389721684782609
             ]
           }
         ],
@@ -365,58 +467,56 @@
       },
       "60-100": {
         "metrics": {
-          "multi": {
-            "races": 122,
-            "states": 31,
-            "brier": 0.007315394979508196,
-            "logLoss": 0.023914267810095213,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.1360503268073194,
-            "coverage80": 0.819672131147541
-          },
-          "aggregate": {
-            "races": 122,
-            "states": 31,
-            "brier": 0.009536846683131563,
-            "logLoss": 0.031536861086678816,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.20386765950031,
-            "coverage80": 0.9262295081967213
-          },
           "frozen-source": {
-            "races": 122,
-            "states": 31,
-            "brier": 0.01784286398377612,
-            "logLoss": 0.07565730475618448,
+            "races": 120,
+            "states": 30,
+            "brier": 0.018140245050172386,
+            "logLoss": 0.07691825983528755,
             "infiniteLogLossCases": 0,
             "false95": 1,
-            "marginMae": 4.916121094176644,
-            "coverage80": 0.860655737704918
+            "marginMae": 4.8866690812404405,
+            "coverage80": 0.8666666666666667
+          },
+          "multi": {
+            "races": 120,
+            "states": 30,
+            "brier": 0.007619118687500001,
+            "logLoss": 0.024755798082570172,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.1305915414139667,
+            "coverage80": 0.8166666666666667
+          },
+          "aggregate": {
+            "races": 120,
+            "states": 30,
+            "brier": 0.016666666666666666,
+            "logLoss": null,
+            "infiniteLogLossCases": 2,
+            "false95": 2
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
-            "stateClusters": 31,
+            "stateClusters": 30,
             "draws": 5000,
-            "difference": -0.010527469004267924,
+            "difference": -0.010521126362672387,
             "interval95": [
-              -0.027095406377766498,
-              0.0013260332279452435
+              -0.029340018770697633,
+              0.002923802295487135
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
-            "stateClusters": 31,
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 30,
             "draws": 5000,
-            "difference": -0.0022214517036233715,
+            "difference": -0.009047547979166666,
             "interval95": [
-              -0.01342851422485798,
-              0.004631116484459559
+              -0.028812513317307685,
+              0.004336547731481483
             ]
           }
         ],
@@ -424,26 +524,6 @@
       },
       "60-100-prior-competitive": {
         "metrics": {
-          "multi": {
-            "races": 17,
-            "states": 12,
-            "brier": 0.025595661764705884,
-            "logLoss": 0.09058160441258081,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.4844446274030005,
-            "coverage80": 0.9411764705882353
-          },
-          "aggregate": {
-            "races": 17,
-            "states": 12,
-            "brier": 0.024226704231592136,
-            "logLoss": 0.10131580378142972,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.4721034843317131,
-            "coverage80": 0.8823529411764706
-          },
           "frozen-source": {
             "races": 17,
             "states": 12,
@@ -453,29 +533,161 @@
             "false95": 0,
             "marginMae": 4.050501823253719,
             "coverage80": 0.9411764705882353
+          },
+          "multi": {
+            "races": 17,
+            "states": 12,
+            "brier": 0.026391493088235293,
+            "logLoss": 0.09180699953588467,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.5044693118194532,
+            "coverage80": 0.9411764705882353
+          },
+          "aggregate": {
+            "races": 17,
+            "states": 12,
+            "brier": 0.058823529411764705,
+            "logLoss": null,
+            "infiniteLogLossCases": 1,
+            "false95": 1
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
             "stateClusters": 12,
             "draws": 5000,
-            "difference": -0.0447173566506234,
+            "difference": -0.04392152532709399,
             "interval95": [
-              -0.08889682733778771,
-              0.008308142249999996
+              -0.08863039441176473,
+              0.011311526796875002
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
             "stateClusters": 12,
             "draws": 5000,
-            "difference": 0.0013689575331137435,
+            "difference": -0.03243203632352941,
             "interval95": [
-              -0.006627471815827267,
-              0.013979062379233291
+              -0.129263709,
+              0.011288875499999997
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "50-100": {
+        "metrics": {
+          "frozen-source": {
+            "races": 131,
+            "states": 32,
+            "brier": 0.017618270267214412,
+            "logLoss": 0.0756714295597203,
+            "infiniteLogLossCases": 0,
+            "false95": 1,
+            "marginMae": 4.72944758377679,
+            "coverage80": 0.8778625954198473
+          },
+          "multi": {
+            "races": 131,
+            "states": 32,
+            "brier": 0.01212177356870229,
+            "logLoss": 0.03757757327139579,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.2751463878769262,
+            "coverage80": 0.8320610687022901
+          },
+          "aggregate": {
+            "races": 131,
+            "states": 32,
+            "brier": 0.022900763358778626,
+            "logLoss": null,
+            "infiniteLogLossCases": 3,
+            "false95": 3
+          }
+        },
+        "paired": [
+          {
+            "method": "multi-aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 32,
+            "draws": 5000,
+            "difference": -0.005496496698512125,
+            "interval95": [
+              -0.021790418368253777,
+              0.012390898993409406
+            ]
+          },
+          {
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 32,
+            "draws": 5000,
+            "difference": -0.010778989790076335,
+            "interval95": [
+              -0.03153097054347826,
+              0.003204250729166667
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "50-100-prior-competitive": {
+        "metrics": {
+          "frozen-source": {
+            "races": 20,
+            "states": 14,
+            "brier": 0.0663218878092799,
+            "logLoss": 0.27177281153999383,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.035753986872491,
+            "coverage80": 0.95
+          },
+          "multi": {
+            "races": 20,
+            "states": 14,
+            "brier": 0.056082098374999986,
+            "logLoss": 0.1738122490010185,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.927014026665437,
+            "coverage80": 0.95
+          },
+          "aggregate": {
+            "races": 20,
+            "states": 14,
+            "brier": 0.1,
+            "logLoss": null,
+            "infiniteLogLossCases": 2,
+            "false95": 2
+          }
+        },
+        "paired": [
+          {
+            "method": "multi-aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 14,
+            "draws": 5000,
+            "difference": -0.010239789434279898,
+            "interval95": [
+              -0.06889756338833884,
+              0.0838148912930876
+            ]
+          },
+          {
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 14,
+            "draws": 5000,
+            "difference": -0.04391790162500001,
+            "interval95": [
+              -0.1401352563157895,
+              0.01389721684782609
             ]
           }
         ],
@@ -485,58 +697,56 @@
     "senate": {
       "all": {
         "metrics": {
+          "frozen-source": {
+            "races": 16,
+            "states": 16,
+            "brier": 0.01828908462157467,
+            "logLoss": 0.07481950594575165,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 5.4828028941733065,
+            "coverage80": 0.875
+          },
           "multi": {
             "races": 16,
             "states": 16,
-            "brier": 0.01527913046875,
-            "logLoss": 0.05243235414737425,
+            "brier": 0.014039503906249999,
+            "logLoss": 0.044540786265108066,
             "infiniteLogLossCases": 0,
             "false95": 0,
-            "marginMae": 2.137110502440062,
+            "marginMae": 2.178201576574476,
             "coverage80": 0.6875
           },
           "aggregate": {
             "races": 16,
             "states": 16,
-            "brier": 0.01076869709041595,
-            "logLoss": 0.04482616687511101,
+            "brier": 0,
+            "logLoss": 0,
             "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.437862118859393,
-            "coverage80": 0.9375
-          },
-          "frozen-source": {
-            "races": 16,
-            "states": 16,
-            "brier": 0.031109562434074672,
-            "logLoss": 0.11066465890025165,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 5.493692792806921,
-            "coverage80": 0.875
+            "false95": 0
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
             "stateClusters": 16,
             "draws": 5000,
-            "difference": -0.015830431965324666,
+            "difference": -0.00424958071532467,
             "interval95": [
-              -0.043848842264078,
-              0.00295587894840649
+              -0.017814611863430824,
+              0.005943913712484494
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
             "stateClusters": 16,
             "draws": 5000,
-            "difference": 0.004510433378334051,
+            "difference": 0.014039503906249999,
             "interval95": [
-              -0.0026447131051640874,
-              0.016175684511863058
+              0,
+              0.04184024421875
             ]
           }
         ],
@@ -544,58 +754,56 @@
       },
       "prior-competitive": {
         "metrics": {
-          "multi": {
-            "races": 4,
-            "states": 4,
-            "brier": 0.06091700625,
-            "logLoss": 0.20256523927429593,
+          "frozen-source": {
+            "races": 3,
+            "states": 3,
+            "brier": 0.09482476020833332,
+            "logLoss": 0.3509468444459269,
             "infiniteLogLossCases": 0,
             "false95": 0,
-            "marginMae": 0.3853984635371921,
+            "marginMae": 3.9973717758421023,
+            "coverage80": 0.6666666666666666
+          },
+          "multi": {
+            "races": 3,
+            "states": 3,
+            "brier": 0.07386852083333333,
+            "logLoss": 0.21209812298905417,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.44538395443066775,
             "coverage80": 1
           },
           "aggregate": {
-            "races": 4,
-            "states": 4,
-            "brier": 0.04291480236246292,
-            "logLoss": 0.17262461940663396,
+            "races": 3,
+            "states": 3,
+            "brier": 0,
+            "logLoss": 0,
             "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.0229890315784949,
-            "coverage80": 1
-          },
-          "frozen-source": {
-            "races": 4,
-            "states": 4,
-            "brier": 0.1226418953125,
-            "logLoss": 0.4144827625193607,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 3.086924201047749,
-            "coverage80": 0.75
+            "false95": 0
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
-            "stateClusters": 4,
+            "stateClusters": 3,
             "draws": 5000,
-            "difference": -0.06172488906249999,
+            "difference": -0.020956239374999994,
             "interval95": [
-              -0.1377400225,
-              0.00786677218750003
+              -0.0863478225,
+              0.04558336000000002
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
-            "stateClusters": 4,
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 3,
             "draws": 5000,
-            "difference": 0.018002203887537083,
+            "difference": 0.07386852083333333,
             "interval95": [
-              -0.010618382046455467,
-              0.06467022561449527
+              0,
+              0.2216055625
             ]
           }
         ],
@@ -603,58 +811,56 @@
       },
       "60-100": {
         "metrics": {
-          "multi": {
-            "races": 16,
-            "states": 16,
-            "brier": 0.01527913046875,
-            "logLoss": 0.05243235414737425,
+          "frozen-source": {
+            "races": 15,
+            "states": 15,
+            "brier": 0.019443979888012983,
+            "logLoss": 0.07770293504429095,
             "infiniteLogLossCases": 0,
             "false95": 0,
-            "marginMae": 2.137110502440062,
-            "coverage80": 0.6875
+            "marginMae": 5.836233547216403,
+            "coverage80": 0.8666666666666667
+          },
+          "multi": {
+            "races": 15,
+            "states": 15,
+            "brier": 0.014821230166666666,
+            "logLoss": 0.04422381923445677,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.310579181621921,
+            "coverage80": 0.6666666666666666
           },
           "aggregate": {
-            "races": 16,
-            "states": 16,
-            "brier": 0.01076869709041595,
-            "logLoss": 0.04482616687511101,
+            "races": 15,
+            "states": 15,
+            "brier": 0,
+            "logLoss": 0,
             "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.437862118859393,
-            "coverage80": 0.9375
-          },
-          "frozen-source": {
-            "races": 16,
-            "states": 16,
-            "brier": 0.031109562434074672,
-            "logLoss": 0.11066465890025165,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 5.493692792806921,
-            "coverage80": 0.875
+            "false95": 0
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
-            "stateClusters": 16,
+            "stateClusters": 15,
             "draws": 5000,
-            "difference": -0.015830431965324666,
+            "difference": -0.004622749721346315,
             "interval95": [
-              -0.043848842264078,
-              0.00295587894840649
+              -0.018754473593046064,
+              0.007208122597323914
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
-            "stateClusters": 16,
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 15,
             "draws": 5000,
-            "difference": 0.004510433378334051,
+            "difference": 0.014821230166666666,
             "interval95": [
-              -0.0026447131051640874,
-              0.016175684511863058
+              0,
+              0.044416164499999994
             ]
           }
         ],
@@ -662,58 +868,170 @@
       },
       "60-100-prior-competitive": {
         "metrics": {
-          "multi": {
-            "races": 4,
-            "states": 4,
-            "brier": 0.06091700625,
-            "logLoss": 0.20256523927429593,
+          "frozen-source": {
+            "races": 3,
+            "states": 3,
+            "brier": 0.09482476020833332,
+            "logLoss": 0.3509468444459269,
             "infiniteLogLossCases": 0,
             "false95": 0,
-            "marginMae": 0.3853984635371921,
+            "marginMae": 3.9973717758421023,
+            "coverage80": 0.6666666666666666
+          },
+          "multi": {
+            "races": 3,
+            "states": 3,
+            "brier": 0.07386852083333333,
+            "logLoss": 0.21209812298905417,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.44538395443066775,
             "coverage80": 1
           },
           "aggregate": {
-            "races": 4,
-            "states": 4,
-            "brier": 0.04291480236246292,
-            "logLoss": 0.17262461940663396,
+            "races": 3,
+            "states": 3,
+            "brier": 0,
+            "logLoss": 0,
             "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.0229890315784949,
-            "coverage80": 1
-          },
-          "frozen-source": {
-            "races": 4,
-            "states": 4,
-            "brier": 0.1226418953125,
-            "logLoss": 0.4144827625193607,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 3.086924201047749,
-            "coverage80": 0.75
+            "false95": 0
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
-            "stateClusters": 4,
+            "stateClusters": 3,
             "draws": 5000,
-            "difference": -0.06172488906249999,
+            "difference": -0.020956239374999994,
             "interval95": [
-              -0.1377400225,
-              0.00786677218750003
+              -0.0863478225,
+              0.04558336000000002
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
-            "stateClusters": 4,
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 3,
             "draws": 5000,
-            "difference": 0.018002203887537083,
+            "difference": 0.07386852083333333,
             "interval95": [
-              -0.010618382046455467,
-              0.06467022561449527
+              0,
+              0.2216055625
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "50-100": {
+        "metrics": {
+          "frozen-source": {
+            "races": 16,
+            "states": 16,
+            "brier": 0.01828908462157467,
+            "logLoss": 0.07481950594575165,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 5.4828028941733065,
+            "coverage80": 0.875
+          },
+          "multi": {
+            "races": 16,
+            "states": 16,
+            "brier": 0.014039503906249999,
+            "logLoss": 0.044540786265108066,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.178201576574476,
+            "coverage80": 0.6875
+          },
+          "aggregate": {
+            "races": 16,
+            "states": 16,
+            "brier": 0,
+            "logLoss": 0,
+            "infiniteLogLossCases": 0,
+            "false95": 0
+          }
+        },
+        "paired": [
+          {
+            "method": "multi-aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 16,
+            "draws": 5000,
+            "difference": -0.00424958071532467,
+            "interval95": [
+              -0.017814611863430824,
+              0.005943913712484494
+            ]
+          },
+          {
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 16,
+            "draws": 5000,
+            "difference": 0.014039503906249999,
+            "interval95": [
+              0,
+              0.04184024421875
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "50-100-prior-competitive": {
+        "metrics": {
+          "frozen-source": {
+            "races": 3,
+            "states": 3,
+            "brier": 0.09482476020833332,
+            "logLoss": 0.3509468444459269,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 3.9973717758421023,
+            "coverage80": 0.6666666666666666
+          },
+          "multi": {
+            "races": 3,
+            "states": 3,
+            "brier": 0.07386852083333333,
+            "logLoss": 0.21209812298905417,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.44538395443066775,
+            "coverage80": 1
+          },
+          "aggregate": {
+            "races": 3,
+            "states": 3,
+            "brier": 0,
+            "logLoss": 0,
+            "infiniteLogLossCases": 0,
+            "false95": 0
+          }
+        },
+        "paired": [
+          {
+            "method": "multi-aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": -0.020956239374999994,
+            "interval95": [
+              -0.0863478225,
+              0.04558336000000002
+            ]
+          },
+          {
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": 0.07386852083333333,
+            "interval95": [
+              0,
+              0.2216055625
             ]
           }
         ],
@@ -723,26 +1041,6 @@
     "governor": {
       "all": {
         "metrics": {
-          "multi": {
-            "races": 13,
-            "states": 13,
-            "brier": 0.000173679807692308,
-            "logLoss": 0.005324058764922804,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 2.1780401068018396,
-            "coverage80": 0.7692307692307693
-          },
-          "aggregate": {
-            "races": 13,
-            "states": 13,
-            "brier": 0.002048150657810849,
-            "logLoss": 0.019593239792601542,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.8380690870447152,
-            "coverage80": 0.9230769230769231
-          },
           "frozen-source": {
             "races": 13,
             "states": 13,
@@ -752,29 +1050,47 @@
             "false95": 0,
             "marginMae": 4.6672731989721825,
             "coverage80": 0.7692307692307693
+          },
+          "multi": {
+            "races": 13,
+            "states": 13,
+            "brier": 0.0001970382692307696,
+            "logLoss": 0.005674742072101082,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.171920799142299,
+            "coverage80": 0.7692307692307693
+          },
+          "aggregate": {
+            "races": 13,
+            "states": 13,
+            "brier": 0,
+            "logLoss": 0,
+            "infiniteLogLossCases": 0,
+            "false95": 0
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
             "stateClusters": 13,
             "draws": 5000,
-            "difference": -0.01746538188584366,
+            "difference": -0.0174420234243052,
             "interval95": [
-              -0.04136847909409114,
-              -0.00006912476297925725
+              -0.04076591908121937,
+              -0.00006848062729488685
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
             "stateClusters": 13,
             "draws": 5000,
-            "difference": -0.001874470850118541,
+            "difference": 0.0001970382692307696,
             "interval95": [
-              -0.005014780093185783,
-              0.000010456705872844038
+              0.000004841730769230803,
+              0.0005678107692307703
             ]
           }
         ],
@@ -782,26 +1098,6 @@
       },
       "prior-competitive": {
         "metrics": {
-          "multi": {
-            "races": 3,
-            "states": 3,
-            "brier": 0.0007189883333333348,
-            "logLoss": 0.017937360764738373,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 0.39793604974450153,
-            "coverage80": 1
-          },
-          "aggregate": {
-            "races": 3,
-            "states": 3,
-            "brier": 0.008869741748510922,
-            "logLoss": 0.08256837806415297,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 0.4795645225567062,
-            "coverage80": 1
-          },
           "frozen-source": {
             "races": 3,
             "states": 3,
@@ -811,29 +1107,47 @@
             "false95": 0,
             "marginMae": 0.6705252519846683,
             "coverage80": 1
+          },
+          "multi": {
+            "races": 3,
+            "states": 3,
+            "brier": 0.0008170908333333353,
+            "logLoss": 0.01930541893758654,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.3995142399628557,
+            "coverage80": 1
+          },
+          "aggregate": {
+            "races": 3,
+            "states": 3,
+            "brier": 0,
+            "logLoss": 0,
+            "infiniteLogLossCases": 0,
+            "false95": 0
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
             "stateClusters": 3,
             "draws": 5000,
-            "difference": -0.07548707294907908,
+            "difference": -0.07538897044907908,
             "interval95": [
-              -0.10895346000000004,
+              -0.10893896000000004,
               -0.016090922500000004
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
             "stateClusters": 3,
             "draws": 5000,
-            "difference": -0.008150753415177589,
+            "difference": 0.0008170908333333353,
             "interval95": [
-              -0.016408745118780182,
-              -0.00001848260621820878
+              0,
+              0.002391210000000005
             ]
           }
         ],
@@ -841,26 +1155,6 @@
       },
       "60-100": {
         "metrics": {
-          "multi": {
-            "races": 13,
-            "states": 13,
-            "brier": 0.000173679807692308,
-            "logLoss": 0.005324058764922804,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 2.1780401068018396,
-            "coverage80": 0.7692307692307693
-          },
-          "aggregate": {
-            "races": 13,
-            "states": 13,
-            "brier": 0.002048150657810849,
-            "logLoss": 0.019593239792601542,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.8380690870447152,
-            "coverage80": 0.9230769230769231
-          },
           "frozen-source": {
             "races": 13,
             "states": 13,
@@ -870,29 +1164,47 @@
             "false95": 0,
             "marginMae": 4.6672731989721825,
             "coverage80": 0.7692307692307693
+          },
+          "multi": {
+            "races": 13,
+            "states": 13,
+            "brier": 0.0001970382692307696,
+            "logLoss": 0.005674742072101082,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.171920799142299,
+            "coverage80": 0.7692307692307693
+          },
+          "aggregate": {
+            "races": 13,
+            "states": 13,
+            "brier": 0,
+            "logLoss": 0,
+            "infiniteLogLossCases": 0,
+            "false95": 0
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
             "stateClusters": 13,
             "draws": 5000,
-            "difference": -0.01746538188584366,
+            "difference": -0.0174420234243052,
             "interval95": [
-              -0.04136847909409114,
-              -0.00006912476297925725
+              -0.04076591908121937,
+              -0.00006848062729488685
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
             "stateClusters": 13,
             "draws": 5000,
-            "difference": -0.001874470850118541,
+            "difference": 0.0001970382692307696,
             "interval95": [
-              -0.005014780093185783,
-              0.000010456705872844038
+              0.000004841730769230803,
+              0.0005678107692307703
             ]
           }
         ],
@@ -900,26 +1212,6 @@
       },
       "60-100-prior-competitive": {
         "metrics": {
-          "multi": {
-            "races": 3,
-            "states": 3,
-            "brier": 0.0007189883333333348,
-            "logLoss": 0.017937360764738373,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 0.39793604974450153,
-            "coverage80": 1
-          },
-          "aggregate": {
-            "races": 3,
-            "states": 3,
-            "brier": 0.008869741748510922,
-            "logLoss": 0.08256837806415297,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 0.4795645225567062,
-            "coverage80": 1
-          },
           "frozen-source": {
             "races": 3,
             "states": 3,
@@ -929,29 +1221,161 @@
             "false95": 0,
             "marginMae": 0.6705252519846683,
             "coverage80": 1
+          },
+          "multi": {
+            "races": 3,
+            "states": 3,
+            "brier": 0.0008170908333333353,
+            "logLoss": 0.01930541893758654,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.3995142399628557,
+            "coverage80": 1
+          },
+          "aggregate": {
+            "races": 3,
+            "states": 3,
+            "brier": 0,
+            "logLoss": 0,
+            "infiniteLogLossCases": 0,
+            "false95": 0
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
             "stateClusters": 3,
             "draws": 5000,
-            "difference": -0.07548707294907908,
+            "difference": -0.07538897044907908,
             "interval95": [
-              -0.10895346000000004,
+              -0.10893896000000004,
               -0.016090922500000004
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
             "stateClusters": 3,
             "draws": 5000,
-            "difference": -0.008150753415177589,
+            "difference": 0.0008170908333333353,
             "interval95": [
-              -0.016408745118780182,
-              -0.00001848260621820878
+              0,
+              0.002391210000000005
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "50-100": {
+        "metrics": {
+          "frozen-source": {
+            "races": 13,
+            "states": 13,
+            "brier": 0.017639061693535966,
+            "logLoss": 0.07621340616541188,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.6672731989721825,
+            "coverage80": 0.7692307692307693
+          },
+          "multi": {
+            "races": 13,
+            "states": 13,
+            "brier": 0.0001970382692307696,
+            "logLoss": 0.005674742072101082,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.171920799142299,
+            "coverage80": 0.7692307692307693
+          },
+          "aggregate": {
+            "races": 13,
+            "states": 13,
+            "brier": 0,
+            "logLoss": 0,
+            "infiniteLogLossCases": 0,
+            "false95": 0
+          }
+        },
+        "paired": [
+          {
+            "method": "multi-aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 13,
+            "draws": 5000,
+            "difference": -0.0174420234243052,
+            "interval95": [
+              -0.04076591908121937,
+              -0.00006848062729488685
+            ]
+          },
+          {
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 13,
+            "draws": 5000,
+            "difference": 0.0001970382692307696,
+            "interval95": [
+              0.000004841730769230803,
+              0.0005678107692307703
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "50-100-prior-competitive": {
+        "metrics": {
+          "frozen-source": {
+            "races": 3,
+            "states": 3,
+            "brier": 0.0762060612824124,
+            "logLoss": 0.30820019207680116,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.6705252519846683,
+            "coverage80": 1
+          },
+          "multi": {
+            "races": 3,
+            "states": 3,
+            "brier": 0.0008170908333333353,
+            "logLoss": 0.01930541893758654,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.3995142399628557,
+            "coverage80": 1
+          },
+          "aggregate": {
+            "races": 3,
+            "states": 3,
+            "brier": 0,
+            "logLoss": 0,
+            "infiniteLogLossCases": 0,
+            "false95": 0
+          }
+        },
+        "paired": [
+          {
+            "method": "multi-aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": -0.07538897044907908,
+            "interval95": [
+              -0.10893896000000004,
+              -0.016090922500000004
+            ]
+          },
+          {
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": 0.0008170908333333353,
+            "interval95": [
+              0,
+              0.002391210000000005
             ]
           }
         ],
@@ -961,58 +1385,56 @@
     "house-not-previously-inspected": {
       "all": {
         "metrics": {
-          "multi": {
+          "frozen-source": {
             "races": 122,
-            "states": 31,
-            "brier": 0.007315394979508196,
-            "logLoss": 0.023914267810095213,
+            "states": 28,
+            "brier": 0.010622619989795806,
+            "logLoss": 0.04890713505645079,
             "infiniteLogLossCases": 0,
             "false95": 0,
-            "marginMae": 1.1360503268073194,
-            "coverage80": 0.819672131147541
+            "marginMae": 4.620628598324675,
+            "coverage80": 0.8852459016393442
+          },
+          "multi": {
+            "races": 122,
+            "states": 28,
+            "brier": 0.004001336086065573,
+            "logLoss": 0.015605865533262523,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.2346134783849456,
+            "coverage80": 0.8442622950819673
           },
           "aggregate": {
             "races": 122,
-            "states": 31,
-            "brier": 0.009536846683131563,
-            "logLoss": 0.031536861086678816,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.20386765950031,
-            "coverage80": 0.9262295081967213
-          },
-          "frozen-source": {
-            "races": 122,
-            "states": 31,
-            "brier": 0.01784286398377612,
-            "logLoss": 0.07565730475618448,
-            "infiniteLogLossCases": 0,
-            "false95": 1,
-            "marginMae": 4.916121094176644,
-            "coverage80": 0.860655737704918
+            "states": 28,
+            "brier": 0.00819672131147541,
+            "logLoss": null,
+            "infiniteLogLossCases": 1,
+            "false95": 1
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
-            "stateClusters": 31,
+            "stateClusters": 28,
             "draws": 5000,
-            "difference": -0.010527469004267924,
+            "difference": -0.006621283903730231,
             "interval95": [
-              -0.027095406377766498,
-              0.0013260332279452435
+              -0.014401472465274017,
+              0.0016246920460723944
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
-            "stateClusters": 31,
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 28,
             "draws": 5000,
-            "difference": -0.0022214517036233715,
+            "difference": -0.004195385225409836,
             "interval95": [
-              -0.01342851422485798,
-              0.004631116484459559
+              -0.01826864638613861,
+              0.0021180527696078436
             ]
           }
         ],
@@ -1020,58 +1442,56 @@
       },
       "prior-competitive": {
         "metrics": {
-          "multi": {
-            "races": 17,
+          "frozen-source": {
+            "races": 18,
             "states": 12,
-            "brier": 0.025595661764705884,
-            "logLoss": 0.09058160441258081,
+            "brier": 0.06984847350336655,
+            "logLoss": 0.2805530872008321,
             "infiniteLogLossCases": 0,
             "false95": 0,
-            "marginMae": 1.4844446274030005,
-            "coverage80": 0.9411764705882353
+            "marginMae": 3.9292152542050065,
+            "coverage80": 0.9444444444444444
+          },
+          "multi": {
+            "races": 18,
+            "states": 12,
+            "brier": 0.0268297725,
+            "logLoss": 0.09808167910389881,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.690703502395359,
+            "coverage80": 0.9444444444444444
           },
           "aggregate": {
-            "races": 17,
+            "races": 18,
             "states": 12,
-            "brier": 0.024226704231592136,
-            "logLoss": 0.10131580378142972,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.4721034843317131,
-            "coverage80": 0.8823529411764706
-          },
-          "frozen-source": {
-            "races": 17,
-            "states": 12,
-            "brier": 0.07031301841532929,
-            "logLoss": 0.280219946430871,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 4.050501823253719,
-            "coverage80": 0.9411764705882353
+            "brier": 0.05555555555555555,
+            "logLoss": null,
+            "infiniteLogLossCases": 1,
+            "false95": 1
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
             "stateClusters": 12,
             "draws": 5000,
-            "difference": -0.0447173566506234,
+            "difference": -0.04301870100336654,
             "interval95": [
-              -0.08889682733778771,
-              0.008308142249999996
+              -0.08182056262811696,
+              0.010418074062499992
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
             "stateClusters": 12,
             "draws": 5000,
-            "difference": 0.0013689575331137435,
+            "difference": -0.02872578305555555,
             "interval95": [
-              -0.006627471815827267,
-              0.013979062379233291
+              -0.12513199266666666,
+              0.013133572023809527
             ]
           }
         ],
@@ -1079,58 +1499,56 @@
       },
       "60-100": {
         "metrics": {
-          "multi": {
-            "races": 122,
-            "states": 31,
-            "brier": 0.007315394979508196,
-            "logLoss": 0.023914267810095213,
+          "frozen-source": {
+            "races": 113,
+            "states": 26,
+            "brier": 0.010920007724740591,
+            "logLoss": 0.05017172607064641,
             "infiniteLogLossCases": 0,
             "false95": 0,
-            "marginMae": 1.1360503268073194,
-            "coverage80": 0.819672131147541
+            "marginMae": 4.783615490543924,
+            "coverage80": 0.8761061946902655
+          },
+          "multi": {
+            "races": 113,
+            "states": 26,
+            "brier": 0.004010716548672566,
+            "logLoss": 0.014714371881095489,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.127055486822604,
+            "coverage80": 0.831858407079646
           },
           "aggregate": {
-            "races": 122,
-            "states": 31,
-            "brier": 0.009536846683131563,
-            "logLoss": 0.031536861086678816,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.20386765950031,
-            "coverage80": 0.9262295081967213
-          },
-          "frozen-source": {
-            "races": 122,
-            "states": 31,
-            "brier": 0.01784286398377612,
-            "logLoss": 0.07565730475618448,
-            "infiniteLogLossCases": 0,
-            "false95": 1,
-            "marginMae": 4.916121094176644,
-            "coverage80": 0.860655737704918
+            "races": 113,
+            "states": 26,
+            "brier": 0.008849557522123894,
+            "logLoss": null,
+            "infiniteLogLossCases": 1,
+            "false95": 1
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
-            "stateClusters": 31,
+            "stateClusters": 26,
             "draws": 5000,
-            "difference": -0.010527469004267924,
+            "difference": -0.0069092911760680244,
             "interval95": [
-              -0.027095406377766498,
-              0.0013260332279452435
+              -0.015015910647787352,
+              0.0014596747591592366
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
-            "stateClusters": 31,
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 26,
             "draws": 5000,
-            "difference": -0.0022214517036233715,
+            "difference": -0.004838840973451328,
             "interval95": [
-              -0.01342851422485798,
-              0.004631116484459559
+              -0.020060458510638302,
+              0.0018419290404040403
             ]
           }
         ],
@@ -1138,26 +1556,6 @@
       },
       "60-100-prior-competitive": {
         "metrics": {
-          "multi": {
-            "races": 17,
-            "states": 12,
-            "brier": 0.025595661764705884,
-            "logLoss": 0.09058160441258081,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.4844446274030005,
-            "coverage80": 0.9411764705882353
-          },
-          "aggregate": {
-            "races": 17,
-            "states": 12,
-            "brier": 0.024226704231592136,
-            "logLoss": 0.10131580378142972,
-            "infiniteLogLossCases": 0,
-            "false95": 0,
-            "marginMae": 1.4721034843317131,
-            "coverage80": 0.8823529411764706
-          },
           "frozen-source": {
             "races": 17,
             "states": 12,
@@ -1167,34 +1565,324 @@
             "false95": 0,
             "marginMae": 4.050501823253719,
             "coverage80": 0.9411764705882353
+          },
+          "multi": {
+            "races": 17,
+            "states": 12,
+            "brier": 0.026391493088235293,
+            "logLoss": 0.09180699953588467,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.5044693118194532,
+            "coverage80": 0.9411764705882353
+          },
+          "aggregate": {
+            "races": 17,
+            "states": 12,
+            "brier": 0.058823529411764705,
+            "logLoss": null,
+            "infiniteLogLossCases": 1,
+            "false95": 1
           }
         },
         "paired": [
           {
-            "method": "multi",
+            "method": "multi-aggregate",
             "comparison": "frozen-source",
             "stateClusters": 12,
             "draws": 5000,
-            "difference": -0.0447173566506234,
+            "difference": -0.04392152532709399,
             "interval95": [
-              -0.08889682733778771,
-              0.008308142249999996
+              -0.08863039441176473,
+              0.011311526796875002
             ]
           },
           {
-            "method": "multi",
-            "comparison": "aggregate",
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
             "stateClusters": 12,
             "draws": 5000,
-            "difference": 0.0013689575331137435,
+            "difference": -0.03243203632352941,
             "interval95": [
-              -0.006627471815827267,
-              0.013979062379233291
+              -0.129263709,
+              0.011288875499999997
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "50-100": {
+        "metrics": {
+          "frozen-source": {
+            "races": 122,
+            "states": 28,
+            "brier": 0.010622619989795806,
+            "logLoss": 0.04890713505645079,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.620628598324675,
+            "coverage80": 0.8852459016393442
+          },
+          "multi": {
+            "races": 122,
+            "states": 28,
+            "brier": 0.004001336086065573,
+            "logLoss": 0.015605865533262523,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.2346134783849456,
+            "coverage80": 0.8442622950819673
+          },
+          "aggregate": {
+            "races": 122,
+            "states": 28,
+            "brier": 0.00819672131147541,
+            "logLoss": null,
+            "infiniteLogLossCases": 1,
+            "false95": 1
+          }
+        },
+        "paired": [
+          {
+            "method": "multi-aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 28,
+            "draws": 5000,
+            "difference": -0.006621283903730231,
+            "interval95": [
+              -0.014401472465274017,
+              0.0016246920460723944
+            ]
+          },
+          {
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 28,
+            "draws": 5000,
+            "difference": -0.004195385225409836,
+            "interval95": [
+              -0.01826864638613861,
+              0.0021180527696078436
+            ]
+          }
+        ],
+        "false95Ids": []
+      },
+      "50-100-prior-competitive": {
+        "metrics": {
+          "frozen-source": {
+            "races": 18,
+            "states": 12,
+            "brier": 0.06984847350336655,
+            "logLoss": 0.2805530872008321,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 3.9292152542050065,
+            "coverage80": 0.9444444444444444
+          },
+          "multi": {
+            "races": 18,
+            "states": 12,
+            "brier": 0.0268297725,
+            "logLoss": 0.09808167910389881,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.690703502395359,
+            "coverage80": 0.9444444444444444
+          },
+          "aggregate": {
+            "races": 18,
+            "states": 12,
+            "brier": 0.05555555555555555,
+            "logLoss": null,
+            "infiniteLogLossCases": 1,
+            "false95": 1
+          }
+        },
+        "paired": [
+          {
+            "method": "multi-aggregate",
+            "comparison": "frozen-source",
+            "stateClusters": 12,
+            "draws": 5000,
+            "difference": -0.04301870100336654,
+            "interval95": [
+              -0.08182056262811696,
+              0.010418074062499992
+            ]
+          },
+          {
+            "method": "multi-aggregate",
+            "comparison": "counted-leader",
+            "stateClusters": 12,
+            "draws": 5000,
+            "difference": -0.02872578305555555,
+            "interval95": [
+              -0.12513199266666666,
+              0.013133572023809527
             ]
           }
         ],
         "false95Ids": []
       }
     }
-  }
+  },
+  "quarantined": [
+    {
+      "id": "2022-ga-house-10",
+      "reason": "Race reporting below the specified scope"
+    },
+    {
+      "id": "2022-ga-house-13",
+      "reason": "Race reporting below the specified scope"
+    },
+    {
+      "id": "2022-mi-house-4",
+      "reason": "Race reporting below the specified scope"
+    },
+    {
+      "id": "2022-mi-house-7",
+      "reason": "Race reporting below the specified scope"
+    },
+    {
+      "id": "2022-oh-house-15",
+      "reason": "Race reporting below the specified scope"
+    },
+    {
+      "id": "2022-oh-governor",
+      "reason": "Race reporting below the specified scope"
+    },
+    {
+      "id": "2022-az-house-3",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-az-house-4",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-az-house-6",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-1",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-13",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-14",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-17",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-18",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-19",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-20",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-22",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-42",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-43",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-45",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-48",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-51",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-52",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-house-8",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ga-house-5",
+      "reason": "Non-plurality rule under 2026 mapping"
+    },
+    {
+      "id": "2022-ga-house-8",
+      "reason": "Non-plurality rule under 2026 mapping"
+    },
+    {
+      "id": "2022-mo-house-1",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-mt-house-1",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-nv-house-2",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-oh-house-13",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-va-house-2",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-wa-house-4",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-wa-house-9",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-senate",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ga-senate",
+      "reason": "Non-plurality rule under 2026 mapping"
+    },
+    {
+      "id": "2022-ky-senate",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-nc-senate",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-az-governor",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    },
+    {
+      "id": "2022-ca-governor",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    }
+  ]
 }

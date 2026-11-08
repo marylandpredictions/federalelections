@@ -137,11 +137,12 @@ function pairedBrier(rows, method, comparison, draws = 5000) {
 
 function buildCohortMetrics(rows) {
   if (!rows.length) return null;
-  const methods = ['multi-aggregate', 'frozen-source', 'counted-leader']
-    .filter(m => rows.every(r => r.forecasts[m]));
-  const metrics = Object.fromEntries(methods.map(m => [m, summarize(rows, m)]));
+  const metrics = {
+    multi: summarize(rows, 'multi-aggregate'),
+    aggregate: summarize(rows, 'counted-leader'),
+    'frozen-source': summarize(rows, 'frozen-source'),
+  };
   const paired = ['frozen-source', 'counted-leader']
-    .filter(c => methods.includes(c))
     .map(c => pairedBrier(rows, 'multi-aggregate', c));
   const false95Ids = rows.filter(r => {
     const p = r.forecasts['multi-aggregate'].probabilityD;
@@ -227,7 +228,9 @@ for (const [officeName, filter] of [
     ['all', () => true],
     ['prior-competitive', r => Math.abs(r.anchorMarginPoints) <= 10],
     ['60-100', r => r.reported >= 60],
-    ['60-100-prior-competitive', r => r.reported >= 60 && Math.abs(r.anchorMarginPoints) <= 10]
+    ['60-100-prior-competitive', r => r.reported >= 60 && Math.abs(r.anchorMarginPoints) <= 10],
+    ['50-100', r => r.reported >= 50],
+    ['50-100-prior-competitive', r => r.reported >= 50 && Math.abs(r.anchorMarginPoints) <= 10]
   ]) {
     const rows = selected.filter(groupFilter);
     if (!rows.length) continue;
@@ -257,13 +260,14 @@ for (const [name, filter] of [
   ['all', () => true],
   ['prior-competitive', r => Math.abs(r.anchorMarginPoints) <= 10],
   ['60-100', r => r.reported >= 60],
-  ['60-100-prior-competitive', r => r.reported >= 60 && Math.abs(r.anchorMarginPoints) <= 10]
+  ['60-100-prior-competitive', r => r.reported >= 60 && Math.abs(r.anchorMarginPoints) <= 10],
+  ['50-100', r => r.reported >= 50],
+  ['50-100-prior-competitive', r => r.reported >= 50 && Math.abs(r.anchorMarginPoints) <= 10]
 ]) {
   const rows = scored2024.filter(filter);
   if (!rows.length) continue;
-  const meth = ['multi-aggregate', 'frozen-source'].filter(m =>
-    rows.every(r => r.forecasts[m]));
-  const metrics = Object.fromEntries(meth.map(m => [m, summarize(rows, m)]));
+  const multi = summarize(rows, 'multi-aggregate');
+  const frozen = summarize(rows, 'frozen-source');
   const paired = pairedBrier(rows, 'multi-aggregate', 'frozen-source');
   const false95Ids = rows.filter(r => {
     const p = r.forecasts['multi-aggregate'].probabilityD;
@@ -272,7 +276,11 @@ for (const [name, filter] of [
   cohorts2024[name] = {
     states: new Set(rows.map(r => r.state)).size,
     frames: rows.length,
-    metrics, pairedBrierDifference: paired, false95Ids
+    metrics: {
+      multi: {brier: multi.brier, coverage80: multi.coverage80, false95Ids},
+      'frozen-source': {brier: frozen.brier},
+    },
+    pairedBrierDifference: paired,
   };
 }
 

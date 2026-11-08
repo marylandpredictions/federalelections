@@ -1,29 +1,33 @@
 {
   "status": "Research confirmation; not a production release",
-  "modelVersion": "fea-live-multi-aggregate-1",
+  "studySha256": "9ba5781d82eb90a012b11ae0f71ae6917d60b51e6df8c764e54881496a890ea2",
   "forecastSha256": "9ba5781d82eb90a012b11ae0f71ae6917d60b51e6df8c764e54881496a890ea2",
-  "planSha256": "290e724cf4548aad0894be8c2702c7f3c9e101017d0026543a02b8da1bf623d3",
-  "weighting": "Equal states, equal frames within each state; state-cluster bootstrap",
-  "scoredRuns": 29,
+  "modelVersion": "fea-live-multi-aggregate-1",
+  "shareConcentration": 40,
+  "simulations": 20000,
   "cohorts": {
     "all": {
       "states": 23,
-      "frames": 29,
+      "frames": 32,
       "metrics": {
         "multi": {
-          "brier": 0.0058821415217391315,
-          "coverage80": 0.9782608695652174,
+          "brier": 0.005804444296875001,
+          "coverage80": 0.9375,
           "false95Ids": []
         },
         "frozen-source": {
-          "brier": 0.0634099290201322
+          "brier": 0.05142515460822002
         }
       },
       "pairedBrierDifference": {
-        "difference": -0.057527787498393074,
+        "method": "multi-aggregate",
+        "comparison": "frozen-source",
+        "stateClusters": 23,
+        "draws": 5000,
+        "difference": -0.04562071031134501,
         "interval95": [
-          -0.1059999710581182,
-          -0.015559812237859275
+          -0.08863683358639673,
+          -0.012019640797357671
         ]
       }
     },
@@ -32,19 +36,23 @@
       "frames": 9,
       "metrics": {
         "multi": {
-          "brier": 0.01667874578125,
+          "brier": 0.019083626944444446,
           "coverage80": 1,
           "false95Ids": []
         },
         "frozen-source": {
-          "brier": 0.18155627593288012
+          "brier": 0.18209056638478233
         }
       },
       "pairedBrierDifference": {
-        "difference": -0.16487753015163012,
+        "method": "multi-aggregate",
+        "comparison": "frozen-source",
+        "stateClusters": 8,
+        "draws": 5000,
+        "difference": -0.16300693944033784,
         "interval95": [
-          -0.26200427980229485,
-          -0.06957412643846533
+          -0.2503391859282602,
+          -0.07769480977949392
         ]
       }
     },
@@ -53,19 +61,23 @@
       "frames": 29,
       "metrics": {
         "multi": {
-          "brier": 0.0058821415217391315,
-          "coverage80": 0.9782608695652174,
+          "brier": 0.006016230862068967,
+          "coverage80": 0.9310344827586207,
           "false95Ids": []
         },
         "frozen-source": {
-          "brier": 0.0634099290201322
+          "brier": 0.05672377267113933
         }
       },
       "pairedBrierDifference": {
-        "difference": -0.057527787498393074,
+        "method": "multi-aggregate",
+        "comparison": "frozen-source",
+        "stateClusters": 23,
+        "draws": 5000,
+        "difference": -0.050707541809070354,
         "interval95": [
-          -0.1059999710581182,
-          -0.015559812237859275
+          -0.09633342852749036,
+          -0.013692410789192554
         ]
       }
     },
@@ -74,21 +86,711 @@
       "frames": 9,
       "metrics": {
         "multi": {
-          "brier": 0.01667874578125,
+          "brier": 0.019083626944444446,
           "coverage80": 1,
           "false95Ids": []
         },
         "frozen-source": {
-          "brier": 0.18155627593288012
+          "brier": 0.18209056638478233
         }
       },
       "pairedBrierDifference": {
-        "difference": -0.16487753015163012,
+        "method": "multi-aggregate",
+        "comparison": "frozen-source",
+        "stateClusters": 8,
+        "draws": 5000,
+        "difference": -0.16300693944033784,
         "interval95": [
-          -0.26200427980229485,
-          -0.06957412643846533
+          -0.2503391859282602,
+          -0.07769480977949392
+        ]
+      }
+    },
+    "50-100": {
+      "states": 23,
+      "frames": 32,
+      "metrics": {
+        "multi": {
+          "brier": 0.005804444296875001,
+          "coverage80": 0.9375,
+          "false95Ids": []
+        },
+        "frozen-source": {
+          "brier": 0.05142515460822002
+        }
+      },
+      "pairedBrierDifference": {
+        "method": "multi-aggregate",
+        "comparison": "frozen-source",
+        "stateClusters": 23,
+        "draws": 5000,
+        "difference": -0.04562071031134501,
+        "interval95": [
+          -0.08863683358639673,
+          -0.012019640797357671
+        ]
+      }
+    },
+    "50-100-prior-competitive": {
+      "states": 8,
+      "frames": 9,
+      "metrics": {
+        "multi": {
+          "brier": 0.019083626944444446,
+          "coverage80": 1,
+          "false95Ids": []
+        },
+        "frozen-source": {
+          "brier": 0.18209056638478233
+        }
+      },
+      "pairedBrierDifference": {
+        "method": "multi-aggregate",
+        "comparison": "frozen-source",
+        "stateClusters": 8,
+        "draws": 5000,
+        "difference": -0.16300693944033784,
+        "interval95": [
+          -0.2503391859282602,
+          -0.07769480977949392
         ]
       }
     }
-  }
+  },
+  "quarantined": [
+    {
+      "state": "AL",
+      "at": "2024-11-05 20:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "AL",
+      "at": "2024-11-05 22:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "AL",
+      "at": "2024-11-05 22:55:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "AL",
+      "at": "2024-11-05 23:45:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "AR",
+      "at": "2024-11-05 20:40:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "AR",
+      "at": "2024-11-05 21:30:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "AR",
+      "at": "2024-11-05 22:45:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "AR",
+      "at": "2024-11-05 23:40:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "AZ",
+      "at": "2024-11-05 22:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "CA",
+      "at": "2024-11-05 23:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "CA",
+      "at": "2024-11-05 23:35:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "CO",
+      "at": "2024-11-05 21:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "CO",
+      "at": "2024-11-05 21:20:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "CO",
+      "at": "2024-11-05 22:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "FL",
+      "at": "2024-11-05 19:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "FL",
+      "at": "2024-11-05 19:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "FL",
+      "at": "2024-11-05 19:25:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "FL",
+      "at": "2024-11-05 20:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "GA",
+      "at": "2024-11-05 19:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "GA",
+      "at": "2024-11-05 20:00:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "GA",
+      "at": "2024-11-05 20:50:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "GA",
+      "at": "2024-11-05 22:40:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "IA",
+      "at": "2024-11-05 21:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "IA",
+      "at": "2024-11-05 21:55:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "IA",
+      "at": "2024-11-05 22:45:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "IA",
+      "at": "2024-11-05 23:55:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "ID",
+      "at": "2024-11-05 23:00:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "ID",
+      "at": "2024-11-05 23:50:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "ID",
+      "at": "2024-11-06 01:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "ID",
+      "at": "2024-11-06 05:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "IL",
+      "at": "2024-11-05 20:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "IL",
+      "at": "2024-11-05 21:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "IL",
+      "at": "2024-11-05 22:00:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "IL",
+      "at": "2024-11-06 00:50:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "IN",
+      "at": "2024-11-05 18:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "IN",
+      "at": "2024-11-05 19:55:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "IN",
+      "at": "2024-11-05 21:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "IN",
+      "at": "2024-11-05 23:55:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "KS",
+      "at": "2024-11-05 20:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "KS",
+      "at": "2024-11-05 20:45:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "KS",
+      "at": "2024-11-05 22:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "KS",
+      "at": "2024-11-06 00:35:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "KY",
+      "at": "2024-11-05 18:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "KY",
+      "at": "2024-11-05 19:35:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "KY",
+      "at": "2024-11-05 20:35:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "KY",
+      "at": "2024-11-05 21:35:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "LA",
+      "at": "2024-11-05 21:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "LA",
+      "at": "2024-11-05 21:25:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "LA",
+      "at": "2024-11-05 22:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MI",
+      "at": "2024-11-05 20:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MI",
+      "at": "2024-11-05 22:40:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MI",
+      "at": "2024-11-06 00:55:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MN",
+      "at": "2024-11-05 21:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MN",
+      "at": "2024-11-05 23:30:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MN",
+      "at": "2024-11-06 00:30:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MN",
+      "at": "2024-11-06 02:30:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MS",
+      "at": "2024-11-05 20:25:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MS",
+      "at": "2024-11-05 22:00:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MS",
+      "at": "2024-11-06 01:20:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MS",
+      "at": "2024-11-08 15:00:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MT",
+      "at": "2024-11-05 22:20:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MT",
+      "at": "2024-11-06 01:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "MT",
+      "at": "2024-11-06 04:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NC",
+      "at": "2024-11-05 19:35:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NC",
+      "at": "2024-11-05 20:50:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NC",
+      "at": "2024-11-05 21:40:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "ND",
+      "at": "2024-11-05 21:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "ND",
+      "at": "2024-11-05 22:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "ND",
+      "at": "2024-11-05 23:25:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "ND",
+      "at": "2024-11-06 00:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NE",
+      "at": "2024-11-05 21:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NE",
+      "at": "2024-11-05 23:50:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NE",
+      "at": "2024-11-06 03:20:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NJ",
+      "at": "2024-11-05 20:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NJ",
+      "at": "2024-11-05 20:40:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NM",
+      "at": "2024-11-05 21:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NM",
+      "at": "2024-11-05 22:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NM",
+      "at": "2024-11-05 22:40:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NV",
+      "at": "2024-11-05 23:40:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NV",
+      "at": "2024-11-06 01:00:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NY",
+      "at": "2024-11-05 21:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NY",
+      "at": "2024-11-05 21:25:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "NY",
+      "at": "2024-11-05 22:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "OH",
+      "at": "2024-11-05 19:40:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "OH",
+      "at": "2024-11-05 20:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "OH",
+      "at": "2024-11-05 21:25:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "OK",
+      "at": "2024-11-05 20:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "OK",
+      "at": "2024-11-05 20:30:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "OR",
+      "at": "2024-11-05 23:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "OR",
+      "at": "2024-11-05 23:35:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "PA",
+      "at": "2024-11-05 20:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "PA",
+      "at": "2024-11-05 21:30:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "PA",
+      "at": "2024-11-05 22:45:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "PA",
+      "at": "2024-11-06 00:55:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "SC",
+      "at": "2024-11-05 19:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "SC",
+      "at": "2024-11-05 20:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "SC",
+      "at": "2024-11-05 21:20:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "SD",
+      "at": "2024-11-05 21:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "SD",
+      "at": "2024-11-05 23:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "TN",
+      "at": "2024-11-05 20:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "TN",
+      "at": "2024-11-05 20:40:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "TN",
+      "at": "2024-11-05 21:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "TN",
+      "at": "2024-11-05 22:25:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "TX",
+      "at": "2024-11-05 20:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "TX",
+      "at": "2024-11-05 20:20:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "TX",
+      "at": "2024-11-05 21:00:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "TX",
+      "at": "2024-11-06 00:35:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "UT",
+      "at": "2024-11-06 00:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "UT",
+      "at": "2024-11-06 01:20:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "VA",
+      "at": "2024-11-05 19:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "VA",
+      "at": "2024-11-05 20:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "VA",
+      "at": "2024-11-05 21:40:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WA",
+      "at": "2024-11-05 23:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WA",
+      "at": "2024-11-05 23:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WA",
+      "at": "2024-11-05 23:40:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WI",
+      "at": "2024-11-05 21:10:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WI",
+      "at": "2024-11-05 21:50:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WI",
+      "at": "2024-11-05 23:15:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WV",
+      "at": "2024-11-05 19:45:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WV",
+      "at": "2024-11-05 20:30:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WV",
+      "at": "2024-11-05 21:25:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WV",
+      "at": "2024-11-05 23:20:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WY",
+      "at": "2024-11-05 21:25:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WY",
+      "at": "2024-11-05 23:50:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WY",
+      "at": "2024-11-06 01:05:00",
+      "reason": "Cannot aggregate source estimate with a missing/zero-count county"
+    },
+    {
+      "state": "WY",
+      "at": "2024-11-06 03:30:00",
+      "reason": "Source count requires correction against certified controls"
+    },
+    {
+      "id": "DE@2024-11-05 20:35:00",
+      "reason": "The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting."
+    }
+  ]
 }

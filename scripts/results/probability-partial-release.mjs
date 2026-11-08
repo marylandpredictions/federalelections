@@ -73,7 +73,8 @@ function validateMultiEvidence(release,evidence){
  check(a?.modelVersion===multiAggregateModelVersion&&b?.modelVersion===multiAggregateModelVersion,
   'multi race-total model identity mismatch');
  const house=a?.cohorts?.['house-not-previously-inspected'];
- for(const [group,n,states]of [['60-100',100,20],['60-100-prior-competitive',15,10]]){
+ for(const [group,n,states]of [['60-100',100,20],['60-100-prior-competitive',15,10],
+  ['50-100',100,20],['50-100-prior-competitive',15,10]]){
   const row=house?.[group],m=row?.metrics?.multi;
   check(m?.races>=n&&m.states>=states&&m.false95===0&&m.coverage80>=.7&&m.coverage80<=1&&
    m.brier<row.metrics['frozen-source']?.brier,
@@ -81,7 +82,8 @@ function validateMultiEvidence(release,evidence){
  }
  // Different-cycle confirmation must show significant skill; the 2022 paired
  // interval can be borderline while still beating the frozen prior on Brier.
- for(const [group,n]of [['60-100',20],['60-100-prior-competitive',5]]){
+ for(const [group,n]of [['60-100',20],['60-100-prior-competitive',5],
+  ['50-100',20],['50-100-prior-competitive',5]]){
   const row=b?.cohorts?.[group],m=row?.metrics?.multi;
   check(row?.states>=n&&m?.false95Ids?.length===0&&m.coverage80>=.7&&m.coverage80<=1&&
    m.brier<row.metrics['frozen-source']?.brier&&row.pairedBrierDifference?.interval95?.[1]<0,
@@ -96,7 +98,7 @@ function validateMajorityLockEvidence(release,evidence){
   check(doc?.modelVersion===majorityLockModelVersion&&doc.kernelVersion===multiAggregateModelVersion&&
   doc.boundMultiEvidence===true&&doc.requirements?.unresolvedShareMustBeZero===true&&
   doc.requirements?.terminalResolution===true&&
-  doc.requirements?.simulations===20000&&doc.requirements?.minimumReportedPercent===60,
+  doc.requirements?.simulations===20000&&doc.requirements?.minimumReportedPercent===50,
  'majority-lock gate identity is incomplete');
  validateMultiEvidence({...release,multiValidationHash:release.multiValidationHash||evidence.multiValidationHash},evidence);
 }

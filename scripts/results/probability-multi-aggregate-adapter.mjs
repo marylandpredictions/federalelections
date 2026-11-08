@@ -80,8 +80,8 @@ export function simulateMultiAggregateProbability(prior, snapshot, settings = {}
   const reported = ids.reduce((sum, id) => sum + unit.votes[id], 0);
   const percent = snapshot.expectedVotePercent;
   check(Number.isSafeInteger(reported), 'unsafe candidate total');
-  if (reported <= 0 || !Number.isFinite(percent) || percent < 60 || percent > 100 || unit.expectedVotePercent !== percent)
-    return {status: 'unavailable', reason: 'The multi-candidate race-total model requires positive NBC counts and at least 60% source-estimated reporting.'};
+  if (reported <= 0 || !Number.isFinite(percent) || percent < 50 || percent > 100 || unit.expectedVotePercent !== percent)
+    return {status: 'unavailable', reason: 'The multi-candidate race-total model requires positive NBC counts and at least 50% source-estimated reporting.'};
   const simulations = settings.simulations ?? 20000;
   check(simulations === 20000, '20,000 simulations required');
   check(settings.implementationHash === undefined || /^[a-f0-9]{64}$/.test(settings.implementationHash), 'invalid implementation identity');
@@ -97,7 +97,7 @@ export function simulateMultiAggregateProbability(prior, snapshot, settings = {}
   const center = ids.map(id => shares[id]);
   // Weight counted shares more heavily as reporting advances; keep a floor on
   // the frozen center so early leaders cannot erase the prior completely.
-  const countedWeight = Math.min(0.75, Math.max(0.12, (percent - 60) / 50));
+  const countedWeight = Math.min(0.75, Math.max(0.12, (percent - 50) / 50));
   const blend = center.map((value, index) => (1 - countedWeight) * value + countedWeight * empirical[index]);
   const blendTotal = blend.reduce((sum, value) => sum + value, 0);
   const blended = blend.map(value => value / blendTotal);
