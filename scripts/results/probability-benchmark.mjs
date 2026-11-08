@@ -22,7 +22,8 @@ function loss(point,truth) {
 
 export async function benchmarkProbability({policy,bundles},truth) {
   const {method,cohorts,minimumRaces,minimumCycles,coverageTolerance,settings,holdoutDates,frozenAt}=policy;
-  if (!['full-coverage','partial-pool'].includes(method) || !cohorts?.length ||
+  const compareLimits=method==='outstanding-limits';
+  if (!['full-coverage','partial-pool','outstanding-limits'].includes(method) || !cohorts?.length ||
       !Number.isInteger(minimumRaces) || minimumRaces<2 ||
       !Number.isInteger(minimumCycles) || minimumCycles<2 || !unitInterval(coverageTolerance) ||
       !holdoutDates?.length || holdoutDates.some(date=>!(Date.parse(frozenAt)<Date.parse(date))) ||
@@ -36,19 +37,32 @@ export async function benchmarkProbability({policy,bundles},truth) {
     if (!holdoutDates.includes(electionDate) || seen.has(id)) throw Error('Unexpected or duplicate held-out race: '+id);
     seen.add(id);
     const snapshots=bundle.snapshots;
-    const run=mode=>runProbabilityReplay({prior:bundle.prior,snapshots,settings:{...settings,method:mode}},
-      undefined,{persist:false});
-    const baseline=await run('frozen-baseline');
-    const candidate=await run(method);
+    const withLimits=new Set(snapshots.filter(snapshot=>snapshot.units.some(unit=>unit.outstandingLimit!==undefined))
+      .map(snapshot=>snapshot.at));
+    if (withLimits.size && !compareLimits) throw Error('Ballot limits require a separate benchmark policy');
+    const uncapped=compareLimits?snapshots.map(snapshot=>({...snapshot,units:snapshot.units.map(unit=>{
+      const {outstandingLimit,...report}=unit;
+      return report;
+    })})):snapshots;
+    const run=(mode,inputs)=>runProbabilityReplay({prior:bundle.prior,snapshots:inputs,settings:{...settings,method:mode}},
+      undefined,{persist:false,deduplicate:!compareLimits});
+    const baseline=await run(compareLimits?'full-coverage':'frozen-baseline',uncapped);
+    const candidate=await run(compareLimits?'full-coverage':method,snapshots);
     const byTime=new Map(candidate.points.map(point=>[point.at,point]));
     // Truth enters only after both runs. Actual completion is for scoring
     // strata, never an input to either forecast.
     const actual=truth[id];
     if (!actual || !Number.isSafeInteger(actual.totalVotes) || actual.totalVotes<=0 || !actual.source)
       throw Error('Missing certified outcome or denominator: '+id);
+    if (compareLimits && snapshots.some(({units,totals})=>
+      units.every(unit=>unit.complete || unit.outstandingLimit) &&
+      Object.values(totals).reduce((total,n)=>total+n,0)+
+        units.reduce((total,unit)=>total+(unit.outstandingLimit?.maxBallots??0),0)<actual.totalVotes))
+      throw Error('Certified turnout exceeds the claimed all-ballot bound: '+id);
     const stages=new Set();
     for (const reference of baseline.points) {
-      if (reference.verifiedComplete || method==='partial-pool' && reference.geography.coveredRegions===reference.geography.regions) continue;
+      if (reference.verifiedComplete || compareLimits && !withLimits.has(reference.at) ||
+          method==='partial-pool' && reference.geography.coveredRegions===reference.geography.regions) continue;
       if (reference.reportedVotes>actual.totalVotes) throw Error('Reported votes exceed held-out outcome: '+id);
       const stage=Math.min(9,Math.floor(10*reference.reportedVotes/actual.totalVotes));
       const group=groups.get(office+':'+stage);

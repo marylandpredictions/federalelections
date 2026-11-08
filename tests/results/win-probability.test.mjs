@@ -12,9 +12,19 @@ import {runProbabilityReplay,readProbabilityReplay,scoreProbabilityReplay} from 
 import {benchmarkProbability} from '../../scripts/results/probability-benchmark.mjs';
 import {readProbabilityCapture} from '../../scripts/results/probability-capture.mjs';
 import {compareSparsePairFallbacks,fitTurnoutWeight,evaluateTurnoutWeight} from '../../scripts/results/probability-turnout-study.mjs';
+import {countOnlyEstimate,readApCheckpoints,readNyt2022Ballots} from '../../scripts/results/probability-count-study.mjs';
+import {scoreGeorgiaRunoffs} from '../../scripts/results/probability-georgia-runoff-study.mjs';
+import {estimateFromBallotAnalogs} from '../../scripts/results/probability-ballot-study.mjs';
+import {benchmarkStatewideProxy,fitHistoricalTurnout,statewideFeatures} from '../../scripts/results/probability-statewide-study.mjs';
+import {firstCountBounds,firstCountOutcome} from '../../scripts/results/probability-rule-outcomes.mjs';
+import {alignWinnerMass,allocateJointDraw,roundedPairEndpoints} from '../../scripts/results/probability-joint-study.mjs';
 import {buildCountyProbabilityPrior,evaluateRegularProbability,matchFrozenCandidateCenter,normalizeProbabilitySnapshot,probabilityGeographyBasis,probabilityRule,readGeographicReferences} from '../../scripts/results/probability-inputs.mjs';
 
 const settings={simulations:1200};
+test('Rounded historical checkpoints retain the full feasible vote range',()=>{
+  const row={total:10000,ranked:[{share:.502},{share:.498}]};
+  assert.deepEqual(roundedPairEndpoints(row).map(x=>x.votes),[[5015,4985],[5025,4975]]);
+});
 const ids=['d','r','other'];
 const prior={raceId:'senate-fixture',office:'senate',rule:'plurality',electionDate:'2026-11-03',
   availableAt:'2026-11-02T20:00:00Z',source:'Frozen fixture prior',candidateIds:ids,marginCandidateIds:['d','r'],
@@ -93,6 +103,7 @@ test('Nationwide workbook import checks district totals and isolates unmapped so
   t.after(()=>rm(directory,{recursive:true,force:true}));
   const {races}=readGeographicReferences();
   const ny=races.find(row=>row.raceId==='house-NY-11').reference;
+  const tx=races.find(row=>row.raceId==='house-TX-14').reference;
   const mid=value=>Math.floor(value/2);
   const first=[mid(ny.demVotes),mid(ny.repVotes),mid(ny.totalVotes)];
   const second=[ny.demVotes,ny.repVotes,ny.totalVotes].map((votes,i)=>votes-first[i]);
@@ -102,12 +113,19 @@ test('Nationwide workbook import checks district totals and isolates unmapped so
     'NYC - Brooklyn (pt.),NYC_BK,11,'+second.join(','),
     'Unmapped,Unmapped,12,1,1,2',
   ].join('\n'));
+  await writeFile(join(directory,'TX.csv'),[
+    'County,ShortName,CD,Harris,Trump,Total',
+    'Galveston,Galveston,14,'+[tx.demVotes,tx.repVotes,tx.totalVotes].join(','),
+  ].join('\n'));
   const loaded=readGeographicReferences(process.cwd(),{districtTablesDir:directory});
   const district=loaded.races.find(row=>row.raceId==='house-NY-11');
   assert.equal(probabilityGeographyBasis(district),'all-votes');
   assert.deepEqual(district.countyReferences.map(row=>row.fips),['36085','36047']);
   assert.match(loaded.workbooks.NY.rejected['NY-12'],/Unmapped county/);
   assert.equal(loaded.workbooks.CA.error,'Table export missing');
+  const texas=loaded.races.find(row=>row.raceId==='house-TX-14');
+  assert.deepEqual(texas.countyReferences,[]);
+  assert.match(loaded.workbooks.TX.rejected['TX-14'],/official Texas district county set/);
 });
 
 test('NBC expected vote metadata never supplies a completion notice',()=>{
@@ -121,6 +139,7 @@ test('NBC expected vote metadata never supplies a completion notice',()=>{
     ]};
   const capture={at:'2026-11-04T02:00:10Z',source:'Fixture NBC snapshot',maxAgeMs:30000};
   const observed=normalizeProbabilitySnapshot(detail,roster,capture);
+  assert.throws(()=>normalizeProbabilitySnapshot({...detail,providerBallotAccounting:{ballotsOutsideCandidateTotals:6021}},roster,capture),/ballot-aware probability model/);
   assert.equal(observed.expectedVotePercent,91);
   assert.equal(observed.units[0].expectedVotePercent,100);
   assert.equal(observed.units[0].complete,false);
@@ -140,6 +159,30 @@ test('NBC expected vote metadata never supplies a completion notice',()=>{
   assert.equal(result.status,'research');
   assert.equal(result.providerExpectedVotePercent,91);
   assert.equal(result.verifiedComplete,true);
+});
+test('Municipality counts align to frozen county portions without losing votes or masking stale units',()=>{
+  const roster=[{id:'d',name:'Alex Doe',party:'D'},{id:'r',name:'Jamie Roe',party:'R'}];
+  const at='2026-11-04T02:10:00Z',old='2026-11-04T01:00:00Z';
+  const candidates=(d,r)=>roster.map((candidate,i)=>({...candidate,votes:i?r:d}));
+  const unit=(fips,d,r,updatedAt=at)=>({fips,source:'NBC News',updatedAt,estimatedVoteReporting:100,candidates:candidates(d,r)});
+  const detail={id:'house-MA-fixture',provider:'NBC',electionDate:'2026-11-03',updatedAt:at,
+    candidates:candidates(150,130),counties:[
+      unit('2500100010',60,40,old),unit('2500100020',20,30),
+      unit('2500300010',70,60),
+    ]};
+  const capture={at,source:'NBC News',reportingUnitIds:['25001','25003']};
+  const result=normalizeProbabilitySnapshot(detail,roster,capture);
+  assert.deepEqual(result.units.map(unit=>[unit.id,unit.votes]),[
+    ['25001',{d:80,r:70}],['25003',{d:70,r:60}],
+  ]);
+  assert.equal(result.units[0].availableAt,old);
+  assert.ok(result.units.every(unit=>!unit.complete));
+  assert.throws(()=>normalizeProbabilitySnapshot({...detail,counties:[...detail.counties,detail.counties[0]]},roster,capture),/Duplicate reporting units/);
+  assert.throws(()=>normalizeProbabilitySnapshot({...detail,counties:[...detail.counties,unit('25001',1,1)]},roster,capture),/overlap/);
+  assert.throws(()=>normalizeProbabilitySnapshot(detail,roster,{...capture,reportingUnitIds:['25001','25005']}),/outside/);
+  const completion={'25001':{raceId:detail.id,unitId:'25001',electionDate:detail.electionDate,
+    availableAt:at,countedVotes:150,source:'Fixture county certification'}};
+  assert.equal(normalizeProbabilitySnapshot(detail,roster,{...capture,completion}).units[0].complete,true);
 });
 
 test('Frozen centers check the named matchup, district, and publication time',()=>{
@@ -193,7 +236,15 @@ test('Reviewed regular-model release runs off-thread, keeps history on restart, 
   });
   assert.equal(new Set(visited.slice(0,506)).size,506);
   assert.equal(peak,2);
-  assert.equal(national.nextCountyRace(),'senate-test-0');
+  const hydrated=new Set();
+  for(let batch=0;batch<169;batch++){
+    const selected=national.nextCountyRaces(()=>true,3);
+    assert.equal(selected.length,3);
+    for(const id of selected)hydrated.add(id);
+  }
+  assert.equal(hydrated.size,506);
+  assert.deepEqual(national.nextCountyRaces(id=>id==='senate-test-0',4),['senate-test-0']);
+  assert.deepEqual(national.nextCountyRaces(()=>false,4),[]);
   let now=Date.parse('2026-11-04T02:00:10Z');
   const updatedAt=new Date(now-1000).toISOString(),frozenDate=prior.electionDate;
   const rows=(d,r)=>roster.map((row,i)=>({...row,votes:i?r:d}));
@@ -202,11 +253,23 @@ test('Reviewed regular-model release runs off-thread, keeps history on restart, 
     counties:[county('39001',60,40),county('39003',40,60),county('39005',10,0)]};
   const completion=Object.fromEntries(['39001','39003'].map(unitId=>[unitId,{unitId,raceId,
     electionDate:frozenDate,availableAt:updatedAt,source:'Fixture report',countedVotes:100}]));
+  let attempts=0;
+  const pending=new LiveProbability(directory,{now:()=>now,simulate:(...args)=>{
+    attempts++;
+    return simulateWinProbability(...args);
+  }});
+  await pending.load(release);
+  await pending.update(raceId,detail);
+  await pending.update(raceId,{...detail,updatedAt:new Date(now).toISOString()});
+  assert.equal(attempts,1);
+  assert.equal(pending.view(raceId).status,'waiting');
+  await pending.update(raceId,detail,{[completion['39001'].unitId]:completion['39001']});
+  assert.equal(attempts,2);
   const live=new LiveProbability(directory,{now:()=>now});
   await live.load(release);
   await live.update(raceId,detail);
   assert.equal(live.view(raceId).status,'waiting');
-  assert.match(live.view(raceId).reason,/completion/);
+  assert.match(live.view(raceId).reason,/completed reporting units/);
   await live.update(raceId,detail,completion);
   const first=live.view(raceId);
   assert.equal(first.status,'live');
@@ -247,6 +310,18 @@ test('Late counts narrow modeled uncertainty and verified completion fixes the m
   assert.ok(simulateWinProbability({...prior,units:prior.units.map((u,i)=>i===2?{...u,turnout:16000}:u)},late,settings).margin.median<b.margin.median);
 });
 
+test('Municipality-sized geographies can run without dropping reporting units',()=>{
+  const unitCount=487;
+  const units=Array.from({length:unitCount},(_,i)=>({...prior.units[0],id:'town-'+i}));
+  const reports=units.map(({id},i)=>({...middle.units[0],id,complete:i<2,
+    ...(i<2?{completionSource:'Fixture'}:{}),votes:{d:100,r:90,other:10}}));
+  const result=simulateWinProbability({...prior,units},{...middle,units:reports,
+    totals:{d:100*unitCount,r:90*unitCount,other:10*unitCount}},{simulations:100});
+  assert.equal(result.status,'research');
+  assert.equal(result.reportedVotes,200*unitCount);
+  assert.equal(result.geography.completedUnits,2);
+});
+
 test('Rejects future evidence, incompatible rules, incomplete geography, and unreconciled counts',()=>{
   assert.throws(()=>simulateWinProbability({...prior,availableAt:late.at},middle,settings),/look-ahead/);
   assert.throws(()=>simulateWinProbability(prior,{...middle,sourceUpdatedAt:late.at},settings),/look-ahead/);
@@ -254,6 +329,31 @@ test('Rejects future evidence, incompatible rules, incomplete geography, and unr
   assert.throws(()=>simulateWinProbability(prior,{...middle,units:middle.units.slice(1)},settings),/coverage/);
   assert.throws(()=>simulateWinProbability(prior,{...middle,totals:{d:1,r:1,other:1}},settings),/reconcile/);
   assert.throws(()=>simulateWinProbability({...prior,rule:'ranked-choice'},middle,settings),/Unsupported/);
+});
+
+test('As-of all-ballot limits constrain the outstanding-vote model without implying completion',()=>{
+  const input=snapshot(15,[[750,200,50,true],[200,750,50,true],[3400,2500,100,false]]);
+  const unit=input.units[2];
+  const limit={raceId:prior.raceId,electionDate:prior.electionDate,unitId:unit.id,scope:'all-ballots',evidenceType:'verified-upper-bound',
+    reportedVotes:{...unit.votes},maxBallots:300,availableAt:input.at,source:'Fixture official ballot accounting'};
+  const uncapped=simulateWinProbability(prior,input,settings);
+  unit.outstandingLimit=limit;
+  const capped=simulateWinProbability(prior,input,settings,uncapped.inputHash);
+  assert.equal(capped.status,'research');
+  assert.equal(capped.verifiedComplete,false);
+  assert.equal(capped.geography.completedUnits,2);
+  assert.ok(capped.estimatedCounted>=8000/8300-1e-12);
+  assert.ok(capped.candidates[0].probability>uncapped.candidates[0].probability);
+  assert.notEqual(capped.inputHash,uncapped.inputHash);
+  assert.equal(simulateWinProbability(prior,input,settings,capped.inputHash).status,'unchanged');
+  for (const mismatch of [
+    {scope:'provisional-only'},{unitId:'metro'},{raceId:'wrong-race'},{electionDate:'2024-11-05'},
+    {availableAt:'2026-11-04T03:00:00Z'},{availableAt:'2026-11-04T01:59:00Z'},
+    {reportedVotes:{...unit.votes,r:2501}},{maxBallots:-1},{evidenceType:'unprocessed-ballots-estimate'},
+  ]) {
+    unit.outstandingLimit={...limit,...mismatch};
+    assert.throws(()=>simulateWinProbability(prior,input,settings),/Outstanding-ballot limit/);
+  }
 });
 
 test('Partial pooling uses completed units in observed regions without imputing missing count records',()=>{
@@ -281,6 +381,27 @@ test('Benchmark keeps the frozen baseline paired and blocks underpowered or post
   assert.equal(result.cohorts[0].status,'insufficient-evidence');
   await assert.rejects(benchmarkProbability({policy:{...policy,frozenAt:final.at},bundles:[bundle]},truth),/preregistered/);
   await assert.rejects(benchmarkProbability({policy,bundles:[bundle,bundle]},truth),/duplicate/);
+});
+
+test('Ballot-limit benchmark pairs a newly available limit with the same unchanged count',async()=>{
+  const first=snapshot(14,[[750,200,50,true],[200,750,50,true],[3400,2500,100,false]]);
+  const second=snapshot(15,[[750,200,50,true],[200,750,50,true],[3400,2500,100,false]]);
+  const unit=second.units[2];
+  unit.outstandingLimit={raceId:prior.raceId,electionDate:prior.electionDate,unitId:unit.id,scope:'all-ballots',evidenceType:'verified-upper-bound',
+    reportedVotes:{...unit.votes},maxBallots:300,availableAt:second.at,source:'Fixture official ballot accounting'};
+  const policy={method:'outstanding-limits',frozenAt:'2026-10-01',holdoutDates:[prior.electionDate],
+    minimumRaces:2,minimumCycles:2,coverageTolerance:.2,settings,cohorts:[{office:'senate',stage:9}]};
+  const input={policy,bundles:[{prior,snapshots:[first,second]}]};
+  const truth={[prior.electionDate+':'+prior.raceId]:{source:'Fixture certified outcome',totalVotes:8200,
+    winner:'d',margin:10,marginCandidateIds:prior.marginCandidateIds}};
+  const report=await benchmarkProbability(input,truth);
+  assert.equal(report.status,'blocked');
+  assert.equal(report.cohorts[0].opportunities,1);
+  assert.equal(report.cohorts[0].races,1);
+  assert.ok(report.cohorts[0].model.brier<report.cohorts[0].baseline.brier);
+  await assert.rejects(benchmarkProbability({...input,policy:{...policy,method:'full-coverage'}},truth),/separate benchmark/);
+  truth[prior.electionDate+':'+prior.raceId].totalVotes=8301;
+  await assert.rejects(benchmarkProbability(input,truth),/exceeds the claimed/);
 });
 
 test('Archived county captures require a matching checksum and reconciliation and do not infer completion',()=>{
@@ -328,6 +449,162 @@ test('Sparse D/R research draws do not depend on held-out winners or final margi
     r.forecasts[0].methods[name].democraticPairProbability);
   assert.notEqual(d.metrics['frozen-prior'].brier,r.metrics['frozen-prior'].brier);
   assert.deepEqual(score(209,600).unresolvedTruth,[input.id]);
+});
+
+test('Count-only forecasts use one historical update per race and ignore evaluation outcomes',()=>{
+  const observed={office:'house',hour:4,margin:-.04};
+  const training=Array.from({length:10},(_,i)=>({id:'house-'+i,...observed,finalMargin:i<4?-.08:.01}));
+  const forecast=countOnlyEstimate(observed,training);
+  assert.ok(forecast.p>.5 && forecast.p<1);
+  assert.deepEqual(forecast,countOnlyEstimate({...observed,finalMargin:-.9},[...training,...training]));
+  assert.equal(countOnlyEstimate({...observed,office:'senate'},training),null);
+  assert.equal(countOnlyEstimate({...observed,hour:50},training),null);
+  assert.throws(()=>countOnlyEstimate({...observed,hour:336},training),/unsupported/);
+});
+
+test('Georgia runoff scenarios use earlier rounds without reading the target outcome',()=>{
+  const earlier={year:2020,general:[90,100],runoff:[95,90]};
+  const later={year:2022,general:[100,95],runoff:[105,90]};
+  const [first]=scoreGeorgiaRunoffs([earlier,later]);
+  const [changed]=scoreGeorgiaRunoffs([earlier,{...later,runoff:[90,105]}]);
+  assert.deepEqual(first.analogs,changed.analogs);
+  assert.notEqual(first.actual.margin,changed.actual.margin);
+  assert.throws(()=>scoreGeorgiaRunoffs([later,earlier]),/predate/);
+});
+
+test('Archived AP checkpoints require reconciled vote totals, matching candidates and a real as-of update',()=>{
+  const key='20241105OH1',at='2024-11-06T04:00:00Z';
+  const row={raceID:key,statePostal:'OH',lastUpdated:'2024-11-06T03:00:00Z',
+    pollClosingTime:'2024-11-06T00:30:00Z',test:false,resultsType:'live',level:'state',
+    parameters:{vote:{total:150}},candidates:[{candidateID:'1',voteCount:70},{candidateID:'2',voteCount:80}]};
+  const race={raceID:key,statePostal:'OH',officeID:'H',seatNum:'1',eventID:'20241105',
+    electionDate:'2024-11-05',raceTypeID:'G',candidates:{
+      '1':{first:'Alex',last:'Example',party:'Dem'},'2':{first:'Robin',last:'Example',party:'GOP'}}};
+  const truth=new Map([['OH-G-H-1',{d:100,r:120,total:220,democrat:'Alex Q Example',republican:'Robin Example'}]]);
+  const read=(count,details=race)=>readApCheckpoints({[key]:count},{[key]:details},at,truth);
+  assert.equal(read(row)[0].margin,-10/150);
+  assert.deepEqual(read({...row,lastUpdated:'2024-11-06T04:00:01Z'}),[]);
+  assert.deepEqual(read({...row,lastUpdated:'2024-11-06T00:29:59Z'}),[]);
+  assert.deepEqual(read({...row,test:true}),[]);
+  assert.deepEqual(read({...row,parameters:{vote:{total:149}}}),[]);
+  assert.deepEqual(read(row,{...race,seatNum:'2'}),[]);
+  assert.deepEqual(read(row,{...race,candidates:{...race.candidates,'1':{first:'Alice',last:'Example',party:'Dem'}}}),[]);
+});
+
+test('2022 candidate histories use only the vote estimate attached to the timestamped checkpoint',()=>{
+  const id='OH-G-H-1-2022-11-08',at='2022-11-09T03:00:00Z';
+  const race={nyt_id:id,office_id:'H',seat_number:1,top_reporting_unit:{state_postal:'OH',total_expected_vote:900},
+    election_date:'2022-11-08',type:'General',race_type_id:'G',max_winners:1,
+    candidate_metadata:{d:{first_name:'Alex',last_name:'Example'},r:{first_name:'Robin',last_name:'Example'}}};
+  const point={provider_updated_at:at,total_votes:150,nyt_vote_estimate:{total_expected_vote:250},
+    candidates:[{nyt_id:'d',votes:{total:70}},{nyt_id:'r',votes:{total:80}}]};
+  const truth=new Map([['OH-G-H-1',{total:220,ballot:[
+    {name:'Alex Example',votes:100},{name:'Robin Example',votes:120},
+  ]}]]);
+  const readWithOptions=(series,options)=>readNyt2022Ballots({races:[race],timeseries:{[id]:series},
+    pollClosingTimes:[{reporting_unit:{state_postal:'OH'},poll_closing_time:'2022-11-09T00:30:00Z'}]},truth,options);
+  const read=(...series)=>readWithOptions(series);
+  assert.equal(read(point)[0].expected,250);
+  assert.equal(read(point,point).length,1);
+  assert.deepEqual(read({...point,nyt_vote_estimate:null}),[]);
+  const [countOnly]=readWithOptions([{...point,nyt_vote_estimate:null}],{requireExpected:false});
+  assert.equal(countOnly.expected,null);
+  assert.equal(countOnly.roster[0].votes,70);
+  assert.deepEqual(read({...point,provider_updated_at:'2022-11-09T00:29:59Z'}),[]);
+  assert.deepEqual(read(point,{...point,nyt_vote_estimate:{total_expected_vote:251}}),[]);
+});
+
+test('Ballot analogs score every candidate without using the target outcome',()=>{
+  const race={id:'oh-test',state:'OH',office:'house',hour:6,expected:1000,roster:[
+    {id:'a',votes:200},{id:'b',votes:190},{id:'c',votes:100},
+  ]};
+  const training=Array.from({length:8},(_,i)=>({id:'training-'+i,state:'TX',office:'house',hour:6,
+    ranked:race.roster,share:.49,gap:10/490,turnoutError:1,remainingShares:[.15,.2,.65]}));
+  const estimate=estimateFromBallotAnalogs(race,training,1);
+  assert.ok(estimate.candidates.find(candidate=>candidate.id==='c').probability>.8);
+  for (const probabilities of [estimate.candidates,estimate.turnoutOnly])
+    assert.ok(Math.abs(probabilities.reduce((total,candidate)=>total+candidate.probability,0)-1)<1e-12);
+  assert.equal(estimate.expectedFinal,1000);
+  assert.deepEqual(estimateFromBallotAnalogs({...race,roster:race.roster.map(c=>({...c,actual:c.votes+10000}))},
+    [...training,...training],1),estimate);
+  assert.equal(estimateFromBallotAnalogs(race,training.map(row=>({...row,state:'OH'}))),null);
+});
+
+test('Statewide turnout fitting uses prior cycles and keeps the estimated count independent of final returns',()=>{
+  const prior={totalVotes:1000,demVotes:510,repVotes:460};
+  const states=['DE','MD','CT','WA','MO','NC','OH','CO'];
+  const anchors=new Map(states.map(state=>[state,prior]));
+  const earlier=states.map((state,i)=>({year:2018,state,office:'governor',total:750+i*30}));
+  const cohort=fitHistoricalTurnout(earlier,anchors).get('governor|midterm');
+  assert.equal(cohort.n,8);
+  assert.ok(cohort.center<cohort.upper);
+  assert.throws(()=>fitHistoricalTurnout([...earlier,{...earlier[0],year:2022}],anchors),/target cycle/);
+  assert.throws(()=>fitHistoricalTurnout([...earlier,earlier[0]],anchors),/Duplicate/);
+  const observed={hour:6,total:780,d:380,r:370};
+  const features=statewideFeatures(observed,prior,cohort);
+  assert.deepEqual(features,statewideFeatures({...observed,expected:10000,finalD:1000,finalR:5},prior,cohort));
+  assert.equal(features.anchor,840);
+  assert.equal(features.stage,'90-plus');
+  assert.equal(statewideFeatures({...observed,d:1000},prior,cohort),null);
+  const rounded=statewideFeatures({hour:6,total:780,dShare:380/780,rShare:370/780},prior,cohort);
+  assert.ok(Math.abs(rounded.signal-features.signal)<1e-12);
+  assert.throws(()=>benchmarkStatewideProxy([],[],anchors,new Map(),{trainingYear:2024,holdoutYear:2022}),/move forward/);
+});
+
+test('First-choice plurality does not resolve Maine ranked choice and an uncounted transfer stays unresolved',()=>{
+  // Maine Attorney General, OJ-26-1, 2018 CD-2 example. The certified
+  // later-round winner was Golden even though Poliquin led this count.
+  const votes={golden:132013,poliquin:134184,bond:16552,hoar:6875};
+  assert.equal(firstCountOutcome('plurality',votes).winner,'poliquin');
+  assert.equal(firstCountOutcome('ranked-choice',votes,289624).status,'transfers-required');
+  assert.throws(()=>firstCountOutcome('ranked-choice',votes,289623),/denominator/);
+  assert.equal(firstCountOutcome('ranked-choice',{a:51,b:49},105).status,'transfers-required');
+  assert.equal(firstCountOutcome('ranked-choice',{a:51,b:49},100).winner,'a');
+  const bounds=firstCountBounds('ranked-choice',[
+    {votes:{a:51,b:49},majorityDenominator:105},
+    {votes:{a:60,b:40},majorityDenominator:105},
+  ]);
+  assert.deepEqual(bounds,{status:'research-bounds',unresolved:.5,candidates:[
+    {id:'a',lower:.5,upper:1},{id:'b',lower:0,upper:.5},
+  ]});
+  assert.throws(()=>firstCountBounds('plurality',[{votes:{a:20,b:15}},{votes:{a:20,c:15}}]),/different ballots/);
+});
+
+test('Second-election and legislative samples bound potential winners without awarding a plurality leader',()=>{
+  const votes={a:44,b:24,c:24,d:8};
+  assert.deepEqual(firstCountOutcome('majority-runoff',votes,100),
+    {status:'runoff-required',possible:['a','b','c']});
+  assert.deepEqual(firstCountOutcome('legislative-contingency',{a:40,b:30,c:20,d:10},100),
+    {status:'legislative-choice-required',possible:['a','b','c']});
+  assert.equal(firstCountOutcome('majority-runoff',{a:52,b:46,c:2},100).winner,'a');
+});
+
+test('A joint turnout and margin draw preserves every candidate count and allocates every remaining vote',()=>{
+  const observed=[450,480,70];
+  const remaining=200,profile=[.35,.45,.20];
+  for (const margin of [-.90,-.03,0,.10,.90]) {
+    const votes=allocateJointDraw(observed,remaining,profile,margin);
+    assert.ok(votes.every((value,i)=>value>=observed[i]));
+    assert.equal(votes.reduce((total,value)=>total+value,0),1200);
+    assert.equal(votes[2],110);
+  }
+  assert.deepEqual(allocateJointDraw(observed,0,profile,.90),observed);
+  assert.deepEqual(allocateJointDraw([80,20],10,[],-.90),[80,30]);
+});
+
+test('Joint calibration adjusts weights without adding unsupported winners or changing vote vectors',()=>{
+  const ids=['d','r'],input={ids};
+  const draws=Array.from({length:20},(_,index)=>index<10?
+    {votes:[10,9],total:19,margin:1/19,weight:1}:{votes:[9,10],total:19,margin:-1/19,weight:1})
+    .sort((a,b)=>a.margin-b.margin);
+  const distribution={draws,weight:20,effective:20};
+  const aligned=alignWinnerMass(input,distribution,[{id:'d',probability:.7},{id:'r',probability:.3}]);
+  assert.ok(aligned.effective>=8);
+  const mass=aligned.draws.filter(draw=>draw.winner===0).reduce((total,draw)=>total+draw.weight,0);
+  assert.ok(Math.abs(mass/aligned.weight-.7)<1e-12);
+  assert.deepEqual(aligned.draws.map(draw=>draw.votes),draws.map(draw=>draw.votes));
+  const oneSided={draws:draws.slice(10),weight:10,effective:10};
+  assert.equal(alignWinnerMass(input,oneSided,[{id:'d',probability:.7},{id:'r',probability:.3}]),null);
 });
 
 test('Replay is chronological, persisted, idempotent, and only accepts documented corrections',async t=>{

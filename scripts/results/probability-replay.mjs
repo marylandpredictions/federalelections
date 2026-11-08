@@ -5,7 +5,7 @@ import {randomUUID} from 'node:crypto';
 import {resultStorage} from './storage.mjs';
 import {modelVersion,simulateWinProbability} from './win-probability.mjs';
 
-export async function runProbabilityReplay({prior,snapshots,settings},root=process.cwd(),{persist=true}={}) {
+export async function runProbabilityReplay({prior,snapshots,settings},root=process.cwd(),{persist=true,deduplicate=true}={}) {
   if (!Array.isArray(snapshots) || !snapshots.length) throw Error('No historical snapshots');
   for (let i=0;i<snapshots.length;i++) {
     const at=Date.parse(snapshots[i].at);
@@ -25,7 +25,7 @@ export async function runProbabilityReplay({prior,snapshots,settings},root=proce
       throw Error('Reporting regression requires a documented correction');
     if (previous && Date.parse(snapshot.sourceUpdatedAt)<Date.parse(previous.sourceUpdatedAt))
       throw Error('Provider timestamp regressed');
-    const point=simulateWinProbability(prior,snapshot,settings,accepted?.inputHash);
+    const point=simulateWinProbability(prior,snapshot,settings,deduplicate?accepted?.inputHash:undefined);
     if (point.status==='unavailable') {
       skipped.push({at:snapshot.at,reason:point.reason});
     } else if (point.status==='research') {

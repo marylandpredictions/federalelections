@@ -55,8 +55,20 @@ function prepare(prior,snapshot,settings) {
     const votes = ids.map(id=>votesFor(report.votes,id));
     const total = sum(votes);
     requireInput(Number.isSafeInteger(total),'Unsafe reported vote total');
+    const limit = report.outstandingLimit;
+    if (limit !== undefined) {
+      requireInput(limit && limit.raceId===prior.raceId && limit.electionDate===prior.electionDate &&
+        limit.unitId===unit.id && limit.scope==='all-ballots' &&
+        limit.evidenceType==='verified-upper-bound' && count(limit.maxBallots) &&
+        count(total+limit.maxBallots) && (!report.complete || limit.maxBallots===0) &&
+        time(limit.availableAt)<=time(snapshot.at) && time(limit.availableAt)>=time(report.availableAt) &&
+        typeof limit.source==='string' && limit.source.trim() &&
+        Object.keys(limit.reportedVotes || {}).length===ids.length &&
+        ids.every(id=>Object.hasOwn(limit.reportedVotes,id) && limit.reportedVotes[id]===report.votes[id]),
+      'Outstanding-ballot limit does not match the race, vote snapshot, or as-of time');
+    }
     const baseline = ids.slice(0,-1).map(id=>Math.log(unit.shares[id]/unit.shares[reference]));
-    return {...unit,baseline,votes,total,complete:report.complete};
+    return {...unit,baseline,votes,total,complete:report.complete,maxOutstanding:limit?.maxBallots};
   });
   const reported = ids.map((_,index)=>sum(units.map(unit=>unit.votes[index])));
   requireInput(reported.every(count) && count(sum(reported)) && snapshot.totals &&
@@ -95,7 +107,8 @@ function posterior(units,dimensions,settings) {
       const scale=1+regionVariance*precision;
       weight+=precision/scale;
       signal+=weightedSwing/scale;
-      regions.set(region,{precision,weightedSwing});
+      const variance=1/(1/regionVariance+precision);
+      regions.set(region,{variance,sd:Math.sqrt(variance),weightedSwing});
     }
     return {mean:signal/weight,sd:Math.sqrt(1/weight),regions,regionVariance};
   });
@@ -115,7 +128,7 @@ export function simulateWinProbability(prior,snapshot,options={},previousInputHa
        settings.method==='full-coverage' && coveredRegions.size!==regions.size ||
        settings.method==='partial-pool' && coveredRegions.size<Math.min(2,regions.size)))
     return {status:'unavailable',reason:'Insufficient completed reporting units across regions'};
-  const evidence=units.map(({id,votes,complete})=>({id,votes,complete}));
+  const evidence=units.map(({id,votes,complete,maxOutstanding})=>({id,votes,complete,maxOutstanding}));
   const comparison=prior.marginCandidateIds;
   requireInput(Array.isArray(comparison)&&comparison.length===2&&comparison[0]!==comparison[1]&&
     comparison.every(id=>ids.includes(id)),'Missing fixed margin comparison candidates');
@@ -126,32 +139,42 @@ export function simulateWinProbability(prior,snapshot,options={},previousInputHa
   // Keep draws paired across methods so score differences reflect the update,
   // rather than independent Monte Carlo noise.
   const {method,...drawSettings}=settings;
-  const normal=rng(hash({priorHash,settings:drawSettings,evidence}));
+  // Keep random draws fixed when comparing the same count with and without
+  // ballot limits. The limit changes the model input, not its random seed.
+  const drawEvidence=evidence.map(({id,votes,complete})=>({id,votes,complete}));
+  const normal=rng(hash({priorHash,settings:drawSettings,evidence:drawEvidence}));
   const fit=posterior(units,ids.length-1,settings);
+  const incomplete=units.filter(unit=>!unit.complete);
+  const regionEffects=fit.map(()=>new Map());
+  const weights=ids.map(()=>0);
   const wins=ids.map(()=>0), shareSums=ids.map(()=>0), margins=[];
   let completeness=0;
   const reportedVotes=sum(reported);
   const [first,second]=comparison.map(id=>ids.indexOf(id));
   for (let i=0;i<settings.simulations;i++) {
     const sharedTurnout=normal()*settings.sharedTurnoutSd;
-    const regionEffects=fit.map(effect=>{
+    for (let k=0;k<fit.length;k++) {
+      const effect=fit[k];
       const statewide=effect.mean+normal()*effect.sd;
-      return new Map([...effect.regions].map(([region,{precision,weightedSwing}])=>{
-        const variance=1/(1/effect.regionVariance+precision);
-        return [region,variance*(statewide/effect.regionVariance+weightedSwing)+normal()*Math.sqrt(variance)];
-      }));
-    });
+      for (const [region,{variance,sd,weightedSwing}] of effect.regions)
+        regionEffects[k].set(region,variance*(statewide/effect.regionVariance+weightedSwing)+normal()*sd);
+    }
     const votes=[...reported];
-    for (const unit of units) {
-      if (unit.complete) continue;
+    for (const unit of incomplete) {
       const turnout=unit.turnout*Math.exp(sharedTurnout+normal()*unit.turnoutLogSd);
-      const outstanding=Math.max(0,turnout-unit.total);
-      const logits=[...unit.baseline.map((value,k)=>value+regionEffects[k].get(unit.region)+normal()*settings.unitSd),0];
-      const max=Math.max(...logits);
-      const weights=logits.map(value=>Math.exp(value-max)), weight=sum(weights);
+      const outstanding=Math.min(unit.maxOutstanding??Infinity,Math.max(0,turnout-unit.total));
+      let max=0;
+      for (let k=0;k<unit.baseline.length;k++) {
+        weights[k]=unit.baseline[k]+regionEffects[k].get(unit.region)+normal()*settings.unitSd;
+        if (weights[k]>max) max=weights[k];
+      }
+      weights[ids.length-1]=0;
+      for (let k=0;k<ids.length;k++) weights[k]=Math.exp(weights[k]-max);
+      const weight=sum(weights);
       for (let k=0;k<ids.length;k++) votes[k]+=outstanding*weights[k]/weight;
     }
     const total=sum(votes), best=Math.max(...votes);
+    if (!total) return {status:'unavailable',reason:'No votes in the modeled contest'};
     const tied=votes.filter(value=>value===best).length;
     for (let k=0;k<ids.length;k++) {
       if (votes[k]===best) wins[k]+=1/tied;
