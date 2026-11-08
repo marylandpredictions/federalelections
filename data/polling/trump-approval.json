@@ -1,1496 +1,2475 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 3,
   "subject": "Donald Trump",
-  "asOf": "2026-10-06",
-  "builtAt": "2026-11-08T22:14:38.892Z",
-  "source": "VoteHub public polling API",
+  "asOf": "2026-11-07",
+  "builtAt": "2026-11-08T22:52:24.584Z",
+  "source": "VoteHub + Pollfinity public polls",
   "sourceUrl": "https://votehub.com/polls/api/",
-  "license": "CC BY 4.0",
-  "method": "Weighted mean of eligible VoteHub public Trump job-approval polls in the 45 days through the as-of date. Weights: recency half-life 21 days, sqrt(sample size) capped 0.55x–2.10x, LV 1.15 / RV 1.05 / adult 1.0, partisan 0.78, repeated pollster 1/sqrt(1+prior weight). Same pollster+end date collapsed to the preferred population. Internals excluded. This is an FEA aggregate of VoteHub data (CC BY 4.0), not VoteHub’s published average or a forecast.",
-  "windowDays": 45,
+  "sources": [
+    {
+      "source": "votehub",
+      "sourceUrl": "https://votehub.com/polls/api/",
+      "license": "CC BY 4.0",
+      "fetched": 1028,
+      "usable": 1026,
+      "lastUpdated": null
+    },
+    {
+      "source": "pollfinity",
+      "sourceUrl": "https://pollfinity.com/averages.json",
+      "license": null,
+      "fetched": 5,
+      "usable": 5,
+      "lastUpdated": "2026-11-07"
+    }
+  ],
+  "license": "VoteHub rows CC BY 4.0; Pollfinity rows per Pollfinity terms",
+  "method": "FEA weighted Trump job-approval average from multiple public feeds (VoteHub individual polls, CC BY 4.0, plus Pollfinity’s published poll list). Identical surveys are collapsed across sources by pollster/date/result before weighting. Soft exponential recency decay with no short hard cutoff. When recent polling is thin, the half-life lengthens (about 14→45 days). Within each pollster, polls are recency-weighted; pollsters are then weighted by the recency of their latest poll. LV beats RV beats adults when the same release reports multiple populations. Internals excluded. ENOP is the sum of raw pollster weights before normalization. This is FEA’s own aggregate, not VoteHub’s or Pollfinity’s published average.",
+  "windowDays": 180,
+  "halfLife": 45,
   "coverage": {
     "firstPoll": "2025-01-20",
-    "latestPoll": "2026-10-06",
-    "usablePolls": 835
+    "latestPoll": "2026-11-07",
+    "usablePolls": 840,
+    "collapsedDuplicates": 19,
+    "sourceErrors": []
   },
   "current": {
-    "approve": 36.3,
-    "disapprove": 61.5,
-    "net": -25.1,
-    "disagreement": 11.8,
-    "pollCount": 5,
-    "effectivePollsters": 5,
-    "latestPoll": "2026-10-06"
+    "approve": 38.3,
+    "disapprove": 58.6,
+    "net": -20.3,
+    "disagreement": 7.03,
+    "pollCount": 86,
+    "effectivePollsters": 40,
+    "enop": 8.8,
+    "halfLife": 45,
+    "latestPoll": "2026-11-07"
   },
   "series": [
     {
-      "date": "2025-01-22",
-      "approve": 53.31,
-      "disapprove": 38.76,
-      "net": 14.55,
-      "pollCount": 3,
-      "effectivePollsters": 3
-    },
-    {
       "date": "2025-02-01",
-      "approve": 50.51,
-      "disapprove": 43.54,
-      "net": 6.97,
+      "approve": 50.3,
+      "disapprove": 43.68,
+      "net": 6.62,
       "pollCount": 20,
-      "effectivePollsters": 18
+      "effectivePollsters": 18,
+      "enop": 14.8,
+      "halfLife": 21
     },
     {
       "date": "2025-02-08",
-      "approve": 50.03,
-      "disapprove": 44.99,
-      "net": 5.04,
+      "approve": 49.71,
+      "disapprove": 45.24,
+      "net": 4.47,
       "pollCount": 30,
-      "effectivePollsters": 23
+      "effectivePollsters": 23,
+      "enop": 14.89,
+      "halfLife": 14
     },
     {
       "date": "2025-02-15",
-      "approve": 50.42,
-      "disapprove": 45.12,
-      "net": 5.3,
+      "approve": 50.22,
+      "disapprove": 45.35,
+      "net": 4.87,
       "pollCount": 36,
-      "effectivePollsters": 24
+      "effectivePollsters": 24,
+      "enop": 12.73,
+      "halfLife": 14
     },
     {
       "date": "2025-02-22",
-      "approve": 49.67,
-      "disapprove": 46.04,
-      "net": 3.63,
+      "approve": 49.11,
+      "disapprove": 46.65,
+      "net": 2.47,
       "pollCount": 53,
-      "effectivePollsters": 30
+      "effectivePollsters": 30,
+      "enop": 18.02,
+      "halfLife": 14
     },
     {
       "date": "2025-03-01",
-      "approve": 49.26,
-      "disapprove": 46.45,
-      "net": 2.81,
+      "approve": 48.64,
+      "disapprove": 46.76,
+      "net": 1.88,
       "pollCount": 67,
-      "effectivePollsters": 34
+      "effectivePollsters": 34,
+      "enop": 20.2,
+      "halfLife": 14
     },
     {
       "date": "2025-03-08",
-      "approve": 48.99,
-      "disapprove": 47.03,
-      "net": 1.97,
-      "pollCount": 79,
-      "effectivePollsters": 36
+      "approve": 48.59,
+      "disapprove": 47.61,
+      "net": 0.98,
+      "pollCount": 81,
+      "effectivePollsters": 37,
+      "enop": 19.99,
+      "halfLife": 14
     },
     {
       "date": "2025-03-15",
-      "approve": 48.52,
-      "disapprove": 47.88,
-      "net": 0.64,
-      "pollCount": 78,
-      "effectivePollsters": 35
+      "approve": 48.17,
+      "disapprove": 48.23,
+      "net": -0.06,
+      "pollCount": 94,
+      "effectivePollsters": 38,
+      "enop": 19.47,
+      "halfLife": 14
     },
     {
       "date": "2025-03-22",
-      "approve": 48.15,
-      "disapprove": 48.52,
-      "net": -0.37,
-      "pollCount": 79,
-      "effectivePollsters": 37
+      "approve": 47.76,
+      "disapprove": 48.94,
+      "net": -1.19,
+      "pollCount": 104,
+      "effectivePollsters": 42,
+      "enop": 19.48,
+      "halfLife": 14
     },
     {
       "date": "2025-04-01",
-      "approve": 47.7,
-      "disapprove": 48.86,
-      "net": -1.16,
-      "pollCount": 87,
-      "effectivePollsters": 41
+      "approve": 47.36,
+      "disapprove": 49.25,
+      "net": -1.89,
+      "pollCount": 123,
+      "effectivePollsters": 45,
+      "enop": 19.99,
+      "halfLife": 14
     },
     {
       "date": "2025-04-08",
-      "approve": 47.2,
-      "disapprove": 49.19,
-      "net": -1.99,
-      "pollCount": 78,
-      "effectivePollsters": 39
+      "approve": 46.87,
+      "disapprove": 49.49,
+      "net": -2.62,
+      "pollCount": 131,
+      "effectivePollsters": 46,
+      "enop": 18.13,
+      "halfLife": 14
     },
     {
       "date": "2025-04-15",
-      "approve": 46.38,
-      "disapprove": 49.89,
-      "net": -3.51,
-      "pollCount": 83,
-      "effectivePollsters": 41
+      "approve": 46.08,
+      "disapprove": 49.98,
+      "net": -3.9,
+      "pollCount": 149,
+      "effectivePollsters": 49,
+      "enop": 21.91,
+      "halfLife": 14
     },
     {
       "date": "2025-04-22",
-      "approve": 45.7,
-      "disapprove": 50.83,
-      "net": -5.13,
-      "pollCount": 80,
-      "effectivePollsters": 40
+      "approve": 45.34,
+      "disapprove": 50.99,
+      "net": -5.65,
+      "pollCount": 161,
+      "effectivePollsters": 52,
+      "enop": 22.68,
+      "halfLife": 14
     },
     {
       "date": "2025-05-01",
-      "approve": 45.35,
-      "disapprove": 51.18,
-      "net": -5.83,
-      "pollCount": 85,
-      "effectivePollsters": 45
+      "approve": 45.15,
+      "disapprove": 51.17,
+      "net": -6.02,
+      "pollCount": 181,
+      "effectivePollsters": 54,
+      "enop": 23.29,
+      "halfLife": 14
     },
     {
       "date": "2025-05-08",
-      "approve": 45.18,
-      "disapprove": 51.09,
-      "net": -5.91,
-      "pollCount": 84,
-      "effectivePollsters": 43
+      "approve": 45,
+      "disapprove": 51.15,
+      "net": -6.15,
+      "pollCount": 191,
+      "effectivePollsters": 55,
+      "enop": 20.53,
+      "halfLife": 14
     },
     {
       "date": "2025-05-15",
-      "approve": 45.35,
-      "disapprove": 51.21,
-      "net": -5.86,
-      "pollCount": 81,
-      "effectivePollsters": 43
+      "approve": 45.36,
+      "disapprove": 51.17,
+      "net": -5.81,
+      "pollCount": 200,
+      "effectivePollsters": 55,
+      "enop": 19.08,
+      "halfLife": 14
     },
     {
       "date": "2025-05-22",
-      "approve": 45.53,
-      "disapprove": 51.16,
-      "net": -5.63,
-      "pollCount": 85,
-      "effectivePollsters": 43
+      "approve": 45.68,
+      "disapprove": 51,
+      "net": -5.32,
+      "pollCount": 211,
+      "effectivePollsters": 56,
+      "enop": 18.91,
+      "halfLife": 14
     },
     {
       "date": "2025-06-01",
-      "approve": 45.87,
-      "disapprove": 51.01,
-      "net": -5.14,
-      "pollCount": 70,
-      "effectivePollsters": 35
+      "approve": 46.09,
+      "disapprove": 50.6,
+      "net": -4.51,
+      "pollCount": 220,
+      "effectivePollsters": 56,
+      "enop": 15.54,
+      "halfLife": 14
     },
     {
       "date": "2025-06-08",
-      "approve": 46.01,
-      "disapprove": 51.18,
-      "net": -5.16,
-      "pollCount": 64,
-      "effectivePollsters": 31
+      "approve": 46,
+      "disapprove": 51.08,
+      "net": -5.08,
+      "pollCount": 229,
+      "effectivePollsters": 56,
+      "enop": 14.59,
+      "halfLife": 14
     },
     {
       "date": "2025-06-15",
-      "approve": 45.67,
-      "disapprove": 51.39,
-      "net": -5.72,
-      "pollCount": 63,
-      "effectivePollsters": 30
+      "approve": 45.17,
+      "disapprove": 51.83,
+      "net": -6.66,
+      "pollCount": 242,
+      "effectivePollsters": 56,
+      "enop": 16.3,
+      "halfLife": 14
     },
     {
       "date": "2025-06-22",
-      "approve": 45.77,
-      "disapprove": 51.6,
-      "net": -5.83,
-      "pollCount": 67,
-      "effectivePollsters": 31
+      "approve": 45.38,
+      "disapprove": 51.94,
+      "net": -6.56,
+      "pollCount": 255,
+      "effectivePollsters": 57,
+      "enop": 18.14,
+      "halfLife": 14
     },
     {
       "date": "2025-07-01",
-      "approve": 45.54,
-      "disapprove": 51.52,
-      "net": -5.98,
-      "pollCount": 71,
-      "effectivePollsters": 34
+      "approve": 45.29,
+      "disapprove": 51.61,
+      "net": -6.31,
+      "pollCount": 271,
+      "effectivePollsters": 59,
+      "enop": 19.23,
+      "halfLife": 14
     },
     {
       "date": "2025-07-08",
-      "approve": 45.51,
-      "disapprove": 51.49,
-      "net": -5.98,
-      "pollCount": 64,
-      "effectivePollsters": 32
+      "approve": 45.35,
+      "disapprove": 51.5,
+      "net": -6.15,
+      "pollCount": 275,
+      "effectivePollsters": 59,
+      "enop": 15.04,
+      "halfLife": 14
     },
     {
       "date": "2025-07-15",
-      "approve": 45.1,
-      "disapprove": 51.9,
-      "net": -6.8,
-      "pollCount": 68,
-      "effectivePollsters": 34
+      "approve": 44.98,
+      "disapprove": 52.18,
+      "net": -7.2,
+      "pollCount": 286,
+      "effectivePollsters": 60,
+      "enop": 16.74,
+      "halfLife": 14
     },
     {
       "date": "2025-07-22",
-      "approve": 44.61,
-      "disapprove": 52.58,
-      "net": -7.97,
-      "pollCount": 77,
-      "effectivePollsters": 36
+      "approve": 44.34,
+      "disapprove": 52.94,
+      "net": -8.6,
+      "pollCount": 301,
+      "effectivePollsters": 60,
+      "enop": 22.12,
+      "halfLife": 14
     },
     {
       "date": "2025-08-01",
-      "approve": 44.67,
-      "disapprove": 52.33,
-      "net": -7.66,
-      "pollCount": 72,
-      "effectivePollsters": 38
+      "approve": 44.18,
+      "disapprove": 52.72,
+      "net": -8.54,
+      "pollCount": 298,
+      "effectivePollsters": 60,
+      "enop": 20.53,
+      "halfLife": 14
     },
     {
       "date": "2025-08-08",
-      "approve": 44.77,
-      "disapprove": 52.08,
-      "net": -7.31,
-      "pollCount": 66,
-      "effectivePollsters": 38
+      "approve": 44.37,
+      "disapprove": 52.4,
+      "net": -8.03,
+      "pollCount": 293,
+      "effectivePollsters": 60,
+      "enop": 16.52,
+      "halfLife": 14
     },
     {
       "date": "2025-08-15",
-      "approve": 44.45,
-      "disapprove": 52.52,
-      "net": -8.07,
-      "pollCount": 59,
-      "effectivePollsters": 35
+      "approve": 44.15,
+      "disapprove": 52.78,
+      "net": -8.63,
+      "pollCount": 294,
+      "effectivePollsters": 60,
+      "enop": 14.19,
+      "halfLife": 14
     },
     {
       "date": "2025-08-22",
-      "approve": 44.44,
-      "disapprove": 52.48,
-      "net": -8.04,
-      "pollCount": 67,
-      "effectivePollsters": 37
+      "approve": 44.17,
+      "disapprove": 52.76,
+      "net": -8.59,
+      "pollCount": 288,
+      "effectivePollsters": 59,
+      "enop": 16.66,
+      "halfLife": 14
     },
     {
       "date": "2025-09-01",
-      "approve": 44.41,
-      "disapprove": 51.99,
-      "net": -7.58,
-      "pollCount": 67,
-      "effectivePollsters": 36
+      "approve": 44.15,
+      "disapprove": 51.79,
+      "net": -7.64,
+      "pollCount": 284,
+      "effectivePollsters": 59,
+      "enop": 19.44,
+      "halfLife": 14
     },
     {
       "date": "2025-09-08",
-      "approve": 44.33,
-      "disapprove": 52.22,
-      "net": -7.88,
-      "pollCount": 57,
-      "effectivePollsters": 30
+      "approve": 44.05,
+      "disapprove": 52.16,
+      "net": -8.11,
+      "pollCount": 277,
+      "effectivePollsters": 59,
+      "enop": 16.53,
+      "halfLife": 14
     },
     {
       "date": "2025-09-15",
-      "approve": 44.54,
-      "disapprove": 52.44,
-      "net": -7.9,
-      "pollCount": 57,
-      "effectivePollsters": 30
+      "approve": 44.27,
+      "disapprove": 52.47,
+      "net": -8.2,
+      "pollCount": 274,
+      "effectivePollsters": 56,
+      "enop": 16.45,
+      "halfLife": 14
     },
     {
       "date": "2025-09-22",
-      "approve": 44.27,
-      "disapprove": 52.7,
-      "net": -8.43,
-      "pollCount": 65,
-      "effectivePollsters": 31
+      "approve": 43.84,
+      "disapprove": 52.95,
+      "net": -9.11,
+      "pollCount": 278,
+      "effectivePollsters": 57,
+      "enop": 18.83,
+      "halfLife": 14
     },
     {
       "date": "2025-10-01",
-      "approve": 44.37,
-      "disapprove": 52.58,
-      "net": -8.2,
-      "pollCount": 69,
-      "effectivePollsters": 34
+      "approve": 43.95,
+      "disapprove": 52.68,
+      "net": -8.73,
+      "pollCount": 273,
+      "effectivePollsters": 56,
+      "enop": 18.41,
+      "halfLife": 14
     },
     {
       "date": "2025-10-08",
-      "approve": 44.47,
-      "disapprove": 52.42,
-      "net": -7.95,
-      "pollCount": 68,
-      "effectivePollsters": 35
+      "approve": 44.11,
+      "disapprove": 52.53,
+      "net": -8.42,
+      "pollCount": 272,
+      "effectivePollsters": 55,
+      "enop": 17.17,
+      "halfLife": 14
     },
     {
       "date": "2025-10-15",
-      "approve": 44.48,
-      "disapprove": 52.29,
-      "net": -7.81,
-      "pollCount": 66,
-      "effectivePollsters": 35
+      "approve": 44.08,
+      "disapprove": 52.11,
+      "net": -8.03,
+      "pollCount": 267,
+      "effectivePollsters": 53,
+      "enop": 17.16,
+      "halfLife": 14
     },
     {
       "date": "2025-10-22",
-      "approve": 44.13,
-      "disapprove": 52.78,
-      "net": -8.65,
-      "pollCount": 72,
-      "effectivePollsters": 36
+      "approve": 43.47,
+      "disapprove": 53.08,
+      "net": -9.61,
+      "pollCount": 264,
+      "effectivePollsters": 53,
+      "enop": 19.04,
+      "halfLife": 14
     },
     {
       "date": "2025-11-01",
-      "approve": 43.61,
-      "disapprove": 53.28,
-      "net": -9.67,
-      "pollCount": 72,
-      "effectivePollsters": 38
+      "approve": 43.13,
+      "disapprove": 53.53,
+      "net": -10.4,
+      "pollCount": 268,
+      "effectivePollsters": 56,
+      "enop": 22.25,
+      "halfLife": 14
     },
     {
       "date": "2025-11-08",
-      "approve": 43.62,
-      "disapprove": 53.13,
-      "net": -9.51,
-      "pollCount": 69,
-      "effectivePollsters": 38
+      "approve": 43.2,
+      "disapprove": 53.23,
+      "net": -10.03,
+      "pollCount": 264,
+      "effectivePollsters": 55,
+      "enop": 18.04,
+      "halfLife": 14
     },
     {
       "date": "2025-11-15",
-      "approve": 42.92,
-      "disapprove": 54.05,
-      "net": -11.12,
-      "pollCount": 75,
-      "effectivePollsters": 39
+      "approve": 42.26,
+      "disapprove": 54.59,
+      "net": -12.33,
+      "pollCount": 269,
+      "effectivePollsters": 58,
+      "enop": 20.8,
+      "halfLife": 14
     },
     {
       "date": "2025-11-22",
-      "approve": 42.57,
-      "disapprove": 54.38,
-      "net": -11.81,
-      "pollCount": 78,
-      "effectivePollsters": 40
+      "approve": 42.01,
+      "disapprove": 54.69,
+      "net": -12.68,
+      "pollCount": 275,
+      "effectivePollsters": 56,
+      "enop": 21.63,
+      "halfLife": 14
     },
     {
       "date": "2025-12-01",
-      "approve": 42.35,
-      "disapprove": 54.47,
-      "net": -12.12,
-      "pollCount": 74,
-      "effectivePollsters": 40
+      "approve": 41.9,
+      "disapprove": 54.58,
+      "net": -12.68,
+      "pollCount": 273,
+      "effectivePollsters": 56,
+      "enop": 18.45,
+      "halfLife": 14
     },
     {
       "date": "2025-12-08",
-      "approve": 42.48,
-      "disapprove": 54.46,
-      "net": -11.98,
-      "pollCount": 75,
-      "effectivePollsters": 39
+      "approve": 42.3,
+      "disapprove": 54.49,
+      "net": -12.19,
+      "pollCount": 274,
+      "effectivePollsters": 56,
+      "enop": 20.26,
+      "halfLife": 14
     },
     {
       "date": "2025-12-15",
-      "approve": 42.72,
-      "disapprove": 54.13,
-      "net": -11.41,
-      "pollCount": 77,
-      "effectivePollsters": 37
+      "approve": 42.38,
+      "disapprove": 54.35,
+      "net": -11.97,
+      "pollCount": 276,
+      "effectivePollsters": 57,
+      "enop": 21.58,
+      "halfLife": 14
     },
     {
       "date": "2025-12-22",
-      "approve": 42.89,
-      "disapprove": 54,
-      "net": -11.11,
-      "pollCount": 78,
-      "effectivePollsters": 39
+      "approve": 42.54,
+      "disapprove": 53.99,
+      "net": -11.45,
+      "pollCount": 277,
+      "effectivePollsters": 58,
+      "enop": 21.24,
+      "halfLife": 14
     },
     {
       "date": "2026-01-01",
-      "approve": 43.44,
-      "disapprove": 53.38,
-      "net": -9.93,
-      "pollCount": 65,
-      "effectivePollsters": 34
+      "approve": 43.06,
+      "disapprove": 53.45,
+      "net": -10.39,
+      "pollCount": 267,
+      "effectivePollsters": 56,
+      "enop": 14.52,
+      "halfLife": 14
     },
     {
       "date": "2026-01-08",
-      "approve": 43.59,
-      "disapprove": 53.42,
-      "net": -9.83,
-      "pollCount": 58,
-      "effectivePollsters": 33
+      "approve": 43.11,
+      "disapprove": 53.8,
+      "net": -10.69,
+      "pollCount": 267,
+      "effectivePollsters": 56,
+      "enop": 13.82,
+      "halfLife": 14
     },
     {
       "date": "2026-01-15",
-      "approve": 43.09,
-      "disapprove": 53.63,
-      "net": -10.54,
-      "pollCount": 66,
-      "effectivePollsters": 37
+      "approve": 42.37,
+      "disapprove": 54.05,
+      "net": -11.68,
+      "pollCount": 268,
+      "effectivePollsters": 60,
+      "enop": 18.98,
+      "halfLife": 14
     },
     {
       "date": "2026-01-22",
-      "approve": 42.52,
-      "disapprove": 54.21,
-      "net": -11.69,
-      "pollCount": 72,
-      "effectivePollsters": 38
+      "approve": 41.9,
+      "disapprove": 54.53,
+      "net": -12.63,
+      "pollCount": 267,
+      "effectivePollsters": 59,
+      "enop": 20.84,
+      "halfLife": 14
     },
     {
       "date": "2026-02-01",
-      "approve": 42.53,
-      "disapprove": 54.38,
-      "net": -11.85,
-      "pollCount": 70,
-      "effectivePollsters": 39
+      "approve": 42.17,
+      "disapprove": 54.59,
+      "net": -12.42,
+      "pollCount": 274,
+      "effectivePollsters": 60,
+      "enop": 23.71,
+      "halfLife": 14
     },
     {
       "date": "2026-02-08",
-      "approve": 42.13,
-      "disapprove": 54.89,
-      "net": -12.76,
-      "pollCount": 68,
-      "effectivePollsters": 39
+      "approve": 41.76,
+      "disapprove": 55.13,
+      "net": -13.37,
+      "pollCount": 275,
+      "effectivePollsters": 60,
+      "enop": 20.47,
+      "halfLife": 14
     },
     {
       "date": "2026-02-15",
-      "approve": 41.98,
-      "disapprove": 55.03,
-      "net": -13.05,
-      "pollCount": 73,
-      "effectivePollsters": 40
+      "approve": 41.58,
+      "disapprove": 55.17,
+      "net": -13.59,
+      "pollCount": 277,
+      "effectivePollsters": 61,
+      "enop": 17.76,
+      "halfLife": 14
     },
     {
       "date": "2026-02-22",
-      "approve": 42.02,
-      "disapprove": 55.15,
-      "net": -13.13,
-      "pollCount": 82,
-      "effectivePollsters": 41
+      "approve": 41.65,
+      "disapprove": 55.34,
+      "net": -13.69,
+      "pollCount": 281,
+      "effectivePollsters": 63,
+      "enop": 20.35,
+      "halfLife": 14
     },
     {
       "date": "2026-03-01",
-      "approve": 42.44,
-      "disapprove": 54.8,
-      "net": -12.36,
-      "pollCount": 84,
-      "effectivePollsters": 40
+      "approve": 42.48,
+      "disapprove": 54.52,
+      "net": -12.04,
+      "pollCount": 286,
+      "effectivePollsters": 65,
+      "enop": 21.93,
+      "halfLife": 14
     },
     {
       "date": "2026-03-08",
-      "approve": 42.41,
-      "disapprove": 54.65,
-      "net": -12.24,
-      "pollCount": 87,
-      "effectivePollsters": 42
+      "approve": 42.18,
+      "disapprove": 54.6,
+      "net": -12.42,
+      "pollCount": 294,
+      "effectivePollsters": 66,
+      "enop": 22.73,
+      "halfLife": 14
     },
     {
       "date": "2026-03-15",
-      "approve": 42.28,
-      "disapprove": 54.59,
-      "net": -12.3,
-      "pollCount": 75,
-      "effectivePollsters": 39
+      "approve": 41.91,
+      "disapprove": 54.69,
+      "net": -12.78,
+      "pollCount": 288,
+      "effectivePollsters": 66,
+      "enop": 18.15,
+      "halfLife": 14
     },
     {
       "date": "2026-03-22",
-      "approve": 41.81,
-      "disapprove": 55.07,
-      "net": -13.26,
-      "pollCount": 78,
-      "effectivePollsters": 39
+      "approve": 41.32,
+      "disapprove": 55.26,
+      "net": -13.94,
+      "pollCount": 288,
+      "effectivePollsters": 65,
+      "enop": 19.17,
+      "halfLife": 14
     },
     {
       "date": "2026-04-01",
-      "approve": 41.54,
-      "disapprove": 55.65,
-      "net": -14.11,
-      "pollCount": 80,
-      "effectivePollsters": 41
+      "approve": 40.86,
+      "disapprove": 56.28,
+      "net": -15.42,
+      "pollCount": 291,
+      "effectivePollsters": 67,
+      "enop": 20.07,
+      "halfLife": 14
     },
     {
       "date": "2026-04-08",
-      "approve": 41.21,
-      "disapprove": 55.6,
-      "net": -14.39,
-      "pollCount": 75,
-      "effectivePollsters": 38
+      "approve": 40.64,
+      "disapprove": 55.98,
+      "net": -15.34,
+      "pollCount": 290,
+      "effectivePollsters": 67,
+      "enop": 18.58,
+      "halfLife": 14
     },
     {
       "date": "2026-04-15",
-      "approve": 40.72,
-      "disapprove": 56.48,
-      "net": -15.76,
-      "pollCount": 71,
-      "effectivePollsters": 40
+      "approve": 40.22,
+      "disapprove": 56.83,
+      "net": -16.61,
+      "pollCount": 289,
+      "effectivePollsters": 67,
+      "enop": 18.58,
+      "halfLife": 14
     },
     {
       "date": "2026-04-22",
-      "approve": 39.86,
-      "disapprove": 57.3,
-      "net": -17.44,
-      "pollCount": 69,
-      "effectivePollsters": 37
+      "approve": 39.36,
+      "disapprove": 57.57,
+      "net": -18.2,
+      "pollCount": 292,
+      "effectivePollsters": 67,
+      "enop": 20.75,
+      "halfLife": 14
     },
     {
       "date": "2026-05-01",
-      "approve": 39.92,
-      "disapprove": 57.31,
-      "net": -17.39,
-      "pollCount": 79,
-      "effectivePollsters": 40
+      "approve": 39.79,
+      "disapprove": 57.11,
+      "net": -17.32,
+      "pollCount": 294,
+      "effectivePollsters": 63,
+      "enop": 23.51,
+      "halfLife": 14
     },
     {
       "date": "2026-05-08",
+      "approve": 39.86,
+      "disapprove": 57.21,
+      "net": -17.35,
+      "pollCount": 295,
+      "effectivePollsters": 64,
+      "enop": 20.59,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-11",
+      "approve": 39.96,
+      "disapprove": 57.25,
+      "net": -17.29,
+      "pollCount": 293,
+      "effectivePollsters": 63,
+      "enop": 19.56,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-12",
+      "approve": 39.96,
+      "disapprove": 57.25,
+      "net": -17.29,
+      "pollCount": 288,
+      "effectivePollsters": 63,
+      "enop": 18.62,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-13",
+      "approve": 39.96,
+      "disapprove": 57.25,
+      "net": -17.29,
+      "pollCount": 285,
+      "effectivePollsters": 63,
+      "enop": 17.72,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-14",
       "approve": 40,
-      "disapprove": 57.3,
-      "net": -17.3,
-      "pollCount": 72,
-      "effectivePollsters": 41
+      "disapprove": 57.24,
+      "net": -17.24,
+      "pollCount": 284,
+      "effectivePollsters": 63,
+      "enop": 17.19,
+      "halfLife": 14
     },
     {
       "date": "2026-05-15",
-      "approve": 39.93,
-      "disapprove": 57.45,
+      "approve": 39.78,
+      "disapprove": 57.42,
+      "net": -17.64,
+      "pollCount": 286,
+      "effectivePollsters": 63,
+      "enop": 17.54,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-16",
+      "approve": 39.78,
+      "disapprove": 57.42,
+      "net": -17.64,
+      "pollCount": 285,
+      "effectivePollsters": 63,
+      "enop": 16.69,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-17",
+      "approve": 39.83,
+      "disapprove": 57.38,
+      "net": -17.55,
+      "pollCount": 280,
+      "effectivePollsters": 63,
+      "enop": 16.18,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-18",
+      "approve": 39.82,
+      "disapprove": 57.33,
       "net": -17.51,
-      "pollCount": 68,
-      "effectivePollsters": 39
+      "pollCount": 291,
+      "effectivePollsters": 64,
+      "enop": 23.41,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-19",
+      "approve": 39.76,
+      "disapprove": 57.39,
+      "net": -17.63,
+      "pollCount": 292,
+      "effectivePollsters": 64,
+      "enop": 23.1,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-20",
+      "approve": 39.15,
+      "disapprove": 57.66,
+      "net": -18.52,
+      "pollCount": 291,
+      "effectivePollsters": 65,
+      "enop": 23.76,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-21",
+      "approve": 39.18,
+      "disapprove": 57.66,
+      "net": -18.47,
+      "pollCount": 288,
+      "effectivePollsters": 65,
+      "enop": 22.9,
+      "halfLife": 14
     },
     {
       "date": "2026-05-22",
-      "approve": 39.67,
-      "disapprove": 57.55,
-      "net": -17.88,
-      "pollCount": 79,
-      "effectivePollsters": 42
+      "approve": 39.36,
+      "disapprove": 57.53,
+      "net": -18.17,
+      "pollCount": 289,
+      "effectivePollsters": 65,
+      "enop": 22.61,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-23",
+      "approve": 39.36,
+      "disapprove": 57.53,
+      "net": -18.17,
+      "pollCount": 288,
+      "effectivePollsters": 65,
+      "enop": 21.52,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-24",
+      "approve": 39.41,
+      "disapprove": 57.48,
+      "net": -18.07,
+      "pollCount": 288,
+      "effectivePollsters": 65,
+      "enop": 20.77,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-25",
+      "approve": 39.4,
+      "disapprove": 57.39,
+      "net": -17.99,
+      "pollCount": 287,
+      "effectivePollsters": 65,
+      "enop": 20.53,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-26",
+      "approve": 39.62,
+      "disapprove": 57.34,
+      "net": -17.72,
+      "pollCount": 289,
+      "effectivePollsters": 65,
+      "enop": 20.95,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-27",
+      "approve": 39.66,
+      "disapprove": 57.32,
+      "net": -17.66,
+      "pollCount": 290,
+      "effectivePollsters": 65,
+      "enop": 20.7,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-28",
+      "approve": 39.56,
+      "disapprove": 57.2,
+      "net": -17.64,
+      "pollCount": 291,
+      "effectivePollsters": 65,
+      "enop": 20.43,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-29",
+      "approve": 39.56,
+      "disapprove": 57.2,
+      "net": -17.64,
+      "pollCount": 290,
+      "effectivePollsters": 65,
+      "enop": 19.45,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-30",
+      "approve": 39.56,
+      "disapprove": 57.2,
+      "net": -17.64,
+      "pollCount": 288,
+      "effectivePollsters": 65,
+      "enop": 18.51,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-05-31",
+      "approve": 39.77,
+      "disapprove": 56.91,
+      "net": -17.14,
+      "pollCount": 289,
+      "effectivePollsters": 65,
+      "enop": 19.51,
+      "halfLife": 14
     },
     {
       "date": "2026-06-01",
-      "approve": 39.86,
-      "disapprove": 57.09,
-      "net": -17.23,
-      "pollCount": 75,
-      "effectivePollsters": 39
+      "approve": 39.69,
+      "disapprove": 56.91,
+      "net": -17.21,
+      "pollCount": 291,
+      "effectivePollsters": 65,
+      "enop": 19.57,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-06-02",
+      "approve": 39.8,
+      "disapprove": 56.82,
+      "net": -17.02,
+      "pollCount": 294,
+      "effectivePollsters": 65,
+      "enop": 21.24,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-06-03",
+      "approve": 39.73,
+      "disapprove": 57,
+      "net": -17.27,
+      "pollCount": 293,
+      "effectivePollsters": 65,
+      "enop": 21.09,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-06-04",
+      "approve": 39.81,
+      "disapprove": 57.01,
+      "net": -17.2,
+      "pollCount": 293,
+      "effectivePollsters": 65,
+      "enop": 21.42,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-06-05",
+      "approve": 39.81,
+      "disapprove": 57.05,
+      "net": -17.24,
+      "pollCount": 294,
+      "effectivePollsters": 65,
+      "enop": 21.26,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-06-06",
+      "approve": 39.73,
+      "disapprove": 57.05,
+      "net": -17.32,
+      "pollCount": 293,
+      "effectivePollsters": 65,
+      "enop": 21.23,
+      "halfLife": 14
+    },
+    {
+      "date": "2026-06-07",
+      "approve": 39.98,
+      "disapprove": 56.94,
+      "net": -16.96,
+      "pollCount": 289,
+      "effectivePollsters": 65,
+      "enop": 21.92,
+      "halfLife": 14
     },
     {
       "date": "2026-06-08",
-      "approve": 40.14,
-      "disapprove": 57.11,
-      "net": -16.97,
-      "pollCount": 74,
-      "effectivePollsters": 41
+      "approve": 39.96,
+      "disapprove": 57.01,
+      "net": -17.05,
+      "pollCount": 294,
+      "effectivePollsters": 65,
+      "enop": 23.27,
+      "halfLife": 14
     },
     {
       "date": "2026-06-09",
-      "approve": 40.12,
-      "disapprove": 57.12,
-      "net": -17,
-      "pollCount": 73,
-      "effectivePollsters": 41
+      "approve": 39.96,
+      "disapprove": 57.01,
+      "net": -17.05,
+      "pollCount": 293,
+      "effectivePollsters": 65,
+      "enop": 22.15,
+      "halfLife": 14
     },
     {
       "date": "2026-06-10",
-      "approve": 40.13,
-      "disapprove": 57.12,
-      "net": -17,
-      "pollCount": 73,
-      "effectivePollsters": 41
+      "approve": 39.96,
+      "disapprove": 57.01,
+      "net": -17.05,
+      "pollCount": 290,
+      "effectivePollsters": 65,
+      "enop": 21.08,
+      "halfLife": 14
     },
     {
       "date": "2026-06-11",
-      "approve": 40.16,
-      "disapprove": 57.1,
-      "net": -16.94,
-      "pollCount": 72,
-      "effectivePollsters": 40
+      "approve": 39.9,
+      "disapprove": 57.08,
+      "net": -17.18,
+      "pollCount": 291,
+      "effectivePollsters": 65,
+      "enop": 21.23,
+      "halfLife": 14
     },
     {
       "date": "2026-06-12",
-      "approve": 40.13,
-      "disapprove": 57.14,
-      "net": -17.01,
-      "pollCount": 66,
-      "effectivePollsters": 38
+      "approve": 39.9,
+      "disapprove": 57.08,
+      "net": -17.18,
+      "pollCount": 290,
+      "effectivePollsters": 65,
+      "enop": 20.2,
+      "halfLife": 14
     },
     {
       "date": "2026-06-13",
-      "approve": 40.13,
-      "disapprove": 57.13,
-      "net": -17.01,
-      "pollCount": 64,
-      "effectivePollsters": 38
+      "approve": 39.9,
+      "disapprove": 57.08,
+      "net": -17.18,
+      "pollCount": 289,
+      "effectivePollsters": 65,
+      "enop": 19.23,
+      "halfLife": 14
     },
     {
       "date": "2026-06-14",
-      "approve": 40.13,
-      "disapprove": 57.18,
-      "net": -17.06,
-      "pollCount": 65,
-      "effectivePollsters": 38
+      "approve": 39.91,
+      "disapprove": 57.15,
+      "net": -17.24,
+      "pollCount": 283,
+      "effectivePollsters": 64,
+      "enop": 19.04,
+      "halfLife": 14
     },
     {
       "date": "2026-06-15",
-      "approve": 40.11,
-      "disapprove": 57.32,
-      "net": -17.2,
-      "pollCount": 67,
-      "effectivePollsters": 38
+      "approve": 39.84,
+      "disapprove": 57.42,
+      "net": -17.57,
+      "pollCount": 286,
+      "effectivePollsters": 63,
+      "enop": 20.37,
+      "halfLife": 14
     },
     {
       "date": "2026-06-16",
-      "approve": 40.16,
-      "disapprove": 57.3,
-      "net": -17.14,
-      "pollCount": 67,
-      "effectivePollsters": 38
+      "approve": 39.9,
+      "disapprove": 57.39,
+      "net": -17.49,
+      "pollCount": 286,
+      "effectivePollsters": 62,
+      "enop": 19.89,
+      "halfLife": 14
     },
     {
       "date": "2026-06-17",
-      "approve": 40.11,
-      "disapprove": 57.44,
-      "net": -17.34,
-      "pollCount": 69,
-      "effectivePollsters": 38
+      "approve": 39.87,
+      "disapprove": 57.53,
+      "net": -17.65,
+      "pollCount": 287,
+      "effectivePollsters": 62,
+      "enop": 20.23,
+      "halfLife": 14
     },
     {
       "date": "2026-06-18",
-      "approve": 40.15,
-      "disapprove": 57.42,
-      "net": -17.26,
-      "pollCount": 69,
-      "effectivePollsters": 38
+      "approve": 39.92,
+      "disapprove": 57.49,
+      "net": -17.57,
+      "pollCount": 285,
+      "effectivePollsters": 62,
+      "enop": 19.54,
+      "halfLife": 14
     },
     {
       "date": "2026-06-19",
-      "approve": 40.13,
-      "disapprove": 57.48,
-      "net": -17.35,
-      "pollCount": 68,
-      "effectivePollsters": 37
+      "approve": 39.89,
+      "disapprove": 57.55,
+      "net": -17.66,
+      "pollCount": 284,
+      "effectivePollsters": 62,
+      "enop": 18.78,
+      "halfLife": 14
     },
     {
       "date": "2026-06-20",
-      "approve": 39.88,
-      "disapprove": 57.74,
-      "net": -17.86,
-      "pollCount": 67,
-      "effectivePollsters": 37
+      "approve": 39.48,
+      "disapprove": 57.95,
+      "net": -18.47,
+      "pollCount": 283,
+      "effectivePollsters": 62,
+      "enop": 18.66,
+      "halfLife": 14
     },
     {
       "date": "2026-06-21",
-      "approve": 40.06,
-      "disapprove": 57.62,
-      "net": -17.56,
-      "pollCount": 67,
-      "effectivePollsters": 37
+      "approve": 39.8,
+      "disapprove": 57.73,
+      "net": -17.93,
+      "pollCount": 283,
+      "effectivePollsters": 62,
+      "enop": 18.57,
+      "halfLife": 14
     },
     {
       "date": "2026-06-22",
-      "approve": 39.9,
-      "disapprove": 57.65,
-      "net": -17.74,
-      "pollCount": 72,
-      "effectivePollsters": 36
+      "approve": 39.6,
+      "disapprove": 57.75,
+      "net": -18.15,
+      "pollCount": 289,
+      "effectivePollsters": 62,
+      "enop": 20.36,
+      "halfLife": 14
     },
     {
       "date": "2026-06-23",
-      "approve": 40.1,
-      "disapprove": 57.43,
-      "net": -17.33,
-      "pollCount": 74,
-      "effectivePollsters": 36
+      "approve": 39.87,
+      "disapprove": 57.42,
+      "net": -17.55,
+      "pollCount": 291,
+      "effectivePollsters": 62,
+      "enop": 20.21,
+      "halfLife": 14
     },
     {
       "date": "2026-06-24",
-      "approve": 40.1,
-      "disapprove": 57.43,
-      "net": -17.33,
-      "pollCount": 74,
-      "effectivePollsters": 36
+      "approve": 39.87,
+      "disapprove": 57.42,
+      "net": -17.55,
+      "pollCount": 291,
+      "effectivePollsters": 62,
+      "enop": 19.23,
+      "halfLife": 14
     },
     {
       "date": "2026-06-25",
-      "approve": 40.06,
-      "disapprove": 57.45,
-      "net": -17.39,
-      "pollCount": 72,
-      "effectivePollsters": 35
+      "approve": 39.87,
+      "disapprove": 57.42,
+      "net": -17.55,
+      "pollCount": 290,
+      "effectivePollsters": 62,
+      "enop": 18.3,
+      "halfLife": 14
     },
     {
       "date": "2026-06-26",
-      "approve": 40.07,
-      "disapprove": 57.44,
-      "net": -17.37,
-      "pollCount": 70,
-      "effectivePollsters": 35
+      "approve": 39.87,
+      "disapprove": 57.42,
+      "net": -17.55,
+      "pollCount": 289,
+      "effectivePollsters": 62,
+      "enop": 17.42,
+      "halfLife": 14
     },
     {
       "date": "2026-06-27",
-      "approve": 40.07,
-      "disapprove": 57.44,
-      "net": -17.37,
-      "pollCount": 70,
-      "effectivePollsters": 35
+      "approve": 39.87,
+      "disapprove": 57.42,
+      "net": -17.55,
+      "pollCount": 288,
+      "effectivePollsters": 62,
+      "enop": 16.58,
+      "halfLife": 14
     },
     {
       "date": "2026-06-28",
-      "approve": 40.24,
-      "disapprove": 57.28,
-      "net": -17.04,
-      "pollCount": 71,
-      "effectivePollsters": 35
+      "approve": 40.08,
+      "disapprove": 57.23,
+      "net": -17.14,
+      "pollCount": 288,
+      "effectivePollsters": 62,
+      "enop": 16.57,
+      "halfLife": 14
     },
     {
       "date": "2026-06-29",
-      "approve": 40.23,
-      "disapprove": 57.28,
-      "net": -17.05,
-      "pollCount": 71,
-      "effectivePollsters": 35
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 289,
+      "effectivePollsters": 62,
+      "enop": 16.06,
+      "halfLife": 14
     },
     {
       "date": "2026-06-30",
-      "approve": 40.29,
-      "disapprove": 57.23,
-      "net": -16.94,
-      "pollCount": 69,
-      "effectivePollsters": 34
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 289,
+      "effectivePollsters": 62,
+      "enop": 15.29,
+      "halfLife": 14
     },
     {
       "date": "2026-07-01",
-      "approve": 40.29,
-      "disapprove": 57.23,
-      "net": -16.94,
-      "pollCount": 69,
-      "effectivePollsters": 34
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 289,
+      "effectivePollsters": 62,
+      "enop": 14.55,
+      "halfLife": 14
     },
     {
       "date": "2026-07-02",
-      "approve": 40.29,
-      "disapprove": 57.23,
-      "net": -16.94,
-      "pollCount": 68,
-      "effectivePollsters": 34
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 289,
+      "effectivePollsters": 62,
+      "enop": 13.85,
+      "halfLife": 14
     },
     {
       "date": "2026-07-03",
-      "approve": 40.34,
-      "disapprove": 57.21,
-      "net": -16.86,
-      "pollCount": 57,
-      "effectivePollsters": 32
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 288,
+      "effectivePollsters": 62,
+      "enop": 13.18,
+      "halfLife": 14
     },
     {
       "date": "2026-07-04",
-      "approve": 40.36,
-      "disapprove": 57.2,
-      "net": -16.85,
-      "pollCount": 56,
-      "effectivePollsters": 32
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 287,
+      "effectivePollsters": 62,
+      "enop": 12.54,
+      "halfLife": 14
     },
     {
       "date": "2026-07-05",
-      "approve": 40.49,
-      "disapprove": 57.15,
-      "net": -16.66,
-      "pollCount": 54,
-      "effectivePollsters": 31
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 285,
+      "effectivePollsters": 62,
+      "enop": 11.94,
+      "halfLife": 14
     },
     {
       "date": "2026-07-06",
-      "approve": 40.49,
-      "disapprove": 57.14,
-      "net": -16.65,
-      "pollCount": 53,
-      "effectivePollsters": 31
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 285,
+      "effectivePollsters": 62,
+      "enop": 11.36,
+      "halfLife": 14
     },
     {
       "date": "2026-07-07",
-      "approve": 40.46,
-      "disapprove": 57.16,
-      "net": -16.7,
-      "pollCount": 52,
-      "effectivePollsters": 30
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 283,
+      "effectivePollsters": 61,
+      "enop": 10.81,
+      "halfLife": 14
     },
     {
       "date": "2026-07-08",
-      "approve": 40.47,
-      "disapprove": 57.16,
-      "net": -16.7,
-      "pollCount": 52,
-      "effectivePollsters": 30
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 282,
+      "effectivePollsters": 61,
+      "enop": 10.29,
+      "halfLife": 14
     },
     {
       "date": "2026-07-09",
-      "approve": 40.45,
-      "disapprove": 57.19,
-      "net": -16.74,
-      "pollCount": 51,
-      "effectivePollsters": 30
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 281,
+      "effectivePollsters": 61,
+      "enop": 9.79,
+      "halfLife": 14
     },
     {
       "date": "2026-07-10",
-      "approve": 40.46,
-      "disapprove": 57.2,
-      "net": -16.74,
-      "pollCount": 50,
-      "effectivePollsters": 30
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 281,
+      "effectivePollsters": 61,
+      "enop": 9.32,
+      "halfLife": 14
     },
     {
       "date": "2026-07-11",
-      "approve": 40.43,
-      "disapprove": 57.22,
-      "net": -16.79,
-      "pollCount": 47,
-      "effectivePollsters": 30
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 279,
+      "effectivePollsters": 60,
+      "enop": 8.87,
+      "halfLife": 14
     },
     {
       "date": "2026-07-12",
-      "approve": 40.46,
-      "disapprove": 57.19,
-      "net": -16.73,
-      "pollCount": 46,
-      "effectivePollsters": 30
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 273,
+      "effectivePollsters": 60,
+      "enop": 8.44,
+      "halfLife": 14
     },
     {
       "date": "2026-07-13",
-      "approve": 40.51,
-      "disapprove": 57.24,
-      "net": -16.72,
-      "pollCount": 45,
-      "effectivePollsters": 29
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 270,
+      "effectivePollsters": 59,
+      "enop": 8.03,
+      "halfLife": 14
     },
     {
       "date": "2026-07-14",
-      "approve": 40.51,
-      "disapprove": 57.24,
-      "net": -16.72,
-      "pollCount": 45,
-      "effectivePollsters": 29
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 268,
+      "effectivePollsters": 59,
+      "enop": 7.64,
+      "halfLife": 14
     },
     {
       "date": "2026-07-15",
-      "approve": 40.52,
-      "disapprove": 57.24,
-      "net": -16.72,
-      "pollCount": 45,
-      "effectivePollsters": 29
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 267,
+      "effectivePollsters": 59,
+      "enop": 7.27,
+      "halfLife": 14
     },
     {
       "date": "2026-07-16",
-      "approve": 40.45,
-      "disapprove": 57.35,
-      "net": -16.89,
-      "pollCount": 42,
-      "effectivePollsters": 27
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 266,
+      "effectivePollsters": 59,
+      "enop": 6.92,
+      "halfLife": 14
     },
     {
       "date": "2026-07-17",
-      "approve": 40.51,
-      "disapprove": 57.34,
-      "net": -16.83,
-      "pollCount": 40,
-      "effectivePollsters": 26
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 265,
+      "effectivePollsters": 59,
+      "enop": 6.59,
+      "halfLife": 14
     },
     {
       "date": "2026-07-18",
-      "approve": 40.52,
-      "disapprove": 57.38,
-      "net": -16.86,
-      "pollCount": 37,
-      "effectivePollsters": 25
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 263,
+      "effectivePollsters": 59,
+      "enop": 6.27,
+      "halfLife": 14
     },
     {
       "date": "2026-07-19",
-      "approve": 40.59,
-      "disapprove": 57.28,
-      "net": -16.69,
-      "pollCount": 36,
-      "effectivePollsters": 24
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 261,
+      "effectivePollsters": 59,
+      "enop": 5.97,
+      "halfLife": 14
     },
     {
       "date": "2026-07-20",
-      "approve": 40.52,
-      "disapprove": 57.31,
-      "net": -16.78,
-      "pollCount": 34,
-      "effectivePollsters": 23
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 258,
+      "effectivePollsters": 59,
+      "enop": 5.68,
+      "halfLife": 14
     },
     {
       "date": "2026-07-21",
-      "approve": 40.54,
-      "disapprove": 57.29,
-      "net": -16.76,
-      "pollCount": 33,
-      "effectivePollsters": 22
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 256,
+      "effectivePollsters": 59,
+      "enop": 5.4,
+      "halfLife": 14
     },
     {
       "date": "2026-07-22",
-      "approve": 40.58,
-      "disapprove": 57.3,
-      "net": -16.72,
-      "pollCount": 32,
-      "effectivePollsters": 21
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 253,
+      "effectivePollsters": 59,
+      "enop": 5.14,
+      "halfLife": 14
     },
     {
       "date": "2026-07-23",
-      "approve": 40.45,
-      "disapprove": 57.39,
-      "net": -16.93,
-      "pollCount": 30,
-      "effectivePollsters": 19
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 253,
+      "effectivePollsters": 59,
+      "enop": 4.9,
+      "halfLife": 14
     },
     {
       "date": "2026-07-24",
-      "approve": 40.51,
-      "disapprove": 57.38,
-      "net": -16.87,
-      "pollCount": 25,
-      "effectivePollsters": 17
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 251,
+      "effectivePollsters": 59,
+      "enop": 4.66,
+      "halfLife": 14
     },
     {
       "date": "2026-07-25",
-      "approve": 40.51,
-      "disapprove": 57.38,
-      "net": -16.87,
-      "pollCount": 25,
-      "effectivePollsters": 17
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 249,
+      "effectivePollsters": 59,
+      "enop": 4.43,
+      "halfLife": 14
     },
     {
       "date": "2026-07-26",
-      "approve": 40.51,
-      "disapprove": 57.38,
-      "net": -16.87,
-      "pollCount": 25,
-      "effectivePollsters": 17
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 243,
+      "effectivePollsters": 59,
+      "enop": 4.22,
+      "halfLife": 14
     },
     {
       "date": "2026-07-27",
-      "approve": 40.55,
-      "disapprove": 57.37,
-      "net": -16.81,
-      "pollCount": 23,
-      "effectivePollsters": 16
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 242,
+      "effectivePollsters": 59,
+      "enop": 4.02,
+      "halfLife": 14
     },
     {
       "date": "2026-07-28",
-      "approve": 40.55,
-      "disapprove": 57.37,
-      "net": -16.82,
-      "pollCount": 23,
-      "effectivePollsters": 16
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 240,
+      "effectivePollsters": 59,
+      "enop": 3.82,
+      "halfLife": 14
     },
     {
       "date": "2026-07-29",
-      "approve": 40.55,
-      "disapprove": 57.37,
-      "net": -16.82,
-      "pollCount": 23,
-      "effectivePollsters": 16
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 238,
+      "effectivePollsters": 58,
+      "enop": 3.64,
+      "halfLife": 14
     },
     {
       "date": "2026-07-30",
-      "approve": 40.57,
-      "disapprove": 57.32,
-      "net": -16.75,
-      "pollCount": 22,
-      "effectivePollsters": 16
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 236,
+      "effectivePollsters": 57,
+      "enop": 3.46,
+      "halfLife": 14
     },
     {
       "date": "2026-07-31",
-      "approve": 40.57,
-      "disapprove": 57.22,
-      "net": -16.65,
-      "pollCount": 17,
-      "effectivePollsters": 14
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 235,
+      "effectivePollsters": 57,
+      "enop": 3.29,
+      "halfLife": 14
     },
     {
       "date": "2026-08-01",
-      "approve": 40.51,
-      "disapprove": 57.27,
-      "net": -16.76,
-      "pollCount": 16,
-      "effectivePollsters": 13
-    },
-    {
-      "date": "2026-08-02",
-      "approve": 40.66,
-      "disapprove": 56.95,
-      "net": -16.29,
-      "pollCount": 14,
-      "effectivePollsters": 11
-    },
-    {
-      "date": "2026-08-03",
-      "approve": 40.47,
-      "disapprove": 57.11,
-      "net": -16.64,
-      "pollCount": 13,
-      "effectivePollsters": 11
-    },
-    {
-      "date": "2026-08-04",
-      "approve": 40.67,
-      "disapprove": 56.69,
-      "net": -16.01,
-      "pollCount": 12,
-      "effectivePollsters": 11
-    },
-    {
-      "date": "2026-08-05",
-      "approve": 41.38,
-      "disapprove": 56.01,
-      "net": -14.63,
-      "pollCount": 11,
-      "effectivePollsters": 10
-    },
-    {
-      "date": "2026-08-06",
-      "approve": 40.96,
-      "disapprove": 56.23,
-      "net": -15.28,
-      "pollCount": 10,
-      "effectivePollsters": 9
-    },
-    {
-      "date": "2026-08-07",
-      "approve": 43.31,
-      "disapprove": 54.22,
-      "net": -10.92,
-      "pollCount": 4,
-      "effectivePollsters": 4
-    },
-    {
-      "date": "2026-08-08",
-      "approve": 42.59,
-      "disapprove": 55.23,
-      "net": -12.64,
-      "pollCount": 2,
-      "effectivePollsters": 2
-    },
-    {
-      "date": "2026-08-09",
-      "approve": 42.59,
-      "disapprove": 55.23,
-      "net": -12.64,
-      "pollCount": 2,
-      "effectivePollsters": 2
-    },
-    {
-      "date": "2026-08-10",
-      "approve": 42.59,
-      "disapprove": 55.23,
-      "net": -12.64,
-      "pollCount": 2,
-      "effectivePollsters": 2
+      "approve": 40.08,
+      "disapprove": 57.25,
+      "net": -17.17,
+      "pollCount": 232,
+      "effectivePollsters": 57,
+      "enop": 3.13,
+      "halfLife": 14
     },
     {
       "date": "2026-08-11",
-      "approve": 42.59,
-      "disapprove": 55.23,
-      "net": -12.64,
-      "pollCount": 2,
-      "effectivePollsters": 2
+      "approve": 39.94,
+      "disapprove": 57.23,
+      "net": -17.29,
+      "pollCount": 220,
+      "effectivePollsters": 57,
+      "enop": 5.14,
+      "halfLife": 21
     },
     {
       "date": "2026-08-12",
-      "approve": 42.59,
-      "disapprove": 55.23,
-      "net": -12.64,
-      "pollCount": 2,
-      "effectivePollsters": 2
+      "approve": 39.94,
+      "disapprove": 57.23,
+      "net": -17.29,
+      "pollCount": 218,
+      "effectivePollsters": 57,
+      "enop": 4.97,
+      "halfLife": 21
+    },
+    {
+      "date": "2026-08-13",
+      "approve": 39.94,
+      "disapprove": 57.23,
+      "net": -17.29,
+      "pollCount": 216,
+      "effectivePollsters": 57,
+      "enop": 4.81,
+      "halfLife": 21
+    },
+    {
+      "date": "2026-08-14",
+      "approve": 39.94,
+      "disapprove": 57.23,
+      "net": -17.29,
+      "pollCount": 216,
+      "effectivePollsters": 57,
+      "enop": 4.65,
+      "halfLife": 21
+    },
+    {
+      "date": "2026-08-15",
+      "approve": 39.94,
+      "disapprove": 57.23,
+      "net": -17.29,
+      "pollCount": 216,
+      "effectivePollsters": 57,
+      "enop": 4.5,
+      "halfLife": 21
+    },
+    {
+      "date": "2026-08-16",
+      "approve": 40.3,
+      "disapprove": 57.02,
+      "net": -16.72,
+      "pollCount": 214,
+      "effectivePollsters": 57,
+      "enop": 5.27,
+      "halfLife": 21
     },
     {
       "date": "2026-08-17",
-      "approve": 42,
-      "disapprove": 55.52,
-      "net": -13.52,
-      "pollCount": 2,
-      "effectivePollsters": 2
+      "approve": 40.53,
+      "disapprove": 56.81,
+      "net": -16.28,
+      "pollCount": 214,
+      "effectivePollsters": 57,
+      "enop": 5.75,
+      "halfLife": 21
     },
     {
       "date": "2026-08-18",
-      "approve": 42,
-      "disapprove": 55.52,
-      "net": -13.52,
-      "pollCount": 2,
-      "effectivePollsters": 2
+      "approve": 40.52,
+      "disapprove": 56.81,
+      "net": -16.29,
+      "pollCount": 209,
+      "effectivePollsters": 56,
+      "enop": 5.56,
+      "halfLife": 21
     },
     {
       "date": "2026-08-19",
-      "approve": 42,
-      "disapprove": 55.52,
-      "net": -13.52,
-      "pollCount": 2,
-      "effectivePollsters": 2
+      "approve": 40.2,
+      "disapprove": 56.98,
+      "net": -16.78,
+      "pollCount": 208,
+      "effectivePollsters": 55,
+      "enop": 9.35,
+      "halfLife": 30
     },
     {
       "date": "2026-08-20",
-      "approve": 42,
-      "disapprove": 55.52,
-      "net": -13.52,
-      "pollCount": 2,
-      "effectivePollsters": 2
+      "approve": 40.19,
+      "disapprove": 56.98,
+      "net": -16.79,
+      "pollCount": 205,
+      "effectivePollsters": 55,
+      "enop": 9.13,
+      "halfLife": 30
     },
     {
       "date": "2026-08-21",
-      "approve": 42,
-      "disapprove": 55.52,
-      "net": -13.52,
-      "pollCount": 2,
-      "effectivePollsters": 2
+      "approve": 40.19,
+      "disapprove": 56.98,
+      "net": -16.79,
+      "pollCount": 205,
+      "effectivePollsters": 55,
+      "enop": 8.93,
+      "halfLife": 30
     },
     {
       "date": "2026-08-22",
-      "approve": 42,
-      "disapprove": 55.52,
-      "net": -13.52,
-      "pollCount": 2,
-      "effectivePollsters": 2
+      "approve": 40.01,
+      "disapprove": 57.02,
+      "net": -17.02,
+      "pollCount": 203,
+      "effectivePollsters": 55,
+      "enop": 14.89,
+      "halfLife": 45
     },
     {
       "date": "2026-08-23",
-      "approve": 42,
-      "disapprove": 55.52,
-      "net": -13.52,
-      "pollCount": 2,
-      "effectivePollsters": 2
+      "approve": 40,
+      "disapprove": 57.03,
+      "net": -17.03,
+      "pollCount": 199,
+      "effectivePollsters": 55,
+      "enop": 14.66,
+      "halfLife": 45
     },
     {
       "date": "2026-08-24",
-      "approve": 40.39,
-      "disapprove": 57.53,
-      "net": -17.14,
-      "pollCount": 4,
-      "effectivePollsters": 4
+      "approve": 39.88,
+      "disapprove": 57.27,
+      "net": -17.39,
+      "pollCount": 201,
+      "effectivePollsters": 55,
+      "enop": 15.64,
+      "halfLife": 45
     },
     {
       "date": "2026-08-25",
-      "approve": 40.39,
-      "disapprove": 57.53,
-      "net": -17.14,
-      "pollCount": 4,
-      "effectivePollsters": 4
+      "approve": 39.87,
+      "disapprove": 57.27,
+      "net": -17.4,
+      "pollCount": 200,
+      "effectivePollsters": 55,
+      "enop": 15.4,
+      "halfLife": 45
     },
     {
       "date": "2026-08-26",
-      "approve": 40.39,
-      "disapprove": 57.53,
-      "net": -17.14,
-      "pollCount": 4,
-      "effectivePollsters": 4
+      "approve": 39.86,
+      "disapprove": 57.29,
+      "net": -17.43,
+      "pollCount": 197,
+      "effectivePollsters": 55,
+      "enop": 15.16,
+      "halfLife": 45
     },
     {
       "date": "2026-08-27",
-      "approve": 40.39,
-      "disapprove": 57.53,
-      "net": -17.14,
-      "pollCount": 4,
-      "effectivePollsters": 4
+      "approve": 39.85,
+      "disapprove": 57.3,
+      "net": -17.45,
+      "pollCount": 194,
+      "effectivePollsters": 55,
+      "enop": 14.93,
+      "halfLife": 45
     },
     {
       "date": "2026-08-28",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.75,
+      "disapprove": 57.05,
+      "net": -17.3,
+      "pollCount": 192,
+      "effectivePollsters": 54,
+      "enop": 15.4,
+      "halfLife": 45
     },
     {
       "date": "2026-08-29",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.75,
+      "disapprove": 57.05,
+      "net": -17.3,
+      "pollCount": 189,
+      "effectivePollsters": 54,
+      "enop": 15.16,
+      "halfLife": 45
     },
     {
       "date": "2026-08-30",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.74,
+      "disapprove": 57.06,
+      "net": -17.32,
+      "pollCount": 187,
+      "effectivePollsters": 54,
+      "enop": 14.93,
+      "halfLife": 45
     },
     {
       "date": "2026-08-31",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.68,
+      "disapprove": 57.11,
+      "net": -17.43,
+      "pollCount": 182,
+      "effectivePollsters": 52,
+      "enop": 14.59,
+      "halfLife": 45
     },
     {
       "date": "2026-09-01",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.68,
+      "disapprove": 57.12,
+      "net": -17.44,
+      "pollCount": 179,
+      "effectivePollsters": 52,
+      "enop": 14.37,
+      "halfLife": 45
     },
     {
       "date": "2026-09-02",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.66,
+      "disapprove": 57.16,
+      "net": -17.49,
+      "pollCount": 176,
+      "effectivePollsters": 51,
+      "enop": 14.09,
+      "halfLife": 45
     },
     {
       "date": "2026-09-03",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.66,
+      "disapprove": 57.16,
+      "net": -17.49,
+      "pollCount": 176,
+      "effectivePollsters": 51,
+      "enop": 13.87,
+      "halfLife": 45
     },
     {
       "date": "2026-09-04",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.66,
+      "disapprove": 57.16,
+      "net": -17.49,
+      "pollCount": 176,
+      "effectivePollsters": 51,
+      "enop": 13.66,
+      "halfLife": 45
     },
     {
       "date": "2026-09-05",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.66,
+      "disapprove": 57.16,
+      "net": -17.49,
+      "pollCount": 174,
+      "effectivePollsters": 51,
+      "enop": 13.45,
+      "halfLife": 45
     },
     {
       "date": "2026-09-06",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.66,
+      "disapprove": 57.16,
+      "net": -17.5,
+      "pollCount": 173,
+      "effectivePollsters": 51,
+      "enop": 13.25,
+      "halfLife": 45
     },
     {
       "date": "2026-09-07",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.66,
+      "disapprove": 57.17,
+      "net": -17.51,
+      "pollCount": 172,
+      "effectivePollsters": 51,
+      "enop": 13.04,
+      "halfLife": 45
     },
     {
       "date": "2026-09-08",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.66,
+      "disapprove": 57.17,
+      "net": -17.51,
+      "pollCount": 172,
+      "effectivePollsters": 51,
+      "enop": 12.84,
+      "halfLife": 45
     },
     {
       "date": "2026-09-09",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.66,
+      "disapprove": 57.17,
+      "net": -17.51,
+      "pollCount": 171,
+      "effectivePollsters": 51,
+      "enop": 12.65,
+      "halfLife": 45
     },
     {
       "date": "2026-09-10",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.66,
+      "disapprove": 57.17,
+      "net": -17.51,
+      "pollCount": 171,
+      "effectivePollsters": 51,
+      "enop": 12.45,
+      "halfLife": 45
     },
     {
       "date": "2026-09-11",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.66,
+      "disapprove": 57.17,
+      "net": -17.51,
+      "pollCount": 171,
+      "effectivePollsters": 51,
+      "enop": 12.26,
+      "halfLife": 45
     },
     {
       "date": "2026-09-12",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.65,
+      "disapprove": 57.17,
+      "net": -17.52,
+      "pollCount": 170,
+      "effectivePollsters": 51,
+      "enop": 12.08,
+      "halfLife": 45
     },
     {
       "date": "2026-09-13",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.65,
+      "disapprove": 57.18,
+      "net": -17.52,
+      "pollCount": 167,
+      "effectivePollsters": 51,
+      "enop": 11.89,
+      "halfLife": 45
     },
     {
       "date": "2026-09-14",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.64,
+      "disapprove": 57.19,
+      "net": -17.55,
+      "pollCount": 164,
+      "effectivePollsters": 51,
+      "enop": 11.71,
+      "halfLife": 45
     },
     {
       "date": "2026-09-15",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.62,
+      "disapprove": 57.22,
+      "net": -17.6,
+      "pollCount": 161,
+      "effectivePollsters": 51,
+      "enop": 11.53,
+      "halfLife": 45
     },
     {
       "date": "2026-09-16",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.62,
+      "disapprove": 57.22,
+      "net": -17.61,
+      "pollCount": 160,
+      "effectivePollsters": 51,
+      "enop": 11.36,
+      "halfLife": 45
     },
     {
       "date": "2026-09-17",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.62,
+      "disapprove": 57.23,
+      "net": -17.61,
+      "pollCount": 157,
+      "effectivePollsters": 51,
+      "enop": 11.18,
+      "halfLife": 45
     },
     {
       "date": "2026-09-18",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.62,
+      "disapprove": 57.23,
+      "net": -17.61,
+      "pollCount": 157,
+      "effectivePollsters": 51,
+      "enop": 11.01,
+      "halfLife": 45
     },
     {
       "date": "2026-09-19",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.62,
+      "disapprove": 57.23,
+      "net": -17.61,
+      "pollCount": 157,
+      "effectivePollsters": 51,
+      "enop": 10.84,
+      "halfLife": 45
     },
     {
       "date": "2026-09-20",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.59,
+      "disapprove": 57.24,
+      "net": -17.65,
+      "pollCount": 153,
+      "effectivePollsters": 50,
+      "enop": 10.62,
+      "halfLife": 45
     },
     {
       "date": "2026-09-21",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.59,
+      "disapprove": 57.24,
+      "net": -17.65,
+      "pollCount": 151,
+      "effectivePollsters": 50,
+      "enop": 10.45,
+      "halfLife": 45
     },
     {
       "date": "2026-09-22",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.63,
+      "disapprove": 57.21,
+      "net": -17.58,
+      "pollCount": 150,
+      "effectivePollsters": 49,
+      "enop": 10.23,
+      "halfLife": 45
     },
     {
       "date": "2026-09-23",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.62,
+      "disapprove": 57.21,
+      "net": -17.59,
+      "pollCount": 147,
+      "effectivePollsters": 49,
+      "enop": 10.08,
+      "halfLife": 45
     },
     {
       "date": "2026-09-24",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.62,
+      "disapprove": 57.21,
+      "net": -17.59,
+      "pollCount": 147,
+      "effectivePollsters": 49,
+      "enop": 9.92,
+      "halfLife": 45
     },
     {
       "date": "2026-09-25",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.62,
+      "disapprove": 57.21,
+      "net": -17.59,
+      "pollCount": 147,
+      "effectivePollsters": 49,
+      "enop": 9.77,
+      "halfLife": 45
     },
     {
       "date": "2026-09-26",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.62,
+      "disapprove": 57.21,
+      "net": -17.59,
+      "pollCount": 146,
+      "effectivePollsters": 49,
+      "enop": 9.62,
+      "halfLife": 45
     },
     {
       "date": "2026-09-27",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.63,
+      "disapprove": 57.19,
+      "net": -17.57,
+      "pollCount": 142,
+      "effectivePollsters": 47,
+      "enop": 9.36,
+      "halfLife": 45
     },
     {
       "date": "2026-09-28",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.62,
+      "disapprove": 57.19,
+      "net": -17.57,
+      "pollCount": 141,
+      "effectivePollsters": 47,
+      "enop": 9.22,
+      "halfLife": 45
     },
     {
       "date": "2026-09-29",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.62,
+      "disapprove": 57.19,
+      "net": -17.57,
+      "pollCount": 141,
+      "effectivePollsters": 47,
+      "enop": 9.08,
+      "halfLife": 45
     },
     {
       "date": "2026-09-30",
-      "approve": 39.85,
-      "disapprove": 56.28,
-      "net": -16.43,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 39.62,
+      "disapprove": 57.19,
+      "net": -17.57,
+      "pollCount": 139,
+      "effectivePollsters": 47,
+      "enop": 8.94,
+      "halfLife": 45
     },
     {
       "date": "2026-10-01",
-      "approve": 39.28,
-      "disapprove": 56.35,
-      "net": -17.08,
-      "pollCount": 4,
-      "effectivePollsters": 4
+      "approve": 39.62,
+      "disapprove": 57.22,
+      "net": -17.59,
+      "pollCount": 138,
+      "effectivePollsters": 46,
+      "enop": 8.74,
+      "halfLife": 45
     },
     {
       "date": "2026-10-02",
-      "approve": 38.4,
-      "disapprove": 56.79,
-      "net": -18.4,
-      "pollCount": 3,
-      "effectivePollsters": 3
+      "approve": 39.62,
+      "disapprove": 57.22,
+      "net": -17.59,
+      "pollCount": 138,
+      "effectivePollsters": 46,
+      "enop": 8.61,
+      "halfLife": 45
     },
     {
       "date": "2026-10-03",
-      "approve": 38.4,
-      "disapprove": 56.79,
-      "net": -18.4,
-      "pollCount": 3,
-      "effectivePollsters": 3
+      "approve": 39.62,
+      "disapprove": 57.22,
+      "net": -17.59,
+      "pollCount": 138,
+      "effectivePollsters": 46,
+      "enop": 8.48,
+      "halfLife": 45
     },
     {
       "date": "2026-10-04",
-      "approve": 32.69,
-      "disapprove": 64.41,
-      "net": -31.72,
-      "pollCount": 4,
-      "effectivePollsters": 4
+      "approve": 38.66,
+      "disapprove": 58.29,
+      "net": -19.63,
+      "pollCount": 137,
+      "effectivePollsters": 46,
+      "enop": 9.26,
+      "halfLife": 45
     },
     {
       "date": "2026-10-05",
-      "approve": 32.69,
-      "disapprove": 64.41,
-      "net": -31.72,
-      "pollCount": 4,
-      "effectivePollsters": 4
+      "approve": 38.67,
+      "disapprove": 58.29,
+      "net": -19.62,
+      "pollCount": 135,
+      "effectivePollsters": 46,
+      "enop": 9.12,
+      "halfLife": 45
     },
     {
       "date": "2026-10-06",
-      "approve": 36.31,
-      "disapprove": 61.46,
-      "net": -25.15,
-      "pollCount": 5,
-      "effectivePollsters": 5
+      "approve": 38.88,
+      "disapprove": 58.18,
+      "net": -19.3,
+      "pollCount": 135,
+      "effectivePollsters": 46,
+      "enop": 9.4,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-07",
+      "approve": 38.86,
+      "disapprove": 58.19,
+      "net": -19.33,
+      "pollCount": 132,
+      "effectivePollsters": 46,
+      "enop": 9.26,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-08",
+      "approve": 38.86,
+      "disapprove": 58.19,
+      "net": -19.32,
+      "pollCount": 131,
+      "effectivePollsters": 46,
+      "enop": 9.12,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-09",
+      "approve": 38.86,
+      "disapprove": 58.19,
+      "net": -19.32,
+      "pollCount": 131,
+      "effectivePollsters": 46,
+      "enop": 8.98,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-10",
+      "approve": 38.86,
+      "disapprove": 58.19,
+      "net": -19.33,
+      "pollCount": 130,
+      "effectivePollsters": 46,
+      "enop": 8.84,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-11",
+      "approve": 38.88,
+      "disapprove": 58.14,
+      "net": -19.26,
+      "pollCount": 126,
+      "effectivePollsters": 44,
+      "enop": 8.58,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-12",
+      "approve": 38.88,
+      "disapprove": 58.14,
+      "net": -19.26,
+      "pollCount": 125,
+      "effectivePollsters": 44,
+      "enop": 8.45,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-13",
+      "approve": 38.88,
+      "disapprove": 58.13,
+      "net": -19.26,
+      "pollCount": 123,
+      "effectivePollsters": 43,
+      "enop": 8.26,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-14",
+      "approve": 38.87,
+      "disapprove": 58.14,
+      "net": -19.26,
+      "pollCount": 122,
+      "effectivePollsters": 43,
+      "enop": 8.13,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-15",
+      "approve": 38.87,
+      "disapprove": 58.14,
+      "net": -19.26,
+      "pollCount": 122,
+      "effectivePollsters": 43,
+      "enop": 8.01,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-16",
+      "approve": 38.88,
+      "disapprove": 58.13,
+      "net": -19.25,
+      "pollCount": 121,
+      "effectivePollsters": 43,
+      "enop": 7.89,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-17",
+      "approve": 38.89,
+      "disapprove": 58.13,
+      "net": -19.24,
+      "pollCount": 118,
+      "effectivePollsters": 43,
+      "enop": 7.77,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-18",
+      "approve": 38.95,
+      "disapprove": 58.17,
+      "net": -19.23,
+      "pollCount": 109,
+      "effectivePollsters": 41,
+      "enop": 7.52,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-19",
+      "approve": 38.95,
+      "disapprove": 58.17,
+      "net": -19.23,
+      "pollCount": 109,
+      "effectivePollsters": 41,
+      "enop": 7.41,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-20",
+      "approve": 38.95,
+      "disapprove": 58.17,
+      "net": -19.23,
+      "pollCount": 109,
+      "effectivePollsters": 41,
+      "enop": 7.3,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-21",
+      "approve": 38.94,
+      "disapprove": 58.18,
+      "net": -19.24,
+      "pollCount": 106,
+      "effectivePollsters": 41,
+      "enop": 7.18,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-22",
+      "approve": 38.92,
+      "disapprove": 58.19,
+      "net": -19.27,
+      "pollCount": 105,
+      "effectivePollsters": 41,
+      "enop": 7.07,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-23",
+      "approve": 38.92,
+      "disapprove": 58.19,
+      "net": -19.27,
+      "pollCount": 105,
+      "effectivePollsters": 41,
+      "enop": 6.97,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-24",
+      "approve": 38.88,
+      "disapprove": 58.23,
+      "net": -19.36,
+      "pollCount": 102,
+      "effectivePollsters": 41,
+      "enop": 6.86,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-25",
+      "approve": 38.84,
+      "disapprove": 58.31,
+      "net": -19.47,
+      "pollCount": 96,
+      "effectivePollsters": 39,
+      "enop": 6.63,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-26",
+      "approve": 38.88,
+      "disapprove": 58.35,
+      "net": -19.47,
+      "pollCount": 96,
+      "effectivePollsters": 41,
+      "enop": 8.53,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-27",
+      "approve": 38.88,
+      "disapprove": 58.35,
+      "net": -19.47,
+      "pollCount": 96,
+      "effectivePollsters": 41,
+      "enop": 8.4,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-28",
+      "approve": 38.88,
+      "disapprove": 58.35,
+      "net": -19.47,
+      "pollCount": 93,
+      "effectivePollsters": 41,
+      "enop": 8.27,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-29",
+      "approve": 38.87,
+      "disapprove": 58.34,
+      "net": -19.46,
+      "pollCount": 92,
+      "effectivePollsters": 41,
+      "enop": 8.15,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-30",
+      "approve": 38.67,
+      "disapprove": 58.19,
+      "net": -19.52,
+      "pollCount": 93,
+      "effectivePollsters": 42,
+      "enop": 9.02,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-10-31",
+      "approve": 38.67,
+      "disapprove": 58.19,
+      "net": -19.52,
+      "pollCount": 92,
+      "effectivePollsters": 42,
+      "enop": 8.88,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-11-01",
+      "approve": 38.68,
+      "disapprove": 58.16,
+      "net": -19.47,
+      "pollCount": 90,
+      "effectivePollsters": 41,
+      "enop": 8.69,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-11-02",
+      "approve": 38.68,
+      "disapprove": 58.16,
+      "net": -19.49,
+      "pollCount": 88,
+      "effectivePollsters": 41,
+      "enop": 8.55,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-11-03",
+      "approve": 38.68,
+      "disapprove": 58.16,
+      "net": -19.48,
+      "pollCount": 87,
+      "effectivePollsters": 41,
+      "enop": 8.42,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-11-04",
+      "approve": 38.68,
+      "disapprove": 58.14,
+      "net": -19.47,
+      "pollCount": 86,
+      "effectivePollsters": 40,
+      "enop": 8.23,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-11-05",
+      "approve": 38.68,
+      "disapprove": 58.14,
+      "net": -19.47,
+      "pollCount": 86,
+      "effectivePollsters": 40,
+      "enop": 8.11,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-11-06",
+      "approve": 38.38,
+      "disapprove": 58.57,
+      "net": -20.2,
+      "pollCount": 87,
+      "effectivePollsters": 41,
+      "enop": 8.98,
+      "halfLife": 45
+    },
+    {
+      "date": "2026-11-07",
+      "approve": 38.34,
+      "disapprove": 58.6,
+      "net": -20.26,
+      "pollCount": 86,
+      "effectivePollsters": 40,
+      "enop": 8.8,
+      "halfLife": 45
     }
   ],
   "recentPolls": [
     {
-      "id": "appdonrmgb3a47853",
+      "id": "pollfinity:economistyougov-2026-11-07-36-62",
+      "pollster": "Economist/YouGov",
+      "endDate": "2026-11-07",
+      "startDate": "2026-11-07",
+      "population": "a",
+      "sampleSize": null,
+      "approve": 36,
+      "disapprove": 62,
+      "net": -26,
+      "weight": 0.5039,
+      "url": null,
+      "sources": [
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "pollfinity:economistyougov-2026-11-06-36-62",
+      "pollster": "Economist/YouGov",
+      "endDate": "2026-11-06",
+      "startDate": "2026-11-06",
+      "population": "a",
+      "sampleSize": null,
+      "approve": 36,
+      "disapprove": 62,
+      "net": -26,
+      "weight": 0.4961,
+      "url": null,
+      "sources": [
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "pollfinity:emersoncollegepolling-2026-10-30-37-57",
+      "pollster": "Emerson College Polling",
+      "endDate": "2026-10-30",
+      "startDate": "2026-10-30",
+      "population": "a",
+      "sampleSize": null,
+      "approve": 37,
+      "disapprove": 57,
+      "net": -20,
+      "weight": 0.8841,
+      "url": null,
+      "sources": [
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "pollfinity:harvardcapsharrispoll-2026-10-26-39-59",
+      "pollster": "Harvard CAPS-Harris Poll",
+      "endDate": "2026-10-26",
+      "startDate": "2026-10-26",
+      "population": "a",
+      "sampleSize": 2700,
+      "approve": 39,
+      "disapprove": 59,
+      "net": -20,
+      "weight": 0.8312,
+      "url": null,
+      "sources": [
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "pollfinity:yougovtheeconomist-2026-10-26-39-58",
+      "pollster": "YouGov / The Economist",
+      "endDate": "2026-10-26",
+      "startDate": "2026-10-26",
+      "population": "a",
+      "sampleSize": 1440,
+      "approve": 39,
+      "disapprove": 58,
+      "net": -19,
+      "weight": 0.8312,
+      "url": null,
+      "sources": [
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "votehub:appdonrmgb3a47853",
       "pollster": "RMG Research",
       "endDate": "2026-10-06",
       "startDate": "2026-09-28",
@@ -1499,11 +2478,14 @@
       "approve": 43,
       "disapprove": 56,
       "net": -13,
-      "weight": 1.5652,
-      "url": "https://napolitannews.org/jobapproval#10-06-2026"
+      "weight": 0.1733,
+      "url": "https://napolitannews.org/jobapproval#10-06-2026",
+      "sources": [
+        "votehub"
+      ]
     },
     {
-      "id": "appdonpewda7eda24",
+      "id": "votehub:appdonpewda7eda24",
       "pollster": "Pew Research Center",
       "endDate": "2026-10-04",
       "startDate": "2026-09-30",
@@ -1512,11 +2494,14 @@
       "approve": 30,
       "disapprove": 68,
       "net": -38,
-      "weight": 1.9658,
-      "url": "https://www.pewresearch.org/politics/2026/10/08/with-americans-in-a-sour-mood-democratic-voters-are-more-engaged-in-midterms"
+      "weight": 0.5923,
+      "url": "https://www.pewresearch.org/politics/2026/10/08/with-americans-in-a-sour-mood-democratic-voters-are-more-engaged-in-midterms",
+      "sources": [
+        "votehub"
+      ]
     },
     {
-      "id": "us-dontip0ec7e1c5",
+      "id": "votehub:us-dontip0ec7e1c5",
       "pollster": "TIPP Insights",
       "endDate": "2026-08-28",
       "startDate": "2026-08-25",
@@ -1525,24 +2510,14 @@
       "approve": 38,
       "disapprove": 52,
       "net": -14,
-      "weight": 0.3517,
-      "url": "https://issuesinsights.com/2026/08/31/trumps-voter-approval-stays-strong-with-gop-but-weakens-with-indie-voters-ii-tipp-poll/"
+      "weight": 0.2674,
+      "url": "https://issuesinsights.com/2026/08/31/trumps-voter-approval-stays-strong-with-gop-but-weakens-with-indie-voters-ii-tipp-poll/",
+      "sources": [
+        "votehub"
+      ]
     },
     {
-      "id": "appdonyou5d559444",
-      "pollster": "YouGov",
-      "endDate": "2026-08-24",
-      "startDate": "2026-08-21",
-      "population": "rv",
-      "sampleSize": 1379,
-      "approve": 40,
-      "disapprove": 57,
-      "net": -17,
-      "weight": 0.3144,
-      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econTabReport_v7iliA1.pdf#page=31"
-    },
-    {
-      "id": "appdonips081c616d",
+      "id": "votehub:appdonips081c616d",
       "pollster": "Ipsos",
       "endDate": "2026-08-24",
       "startDate": "2026-08-21",
@@ -1551,8 +2526,667 @@
       "approve": 37,
       "disapprove": 63,
       "net": -26,
-      "weight": 0.2611,
-      "url": "https://www.ipsos.com/en-us/americans-continue-expect-extended-us-military-involvement-iran"
+      "weight": 0.1125,
+      "url": "https://www.ipsos.com/en-us/americans-continue-expect-extended-us-military-involvement-iran",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonyou5d559444",
+      "pollster": "YouGov",
+      "endDate": "2026-08-24",
+      "startDate": "2026-08-21",
+      "population": "rv",
+      "sampleSize": 1379,
+      "approve": 40,
+      "disapprove": 57,
+      "net": -17,
+      "weight": 0.0759,
+      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econTabReport_v7iliA1.pdf#page=31",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonrmga41ef363",
+      "pollster": "RMG Research",
+      "endDate": "2026-08-17",
+      "startDate": "2026-08-10",
+      "population": "rv",
+      "sampleSize": 2000,
+      "approve": 42,
+      "disapprove": 55,
+      "net": -13,
+      "weight": 0.0802,
+      "url": "https://napolitannews.org/jobapproval#08-17-2026",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonnob90e4a532",
+      "pollster": "Noble Predictive Insights",
+      "endDate": "2026-08-16",
+      "startDate": "2026-08-12",
+      "population": "rv",
+      "sampleSize": 2533,
+      "approve": 42,
+      "disapprove": 56,
+      "net": -14,
+      "weight": 0.2097,
+      "url": "https://www.thecentersquare.com/polls#08-16-2026",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonyou319bfe49",
+      "pollster": "YouGov",
+      "endDate": "2026-06-29",
+      "startDate": "2026-06-26",
+      "population": "rv",
+      "sampleSize": 1428,
+      "approve": 40,
+      "disapprove": 58,
+      "net": -18,
+      "weight": 0.0326,
+      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econTabReport_1tbbxVr.pdf#page=4",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonbig21afe736",
+      "pollster": "Big Data Poll",
+      "endDate": "2026-06-28",
+      "startDate": "2026-06-26",
+      "population": "lv",
+      "sampleSize": 2604,
+      "approve": 44.4,
+      "disapprove": 53.3,
+      "net": -8.9,
+      "weight": 0.0797,
+      "url": "https://www.bigdatapoll.com/blog/trump-bump-voters-overwhelmingly-support-iran-peace-deal/",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonmcl82c5b1de",
+      "pollster": "McLaughlin & Associates",
+      "endDate": "2026-06-23",
+      "startDate": "2026-06-17",
+      "population": "lv",
+      "sampleSize": 1000,
+      "approve": 46,
+      "disapprove": 50,
+      "net": -4,
+      "weight": 0.077,
+      "url": "https://mclaughlinonline.com/pols/wp-content/uploads/2026/06/National-June-Presentation-RELEASE-June-2026.pdf",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonrmgbdce1d04",
+      "pollster": "RMG Research",
+      "endDate": "2026-06-23",
+      "startDate": "2026-06-16",
+      "population": "rv",
+      "sampleSize": 3000,
+      "approve": 43,
+      "disapprove": 55,
+      "net": -12,
+      "weight": 0.0421,
+      "url": "https://napolitannews.org/jobapproval",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonvera0a8d3f8",
+      "pollster": "Verasight",
+      "endDate": "2026-06-22",
+      "startDate": "2026-06-17",
+      "population": "a",
+      "sampleSize": 2087,
+      "approve": 37,
+      "disapprove": 60,
+      "net": -23,
+      "weight": 0.079,
+      "url": "https://www.gelliottmorris.com/p/poll",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonquic94c3045",
+      "pollster": "Quinnipiac University",
+      "endDate": "2026-06-22",
+      "startDate": "2026-06-18",
+      "population": "rv",
+      "sampleSize": 1165,
+      "approve": 38,
+      "disapprove": 55,
+      "net": -17,
+      "weight": 0.0761,
+      "url": "https://poll.qu.edu/poll-release?releaseid=3961",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonech4ae9eee2",
+      "pollster": "Echelon Insights",
+      "endDate": "2026-06-22",
+      "startDate": "2026-06-18",
+      "population": "lv",
+      "sampleSize": 1003,
+      "approve": 41,
+      "disapprove": 58,
+      "net": -17,
+      "weight": 0.0483,
+      "url": "https://echeloninsights.com/insights/june-2026-america-250-verified-voter-omnibus",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonips8b682645",
+      "pollster": "Ipsos",
+      "endDate": "2026-06-22",
+      "startDate": "2026-06-18",
+      "population": "rv",
+      "sampleSize": 978,
+      "approve": 34,
+      "disapprove": 64,
+      "net": -30,
+      "weight": 0.0432,
+      "url": "https://www.reuters.com/data/trumps-approval-rating-2025-01-21/",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonyoub2fe3e15",
+      "pollster": "YouGov",
+      "endDate": "2026-06-22",
+      "startDate": "2026-06-19",
+      "population": "rv",
+      "sampleSize": 1517,
+      "approve": 39,
+      "disapprove": 58,
+      "net": -19,
+      "weight": 0.0302,
+      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econTabReport_v8p0Pe8.pdf#page=4",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonmord01ba943",
+      "pollster": "Morning Consult",
+      "endDate": "2026-06-22",
+      "startDate": "2026-06-19",
+      "population": "rv",
+      "sampleSize": 2200,
+      "approve": 43.1,
+      "disapprove": 54.3,
+      "net": -11.2,
+      "weight": 0.0258,
+      "url": "https://pro-assets.morningconsult.com/wp-uploads/2026/06/MCPI-PI-Weekly_260622.html",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonj.l5a345c41",
+      "pollster": "J.L. Partners",
+      "endDate": "2026-06-21",
+      "startDate": "2026-06-19",
+      "population": "rv",
+      "sampleSize": 1042,
+      "approve": 47,
+      "disapprove": 53,
+      "net": -6,
+      "weight": 0.0743,
+      "url": "https://www.dailymail.com/news/article-15921233/trump-approval-bounces-iran-deal.html",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonameea0e73fc",
+      "pollster": "American Research Group",
+      "endDate": "2026-06-20",
+      "startDate": "2026-06-16",
+      "population": "rv",
+      "sampleSize": 1006,
+      "approve": 30,
+      "disapprove": 67,
+      "net": -37,
+      "weight": 0.0714,
+      "url": "https://americanresearchgroup.com/economy/",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonyoub00f2735",
+      "pollster": "YouGov",
+      "endDate": "2026-06-19",
+      "startDate": "2026-06-17",
+      "population": "a",
+      "sampleSize": 2519,
+      "approve": 38,
+      "disapprove": 62,
+      "net": -24,
+      "weight": 0.0354,
+      "url": "https://assets1.cbsnewsstatic.com/hub/cms/prod_cms_alt/file/2026/06/21/90063c95-6d0a-4a28-b9ab-528e08940916/cbsnews_20260621_sun.pdf",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonrmg0715e331",
+      "pollster": "RMG Research",
+      "endDate": "2026-06-18",
+      "startDate": "2026-06-10",
+      "population": "rv",
+      "sampleSize": 3000,
+      "approve": 43,
+      "disapprove": 55,
+      "net": -12,
+      "weight": 0.039,
+      "url": "https://napolitannews.org/jobapproval#06-18-2026",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonap-6dc2cc83",
+      "pollster": "AP-NORC",
+      "endDate": "2026-06-17",
+      "startDate": "2026-06-11",
+      "population": "a",
+      "sampleSize": 3040,
+      "approve": 37,
+      "disapprove": 62,
+      "net": -25,
+      "weight": 0.08,
+      "url": "https://apnorc.org/wp-content/uploads/2026/06/June-2026-Topline.pdf",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonqua1fbaf73b",
+      "pollster": "Quantus Insights",
+      "endDate": "2026-06-17",
+      "startDate": "2026-06-16",
+      "population": "lv",
+      "sampleSize": 1000,
+      "approve": 43,
+      "disapprove": 56,
+      "net": -13,
+      "weight": 0.0609,
+      "url": "https://polls.quantusinsights.org/polls/national-approval-june-17?tab=toplines",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonthe259afea8",
+      "pollster": "The Bullfinch Group",
+      "endDate": "2026-06-16",
+      "startDate": "2026-06-12",
+      "population": "rv",
+      "sampleSize": 1000,
+      "approve": 42,
+      "disapprove": 56,
+      "net": -14,
+      "weight": 0.0603,
+      "url": "https://cdn.prod.website-files.com/68f64c3625044325e169d107/6a3583631f77734f69af70c8_2026%20IC%20Nationwide%20News%20Survey%20Toplines%20(1).pdf",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonmar846f107b",
+      "pollster": "Marquette University Law School",
+      "endDate": "2026-06-15",
+      "startDate": "2026-06-09",
+      "population": "a",
+      "sampleSize": 1514,
+      "approve": 38,
+      "disapprove": 62,
+      "net": -24,
+      "weight": 0.0704,
+      "url": "https://law.marquette.edu/poll/",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonbea7035f2d9",
+      "pollster": "Beacon Research/Shaw & Co. Research",
+      "endDate": "2026-06-15",
+      "startDate": "2026-06-12",
+      "population": "rv",
+      "sampleSize": 1002,
+      "approve": 39,
+      "disapprove": 60,
+      "net": -21,
+      "weight": 0.065,
+      "url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/06/fox_june-12-15-2026_national_topline_june-17-release.pdf",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonipsb35d6ff5",
+      "pollster": "Ipsos",
+      "endDate": "2026-06-15",
+      "startDate": "2026-06-12",
+      "population": "rv",
+      "sampleSize": 1195,
+      "approve": 40,
+      "disapprove": 60,
+      "net": -20,
+      "weight": 0.0429,
+      "url": "https://www.ipsos.com/sites/default/files/ct/news/documents/2026-06/Reuters%20Ipsos%20America%20250%20Poll%20Topline%20June%202026_0.pdf",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonyouf5029f98",
+      "pollster": "YouGov",
+      "endDate": "2026-06-15",
+      "startDate": "2026-06-13",
+      "population": "rv",
+      "sampleSize": 1403,
+      "approve": 41,
+      "disapprove": 56,
+      "net": -15,
+      "weight": 0.0261,
+      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econTabReport_GpnDRNm.pdf#page=47",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonmor53d7f039",
+      "pollster": "Morning Consult",
+      "endDate": "2026-06-15",
+      "startDate": "2026-06-12",
+      "population": "rv",
+      "sampleSize": 2200,
+      "approve": 43.1,
+      "disapprove": 53.4,
+      "net": -10.3,
+      "weight": 0.0231,
+      "url": "https://pro-assets.morningconsult.com/wp-uploads/2026/06/MCPI-PI-Weekly_260622.html",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonech98624dac",
+      "pollster": "Echelon Insights",
+      "endDate": "2026-06-14",
+      "startDate": "2026-06-11",
+      "population": "lv",
+      "sampleSize": 1012,
+      "approve": 40,
+      "disapprove": 59,
+      "net": -19,
+      "weight": 0.0429,
+      "url": "https://echeloninsights.com/hubfs/_Media%20for%20Insights%20Blog/June%202026%20Voter%20Omnibus%20Topline%20-%20External.pdf",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonmarc2ce770a",
+      "pollster": "Marist University",
+      "endDate": "2026-06-11",
+      "startDate": "2026-06-08",
+      "population": "rv",
+      "sampleSize": 1162,
+      "approve": 38,
+      "disapprove": 59,
+      "net": -21,
+      "weight": 0.1008,
+      "url": "https://maristpoll.marist.edu/wp-content/uploads/2026/06/NPR_PBS-News_Marist-Poll_USA-NOS-and-Tables_202606120857.pdf",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonrmg65905496",
+      "pollster": "RMG Research",
+      "endDate": "2026-06-11",
+      "startDate": "2026-06-03",
+      "population": "rv",
+      "sampleSize": 3000,
+      "approve": 42,
+      "disapprove": 56,
+      "net": -14,
+      "weight": 0.035,
+      "url": "https://napolitannews.org/jobapproval#06-11-2026",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonipsafe1f92e",
+      "pollster": "Ipsos",
+      "endDate": "2026-06-08",
+      "startDate": "2026-06-03",
+      "population": "rv",
+      "sampleSize": 3578,
+      "approve": 38,
+      "disapprove": 61,
+      "net": -23,
+      "weight": 0.0666,
+      "url": "https://www.ipsos.com/sites/default/files/ct/news/documents/2026-06/Reuters%20Ipsos%20Large%20Issue%20Topline%20June%202026%206.8%20release.pdf",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonglo438a47fc",
+      "pollster": "Global Strategy Group",
+      "endDate": "2026-06-08",
+      "startDate": "2026-06-04",
+      "population": "rv",
+      "sampleSize": 1000,
+      "approve": 40,
+      "disapprove": 58,
+      "net": -18,
+      "weight": 0.0558,
+      "url": "https://navigatorresearch.org/wp-content/uploads/2026/06/Navigator-Update-06.15.2026.pdf",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonemeab263756",
+      "pollster": "Emerson College",
+      "endDate": "2026-06-08",
+      "startDate": "2026-06-07",
+      "population": "lv",
+      "sampleSize": 1200,
+      "approve": 39.4,
+      "disapprove": 54.6,
+      "net": -15.2,
+      "weight": 0.0554,
+      "url": "https://docs.google.com/spreadsheets/d/1OdhDSPbsk575neEvXB2v103QdfEAE8l-/edit?gid=1710999602#gid=1710999602",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonyoudd7ff04e",
+      "pollster": "YouGov",
+      "endDate": "2026-06-08",
+      "startDate": "2026-06-05",
+      "population": "rv",
+      "sampleSize": 1438,
+      "approve": 39,
+      "disapprove": 59,
+      "net": -20,
+      "weight": 0.0237,
+      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econTabReport_nvajahp.pdf#page=16",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonmor94b82fbd",
+      "pollster": "Morning Consult",
+      "endDate": "2026-06-08",
+      "startDate": "2026-06-06",
+      "population": "rv",
+      "sampleSize": 2200,
+      "approve": 44,
+      "disapprove": 54,
+      "net": -10,
+      "weight": 0.0208,
+      "url": "https://pro-assets.morningconsult.com/wp-uploads/2026/06/MCPI-PI-Weekly_260609.html#06-08-2026",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonhar2d99bbc2",
+      "pollster": "HarrisX",
+      "endDate": "2026-06-07",
+      "startDate": "2026-05-20",
+      "population": "lv",
+      "sampleSize": 1137,
+      "approve": 44,
+      "disapprove": 54,
+      "net": -10,
+      "weight": 0.0947,
+      "url": "https://www.harrisx.com/content/forbes-harrisx-american-confidence-tracker-june-2026#06-07-2026",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonhar035e6496",
+      "pollster": "Hart Research Associates/Public Opinion Strategies",
+      "endDate": "2026-06-07",
+      "startDate": "2026-05-29",
+      "population": "rv",
+      "sampleSize": 2400,
+      "approve": 42,
+      "disapprove": 57,
+      "net": -15,
+      "weight": 0.0947,
+      "url": "https://www.documentcloud.org/documents/28246606-260216-nbc-june-2026-poll-61426-release",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonres6259e65c",
+      "pollster": "Research Co.",
+      "endDate": "2026-06-06",
+      "startDate": "2026-06-04",
+      "population": "a",
+      "sampleSize": 1001,
+      "approve": 38,
+      "disapprove": 57,
+      "net": -19,
+      "weight": 0.0933,
+      "url": "https://researchco.ca/wp-content/uploads/2026/06/Tables_Politics_USA_15Jun2026.pdf",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonclad90d3abf",
+      "pollster": "Clarity Campaign Labs",
+      "endDate": "2026-06-05",
+      "startDate": "2026-05-28",
+      "population": "lv",
+      "sampleSize": 1045,
+      "approve": 40,
+      "disapprove": 58,
+      "net": -18,
+      "weight": 0.0919,
+      "url": "https://www.claritycampaigns.com/clarity-omnibus-2026-may",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonnob95ec3b7f",
+      "pollster": "Noble Predictive Insights",
+      "endDate": "2026-06-04",
+      "startDate": "2026-06-01",
+      "population": "rv",
+      "sampleSize": 2585,
+      "approve": 40,
+      "disapprove": 58,
+      "net": -18,
+      "weight": 0.0688,
+      "url": "https://www.thecentersquare.com/national/article_068f34af-cac1-4328-b582-915d04044322.html",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonrmga1d490a7",
+      "pollster": "RMG Research",
+      "endDate": "2026-06-04",
+      "startDate": "2026-05-26",
+      "population": "rv",
+      "sampleSize": 3000,
+      "approve": 44,
+      "disapprove": 55,
+      "net": -11,
+      "weight": 0.0314,
+      "url": "https://napolitannews.org/jobapproval#06-04-2026",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonthe0b6c3d57",
+      "pollster": "The Argument/Verasight",
+      "endDate": "2026-06-03",
+      "startDate": "2026-05-29",
+      "population": "rv",
+      "sampleSize": 3008,
+      "approve": 38,
+      "disapprove": 61,
+      "net": -23,
+      "weight": 0.0891,
+      "url": "https://www.theargumentmag.com/p/the-biggest-issue-in-american-politics",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdontheb893ec9c",
+      "pollster": "The Winston Group",
+      "endDate": "2026-06-02",
+      "startDate": "2026-05-30",
+      "population": "rv",
+      "sampleSize": 1000,
+      "approve": 37,
+      "disapprove": 58,
+      "net": -21,
+      "weight": 0.0684,
+      "url": "https://www.winningtheissues.org/wp-content/uploads/2026/06/May-2026-Winning-the-Issues-Survey.pdf",
+      "sources": [
+        "votehub"
+      ]
     }
   ]
 }

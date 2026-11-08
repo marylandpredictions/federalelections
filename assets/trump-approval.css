@@ -68,6 +68,38 @@
   margin-bottom: 8px;
 }
 
+.approval-view-toggle {
+  display: inline-flex;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--paper-2) 88%, transparent);
+}
+
+.approval-view-toggle button {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 800;
+  font-size: .82rem;
+  cursor: pointer;
+}
+
+.approval-view-toggle button.is-active {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.approval-view-toggle button:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
 .approval-summary-heading .kicker,
 .approval-section-heading .kicker {
   margin: 0 0 8px;
@@ -156,7 +188,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .approval-chart .grid line {
@@ -169,25 +201,39 @@
   font: 600 12px Telegraf, "Segoe UI", sans-serif;
 }
 
-.approval-chart .series-approve {
+.approval-chart .series-approve,
+.approval-chart .series-disapprove,
+.approval-chart .series-net {
   fill: none;
-  stroke: var(--approve);
   stroke-width: 2.6;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
 
-.approval-chart .series-disapprove {
-  fill: none;
-  stroke: var(--disapprove);
-  stroke-width: 2.6;
-  stroke-linejoin: round;
-  stroke-linecap: round;
+.approval-chart .series-approve { stroke: var(--approve); }
+.approval-chart .series-disapprove { stroke: var(--disapprove); }
+.approval-chart .series-net { stroke: #d7def7; }
+
+.approval-chart .zero-line {
+  stroke: color-mix(in srgb, var(--ink) 45%, transparent);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 4;
+}
+
+.approval-chart .cursor-line {
+  stroke: color-mix(in srgb, var(--ink) 55%, transparent);
+  stroke-width: 1;
+  pointer-events: none;
 }
 
 .approval-chart .hit {
   fill: transparent;
   cursor: crosshair;
+  outline: none;
+}
+
+.approval-chart .hit:focus {
+  outline: none;
 }
 
 .approval-chart .marker {
@@ -198,6 +244,7 @@
 
 .approval-chart .marker-approve { stroke: var(--approve); }
 .approval-chart .marker-disapprove { stroke: var(--disapprove); }
+.approval-chart .marker-net { stroke: #d7def7; }
 
 .approval-tooltip {
   position: absolute;
@@ -225,7 +272,8 @@
 }
 
 .approval-legend-approve::before,
-.approval-legend-disapprove::before {
+.approval-legend-disapprove::before,
+.approval-legend-net::before {
   content: "";
   display: inline-block;
   width: 18px;
@@ -237,6 +285,7 @@
 
 .approval-legend-approve::before { background: var(--approve); }
 .approval-legend-disapprove::before { background: var(--disapprove); }
+.approval-legend-net::before { background: #d7def7; }
 
 .approval-table-wrap {
   overflow-x: auto;

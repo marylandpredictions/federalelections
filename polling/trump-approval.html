@@ -6,8 +6,8 @@
 <link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
 <script src="/assets/theme.js?v=20261030-features2"></script>
 <link rel="stylesheet" href="/assets/wiki.css?v=20261030-features1">
-<link rel="stylesheet" href="/assets/trump-approval.css?v=20261108-approval1">
-<script defer src="/assets/trump-approval.js?v=20261108-approval1"></script>
+<link rel="stylesheet" href="/assets/trump-approval.css?v=20261108-approval3">
+<script defer src="/assets/trump-approval.js?v=20261108-approval3"></script>
 </head><body>
 <header class="site-header">
     <a class="brand" href="/">
@@ -28,7 +28,7 @@
   <p class="kicker">Polling averages</p>
   <h1>Trump job approval.</h1>
   <p class="lede">FEA’s weighted average of public VoteHub approval polls — not a forecast, and not VoteHub’s own published average.</p>
-  <p class="approval-source">Source: <a href="https://votehub.com/polls/api/" target="_blank" rel="noopener noreferrer">VoteHub public polls API ↗</a> · CC BY 4.0</p>
+  <p class="approval-source">Sources: <a href="https://votehub.com/polls/api/" target="_blank" rel="noopener noreferrer">VoteHub ↗</a> (CC BY 4.0) and <a href="https://pollfinity.com/averages.json" target="_blank" rel="noopener noreferrer">Pollfinity ↗</a>; duplicates removed before averaging.</p>
 </header>
 
 <section class="approval-summary" aria-labelledby="approval-current-title">
@@ -60,14 +60,18 @@
       <p class="kicker">Trend</p>
       <h2 id="approval-chart-title">Approval over time</h2>
     </div>
+    <div class="approval-view-toggle" role="group" aria-label="Chart series">
+      <button type="button" id="approval-view-split" class="is-active" aria-pressed="true">Approve / disapprove</button>
+      <button type="button" id="approval-view-net" aria-pressed="false">Net approval</button>
+    </div>
   </div>
-  <p class="approval-chart-guide">Rolling 45-day weighted average. Hover or focus the chart for a daily reading.</p>
+  <p id="approval-chart-guide" class="approval-chart-guide">Soft-decay weighted average. Hover or focus the chart for a daily reading.</p>
   <div id="approval-chart" class="approval-chart" aria-busy="true">Loading chart…</div>
   <aside id="approval-tooltip" class="approval-tooltip" role="tooltip" hidden>
     <strong id="approval-tooltip-date"></strong>
     <p id="approval-tooltip-values"></p>
   </aside>
-  <div class="approval-legend" aria-label="Series legend">
+  <div id="approval-legend" class="approval-legend" aria-label="Series legend">
     <span class="approval-legend-approve">Approve</span>
     <span class="approval-legend-disapprove">Disapprove</span>
   </div>
@@ -93,6 +97,7 @@
           <th scope="col">Disapprove</th>
           <th scope="col">Net</th>
           <th scope="col">Weight</th>
+          <th scope="col">Sources</th>
         </tr>
       </thead>
       <tbody id="approval-poll-rows"></tbody>
