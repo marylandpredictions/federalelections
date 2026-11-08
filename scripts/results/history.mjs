@@ -39,8 +39,8 @@ export class CountyHistory {
     const previous = this.latest.get(race.id),
       changes = [];
     for (const county of race.counties || []) {
-      if (!/^(county|town|city|municipality|township|minor civil division|cousub)$/i.test(county.type || 'County')) continue;
-      if (!/^(?:\d{5}|\d{10})$/.test(county.fips)) continue;
+      if (!/^(county|town|city|municipality|township|minor civil division|cousub|state house district|overseas absentee)$/i.test(county.type || 'County')) continue;
+      if (!/^(?:\d{5}|\d{10}|AK-HD-(?:0[1-9]|[1-3]\d|40)|AK-OA)$/.test(county.fips)) continue;
       if (!previous.has(county.fips)) {
         const prior = this.read(race.id, county.fips).at(-1);
         previous.set(county.fips, prior ? resultSignature(prior) : null);
@@ -70,7 +70,7 @@ export class CountyHistory {
     return changes;
   }
   read(id, fips = "") {
-    if (!/^[\w-]+$/.test(id) || !/^(?:\d{5}|\d{10})$/.test(fips)) return [];
+    if (!/^[\w-]+$/.test(id) || !/^(?:\d{5}|\d{10}|AK-HD-(?:0[1-9]|[1-3]\d|40)|AK-OA)$/.test(fips)) return [];
     try {
       return readFileSync(join(this.directory, id, `${fips}.ndjson`), "utf8")
         .trim()

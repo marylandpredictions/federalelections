@@ -292,15 +292,22 @@ window.FEAEnhanceBoard = function (Page) {
   p.loadCountyFeatures = async function (state) {
     const fips = stateFipsForElectionNight(state || this.currentRace?.state);
     if (!fips) return [];
-    if (!this.countyGeometries.has(fips)) {
-      const file = this.mapAssets?.municipalities?.[fips]?.path || this.mapAssets?.counties?.[fips];
+    const detail = this.currentRace && this.liveRaceDetails?.get(this.currentRace.id);
+    const usesDistricts = (detail?.counties || this.currentRace?.counties || []).some(
+      (county) => /^AK-HD-/.test(county.fips || "") || county.type === "State House District",
+    );
+    const cacheKey = usesDistricts ? `sldl-${fips}` : fips;
+    if (!this.countyGeometries.has(cacheKey)) {
+      const file = usesDistricts
+        ? this.mapAssets?.legislativeDistricts?.[fips]?.path
+        : this.mapAssets?.municipalities?.[fips]?.path || this.mapAssets?.counties?.[fips];
       this.countyGeometries.set(
-        fips,
+        cacheKey,
         file ? (await this.safeJson(file))?.features || [] : [],
       );
       while(this.countyGeometries.size>6)this.countyGeometries.delete(this.countyGeometries.keys().next().value);
     }
-    const features=this.countyGeometries.get(fips);this.countyGeometries.delete(fips);this.countyGeometries.set(fips,features);return features;
+    const features=this.countyGeometries.get(cacheKey);this.countyGeometries.delete(cacheKey);this.countyGeometries.set(cacheKey,features);return features;
   };
   p.safeJson = async function (url) {
     const deadline=url.startsWith('/api/')?requestDeadline():null;
@@ -810,6 +817,8 @@ window.FEAEnhanceBoard = function (Page) {
         };
       })};
     }
+    if ((data.counties || []).some((county) => /^AK-HD-/.test(county.fips || "") || county.type === "State House District"))
+      return { ...data, districtReporting: true };
     return data;
   };
   p.renderFocusedRace = function (race) {
@@ -865,9 +874,14 @@ window.FEAEnhanceBoard = function (Page) {
       "demographics",
     ];
     if (!tabs.includes(this.focusedPanelTab)) this.focusedPanelTab = "results";
+    const unitLabel = data.localReporting
+      ? { tab: "Towns / cities", select: "town or city", clear: "town / city", awaiting: "local" }
+      : data.districtReporting
+        ? { tab: "House districts", select: "House district", clear: "district", awaiting: "district" }
+        : { tab: "counties", select: "county", clear: "county", awaiting: "county" };
     const tabLabel = {
       results: "results",
-      counties: data.localReporting ? "Towns / cities" : "counties",
+      counties: unitLabel.tab,
       trends: "trends",
       probability: "Probability",
       demographics: "demographics",
@@ -878,9 +892,9 @@ window.FEAEnhanceBoard = function (Page) {
     if (this.focusedPanelTab === "counties")
       body = county
         ? this.countyMarkup(data, county)
-        : `<p class="desk-hint">Select a ${data.localReporting ? 'town or city' : 'county'} on the map or below to keep its results open.</p><div class="county-list">${counties.map((c) => `<button type="button" data-county-fips="${esc(c.fips)}"><span>${esc(c.name)}</span><strong>${FEADesk.total(c) ? fmt(FEADesk.total(c)) : '—'}</strong></button>`).join("")}</div>`;
+        : `<p class="desk-hint">Select a ${unitLabel.select} on the map or below to keep its results open.</p><div class="county-list">${counties.map((c) => `<button type="button" data-county-fips="${esc(c.fips)}"><span>${esc(c.name)}</span><strong>${FEADesk.total(c) ? fmt(FEADesk.total(c)) : '—'}</strong></button>`).join("")}</div>`;
     if (this.focusedPanelTab === "trends")
-      body = `${county ? `<p>${esc(county.name)} · <button type="button" data-unlock-county>Clear ${data.localReporting?'town / city':'county'}</button></p>` : ""}<label class="trend-mode-label">Chart <select data-trend-mode aria-label="Trend metric">${[
+      body = `${county ? `<p>${esc(county.name)} · <button type="button" data-unlock-county>Clear ${unitLabel.clear}</button></p>` : ""}<label class="trend-mode-label">Chart <select data-trend-mode aria-label="Trend metric">${[
         ["total", "Total votes"],
         ["share", "Candidate vote share"],
         ["margin", "D−R vote margin"],
@@ -1023,8 +1037,11 @@ window.FEAEnhanceBoard = function (Page) {
     )}${m.batchShares.length ? `<div class="vote-batch"><small>Votes added in latest update</small>${m.batchShares.map((c) => `<span>${esc(c.name)} <b>${percent(c.share)}</b></span>`).join("")}</div>` : ""}</details>${data.provider === "NBC" ? '<p class="race-attribution">Results via NBC News</p>' : data.provider === 'CivicAPI' ? '<p class="race-attribution">Vote totals via <a href="https://www.civicapi.org/results/elections/november-3-2026" target="_blank" rel="noopener">CivicAPI</a> · Secondary source. NBC calls remain separate. County detail stays at its last verified update.</p>' : ""}`;
   };
   p.countyMarkup = function (race, county) {
-    if (!FEADesk.total(county))
-      return `<div class="county-heading"><h3>${esc(county.name)}</h3><button type="button" data-unlock-county>Clear ${race.localReporting ? 'town / city' : 'county'}</button></div><p class="desk-hint">Awaiting ${race.localReporting ? 'local' : 'county'} results.</p>${county.candidates?.length ? this.candidateTable(county) : ''}`;
+    const clear = race.localReporting ? 'town / city' : race.districtReporting ? 'district' : 'county';
+    if (!FEADesk.total(county)) {
+      const awaiting = race.localReporting ? 'local' : race.districtReporting ? 'district' : 'county';
+      return `<div class="county-heading"><h3>${esc(county.name)}</h3><button type="button" data-unlock-county>Clear ${clear}</button></div><p class="desk-hint">Awaiting ${awaiting} results.</p>${county.candidates?.length ? this.candidateTable(county) : ''}`;
+    }
     const baseline =
       race.type !== "house"
         ? this.comparisonData
@@ -1035,7 +1052,7 @@ window.FEAEnhanceBoard = function (Page) {
         this.countyHistories?.get(`${race.id}:${county.fips}`) || [],
       previous = history.length > 1 ? history.at(-2) : null,
       m = FEADesk.metrics(county, previous, baseline);
-    return `<div class="county-heading"><h3>${esc(county.name)}</h3><button type="button" data-unlock-county>Clear ${race.localReporting?'town / city':'county'}</button></div>${this.candidateTable(county)}${this.facts(
+    return `<div class="county-heading"><h3>${esc(county.name)}</h3><button type="button" data-unlock-county>Clear ${clear}</button></div>${this.candidateTable(county)}${this.facts(
       [
         ["Votes counted", fmt(m.votes)],
         [

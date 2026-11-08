@@ -90,7 +90,7 @@ test('Alaska overseas absentee totals remain a separate non-county reporting uni
  assert.throws(()=>parseNbcNativeReportingUnits(p,r),/duplicate Alaska/);
 });
 
-test('Native Alaska model inputs persist through restart/outage without leaking into public county geometry or deltas',async t=>{
+test('Native Alaska model inputs persist through restart/outage and publish House districts without Census FIPS',async t=>{
  const root=await mkdtemp(join(tmpdir(),'fea-native-units-'));
  t.after(()=>rm(root,{recursive:true,force:true}));
  await mkdir(join(root,'data'));await mkdir(join(root,'disk'));
@@ -109,17 +109,20 @@ test('Native Alaska model inputs persist through restart/outage without leaking 
  const ids=Array.from({length:40},(_,i)=>'AK-HD-'+String(i+1).padStart(2,'0'));
  const input=control.probabilityResult(r.id,ids);
  assert.equal(input.counties.length,40);assert.equal(input.reportingUnitScheme,'nbc-alaska-state-house-districts');
+ assert.ok(input.counties.every(unit=>!Object.hasOwn(unit,'fips')));
  const snapshot=normalizeProbabilitySnapshot(input,r.candidates,{at:p.currentTime,source:'NBC News',reportingUnitIds:ids});
  assert.equal(snapshot.units.length,40);
  const publicRace=control.results({details:true}).groups.flatMap(g=>g.races)[0];
- assert.equal(publicRace.counties.length,0);assert.equal(Object.hasOwn(publicRace,'probabilityUnits'),false);
- assert.equal(feed.update(control.results()).version,before);
+ assert.equal(publicRace.counties.length,40);
+ assert.ok(publicRace.counties.every(c=>/^AK-HD-(?:0[1-9]|[1-3]\d|40)$/.test(c.fips)&&c.type==='State House District'));
+ assert.equal(Object.hasOwn(publicRace,'probabilityUnits'),false);
+ assert.notEqual(feed.update(control.results()).version,before);
  const restarted=await new ResultsControl(options).init();
  assert.deepEqual(restarted.probabilityResult(r.id,ids),input);
  outage=true;now+=16000;
  assert.equal(await restarted.loadCountyResultsBatch([r.id]),false);
  assert.deepEqual(restarted.probabilityResult(r.id,ids),input);
- assert.equal(feed.update(restarted.results()).version,before);
+ assert.equal(restarted.results({details:true}).groups.flatMap(g=>g.races)[0].counties.length,40);
 });
 test('Observed NBC pages supply exact county FIPS, district-only county portions, Senate specials and ME/MA/NH town GEOIDs',async()=>{
  const provider=new NbcCountyProvider();

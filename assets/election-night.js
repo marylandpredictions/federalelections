@@ -371,6 +371,7 @@ function featureCountyFipsForElectionNight(feature) {
   // A county-within-district GEOID is a composite (for example 4801405),
   // not the county FIPS (48405). Municipal GEOIDs remain distinct local IDs.
   if(props.localType==='municipality')return String(feature?.id||props.GEOID||'');
+  if(props.localType==='state-house-district')return String(feature?.id||props.reportingUnitId||'');
   const county=props.countyFips || ((props.STATEFP||props.STATE)&&(props.COUNTYFP||props.COUNTY) ? `${props.STATEFP||props.STATE}${props.COUNTYFP||props.COUNTY}` : null);
   return String(county || feature?.id || props.GEOID || '').padStart(5,'0');
 }
@@ -379,6 +380,8 @@ function countyForFeature(feature, lookup) {
   const props = feature?.properties || {};
   if (props.localType === 'municipality')
     return lookup.get(featureCountyFipsForElectionNight(feature)) || lookup.get('local:' + regionLookupKey(String(props.NAME || '').replace(/\s+(town|city|township)$/i,''))) || null;
+  if (props.localType === 'state-house-district')
+    return lookup.get(featureCountyFipsForElectionNight(feature)) || null;
   const countyName = props.countyName || props.NAME || "";
   const cleanName = cleanCountyName(countyName);
   return lookup.get(featureCountyFipsForElectionNight(feature))
@@ -1782,16 +1785,17 @@ class ElectionNightPage {
     const statewideSource = detail || race;
     if (!this.isStatewideRace(statewideSource)) return false;
     const localReporting = allFeatures[0]?.properties?.localType === 'municipality';
+    const districtReporting = allFeatures[0]?.properties?.localType === 'state-house-district';
     const counties = (detail?.counties || []).filter((county) => {
       const type = String(county.type || "County").toLowerCase();
-      return type === "county" && county.candidates?.length;
+      return (type === "county" || type === "state house district") && county.candidates?.length;
     });
 
     const stateFips = stateFipsForElectionNight(state);
     const features = allFeatures.filter((feature) => featureStateFipsForElectionNight(feature) === stateFips);
     if (!features.length) return false;
 
-    this.renderCountyDetailMap((counties.length || localReporting) ? (detail || race) : race, features, { preserveMapTransform: options.preserveMapTransform });
+    this.renderCountyDetailMap((counties.length || localReporting || districtReporting) ? (detail || race) : race, features, { preserveMapTransform: options.preserveMapTransform });
     return true;
   }
 

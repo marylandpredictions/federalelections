@@ -866,7 +866,7 @@ window.FEACompleteBoard = function (Page) {
       if(/^#[\da-f]{6}$/i.test(color))node.style.setProperty('--broadcast-value-ink',T.readableColor(color,'#e8ebef'));
     }
     if (this.focusedPanelTab === "counties" && !this.lockedCounty) {
-      const data=this.panelData(race),rows = [...(data.counties || [])],sortLabel=data.localReporting?'Sort towns / cities':'Sort counties';
+      const data=this.panelData(race),rows = [...(data.counties || [])],sortLabel=data.localReporting?'Sort towns / cities':data.districtReporting?'Sort House districts':'Sort counties';
       const select = document.createElement("label");
       select.className = "county-sort";
       select.innerHTML =

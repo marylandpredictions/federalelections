@@ -162,6 +162,18 @@ export function parseNbcCountyAggregates(data,race,{lookup=countyGeographies(dat
 }
 // Alaska's NBC feed uses state House districts. Retain their actual identity
 // for private model inputs; never invent Census FIPS codes or borough counts.
+export function publicAlaskaCounties(units) {
+  return units.map(unit=>({
+    fips:unit.id,
+    name:unit.name,
+    type:unit.reportingUnitType==='overseas-absentee'?'Overseas Absentee':'State House District',
+    candidates:unit.candidates,
+    estimatedVoteReporting:unit.estimatedVoteReporting,
+    percentReporting:null,
+    lastUpdated:unit.lastUpdated,
+    source:unit.source,
+  }));
+}
 export function parseNbcNativeReportingUnits(data,race) {
   const raw=validate(data,race),updated=Date.parse(data.currentTime||data.lastModified);
   if(race.state!=='AK'||data.underlyingGeographies!=='legislativeDistricts'||
@@ -278,7 +290,8 @@ export class NbcCountyProvider {
       if(endpoint.origin!=='https://www.nbcnews.com'||endpoint.username||endpoint.password||endpoint.search||endpoint.hash||endpoint.pathname!==new URL(page).pathname.replace('/politics/','/firecracker/api/v2/state-results/'))throw Error('NBC county updateUrl does not match public race page');
       const lookup=cached?.lookup||countyGeographies(data,race,await this.localFeatures(race.state)),issues=[];
       const modelUnits=race.state==='AK'?parseNbcNativeReportingUnits(data,race):undefined;
-      const counties=modelUnits?[]:parseNbcCounties(data,race,{lookup,previous:race.counties,onInvalid:i=>issues.push(i)});
+      // Publish native HD rows for the desk without inventing borough/Census FIPS.
+      const counties=modelUnits?publicAlaskaCounties(modelUnits):parseNbcCounties(data,race,{lookup,previous:race.counties,onInvalid:i=>issues.push(i)});
       let modelCounties;
       if(['ME','MA','NH','CT','RI','VT'].includes(race.state)){
         try{modelCounties=parseNbcCountyAggregates(data,race,{lookup});}catch{/* Incomplete parent geography stays unavailable to the model. */}

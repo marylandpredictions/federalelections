@@ -61,7 +61,7 @@ export async function readiness(control, root, {storageEnvironment=process.env}=
       if(name==='Poll-close schedule')validatePollSchedule(data);
       if (name === "Geometry manifest") {
         if(!data.states||!data.house||!Object.keys(data.counties||{}).length)throw Error('Geometry manifest is incomplete.');
-        for (const file of [data.states,data.house,...Object.values(data.counties||{}),...Object.values(data.municipalities||{}).map(m=>m.path)]){
+        for (const file of [data.states,data.house,...Object.values(data.counties||{}),...Object.values(data.municipalities||{}).map(m=>m.path),...Object.values(data.legislativeDistricts||{}).map(m=>m.path)]){
           const geometry=await asset(root,file);
           if(!(geometry.type==='FeatureCollection'&&geometry.features?.length||geometry.type==='Topology'&&Object.keys(geometry.objects||{}).length&&geometry.arcs?.length))throw Error('Geometry asset is empty or malformed.');
         }

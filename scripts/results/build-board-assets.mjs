@@ -16,7 +16,11 @@ export function buildBoardAssets(root = process.cwd()) {
     note: "Display geometry rounded to four decimals. National House topology retains the top 5% of weighted arc points; selected-race county geometry and original sources remain unchanged. Not a district-baseline certification.",
     counties: {},
   };
-  try { manifest.municipalities=JSON.parse(readFileSync(resolve(root,'data/results/map-assets.json'))).municipalities; } catch {}
+  try {
+    const existing=JSON.parse(readFileSync(resolve(root,'data/results/map-assets.json')));
+    manifest.municipalities=existing.municipalities;
+    if(existing.legislativeDistricts)manifest.legislativeDistricts=existing.legislativeDistricts;
+  } catch {}
   manifest.countyGeometry = 'Shared district-fragment arcs dissolved into county outlines. House-detail files remain separate.';
   const read = (file) => JSON.parse(readFileSync(resolve(root, file), "utf8"));
   const round = (value) =>

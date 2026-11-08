@@ -72,7 +72,7 @@
         const [geometry,states]=await Promise.all([json(exact?geography.geometryFile:!house&&assets.municipalities?.[fips]?.path||assets.counties[fips]),json(assets.states)]);
         contextStates=states.features||[];
         if(token!==sequence)return;
-        panel.querySelector('[data-detail-tab="counties"]').textContent=geometry.features[0]?.properties?.localType==='municipality'?'Towns / cities':'Counties';
+        panel.querySelector('[data-detail-tab="counties"]').textContent=geometry.features[0]?.properties?.localType==='municipality'?'Towns / cities':geometry.features[0]?.properties?.localType==='state-house-district'?'House districts':'Counties';
         sources=comparisons.sources.filter(s=>s.id!=='live'&&s.status==='available'&&s.appliesTo?.includes(race.type));
         await Promise.all(sources.flatMap(s=>['state','county',...(house?['district']:[])].map(async scope=>{try{if(s[scope+'File'])datasets.set(s.id+':'+scope,await json(s[scope+'File']));}catch{datasets.delete(s.id+':'+scope);}})));
         if(token!==sequence)return;
