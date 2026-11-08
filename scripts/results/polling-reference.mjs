@@ -74,7 +74,11 @@ function eligiblePollRows(race, pair, polls, wanted, cutoff, asOf) {
   return collapseSamePollsterDay(rows);
 }
 
-export function pollingReference(races, polls, {asOf = '2026-11-02'} = {}) {
+export function pollingReference(races, polls, {
+  asOf = '2026-11-02',
+  minPollsters = 2,
+  label = 'FEA race-poll aggregate',
+} = {}) {
   const cutoff = Date.parse(asOf) - 60 * 86400000;
   const rows = {};
   for (const race of races) {
@@ -83,9 +87,10 @@ export function pollingReference(races, polls, {asOf = '2026-11-02'} = {}) {
     const pair = headlinerPair(race, polls, wanted, cutoff, asOf);
     if (!pair) continue;
     const selected = eligiblePollRows(race, pair, polls, wanted, cutoff, asOf);
-    if (new Set(selected.map(p => normalizePollChoice(p.pollster))).size < 2) continue;
+    if (new Set(selected.map(p => normalizePollChoice(p.pollster))).size < minPollsters) continue;
     const agg = weightRacePolls(selected, {asOf});
-    if (!agg || agg.effectivePollsters < 2) continue;
+    if (!agg || agg.effectivePollsters < minPollsters) continue;
+    const thin = agg.effectivePollsters < 2;
     rows[race.id] = {
       candidates: pair.map((c, i) => ({
         name: c.name,
@@ -93,10 +98,12 @@ export function pollingReference(races, polls, {asOf = '2026-11-02'} = {}) {
         percent: Number((i === 0 ? agg.dem : agg.rep).toFixed(1)),
       })),
       projectedMargin: Number(agg.projectedMargin.toFixed(3)),
-      error: Number(agg.error.toFixed(3)),
+      // Single-pollster signals stay wide; they only feed priors, not the desk chip.
+      error: Number((thin ? Math.max(12, agg.error) : agg.error).toFixed(3)),
       disagreement: Number(agg.disagreement.toFixed(3)),
       pollCount: agg.pollCount,
       effectivePollsters: agg.effectivePollsters,
+      thin,
       latestPoll: agg.latestPoll,
       pollIds: agg.pollIds,
       pollWeights: agg.pollWeights,
@@ -107,7 +114,7 @@ export function pollingReference(races, polls, {asOf = '2026-11-02'} = {}) {
     source: 'VoteHub public polling API',
     sourceUrl: 'https://votehub.com/polls/api/',
     license: 'CC BY 4.0',
-    label: 'FEA race-poll aggregate',
+    label,
     method: POLL_AGGREGATE_METHOD,
     races: rows,
   };

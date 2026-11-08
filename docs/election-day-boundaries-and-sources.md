@@ -64,9 +64,11 @@ Method: weighted mean of eligible polls in a 60-day window (recency half-life 45
 days, sample-size and LV/RV weights, partisan downweight, repeated-pollster
 decay), LV/RV, no internal polls, at least two pollsters, exact
 office/state/district and named ballot matchup (including 1D+NR headliners).
-The same artifact feeds live win-probability priors when a race qualifies;
-otherwise the prior is uninformative. VoteHub is credited with its CC BY 4.0
-API source link.
+The same artifact feeds live win-probability priors when a race qualifies.
+Priors also blend in frozen Kalshi Democratic-contract prices (pre-Election-Day
+candlesticks) and, for research priors only, single-pollster VoteHub signals.
+Races with neither polls nor a usable market stay on a wide uninformative prior.
+VoteHub is credited with its CC BY 4.0 API source link.
 
 ## CivicAPI
 
