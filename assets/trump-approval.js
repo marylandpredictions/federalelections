@@ -218,15 +218,18 @@
       cursor.setAttribute('x1', xx);
       cursor.setAttribute('x2', xx);
       if (mode === 'net') {
-        tipValues.textContent = `Net ${fmtNet(point.net)} · Approve ${fmtPct(point.approve)} · Disapprove ${fmtPct(point.disapprove)}`;
+        const netClass = point.net >= 0 ? 'is-approve' : 'is-disapprove';
+        tipValues.innerHTML =
+          `<span class="tip-net ${netClass}">Net ${fmtNet(point.net)}</span>`;
         markerNet.setAttribute('visibility', 'visible');
         markerNet.setAttribute('cx', xx);
         markerNet.setAttribute('cy', y(point.net));
         markerApprove.setAttribute('visibility', 'hidden');
         markerDisapprove.setAttribute('visibility', 'hidden');
       } else {
-        tipValues.textContent =
-          `Approve ${fmtPct(point.approve)} · Disapprove ${fmtPct(point.disapprove)} · Net ${fmtNet(point.net)}`;
+        tipValues.innerHTML =
+          `<span class="tip-approve">Approval: ${fmtPct(point.approve)}</span>` +
+          `<span class="tip-disapprove">Disapproval: ${fmtPct(point.disapprove)}</span>`;
         markerApprove.setAttribute('visibility', 'visible');
         markerDisapprove.setAttribute('visibility', 'visible');
         markerApprove.setAttribute('cx', xx);
@@ -236,8 +239,8 @@
         markerNet.setAttribute('visibility', 'hidden');
       }
       const bounds = host.getBoundingClientRect();
-      const left = Math.min(Math.max(12, clientX - bounds.left + 14), bounds.width - 190);
-      const top = Math.min(Math.max(12, clientY - bounds.top - 64), bounds.height - 78);
+      const left = Math.min(Math.max(12, clientX - bounds.left + 14), bounds.width - 160);
+      const top = Math.min(Math.max(12, clientY - bounds.top - 72), bounds.height - 88);
       tip.style.left = `${left}px`;
       tip.style.top = `${top}px`;
     };
