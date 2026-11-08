@@ -75,6 +75,7 @@ window.FEAEnhanceBoard = function (Page) {
     new ResizeObserver(() => {
       this.positionDeskControls();
       if (this.focusedPanelTab === "trends") this.renderTrendChart();
+      if (this.focusedPanelTab === "probability") this.renderProbabilityPanel();
     }).observe(document.getElementById("focused-race-panel"));
     // FEACompleteBoard's fea-desk-theme handler already refreshes fills.
   };
@@ -520,6 +521,7 @@ window.FEAEnhanceBoard = function (Page) {
   p.retrySelectedDetail = async function () {
     if(this.currentRace&&this.countyHistoryRetry===`${this.currentRace.id}:${this.lockedCounty}`){
       if(this.focusedPanelTab==='trends')await this.renderTrendChart();
+      else if(this.focusedPanelTab==='probability')this.renderProbabilityPanel();
       else if(this.focusedPanelTab==='counties'){
         await this.loadCountyHistory(this.currentRace,this.lockedCounty);
         this.renderFocusedRace(this.currentRace);
@@ -854,14 +856,23 @@ window.FEAEnhanceBoard = function (Page) {
       : FEADesk.total(data) > 0
         ? "Counting"
         : "Awaiting results";
+    const showProbability = !this.isLabPage && !this.lockedCounty && race.electionDate === '2026-11-03';
     const tabs = [
       "results",
       ...(counties.length ? ["counties"] : []),
       "trends",
+      ...(showProbability ? ["probability"] : []),
       "demographics",
     ];
     if (!tabs.includes(this.focusedPanelTab)) this.focusedPanelTab = "results";
-    const tabbar = `<div class="desk-tabs" role="tablist" aria-label="Race information">${tabs.map((tab) => `<button role="tab" type="button" data-panel-tab="${tab}" aria-selected="${this.focusedPanelTab === tab}" aria-controls="desk-panel-view">${data.localReporting && tab === 'counties' ? 'Towns / cities' : tab}</button>`).join("")}</div>`;
+    const tabLabel = {
+      results: "results",
+      counties: data.localReporting ? "Towns / cities" : "counties",
+      trends: "trends",
+      probability: "Probability",
+      demographics: "demographics",
+    };
+    const tabbar = `<div class="desk-tabs" role="tablist" aria-label="Race information">${tabs.map((tab) => `<button role="tab" type="button" data-panel-tab="${tab}" aria-selected="${this.focusedPanelTab === tab}" aria-controls="desk-panel-view">${tabLabel[tab] || tab}</button>`).join("")}</div>`;
     let body = "";
     if (this.focusedPanelTab === "results") body = this.resultsMarkup(data);
     if (this.focusedPanelTab === "counties")
@@ -881,7 +892,9 @@ window.FEAEnhanceBoard = function (Page) {
         )
         .join(
           "",
-        )}</select></label><div id="desk-trend-chart"><p class="desk-hint">Loading observed history...</p></div><section id="desk-trend-detail" class="trend-detail" aria-label="Selected results update" role="status"></section>${!this.isLabPage && !this.lockedCounty && race.electionDate==='2026-11-03' ? '<section class="desk-probability" aria-labelledby="desk-win-probability-title"><h3 id="desk-win-probability-title">Live win probability</h3><div id="desk-win-probability"><p class="desk-hint">Checking forecast availability…</p></div></section>' : ''}`;
+        )}</select></label><div id="desk-trend-chart"><p class="desk-hint">Loading observed history...</p></div><section id="desk-trend-detail" class="trend-detail" aria-label="Selected results update" role="status"></section>`;
+    if (this.focusedPanelTab === "probability")
+      body = '<section class="desk-probability" aria-labelledby="desk-probability-title"><h3 id="desk-probability-title">Probability</h3><div id="desk-win-probability"><p class="desk-hint">Checking forecast availability…</p></div></section>';
     if (this.focusedPanelTab === "demographics")
       body =
         '<div id="desk-demographics"><p class="desk-hint">Loading Census estimates…</p></div>';
@@ -912,6 +925,7 @@ window.FEAEnhanceBoard = function (Page) {
     }
     this.positionDeskControls();
     if (this.focusedPanelTab === "trends") this.renderTrendChart();
+    if (this.focusedPanelTab === "probability") this.renderProbabilityPanel();
     if (this.focusedPanelTab === "demographics") this.renderDemographics();
   };
   p.candidateTable = function (row, call) {
@@ -1138,6 +1152,11 @@ window.FEAEnhanceBoard = function (Page) {
         .attr('cy',y(candidate.value(latest))).attr('r',3.5).attr('stroke',candidate.ink);
     }
   }
+  p.renderProbabilityPanel = function () {
+    const race = this.currentRace;
+    if (!race || this.focusedPanelTab !== "probability") return;
+    void renderLiveProbability(race, document.getElementById("desk-win-probability")).catch(() => {});
+  };
   p.renderTrendChart = async function () {
     const revision=this.trendRenderRevision=(this.trendRenderRevision||0)+1;
     const race = this.currentRace;
@@ -1146,7 +1165,6 @@ window.FEAEnhanceBoard = function (Page) {
       county = this.lockedCounty;
     let data = this.panelData(race),
       history = data.voteHistory || [];
-    void renderLiveProbability(race, document.getElementById('desk-win-probability')).catch(() => {});
     if (county) history = await this.loadCountyHistory(race, county);
     if (
       revision!==this.trendRenderRevision ||
@@ -1409,6 +1427,7 @@ window.FEAEnhanceBoard = function (Page) {
       );
     } catch {}
     if (this.focusedPanelTab === "trends") this.renderTrendChart();
+    if (this.focusedPanelTab === "probability") this.renderProbabilityPanel();
   };
   p.restorePanelSize = function () {
     try {
@@ -1427,6 +1446,7 @@ window.FEAEnhanceBoard = function (Page) {
     panel.style.height = "";
     panel.style.maxHeight = "";
     if (this.focusedPanelTab === "trends") this.renderTrendChart();
+    if (this.focusedPanelTab === "probability") this.renderProbabilityPanel();
   };
   p.pulseRace = function (race) {
     if (!this.viewport) return;

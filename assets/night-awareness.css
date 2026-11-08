@@ -371,7 +371,7 @@
 .results-board #desk-trend-detail :is(small,footer) { color: var(--text-secondary); font-size: 13px; }
 .results-board #desk-trend-detail footer { padding-top: 8px; }
 .results-board :is(#focused-race-content,#night-drawer) { overflow-anchor: none; }
-.results-board[data-theme-preset="nyt-results"] :is(#focused-race-title,.appearance-dialog h2) {
+.results-board[data-theme-preset="nyt-results"] :is(#focused-race-title,.appearance-dialog h2,#desk-probability-title) {
   font-family: Georgia, 'Times New Roman', serif;
 }
 .results-board[data-map-labels="off"] :is(.night-geo-labels,.map-background-cities,.map-background-city) { display: none !important; }
@@ -396,26 +396,36 @@
 .results-board .trend-series-key span { display:flex; align-items:center; gap:5px; }
 .results-board .trend-series-key i { width:9px; height:9px; border-radius:50%; }
 .results-board .desk-probability {
-  margin-block: 16px 4px;
-  padding: 12px;
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
   color: var(--text-primary);
-  background: var(--panel-raised);
-  border: 1px solid var(--panel-border);
-  border-radius: var(--panel-radius, 8px);
+  background: transparent;
+  border: 0;
 }
-.results-board .desk-probability h3 { margin: 0; font: inherit; font-size: .9rem; font-weight: 750; }
-.results-board[data-presentation="editorial"] .desk-probability h3 { font-family: Georgia, 'Times New Roman', serif; }
-.results-board .desk-probability-state { display: grid; gap: 3px; margin: 9px 0 0; font-size: .77rem; line-height: 1.5; }
+.results-board .desk-probability h3,
+.results-board #desk-probability-title {
+  margin: 0;
+  padding: 0 0 10px;
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 750;
+  letter-spacing: -.02em;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--panel-border);
+}
+.results-board .desk-probability-state { display: grid; gap: 3px; margin: 0; font-size: .8rem; line-height: 1.5; }
 .results-board .desk-probability-state span { color: var(--text-secondary); }
-.results-board .desk-probability .trend-summary { margin-top: 8px; padding: 8px; align-items: center; }
-.results-board .desk-probability .trend-summary strong { font-size: 1rem; }
-.results-board .desk-probability-candidates { list-style: none; margin: 0; padding: 0; font-size: .8rem; }
+.results-board .desk-probability .trend-summary { margin: 0; padding: 4px 0 8px; align-items: end; }
+.results-board .desk-probability .trend-summary strong { font-size: 1.15rem; }
+.results-board .desk-probability-candidates { list-style: none; margin: 0; padding: 0; font-size: .82rem; }
 .results-board .desk-probability-candidates li {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
-  padding: 7px 0;
+  padding: 8px 0;
   border-top: 1px solid var(--panel-border);
   font-variant-numeric: tabular-nums;
 }
@@ -423,4 +433,5 @@
 .results-board .desk-probability-candidates i { flex: 0 0 9px; height: 9px; border-radius: 50%; background: var(--probability-ink); }
 .results-board .desk-probability-chart svg { display: block; width: 100%; }
 .results-board .desk-probability-chart .chart-axis .domain { display: none; }
+.results-board .desk-probability-chart .chart-axis text { fill: var(--text-secondary); font-size: 11px; }
 .results-board .desk-probability-line { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
