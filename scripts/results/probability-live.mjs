@@ -205,7 +205,8 @@ export class LiveProbability {
     const units = new Map(snapshot.units.map(unit => [unit.id, unit]));
     if (previous && Date.parse(snapshot.sourceUpdatedAt) < Date.parse(previous.sourceUpdatedAt)) return;
     const evidence = evidenceHash(snapshot);
-    if (race.evidence === evidence) {
+    // Same NBC ballot can still need a fresh draw after a prior/model revision.
+    if (race.evidence === evidence && !race.pendingModelRevision) {
       Object.assign(race, {...freshness, snapshot});
       return;
     }
@@ -236,7 +237,8 @@ export class LiveProbability {
           typeof correction.source !== 'string' || !correction.source.trim()) return;
       else correctionSource = correction.source;
     }
-    const point = await this.simulate(prior, snapshot, race.settings, last?.inputHash);
+    const point = await this.simulate(prior, snapshot, race.settings,
+      race.pendingModelRevision ? undefined : last?.inputHash);
     if (point.status === 'unavailable') {
       race.reason = partial?point.reason:'Waiting for verified reporting-unit completion. '+point.reason;
       race.rejectedEvidence = {hash: evidence, reason: race.reason};
@@ -260,16 +262,38 @@ export class LiveProbability {
 
 export async function openLiveProbability(storage) {
   const worker = new LiveProbability(storage.directory);
-  if (!storage.durable) return worker;
-  try {
-    const disk = await readJson(join(storage.directory, 'probability-release.json'));
-    const repo = await readJson(new URL('../../data/results/probability-release.json',import.meta.url));
+  if (!storage.durable) {
     try {
-      await worker.load(disk ?? repo);
+      const repo = await readJson(new URL('../../data/results/probability-release.json', import.meta.url));
+      if (repo) await worker.load(repo);
+    } catch (error) {
+      console.error('Live probability disabled: ' + error.message);
+    }
+    return worker;
+  }
+  try {
+    const diskPath = join(storage.directory, 'probability-release.json');
+    const disk = await readJson(diskPath);
+    const repo = await readJson(new URL('../../data/results/probability-release.json', import.meta.url));
+    // Deployed git release is source of truth. A stale durable copy must not pin
+    // abandoned priors after a prior-anchor rebuild.
+    const preferDisk = process.env.PROBABILITY_RELEASE_DISK_OVERRIDE === '1';
+    const chosen = preferDisk ? (disk ?? repo) : (repo ?? disk);
+    try {
+      await worker.load(chosen);
+      if (repo && storage.durable && !preferDisk) {
+        await mkdir(storage.directory, {recursive: true});
+        await writeFile(diskPath + '.tmp', JSON.stringify(repo) + '\n');
+        await rename(diskPath + '.tmp', diskPath);
+      }
     } catch (error) {
       // A stale disk copy from an older deploy must not blank the live models.
-      if (disk && repo) {
+      if (disk && repo && chosen === disk) {
         console.error('Live probability disk release rejected; loading repository release: ' + error.message);
+        worker.races = new Map();
+        await worker.load(repo);
+      } else if (repo && chosen !== repo) {
+        console.error('Live probability chosen release rejected; loading repository release: ' + error.message);
         worker.races = new Map();
         await worker.load(repo);
       } else throw error;

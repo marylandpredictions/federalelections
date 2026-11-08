@@ -19,7 +19,7 @@ function fixture(){
  const detail={id:prior.raceId,electionDate:prior.electionDate,provider:'NBC',lastUpdated:at,expectedVotePercent:60,
   candidates:candidates(110,90),counties:[{fips:'01001',source:'NBC News',lastUpdated:at,estimatedVoteReporting:60,candidates:candidates(70,30)},
    {fips:'01003',source:'NBC News',lastUpdated:at,estimatedVoteReporting:60,candidates:candidates(40,60)}]};
- const release={modelVersion:partialLiveModelVersion,policy:{method:prior.method,simulations:20000,minimumReportedPercent:25,maximumInputAgeMs:48*60*60*1000},
+ const release={modelVersion:partialLiveModelVersion,policy:{method:prior.method,simulations:20000,minimumReportedPercent:25,maximumInputAgeMs:7*24*60*60*1000},
   approval:{kind:'automated-source-and-statistical-review',at},validationHash:e.validationHash,calibrationHash:e.calibrationHash,
   implementationHash:e.implementationHash,races:{[prior.raceId]:{prior,roster}}};
  return {now,detail,release,id:prior.raceId};
