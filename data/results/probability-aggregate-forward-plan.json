@@ -29,9 +29,16 @@
     "office": "presidential state D/R component; not a certification of multicandidate state elections",
     "countInputs": ".runtime/probability-medsl2024-state-frames.json",
     "anchor": "Latest available pre-election Wayback capture of the official 538 2024 forecast ZIP; exact identity and checksum required",
-    "method": "Identical one-race-unit transformation, frozen mean and normal approximation to the source 80% margin interval; no refit or retuning after 2022 results",
+    "method": "Identical one-race-unit transformation, frozen candidate median margin and Gaussian approximation to the published interval at its documented level. The 2024 primary frontend explicitly labels the range 95%, unlike the 2022 p10/p90 80% source. No refit after 2022.",
     "selection": "Every reconciled 2024 state frame with positive race count, positive source estimate at least 25%, and a matching dated Harris/Trump forecast",
     "report": "Equal-state scores, state-cluster paired uncertainty, stage and competitive subgroups, every quarantine and every wrong 95% forecast",
-    "limitation": "2024 geographic-model results were inspected in earlier research; this is a different-cycle confirmation of a frozen aggregate variant, not a claim that the election was never inspected."
+    "limitation": "2024 geographic-model results were inspected in earlier research; this is a different-cycle confirmation of a frozen aggregate variant, not a claim that the election was never inspected.",
+    "reportingEstimate": "2024 county-only capture has no race-level source estimate. Aggregate current votes / sum(county votes / source reporting fraction) only when every county has positive count and source estimate. Never use countedShareForScoring or final turnout as an input.",
+    "intervalEvidence": {
+      "url": "https://web.archive.org/web/20241008050726id_/https://projects.fivethirtyeight.com/2024-election-forecast/",
+      "sha256": "65d54829df132a0eba61090824bc4a3e133712c1d33fafc284ae578657b0dc8c",
+      "label": "95% of outcomes fall in this range",
+      "review": "Documented before any 2024 aggregate forecasts were generated."
+    }
   }
 }
