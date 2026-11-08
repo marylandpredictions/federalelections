@@ -34,9 +34,11 @@ export function simulateUnopposedProbability(prior, snapshot, settings = {}, pre
   check(Object.keys(snapshot.totals || {}).length === 1 && Object.keys(unit.votes || {}).length === 1 &&
     Number.isSafeInteger(snapshot.totals[id]) && snapshot.totals[id] >= 0 && unit.votes[id] === snapshot.totals[id],
   'malformed sole-candidate counts');
+  // Sole-candidate certainty does not depend on remaining-vote modeling. NBC may
+  // list and even project the only reviewed candidate before a reporting %.
   const percent = snapshot.expectedVotePercent;
-  if (!Number.isFinite(percent) || percent < 60 || percent > 100 || unit.expectedVotePercent !== percent)
-    return {status: 'unavailable', reason: 'The unopposed model requires at least 60% source-estimated reporting.'};
+  if (!Number.isFinite(percent) || percent < 0 || percent > 100 || unit.expectedVotePercent !== percent)
+    return {status: 'unavailable', reason: 'The unopposed model requires a finite NBC source-estimated reporting share.'};
   check((settings.simulations ?? 20000) === 20000, '20,000 simulations required for release policy parity');
   check(settings.implementationHash === undefined || /^[a-f0-9]{64}$/.test(settings.implementationHash), 'invalid implementation identity');
   const priorHash = hash(prior);
