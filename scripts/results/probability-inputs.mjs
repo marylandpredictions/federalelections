@@ -3,6 +3,7 @@ import {join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
 import {matchBallotCandidate} from './candidate-roster.mjs';
+import {namedProviderCandidates} from './probability-ballot-filter.mjs';
 import {parseDelimited} from './csv.mjs';
 import {simulateWinProbability} from './win-probability.mjs';
 
@@ -298,10 +299,13 @@ export function buildCountyProbabilityPrior(geography,forecast) {
 export function normalizeProbabilitySnapshot(detail,roster,{at,source,completion={},reportingUnitIds,allowSingleReportingUnit=false,aggregateRace=false}) {
   requireInput(detail?.id && (aggregateRace || Array.isArray(detail.counties) && detail.counties.length) &&
     Number.isFinite(dateTime(at)) && typeof source==='string' && source.trim(),'Missing dated reporting-unit returns');
-  requireInput(!(detail.providerBallotAccounting?.ballotsOutsideCandidateTotals>0),
+  requireInput(!(detail.providerBallotAccounting?.ballotsOutsideCandidateTotals>0) ||
+    aggregateRace==='majority-lock'||aggregateRace==='unopposed',
     'Ballots outside ranked-choice candidate totals require a ballot-aware probability model');
   const election=detail.electionDate || detail.date;
-  requireInput(Array.isArray(roster)&&roster.length>=2,'At least two named candidates are required by this probability model');
+  requireInput(Array.isArray(roster)&&(aggregateRace==='unopposed'?roster.length===1:roster.length>=2),
+    aggregateRace==='unopposed'?'Exactly one named candidate is required by the unopposed model':
+      'At least two named candidates are required by this probability model');
   const candidateIds=roster.map(candidate=>candidate.id);
   requireInput(candidateIds.every(id=>typeof id==='string' && /^[\w-]{1,100}$/.test(id)) &&
     new Set(candidateIds).size===candidateIds.length,'Missing stable race-specific candidate IDs');
@@ -327,12 +331,36 @@ export function normalizeProbabilitySnapshot(detail,roster,{at,source,completion
   requireInput(election && dateTime(sourceUpdatedAt)<=dateTime(at),'Invalid race date or provider timestamp');
   if(aggregateRace){
     const id='race:'+detail.id;
+    const multi=roster.length>=2&&roster.length<=20;
+    const twoParty=roster.length===2&&roster.some(c=>displayParty(c)==='D')&&roster.some(c=>displayParty(c)==='R');
+    const rule=probabilityRule(detail.id,election);
+    const special=aggregateRace==='majority-lock'&&['majority-runoff','ranked-choice','legislative-contingency'].includes(rule);
+    const unopposed=aggregateRace==='unopposed'&&rule==='plurality'&&roster.length===1;
     requireInput(detail.provider==='NBC'&&source==='NBC News'&&detail.reportingUnitScheme===undefined&&
-      election==='2026-11-03'&&probabilityRule(detail.id,election)==='plurality'&&
-      roster.length===2&&roster.some(c=>displayParty(c)==='D')&&roster.some(c=>displayParty(c)==='R')&&
-      Array.isArray(reportingUnitIds)&&reportingUnitIds.length===1&&reportingUnitIds[0]===id,
-    'Race-total input scheme does not match a complete NBC plurality ballot');
-    const totals=counts(detail.candidates),expected=detail.expectedVotePercent??detail.estimatedVoteReporting;
+      election==='2026-11-03'&&Array.isArray(reportingUnitIds)&&reportingUnitIds.length===1&&reportingUnitIds[0]===id&&
+      (aggregateRace===true&&twoParty&&rule==='plurality'||aggregateRace==='multi'&&multi&&rule==='plurality'||special||unopposed),
+    'Race-total input scheme does not match a complete NBC ballot for this model');
+    // Anonymous NBC write-in totals stay outside the named modeled field.
+    // Multi-candidate race-total may pad reviewed roster names that NBC omitted
+    // at high reporting (typically 0-vote minor candidates) with explicit zeros.
+    const named=namedProviderCandidates(detail.candidates,roster);
+    let totals;
+    if(aggregateRace==='multi'||aggregateRace==='majority-lock'){
+      const seen=new Set();
+      totals=Object.fromEntries(roster.map(candidate=>[candidate.id,0]));
+      for(const candidate of named){
+        const partyCode=displayParty(candidate);
+        requireInput(partyCode&&Number.isSafeInteger(candidate.votes)&&candidate.votes>=0,'Invalid candidate party or votes');
+        const matched=matchBallotCandidate({...candidate,partyCode},roster);
+        const candidateId=byName.get(matched.name)?.id;
+        requireInput(candidateId&&!seen.has(candidateId),'Duplicate or unmatched candidate identity');
+        seen.add(candidateId);
+        totals[candidateId]=candidate.votes;
+      }
+      requireInput(seen.size>=2&&seen.size===named.length,
+        'Multi race-total requires every NBC named candidate to match the reviewed roster');
+    }else totals=counts(named);
+    const expected=detail.expectedVotePercent??detail.estimatedVoteReporting;
     const expectedVotePercent=Number.isFinite(expected)&&expected>=0&&expected<=100?expected:null;
     return {raceId:detail.id,electionDate:election,at,sourceUpdatedAt,source,totals,expectedVotePercent,
       units:[{id,availableAt:sourceUpdatedAt,votes:{...totals},expectedVotePercent:expectedVotePercent,complete:false}]};

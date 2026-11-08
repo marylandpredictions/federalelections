@@ -52,6 +52,9 @@ test('Race-total normalization maps aliases, ignores county geometry, and cannot
  const snapshot=normalizeProbabilitySnapshot(x.detail,r.roster,options);
  assert.equal(snapshot.units[0].complete,false);assert.deepEqual(snapshot.totals,{dem:1100,rep:900});
  assert.deepEqual(normalizeProbabilitySnapshot({...x.detail,counties:[{bad:'geometry'}]},r.roster,options),snapshot);
+ const withWriteIns=normalizeProbabilitySnapshot({...x.detail,candidates:[...x.detail.candidates,
+  {name:'Total Write-ins',party:'O',votes:17,writeIn:true}]},r.roster,options);
+ assert.deepEqual(withWriteIns.totals,snapshot.totals);
  for(const detail of [{...x.detail,provider:'CivicAPI'},{...x.detail,providerBallotAccounting:{ballotsOutsideCandidateTotals:1}},
   {...x.detail,reportingUnitScheme:'nbc-alaska-state-house-districts'}])
   assert.throws(()=>normalizeProbabilitySnapshot(detail,r.roster,options));

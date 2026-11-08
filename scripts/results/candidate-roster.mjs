@@ -38,7 +38,20 @@ export function matchBallotCandidate(candidate, roster) {
   }
   if(matches.length!==1)throw Error((matches.length?'Ambiguous':'Unknown')+' provider candidate: '+candidate.name);
   const local=matches[0],party=local.partyCode||local.party;
-  if(party&&candidate.partyCode&&partyIdentity(party)!==partyIdentity(candidate.partyCode))throw Error('Provider party mismatch: '+candidate.name);
+  // Unique name matches still protect major-party identity. Non-major ballot
+  // labels (Working Class, FWD, NP, long independent names) often disagree with
+  // NBC's short codes without changing who the candidate is.
+  if(party&&candidate.partyCode){
+    const major=value=>{
+      const key=partyIdentity(value);
+      if(key==='d'||key.startsWith('democrat'))return 'D';
+      if(key==='r'||key.startsWith('republican')||key==='gop')return 'R';
+      return null;
+    };
+    const localMajor=major(party),providerMajor=major(candidate.partyCode);
+    if((localMajor||providerMajor)&&localMajor!==providerMajor)
+      throw Error('Provider party mismatch: '+candidate.name);
+  }
   return {...candidate,name:local.name,...(party?{party,partyCode:party}:{}),
     ...(local.providerName?{providerName:local.providerName}:{}),
     ...(local.aliases?{aliases:local.aliases}:{}),

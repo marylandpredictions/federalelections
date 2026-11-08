@@ -1,0 +1,94 @@
+{
+  "status": "Research confirmation; not a production release",
+  "modelVersion": "fea-live-multi-aggregate-1",
+  "forecastSha256": "9ba5781d82eb90a012b11ae0f71ae6917d60b51e6df8c764e54881496a890ea2",
+  "planSha256": "290e724cf4548aad0894be8c2702c7f3c9e101017d0026543a02b8da1bf623d3",
+  "weighting": "Equal states, equal frames within each state; state-cluster bootstrap",
+  "scoredRuns": 29,
+  "cohorts": {
+    "all": {
+      "states": 23,
+      "frames": 29,
+      "metrics": {
+        "multi": {
+          "brier": 0.0058821415217391315,
+          "coverage80": 0.9782608695652174,
+          "false95Ids": []
+        },
+        "frozen-source": {
+          "brier": 0.0634099290201322
+        }
+      },
+      "pairedBrierDifference": {
+        "difference": -0.057527787498393074,
+        "interval95": [
+          -0.1059999710581182,
+          -0.015559812237859275
+        ]
+      }
+    },
+    "prior-competitive": {
+      "states": 8,
+      "frames": 9,
+      "metrics": {
+        "multi": {
+          "brier": 0.01667874578125,
+          "coverage80": 1,
+          "false95Ids": []
+        },
+        "frozen-source": {
+          "brier": 0.18155627593288012
+        }
+      },
+      "pairedBrierDifference": {
+        "difference": -0.16487753015163012,
+        "interval95": [
+          -0.26200427980229485,
+          -0.06957412643846533
+        ]
+      }
+    },
+    "60-100": {
+      "states": 23,
+      "frames": 29,
+      "metrics": {
+        "multi": {
+          "brier": 0.0058821415217391315,
+          "coverage80": 0.9782608695652174,
+          "false95Ids": []
+        },
+        "frozen-source": {
+          "brier": 0.0634099290201322
+        }
+      },
+      "pairedBrierDifference": {
+        "difference": -0.057527787498393074,
+        "interval95": [
+          -0.1059999710581182,
+          -0.015559812237859275
+        ]
+      }
+    },
+    "60-100-prior-competitive": {
+      "states": 8,
+      "frames": 9,
+      "metrics": {
+        "multi": {
+          "brier": 0.01667874578125,
+          "coverage80": 1,
+          "false95Ids": []
+        },
+        "frozen-source": {
+          "brier": 0.18155627593288012
+        }
+      },
+      "pairedBrierDifference": {
+        "difference": -0.16487753015163012,
+        "interval95": [
+          -0.26200427980229485,
+          -0.06957412643846533
+        ]
+      }
+    }
+  }
+}

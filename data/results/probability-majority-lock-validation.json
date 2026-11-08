@@ -1,0 +1,13 @@
+{
+  "status": "Majority-lock gate evidence; binds the multi remaining-vote engine and first-count outcome helper",
+  "modelVersion": "fea-live-majority-lock-1",
+  "kernelVersion": "fea-live-multi-aggregate-1",
+  "description": "Publishes only when every remaining-vote draw still yields a first-count majority winner under the race rule. Draws that need a runoff, ranked-choice transfers, or legislative choice stay unavailable.",
+  "requirements": {
+    "simulations": 20000,
+    "minimumReportedPercent": 60,
+    "unresolvedShareMustBeZero": true,
+    "rules": ["majority-runoff", "ranked-choice", "legislative-contingency"]
+  },
+  "boundMultiEvidence": true
+}
