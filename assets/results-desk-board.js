@@ -1127,8 +1127,7 @@ window.FEAEnhanceBoard = function (Page) {
     container.innerHTML = `<div class="trend-summary"><div><small>${status}</small><strong>Chance of winning</strong></div><span>${esc(dateLabel(latest.at))}<br>${esc(time(latest.at))}</span></div>
       ${data.status === 'stale' && data.reason ? `<p class="desk-hint">${esc(data.reason)}</p>` : ''}
       <ul class="desk-probability-candidates">${summaries}</ul><div class="desk-probability-chart"></div>
-      ${conservative?'<p class="desk-hint">Uses race totals and a pre-election prior. Uncertainty is conservative.</p>':''}
-      <p class="desk-hint">FEA model estimate using NBC News returns. Race calls are shown separately.</p>`;
+      ${conservative?'<p class="desk-hint">Uses race totals and a pre-election prior. Uncertainty is conservative.</p>':''}`;
     if (points.length < 2) return;
     const width = Math.max(210, container.clientWidth), height = 182;
     const y = d3.scaleLinear().domain([0,1]).range([height - 30, 12]);
