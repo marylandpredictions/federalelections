@@ -113,7 +113,7 @@ export function validatePartialProbabilityRelease(release,evidence=partialReleas
   Date.parse(approval.at)<=Date.now()+120000&&
   release.validationHash===evidence.validationHash&&release.calibrationHash===evidence.calibrationHash&&
   release.implementationHash===evidence.implementationHash,'approval does not bind current code, calibration and evidence');
- check(policy.simulations===20000&&policy.minimumReportedPercent===25&&policy.maximumInputAgeMs===48*60*60*1000,
+ check(policy.simulations===20000&&policy.minimumReportedPercent===25&&policy.maximumInputAgeMs===7*24*60*60*1000,
   'unexpected simulation or supported reporting policy');
  const cohorts=evidence.validation.cohorts?.['new-races'];
  const overall=cohorts?.['supported-stages']?.metrics,competitive=cohorts?.['supported-prior-competitive']?.metrics;

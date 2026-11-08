@@ -97,7 +97,7 @@ export function compilePartialRelease(inventory,crosscheck,catalogue,evidence=pa
  const hasMajorityLock=Object.values(races).some(c=>c.prior.inputMode==='majority-lock');
  const release={schemaVersion:2,modelVersion:partialLiveModelVersion,
   description:'Scoped calibrated partial-count rollout with race-total, multi-candidate, unopposed and majority-lock paths.',
-  policy:{method:'calibrated-partial-count',simulations:20000,minimumReportedPercent:25,maximumInputAgeMs:48*60*60*1000},
+  policy:{method:'calibrated-partial-count',simulations:20000,minimumReportedPercent:25,maximumInputAgeMs:7*24*60*60*1000},
   approval:{kind:'automated-source-and-statistical-review',at,performedBy:'Automated replay checks and Codex source review; no independent human review claimed'},
   validationHash:evidence.validationHash,calibrationHash:evidence.calibrationHash,implementationHash:evidence.implementationHash,
   priorSource:{commit:inventory.priorCommit,availableAt:inventory.anchorAvailableAt,sha256:inventory.anchorSha256},
