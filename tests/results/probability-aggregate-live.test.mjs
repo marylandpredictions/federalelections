@@ -12,11 +12,11 @@ import {compilePartialRelease} from '../../scripts/results/build-partial-probabi
 function fixture(id='house-HI-2'){
  const now=Date.now(),at=new Date(now).toISOString(),e=partialReleaseEvidence({aggregate:true}),office=id.split('-')[0];
  const roster=[{id:'dem',name:'Alex Fixture',party:'D',aliases:['Alex Source']},{id:'rep',name:'Jamie Fixture',party:'R'}];
- const anchorSource={commit:'a'.repeat(40),sha256:'b'.repeat(64),file:office==='house'?'data/house-forecast.json':'data/governor-forecast.json',availableAt:'2026-11-02T20:00:00Z'};
+ const anchorSource={commit:'a'.repeat(40),sha256:'b'.repeat(64),file:'data/results/prior-anchors-v1.json',availableAt:'2026-11-02T20:00:00Z'};
  const prior={raceId:id,office,electionDate:'2026-11-03',rule:'plurality',method:'calibrated-partial-count',
   inputMode:'race-total',modelVersion:partialLiveModelVersion,candidateIds:['dem','rep'],parties:{dem:'D',rep:'R'},
   anchorAvailableAt:anchorSource.availableAt,anchorSource,marginSigmaPoints:10,units:[{id:'race:'+id,margin:.1,weight:1}]};
- const release={modelVersion:partialLiveModelVersion,policy:{method:prior.method,simulations:20000,minimumReportedPercent:25,maximumInputAgeMs:48*60*60*1000},
+ const release={modelVersion:partialLiveModelVersion,policy:{method:prior.method,simulations:20000,minimumReportedPercent:25,maximumInputAgeMs:7*24*60*60*1000},
   approval:{kind:'automated-source-and-statistical-review',at},validationHash:e.validationHash,calibrationHash:e.calibrationHash,
   implementationHash:e.implementationHash,aggregateValidationHash:e.aggregateValidationHash,
   aggregatePriorSources:{[office]:anchorSource},races:{[id]:{prior,roster}}};

@@ -215,7 +215,7 @@ export function validatePartialProbabilityRelease(release,evidence=partialReleas
     'future or undated multi prior');
    const s=prior.anchorSource;
    check(s&&/^[a-f0-9]{40}$/.test(s.commit)&&/^[a-f0-9]{64}$/.test(s.sha256)&&s.availableAt===prior.anchorAvailableAt&&
-    s.file===(prior.office==='house'?'data/house-forecast.json':prior.office==='senate'?'data/forecast.json':'data/governor-forecast.json')&&
+    (s.file==='data/results/prior-anchors-v1.json'||s.file==='data/results/polling-reference.json')&&
     objectHash(s)===objectHash(release.multiPriorSources?.[prior.office]),'unbound multi race-total candidate prior');
    check(Number.isFinite(prior.shareConcentration)&&prior.shareConcentration>=2&&prior.shareConcentration<=500&&
     Number.isFinite(prior.marginSigmaPoints)&&prior.marginSigmaPoints>0&&prior.marginSigmaPoints<100,
@@ -243,7 +243,7 @@ export function validatePartialProbabilityRelease(release,evidence=partialReleas
   if(aggregate){
    const s=prior.anchorSource;
    check(s&&/^[a-f0-9]{40}$/.test(s.commit)&&/^[a-f0-9]{64}$/.test(s.sha256)&&s.availableAt===prior.anchorAvailableAt&&
-    s.file===(prior.office==='house'?'data/house-forecast.json':'data/governor-forecast.json')&&
+    (s.file==='data/results/prior-anchors-v1.json'||s.file==='data/results/polling-reference.json')&&
     objectHash(s)===objectHash(release.aggregatePriorSources?.[prior.office]),'unbound race-total candidate prior');
   }
   check(Number.isFinite(prior.marginSigmaPoints)&&prior.marginSigmaPoints>0&&prior.marginSigmaPoints<100&&

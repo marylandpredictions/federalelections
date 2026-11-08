@@ -55,16 +55,18 @@ called-race sample during this check; call transitions were fixture-tested.
 ## Optional polling reference
 
 `npm run build:polling-reference` reads the public VoteHub poll API and matches
-polls to the actual NBC roster. The Nov. 3 snapshot covers 44 races. It displays
-an explicitly labeled **FEA simple average using VoteHub data**, not VoteHub's
-own weighted average. The public average application's referenced JavaScript
-returned 404, and a published-average API contract could not be verified.
+polls to the actual NBC roster. The frozen Nov. 2 aggregate covers 60 races. It
+displays an explicitly labeled **FEA race-poll aggregate using VoteHub data**,
+not VoteHub's own weighted average. VoteHub exposes raw polls only; there is no
+verified published-average API contract.
 
-Method: latest poll per pollster within 30 days, LV/RV, no internal polls, at
-least two pollsters, exact office/state/district and both ballot candidates.
-The stat includes its date, pollster count and method. It is a static dated
-reference, does not drive calls or map colors, and disappears if the runtime
-roster no longer matches. VoteHub is credited with its CC BY 4.0 API source link.
+Method: weighted mean of eligible polls in a 60-day window (recency half-life 45
+days, sample-size and LV/RV weights, partisan downweight, repeated-pollster
+decay), LV/RV, no internal polls, at least two pollsters, exact
+office/state/district and named ballot matchup (including 1D+NR headliners).
+The same artifact feeds live win-probability priors when a race qualifies;
+otherwise the prior is uninformative. VoteHub is credited with its CC BY 4.0
+API source link.
 
 ## CivicAPI
 
