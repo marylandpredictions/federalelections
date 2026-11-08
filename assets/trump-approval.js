@@ -21,9 +21,7 @@
 
   function setCurrent(data) {
     const {current, asOf} = data;
-    const enop = Number.isFinite(current.enop) ? ` · ENOP ${current.enop.toFixed(2)}` : '';
-    $('approval-asof').textContent =
-      `As of ${fmtDate(asOf)} · ${current.pollCount} polls · ${current.effectivePollsters} pollsters${enop}`;
+    $('approval-asof').textContent = `As of ${fmtDate(asOf)}`;
     const approve = $('approval-approve');
     const disapprove = $('approval-disapprove');
     const net = $('approval-net');
@@ -33,7 +31,7 @@
     disapprove.className = 'is-disapprove';
     net.textContent = fmtNet(current.net);
     net.className = current.net >= 0 ? 'is-approve' : 'is-disapprove';
-    $('approval-polls').textContent = String(current.pollCount);
+    $('approval-enop').textContent = Number.isFinite(current.enop) ? current.enop.toFixed(2) : '—';
     const total = current.approve + current.disapprove;
     const approveShare = total > 0 ? (100 * current.approve) / total : 50;
     $('approval-meter-approve').style.width = `${approveShare}%`;
@@ -299,7 +297,7 @@
   async function boot() {
     bindToggle();
     try {
-      const response = await fetch('/data/polling/trump-approval.json?v=20261108-3', {
+      const response = await fetch('/data/polling/trump-approval.json?v=20261108-5', {
         signal: AbortSignal.timeout(12000),
       });
       if (!response.ok) throw Error(`HTTP ${response.status}`);

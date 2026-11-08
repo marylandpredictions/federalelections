@@ -1,3 +1,68 @@
+.home-approval-card {
+  display: grid;
+  gap: 0;
+  width: min(100%, 220px);
+  margin: 0 0 1rem;
+  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--paper) 92%, white 8%);
+  color: inherit;
+  text-decoration: none;
+  overflow: hidden;
+  box-shadow: 0 10px 28px color-mix(in srgb, #000 14%, transparent);
+  transition: transform .16s var(--ease-out), box-shadow .16s var(--ease-out);
+}
+.home-approval-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px color-mix(in srgb, #000 18%, transparent);
+}
+.home-approval-card:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+.home-approval-title {
+  display: block;
+  padding: .72rem .85rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 45%, transparent);
+  color: color-mix(in srgb, var(--muted) 70%, #8b7cc9);
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.home-approval-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.home-approval-cell {
+  display: grid;
+  gap: .2rem;
+  justify-items: center;
+  padding: .85rem .55rem 1rem;
+}
+.home-approval-cell + .home-approval-cell {
+  border-left: 1px solid color-mix(in srgb, var(--line) 45%, transparent);
+}
+.home-approval-cell strong {
+  font-size: clamp(1.7rem, 3vw, 2.15rem);
+  font-weight: 950;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.home-approval-cell small {
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 700;
+}
+.home-approval-approve { color: #12a454; }
+.home-approval-disapprove { color: #e35d7a; }
+:root[data-theme="dark"] .home-approval-card {
+  background: color-mix(in srgb, var(--paper) 88%, #1a1630);
+}
+:root[data-theme="dark"] .home-approval-approve { color: #3dd68c; }
+:root[data-theme="dark"] .home-approval-disapprove { color: #ff8fa8; }
+
 .home-national-results { gap:.55rem; padding:clamp(1rem,2.5vw,1.8rem); }
 .home-national-results h2 { color:#fff; margin:0; font-size:1.35rem; }
 .home-national-results #home-results-lines > div {

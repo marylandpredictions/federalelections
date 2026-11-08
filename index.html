@@ -11,7 +11,7 @@
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
   <script src="assets/theme.js?v=20261030-features2"></script>
   <link rel="stylesheet" href="assets/wiki.css?v=20261030-features1">
-  <link rel="stylesheet" href="assets/home-results.css?v=2">
+  <link rel="stylesheet" href="assets/home-results.css?v=3">
   <link rel="stylesheet" href="assets/incoming-congress.css?v=2">
 </head>
 <body data-election-phase="post-election">
@@ -33,6 +33,19 @@
   <main>
     <section class="home-hero-shell" aria-labelledby="page-title">
       <div class="hero-main home-hero">
+        <a class="home-approval-card" href="/polling/trump-approval" aria-label="Trump approval average">
+          <span class="home-approval-title">Trump Approval</span>
+          <span class="home-approval-grid">
+            <span class="home-approval-cell">
+              <strong id="home-approval-approve" class="home-approval-approve">—</strong>
+              <small>Approve</small>
+            </span>
+            <span class="home-approval-cell">
+              <strong id="home-approval-disapprove" class="home-approval-disapprove">—</strong>
+              <small>Disapprove</small>
+            </span>
+          </span>
+        </a>
         <p class="kicker">Federal Elections Analysis</p>
         <h1 id="page-title">Analysis on your screen.</h1>
         <p class="lede">Election coverage, reporting, and analysis from the FEA team.</p>
@@ -52,6 +65,7 @@
       <div>
         <a class="button-link" href="/features/map-maker">Map Maker</a>
         <a class="button-link" href="/features/polling-bias">State Polling Bias</a>
+        <a class="button-link" href="/polling/trump-approval">Trump Approval</a>
         <a class="button-link" href="/results">Results Board</a>
       </div>
     </section>
@@ -178,7 +192,7 @@
   <script src="assets/wiki.js?v=20260721-ratings"></script>
   <script src="assets/incoming-congress-model.js?v=1" defer></script>
   <script src="assets/incoming-congress.js?v=1" defer></script>
-  <script src="assets/home-results.js?v=2" defer></script>
+  <script src="assets/home-results.js?v=3" defer></script>
 </body>
 </html>
 

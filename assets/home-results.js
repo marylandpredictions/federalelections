@@ -147,4 +147,22 @@
     document.addEventListener('visibilitychange',refresh);
   }
   biasPreview().catch(()=>{});
+  async function approvalCard() {
+    const approve = $('home-approval-approve');
+    const disapprove = $('home-approval-disapprove');
+    if (!approve || !disapprove) return;
+    try {
+      const response = await fetch('/data/polling/trump-approval.json?v=20261108-3', {
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!response.ok) throw Error('Approval unavailable');
+      const {current} = await response.json();
+      approve.textContent = `${Math.round(current.approve)}%`;
+      disapprove.textContent = `${Math.round(current.disapprove)}%`;
+    } catch {
+      approve.textContent = '—';
+      disapprove.textContent = '—';
+    }
+  }
+  approvalCard().catch(()=>{});
 })();
