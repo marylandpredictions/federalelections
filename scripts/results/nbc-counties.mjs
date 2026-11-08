@@ -107,7 +107,7 @@ export function parseNbcCountyAggregates(data,race,{lookup=countyGeographies(dat
   if(!Number.isFinite(updated)||updated>Date.now()+120000)throw Error('Invalid NBC county timestamp');
   if(!['ME','MA','NH','CT','RI','VT'].includes(race.state)||!Array.isArray(raw.areas)||
       !raw.areas.length||raw.areas.length>5000)throw Error('No supported municipal count array');
-  const byCounty=new Map(),names=new Map(race.candidates.map(c=>[c.name,c]));
+  const byCounty=new Map(),estimatedTotals=new Map(),names=new Map(race.candidates.map(c=>[c.name,c]));
   for(const area of raw.areas){
     const options=[...(lookup.get(normalize(area.name))||[])];
     const counties=new Set(options.map(id=>id.slice(0,5)));
@@ -132,6 +132,14 @@ export function parseNbcCountyAggregates(data,race,{lookup=countyGeographies(dat
       total.set(name,next);
     }
     byCounty.set(id,total);
+    // Aggregate source turnout estimates, rather than averaging town percentages.
+    // A missing/zero estimate in any town keeps the county estimate unavailable.
+    let reporting=null;
+    try{reporting=percent(area.percentIn);}catch{/* Counts remain useful without a valid estimate. */}
+    const estimated=area.votes>0&&reporting>0?area.votes/(reporting/100):null;
+    const previous=estimatedTotals.get(id)??0;
+    estimatedTotals.set(id,estimatedTotals.get(id)===null||!Number.isFinite(estimated)||estimated===null||
+      !Number.isFinite(previous+estimated)?null:previous+estimated);
   }
   const expected=new Map();
   for(const candidate of raw.summary.candidates){
@@ -147,7 +155,7 @@ export function parseNbcCountyAggregates(data,race,{lookup=countyGeographies(dat
   return [...byCounty].sort(([a],[b])=>a.localeCompare(b)).map(([id,votes])=>{
     const total=[...votes.values()].reduce((sum,value)=>sum+value,0);
     return {fips:id,type:'County',source:'NBC News',lastUpdated:new Date(updated).toISOString(),
-      estimatedVoteReporting:null,percentReporting:null,
+      estimatedVoteReporting:estimatedTotals.get(id)>0?100*total/estimatedTotals.get(id):null,percentReporting:null,
       candidates:[...votes].map(([name,count])=>({...names.get(name),votes:count,winner:false,isWinner:false,
         percent:total?100*count/total:0}))};
   });

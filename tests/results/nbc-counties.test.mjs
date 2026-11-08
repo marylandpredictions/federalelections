@@ -174,6 +174,14 @@ test('Municipality arrays preserve city/town collisions when their parent county
  assert.equal(rows[0].candidates[1].votes,40);
  assert.equal(rows[1].candidates[0].votes,5);
  assert.ok(rows.every(row=>row.estimatedVoteReporting===null&&row.candidates.every(c=>!c.winner&&!c.isWinner)));
+ raw.areas[0].percentIn=50;raw.areas[1].percentIn=100;raw.areas[2].percentIn=25;
+ const estimated=parseNbcCountyAggregates(p,r,{lookup});
+ assert.ok(Math.abs(estimated[0].estimatedVoteReporting-100*100/130)<1e-10);
+ assert.equal(estimated[1].estimatedVoteReporting,25);
+ for(const invalid of [null,0,'bad',101]){
+   raw.areas[1].percentIn=invalid;
+   assert.equal(parseNbcCountyAggregates(p,r,{lookup})[0].estimatedVoteReporting,null);
+ }
  lookup.get('samename').add('2500500010');
  assert.throws(()=>parseNbcCountyAggregates(p,r,{lookup}),/unique parent county/);
  lookup.get('samename').delete('2500500010');raw.summary.votes++;

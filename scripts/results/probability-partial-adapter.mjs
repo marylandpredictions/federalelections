@@ -87,7 +87,9 @@ export function simulatePartialProbability(prior,snapshot,settings={},previousIn
   const calibration=partialCalibrationWithPrior(prior.calibration,prior.units,prior.marginSigmaPoints);
   const priors=prior.units.map(({id,margin})=>({id,margin}));
   const priorHash=hash(prior);
-  const inputHash=hash([partialLiveModelVersion,priorHash,[...reports].sort((a,b)=>a.id.localeCompare(b.id)),simulations]);
+  requireInput(settings.implementationHash===undefined||/^[a-f0-9]{64}$/.test(settings.implementationHash),
+    'Invalid model implementation identity');
+  const inputHash=hash([partialLiveModelVersion,settings.implementationHash??null,priorHash,[...reports].sort((a,b)=>a.id.localeCompare(b.id)),simulations]);
   if(inputHash===previousInputHash)return {status:'unchanged',inputHash};
   const result=simulatePartialCounts(priors,reports,calibration,{simulations});
   return {status:'research',raceId:prior.raceId,office:prior.office,electionDate:prior.electionDate,

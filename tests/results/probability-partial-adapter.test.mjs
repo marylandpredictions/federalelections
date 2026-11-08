@@ -39,6 +39,15 @@ test('Two-candidate production-format points agree with the verified partial-cou
  assert.ok(result.candidates.every(c=>c.probability>0&&c.probability<1));
  assert.equal(simulatePartialProbability(prior,snapshot,{},result.inputHash).status,'unchanged');
 });
+test('An implementation revision recomputes unchanged counts instead of reusing old odds',()=>{
+ const {prior,snapshot}=input();
+ const first=simulatePartialProbability(prior,snapshot,{implementationHash:'a'.repeat(64)});
+ assert.equal(simulatePartialProbability(prior,snapshot,{implementationHash:'a'.repeat(64)},first.inputHash).status,'unchanged');
+ const revised=simulatePartialProbability(prior,snapshot,{implementationHash:'b'.repeat(64)},first.inputHash);
+ assert.equal(revised.status,'research');assert.notEqual(revised.inputHash,first.inputHash);
+ assert.throws(()=>simulatePartialProbability(prior,snapshot,{implementationHash:'invalid'}),/implementation identity/);
+});
+
 test('The partial adapter refuses multicandidate fields, incorrect rules and future priors',()=>{
  const mutations=[
   x=>x.prior.candidateIds.push('other'),x=>x.prior.parties.dem='I',

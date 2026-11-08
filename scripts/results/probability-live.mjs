@@ -97,7 +97,7 @@ export class LiveProbability {
         new Set(point.candidates.map(c=>c.id)).size===config.roster.length&&
         config.roster.every(c=>point.candidates.some(p=>p.id===c.id&&Number.isFinite(p.probability)&&p.probability>=0&&p.probability<=1)));
       this.races.set(id, {config, identity, settings: {...release.policy.settings,
-        ...(release.policy.method==='calibrated-partial-count'?{simulations:release.policy.simulations,maximumInputAgeMs:release.policy.maximumInputAgeMs}:{}),
+        ...(release.policy.method==='calibrated-partial-count'?{simulations:release.policy.simulations,maximumInputAgeMs:release.policy.maximumInputAgeMs,implementationHash:release.implementationHash}:{}),
         method:release.policy.method}, points: recovered||compatibleHistory ? state.points : [],
         pendingModelRevision:!recovered&&compatibleHistory&&state.points.length>0,
         snapshot: recovered ? state.snapshot : undefined,
