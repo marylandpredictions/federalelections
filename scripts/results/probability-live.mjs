@@ -218,8 +218,8 @@ export class LiveProbability {
     }
     const point = await this.simulate(prior, snapshot, race.settings, last?.inputHash);
     if (point.status === 'unavailable') {
-      race.reason = point.reason;
-      race.rejectedEvidence = {hash: evidence, reason: point.reason};
+      race.reason = partial?point.reason:'Waiting for verified reporting-unit completion. '+point.reason;
+      race.rejectedEvidence = {hash: evidence, reason: race.reason};
       return;
     }
     if (point.status === 'unchanged') {
