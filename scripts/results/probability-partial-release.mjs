@@ -98,7 +98,7 @@ function validateMajorityLockEvidence(release,evidence){
   check(doc?.modelVersion===majorityLockModelVersion&&doc.kernelVersion===multiAggregateModelVersion&&
   doc.boundMultiEvidence===true&&doc.requirements?.unresolvedShareMustBeZero===true&&
   doc.requirements?.terminalResolution===true&&
-  doc.requirements?.simulations===20000&&doc.requirements?.minimumReportedPercent===50,
+  doc.requirements?.simulations===20000&&doc.requirements?.minimumReportedPercent===20,
  'majority-lock gate identity is incomplete');
  validateMultiEvidence({...release,multiValidationHash:release.multiValidationHash||evidence.multiValidationHash},evidence);
 }

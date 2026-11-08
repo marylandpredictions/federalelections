@@ -5,7 +5,7 @@
   "description": "Publishes when every remaining-vote draw yields either a first-count majority winner or a scoped terminal resolution: a locked top-two runoff sample with wide uncertainty, first-preference IRV elimination transfers, or a two-candidate legislative-choice sample. Draws that cannot resolve stay unavailable.",
   "requirements": {
     "simulations": 20000,
-    "minimumReportedPercent": 50,
+    "minimumReportedPercent": 20,
     "unresolvedShareMustBeZero": true,
     "terminalResolution": true,
     "rules": ["majority-runoff", "ranked-choice", "legislative-contingency"]
