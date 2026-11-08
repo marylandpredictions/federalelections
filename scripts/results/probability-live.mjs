@@ -262,8 +262,18 @@ export async function openLiveProbability(storage) {
   const worker = new LiveProbability(storage.directory);
   if (!storage.durable) return worker;
   try {
-    await worker.load(await readJson(join(storage.directory, 'probability-release.json'))??
-      await readJson(new URL('../../data/results/probability-release.json',import.meta.url)));
+    const disk = await readJson(join(storage.directory, 'probability-release.json'));
+    const repo = await readJson(new URL('../../data/results/probability-release.json',import.meta.url));
+    try {
+      await worker.load(disk ?? repo);
+    } catch (error) {
+      // A stale disk copy from an older deploy must not blank the live models.
+      if (disk && repo) {
+        console.error('Live probability disk release rejected; loading repository release: ' + error.message);
+        worker.races = new Map();
+        await worker.load(repo);
+      } else throw error;
+    }
     return worker;
   } catch (error) {
     console.error('Live probability disabled: ' + error.message);

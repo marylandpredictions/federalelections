@@ -1758,12 +1758,25 @@ class ElectionNightPage {
   async renderSelectedRaceMap(race, options = {}) {
     const presidential=this.comparisonManifest.sources.find(s=>s.id==="pres-2024" && s.status==="available");
     if(race.type!=="house" && presidential){const baseline=this.loadComparisonDataset('county',presidential);if(this.isComparisonActive())await baseline;else baseline.catch(()=>{});}
+    // Hydrate reporting units before choosing map geometry. Alaska NBC pages
+    // use state House districts, including the at-large U.S. House race.
+    const detail = await this.findLiveDetailForRace(race);
+    if (detail && this.isLabPage) this.seedLabDetail(detail, race);
+    if (this.currentRace?.id !== race.id) return false;
+    const usesAlaskaDistricts = (detail?.counties || []).some(
+      (county) => /^AK-HD-/.test(county.fips || "") || county.type === "State House District",
+    );
+    if (usesAlaskaDistricts) {
+      const allFeatures = await this.loadCountyFeatures(detail.state || race.state);
+      if (this.currentRace?.id !== race.id) return false;
+      const stateFips = stateFipsForElectionNight(String(detail.state || race.state || "").toUpperCase());
+      const features = allFeatures.filter((feature) => featureStateFipsForElectionNight(feature) === stateFips);
+      if (!features.length) return false;
+      this.renderCountyDetailMap(detail || race, features, { preserveMapTransform: options.preserveMapTransform });
+      return true;
+    }
     if (String(race?.type || "").toLowerCase() === "house") {
-      const [detail, features] = await Promise.all([
-        this.findLiveDetailForRace(race),
-        this.loadDistrictCountyFeatures(race)
-      ]);
-      if (detail && this.isLabPage) this.seedLabDetail(detail, race);
+      const features = await this.loadDistrictCountyFeatures(race);
       if (this.currentRace?.id !== race.id) return false;
       if (!features.length) return false;
       this.renderCountyDetailMap(detail || race, features, {
@@ -1774,11 +1787,7 @@ class ElectionNightPage {
       return true;
     }
 
-    const [detail, allFeatures] = await Promise.all([
-      this.findLiveDetailForRace(race),
-      this.loadCountyFeatures()
-    ]);
-    if (detail && this.isLabPage) this.seedLabDetail(detail, race);
+    const allFeatures = await this.loadCountyFeatures(detail?.state || race.state);
     if (this.currentRace?.id !== race.id) return false;
 
     const state = String(detail?.state || race?.state || "").toUpperCase();
