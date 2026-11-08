@@ -1,0 +1,511 @@
+{
+  "status": "research-only; sample size and rule/candidate scope still require review",
+  "offices": {
+    "senate": {
+      "forecastSha256": "ccc6a9308f704eb46c7211acdc7fdc8dd855dc3b9428834d56508ab91d842404",
+      "cohorts": {
+        "all": {
+          "metrics": {
+            "historical-only": {
+              "races": 20,
+              "states": 20,
+              "brier": 0.021465295023378846,
+              "logLoss": 0.06408865325525492,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 1.8035073399231927,
+              "coverage80": 0.75
+            },
+            "candidate-and-uncertainty": {
+              "races": 20,
+              "states": 20,
+              "brier": 0.04142822505284986,
+              "logLoss": 0.11757968088861945,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 2.2565722011573888,
+              "coverage80": 0.7
+            },
+            "frozen-source": {
+              "races": 20,
+              "states": 20,
+              "brier": 0.032189777634759734,
+              "logLoss": 0.11429531385413791,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 4.912841692823691,
+              "coverage80": 0.9
+            }
+          },
+          "paired": {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 20,
+            "draws": 5000,
+            "difference": 0.009238447418090122,
+            "interval95": [
+              -0.038262044801354624,
+              0.0811634500089591
+            ]
+          },
+          "false95Ids": []
+        },
+        "new": {
+          "metrics": {
+            "historical-only": {
+              "races": 13,
+              "states": 13,
+              "brier": 0.03278667863246449,
+              "logLoss": 0.09416040868318355,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 1.529712933179887,
+              "coverage80": 0.7692307692307693
+            },
+            "candidate-and-uncertainty": {
+              "races": 13,
+              "states": 13,
+              "brier": 0.06363328644778175,
+              "logLoss": 0.17798603781775613,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 1.7520373879913589,
+              "coverage80": 0.7692307692307693
+            },
+            "frozen-source": {
+              "races": 13,
+              "states": 13,
+              "brier": 0.027637405016918973,
+              "logLoss": 0.09417868768045977,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 4.83207289345202,
+              "coverage80": 1.0
+            }
+          },
+          "paired": {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 13,
+            "draws": 5000,
+            "difference": 0.03599588143086277,
+            "interval95": [
+              -0.026756095907000003,
+              0.13598622750243952
+            ]
+          },
+          "false95Ids": []
+        },
+        "supported-new": {
+          "metrics": {
+            "historical-only": {
+              "races": 13,
+              "states": 13,
+              "brier": 0.03278667863246449,
+              "logLoss": 0.09416040868318355,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 1.529712933179887,
+              "coverage80": 0.7692307692307693
+            },
+            "candidate-and-uncertainty": {
+              "races": 13,
+              "states": 13,
+              "brier": 0.06363328644778175,
+              "logLoss": 0.17798603781775613,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 1.7520373879913589,
+              "coverage80": 0.7692307692307693
+            },
+            "frozen-source": {
+              "races": 13,
+              "states": 13,
+              "brier": 0.027637405016918973,
+              "logLoss": 0.09417868768045977,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 4.83207289345202,
+              "coverage80": 1.0
+            }
+          },
+          "paired": {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 13,
+            "draws": 5000,
+            "difference": 0.03599588143086277,
+            "interval95": [
+              -0.026756095907000003,
+              0.13598622750243952
+            ]
+          },
+          "false95Ids": []
+        },
+        "supported-new-competitive": {
+          "metrics": {
+            "historical-only": {
+              "races": 2,
+              "states": 2,
+              "brier": 0.21311335613301258,
+              "logLoss": 0.6114927389278614,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 2.2560434483544576,
+              "coverage80": 1.0
+            },
+            "candidate-and-uncertainty": {
+              "races": 2,
+              "states": 2,
+              "brier": 0.4136160670285459,
+              "logLoss": 1.1560592682815756,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 4.283313828291637,
+              "coverage80": 0.5
+            },
+            "frozen-source": {
+              "races": 2,
+              "states": 2,
+              "brier": 0.17557953312500002,
+              "logLoss": 0.5422693024066988,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 0.8330660558056199,
+              "coverage80": 1.0
+            }
+          },
+          "paired": {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 2,
+            "draws": 5000,
+            "difference": 0.23803653390354587,
+            "interval95": [
+              -0.11558869608699936,
+              0.5916617638940911
+            ]
+          },
+          "false95Ids": []
+        }
+      },
+      "quarantined": [
+        {
+          "file": "2022-ak-senate.body",
+          "reason": "Reporting geography outside county model"
+        },
+        {
+          "file": "2022-az-senate.body",
+          "reason": "Pre-results snapshot; evaluated separately from partial counts"
+        },
+        {
+          "file": "2022-ct-senate.body",
+          "reason": "Reporting geography outside county model"
+        },
+        {
+          "file": "2022-ia-senate.body",
+          "reason": "Unknown provider candidate: Mike Franken"
+        },
+        {
+          "file": "2022-in-senate.body",
+          "reason": "Unknown provider candidate: Tom McDermott"
+        },
+        {
+          "file": "2022-mo-senate.body",
+          "reason": "No reconciled certified ballot control"
+        },
+        {
+          "file": "2022-nh-senate.body",
+          "reason": "Reporting geography outside county model"
+        },
+        {
+          "file": "2022-nv-senate.body",
+          "reason": "Pre-results snapshot; evaluated separately from partial counts"
+        },
+        {
+          "file": "2022-ny-senate.body",
+          "reason": "Unknown provider candidate: Chuck Schumer"
+        },
+        {
+          "file": "2022-ut-senate.body",
+          "reason": "No reconciled certified ballot control"
+        },
+        {
+          "file": "2022-vt-senate.body",
+          "reason": "Reporting geography outside county model"
+        },
+        {
+          "id": "2022-pa-senate",
+          "reason": "Frozen candidate identities missing or ambiguous"
+        }
+      ]
+    },
+    "governor": {
+      "forecastSha256": "56b6ca281393054ec7efeccb5af44417cd7ff49525237b363c29623a4a1e4faf",
+      "cohorts": {
+        "all": {
+          "metrics": {
+            "historical-only": {
+              "races": 16,
+              "states": 16,
+              "brier": 0.0011960815195489194,
+              "logLoss": 0.010394317808881455,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 2.908814544567276,
+              "coverage80": 0.6875
+            },
+            "candidate-and-uncertainty": {
+              "races": 16,
+              "states": 16,
+              "brier": 0.0010253798070619833,
+              "logLoss": 0.00879699615467014,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 2.3688338622774903,
+              "coverage80": 0.75
+            },
+            "frozen-source": {
+              "races": 16,
+              "states": 16,
+              "brier": 0.026532788368185477,
+              "logLoss": 0.09883708791624303,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 4.856864123408497,
+              "coverage80": 0.75
+            }
+          },
+          "paired": {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 16,
+            "draws": 5000,
+            "difference": -0.02550740856112349,
+            "interval95": [
+              -0.05354530571391143,
+              -0.002060274631231332
+            ]
+          },
+          "false95Ids": []
+        },
+        "new": {
+          "metrics": {
+            "historical-only": {
+              "races": 14,
+              "states": 14,
+              "brier": 1.3113325573808811e-05,
+              "logLoss": 0.00129207070432013,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 3.049008528954007,
+              "coverage80": 0.6428571428571429
+            },
+            "candidate-and-uncertainty": {
+              "races": 14,
+              "states": 14,
+              "brier": 2.1562802587882515e-07,
+              "logLoss": 0.00025719933718041445,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 2.3055012777812074,
+              "coverage80": 0.7142857142857143
+            },
+            "frozen-source": {
+              "races": 14,
+              "states": 14,
+              "brier": 0.016366315947569113,
+              "logLoss": 0.07022025217713873,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 5.244946074695514,
+              "coverage80": 0.7142857142857143
+            }
+          },
+          "paired": {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 14,
+            "draws": 5000,
+            "difference": -0.016366100319543237,
+            "interval95": [
+              -0.03857420921273712,
+              -5.526804699733241e-05
+            ]
+          },
+          "false95Ids": []
+        },
+        "supported-new": {
+          "metrics": {
+            "historical-only": {
+              "races": 13,
+              "states": 13,
+              "brier": 1.3949035212568873e-05,
+              "logLoss": 0.0012760126249821114,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 2.1198684790753877,
+              "coverage80": 0.6923076923076923
+            },
+            "candidate-and-uncertainty": {
+              "races": 13,
+              "states": 13,
+              "brier": 1.022667815044322e-07,
+              "logLoss": 0.00017693886721742273,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 1.8372010543743307,
+              "coverage80": 0.7692307692307693
+            },
+            "frozen-source": {
+              "races": 13,
+              "states": 13,
+              "brier": 0.01762130328007443,
+              "logLoss": 0.07506789741358136,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 4.968329440008135,
+              "coverage80": 0.7692307692307693
+            }
+          },
+          "paired": {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 13,
+            "draws": 5000,
+            "difference": -0.01762120101329293,
+            "interval95": [
+              -0.041503209573200764,
+              -6.307297055823803e-05
+            ]
+          },
+          "false95Ids": []
+        },
+        "supported-new-competitive": {
+          "metrics": {
+            "historical-only": {
+              "races": 3,
+              "states": 3,
+              "brier": 6.0412499250466174e-05,
+              "logLoss": 0.005196104700479139,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 0.3977623940153796,
+              "coverage80": 1.0
+            },
+            "candidate-and-uncertainty": {
+              "races": 3,
+              "states": 3,
+              "brier": 4.098360491869244e-07,
+              "logLoss": 0.0004334517501654881,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 0.18923517045915497,
+              "coverage80": 1.0
+            },
+            "frozen-source": {
+              "races": 3,
+              "states": 3,
+              "brier": 0.0762060612824124,
+              "logLoss": 0.30820019207680116,
+              "infiniteLogLossCases": 0,
+              "false95": 0,
+              "marginMae": 0.6705252519846683,
+              "coverage80": 1.0
+            }
+          },
+          "paired": {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": -0.07620565144636322,
+            "interval95": [
+              -0.10899901250399885,
+              -0.016090912503998803
+            ]
+          },
+          "false95Ids": []
+        }
+      },
+      "quarantined": [
+        {
+          "file": "2022-ar-governor.body",
+          "reason": "No reconciled certified ballot control"
+        },
+        {
+          "file": "2022-ct-governor.body",
+          "reason": "Reporting geography outside county model"
+        },
+        {
+          "file": "2022-fl-governor.body",
+          "reason": "No reconciled certified ballot control"
+        },
+        {
+          "file": "2022-ga-governor.body",
+          "reason": "No reconciled certified ballot control"
+        },
+        {
+          "file": "2022-id-governor.body",
+          "reason": "No reconciled certified ballot control"
+        },
+        {
+          "file": "2022-ma-governor.body",
+          "reason": "Reporting geography outside county model"
+        },
+        {
+          "file": "2022-me-governor.body",
+          "reason": "Reporting geography outside county model"
+        },
+        {
+          "file": "2022-mi-governor.body",
+          "reason": "No reconciled certified ballot control"
+        },
+        {
+          "file": "2022-mn-governor.body",
+          "reason": "No reconciled certified ballot control"
+        },
+        {
+          "file": "2022-nh-governor.body",
+          "reason": "Reporting geography outside county model"
+        },
+        {
+          "file": "2022-nv-governor.body",
+          "reason": "Pre-results snapshot; evaluated separately from partial counts"
+        },
+        {
+          "file": "2022-ok-governor.body",
+          "reason": "No reconciled certified ballot control"
+        },
+        {
+          "file": "2022-or-governor.body",
+          "reason": "Pre-results snapshot; evaluated separately from partial counts"
+        },
+        {
+          "file": "2022-pa-governor.body",
+          "reason": "Unknown provider candidate: Doug Mastriano"
+        },
+        {
+          "file": "2022-ri-governor.body",
+          "reason": "Reporting geography outside county model"
+        },
+        {
+          "file": "2022-sc-governor.body",
+          "reason": "No reconciled certified ballot control"
+        },
+        {
+          "file": "2022-tn-governor.body",
+          "reason": "No reconciled certified ballot control"
+        },
+        {
+          "file": "2022-tx-governor.body",
+          "reason": "No reconciled certified ballot control"
+        },
+        {
+          "file": "2022-vt-governor.body",
+          "reason": "Reporting geography outside county model"
+        }
+      ]
+    }
+  }
+}
