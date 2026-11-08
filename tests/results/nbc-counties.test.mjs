@@ -124,6 +124,31 @@ test('Native Alaska model inputs persist through restart/outage and publish Hous
  assert.deepEqual(restarted.probabilityResult(r.id,ids),input);
  assert.equal(restarted.results({details:true}).groups.flatMap(g=>g.races)[0].counties.length,40);
 });
+
+test('Older Alaska page fetches still publish public House districts when private units are already newer',async t=>{
+ const root=await mkdtemp(join(tmpdir(),'fea-native-publish-'));
+ t.after(()=>rm(root,{recursive:true,force:true}));
+ await mkdir(join(root,'data'));await mkdir(join(root,'disk'));
+ const {p,r}=alaskaFixture();
+ let now=Date.parse(p.currentTime);
+ const cp=new NbcCountyProvider({now:()=>now,fetchImpl:async()=>new Response(`<script id="__NEXT_DATA__">${JSON.stringify({props:{pageProps:p}})}</script>`)});
+ await writeFile(join(root,'data/election-night-races.json'),JSON.stringify({races:[r]}));
+ await writeFile(join(root,'data/results-provider.json'),'{"sources":[]}');
+ await writeFile(join(root,'data/result-calls.json'),'{"races":{}}');
+ const control=await new ResultsControl({root,storageDir:join(root,'disk'),provider:{fetchResults:async()=>[clone(r)]},countyProvider:cp}).init();
+ await control.poll();
+ const newer=new Date(Date.parse(p.currentTime)+60000).toISOString();
+ const units=parseNbcNativeReportingUnits(p,r).map(unit=>({...unit,lastUpdated:newer}));
+ const current=control.runtime.races[r.id];
+ control.runtime.races[r.id]={...current,probabilityUnits:units,counties:[],_signature:'seed-private-units'};
+ assert.equal(await control.loadCountyResultsBatch([r.id]),true);
+ const publicRace=control.results({details:true}).groups.flatMap(g=>g.races)[0];
+ assert.equal(publicRace.counties.length,40);
+ assert.ok(publicRace.counties.every(c=>/^AK-HD-/.test(c.fips)));
+ const ids=units.map(unit=>unit.id);
+ assert.deepEqual(control.probabilityResult(r.id,ids).counties.map(unit=>unit.lastUpdated),units.map(unit=>unit.lastUpdated));
+});
+
 test('Observed NBC pages supply exact county FIPS, district-only county portions, Senate specials and ME/MA/NH town GEOIDs',async()=>{
  const provider=new NbcCountyProvider();
  for(const key of Object.keys(samples)){const r=race(key),lookup=countyGeographies(samples[key],r,await provider.localFeatures(r.state)),rows=parseNbcCounties(samples[key],r,{lookup});assert.equal(rows.length,2,key);assert.equal(rows[0].fips.length,['me','ma','nh'].includes(key)?10:5);assert.ok(rows.every(c=>c.candidates.every(x=>!x.winner&&!x.isWinner)));}

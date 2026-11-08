@@ -1,5 +1,5 @@
 import {ResultsProvider} from './civic-provider.mjs';
-import {NbcCountyProvider,nbcCountyPage} from './nbc-counties.mjs';
+import {NbcCountyProvider,nbcCountyPage,publicAlaskaCounties} from './nbc-counties.mjs';
 import { readFile, writeFile, rename, mkdir,readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { NbcProvider } from "./nbc-provider.mjs";
@@ -230,7 +230,18 @@ export class ResultsControl {
         const modelUnits=this.countyProvider.modelUnitsFor?.(raw);
         if(!Array.isArray(counties)||!counties.length&&!modelUnits?.length||!current||current.provider!==raw.provider||current.providerScope!==raw.providerScope||current.providerPageUrl!==raw.providerPageUrl)continue;
         const previousUnits=new Map(current.probabilityUnits?.map(unit=>[unit.id,unit]));
-        if(modelUnits?.some(unit=>Date.parse(previousUnits.get(unit.id)?.lastUpdated)>Date.parse(unit.lastUpdated)))continue;
+        const unitsRegressed=modelUnits?.some(unit=>Date.parse(previousUnits.get(unit.id)?.lastUpdated)>Date.parse(unit.lastUpdated));
+        // Private AK units may already be newer than this page fetch. Still publish
+        // public House-district rows once when the desk counties array is empty.
+        if(unitsRegressed){
+          if(current.counties?.length||!current.probabilityUnits?.length)continue;
+          const published=publicAlaskaCounties(current.probabilityUnits);
+          const next={...current,counties:published},signature=resultFingerprint(next);
+          if(signature===current._signature)continue;
+          this.runtime.races[raw.id]={...next,_signature:signature};
+          changed=true;
+          continue;
+        }
         const previous=new Map(current.counties?.map(c=>[c.fips,c]));
         if(counties.some(c=>Date.parse(previous.get(c.fips)?.lastUpdated)>Date.parse(c.lastUpdated)))continue;
         // Keep units added by a poll that finished while this page was loading.
