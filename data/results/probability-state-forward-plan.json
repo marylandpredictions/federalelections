@@ -1,0 +1,44 @@
+{
+  "status": "Frozen evaluation plan; not publication approval",
+  "createdAt": "2026-11-08T16:17:52.327Z",
+  "purpose": "Evaluate unchanged candidate-and-uncertainty partial-count method across Senate and governor races before broadening production scope",
+  "selection": "First indexed capture per URL from November 9 through November 10, 2022, including every indexed eligible race; no outcome, margin or winner-based selection",
+  "indexSha256": {
+    "senate": "eaba09d8fc2615e0ef74a6900472fef2a3779ce07ac66eabca0b6233fd599e7a",
+    "governor": "f5a8f2a35574d06a552f1c4bf98c0d7a6c94afa323c42606d25aad02dd3f74c3"
+  },
+  "forecastSource": "Latest available pre-election archived 2022 deluxe toplines; independently check date, byte checksum, candidate identities and uncertainty",
+  "fixedModel": {
+    "kernelSha256": "fca072e24fe8ac5f999a4f232aefdc1a3dfb91ca2329df4acccc07dc5170e95f",
+    "candidateAdapterSha256": "85a8c9f5ac194b673ff8f529ec9087467c4a8c64c246097eba1848b23e56a55a",
+    "calibrationSha256": "1cf43c67eeae158364e18cb572ec76ca126b21a8cf3ccc63a668dd4fa4b6b0f6",
+    "parameters": "No fitting or hyperparameter changes on this evaluation cohort"
+  },
+  "previouslyInspected": [
+    "2022-az-senate",
+    "2022-fl-senate",
+    "2022-il-senate",
+    "2022-ky-senate",
+    "2022-md-senate",
+    "2022-nd-senate",
+    "2022-oh-senate",
+    "2022-pa-senate",
+    "2022-wi-senate",
+    "2024-mi-senate",
+    "2024-tx-senate",
+    "2024-wi-senate",
+    "2022-az-governor",
+    "2022-co-governor"
+  ],
+  "scope": "Conditional D/R plurality component only. This does not authorize multicandidate win vectors or ranked-choice/runoff/legislative contingency races",
+  "report": [
+    "All accepted and quarantined races with explicit reasons",
+    "New races separately from previously inspected races",
+    "Source-estimated reporting stages below 25 and at least 25 separately",
+    "Equal-state Brier/log loss and 80% margin interval coverage",
+    "Paired state bootstrap versus frozen prior",
+    "All wrong forecasts above 95% confidence",
+    "Prior-competitive subgroup with absolute frozen margin at most 10 points"
+  ],
+  "publication": "A model does not become validated merely because data were collected. Require demonstrated held-out skill and adequate uncertainty before expanding live scope."
+}
