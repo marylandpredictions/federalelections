@@ -31,7 +31,7 @@ test("Countdown has one fixed Eastern target, renders days/hours/minutes and exp
     }
   }
 });
-test("All public primary navigation includes Features and polling bias; no ratings dropdown", async () => {
+test("All public primary navigation includes Features, Polling averages, and Trump Approval", async () => {
   const { readdir } = await import("node:fs/promises");
   let checked = 0;
   async function walk(dir) {
@@ -61,12 +61,14 @@ test("All public primary navigation includes Features and polling bias; no ratin
         if (nav) {
           assert.deepEqual(
             [...nav.matchAll(/<a[^>]*>(.*?)<\/a>/g)].map((m) => m[1]),
-            ["Home", "Results", "Videos", "Articles", "State polling bias", "Map maker"],
+            ["Home", "Results", "Videos", "Articles", "State polling bias", "Map maker", "Trump Approval"],
             path,
           );
           assert.match(nav, /<summary[^>]*>Features<\/summary>/, path);
+          assert.match(nav, /<summary[^>]*>Polling averages<\/summary>/, path);
           assert.match(nav, /href="\/features\/polling-bias"/, path);
           assert.match(nav, /href="\/features\/map-maker"/, path);
+          assert.match(nav, /href="\/polling\/trump-approval"/, path);
           checked++;
         }
       }

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trump Approval | Federal Elections Analysis</title>
+<meta name="description" content="FEA’s weighted Trump job-approval average from VoteHub public polls, with a trend chart and recent poll table.">
+<link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
+<script src="/assets/theme.js?v=20261030-features2"></script>
+<link rel="stylesheet" href="/assets/wiki.css?v=20261030-features1">
+<link rel="stylesheet" href="/assets/trump-approval.css?v=20261108-approval1">
+<script defer src="/assets/trump-approval.js?v=20261108-approval1"></script>
+</head><body>
+<header class="site-header">
+    <a class="brand" href="/">
+      <img class="brand-mark" src="/assets/img/FEA_Icon.webp" alt="Federal Elections Analysis">
+      <span><strong>Federal Elections Analysis</strong><small style="font-weight: 700;">Election analysis</small></span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/results">Results</a><a href="/videos">Videos</a><a href="/articles">Articles</a><details class="nav-dropdown"><summary>Features</summary><div class="nav-dropdown-menu"><a href="/features/polling-bias">State polling bias</a><a href="/features/map-maker">Map maker</a></div></details><details class="nav-dropdown"><summary class="active">Polling averages</summary><div class="nav-dropdown-menu"><a href="/polling/trump-approval" aria-current="page">Trump Approval</a></div></details></nav>
+    <div class="site-nav-right">
+      <a href="https://gofund.me/50724cf21" target="_blank" rel="noopener" class="donate-button">$ Donate</a>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A8.5 8.5 0 1 1 11.21 3 6.5 6.5 0 0 0 21 12.79Z"></path></svg>
+      </button>
+    </div>
+  </header>
+<main class="approval-page">
+<header class="approval-hero">
+  <p class="kicker">Polling averages</p>
+  <h1>Trump job approval.</h1>
+  <p class="lede">FEA’s weighted average of public VoteHub approval polls — not a forecast, and not VoteHub’s own published average.</p>
+  <p class="approval-source">Source: <a href="https://votehub.com/polls/api/" target="_blank" rel="noopener noreferrer">VoteHub public polls API ↗</a> · CC BY 4.0</p>
+</header>
+
+<section class="approval-summary" aria-labelledby="approval-current-title">
+  <div class="approval-summary-heading">
+    <div>
+      <p class="kicker">Current average</p>
+      <h2 id="approval-current-title">National job approval</h2>
+    </div>
+    <p id="approval-asof" class="approval-asof" role="status">Loading…</p>
+  </div>
+  <dl class="approval-stats">
+    <div><dt>Approve</dt><dd id="approval-approve">—</dd></div>
+    <div><dt>Disapprove</dt><dd id="approval-disapprove">—</dd></div>
+    <div><dt>Net</dt><dd id="approval-net">—</dd></div>
+    <div><dt>Polls in window</dt><dd id="approval-polls">—</dd></div>
+  </dl>
+  <div class="approval-meter" aria-hidden="true">
+    <div class="approval-meter-track">
+      <span id="approval-meter-approve" class="approval-meter-approve"></span>
+      <span id="approval-meter-disapprove" class="approval-meter-disapprove"></span>
+    </div>
+    <div class="approval-meter-labels"><span>Approve</span><span>Disapprove</span></div>
+  </div>
+</section>
+
+<section class="approval-section" aria-labelledby="approval-chart-title">
+  <div class="approval-section-heading">
+    <div>
+      <p class="kicker">Trend</p>
+      <h2 id="approval-chart-title">Approval over time</h2>
+    </div>
+  </div>
+  <p class="approval-chart-guide">Rolling 45-day weighted average. Hover or focus the chart for a daily reading.</p>
+  <div id="approval-chart" class="approval-chart" aria-busy="true">Loading chart…</div>
+  <aside id="approval-tooltip" class="approval-tooltip" role="tooltip" hidden>
+    <strong id="approval-tooltip-date"></strong>
+    <p id="approval-tooltip-values"></p>
+  </aside>
+  <div class="approval-legend" aria-label="Series legend">
+    <span class="approval-legend-approve">Approve</span>
+    <span class="approval-legend-disapprove">Disapprove</span>
+  </div>
+</section>
+
+<section class="approval-section" aria-labelledby="approval-table-title">
+  <div class="approval-section-heading">
+    <div>
+      <p class="kicker">Recent polls</p>
+      <h2 id="approval-table-title">Polls in the current average</h2>
+    </div>
+  </div>
+  <p class="approval-table-guide">Weights reflect recency, sample size, population, and repeated-pollster downweighting. Swipe sideways on small screens.</p>
+  <div class="approval-table-wrap" role="region" aria-label="Recent Trump approval polls" tabindex="0">
+    <table class="approval-table">
+      <caption>Weighted polls · percentages</caption>
+      <thead>
+        <tr>
+          <th scope="col">Pollster</th>
+          <th scope="col">Dates</th>
+          <th scope="col">Sample</th>
+          <th scope="col">Approve</th>
+          <th scope="col">Disapprove</th>
+          <th scope="col">Net</th>
+          <th scope="col">Weight</th>
+        </tr>
+      </thead>
+      <tbody id="approval-poll-rows"></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="approval-section approval-method" aria-labelledby="approval-method-title">
+  <h2 id="approval-method-title">How the average is built</h2>
+  <p id="approval-method-text"></p>
+</section>
+</main>
+</body></html>
