@@ -1,8 +1,8 @@
 # Live probability rollout — November 8, 2026
 
 The objective remains published, validated odds for all 506 races. The first
-scoped configuration initially contained 99 House races and now contains 118;
-the other 388 are not certified
+scoped configuration initially contained 99 House races and now contains 126;
+the other 380 are not certified
 by this release. Configuration coverage is not proof that every configured race
 currently has fresh, reconciled NBC inputs. Check the public coverage API.
 
@@ -51,8 +51,17 @@ The 2026 means and uncertainties come from FEA's November 2 forecast, preserved
 in commit `4b2845d76040aa258d8e92f07567bccf2d4bcf3a`. Those are priors, not fixed
 predictions. Live counts remain untouched. Historical geography must reconcile
 and the reviewed/local and NBC rosters must agree. Four otherwise eligible
-races are withheld because historical geographic sources disagree: AL-06,
-CA-08, CA-18 and TX-10. No neighboring geography or guessed turnout substitutes.
+races were initially withheld because historical geographic sources disagree:
+AL-06, CA-08, CA-18 and TX-10. NM-03 is also withheld after identity reconciliation
+made it otherwise eligible. No neighboring geography or guessed turnout substitutes.
+
+Source and local names may differ by omitted middle names. Reconciliation still
+requires exact first/last names, compatible suffixes, one unique roster match,
+and the same party; conflicting middle names and guessed nicknames fail closed.
+Explicit aliases for MD-02, IN-06, IL-14 and NJ-04 were checked against official
+or candidate-owned sources. Their URLs and November 8 identity-review date are
+retained in the reviewed roster. This updates identity metadata, never the frozen
+November 2 forecast or its candidate margin.
 
 The normal model uses NBC only. Every model area needs a positive count and a
 positive source estimate; source 100% is not proof of completion. Turnout and
@@ -60,7 +69,8 @@ remaining vote stay uncertain. The model runs 20,000 backend simulations;
 unchanged inputs do not create additional simulations or history points.
 
 The release binds the validation artifact, trained calibration and current
-implementation. It checks scope, sample size, state-cluster skill, interval
+implementation, including candidate matching and NBC county normalization.
+It checks scope, sample size, state-cluster skill, interval
 coverage, false-confidence cases, roster identities, and as-of provenance.
 Approval is explicitly automated checks plus agent source review; it does not
 claim an independent human reviewer.

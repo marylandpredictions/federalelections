@@ -17,7 +17,7 @@ export function partialReleaseEvidence(){
  const calibrationBytes=readFileSync(new URL('../../data/results/probability-partial-calibration.json',import.meta.url),'utf8').replace(/\r\n/g,'\n');
  return {validation:JSON.parse(validationBytes),validationHash:hash(validationBytes),
   calibration:JSON.parse(calibrationBytes).calibration,calibrationHash:hash(calibrationBytes),
-  implementationHash:objectHash(['./probability-partial-model.mjs','./probability-partial-adapter.mjs','./probability-partial-release.mjs','./probability-live.mjs','./probability-inputs.mjs'].map(normalizedHash))};
+  implementationHash:objectHash(['./probability-partial-model.mjs','./probability-partial-adapter.mjs','./probability-partial-release.mjs','./probability-live.mjs','./probability-inputs.mjs','./candidate-roster.mjs','./nbc-counties.mjs'].map(normalizedHash))};
 }
 
 export function validatePartialProbabilityRelease(release,evidence=partialReleaseEvidence()){

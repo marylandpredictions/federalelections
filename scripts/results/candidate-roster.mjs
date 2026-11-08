@@ -12,7 +12,7 @@ function identityForms(value) {
   return variants.map(name=>{
     const tokens=name.normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,' ').trim().split(/\s+/);
     const suffix=/^(jr|sr|ii|iii|iv|v)$/.test(tokens.at(-1))?tokens.pop():null;
-    return {key:tokens.filter((t,i)=>!(i>0&&i<tokens.length-1&&t.length===1)).join(''),suffix};
+    return {key:tokens.filter((t,i)=>!(i>0&&i<tokens.length-1&&t.length===1)).join(''),tokens,suffix};
   });
 }
 // Conservative ballot reconciliation: never match by party or surname alone.
@@ -24,6 +24,16 @@ export function matchBallotCandidate(candidate, roster) {
   if(!matches.length){
     const incoming=identityForms(candidate.name);
     matches=roster.filter(c=>names(c).some(n=>identityForms(n).some(a=>incoming.some(b=>a.key&&a.key===b.key&&(!a.suffix||!b.suffix||a.suffix===b.suffix)))));
+  }
+  if(!matches.length){
+    // A source may omit full middle names, just as it may omit initials.
+    // Keep exact first/last names, reject suffix conflicts and require a unique
+    // roster match. Never guess a nickname or discard conflicting middle names.
+    const incoming=identityForms(candidate.name);
+    matches=roster.filter(c=>names(c).some(n=>identityForms(n).some(a=>incoming.some(b=>
+      a.tokens.length>=2&&b.tokens.length>=2&&(a.tokens.length===2||b.tokens.length===2)&&
+      a.tokens[0]===b.tokens[0]&&a.tokens.at(-1)===b.tokens.at(-1)&&
+      (!a.suffix||!b.suffix||a.suffix===b.suffix)))));
   }
   if(matches.length!==1)throw Error((matches.length?'Ambiguous':'Unknown')+' provider candidate: '+candidate.name);
   const local=matches[0],party=local.partyCode||local.party;

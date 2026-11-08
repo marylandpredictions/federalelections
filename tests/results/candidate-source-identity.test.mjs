@@ -17,6 +17,17 @@ test('Candidate identity retains verified source names across repeated matching 
     {name:'Different Candidate',providerName:'NBC Source Name'}]),/Ambiguous/);
 });
 
+test('Omitted full middle names require unique first/last identity and compatible suffixes',()=>{
+ const roster=[{name:'Maria Elvira Salazar',party:'R'},{name:'Melanie Ann Stansbury',party:'D'}];
+ assert.equal(matchBallotCandidate({name:'Maria Salazar',partyCode:'R'},roster).name,roster[0].name);
+ assert.equal(matchBallotCandidate({name:'Melanie Stansbury',partyCode:'D'},roster).name,roster[1].name);
+ assert.throws(()=>matchBallotCandidate({name:'Maria Salazar'},[...roster,{name:'Maria Teresa Salazar'}]),/Ambiguous/);
+ assert.throws(()=>matchBallotCandidate({name:'Maria Teresa Salazar'},roster),/Unknown/);
+ assert.throws(()=>matchBallotCandidate({name:'Maria Salazar Sr.'},[{name:'Maria Elvira Salazar Jr.'}]),/Unknown/);
+ assert.throws(()=>matchBallotCandidate({name:'Mary Salazar'},roster),/Unknown/);
+ assert.throws(()=>matchBallotCandidate({name:'Maria Salazar',partyCode:'D'},roster),/party mismatch/);
+});
+
 test('NBC county counts accept the verified source spelling retained by the race roster',()=>{
   const data=JSON.parse(readFileSync('tests/fixtures/nbc-counties-2026.json','utf8')).co;
   const candidates=data.races[0].summary.candidates.map((candidate,index)=>({
