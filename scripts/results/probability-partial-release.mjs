@@ -93,8 +93,9 @@ function validateMajorityLockEvidence(release,evidence){
  check(release.majorityLockValidationHash===evidence.majorityLockValidationHash&&evidence.majorityLockEvidence,
   'majority-lock evidence is not bound to the release');
  const doc=evidence.majorityLockEvidence;
- check(doc?.modelVersion===majorityLockModelVersion&&doc.kernelVersion===multiAggregateModelVersion&&
+  check(doc?.modelVersion===majorityLockModelVersion&&doc.kernelVersion===multiAggregateModelVersion&&
   doc.boundMultiEvidence===true&&doc.requirements?.unresolvedShareMustBeZero===true&&
+  doc.requirements?.terminalResolution===true&&
   doc.requirements?.simulations===20000&&doc.requirements?.minimumReportedPercent===60,
  'majority-lock gate identity is incomplete');
  validateMultiEvidence({...release,multiValidationHash:release.multiValidationHash||evidence.multiValidationHash},evidence);

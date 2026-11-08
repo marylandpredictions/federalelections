@@ -1,13 +1,20 @@
 {
-  "status": "Majority-lock gate evidence; binds the multi remaining-vote engine and first-count outcome helper",
-  "modelVersion": "fea-live-majority-lock-1",
+  "status": "Majority-lock gate evidence; binds the multi remaining-vote engine, first-count outcome helper, and scoped terminal runoff/IRV resolution",
+  "modelVersion": "fea-live-majority-lock-2",
   "kernelVersion": "fea-live-multi-aggregate-1",
-  "description": "Publishes only when every remaining-vote draw still yields a first-count majority winner under the race rule. Draws that need a runoff, ranked-choice transfers, or legislative choice stay unavailable.",
+  "description": "Publishes when every remaining-vote draw yields either a first-count majority winner or a scoped terminal resolution: a locked top-two runoff sample with wide uncertainty, first-preference IRV elimination transfers, or a two-candidate legislative-choice sample. Draws that cannot resolve stay unavailable.",
   "requirements": {
     "simulations": 20000,
     "minimumReportedPercent": 60,
     "unresolvedShareMustBeZero": true,
+    "terminalResolution": true,
     "rules": ["majority-runoff", "ranked-choice", "legislative-contingency"]
   },
-  "boundMultiEvidence": true
+  "boundMultiEvidence": true,
+  "historicalControls": {
+    "louisianaRunoffFirstRoundLeaderLosses": ["2016-LA-3", "2016-LA-4"],
+    "louisianaRunoffFirstRoundLeaderWins": ["2020-LA-5"],
+    "alaskaRcvReplay": "data/results/probability-alaska-rcv-2024-control.json",
+    "note": "Runoff sampling uses wide Dirichlet concentration 4 around first-count pair shares because first-round leaders lost two of three recent LA House runoffs. RCV uses noisy first-preference proportional transfers without cast-vote images."
+  }
 }

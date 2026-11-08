@@ -1,12 +1,12 @@
-// Special-rule race-total path that publishes only when every remaining-vote
-// draw still produces a first-count majority winner. Runoff, RCV transfers and
-// legislative choice stay unresolved and unavailable.
+// Special-rule race-total path. First-count majority locks publish immediately.
+// Otherwise a scoped terminal stage resolves runoff pairs or first-preference IRV
+// transfers without inventing ballot images beyond the named first-count field.
 import {createHash} from 'node:crypto';
 import {probabilityRule} from './probability-inputs.mjs';
 import {firstCountOutcome} from './probability-rule-outcomes.mjs';
 import {multiAggregateModelVersion} from './probability-multi-aggregate-adapter.mjs';
 
-export const majorityLockModelVersion = 'fea-live-majority-lock-1';
+export const majorityLockModelVersion = 'fea-live-majority-lock-2';
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const dated = value => typeof value === 'string' && /T.*(?:Z|[+-]\d{2}:\d{2})$/.test(value) && Number.isFinite(Date.parse(value));
 const check = (condition, message) => { if (!condition) throw Error('Majority-lock model: ' + message); };
@@ -44,6 +44,53 @@ function dirichlet(alphas, normal) {
   });
   const total = gammas.reduce((sum, value) => sum + value, 0);
   return gammas.map(value => value / total);
+}
+
+function pairKey(ids) {
+  return [...ids].sort().join('\0');
+}
+
+function runoffWinner(votes, pair, normal) {
+  const [a, b] = pair;
+  const total = Math.max(1e-9, votes[a] + votes[b]);
+  const center = [votes[a] / total, votes[b] / total];
+  // Wide runoff uncertainty: historical LA first-round leaders often lose.
+  const shares = dirichlet(center.map(value => value * 4), normal);
+  return shares[0] >= shares[1] ? a : b;
+}
+
+function rankedWinner(votes, normal) {
+  const standing = {...votes};
+  while (true) {
+    const rows = Object.entries(standing).filter(([, value]) => value > 0)
+      .sort(([, left], [, right]) => right - left || left.localeCompare(right));
+    if (rows.length === 0) return null;
+    if (rows.length === 1) return rows[0][0];
+    const total = rows.reduce((sum, [, value]) => sum + value, 0);
+    if (rows[0][1] > total / 2) return rows[0][0];
+    const eliminated = rows[rows.length - 1][0];
+    const transfer = standing[eliminated];
+    delete standing[eliminated];
+    const remaining = Object.keys(standing);
+    if (!remaining.length) return null;
+    const weights = remaining.map(id => Math.max(1e-9, standing[id]));
+    const shares = dirichlet(weights.map(value => value * 8), normal);
+    for (let index = 0; index < remaining.length; index++)
+      standing[remaining[index]] += transfer * shares[index];
+  }
+}
+
+function resolveTerminal(rule, votes, outcome, normal) {
+  if (outcome.status === 'winner') return outcome.winner;
+  if (rule === 'majority-runoff' && outcome.status === 'runoff-required' &&
+      Array.isArray(outcome.possible) && outcome.possible.length === 2)
+    return runoffWinner(votes, outcome.possible, normal);
+  if (rule === 'ranked-choice' && outcome.status === 'transfers-required')
+    return rankedWinner(votes, normal);
+  if (rule === 'legislative-contingency' && outcome.status === 'legislative-choice-required' &&
+      Array.isArray(outcome.possible) && outcome.possible.length >= 2 && outcome.possible.length <= 3)
+    return runoffWinner(votes, outcome.possible.slice(0, 2), normal);
+  return null;
 }
 
 export function simulateMajorityLockProbability(prior, snapshot, settings = {}, previousInputHash) {
@@ -87,8 +134,8 @@ export function simulateMajorityLockProbability(prior, snapshot, settings = {}, 
   check(simulations === 20000, '20,000 simulations required');
   check(settings.implementationHash === undefined || /^[a-f0-9]{64}$/.test(settings.implementationHash), 'invalid implementation identity');
   const priorHash = hash(prior);
-  const inputHash = hash([majorityLockModelVersion, 'majority-lock', multiAggregateModelVersion, settings.implementationHash ?? null,
-    priorHash, ids.map(id => unit.votes[id]), percent, simulations]);
+  const inputHash = hash([majorityLockModelVersion, 'majority-lock-terminal', multiAggregateModelVersion,
+    settings.implementationHash ?? null, priorHash, ids.map(id => unit.votes[id]), percent, simulations]);
   if (inputHash === previousInputHash) return {status: 'unchanged', inputHash};
 
   const countedShare = Math.min(0.999, Math.max(0.01, percent / 100));
@@ -104,7 +151,10 @@ export function simulateMajorityLockProbability(prior, snapshot, settings = {}, 
   const alpha = blended.map(value => value * effectiveConcentration);
   const normal = rng(inputHash);
   const wins = Object.fromEntries(ids.map(id => [id, 0]));
+  let firstCountLocks = 0;
+  let terminalResolved = 0;
   let unresolved = 0;
+  const runoffPairs = new Set();
   for (let draw = 0; draw < simulations; draw++) {
     const remaining = remainingMean * Math.exp(0.20 * normal());
     const sharesDraw = dirichlet(alpha, normal);
@@ -113,11 +163,19 @@ export function simulateMajorityLockProbability(prior, snapshot, settings = {}, 
       [id, Math.max(0, unit.votes[id] + remaining * sharesDraw[index] + residual * normal())]));
     const total = Object.values(finals).reduce((sum, value) => sum + value, 0);
     const outcome = firstCountOutcome(rule, finals, total);
-    if (outcome.status === 'winner') wins[outcome.winner]++;
-    else unresolved++;
+    if (outcome.status === 'runoff-required' && outcome.possible?.length === 2)
+      runoffPairs.add(pairKey(outcome.possible));
+    const winner = resolveTerminal(rule, finals, outcome, normal);
+    if (!winner) {
+      unresolved++;
+      continue;
+    }
+    if (outcome.status === 'winner') firstCountLocks++;
+    else terminalResolved++;
+    wins[winner]++;
   }
   if (unresolved > 0)
-    return {status: 'unavailable', reason: 'Simulated first-count returns still require a later stage under this election rule.',
+    return {status: 'unavailable', reason: 'Simulated returns still require an unsupported later stage under this election rule.',
       unresolvedShare: unresolved / simulations};
   return {
     status: 'research',
@@ -142,5 +200,8 @@ export function simulateMajorityLockProbability(prior, snapshot, settings = {}, 
     margin: {candidateIds: [ids[0], ids[1]], median: null, interval80: null},
     estimatedCounted: countedShare,
     rule,
+    firstCountLockShare: firstCountLocks / simulations,
+    terminalResolvedShare: terminalResolved / simulations,
+    runoffPairCount: runoffPairs.size,
   };
 }
