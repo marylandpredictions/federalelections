@@ -19,17 +19,18 @@ function identityForms(value) {
 export function matchBallotCandidate(candidate, roster) {
   if(!roster?.length)return candidate;
   const names=c=>[c.name,c.providerName,...(c.aliases || [])].filter(Boolean);
-  const exact=roster.filter(c=>names(c).some(n=>identityKey(n)===identityKey(candidate.name)));
+  const incomingNames=names(candidate);
+  const exact=roster.filter(c=>names(c).some(n=>incomingNames.some(incoming=>identityKey(n)===identityKey(incoming))));
   let matches=exact;
   if(!matches.length){
-    const incoming=identityForms(candidate.name);
+    const incoming=incomingNames.flatMap(identityForms);
     matches=roster.filter(c=>names(c).some(n=>identityForms(n).some(a=>incoming.some(b=>a.key&&a.key===b.key&&(!a.suffix||!b.suffix||a.suffix===b.suffix)))));
   }
   if(!matches.length){
     // A source may omit full middle names, just as it may omit initials.
     // Keep exact first/last names, reject suffix conflicts and require a unique
     // roster match. Never guess a nickname or discard conflicting middle names.
-    const incoming=identityForms(candidate.name);
+    const incoming=incomingNames.flatMap(identityForms);
     matches=roster.filter(c=>names(c).some(n=>identityForms(n).some(a=>incoming.some(b=>
       a.tokens.length>=2&&b.tokens.length>=2&&(a.tokens.length===2||b.tokens.length===2)&&
       a.tokens[0]===b.tokens[0]&&a.tokens.at(-1)===b.tokens.at(-1)&&

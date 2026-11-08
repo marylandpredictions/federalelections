@@ -1,10 +1,10 @@
 # Race-total fallback research — November 8, 2026
 
 This fallback demonstrates descriptive predictive skill in the tests below.
-It is now integrated into the runtime and the 146-race release configuration.
-The 506-race publication objective remains
-incomplete. The existing geographic model is preferred wherever validated
-inputs are available.
+It is now integrated into the runtime and the current release configuration
+(159 races as of the November 8 identity-expansion rebuild). The 506-race
+publication objective remains incomplete. The existing geographic model is
+preferred wherever validated inputs are available.
 
 ## Method and scope
 
@@ -108,12 +108,14 @@ reporting because separate-cycle early-stage evidence is sparse. Keep the
 geographic model as the preferred path. Never publish a D/R conditional
 probability as a full multicandidate win probability.
 
-The initial integration adds 18 House and two governor races to the prior 126,
+The initial integration added 18 House and two governor races to the prior 126,
 including races withheld for disputed geographic priors: the fallback never
-uses those priors. Its separate source identities and checksums refer to the
-actual November 2 candidate forecast. Senate activation remains excluded from
-the release gate pending adequate evidence, even though the numerical component
-can be exercised in Senate research fixtures.
+uses those priors. A later identity-reconciliation pass expanded race-total
+coverage further under the same 60% reporting and two-candidate D/R gates.
+Its separate source identities and checksums refer to the actual November 2
+candidate forecast. Senate activation remains excluded from the release gate
+pending adequate evidence, even though the numerical component can be exercised
+in Senate research fixtures.
 
 ## Reproduction
 

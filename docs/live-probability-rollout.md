@@ -1,11 +1,14 @@
 # Live probability rollout — November 8, 2026
 
 The objective remains published, validated odds for all 506 races. The first
-scoped configuration initially contained 99 House races and now contains 146
-races (144 House, two governor), including 20 race-total fallbacks. The other
-360 are not certified
-by this release. Configuration coverage is not proof that every configured race
-currently has fresh, reconciled NBC inputs. Check the public coverage API.
+scoped configuration initially contained 99 House races and now contains 159
+races (155 House, four governor), including race-total fallbacks for contests
+that lack reconciled geography or were newly unlocked by verified candidate
+identity aliases. Remaining catalogue races are not certified by this release.
+Configuration coverage is not proof that every configured race currently has
+fresh, reconciled NBC inputs. Check the public coverage API. See
+`docs/live-probability-continuation.md` for the recovered production baseline
+and remaining blockers.
 
 ## Evidence and supported scope
 

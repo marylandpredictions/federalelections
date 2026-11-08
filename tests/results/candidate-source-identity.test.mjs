@@ -28,6 +28,26 @@ test('Omitted full middle names require unique first/last identity and compatibl
  assert.throws(()=>matchBallotCandidate({name:'Maria Salazar',partyCode:'D'},roster),/party mismatch/);
 });
 
+test('Verified nickname aliases match NBC spellings in either direction without inventing surnames',()=>{
+  const catalogue=JSON.parse(readFileSync(new URL('../../data/election-night-races.json',import.meta.url),'utf8')).races;
+  const cases=[
+    ['house-IL-11','Jeffrey Walter','Jeff Walter','R'],
+    ['house-KY-1','Drew Williams','John Williams','D'],
+    ['house-TX-12','Heli Rodriguez Prilliman','Angela Rodriguez Prilliman','D'],
+    ['house-FL-24','Te Brown','Te Brown','R'],
+    ['governor-HI','Joshua Green','Josh Green','D'],
+  ];
+  for(const [id,localName,providerName,party]of cases){
+    const race=catalogue.find(row=>row.id===id);
+    const local=race.candidates.find(row=>row.name===localName);
+    assert.ok(local,id+' missing local name');
+    assert.equal(matchBallotCandidate({name:providerName,partyCode:party},race.candidates).name,localName);
+    assert.equal(matchBallotCandidate({name:localName,aliases:local.aliases,partyCode:party},
+      [{name:providerName,partyCode:party}]).name,providerName);
+  }
+  assert.throws(()=>matchBallotCandidate({name:'Drew Williams'},[{name:'John Smith',partyCode:'D'}]),/Unknown/);
+});
+
 test('NBC county counts accept the verified source spelling retained by the race roster',()=>{
   const data=JSON.parse(readFileSync('tests/fixtures/nbc-counties-2026.json','utf8')).co;
   const candidates=data.races[0].summary.candidates.map((candidate,index)=>({
