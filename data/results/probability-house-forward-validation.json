@@ -1,0 +1,1641 @@
+{
+  "status": "research validation evidence; scoped publication requires a separately bound release approval",
+  "planSha256": "9b042656c0bdcb2d22710dcfa5ac3a3fc815afd99eeca8a36ec970c25526e740",
+  "forecastSha256": "0d82d26ace7b1863d39503d298f6ab9f4783672a814e9e98ade80d30c111c544",
+  "cohorts": {
+    "all": {
+      "all-stages": {
+        "metrics": {
+          "historical-only": {
+            "races": 163,
+            "states": 37,
+            "brier": 0.029242723520024154,
+            "logLoss": 0.11656589573222892,
+            "infiniteLogLossCases": 0,
+            "false95": 2,
+            "marginMae": 2.2199077062216763,
+            "coverage80": 0.8159509202453987
+          },
+          "candidate-anchored": {
+            "races": 163,
+            "states": 37,
+            "brier": 0.017545973485453996,
+            "logLoss": 0.07373614001980304,
+            "infiniteLogLossCases": 0,
+            "false95": 1,
+            "marginMae": 1.9761610698298808,
+            "coverage80": 0.803680981595092
+          },
+          "candidate-and-uncertainty": {
+            "races": 163,
+            "states": 37,
+            "brier": 0.015721102525237826,
+            "logLoss": 0.049677067507118956,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.6023369451059801,
+            "coverage80": 0.8834355828220859
+          },
+          "frozen-source": {
+            "races": 163,
+            "states": 37,
+            "brier": 0.026112356188356636,
+            "logLoss": 0.0943224615569685,
+            "infiniteLogLossCases": 0,
+            "false95": 1,
+            "marginMae": 4.892984632901169,
+            "coverage80": 0.8711656441717791
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 37,
+            "draws": 5000,
+            "difference": -0.011696750034570162,
+            "interval95": [
+              -0.03480405520492248,
+              0.007985657246718231
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 37,
+            "draws": 5000,
+            "difference": -0.013521620994786323,
+            "interval95": [
+              -0.04063536114795361,
+              0.006409495963193492
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 37,
+            "draws": 5000,
+            "difference": 0.0031303673316675105,
+            "interval95": [
+              -0.01767721692300564,
+              0.027674291752041308
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 37,
+            "draws": 5000,
+            "difference": -0.008566382702902647,
+            "interval95": [
+              -0.014507050292145524,
+              -0.003669152392191137
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 37,
+            "draws": 5000,
+            "difference": -0.010391253663118815,
+            "interval95": [
+              -0.019643631660777604,
+              -6.290399468811413e-06
+            ]
+          }
+        ]
+      },
+      "prior-competitive": {
+        "metrics": {
+          "historical-only": {
+            "races": 28,
+            "states": 18,
+            "brier": 0.13848470772038068,
+            "logLoss": 0.5822736554392264,
+            "infiniteLogLossCases": 0,
+            "false95": 2,
+            "marginMae": 2.4664559319635635,
+            "coverage80": 0.8571428571428571
+          },
+          "candidate-anchored": {
+            "races": 28,
+            "states": 18,
+            "brier": 0.06628826632765257,
+            "logLoss": 0.20515263886233187,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.3654911846146405,
+            "coverage80": 0.7857142857142857
+          },
+          "candidate-and-uncertainty": {
+            "races": 28,
+            "states": 18,
+            "brier": 0.05853248609283484,
+            "logLoss": 0.19083131405103584,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.3408019594608436,
+            "coverage80": 0.7857142857142857
+          },
+          "frozen-source": {
+            "races": 28,
+            "states": 18,
+            "brier": 0.11692516236377135,
+            "logLoss": 0.3869973929948232,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.1892239132538736,
+            "coverage80": 0.9285714285714286
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 18,
+            "draws": 5000,
+            "difference": -0.07219644139272811,
+            "interval95": [
+              -0.19265055947000326,
+              0.04085852594441127
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 18,
+            "draws": 5000,
+            "difference": -0.07995222162754581,
+            "interval95": [
+              -0.2242092713601221,
+              0.038017048596638174
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 18,
+            "draws": 5000,
+            "difference": 0.02155954535660933,
+            "interval95": [
+              -0.10437053961649372,
+              0.1539422207109081
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 18,
+            "draws": 5000,
+            "difference": -0.050636896036118796,
+            "interval95": [
+              -0.07934056209702472,
+              -0.025943954839173833
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 18,
+            "draws": 5000,
+            "difference": -0.05839267627093652,
+            "interval95": [
+              -0.1079966676167146,
+              -0.0015614960495738185
+            ]
+          }
+        ]
+      },
+      "supported-stages": {
+        "metrics": {
+          "historical-only": {
+            "races": 158,
+            "states": 37,
+            "brier": 0.02892610624855759,
+            "logLoss": 0.11547433506719171,
+            "infiniteLogLossCases": 0,
+            "false95": 2,
+            "marginMae": 2.0855202741718872,
+            "coverage80": 0.8291139240506329
+          },
+          "candidate-anchored": {
+            "races": 158,
+            "states": 37,
+            "brier": 0.01760060500334155,
+            "logLoss": 0.07397694867230115,
+            "infiniteLogLossCases": 0,
+            "false95": 1,
+            "marginMae": 1.8795354006171137,
+            "coverage80": 0.8164556962025317
+          },
+          "candidate-and-uncertainty": {
+            "races": 158,
+            "states": 37,
+            "brier": 0.013191398229507961,
+            "logLoss": 0.04374626425138407,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.5084806387991698,
+            "coverage80": 0.8860759493670886
+          },
+          "frozen-source": {
+            "races": 158,
+            "states": 37,
+            "brier": 0.026653520399457634,
+            "logLoss": 0.0957014203990587,
+            "infiniteLogLossCases": 0,
+            "false95": 1,
+            "marginMae": 4.854015670071812,
+            "coverage80": 0.8734177215189873
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 37,
+            "draws": 5000,
+            "difference": -0.01132550124521604,
+            "interval95": [
+              -0.03503774900932043,
+              0.009226279379845968
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 37,
+            "draws": 5000,
+            "difference": -0.015734708019049626,
+            "interval95": [
+              -0.04285953289781994,
+              0.003689173525551571
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 37,
+            "draws": 5000,
+            "difference": 0.0022725858490999585,
+            "interval95": [
+              -0.019388275336659495,
+              0.027384410069113536
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 37,
+            "draws": 5000,
+            "difference": -0.009052915396116083,
+            "interval95": [
+              -0.015309724155457064,
+              -0.004068511770396281
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 37,
+            "draws": 5000,
+            "difference": -0.013462122169949667,
+            "interval95": [
+              -0.021929607180862426,
+              -0.005837611652098773
+            ]
+          }
+        ]
+      },
+      "supported-prior-competitive": {
+        "metrics": {
+          "historical-only": {
+            "races": 27,
+            "states": 17,
+            "brier": 0.13829866722338618,
+            "logLoss": 0.5862044870512291,
+            "infiniteLogLossCases": 0,
+            "false95": 2,
+            "marginMae": 2.398443086929662,
+            "coverage80": 0.8518518518518519
+          },
+          "candidate-anchored": {
+            "races": 27,
+            "states": 17,
+            "brier": 0.06581382998360151,
+            "logLoss": 0.2005200331537154,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.328402170996746,
+            "coverage80": 0.7777777777777778
+          },
+          "candidate-and-uncertainty": {
+            "races": 27,
+            "states": 17,
+            "brier": 0.04298711269469687,
+            "logLoss": 0.15433493991813496,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.1302420754810494,
+            "coverage80": 0.8148148148148148
+          },
+          "frozen-source": {
+            "races": 27,
+            "states": 17,
+            "brier": 0.11959191643279991,
+            "logLoss": 0.3925086394257208,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.335469385585607,
+            "coverage80": 0.9259259259259259
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 17,
+            "draws": 5000,
+            "difference": -0.07248483723978469,
+            "interval95": [
+              -0.19738081627201964,
+              0.048442725816120295
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 17,
+            "draws": 5000,
+            "difference": -0.09531155452868928,
+            "interval95": [
+              -0.24069403426930674,
+              0.018970115754417313
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 17,
+            "draws": 5000,
+            "difference": 0.018706750790586264,
+            "interval95": [
+              -0.10991848134382566,
+              0.15686227780422046
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 17,
+            "draws": 5000,
+            "difference": -0.05377808644919843,
+            "interval95": [
+              -0.08311877332362953,
+              -0.02906490895717499
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 17,
+            "draws": 5000,
+            "difference": -0.07660480373810305,
+            "interval95": [
+              -0.1213856018139473,
+              -0.03819283488766501
+            ]
+          }
+        ]
+      },
+      "1-24": {
+        "metrics": {
+          "historical-only": {
+            "races": 5,
+            "states": 3,
+            "brier": 0.039247829298367475,
+            "logLoss": 0.15105921274740527,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 6.4665505589950225,
+            "coverage80": 0.4
+          },
+          "candidate-anchored": {
+            "races": 5,
+            "states": 3,
+            "brier": 0.01581961752020722,
+            "logLoss": 0.06612658660086192,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 5.029532216953322,
+            "coverage80": 0.4
+          },
+          "candidate-and-uncertainty": {
+            "races": 5,
+            "states": 3,
+            "brier": 0.09565975827030154,
+            "logLoss": 0.23709045038834126,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.5681962244011824,
+            "coverage80": 0.8
+          },
+          "frozen-source": {
+            "races": 5,
+            "states": 3,
+            "brier": 0.009011567117565344,
+            "logLoss": 0.050747362146917815,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 6.124403858308862,
+            "coverage80": 0.8
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": -0.023428211778160256,
+            "interval95": [
+              -0.05839200086397436,
+              0.0
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": 0.05641192897193407,
+            "interval95": [
+              -0.0003310675597334043,
+              0.14119535620970186
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": 0.03023626218080213,
+            "interval95": [
+              9.683501199684552e-09,
+              0.0754242406079906
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": 0.006808050402641876,
+            "interval95": [
+              -2.424684182553113e-05,
+              0.017032239744016256
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": 0.0866481911527362,
+            "interval95": [
+              9.683501199684552e-09,
+              0.2166195968176925
+            ]
+          }
+        ]
+      },
+      "25-59": {
+        "metrics": {
+          "historical-only": {
+            "races": 36,
+            "states": 11,
+            "brier": 0.10261400918065627,
+            "logLoss": 0.42839523184013717,
+            "infiniteLogLossCases": 0,
+            "false95": 2,
+            "marginMae": 4.6980199588082066,
+            "coverage80": 0.6666666666666666
+          },
+          "candidate-anchored": {
+            "races": 36,
+            "states": 11,
+            "brier": 0.04483549623031024,
+            "logLoss": 0.12819590154645377,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 3.8593034098444017,
+            "coverage80": 0.7222222222222222
+          },
+          "candidate-and-uncertainty": {
+            "races": 36,
+            "states": 11,
+            "brier": 0.02662032302819802,
+            "logLoss": 0.09034395779941319,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.918531338724362,
+            "coverage80": 0.9722222222222222
+          },
+          "frozen-source": {
+            "races": 36,
+            "states": 11,
+            "brier": 0.0565118560303783,
+            "logLoss": 0.16362870118935466,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.643548971716539,
+            "coverage80": 0.9166666666666666
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 11,
+            "draws": 5000,
+            "difference": -0.05777851295034601,
+            "interval95": [
+              -0.10704116611009556,
+              0.04581969679269658
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 11,
+            "draws": 5000,
+            "difference": -0.07599368615245822,
+            "interval95": [
+              -0.12300050432249046,
+              0.006949670677271668
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 11,
+            "draws": 5000,
+            "difference": 0.04610215315027794,
+            "interval95": [
+              -0.07123449968747074,
+              0.0973402097975836
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 11,
+            "draws": 5000,
+            "difference": -0.011676359800068066,
+            "interval95": [
+              -0.04107200013528388,
+              -0.002883457181449225
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 11,
+            "draws": 5000,
+            "difference": -0.029891533002180296,
+            "interval95": [
+              -0.08231156198408146,
+              -0.0015808202591107866
+            ]
+          }
+        ]
+      },
+      "60-89": {
+        "metrics": {
+          "historical-only": {
+            "races": 31,
+            "states": 18,
+            "brier": 0.02720688099803523,
+            "logLoss": 0.08208750907591518,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.5576875638544845,
+            "coverage80": 0.7419354838709677
+          },
+          "candidate-anchored": {
+            "races": 31,
+            "states": 18,
+            "brier": 0.03653855182740437,
+            "logLoss": 0.22009693484582277,
+            "infiniteLogLossCases": 0,
+            "false95": 1,
+            "marginMae": 3.0157273009630936,
+            "coverage80": 0.6774193548387096
+          },
+          "candidate-and-uncertainty": {
+            "races": 31,
+            "states": 18,
+            "brier": 0.035273922245951175,
+            "logLoss": 0.10975266886914456,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.3533464589760436,
+            "coverage80": 0.8064516129032258
+          },
+          "frozen-source": {
+            "races": 31,
+            "states": 18,
+            "brier": 0.04272435718151179,
+            "logLoss": 0.17579562357457054,
+            "infiniteLogLossCases": 0,
+            "false95": 1,
+            "marginMae": 5.449165675436088,
+            "coverage80": 0.8064516129032258
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 18,
+            "draws": 5000,
+            "difference": 0.009331670829369157,
+            "interval95": [
+              -0.005380397759013818,
+              0.03287731845317813
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 18,
+            "draws": 5000,
+            "difference": 0.008067041247915956,
+            "interval95": [
+              0.00044784774625927944,
+              0.018620979138563667
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 18,
+            "draws": 5000,
+            "difference": -0.015517476183476566,
+            "interval95": [
+              -0.034859703377193636,
+              0.00013689913383266365
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 18,
+            "draws": 5000,
+            "difference": -0.00618580535410741,
+            "interval95": [
+              -0.015979448530488067,
+              0.0024904251508422685
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 18,
+            "draws": 5000,
+            "difference": -0.007450434935560611,
+            "interval95": [
+              -0.023949241807121564,
+              0.0062659719414539855
+            ]
+          }
+        ]
+      },
+      "90-99": {
+        "metrics": {
+          "historical-only": {
+            "races": 91,
+            "states": 24,
+            "brier": 0.0003605180860371693,
+            "logLoss": 0.0030549869562415373,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.8911557178304804,
+            "coverage80": 0.9230769230769231
+          },
+          "candidate-anchored": {
+            "races": 91,
+            "states": 24,
+            "brier": 0.0003749738416182451,
+            "logLoss": 0.00275055444319497,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.7092760902554901,
+            "coverage80": 0.9010989010989011
+          },
+          "candidate-and-uncertainty": {
+            "races": 91,
+            "states": 24,
+            "brier": 0.000356238479369702,
+            "logLoss": 0.0028263135823772263,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.6628469506366422,
+            "coverage80": 0.8791208791208791
+          },
+          "frozen-source": {
+            "races": 91,
+            "states": 24,
+            "brier": 0.009366750916415617,
+            "logLoss": 0.04154425109255846,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.734533812648705,
+            "coverage80": 0.8791208791208791
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 24,
+            "draws": 5000,
+            "difference": 1.4455755581075725e-05,
+            "interval95": [
+              -0.00013340612717086976,
+              0.000168342156403752
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 24,
+            "draws": 5000,
+            "difference": -4.2796066674673845e-06,
+            "interval95": [
+              -0.0001348586623451972,
+              0.00010755332920489442
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 24,
+            "draws": 5000,
+            "difference": -0.009006232830378448,
+            "interval95": [
+              -0.018038436805434772,
+              -0.001888956771003161
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 24,
+            "draws": 5000,
+            "difference": -0.00899177707479737,
+            "interval95": [
+              -0.01793130021025327,
+              -0.001954121419025442
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 24,
+            "draws": 5000,
+            "difference": -0.009010512437045913,
+            "interval95": [
+              -0.017964049488375083,
+              -0.0019527274552873855
+            ]
+          }
+        ]
+      }
+    },
+    "new-races": {
+      "all-stages": {
+        "metrics": {
+          "historical-only": {
+            "races": 149,
+            "states": 33,
+            "brier": 0.009634513393154824,
+            "logLoss": 0.030008390164018524,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.1569638823519566,
+            "coverage80": 0.8187919463087249
+          },
+          "candidate-anchored": {
+            "races": 149,
+            "states": 33,
+            "brier": 0.0066007036826867,
+            "logLoss": 0.022590186730834908,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.8333543928397842,
+            "coverage80": 0.8120805369127517
+          },
+          "candidate-and-uncertainty": {
+            "races": 149,
+            "states": 33,
+            "brier": 0.00745924077042287,
+            "logLoss": 0.024160699073893958,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.525716313830426,
+            "coverage80": 0.8791946308724832
+          },
+          "frozen-source": {
+            "races": 149,
+            "states": 33,
+            "brier": 0.016394862449343173,
+            "logLoss": 0.06217348592420509,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.798989028093033,
+            "coverage80": 0.87248322147651
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 33,
+            "draws": 5000,
+            "difference": -0.0030338097104681233,
+            "interval95": [
+              -0.014384920249521762,
+              0.00972354119377395
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 33,
+            "draws": 5000,
+            "difference": -0.0021752726227319496,
+            "interval95": [
+              -0.012527320058042224,
+              0.008050470864735029
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 33,
+            "draws": 5000,
+            "difference": -0.006760349056188352,
+            "interval95": [
+              -0.02003908103342426,
+              0.004712561430695641
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 33,
+            "draws": 5000,
+            "difference": -0.009794158766656473,
+            "interval95": [
+              -0.016046547753398487,
+              -0.004580338798212817
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 33,
+            "draws": 5000,
+            "difference": -0.0089356216789203,
+            "interval95": [
+              -0.018614979602892837,
+              0.0014591816610243814
+            ]
+          }
+        ]
+      },
+      "prior-competitive": {
+        "metrics": {
+          "historical-only": {
+            "races": 22,
+            "states": 16,
+            "brier": 0.06277241488678503,
+            "logLoss": 0.18718527863172574,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.7428504895664587,
+            "coverage80": 0.9090909090909091
+          },
+          "candidate-anchored": {
+            "races": 22,
+            "states": 16,
+            "brier": 0.044704668162730006,
+            "logLoss": 0.15237452215830527,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.7677950393416901,
+            "coverage80": 0.8181818181818182
+          },
+          "candidate-and-uncertainty": {
+            "races": 22,
+            "states": 16,
+            "brier": 0.05051312273038293,
+            "logLoss": 0.16173559667882512,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.119778177498733,
+            "coverage80": 0.7272727272727273
+          },
+          "frozen-source": {
+            "races": 22,
+            "states": 16,
+            "brier": 0.10924061482661807,
+            "logLoss": 0.3766375594245322,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.022641444837024,
+            "coverage80": 0.9090909090909091
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 16,
+            "draws": 5000,
+            "difference": -0.018067746724055055,
+            "interval95": [
+              -0.10267435113518057,
+              0.06947504968164449
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 16,
+            "draws": 5000,
+            "difference": -0.01225929215640212,
+            "interval95": [
+              -0.09251869447363667,
+              0.05833745348510781
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 16,
+            "draws": 5000,
+            "difference": -0.04646819993983304,
+            "interval95": [
+              -0.13162950369153364,
+              0.034585835552640214
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 16,
+            "draws": 5000,
+            "difference": -0.06453594666388808,
+            "interval95": [
+              -0.09292199823524032,
+              -0.03569653369001511
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 16,
+            "draws": 5000,
+            "difference": -0.05872749209623515,
+            "interval95": [
+              -0.11938211352412594,
+              0.007138132160062183
+            ]
+          }
+        ]
+      },
+      "supported-stages": {
+        "metrics": {
+          "historical-only": {
+            "races": 144,
+            "states": 33,
+            "brier": 0.00860627325755716,
+            "logLoss": 0.02580523660209537,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.0073254560796276,
+            "coverage80": 0.8333333333333334
+          },
+          "candidate-anchored": {
+            "races": 144,
+            "states": 33,
+            "brier": 0.0062806025077727905,
+            "logLoss": 0.0210785061797923,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.7223759961691756,
+            "coverage80": 0.8263888888888888
+          },
+          "candidate-and-uncertainty": {
+            "races": 144,
+            "states": 33,
+            "brier": 0.004396722801677083,
+            "logLoss": 0.016767304931031207,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.4200746502689414,
+            "coverage80": 0.8819444444444444
+          },
+          "frozen-source": {
+            "races": 144,
+            "states": 33,
+            "brier": 0.016651226870585456,
+            "logLoss": 0.06257022633313869,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.7529676798216505,
+            "coverage80": 0.875
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 33,
+            "draws": 5000,
+            "difference": -0.0023256707497843676,
+            "interval95": [
+              -0.013972127651220837,
+              0.01101978774966417
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 33,
+            "draws": 5000,
+            "difference": -0.004209550455880074,
+            "interval95": [
+              -0.014253316786136559,
+              0.00469798366556747
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 33,
+            "draws": 5000,
+            "difference": -0.008044953613028299,
+            "interval95": [
+              -0.021974541556395187,
+              0.003540732406211797
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 33,
+            "draws": 5000,
+            "difference": -0.010370624362812667,
+            "interval95": [
+              -0.016967085106722436,
+              -0.005102956656730952
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 33,
+            "draws": 5000,
+            "difference": -0.012254504068908373,
+            "interval95": [
+              -0.021166550705455343,
+              -0.005213573581036756
+            ]
+          }
+        ]
+      },
+      "supported-prior-competitive": {
+        "metrics": {
+          "historical-only": {
+            "races": 21,
+            "states": 15,
+            "brier": 0.058927872684287556,
+            "logLoss": 0.17342547276108627,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.6209480010753903,
+            "coverage80": 0.9047619047619048
+          },
+          "candidate-anchored": {
+            "races": 21,
+            "states": 15,
+            "brier": 0.04306688818871566,
+            "logLoss": 0.14390507116608278,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.691647443486638,
+            "coverage80": 0.8095238095238095
+          },
+          "candidate-and-uncertainty": {
+            "races": 21,
+            "states": 15,
+            "brier": 0.030144339629803066,
+            "logLoss": 0.1134261767283234,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 1.838533384669374,
+            "coverage80": 0.7619047619047619
+          },
+          "frozen-source": {
+            "races": 21,
+            "states": 15,
+            "brier": 0.11230336779455226,
+            "logLoss": 0.38323012228472003,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.202738839338926,
+            "coverage80": 0.9047619047619048
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 15,
+            "draws": 5000,
+            "difference": -0.01586098449557192,
+            "interval95": [
+              -0.10715892134748513,
+              0.07228037191456474
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 15,
+            "draws": 5000,
+            "difference": -0.028783533054484507,
+            "interval95": [
+              -0.10973690417107762,
+              0.03125124488835847
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 15,
+            "draws": 5000,
+            "difference": -0.053375495110264716,
+            "interval95": [
+              -0.14076078620133922,
+              0.03418357592258652
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 15,
+            "draws": 5000,
+            "difference": -0.06923647960583663,
+            "interval95": [
+              -0.09748781847658544,
+              -0.041143768385082484
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 15,
+            "draws": 5000,
+            "difference": -0.08215902816474922,
+            "interval95": [
+              -0.13274647686750446,
+              -0.04196218456901448
+            ]
+          }
+        ]
+      },
+      "1-24": {
+        "metrics": {
+          "historical-only": {
+            "races": 5,
+            "states": 3,
+            "brier": 0.039247829298367475,
+            "logLoss": 0.15105921274740527,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 6.4665505589950225,
+            "coverage80": 0.4
+          },
+          "candidate-anchored": {
+            "races": 5,
+            "states": 3,
+            "brier": 0.01581961752020722,
+            "logLoss": 0.06612658660086192,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 5.029532216953322,
+            "coverage80": 0.4
+          },
+          "candidate-and-uncertainty": {
+            "races": 5,
+            "states": 3,
+            "brier": 0.09565975827030154,
+            "logLoss": 0.23709045038834126,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.5681962244011824,
+            "coverage80": 0.8
+          },
+          "frozen-source": {
+            "races": 5,
+            "states": 3,
+            "brier": 0.009011567117565344,
+            "logLoss": 0.050747362146917815,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 6.124403858308862,
+            "coverage80": 0.8
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": -0.023428211778160256,
+            "interval95": [
+              -0.05839200086397436,
+              0.0
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": 0.05641192897193407,
+            "interval95": [
+              -0.0003310675597334043,
+              0.14119535620970186
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": 0.03023626218080213,
+            "interval95": [
+              9.683501199684552e-09,
+              0.0754242406079906
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": 0.006808050402641876,
+            "interval95": [
+              -2.424684182553113e-05,
+              0.017032239744016256
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 3,
+            "draws": 5000,
+            "difference": 0.0866481911527362,
+            "interval95": [
+              9.683501199684552e-09,
+              0.2166195968176925
+            ]
+          }
+        ]
+      },
+      "25-59": {
+        "metrics": {
+          "historical-only": {
+            "races": 29,
+            "states": 10,
+            "brier": 0.04129398730504261,
+            "logLoss": 0.11160490133938741,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.69790751141708,
+            "coverage80": 0.6551724137931034
+          },
+          "candidate-anchored": {
+            "races": 29,
+            "states": 10,
+            "brier": 0.025569279196584686,
+            "logLoss": 0.07665234724163542,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 3.6044791518571686,
+            "coverage80": 0.7586206896551724
+          },
+          "candidate-and-uncertainty": {
+            "races": 29,
+            "states": 10,
+            "brier": 0.014852093396144012,
+            "logLoss": 0.05059271825109274,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.7575406137016225,
+            "coverage80": 0.9655172413793104
+          },
+          "frozen-source": {
+            "races": 29,
+            "states": 10,
+            "brier": 0.040131579188573074,
+            "logLoss": 0.11519681193065257,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.500426286970912,
+            "coverage80": 0.896551724137931
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 10,
+            "draws": 5000,
+            "difference": -0.015724708108457955,
+            "interval95": [
+              -0.06211718391447413,
+              0.0749435531913708
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 10,
+            "draws": 5000,
+            "difference": -0.026441893908898614,
+            "interval95": [
+              -0.06092225133789947,
+              0.02348546445055869
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 10,
+            "draws": 5000,
+            "difference": 0.0011624081164695542,
+            "interval95": [
+              -0.10801954435248073,
+              0.04583666623403799
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 10,
+            "draws": 5000,
+            "difference": -0.014562299991988395,
+            "interval95": [
+              -0.048932960286761966,
+              -0.0029680305922860405
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 10,
+            "draws": 5000,
+            "difference": -0.025279485792429064,
+            "interval95": [
+              -0.0982732190286984,
+              0.0005230024827605501
+            ]
+          }
+        ]
+      },
+      "60-89": {
+        "metrics": {
+          "historical-only": {
+            "races": 29,
+            "states": 17,
+            "brier": 0.00030933177215924495,
+            "logLoss": 0.006962346339764932,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.540273606292875,
+            "coverage80": 0.7586206896551724
+          },
+          "candidate-anchored": {
+            "races": 29,
+            "states": 17,
+            "brier": 0.004440520510726612,
+            "logLoss": 0.01939952726081334,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.7719763359800824,
+            "coverage80": 0.6896551724137931
+          },
+          "candidate-and-uncertainty": {
+            "races": 29,
+            "states": 17,
+            "brier": 0.005862059424506439,
+            "logLoss": 0.0238140851655911,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 2.2638032420608805,
+            "coverage80": 0.8275862068965517
+          },
+          "frozen-source": {
+            "races": 29,
+            "states": 17,
+            "brier": 0.013164348625064328,
+            "logLoss": 0.06560323420881255,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.7357845279392965,
+            "coverage80": 0.8620689655172413
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 17,
+            "draws": 5000,
+            "difference": 0.004131188738567369,
+            "interval95": [
+              -7.359158600591642e-05,
+              0.012323075820515325
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 17,
+            "draws": 5000,
+            "difference": 0.005552727652347194,
+            "interval95": [
+              1.0816542515549623e-06,
+              0.01611951141272333
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 17,
+            "draws": 5000,
+            "difference": -0.012855016852905082,
+            "interval95": [
+              -0.022349176504650608,
+              -0.0039807563281571215
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 17,
+            "draws": 5000,
+            "difference": -0.008723828114337714,
+            "interval95": [
+              -0.018264451281159434,
+              -0.0012362708683867905
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 17,
+            "draws": 5000,
+            "difference": -0.007302289200557888,
+            "interval95": [
+              -0.017709512144111865,
+              0.001234075271988005
+            ]
+          }
+        ]
+      },
+      "90-99": {
+        "metrics": {
+          "historical-only": {
+            "races": 86,
+            "states": 21,
+            "brier": 0.0003814778587136792,
+            "logLoss": 0.003226789395422265,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.9203210844404377,
+            "coverage80": 0.9186046511627907
+          },
+          "candidate-anchored": {
+            "races": 86,
+            "states": 21,
+            "brier": 0.0003967740652006315,
+            "logLoss": 0.002904657317663689,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.7337783058265229,
+            "coverage80": 0.8953488372093024
+          },
+          "candidate-and-uncertainty": {
+            "races": 86,
+            "states": 21,
+            "brier": 0.00037694943770508,
+            "logLoss": 0.0029848210579611926,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 0.6845555560652905,
+            "coverage80": 0.872093023255814
+          },
+          "frozen-source": {
+            "races": 86,
+            "states": 21,
+            "brier": 0.009909241427544431,
+            "logLoss": 0.04380129365031956,
+            "infiniteLogLossCases": 0,
+            "false95": 0,
+            "marginMae": 4.8439213053711825,
+            "coverage80": 0.872093023255814
+          }
+        },
+        "paired": [
+          {
+            "method": "candidate-anchored",
+            "comparison": "historical-only",
+            "stateClusters": 21,
+            "draws": 5000,
+            "difference": 1.5296206486952222e-05,
+            "interval95": [
+              -0.00014666249796548275,
+              0.00017769858382143085
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "historical-only",
+            "stateClusters": 21,
+            "draws": 5000,
+            "difference": -4.528421008599209e-06,
+            "interval95": [
+              -0.000150966546118401,
+              0.0001144065964215314
+            ]
+          },
+          {
+            "method": "historical-only",
+            "comparison": "frozen-source",
+            "stateClusters": 21,
+            "draws": 5000,
+            "difference": -0.009527763568830751,
+            "interval95": [
+              -0.01950616949873031,
+              -0.0023408002621581677
+            ]
+          },
+          {
+            "method": "candidate-anchored",
+            "comparison": "frozen-source",
+            "stateClusters": 21,
+            "draws": 5000,
+            "difference": -0.009512467362343801,
+            "interval95": [
+              -0.019422805010519566,
+              -0.002418818757607126
+            ]
+          },
+          {
+            "method": "candidate-and-uncertainty",
+            "comparison": "frozen-source",
+            "stateClusters": 21,
+            "draws": 5000,
+            "difference": -0.009532291989839351,
+            "interval95": [
+              -0.01948708129125438,
+              -0.002418742590546134
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "quarantinedCount": 205,
+  "archiveAttempts": {
+    "indexed": 399,
+    "captured": 368,
+    "downloadFailures": 31
+  },
+  "limitations": [
+    "Conditional D/R target; unconditional only for a confirmed two-candidate field",
+    "149 newly evaluated races across 33 states; one House cycle",
+    "Only five new early-stage races; early-stage publication unsupported",
+    "Source estimates are not verified vote completion",
+    "Geometry, candidate and correction quarantines remain explicit"
+  ],
+  "scorerSha256": "5d1d191e1637b51c8da7dfa91fb877a09e3f68d1d87578ac1f582dfe04babd03"
+}

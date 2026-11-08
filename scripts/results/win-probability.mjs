@@ -1,6 +1,7 @@
 import {createHash} from 'node:crypto';
 
 export const modelVersion = 'fea-outstanding-vote-research-2';
+export const maxReportingUnits = 600;
 const defaults = {simulations:20000,stateSd:.18,regionSd:.14,unitSd:.22,method:'full-coverage',
   completedUnitError:.30,sharedTurnoutSd:.08,minimumCompleteUnits:2};
 const time = value => typeof value==='string' && /T.*(?:Z|[+-]\d{2}:\d{2})$/.test(value) ? Date.parse(value) : NaN;
@@ -32,7 +33,7 @@ function prepare(prior,snapshot,settings) {
   const ids = prior.candidateIds;
   requireInput(Array.isArray(ids) && ids.length>=2 && ids.length<=12 && ids.every(safeId) &&
     new Set(ids).size===ids.length,'Candidate identities are missing or ambiguous');
-  requireInput(Array.isArray(prior.units) && prior.units.length>=2 && prior.units.length<=400 &&
+  requireInput(Array.isArray(prior.units) && prior.units.length>=2 && prior.units.length<=maxReportingUnits &&
     Array.isArray(snapshot.units) && snapshot.units.length===prior.units.length,'Reporting-unit coverage is incomplete');
   const reports = new Map(snapshot.units.map(unit=>[unit.id,unit]));
   const ordered = [...prior.units].sort((a,b)=>a.id.localeCompare(b.id));

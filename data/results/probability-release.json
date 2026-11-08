@@ -1,0 +1,7450 @@
+{
+  "schemaVersion": 2,
+  "modelVersion": "fea-live-partial-count-1",
+  "description": "Scoped partial-count House rollout. This is not certification of all 506 races.",
+  "policy": {
+    "method": "calibrated-partial-count",
+    "simulations": 20000,
+    "minimumReportedPercent": 25,
+    "maximumInputAgeMs": 172800000
+  },
+  "approval": {
+    "kind": "automated-source-and-statistical-review",
+    "at": "2026-11-08T15:44:33.344Z",
+    "performedBy": "Automated replay checks and Codex source review; no independent human review claimed"
+  },
+  "validationHash": "916291fe7f405e03ff48fdfb8ec0b3b767db1c32056ea385191cad80ccb6f0e0",
+  "calibrationHash": "bf37faa369b2dffc64c043b02dfb822ac9345ff2d127952b41d3377aa22629cd",
+  "implementationHash": "77b23c71040a0fc1da08af9ee0d265a5eb1140df3ce9ebc50bc3974f10820a03",
+  "priorSource": {
+    "commit": "4b2845d76040aa258d8e92f07567bccf2d4bcf3a",
+    "availableAt": "2026-11-02T20:50:34Z",
+    "sha256": "d681650c6927e13573e60e88e38c9184a808f2f38c511bd74576fed595802970"
+  },
+  "limitations": [
+    "House plurality elections with an exactly two-candidate Democratic/Republican field only",
+    "At least 25% source-estimated reporting and positive counts/estimates in every model area",
+    "Evidence covers a new-race 2022 holdout, not a second independent House cycle",
+    "Delayed NBC inputs are explicitly stale; provider failure cannot manufacture fresh estimates",
+    "Other races remain unavailable pending their own validated model and input coverage"
+  ],
+  "races": {
+    "house-FL-2": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-FL-2",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "175643",
+          "175650"
+        ],
+        "parties": {
+          "175643": "D",
+          "175650": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "12005",
+            "margin": -0.3661773872923637,
+            "weight": 97775
+          },
+          {
+            "id": "12013",
+            "margin": -0.5994951674992108,
+            "weight": 6428
+          },
+          {
+            "id": "12037",
+            "margin": -0.32495123721571917,
+            "weight": 6758
+          },
+          {
+            "id": "12039",
+            "margin": 0.42763030910323074,
+            "weight": 21868
+          },
+          {
+            "id": "12045",
+            "margin": -0.4409882782739468,
+            "weight": 8697
+          },
+          {
+            "id": "12059",
+            "margin": -0.7517804484173918,
+            "weight": 9116
+          },
+          {
+            "id": "12063",
+            "margin": -0.34910068091635627,
+            "weight": 22098
+          },
+          {
+            "id": "12065",
+            "margin": -0.0522512569357092,
+            "weight": 8502
+          },
+          {
+            "id": "12073",
+            "margin": 0.34637666492235364,
+            "weight": 156800
+          },
+          {
+            "id": "12077",
+            "margin": -0.5910032938950047,
+            "weight": 3490
+          },
+          {
+            "id": "12079",
+            "margin": -0.16009826917855008,
+            "weight": 9156
+          },
+          {
+            "id": "12123",
+            "margin": -0.5043584686394479,
+            "weight": 9997
+          },
+          {
+            "id": "12129",
+            "margin": -0.3309298722257781,
+            "weight": 19856
+          },
+          {
+            "id": "12133",
+            "margin": -0.5727938463605581,
+            "weight": 12584
+          },
+          {
+            "id": "12067",
+            "margin": -0.7702736661289683,
+            "weight": 157
+          },
+          {
+            "id": "12131",
+            "margin": -0.44401591162582144,
+            "weight": 16845
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "175650",
+          "name": "Austin Rogers",
+          "party": "R",
+          "providerName": "Austin Rogers"
+        },
+        {
+          "id": "175643",
+          "name": "Amanda Green",
+          "party": "D",
+          "providerName": "Amanda Green"
+        }
+      ]
+    },
+    "house-FL-8": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-FL-8",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "175733",
+          "53079"
+        ],
+        "parties": {
+          "53079": "R",
+          "175733": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "12009",
+            "margin": -0.12831829970544473,
+            "weight": 361449
+          },
+          {
+            "id": "12095",
+            "margin": 0.16412732749722436,
+            "weight": 69070
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "53079",
+          "name": "Mike Haridopolos",
+          "party": "R",
+          "providerName": "Mike Haridopolos"
+        },
+        {
+          "id": "175733",
+          "name": "Jennifer Jenkins",
+          "party": "D",
+          "providerName": "Jennifer Jenkins"
+        }
+      ]
+    },
+    "house-FL-9": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-FL-9",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "65743",
+          "175734"
+        ],
+        "parties": {
+          "65743": "D",
+          "175734": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.0224,
+        "units": [
+          {
+            "id": "12043",
+            "margin": -0.4594620109439991,
+            "weight": 5279
+          },
+          {
+            "id": "12055",
+            "margin": -0.32300302311106743,
+            "weight": 51905
+          },
+          {
+            "id": "12061",
+            "margin": -0.18005482763656666,
+            "weight": 99015
+          },
+          {
+            "id": "12093",
+            "margin": -0.4657829465866067,
+            "weight": 16058
+          },
+          {
+            "id": "12095",
+            "margin": 0.1485924752947516,
+            "weight": 56265
+          },
+          {
+            "id": "12097",
+            "margin": 0.04965166662263987,
+            "weight": 140580
+          },
+          {
+            "id": "12105",
+            "margin": -0.4043418399988882,
+            "weight": 5180
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "65743",
+          "name": "Darren Soto",
+          "party": "D",
+          "providerName": "Darren Soto"
+        },
+        {
+          "id": "175734",
+          "name": "Dan Green",
+          "party": "R",
+          "providerName": "Dan Green"
+        }
+      ]
+    },
+    "house-IL-1": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-IL-1",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "71064",
+          "170439"
+        ],
+        "parties": {
+          "71064": "D",
+          "170439": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "17031",
+            "margin": 0.6171646641282242,
+            "weight": 199551
+          },
+          {
+            "id": "17091",
+            "margin": -0.35149043941574987,
+            "weight": 18145
+          },
+          {
+            "id": "17197",
+            "margin": -0.33682836315195186,
+            "weight": 109828
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "71064",
+          "name": "Jonathan Jackson",
+          "party": "D",
+          "providerName": "Jonathan Jackson"
+        },
+        {
+          "id": "170439",
+          "name": "Christian Maxwell",
+          "party": "R",
+          "providerName": "Christian Maxwell"
+        }
+      ]
+    },
+    "house-IL-3": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-IL-3",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "71076",
+          "167406"
+        ],
+        "parties": {
+          "71076": "D",
+          "167406": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "17031",
+            "margin": 0.36722928390722975,
+            "weight": 179742
+          },
+          {
+            "id": "17043",
+            "margin": 0.0011755303839648956,
+            "weight": 84895
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "71076",
+          "name": "Delia Ramirez",
+          "party": "D",
+          "providerName": "Delia Ramirez"
+        },
+        {
+          "id": "167406",
+          "name": "Angel Oakley",
+          "party": "R",
+          "providerName": "Angel Oakley"
+        }
+      ]
+    },
+    "house-IL-6": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-IL-6",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "66114",
+          "71083"
+        ],
+        "parties": {
+          "66114": "D",
+          "71083": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.7328,
+        "units": [
+          {
+            "id": "17031",
+            "margin": -0.021296325959924034,
+            "weight": 202233
+          },
+          {
+            "id": "17043",
+            "margin": 0.1742510044902421,
+            "weight": 164101
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "66114",
+          "name": "Sean Casten",
+          "party": "D",
+          "providerName": "Sean Casten"
+        },
+        {
+          "id": "71083",
+          "name": "Niki Conforti",
+          "party": "R",
+          "providerName": "Niki Conforti"
+        }
+      ]
+    },
+    "house-IL-9": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-IL-9",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "66099",
+          "66122"
+        ],
+        "parties": {
+          "66099": "D",
+          "66122": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "17031",
+            "margin": 0.35979338772773684,
+            "weight": 276517
+          },
+          {
+            "id": "17097",
+            "margin": -0.0010208596405717474,
+            "weight": 23898
+          },
+          {
+            "id": "17111",
+            "margin": -0.06577260662483375,
+            "weight": 45891
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "66099",
+          "name": "Daniel K. Biss",
+          "party": "D",
+          "providerName": "Daniel Biss"
+        },
+        {
+          "id": "66122",
+          "name": "John Elleson",
+          "party": "R",
+          "providerName": "John Elleson"
+        }
+      ]
+    },
+    "house-IL-13": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-IL-13",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "71104",
+          "170489"
+        ],
+        "parties": {
+          "71104": "D",
+          "170489": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.968399999999999,
+        "units": [
+          {
+            "id": "17117",
+            "margin": -0.4267262391602359,
+            "weight": 23403
+          },
+          {
+            "id": "17163",
+            "margin": 0.24753350474694913,
+            "weight": 70007
+          },
+          {
+            "id": "17019",
+            "margin": 0.4633229025535448,
+            "weight": 60818
+          },
+          {
+            "id": "17115",
+            "margin": -0.06346281173963175,
+            "weight": 17714
+          },
+          {
+            "id": "17119",
+            "margin": -0.0822605157039823,
+            "weight": 83447
+          },
+          {
+            "id": "17147",
+            "margin": -0.29383993698590016,
+            "weight": 5782
+          },
+          {
+            "id": "17167",
+            "margin": -0.010056778591069238,
+            "weight": 70695
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "71104",
+          "name": "Nikki Budzinski",
+          "party": "D",
+          "providerName": "Nikki Budzinski"
+        },
+        {
+          "id": "170489",
+          "name": "Jeff Wilson",
+          "party": "R",
+          "providerName": "Jeff Wilson"
+        }
+      ]
+    },
+    "house-IL-15": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-IL-15",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "170491",
+          "68410"
+        ],
+        "parties": {
+          "68410": "R",
+          "170491": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "17001",
+            "margin": -0.39772715780412693,
+            "weight": 31744
+          },
+          {
+            "id": "17005",
+            "margin": -0.3720950110058846,
+            "weight": 7981
+          },
+          {
+            "id": "17009",
+            "margin": -0.5426210744581104,
+            "weight": 2455
+          },
+          {
+            "id": "17013",
+            "margin": -0.49852485468299035,
+            "weight": 2680
+          },
+          {
+            "id": "17017",
+            "margin": -0.354411955607864,
+            "weight": 5241
+          },
+          {
+            "id": "17021",
+            "margin": -0.3896285705451885,
+            "weight": 15534
+          },
+          {
+            "id": "17039",
+            "margin": -0.3717549271845124,
+            "weight": 7736
+          },
+          {
+            "id": "17041",
+            "margin": -0.38398126958403456,
+            "weight": 8404
+          },
+          {
+            "id": "17045",
+            "margin": -0.4543110457494208,
+            "weight": 7906
+          },
+          {
+            "id": "17051",
+            "margin": -0.5924834796039695,
+            "weight": 9601
+          },
+          {
+            "id": "17061",
+            "margin": -0.5173355873128689,
+            "weight": 6054
+          },
+          {
+            "id": "17067",
+            "margin": -0.42814420575810885,
+            "weight": 9058
+          },
+          {
+            "id": "17071",
+            "margin": -0.30472661644054344,
+            "weight": 3462
+          },
+          {
+            "id": "17083",
+            "margin": -0.4295984601067888,
+            "weight": 11691
+          },
+          {
+            "id": "17107",
+            "margin": -0.3352767476759215,
+            "weight": 12555
+          },
+          {
+            "id": "17125",
+            "margin": -0.3434580897827959,
+            "weight": 6371
+          },
+          {
+            "id": "17129",
+            "margin": -0.3319335332709742,
+            "weight": 6423
+          },
+          {
+            "id": "17135",
+            "margin": -0.36166681449645344,
+            "weight": 13187
+          },
+          {
+            "id": "17137",
+            "margin": -0.23387485533758967,
+            "weight": 14649
+          },
+          {
+            "id": "17139",
+            "margin": -0.41581886792507816,
+            "weight": 6523
+          },
+          {
+            "id": "17149",
+            "margin": -0.5832449055535691,
+            "weight": 7506
+          },
+          {
+            "id": "17169",
+            "margin": -0.3940015413866744,
+            "weight": 3756
+          },
+          {
+            "id": "17171",
+            "margin": -0.5504714505936792,
+            "weight": 2587
+          },
+          {
+            "id": "17173",
+            "margin": -0.5415269931617852,
+            "weight": 11664
+          },
+          {
+            "id": "17019",
+            "margin": -0.2273660930567729,
+            "weight": 21847
+          },
+          {
+            "id": "17029",
+            "margin": -0.11683167863708266,
+            "weight": 15073
+          },
+          {
+            "id": "17057",
+            "margin": -0.371930633473075,
+            "weight": 3810
+          },
+          {
+            "id": "17115",
+            "margin": -0.19852499754167785,
+            "weight": 27510
+          },
+          {
+            "id": "17119",
+            "margin": -0.1816891180794834,
+            "weight": 49152
+          },
+          {
+            "id": "17109",
+            "margin": -0.31488729234782087,
+            "weight": 6571
+          },
+          {
+            "id": "17131",
+            "margin": -0.17657079180874447,
+            "weight": 4181
+          },
+          {
+            "id": "17147",
+            "margin": -0.2944415820135531,
+            "weight": 3714
+          },
+          {
+            "id": "17167",
+            "margin": -0.13409652154912355,
+            "weight": 28150
+          },
+          {
+            "id": "17183",
+            "margin": -0.4215574581267886,
+            "weight": 3942
+          },
+          {
+            "id": "17187",
+            "margin": -0.3326240222188729,
+            "weight": 2686
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "68410",
+          "name": "Mary Miller",
+          "party": "R",
+          "providerName": "Mary Miller"
+        },
+        {
+          "id": "170491",
+          "name": "Jennifer Todd",
+          "party": "D",
+          "providerName": "Jennifer Todd"
+        }
+      ]
+    },
+    "house-IN-5": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-IN-5",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "113146",
+          "162937"
+        ],
+        "parties": {
+          "113146": "D",
+          "162937": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "18035",
+            "margin": -0.04562971152551332,
+            "weight": 45736
+          },
+          {
+            "id": "18053",
+            "margin": -0.3257460628289842,
+            "weight": 25133
+          },
+          {
+            "id": "18057",
+            "margin": 0.05446244765150321,
+            "weight": 196441
+          },
+          {
+            "id": "18095",
+            "margin": -0.1639305194066788,
+            "weight": 55716
+          },
+          {
+            "id": "18159",
+            "margin": -0.4266611998459193,
+            "weight": 7976
+          },
+          {
+            "id": "18067",
+            "margin": -0.25043067088827464,
+            "weight": 38168
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "113146",
+          "name": "J.D. Ford",
+          "party": "D",
+          "providerName": "J.D. Ford"
+        },
+        {
+          "id": "162937",
+          "name": "Victoria Spartz",
+          "party": "R",
+          "providerName": "Victoria Spartz"
+        }
+      ]
+    },
+    "house-IN-8": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-IN-8",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "170362",
+          "112975"
+        ],
+        "parties": {
+          "112975": "R",
+          "170362": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "18021",
+            "margin": -0.5149667962573693,
+            "weight": 12050
+          },
+          {
+            "id": "18025",
+            "margin": -0.42435848381704877,
+            "weight": 5011
+          },
+          {
+            "id": "18027",
+            "margin": -0.5964764477353669,
+            "weight": 11445
+          },
+          {
+            "id": "18037",
+            "margin": -0.3548442574839651,
+            "weight": 21406
+          },
+          {
+            "id": "18051",
+            "margin": -0.45396129317458545,
+            "weight": 15897
+          },
+          {
+            "id": "18055",
+            "margin": -0.4786449092644516,
+            "weight": 14633
+          },
+          {
+            "id": "18083",
+            "margin": -0.44170118419226956,
+            "weight": 15105
+          },
+          {
+            "id": "18101",
+            "margin": -0.5591745102439405,
+            "weight": 4987
+          },
+          {
+            "id": "18117",
+            "margin": -0.4609364065026943,
+            "weight": 8590
+          },
+          {
+            "id": "18119",
+            "margin": -0.4451858618401201,
+            "weight": 9875
+          },
+          {
+            "id": "18121",
+            "margin": -0.5162490508637452,
+            "weight": 6653
+          },
+          {
+            "id": "18123",
+            "margin": -0.21769575409887876,
+            "weight": 8666
+          },
+          {
+            "id": "18125",
+            "margin": -0.49016996520208833,
+            "weight": 6009
+          },
+          {
+            "id": "18129",
+            "margin": -0.3645063534657158,
+            "weight": 12972
+          },
+          {
+            "id": "18147",
+            "margin": -0.3651575707260415,
+            "weight": 10426
+          },
+          {
+            "id": "18153",
+            "margin": -0.4676961690133863,
+            "weight": 8792
+          },
+          {
+            "id": "18163",
+            "margin": -0.037574829479094185,
+            "weight": 73794
+          },
+          {
+            "id": "18165",
+            "margin": -0.3819062448843349,
+            "weight": 7256
+          },
+          {
+            "id": "18167",
+            "margin": -0.09521051807393865,
+            "weight": 40877
+          },
+          {
+            "id": "18173",
+            "margin": -0.22179637526255724,
+            "weight": 33082
+          },
+          {
+            "id": "18045",
+            "margin": -0.5720663228126837,
+            "weight": 4871
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "112975",
+          "name": "Mark Messmer",
+          "party": "R",
+          "providerName": "Mark Messmer"
+        },
+        {
+          "id": "170362",
+          "name": "Mary Allen",
+          "party": "D",
+          "providerName": "Mary Allen"
+        }
+      ]
+    },
+    "house-IA-3": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-IA-3",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "114740",
+          "70417"
+        ],
+        "parties": {
+          "70417": "R",
+          "114740": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.8044,
+        "units": [
+          {
+            "id": "19001",
+            "margin": -0.4064749521899672,
+            "weight": 4064
+          },
+          {
+            "id": "19003",
+            "margin": -0.3983755590087269,
+            "weight": 2131
+          },
+          {
+            "id": "19007",
+            "margin": -0.42235312111432566,
+            "weight": 6466
+          },
+          {
+            "id": "19029",
+            "margin": -0.3605183842617038,
+            "weight": 7195
+          },
+          {
+            "id": "19039",
+            "margin": -0.3731698469952843,
+            "weight": 4459
+          },
+          {
+            "id": "19049",
+            "margin": 0.014327148540330459,
+            "weight": 62633
+          },
+          {
+            "id": "19051",
+            "margin": -0.5052760027677048,
+            "weight": 3950
+          },
+          {
+            "id": "19053",
+            "margin": -0.4285834839987036,
+            "weight": 3727
+          },
+          {
+            "id": "19073",
+            "margin": -0.27741390516096165,
+            "weight": 4874
+          },
+          {
+            "id": "19077",
+            "margin": -0.3305956470407124,
+            "weight": 6514
+          },
+          {
+            "id": "19117",
+            "margin": -0.43928038883172316,
+            "weight": 4639
+          },
+          {
+            "id": "19121",
+            "margin": -0.33640470631162345,
+            "weight": 9995
+          },
+          {
+            "id": "19135",
+            "margin": -0.46437299579603486,
+            "weight": 4146
+          },
+          {
+            "id": "19137",
+            "margin": -0.3421369079644443,
+            "weight": 5061
+          },
+          {
+            "id": "19145",
+            "margin": -0.376488558167304,
+            "weight": 7297
+          },
+          {
+            "id": "19153",
+            "margin": 0.17153121721221853,
+            "weight": 255563
+          },
+          {
+            "id": "19159",
+            "margin": -0.4719246008700102,
+            "weight": 2683
+          },
+          {
+            "id": "19173",
+            "margin": -0.5186699490166887,
+            "weight": 3078
+          },
+          {
+            "id": "19175",
+            "margin": -0.31140899876986816,
+            "weight": 5996
+          },
+          {
+            "id": "19179",
+            "margin": -0.26162829030578205,
+            "weight": 14571
+          },
+          {
+            "id": "19185",
+            "margin": -0.5380823895460275,
+            "weight": 3119
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "114740",
+          "name": "Sarah Trone Garriott",
+          "party": "D",
+          "providerName": "Sarah Trone Garriott"
+        },
+        {
+          "id": "70417",
+          "name": "Zach Nunn",
+          "party": "R",
+          "providerName": "Zach Nunn"
+        }
+      ]
+    },
+    "house-MD-7": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-MD-7",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "57618",
+          "166880"
+        ],
+        "parties": {
+          "57618": "D",
+          "166880": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "24510",
+            "margin": 0.6914057074838214,
+            "weight": 213014
+          },
+          {
+            "id": "24005",
+            "margin": 0.1398878694172736,
+            "weight": 89062
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "57618",
+          "name": "Kweisi Mfume",
+          "party": "D",
+          "providerName": "Kweisi Mfume"
+        },
+        {
+          "id": "166880",
+          "name": "Scott Collier",
+          "party": "R",
+          "providerName": "Scott Collier"
+        }
+      ]
+    },
+    "house-MA-6": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-MA-6",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "67477",
+          "176618"
+        ],
+        "parties": {
+          "67477": "D",
+          "176618": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "25009",
+            "margin": 0.16017624989496926,
+            "weight": 323025
+          },
+          {
+            "id": "25017",
+            "margin": 0.06745962526986138,
+            "weight": 107657
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "67477",
+          "name": "Dan Koh",
+          "party": "D",
+          "providerName": "Dan Koh"
+        },
+        {
+          "id": "176618",
+          "name": "Micah Jones",
+          "party": "R",
+          "providerName": "Micah Jones"
+        }
+      ]
+    },
+    "house-NJ-1": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-NJ-1",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "63457",
+          "163024"
+        ],
+        "parties": {
+          "63457": "D",
+          "163024": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "34007",
+            "margin": 0.19002856372409127,
+            "weight": 246954
+          },
+          {
+            "id": "34005",
+            "margin": 0.09639841698998275,
+            "weight": 11725
+          },
+          {
+            "id": "34015",
+            "margin": -0.08853918813511541,
+            "weight": 117698
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "63457",
+          "name": "Donald Norcross",
+          "party": "D",
+          "providerName": "Donald Norcross"
+        },
+        {
+          "id": "163024",
+          "name": "Damon Galdo",
+          "party": "R",
+          "providerName": "Damon Galdo"
+        }
+      ]
+    },
+    "house-NJ-6": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-NJ-6",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "375",
+          "172147"
+        ],
+        "parties": {
+          "375": "D",
+          "172147": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.246799999999999,
+        "units": [
+          {
+            "id": "34023",
+            "margin": 0.10368577084676622,
+            "weight": 204552
+          },
+          {
+            "id": "34025",
+            "margin": 0.010378242853444242,
+            "weight": 117189
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "375",
+          "name": "Frank Pallone Jr.",
+          "party": "D",
+          "providerName": "Frank Pallone"
+        },
+        {
+          "id": "172147",
+          "name": "Hillary Herzig",
+          "party": "R",
+          "providerName": "Hillary Herzig"
+        }
+      ]
+    },
+    "house-NJ-10": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-NJ-10",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "166034",
+          "134469"
+        ],
+        "parties": {
+          "134469": "R",
+          "166034": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "34013",
+            "margin": 0.5989321221773289,
+            "weight": 136250
+          },
+          {
+            "id": "34017",
+            "margin": 0.431493766425203,
+            "weight": 41836
+          },
+          {
+            "id": "34039",
+            "margin": 0.18311922999009211,
+            "weight": 85374
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "166034",
+          "name": "LaMonica McIver",
+          "party": "D",
+          "providerName": "LaMonica McIver"
+        },
+        {
+          "id": "134469",
+          "name": "Carmen Bucco",
+          "party": "R",
+          "providerName": "Carmen Bucco"
+        }
+      ]
+    },
+    "house-NC-6": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-NC-6",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169330",
+          "160574"
+        ],
+        "parties": {
+          "160574": "R",
+          "169330": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "37057",
+            "margin": -0.40122780515534984,
+            "weight": 93091
+          },
+          {
+            "id": "37059",
+            "margin": -0.3954881514304268,
+            "weight": 26704
+          },
+          {
+            "id": "37159",
+            "margin": -0.279581291460956,
+            "weight": 75236
+          },
+          {
+            "id": "37025",
+            "margin": 0.11169432178304817,
+            "weight": 49397
+          },
+          {
+            "id": "37067",
+            "margin": -0.016930830426027055,
+            "weight": 61990
+          },
+          {
+            "id": "37081",
+            "margin": 0.34931349114343635,
+            "weight": 83908
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "169330",
+          "name": "Cyril Jefferson",
+          "party": "D",
+          "providerName": "Cyril Jefferson"
+        },
+        {
+          "id": "160574",
+          "name": "Addison McDowell",
+          "party": "R",
+          "providerName": "Addison McDowell"
+        }
+      ]
+    },
+    "house-NC-9": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-NC-9",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169336",
+          "61758"
+        ],
+        "parties": {
+          "61758": "R",
+          "169336": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "37001",
+            "margin": 0.03121823737584739,
+            "weight": 89568
+          },
+          {
+            "id": "37093",
+            "margin": 0.17243293127403958,
+            "weight": 22724
+          },
+          {
+            "id": "37125",
+            "margin": -0.1907357514751522,
+            "weight": 61590
+          },
+          {
+            "id": "37151",
+            "margin": -0.49527932173419154,
+            "weight": 75841
+          },
+          {
+            "id": "37037",
+            "margin": -0.07707020868138281,
+            "weight": 20418
+          },
+          {
+            "id": "37051",
+            "margin": 0.46399290075971367,
+            "weight": 48566
+          },
+          {
+            "id": "37081",
+            "margin": 0.0039968514940345035,
+            "weight": 63122
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "169336",
+          "name": "Richard Ojeda",
+          "party": "D",
+          "providerName": "Richard Ojeda"
+        },
+        {
+          "id": "61758",
+          "name": "Richard Hudson",
+          "party": "R",
+          "providerName": "Richard Hudson"
+        }
+      ]
+    },
+    "house-OH-2": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-OH-2",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "170899",
+          "161559"
+        ],
+        "parties": {
+          "161559": "R",
+          "170899": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "39001",
+            "margin": -0.5936717589840365,
+            "weight": 12429
+          },
+          {
+            "id": "39009",
+            "margin": 0.21613841084375185,
+            "weight": 25726
+          },
+          {
+            "id": "39015",
+            "margin": -0.5452910670080802,
+            "weight": 21442
+          },
+          {
+            "id": "39025",
+            "margin": -0.26115901274181286,
+            "weight": 114115
+          },
+          {
+            "id": "39053",
+            "margin": -0.522506196199243,
+            "weight": 13000
+          },
+          {
+            "id": "39073",
+            "margin": -0.35356948970910085,
+            "weight": 13489
+          },
+          {
+            "id": "39079",
+            "margin": -0.5064723436086658,
+            "weight": 14285
+          },
+          {
+            "id": "39087",
+            "margin": -0.4222761585232826,
+            "weight": 26712
+          },
+          {
+            "id": "39105",
+            "margin": -0.4946194828863495,
+            "weight": 10400
+          },
+          {
+            "id": "39115",
+            "margin": -0.45274266965173326,
+            "weight": 6782
+          },
+          {
+            "id": "39131",
+            "margin": -0.45697544217926755,
+            "weight": 12218
+          },
+          {
+            "id": "39141",
+            "margin": -0.29963112015127524,
+            "weight": 32930
+          },
+          {
+            "id": "39145",
+            "margin": -0.3931172799907543,
+            "weight": 31179
+          },
+          {
+            "id": "39163",
+            "margin": -0.5128886787478515,
+            "weight": 5737
+          },
+          {
+            "id": "39167",
+            "margin": -0.347441128450071,
+            "weight": 31000
+          },
+          {
+            "id": "39127",
+            "margin": -0.5115183184291867,
+            "weight": 4577
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "161559",
+          "name": "David Taylor",
+          "party": "R",
+          "providerName": "David Taylor"
+        },
+        {
+          "id": "170899",
+          "name": "Jen Mazzuckelli",
+          "party": "D",
+          "providerName": "Jen Mazzuckelli"
+        }
+      ]
+    },
+    "house-OH-6": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-OH-6",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "170915",
+          "142433"
+        ],
+        "parties": {
+          "142433": "R",
+          "170915": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "39013",
+            "margin": -0.39294835939810524,
+            "weight": 31032
+          },
+          {
+            "id": "39019",
+            "margin": -0.4765771683484673,
+            "weight": 13818
+          },
+          {
+            "id": "39029",
+            "margin": -0.41254788046971314,
+            "weight": 48046
+          },
+          {
+            "id": "39067",
+            "margin": -0.4826356840927498,
+            "weight": 7109
+          },
+          {
+            "id": "39081",
+            "margin": -0.3581640498694899,
+            "weight": 31257
+          },
+          {
+            "id": "39157",
+            "margin": -0.3496839798847563,
+            "weight": 43019
+          },
+          {
+            "id": "39075",
+            "margin": -0.8339598163666624,
+            "weight": 2152
+          },
+          {
+            "id": "39099",
+            "margin": 0.059378677340008235,
+            "weight": 82778
+          },
+          {
+            "id": "39151",
+            "margin": -0.24370058547754847,
+            "weight": 90167
+          },
+          {
+            "id": "39169",
+            "margin": -0.4833954371436676,
+            "weight": 16140
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "142433",
+          "name": "Michael Rulli",
+          "party": "R",
+          "providerName": "Michael Rulli"
+        },
+        {
+          "id": "170915",
+          "name": "Elizabeth Kirtley",
+          "party": "D",
+          "providerName": "Elizabeth Kirtley"
+        }
+      ]
+    },
+    "house-OH-8": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-OH-8",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "66226",
+          "64698"
+        ],
+        "parties": {
+          "64698": "R",
+          "66226": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "39037",
+            "margin": -0.6100978658307751,
+            "weight": 27000
+          },
+          {
+            "id": "39135",
+            "margin": -0.5413353814998136,
+            "weight": 21653
+          },
+          {
+            "id": "39017",
+            "margin": -0.1616895067391425,
+            "weight": 148740
+          },
+          {
+            "id": "39061",
+            "margin": 0.17231372923150157,
+            "weight": 172880
+          },
+          {
+            "id": "39109",
+            "margin": -0.3429714059711376,
+            "weight": 32308
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "64698",
+          "name": "Warren Davidson",
+          "party": "R",
+          "providerName": "Warren Davidson"
+        },
+        {
+          "id": "66226",
+          "name": "Vanessa Enoch",
+          "party": "D",
+          "providerName": "Vanessa Enoch"
+        }
+      ]
+    },
+    "house-OH-12": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-OH-12",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "161573",
+          "66237"
+        ],
+        "parties": {
+          "66237": "R",
+          "161573": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "39031",
+            "margin": -0.48406941154735683,
+            "weight": 16333
+          },
+          {
+            "id": "39045",
+            "margin": -0.18831471402782063,
+            "weight": 84431
+          },
+          {
+            "id": "39059",
+            "margin": -0.4818790686811889,
+            "weight": 17594
+          },
+          {
+            "id": "39083",
+            "margin": -0.4067293560684515,
+            "weight": 32090
+          },
+          {
+            "id": "39089",
+            "margin": -0.2502932870107847,
+            "weight": 95045
+          },
+          {
+            "id": "39111",
+            "margin": -0.5656110029563555,
+            "weight": 6794
+          },
+          {
+            "id": "39119",
+            "margin": -0.3957416231623637,
+            "weight": 39327
+          },
+          {
+            "id": "39121",
+            "margin": -0.6165306161993485,
+            "weight": 6161
+          },
+          {
+            "id": "39041",
+            "margin": 0.01299432855818572,
+            "weight": 89773
+          },
+          {
+            "id": "39075",
+            "margin": -0.6287025193986941,
+            "weight": 10183
+          },
+          {
+            "id": "39127",
+            "margin": -0.4929454530837635,
+            "weight": 12414
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "66237",
+          "name": "Troy Balderson",
+          "party": "R",
+          "providerName": "Troy Balderson"
+        },
+        {
+          "id": "161573",
+          "name": "Jerrad Christian",
+          "party": "D",
+          "providerName": "Jerrad Christian"
+        }
+      ]
+    },
+    "house-OH-14": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-OH-14",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "171016",
+          "62559"
+        ],
+        "parties": {
+          "62559": "R",
+          "171016": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "39007",
+            "margin": -0.2632453574963056,
+            "weight": 43368
+          },
+          {
+            "id": "39055",
+            "margin": -0.21956969745238797,
+            "weight": 54886
+          },
+          {
+            "id": "39085",
+            "margin": -0.12023658507224722,
+            "weight": 128535
+          },
+          {
+            "id": "39155",
+            "margin": -0.1451517274833467,
+            "weight": 96514
+          },
+          {
+            "id": "39099",
+            "margin": -0.214623722489519,
+            "weight": 29900
+          },
+          {
+            "id": "39133",
+            "margin": -0.2598012573167562,
+            "weight": 60232
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "62559",
+          "name": "David Joyce",
+          "party": "R",
+          "providerName": "David Joyce"
+        },
+        {
+          "id": "171016",
+          "name": "Maria Jukic",
+          "party": "D",
+          "providerName": "Maria Jukic"
+        }
+      ]
+    },
+    "house-PA-1": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-1",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "171221",
+          "64827"
+        ],
+        "parties": {
+          "64827": "R",
+          "171221": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.8279999999999985,
+        "units": [
+          {
+            "id": "42017",
+            "margin": -0.08863591956526085,
+            "weight": 401028
+          },
+          {
+            "id": "42091",
+            "margin": -0.06286220546192767,
+            "weight": 72279
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "171221",
+          "name": "Bob Harvie",
+          "party": "D",
+          "providerName": "Bob Harvie"
+        },
+        {
+          "id": "64827",
+          "name": "Brian Fitzpatrick",
+          "party": "R",
+          "providerName": "Brian Fitzpatrick"
+        }
+      ]
+    },
+    "house-PA-4": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-4",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "66414",
+          "171513"
+        ],
+        "parties": {
+          "66414": "D",
+          "171513": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "42011",
+            "margin": -0.2711887605942337,
+            "weight": 77796
+          },
+          {
+            "id": "42091",
+            "margin": 0.15425276686535772,
+            "weight": 389997
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "66414",
+          "name": "Madeleine Dean",
+          "party": "D",
+          "providerName": "Madeleine Dean"
+        },
+        {
+          "id": "171513",
+          "name": "Aurora Stuski",
+          "party": "R",
+          "providerName": "Aurora Stuski"
+        }
+      ]
+    },
+    "house-PA-6": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-6",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "66427",
+          "171515"
+        ],
+        "parties": {
+          "66427": "D",
+          "171515": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.128,
+        "units": [
+          {
+            "id": "42029",
+            "margin": 0.10297705673713842,
+            "weight": 324964
+          },
+          {
+            "id": "42011",
+            "margin": -0.028566732924337868,
+            "weight": 100097
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "66427",
+          "name": "Chrissy Houlahan",
+          "party": "D",
+          "providerName": "Chrissy Houlahan"
+        },
+        {
+          "id": "171515",
+          "name": "Marty Young",
+          "party": "R",
+          "providerName": "Marty Young"
+        }
+      ]
+    },
+    "house-PA-7": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-7",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "146242",
+          "145268"
+        ],
+        "parties": {
+          "145268": "R",
+          "146242": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 9.034799999999999,
+        "units": [
+          {
+            "id": "42025",
+            "margin": -0.30472215100772004,
+            "weight": 35395
+          },
+          {
+            "id": "42077",
+            "margin": 0.07873916399088987,
+            "weight": 189810
+          },
+          {
+            "id": "42095",
+            "margin": 0.03371334664121206,
+            "weight": 178215
+          },
+          {
+            "id": "42089",
+            "margin": -0.32872622187954537,
+            "weight": 7553
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "146242",
+          "name": "Bob Brooks",
+          "party": "D",
+          "providerName": "Bob Brooks"
+        },
+        {
+          "id": "145268",
+          "name": "Ryan Mackenzie",
+          "party": "R",
+          "providerName": "Ryan Mackenzie"
+        }
+      ]
+    },
+    "house-PA-8": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-8",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "171223",
+          "161765"
+        ],
+        "parties": {
+          "161765": "R",
+          "171223": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.652,
+        "units": [
+          {
+            "id": "42069",
+            "margin": 0.12978714889899323,
+            "weight": 116590
+          },
+          {
+            "id": "42103",
+            "margin": -0.14390240856029446,
+            "weight": 34950
+          },
+          {
+            "id": "42127",
+            "margin": -0.2824192853308348,
+            "weight": 29444
+          },
+          {
+            "id": "42079",
+            "margin": -0.046070267015323796,
+            "weight": 131478
+          },
+          {
+            "id": "42089",
+            "margin": 0.12937659791938683,
+            "weight": 77972
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "171223",
+          "name": "Paige Cognetti",
+          "party": "D",
+          "providerName": "Paige Cognetti"
+        },
+        {
+          "id": "161765",
+          "name": "Rob Bresnahan Jr.",
+          "party": "R",
+          "providerName": "Rob Bresnahan"
+        }
+      ]
+    },
+    "house-PA-9": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-9",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "171224",
+          "58537"
+        ],
+        "parties": {
+          "58537": "R",
+          "171224": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "42015",
+            "margin": -0.40515254949832036,
+            "weight": 31192
+          },
+          {
+            "id": "42037",
+            "margin": -0.22277704611594606,
+            "weight": 32576
+          },
+          {
+            "id": "42075",
+            "margin": -0.23262021466495286,
+            "weight": 73692
+          },
+          {
+            "id": "42093",
+            "margin": -0.11757010958596636,
+            "weight": 9908
+          },
+          {
+            "id": "42097",
+            "margin": -0.3184516662860045,
+            "weight": 43522
+          },
+          {
+            "id": "42107",
+            "margin": -0.3412126383248434,
+            "weight": 73184
+          },
+          {
+            "id": "42113",
+            "margin": -0.3928484527569036,
+            "weight": 3721
+          },
+          {
+            "id": "42115",
+            "margin": -0.37031813248955825,
+            "weight": 22404
+          },
+          {
+            "id": "42131",
+            "margin": -0.28502218523844147,
+            "weight": 15052
+          },
+          {
+            "id": "42011",
+            "margin": -0.2913207989268417,
+            "weight": 31945
+          },
+          {
+            "id": "42079",
+            "margin": -0.354865611927748,
+            "weight": 24672
+          },
+          {
+            "id": "42081",
+            "margin": -0.25241501435499936,
+            "weight": 36519
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "58537",
+          "name": "Dan Meuser",
+          "party": "R",
+          "providerName": "Dan Meuser"
+        },
+        {
+          "id": "171224",
+          "name": "Rachel Wallace",
+          "party": "D",
+          "providerName": "Rachel Wallace"
+        }
+      ]
+    },
+    "house-PA-10": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-10",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "161767",
+          "61618"
+        ],
+        "parties": {
+          "61618": "R",
+          "161767": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.886,
+        "units": [
+          {
+            "id": "42043",
+            "margin": 0.1312563313088464,
+            "weight": 149526
+          },
+          {
+            "id": "42041",
+            "margin": 0.0018684645332296412,
+            "weight": 136355
+          },
+          {
+            "id": "42133",
+            "margin": -0.09740225793850044,
+            "weight": 125901
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "161767",
+          "name": "Janelle Stelson",
+          "party": "D",
+          "providerName": "Janelle Stelson"
+        },
+        {
+          "id": "61618",
+          "name": "Scott Perry",
+          "party": "R",
+          "providerName": "Scott Perry"
+        }
+      ]
+    },
+    "house-PA-11": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-11",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "171520",
+          "64833"
+        ],
+        "parties": {
+          "64833": "R",
+          "171520": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "42071",
+            "margin": -0.12688587319724265,
+            "weight": 289257
+          },
+          {
+            "id": "42133",
+            "margin": -0.31262447490925416,
+            "weight": 123309
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "64833",
+          "name": "Lloyd Smucker",
+          "party": "R",
+          "providerName": "Lloyd Smucker"
+        },
+        {
+          "id": "171520",
+          "name": "Nancy Mannion",
+          "party": "D",
+          "providerName": "Nancy Mannion"
+        }
+      ]
+    },
+    "house-PA-12": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-12",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "70046",
+          "161773"
+        ],
+        "parties": {
+          "70046": "D",
+          "161773": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.591599999999999,
+        "units": [
+          {
+            "id": "42003",
+            "margin": 0.17038934405276174,
+            "weight": 358251
+          },
+          {
+            "id": "42129",
+            "margin": -0.3822284622133918,
+            "weight": 70799
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "70046",
+          "name": "Summer Lee",
+          "party": "D",
+          "providerName": "Summer Lee"
+        },
+        {
+          "id": "161773",
+          "name": "James Hayes",
+          "party": "R",
+          "providerName": "James Hayes"
+        }
+      ]
+    },
+    "house-PA-13": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-13",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "161774",
+          "66452"
+        ],
+        "parties": {
+          "66452": "R",
+          "161774": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "42001",
+            "margin": -0.21896736414115203,
+            "weight": 60650
+          },
+          {
+            "id": "42009",
+            "margin": -0.6152440402604803,
+            "weight": 28160
+          },
+          {
+            "id": "42013",
+            "margin": -0.32602361734143503,
+            "weight": 64949
+          },
+          {
+            "id": "42021",
+            "margin": -0.28447080122730406,
+            "weight": 71136
+          },
+          {
+            "id": "42055",
+            "margin": -0.321562272367818,
+            "weight": 83884
+          },
+          {
+            "id": "42057",
+            "margin": -0.6618571029217853,
+            "weight": 8177
+          },
+          {
+            "id": "42061",
+            "margin": -0.43287539476722015,
+            "weight": 23156
+          },
+          {
+            "id": "42067",
+            "margin": -0.5311960175266441,
+            "weight": 12104
+          },
+          {
+            "id": "42087",
+            "margin": -0.47262114437159153,
+            "weight": 22071
+          },
+          {
+            "id": "42099",
+            "margin": -0.3936420297809867,
+            "weight": 25725
+          },
+          {
+            "id": "42041",
+            "margin": -0.26706023729328376,
+            "weight": 12041
+          },
+          {
+            "id": "42111",
+            "margin": -0.3960508631162286,
+            "weight": 948
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "66452",
+          "name": "John Joyce",
+          "party": "R",
+          "providerName": "John Joyce"
+        },
+        {
+          "id": "161774",
+          "name": "Beth Farnham",
+          "party": "D",
+          "providerName": "Beth Farnham"
+        }
+      ]
+    },
+    "house-PA-14": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-14",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "171521",
+          "66458"
+        ],
+        "parties": {
+          "66458": "R",
+          "171521": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "42051",
+            "margin": -0.30058804048299426,
+            "weight": 63472
+          },
+          {
+            "id": "42059",
+            "margin": -0.38175214980491834,
+            "weight": 17236
+          },
+          {
+            "id": "42125",
+            "margin": -0.16960957631240325,
+            "weight": 121617
+          },
+          {
+            "id": "42063",
+            "margin": -0.2827591242206243,
+            "weight": 38175
+          },
+          {
+            "id": "42111",
+            "margin": -0.5142626040331716,
+            "weight": 39933
+          },
+          {
+            "id": "42129",
+            "margin": -0.20739498662690892,
+            "weight": 140651
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "66458",
+          "name": "Guy Reschenthaler",
+          "party": "R",
+          "providerName": "Guy Reschenthaler"
+        },
+        {
+          "id": "171521",
+          "name": "Alan Bradstock",
+          "party": "D",
+          "providerName": "Alan Bradstock"
+        }
+      ]
+    },
+    "house-PA-15": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-15",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "171225",
+          "58283"
+        ],
+        "parties": {
+          "58283": "R",
+          "171225": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "42005",
+            "margin": -0.46436714182663896,
+            "weight": 37119
+          },
+          {
+            "id": "42023",
+            "margin": -0.4351175743375627,
+            "weight": 2219
+          },
+          {
+            "id": "42027",
+            "margin": 0.123374144769973,
+            "weight": 80792
+          },
+          {
+            "id": "42031",
+            "margin": -0.4628943357783717,
+            "weight": 19733
+          },
+          {
+            "id": "42033",
+            "margin": -0.4461425679959016,
+            "weight": 40430
+          },
+          {
+            "id": "42035",
+            "margin": -0.3301850869953683,
+            "weight": 18522
+          },
+          {
+            "id": "42047",
+            "margin": -0.396155690934789,
+            "weight": 17153
+          },
+          {
+            "id": "42053",
+            "margin": -0.3692725169860358,
+            "weight": 2650
+          },
+          {
+            "id": "42065",
+            "margin": -0.5239663791396789,
+            "weight": 23129
+          },
+          {
+            "id": "42083",
+            "margin": -0.3987869782373341,
+            "weight": 19682
+          },
+          {
+            "id": "42105",
+            "margin": -0.5669384285581538,
+            "weight": 9085
+          },
+          {
+            "id": "42109",
+            "margin": -0.39632201137573,
+            "weight": 20038
+          },
+          {
+            "id": "42117",
+            "margin": -0.450038228063918,
+            "weight": 21587
+          },
+          {
+            "id": "42119",
+            "margin": -0.1442557946579227,
+            "weight": 21188
+          },
+          {
+            "id": "42123",
+            "margin": -0.3123116273616463,
+            "weight": 20723
+          },
+          {
+            "id": "42063",
+            "margin": -0.6177615922105701,
+            "weight": 4054
+          },
+          {
+            "id": "42081",
+            "margin": -0.46810481089863265,
+            "weight": 23166
+          },
+          {
+            "id": "42121",
+            "margin": -0.3500607000469471,
+            "weight": 16483
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "58283",
+          "name": "Glenn Thompson",
+          "party": "R",
+          "providerName": "Glenn Thompson"
+        },
+        {
+          "id": "171225",
+          "name": "Ray Bilger",
+          "party": "D",
+          "providerName": "Ray Bilger"
+        }
+      ]
+    },
+    "house-PA-16": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-16",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "171522",
+          "60917"
+        ],
+        "parties": {
+          "60917": "R",
+          "171522": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "42019",
+            "margin": -0.2891371240803815,
+            "weight": 121440
+          },
+          {
+            "id": "42039",
+            "margin": -0.3618425376898804,
+            "weight": 42872
+          },
+          {
+            "id": "42049",
+            "margin": 0.02898179061773498,
+            "weight": 137595
+          },
+          {
+            "id": "42073",
+            "margin": -0.3047476934547533,
+            "weight": 47110
+          },
+          {
+            "id": "42085",
+            "margin": -0.2681105478966245,
+            "weight": 58410
+          },
+          {
+            "id": "42121",
+            "margin": -0.38196149034929383,
+            "weight": 10249
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "60917",
+          "name": "Mike Kelly",
+          "party": "R",
+          "providerName": "Mike Kelly"
+        },
+        {
+          "id": "171522",
+          "name": "Justin Wagner",
+          "party": "D",
+          "providerName": "Justin Wagner"
+        }
+      ]
+    },
+    "house-PA-17": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-PA-17",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "70062",
+          "171523"
+        ],
+        "parties": {
+          "70062": "D",
+          "171523": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.765199999999998,
+        "units": [
+          {
+            "id": "42007",
+            "margin": -0.1948753789442077,
+            "weight": 94843
+          },
+          {
+            "id": "42003",
+            "margin": 0.13922196908018836,
+            "weight": 362253
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "70062",
+          "name": "Chris Deluzio",
+          "party": "D",
+          "providerName": "Chris Deluzio"
+        },
+        {
+          "id": "171523",
+          "name": "Tony Guy",
+          "party": "R",
+          "providerName": "Tony Guy"
+        }
+      ]
+    },
+    "house-TX-1": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-1",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "153531",
+          "69805"
+        ],
+        "parties": {
+          "69805": "R",
+          "153531": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "48067",
+            "margin": -0.5927174254418983,
+            "weight": 14140
+          },
+          {
+            "id": "48073",
+            "margin": -0.5619958487092687,
+            "weight": 20502
+          },
+          {
+            "id": "48183",
+            "margin": -0.333111122534658,
+            "weight": 46699
+          },
+          {
+            "id": "48203",
+            "margin": -0.4243192075529093,
+            "weight": 30226
+          },
+          {
+            "id": "48315",
+            "margin": -0.4466321570392465,
+            "weight": 4714
+          },
+          {
+            "id": "48347",
+            "margin": -0.2955264259623426,
+            "weight": 25470
+          },
+          {
+            "id": "48365",
+            "margin": -0.6010167418311524,
+            "weight": 11437
+          },
+          {
+            "id": "48401",
+            "margin": -0.5235248124947027,
+            "weight": 21702
+          },
+          {
+            "id": "48403",
+            "margin": -0.7429625665760009,
+            "weight": 5581
+          },
+          {
+            "id": "48405",
+            "margin": -0.4873572571234591,
+            "weight": 3747
+          },
+          {
+            "id": "48419",
+            "margin": -0.5809992018810866,
+            "weight": 9948
+          },
+          {
+            "id": "48423",
+            "margin": -0.36472212647863467,
+            "weight": 103815
+          },
+          {
+            "id": "48037",
+            "margin": -0.32685664217564236,
+            "weight": 27216
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "69805",
+          "name": "Nathaniel Moran",
+          "party": "R",
+          "providerName": "Nathaniel Moran"
+        },
+        {
+          "id": "153531",
+          "name": "Yolanda Prince",
+          "party": "D",
+          "providerName": "Yolanda Prince"
+        }
+      ]
+    },
+    "house-TX-2": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-2",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169699",
+          "64604"
+        ],
+        "parties": {
+          "64604": "R",
+          "169699": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "48201",
+            "margin": -0.11500367083825369,
+            "weight": 179495
+          },
+          {
+            "id": "48339",
+            "margin": -0.309349743963248,
+            "weight": 157388
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "64604",
+          "name": "Steve Toth",
+          "party": "R",
+          "providerName": "Steve Toth"
+        },
+        {
+          "id": "169699",
+          "name": "Shaun Finnie",
+          "party": "D",
+          "providerName": "Shaun Finnie"
+        }
+      ]
+    },
+    "house-TX-3": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-3",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169700",
+          "43333"
+        ],
+        "parties": {
+          "43333": "R",
+          "169700": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "48119",
+            "margin": -0.6705680153104703,
+            "weight": 2658
+          },
+          {
+            "id": "48159",
+            "margin": -0.662323521920786,
+            "weight": 5310
+          },
+          {
+            "id": "48223",
+            "margin": -0.6167773017221985,
+            "weight": 16773
+          },
+          {
+            "id": "48343",
+            "margin": -0.47238851282301986,
+            "weight": 5433
+          },
+          {
+            "id": "48449",
+            "margin": -0.5112102354452476,
+            "weight": 10208
+          },
+          {
+            "id": "48085",
+            "margin": -0.10446984703353035,
+            "weight": 297411
+          },
+          {
+            "id": "48231",
+            "margin": -0.465407268483784,
+            "weight": 31132
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "43333",
+          "name": "Keith Self",
+          "party": "R",
+          "providerName": "Keith Self"
+        },
+        {
+          "id": "169700",
+          "name": "Evan Hunt",
+          "party": "D",
+          "providerName": "Evan Hunt"
+        }
+      ]
+    },
+    "house-TX-5": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-5",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169703",
+          "66063"
+        ],
+        "parties": {
+          "66063": "R",
+          "169703": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "48001",
+            "margin": -0.6023229642964254,
+            "weight": 19353
+          },
+          {
+            "id": "48213",
+            "margin": -0.6196790075469227,
+            "weight": 38528
+          },
+          {
+            "id": "48257",
+            "margin": -0.2518925601444777,
+            "weight": 69366
+          },
+          {
+            "id": "48467",
+            "margin": -0.7378070751456891,
+            "weight": 27935
+          },
+          {
+            "id": "48113",
+            "margin": 0.1302208931772353,
+            "weight": 137265
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "66063",
+          "name": "Lance Gooden",
+          "party": "R",
+          "providerName": "Lance Gooden"
+        },
+        {
+          "id": "169703",
+          "name": "Chelsey Hockett",
+          "party": "D",
+          "providerName": "Chelsey Hockett"
+        }
+      ]
+    },
+    "house-TX-6": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-6",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169705",
+          "65914"
+        ],
+        "parties": {
+          "65914": "R",
+          "169705": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "48139",
+            "margin": -0.2885248043829356,
+            "weight": 99485
+          },
+          {
+            "id": "48349",
+            "margin": -0.5015576358593727,
+            "weight": 19829
+          },
+          {
+            "id": "48113",
+            "margin": 0.09210249223340927,
+            "weight": 48436
+          },
+          {
+            "id": "48251",
+            "margin": -0.4507483420964312,
+            "weight": 43118
+          },
+          {
+            "id": "48439",
+            "margin": -0.10254966555762146,
+            "weight": 98152
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "65914",
+          "name": "Jake Ellzey",
+          "party": "R",
+          "providerName": "Jake Ellzey"
+        },
+        {
+          "id": "169705",
+          "name": "Danny Minton",
+          "party": "D",
+          "providerName": "Danny Minton"
+        }
+      ]
+    },
+    "house-TX-9": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-9",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169707",
+          "157689"
+        ],
+        "parties": {
+          "157689": "R",
+          "169707": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "48291",
+            "margin": -0.554500353631389,
+            "weight": 31316
+          },
+          {
+            "id": "48201",
+            "margin": -0.023411162063821878,
+            "weight": 166235
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "169707",
+          "name": "Leticia Gutierrez",
+          "party": "D",
+          "providerName": "Leticia Gutierrez"
+        },
+        {
+          "id": "157689",
+          "name": "Alex Mealer",
+          "party": "R",
+          "providerName": "Alex Mealer"
+        }
+      ]
+    },
+    "house-TX-11": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-11",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169715",
+          "68246"
+        ],
+        "parties": {
+          "68246": "R",
+          "169715": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "48049",
+            "margin": -0.6911759616688278,
+            "weight": 16853
+          },
+          {
+            "id": "48081",
+            "margin": -0.757697287208063,
+            "weight": 1814
+          },
+          {
+            "id": "48083",
+            "margin": -0.7480728305338534,
+            "weight": 4155
+          },
+          {
+            "id": "48095",
+            "margin": -0.688853004934588,
+            "weight": 1198
+          },
+          {
+            "id": "48135",
+            "margin": -0.44838962070996013,
+            "weight": 42615
+          },
+          {
+            "id": "48173",
+            "margin": -0.8583238842459758,
+            "weight": 663
+          },
+          {
+            "id": "48235",
+            "margin": -0.7058174674349471,
+            "weight": 868
+          },
+          {
+            "id": "48267",
+            "margin": -0.7339339404768471,
+            "weight": 2402
+          },
+          {
+            "id": "48299",
+            "margin": -0.5389586600794047,
+            "weight": 13622
+          },
+          {
+            "id": "48319",
+            "margin": -0.5856635760464268,
+            "weight": 2526
+          },
+          {
+            "id": "48307",
+            "margin": -0.6841998735123365,
+            "weight": 3513
+          },
+          {
+            "id": "48327",
+            "margin": -0.6041209176984224,
+            "weight": 1039
+          },
+          {
+            "id": "48329",
+            "margin": -0.5358301698549898,
+            "weight": 58800
+          },
+          {
+            "id": "48399",
+            "margin": -0.7273988318116562,
+            "weight": 4056
+          },
+          {
+            "id": "48411",
+            "margin": -0.7497432560260805,
+            "weight": 2703
+          },
+          {
+            "id": "48431",
+            "margin": -0.8311847249621773,
+            "weight": 629
+          },
+          {
+            "id": "48451",
+            "margin": -0.39513496489610445,
+            "weight": 45438
+          },
+          {
+            "id": "48053",
+            "margin": -0.3977434142373305,
+            "weight": 5078
+          },
+          {
+            "id": "48453",
+            "margin": 0.3564371673804978,
+            "weight": 71942
+          },
+          {
+            "id": "48491",
+            "margin": 0.43675848382270344,
+            "weight": 12222
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "68246",
+          "name": "August Pfluger",
+          "party": "R",
+          "providerName": "August Pfluger"
+        },
+        {
+          "id": "169715",
+          "name": "Claire Reynolds",
+          "party": "D",
+          "providerName": "Claire Reynolds"
+        }
+      ]
+    },
+    "house-TX-13": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-13",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169719",
+          "68255"
+        ],
+        "parties": {
+          "68255": "R",
+          "169719": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "48009",
+            "margin": -0.7491242705762218,
+            "weight": 5132
+          },
+          {
+            "id": "48011",
+            "margin": -0.826852817975161,
+            "weight": 1109
+          },
+          {
+            "id": "48023",
+            "margin": -0.7264723166583325,
+            "weight": 1670
+          },
+          {
+            "id": "48045",
+            "margin": -0.7591251179536564,
+            "weight": 744
+          },
+          {
+            "id": "48065",
+            "margin": -0.772795480666787,
+            "weight": 3172
+          },
+          {
+            "id": "48075",
+            "margin": -0.713341433985333,
+            "weight": 2272
+          },
+          {
+            "id": "48077",
+            "margin": -0.7545695187904182,
+            "weight": 5906
+          },
+          {
+            "id": "48087",
+            "margin": -0.7235388232698302,
+            "weight": 1201
+          },
+          {
+            "id": "48101",
+            "margin": -0.6673389382218103,
+            "weight": 657
+          },
+          {
+            "id": "48111",
+            "margin": -0.7393989392635691,
+            "weight": 1447
+          },
+          {
+            "id": "48117",
+            "margin": -0.42937463902895645,
+            "weight": 4286
+          },
+          {
+            "id": "48125",
+            "margin": -0.6405514187074324,
+            "weight": 993
+          },
+          {
+            "id": "48129",
+            "margin": -0.7455685036272788,
+            "weight": 1712
+          },
+          {
+            "id": "48155",
+            "margin": -0.5871711106054991,
+            "weight": 545
+          },
+          {
+            "id": "48179",
+            "margin": -0.7242024220796082,
+            "weight": 7580
+          },
+          {
+            "id": "48191",
+            "margin": -0.6803276411338396,
+            "weight": 1149
+          },
+          {
+            "id": "48195",
+            "margin": -0.8175338701560251,
+            "weight": 1999
+          },
+          {
+            "id": "48197",
+            "margin": -0.6711331799288938,
+            "weight": 1405
+          },
+          {
+            "id": "48205",
+            "margin": -0.7985274606428043,
+            "weight": 2016
+          },
+          {
+            "id": "48211",
+            "margin": -0.7087683254833788,
+            "weight": 1612
+          },
+          {
+            "id": "48233",
+            "margin": -0.7256274015418231,
+            "weight": 8241
+          },
+          {
+            "id": "48269",
+            "margin": -0.8887324561640344,
+            "weight": 135
+          },
+          {
+            "id": "48275",
+            "margin": -0.6201248102898411,
+            "weight": 1376
+          },
+          {
+            "id": "48295",
+            "margin": -0.7567272596154541,
+            "weight": 1259
+          },
+          {
+            "id": "48337",
+            "margin": -0.7305087371579702,
+            "weight": 11097
+          },
+          {
+            "id": "48341",
+            "margin": -0.6072775098593247,
+            "weight": 5359
+          },
+          {
+            "id": "48345",
+            "margin": -0.8649135338219897,
+            "weight": 650
+          },
+          {
+            "id": "48357",
+            "margin": -0.7775816043176127,
+            "weight": 3008
+          },
+          {
+            "id": "48359",
+            "margin": -0.8104073462121314,
+            "weight": 974
+          },
+          {
+            "id": "48375",
+            "margin": -0.34989319926636764,
+            "weight": 32091
+          },
+          {
+            "id": "48381",
+            "margin": -0.5298714520511901,
+            "weight": 66854
+          },
+          {
+            "id": "48393",
+            "margin": -0.9114785311059046,
+            "weight": 570
+          },
+          {
+            "id": "48421",
+            "margin": -0.8614795278787708,
+            "weight": 872
+          },
+          {
+            "id": "48483",
+            "margin": -0.8144352546820888,
+            "weight": 2272
+          },
+          {
+            "id": "48485",
+            "margin": -0.34487870414630795,
+            "weight": 44497
+          },
+          {
+            "id": "48487",
+            "margin": -0.5320276168445843,
+            "weight": 4463
+          },
+          {
+            "id": "48121",
+            "margin": 0.18705520651127183,
+            "weight": 66820
+          },
+          {
+            "id": "48497",
+            "margin": -0.7233055531387766,
+            "weight": 6255
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "68255",
+          "name": "Ronny L. Jackson",
+          "party": "R",
+          "providerName": "Ronny Jackson"
+        },
+        {
+          "id": "169719",
+          "name": "Mark Nair",
+          "party": "D",
+          "providerName": "Mark Nair"
+        }
+      ]
+    },
+    "house-TX-15": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-15",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169724",
+          "69841"
+        ],
+        "parties": {
+          "69841": "R",
+          "169724": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 6.558399999999999,
+        "units": [
+          {
+            "id": "48025",
+            "margin": -0.27113375308598753,
+            "weight": 8789
+          },
+          {
+            "id": "48047",
+            "margin": 0.24041052162352372,
+            "weight": 2402
+          },
+          {
+            "id": "48123",
+            "margin": -0.5846478013934974,
+            "weight": 7824
+          },
+          {
+            "id": "48175",
+            "margin": -0.5046984920346311,
+            "weight": 3984
+          },
+          {
+            "id": "48177",
+            "margin": -0.4401948357842719,
+            "weight": 7755
+          },
+          {
+            "id": "48249",
+            "margin": -0.00906136247994116,
+            "weight": 13268
+          },
+          {
+            "id": "48285",
+            "margin": -0.6946213016328411,
+            "weight": 10486
+          },
+          {
+            "id": "48007",
+            "margin": -0.45092750616506194,
+            "weight": 10283
+          },
+          {
+            "id": "48215",
+            "margin": 0.12017304240823856,
+            "weight": 144262
+          },
+          {
+            "id": "48391",
+            "margin": -0.28325326330975287,
+            "weight": 2701
+          },
+          {
+            "id": "48409",
+            "margin": -0.16025627351413252,
+            "weight": 16009
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "169724",
+          "name": "Bobby Pulido",
+          "party": "D",
+          "providerName": "Bobby Pulido"
+        },
+        {
+          "id": "69841",
+          "name": "Monica De La Cruz",
+          "party": "R",
+          "providerName": "Monica De La Cruz"
+        }
+      ]
+    },
+    "house-TX-17": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-17",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169727",
+          "358"
+        ],
+        "parties": {
+          "358": "R",
+          "169727": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "48035",
+            "margin": -0.6709716914880306,
+            "weight": 9571
+          },
+          {
+            "id": "48145",
+            "margin": -0.4386282585672079,
+            "weight": 6276
+          },
+          {
+            "id": "48161",
+            "margin": -0.6588148622530594,
+            "weight": 9056
+          },
+          {
+            "id": "48217",
+            "margin": -0.6395091618545392,
+            "weight": 16703
+          },
+          {
+            "id": "48293",
+            "margin": -0.5633196973759078,
+            "weight": 9069
+          },
+          {
+            "id": "48309",
+            "margin": -0.2989719634301008,
+            "weight": 99490
+          },
+          {
+            "id": "48331",
+            "margin": -0.5672056797112033,
+            "weight": 11093
+          },
+          {
+            "id": "48395",
+            "margin": -0.5139565245495621,
+            "weight": 8154
+          },
+          {
+            "id": "48027",
+            "margin": -0.3344589084817525,
+            "weight": 12814
+          },
+          {
+            "id": "48251",
+            "margin": -0.6348623547134314,
+            "weight": 8755
+          },
+          {
+            "id": "48491",
+            "margin": 0.11937679941934709,
+            "weight": 128825
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "358",
+          "name": "Pete Sessions",
+          "party": "R",
+          "providerName": "Pete Sessions"
+        },
+        {
+          "id": "169727",
+          "name": "Casey Shepard",
+          "party": "D",
+          "providerName": "Casey Shepard"
+        }
+      ]
+    },
+    "house-TX-18": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-18",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169213",
+          "169216"
+        ],
+        "parties": {
+          "169213": "D",
+          "169216": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "48157",
+            "margin": 0.30074511218927724,
+            "weight": 57518
+          },
+          {
+            "id": "48201",
+            "margin": 0.4198811206480131,
+            "weight": 185640
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "169213",
+          "name": "Christian Menefee",
+          "party": "D",
+          "providerName": "Christian Menefee"
+        },
+        {
+          "id": "169216",
+          "name": "Ronald Whitfield",
+          "party": "R",
+          "providerName": "Ronald Whitfield"
+        }
+      ]
+    },
+    "house-TX-19": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-19",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169729",
+          "170010"
+        ],
+        "parties": {
+          "169729": "D",
+          "170010": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "48003",
+            "margin": -0.6656544866327115,
+            "weight": 6059
+          },
+          {
+            "id": "48017",
+            "margin": -0.5284635784740301,
+            "weight": 1740
+          },
+          {
+            "id": "48033",
+            "margin": -0.8938407160174825,
+            "weight": 387
+          },
+          {
+            "id": "48069",
+            "margin": -0.49261986928355483,
+            "weight": 2021
+          },
+          {
+            "id": "48079",
+            "margin": -0.586020038978569,
+            "weight": 893
+          },
+          {
+            "id": "48107",
+            "margin": -0.41556198939363764,
+            "weight": 1880
+          },
+          {
+            "id": "48115",
+            "margin": -0.5294124708726933,
+            "weight": 3511
+          },
+          {
+            "id": "48151",
+            "margin": -0.5531892446244695,
+            "weight": 1829
+          },
+          {
+            "id": "48153",
+            "margin": -0.574069238478744,
+            "weight": 2089
+          },
+          {
+            "id": "48165",
+            "margin": -0.7866444976850846,
+            "weight": 6416
+          },
+          {
+            "id": "48169",
+            "margin": -0.6653475390107668,
+            "weight": 1599
+          },
+          {
+            "id": "48189",
+            "margin": -0.4939783877332581,
+            "weight": 9278
+          },
+          {
+            "id": "48207",
+            "margin": -0.6507918814321572,
+            "weight": 2246
+          },
+          {
+            "id": "48219",
+            "margin": -0.5882907481038077,
+            "weight": 7987
+          },
+          {
+            "id": "48227",
+            "margin": -0.5483587562224421,
+            "weight": 9640
+          },
+          {
+            "id": "48253",
+            "margin": -0.6717573504475762,
+            "weight": 6946
+          },
+          {
+            "id": "48263",
+            "margin": -0.7149882194943374,
+            "weight": 445
+          },
+          {
+            "id": "48279",
+            "margin": -0.5648232246626461,
+            "weight": 4151
+          },
+          {
+            "id": "48303",
+            "margin": -0.2850245644967072,
+            "weight": 124972
+          },
+          {
+            "id": "48305",
+            "margin": -0.6378523514342784,
+            "weight": 2567
+          },
+          {
+            "id": "48317",
+            "margin": -0.701489489040539,
+            "weight": 2083
+          },
+          {
+            "id": "48335",
+            "margin": -0.6490481794497525,
+            "weight": 2513
+          },
+          {
+            "id": "48353",
+            "margin": -0.5075794664755126,
+            "weight": 5114
+          },
+          {
+            "id": "48369",
+            "margin": -0.6330591845172802,
+            "weight": 2504
+          },
+          {
+            "id": "48415",
+            "margin": -0.6772764326554972,
+            "weight": 5720
+          },
+          {
+            "id": "48417",
+            "margin": -0.7842324100760313,
+            "weight": 1727
+          },
+          {
+            "id": "48433",
+            "margin": -0.6180233582121798,
+            "weight": 716
+          },
+          {
+            "id": "48437",
+            "margin": -0.5577393604890825,
+            "weight": 2265
+          },
+          {
+            "id": "48441",
+            "margin": -0.399901778406502,
+            "weight": 55386
+          },
+          {
+            "id": "48445",
+            "margin": -0.5744235773340444,
+            "weight": 3419
+          },
+          {
+            "id": "48447",
+            "margin": -0.7937554286501451,
+            "weight": 900
+          },
+          {
+            "id": "48501",
+            "margin": -0.6428145944752232,
+            "weight": 2393
+          },
+          {
+            "id": "48059",
+            "margin": -0.7246880716620123,
+            "weight": 767
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "170010",
+          "name": "Tom Sell",
+          "party": "R",
+          "providerName": "Tom Sell"
+        },
+        {
+          "id": "169729",
+          "name": "Kyle Rable",
+          "party": "D",
+          "providerName": "Kyle Rable"
+        }
+      ]
+    },
+    "house-TX-21": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-21",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "160786",
+          "170021"
+        ],
+        "parties": {
+          "160786": "D",
+          "170021": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "48019",
+            "margin": -0.599228438347869,
+            "weight": 13592
+          },
+          {
+            "id": "48031",
+            "margin": -0.5022494207808131,
+            "weight": 8518
+          },
+          {
+            "id": "48091",
+            "margin": -0.42766843196333815,
+            "weight": 103465
+          },
+          {
+            "id": "48171",
+            "margin": -0.5883757774112262,
+            "weight": 16482
+          },
+          {
+            "id": "48259",
+            "margin": -0.5342944786549665,
+            "weight": 29295
+          },
+          {
+            "id": "48265",
+            "margin": -0.5193942963059032,
+            "weight": 28156
+          },
+          {
+            "id": "48385",
+            "margin": -0.6530654504032092,
+            "weight": 1958
+          },
+          {
+            "id": "48029",
+            "margin": 0.1054698248585677,
+            "weight": 154933
+          },
+          {
+            "id": "48209",
+            "margin": 0.08176450749725728,
+            "weight": 57578
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "170021",
+          "name": "Mark Teixeira",
+          "party": "R",
+          "providerName": "Mark Teixeira"
+        },
+        {
+          "id": "160786",
+          "name": "Kristin Hook",
+          "party": "D",
+          "providerName": "Kristin Hook"
+        }
+      ]
+    },
+    "house-TX-22": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-22",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "160787",
+          "170023"
+        ],
+        "parties": {
+          "160787": "D",
+          "170023": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "48039",
+            "margin": -0.46562968485056144,
+            "weight": 62819
+          },
+          {
+            "id": "48157",
+            "margin": -0.12492845172010425,
+            "weight": 205860
+          },
+          {
+            "id": "48201",
+            "margin": -0.07985354883164408,
+            "weight": 65629
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "170023",
+          "name": "Trever Nehls",
+          "party": "R",
+          "providerName": "Trever Nehls"
+        },
+        {
+          "id": "160787",
+          "name": "Marquette Greene-Scott",
+          "party": "D",
+          "providerName": "Marquette Greene-Scott"
+        }
+      ]
+    },
+    "house-TX-24": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-24",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169739",
+          "68157"
+        ],
+        "parties": {
+          "68157": "R",
+          "169739": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "48113",
+            "margin": 0.05378127430905688,
+            "weight": 116467
+          },
+          {
+            "id": "48439",
+            "margin": -0.11465646276931396,
+            "weight": 255382
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "68157",
+          "name": "Beth Van Duyne",
+          "party": "R",
+          "providerName": "Beth Van Duyne"
+        },
+        {
+          "id": "169739",
+          "name": "Kevin Burge",
+          "party": "D",
+          "providerName": "Kevin Burge"
+        }
+      ]
+    },
+    "house-TX-25": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-25",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169743",
+          "62001"
+        ],
+        "parties": {
+          "62001": "R",
+          "169743": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "48093",
+            "margin": -0.6904395785560681,
+            "weight": 6544
+          },
+          {
+            "id": "48133",
+            "margin": -0.7319723428992386,
+            "weight": 8363
+          },
+          {
+            "id": "48143",
+            "margin": -0.6217431698022255,
+            "weight": 18350
+          },
+          {
+            "id": "48221",
+            "margin": -0.5989176900800316,
+            "weight": 36538
+          },
+          {
+            "id": "48237",
+            "margin": -0.7880697207121282,
+            "weight": 4201
+          },
+          {
+            "id": "48363",
+            "margin": -0.6117420986007407,
+            "weight": 13333
+          },
+          {
+            "id": "48425",
+            "margin": -0.65504337279335,
+            "weight": 5285
+          },
+          {
+            "id": "48429",
+            "margin": -0.751051428796826,
+            "weight": 3761
+          },
+          {
+            "id": "48503",
+            "margin": -0.717666923463483,
+            "weight": 8309
+          },
+          {
+            "id": "48059",
+            "margin": -0.7337808547676675,
+            "weight": 6218
+          },
+          {
+            "id": "48251",
+            "margin": -0.4689322478472725,
+            "weight": 28818
+          },
+          {
+            "id": "48367",
+            "margin": -0.5930002526871148,
+            "weight": 22508
+          },
+          {
+            "id": "48439",
+            "margin": 0.33815908394774064,
+            "weight": 146710
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "62001",
+          "name": "Roger Williams",
+          "party": "R",
+          "providerName": "Roger Williams"
+        },
+        {
+          "id": "169743",
+          "name": "Dione Sims",
+          "party": "D",
+          "providerName": "Dione Sims"
+        }
+      ]
+    },
+    "house-TX-30": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-30",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169745",
+          "170028"
+        ],
+        "parties": {
+          "169745": "D",
+          "170028": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "48113",
+            "margin": 0.510215822429513,
+            "weight": 166550
+          },
+          {
+            "id": "48439",
+            "margin": 0.17162732486111376,
+            "weight": 76757
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "169745",
+          "name": "Frederick Haynes",
+          "party": "D",
+          "providerName": "Frederick Haynes"
+        },
+        {
+          "id": "170028",
+          "name": "Everett Jackson",
+          "party": "R",
+          "providerName": "Everett Jackson"
+        }
+      ]
+    },
+    "house-TX-32": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-32",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169748",
+          "170039"
+        ],
+        "parties": {
+          "169748": "D",
+          "170039": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 10.066799999999999,
+        "units": [
+          {
+            "id": "48063",
+            "margin": -0.3171555686161681,
+            "weight": 5242
+          },
+          {
+            "id": "48379",
+            "margin": -0.5793499636296446,
+            "weight": 6554
+          },
+          {
+            "id": "48397",
+            "margin": -0.16319408089030807,
+            "weight": 62251
+          },
+          {
+            "id": "48459",
+            "margin": -0.5525045880656794,
+            "weight": 19882
+          },
+          {
+            "id": "48499",
+            "margin": -0.5340060592286109,
+            "weight": 24381
+          },
+          {
+            "id": "48085",
+            "margin": 0.3952128490657274,
+            "weight": 17080
+          },
+          {
+            "id": "48113",
+            "margin": 0.3471016716523696,
+            "weight": 171818
+          },
+          {
+            "id": "48231",
+            "margin": -0.47930668873018534,
+            "weight": 15571
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "170039",
+          "name": "Jace Yarbrough",
+          "party": "R",
+          "providerName": "Jace Yarbrough"
+        },
+        {
+          "id": "169748",
+          "name": "Dan Barrios",
+          "party": "D",
+          "providerName": "Dan Barrios"
+        }
+      ]
+    },
+    "house-TX-35": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-35",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "169753",
+          "170052"
+        ],
+        "parties": {
+          "169753": "D",
+          "170052": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.3119999999999985,
+        "units": [
+          {
+            "id": "48187",
+            "margin": -0.2682183185173205,
+            "weight": 85097
+          },
+          {
+            "id": "48255",
+            "margin": -0.5621188653915389,
+            "weight": 5075
+          },
+          {
+            "id": "48493",
+            "margin": -0.5162434603348802,
+            "weight": 27270
+          },
+          {
+            "id": "48029",
+            "margin": 0.09401804380486523,
+            "weight": 183634
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "169753",
+          "name": "Johnny Garcia",
+          "party": "D",
+          "providerName": "Johnny Garcia"
+        },
+        {
+          "id": "170052",
+          "name": "Carlos De La Cruz",
+          "party": "R",
+          "providerName": "Carlos De La Cruz"
+        }
+      ]
+    },
+    "house-TX-36": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-TX-36",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "160562",
+          "41484"
+        ],
+        "parties": {
+          "41484": "R",
+          "160562": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "48005",
+            "margin": -0.5118083881800217,
+            "weight": 34419
+          },
+          {
+            "id": "48071",
+            "margin": -0.6522505555617758,
+            "weight": 24971
+          },
+          {
+            "id": "48199",
+            "margin": -0.7544210814660087,
+            "weight": 28157
+          },
+          {
+            "id": "48241",
+            "margin": -0.6595324224047654,
+            "weight": 15839
+          },
+          {
+            "id": "48351",
+            "margin": -0.6589020164034025,
+            "weight": 5749
+          },
+          {
+            "id": "48457",
+            "margin": -0.7306231712078479,
+            "weight": 9577
+          },
+          {
+            "id": "48039",
+            "margin": 0.13426448388432166,
+            "weight": 39440
+          },
+          {
+            "id": "48201",
+            "margin": -0.07615365086457682,
+            "weight": 112832
+          },
+          {
+            "id": "48245",
+            "margin": 0.1273746112714058,
+            "weight": 41461
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "41484",
+          "name": "Brian Babin",
+          "party": "R",
+          "providerName": "Brian Babin"
+        },
+        {
+          "id": "160562",
+          "name": "Rhonda Hart",
+          "party": "D",
+          "providerName": "Rhonda Hart"
+        }
+      ]
+    },
+    "house-WV-2": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-WV-2",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "170766",
+          "155080"
+        ],
+        "parties": {
+          "155080": "R",
+          "170766": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "54001",
+            "margin": -0.5398059849626122,
+            "weight": 6395
+          },
+          {
+            "id": "54003",
+            "margin": -0.258958986005835,
+            "weight": 56102
+          },
+          {
+            "id": "54009",
+            "margin": -0.3566416156391936,
+            "weight": 9782
+          },
+          {
+            "id": "54017",
+            "margin": -0.6862776793050845,
+            "weight": 2956
+          },
+          {
+            "id": "54023",
+            "margin": -0.7528723672651279,
+            "weight": 5568
+          },
+          {
+            "id": "54027",
+            "margin": -0.559756981078134,
+            "weight": 10500
+          },
+          {
+            "id": "54029",
+            "margin": -0.38040072318786344,
+            "weight": 13030
+          },
+          {
+            "id": "54031",
+            "margin": -0.5059331541713026,
+            "weight": 6411
+          },
+          {
+            "id": "54033",
+            "margin": -0.3170339812214795,
+            "weight": 29495
+          },
+          {
+            "id": "54037",
+            "margin": -0.045635966275054285,
+            "weight": 29156
+          },
+          {
+            "id": "54041",
+            "margin": -0.5238425240860907,
+            "weight": 7048
+          },
+          {
+            "id": "54049",
+            "margin": -0.2110468959181837,
+            "weight": 24634
+          },
+          {
+            "id": "54051",
+            "margin": -0.4178404112719376,
+            "weight": 13233
+          },
+          {
+            "id": "54057",
+            "margin": -0.5310564414728043,
+            "weight": 12904
+          },
+          {
+            "id": "54061",
+            "margin": 0.07190675512327238,
+            "weight": 41452
+          },
+          {
+            "id": "54065",
+            "margin": -0.48025012963120683,
+            "weight": 9097
+          },
+          {
+            "id": "54069",
+            "margin": -0.1537634725731225,
+            "weight": 18689
+          },
+          {
+            "id": "54073",
+            "margin": -0.5208649045296633,
+            "weight": 3348
+          },
+          {
+            "id": "54077",
+            "margin": -0.49926768077484374,
+            "weight": 14426
+          },
+          {
+            "id": "54083",
+            "margin": -0.37455323035998456,
+            "weight": 11594
+          },
+          {
+            "id": "54085",
+            "margin": -0.6832701640914768,
+            "weight": 4050
+          },
+          {
+            "id": "54091",
+            "margin": -0.4337794431880425,
+            "weight": 7265
+          },
+          {
+            "id": "54093",
+            "margin": -0.406970963795109,
+            "weight": 3636
+          },
+          {
+            "id": "54095",
+            "margin": -0.6205849572936899,
+            "weight": 3617
+          },
+          {
+            "id": "54097",
+            "margin": -0.4962668251176413,
+            "weight": 9859
+          },
+          {
+            "id": "54103",
+            "margin": -0.4851365023784423,
+            "weight": 6168
+          },
+          {
+            "id": "54107",
+            "margin": -0.33838117964110537,
+            "weight": 37313
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "155080",
+          "name": "Riley Moore",
+          "party": "R",
+          "providerName": "Riley Moore"
+        },
+        {
+          "id": "170766",
+          "name": "Ace Parsi",
+          "party": "D",
+          "providerName": "Ace Parsi"
+        }
+      ]
+    },
+    "house-WI-1": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-WI-1",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "175180",
+          "67339"
+        ],
+        "parties": {
+          "67339": "R",
+          "175180": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.6408,
+        "units": [
+          {
+            "id": "55059",
+            "margin": -0.10449081910620628,
+            "weight": 90472
+          },
+          {
+            "id": "55079",
+            "margin": -0.050648896114203756,
+            "weight": 85361
+          },
+          {
+            "id": "55101",
+            "margin": -0.10367640425719504,
+            "weight": 107402
+          },
+          {
+            "id": "55105",
+            "margin": 0.056080205955221896,
+            "weight": 65468
+          },
+          {
+            "id": "55127",
+            "margin": -0.25090317239093096,
+            "weight": 54516
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "175180",
+          "name": "Mitchell Berman",
+          "party": "D",
+          "providerName": "Mitchell Berman"
+        },
+        {
+          "id": "67339",
+          "name": "Bryan Steil",
+          "party": "R",
+          "providerName": "Bryan Steil"
+        }
+      ]
+    },
+    "house-WI-5": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-WI-5",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "175224",
+          "59140"
+        ],
+        "parties": {
+          "59140": "R",
+          "175224": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "55027",
+            "margin": -0.3760467669094797,
+            "weight": 25487
+          },
+          {
+            "id": "55055",
+            "margin": -0.13602202819952014,
+            "weight": 50035
+          },
+          {
+            "id": "55079",
+            "margin": 0.07258475404001663,
+            "weight": 32726
+          },
+          {
+            "id": "55127",
+            "margin": -0.3195909971979426,
+            "weight": 5949
+          },
+          {
+            "id": "55131",
+            "margin": -0.3403971418642109,
+            "weight": 91162
+          },
+          {
+            "id": "55133",
+            "margin": -0.1704107865981661,
+            "weight": 274845
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "59140",
+          "name": "Scott Fitzgerald",
+          "party": "R",
+          "providerName": "Scott Fitzgerald"
+        },
+        {
+          "id": "175224",
+          "name": "Andrew Beck",
+          "party": "D",
+          "providerName": "Andrew Beck"
+        }
+      ]
+    },
+    "house-WI-7": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-WI-7",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "153573",
+          "175232"
+        ],
+        "parties": {
+          "153573": "D",
+          "175232": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "55003",
+            "margin": 0.08707121626924819,
+            "weight": 8933
+          },
+          {
+            "id": "55005",
+            "margin": -0.2670897037301194,
+            "weight": 26775
+          },
+          {
+            "id": "55007",
+            "margin": 0.15243239567892175,
+            "weight": 11204
+          },
+          {
+            "id": "55013",
+            "margin": -0.27723176719902554,
+            "weight": 10807
+          },
+          {
+            "id": "55017",
+            "margin": -0.326585635642048,
+            "weight": 17835
+          },
+          {
+            "id": "55019",
+            "margin": -0.36471466380513096,
+            "weight": 15315
+          },
+          {
+            "id": "55031",
+            "margin": 0.09327367434212919,
+            "weight": 25165
+          },
+          {
+            "id": "55037",
+            "margin": -0.47100632922784236,
+            "weight": 3158
+          },
+          {
+            "id": "55041",
+            "margin": -0.30053539258099016,
+            "weight": 5095
+          },
+          {
+            "id": "55051",
+            "margin": -0.22755162418875596,
+            "weight": 4079
+          },
+          {
+            "id": "55053",
+            "margin": -0.3806804480710979,
+            "weight": 1185
+          },
+          {
+            "id": "55057",
+            "margin": -0.3891656136127436,
+            "weight": 3751
+          },
+          {
+            "id": "55067",
+            "margin": -0.3150402511946677,
+            "weight": 11659
+          },
+          {
+            "id": "55069",
+            "margin": -0.21823230179307496,
+            "weight": 17188
+          },
+          {
+            "id": "55073",
+            "margin": -0.15059144219614518,
+            "weight": 78675
+          },
+          {
+            "id": "55081",
+            "margin": -0.3525394834079998,
+            "weight": 2775
+          },
+          {
+            "id": "55085",
+            "margin": -0.1398890502437916,
+            "weight": 24837
+          },
+          {
+            "id": "55095",
+            "margin": -0.2772958143949754,
+            "weight": 28212
+          },
+          {
+            "id": "55099",
+            "margin": -0.27859588239521804,
+            "weight": 8856
+          },
+          {
+            "id": "55107",
+            "margin": -0.3504403188269649,
+            "weight": 8261
+          },
+          {
+            "id": "55113",
+            "margin": -0.1268275511833743,
+            "weight": 11122
+          },
+          {
+            "id": "55109",
+            "margin": -0.15820476548586115,
+            "weight": 60477
+          },
+          {
+            "id": "55119",
+            "margin": -0.4576102308953557,
+            "weight": 11172
+          },
+          {
+            "id": "55125",
+            "margin": -0.19539948657364292,
+            "weight": 16101
+          },
+          {
+            "id": "55129",
+            "margin": -0.24920289026425957,
+            "weight": 10953
+          },
+          {
+            "id": "55141",
+            "margin": -0.1694296739275335,
+            "weight": 17458
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "175232",
+          "name": "Michael Alfonso",
+          "party": "R",
+          "providerName": "Michael Alfonso"
+        },
+        {
+          "id": "153573",
+          "name": "Fred Clark",
+          "party": "D",
+          "providerName": "Fred Clark"
+        }
+      ]
+    },
+    "house-WI-8": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-WI-8",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "175235",
+          "164795"
+        ],
+        "parties": {
+          "164795": "R",
+          "175235": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.686399999999999,
+        "units": [
+          {
+            "id": "55009",
+            "margin": 0.0505776969330316,
+            "weight": 148960
+          },
+          {
+            "id": "55015",
+            "margin": -0.05580275619973796,
+            "weight": 28954
+          },
+          {
+            "id": "55029",
+            "margin": 0.14834158862157443,
+            "weight": 20896
+          },
+          {
+            "id": "55061",
+            "margin": -0.22486880841390955,
+            "weight": 12466
+          },
+          {
+            "id": "55075",
+            "margin": -0.27120469295691974,
+            "weight": 24364
+          },
+          {
+            "id": "55078",
+            "margin": 0.6929030109334477,
+            "weight": 1572
+          },
+          {
+            "id": "55083",
+            "margin": -0.32622167703962524,
+            "weight": 24881
+          },
+          {
+            "id": "55087",
+            "margin": 0.023227776662753996,
+            "weight": 111905
+          },
+          {
+            "id": "55115",
+            "margin": -0.252703582904768,
+            "weight": 23455
+          },
+          {
+            "id": "55135",
+            "margin": -0.2209561266099569,
+            "weight": 30367
+          },
+          {
+            "id": "55139",
+            "margin": -0.259528464906464,
+            "weight": 1952
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "164795",
+          "name": "Tony Wied",
+          "party": "R",
+          "providerName": "Tony Wied"
+        },
+        {
+          "id": "175235",
+          "name": "Rick Crosson",
+          "party": "D",
+          "providerName": "Rick Crosson"
+        }
+      ]
+    },
+    "house-AL-1": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-AL-1",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "171283",
+          "68313"
+        ],
+        "parties": {
+          "68313": "R",
+          "171283": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "01003",
+            "margin": -0.6434541361881558,
+            "weight": 121808
+          },
+          {
+            "id": "01053",
+            "margin": -0.5342412118481974,
+            "weight": 14929
+          },
+          {
+            "id": "01097",
+            "margin": -0.25307215016450735,
+            "weight": 174545
+          },
+          {
+            "id": "01039",
+            "margin": -0.7632198262314907,
+            "weight": 15670
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "68313",
+          "name": "Jerry Carl",
+          "party": "R",
+          "providerName": "Jerry Carl"
+        },
+        {
+          "id": "171283",
+          "name": "Clyde Jones",
+          "party": "D",
+          "providerName": "Clyde Jones"
+        }
+      ]
+    },
+    "house-AL-2": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-AL-2",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "160906",
+          "100547"
+        ],
+        "parties": {
+          "100547": "R",
+          "160906": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 9.096,
+        "units": [
+          {
+            "id": "01005",
+            "margin": 0.09041548458072679,
+            "weight": 9832
+          },
+          {
+            "id": "01011",
+            "margin": 0.6281896359131061,
+            "weight": 4106
+          },
+          {
+            "id": "01013",
+            "margin": 0.007916137658583233,
+            "weight": 8467
+          },
+          {
+            "id": "01031",
+            "margin": -0.40344427309071007,
+            "weight": 22270
+          },
+          {
+            "id": "01041",
+            "margin": -0.35963313918509543,
+            "weight": 6480
+          },
+          {
+            "id": "01045",
+            "margin": -0.3327554278915974,
+            "weight": 19103
+          },
+          {
+            "id": "01061",
+            "margin": -0.6587678949592586,
+            "weight": 12390
+          },
+          {
+            "id": "01067",
+            "margin": -0.3129012738963247,
+            "weight": 9301
+          },
+          {
+            "id": "01069",
+            "margin": -0.2778781630837429,
+            "weight": 44195
+          },
+          {
+            "id": "01085",
+            "margin": 0.5609483043222878,
+            "weight": 5652
+          },
+          {
+            "id": "01087",
+            "margin": 0.7078712193855559,
+            "weight": 7820
+          },
+          {
+            "id": "01101",
+            "margin": 0.5089667824575579,
+            "weight": 89375
+          },
+          {
+            "id": "01109",
+            "margin": -0.01894582289448221,
+            "weight": 13214
+          },
+          {
+            "id": "01113",
+            "margin": 0.2513438586103931,
+            "weight": 20679
+          },
+          {
+            "id": "01039",
+            "margin": -0.6740142484640901,
+            "weight": 1402
+          },
+          {
+            "id": "01051",
+            "margin": -0.2732490484379927,
+            "weight": 18017
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "160906",
+          "name": "Shomari Figures",
+          "party": "D",
+          "providerName": "Shomari Figures"
+        },
+        {
+          "id": "100547",
+          "name": "Rhett Marques",
+          "party": "R",
+          "providerName": "Rhett Marques"
+        }
+      ]
+    },
+    "house-AL-3": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-AL-3",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "171289",
+          "1161"
+        ],
+        "parties": {
+          "1161": "R",
+          "171289": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "01015",
+            "margin": -0.3608411406714602,
+            "weight": 48530
+          },
+          {
+            "id": "01017",
+            "margin": -0.1292229068542846,
+            "weight": 14221
+          },
+          {
+            "id": "01019",
+            "margin": -0.7095044643336792,
+            "weight": 12984
+          },
+          {
+            "id": "01027",
+            "margin": -0.64578678317163,
+            "weight": 6757
+          },
+          {
+            "id": "01029",
+            "margin": -0.8057101352646654,
+            "weight": 7637
+          },
+          {
+            "id": "01055",
+            "margin": -0.4820061765092276,
+            "weight": 46023
+          },
+          {
+            "id": "01081",
+            "margin": -0.17876629499985197,
+            "weight": 72695
+          },
+          {
+            "id": "01111",
+            "margin": -0.58458697365859,
+            "weight": 11075
+          },
+          {
+            "id": "01115",
+            "margin": -0.5779640025884518,
+            "weight": 43440
+          },
+          {
+            "id": "01123",
+            "margin": -0.4130218518989903,
+            "weight": 19980
+          },
+          {
+            "id": "01121",
+            "margin": -0.22728889966924715,
+            "weight": 31527
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "1161",
+          "name": "Mike Rogers",
+          "party": "R",
+          "providerName": "Mike Rogers"
+        },
+        {
+          "id": "171289",
+          "name": "Lee McInnis",
+          "party": "D",
+          "providerName": "Lee McInnis"
+        }
+      ]
+    },
+    "house-AL-4": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-AL-4",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "171292",
+          "523"
+        ],
+        "parties": {
+          "523": "R",
+          "171292": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "01009",
+            "margin": -0.7300568962268781,
+            "weight": 28115
+          },
+          {
+            "id": "01033",
+            "margin": -0.28536964199287884,
+            "weight": 27086
+          },
+          {
+            "id": "01043",
+            "margin": -0.7237486442133918,
+            "weight": 43052
+          },
+          {
+            "id": "01049",
+            "margin": -0.6324546435872068,
+            "weight": 29583
+          },
+          {
+            "id": "01057",
+            "margin": -0.6064105594062343,
+            "weight": 8356
+          },
+          {
+            "id": "01059",
+            "margin": -0.624481988147911,
+            "weight": 12077
+          },
+          {
+            "id": "01075",
+            "margin": -0.6595166957794595,
+            "weight": 6875
+          },
+          {
+            "id": "01093",
+            "margin": -0.7389441272785169,
+            "weight": 13523
+          },
+          {
+            "id": "01095",
+            "margin": -0.6030031561129572,
+            "weight": 40277
+          },
+          {
+            "id": "01127",
+            "margin": -0.6033482527785884,
+            "weight": 29747
+          },
+          {
+            "id": "01133",
+            "margin": -0.7648926357251593,
+            "weight": 11129
+          },
+          {
+            "id": "01077",
+            "margin": -0.2835623605466647,
+            "weight": 34248
+          },
+          {
+            "id": "01125",
+            "margin": -0.23039508150024757,
+            "weight": 39381
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "523",
+          "name": "Robert Aderholt",
+          "party": "R",
+          "providerName": "Robert Aderholt"
+        },
+        {
+          "id": "171292",
+          "name": "Amanda Pusczek",
+          "party": "D",
+          "providerName": "Amanda Pusczek"
+        }
+      ]
+    },
+    "house-AL-5": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-AL-5",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "171296",
+          "70499"
+        ],
+        "parties": {
+          "70499": "R",
+          "171296": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "01071",
+            "margin": -0.6732860801668814,
+            "weight": 23509
+          },
+          {
+            "id": "01079",
+            "margin": -0.5698399496979123,
+            "weight": 16115
+          },
+          {
+            "id": "01083",
+            "margin": -0.3694603651212155,
+            "weight": 53096
+          },
+          {
+            "id": "01089",
+            "margin": -0.0017098537799391522,
+            "weight": 196355
+          },
+          {
+            "id": "01103",
+            "margin": -0.46357010129418574,
+            "weight": 53369
+          },
+          {
+            "id": "01077",
+            "margin": -0.6715118542873756,
+            "weight": 9206
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "70499",
+          "name": "Dale Strong",
+          "party": "R",
+          "providerName": "Dale Strong"
+        },
+        {
+          "id": "171296",
+          "name": "Andrew Sneed",
+          "party": "D",
+          "providerName": "Andrew Sneed"
+        }
+      ]
+    },
+    "house-AL-7": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-AL-7",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "60639",
+          "176560"
+        ],
+        "parties": {
+          "60639": "D",
+          "176560": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "01023",
+            "margin": -0.20652315476410676,
+            "weight": 6646
+          },
+          {
+            "id": "01025",
+            "margin": -0.13703023584995655,
+            "weight": 11946
+          },
+          {
+            "id": "01035",
+            "margin": -0.10578081621314583,
+            "weight": 6043
+          },
+          {
+            "id": "01047",
+            "margin": 0.35816089063831424,
+            "weight": 15528
+          },
+          {
+            "id": "01063",
+            "margin": 0.5831781029958332,
+            "weight": 4035
+          },
+          {
+            "id": "01065",
+            "margin": 0.10387075722204675,
+            "weight": 7290
+          },
+          {
+            "id": "01091",
+            "margin": -0.002646339953768395,
+            "weight": 9673
+          },
+          {
+            "id": "01099",
+            "margin": -0.19904117394338927,
+            "weight": 9799
+          },
+          {
+            "id": "01105",
+            "margin": 0.4570434487047921,
+            "weight": 4457
+          },
+          {
+            "id": "01107",
+            "margin": -0.20109767375345255,
+            "weight": 8898
+          },
+          {
+            "id": "01119",
+            "margin": 0.44317847551565537,
+            "weight": 5297
+          },
+          {
+            "id": "01129",
+            "margin": -0.5314973110001205,
+            "weight": 8430
+          },
+          {
+            "id": "01131",
+            "margin": 0.3472233896201258,
+            "weight": 5260
+          },
+          {
+            "id": "01073",
+            "margin": 0.3938998402732674,
+            "weight": 152107
+          },
+          {
+            "id": "01125",
+            "margin": 0.015575200095281128,
+            "weight": 45498
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "60639",
+          "name": "Terri Sewell",
+          "party": "D",
+          "providerName": "Terri Sewell"
+        },
+        {
+          "id": "176560",
+          "name": "Ammie Akin",
+          "party": "R",
+          "providerName": "Ammie Akin"
+        }
+      ]
+    },
+    "house-AR-2": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-AR-2",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "70529",
+          "63416"
+        ],
+        "parties": {
+          "63416": "R",
+          "70529": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "05023",
+            "margin": -0.6175085846368715,
+            "weight": 12739
+          },
+          {
+            "id": "05029",
+            "margin": -0.3017295836976398,
+            "weight": 8541
+          },
+          {
+            "id": "05045",
+            "margin": -0.21354015242330227,
+            "weight": 54465
+          },
+          {
+            "id": "05105",
+            "margin": -0.4984047823441127,
+            "weight": 4584
+          },
+          {
+            "id": "05125",
+            "margin": -0.29910379004620324,
+            "weight": 57609
+          },
+          {
+            "id": "05141",
+            "margin": -0.5290986516475658,
+            "weight": 7621
+          },
+          {
+            "id": "05145",
+            "margin": -0.541990781721915,
+            "weight": 30837
+          },
+          {
+            "id": "05119",
+            "margin": 0.3284280450510655,
+            "weight": 143104
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "63416",
+          "name": "French Hill",
+          "party": "R",
+          "providerName": "French Hill"
+        },
+        {
+          "id": "70529",
+          "name": "Chris Jones",
+          "party": "D",
+          "providerName": "Chris Jones"
+        }
+      ]
+    },
+    "house-AR-4": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-AR-4",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "70528",
+          "63418"
+        ],
+        "parties": {
+          "63418": "R",
+          "70528": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "05003",
+            "margin": -0.3994878731942626,
+            "weight": 7030
+          },
+          {
+            "id": "05011",
+            "margin": -0.2983524830502129,
+            "weight": 3209
+          },
+          {
+            "id": "05013",
+            "margin": -0.5603633393907024,
+            "weight": 2092
+          },
+          {
+            "id": "05019",
+            "margin": -0.10277458136131201,
+            "weight": 7657
+          },
+          {
+            "id": "05025",
+            "margin": -0.6226371814700344,
+            "weight": 3374
+          },
+          {
+            "id": "05027",
+            "margin": -0.2724246713310886,
+            "weight": 7940
+          },
+          {
+            "id": "05039",
+            "margin": -0.19753366180004017,
+            "weight": 2324
+          },
+          {
+            "id": "05043",
+            "margin": -0.24456569455510946,
+            "weight": 6365
+          },
+          {
+            "id": "05047",
+            "margin": -0.5690381825961076,
+            "weight": 6971
+          },
+          {
+            "id": "05051",
+            "margin": -0.2729662677416247,
+            "weight": 42327
+          },
+          {
+            "id": "05053",
+            "margin": -0.6398799076345016,
+            "weight": 8078
+          },
+          {
+            "id": "05057",
+            "margin": -0.30966205031212124,
+            "weight": 6089
+          },
+          {
+            "id": "05059",
+            "margin": -0.44915741480800997,
+            "weight": 12283
+          },
+          {
+            "id": "05061",
+            "margin": -0.38507932369257714,
+            "weight": 4473
+          },
+          {
+            "id": "05069",
+            "margin": 0.3058932190067907,
+            "weight": 21608
+          },
+          {
+            "id": "05071",
+            "margin": -0.44139950447954845,
+            "weight": 9059
+          },
+          {
+            "id": "05073",
+            "margin": -0.29311045911962375,
+            "weight": 2325
+          },
+          {
+            "id": "05081",
+            "margin": -0.4702517298558694,
+            "weight": 4899
+          },
+          {
+            "id": "05083",
+            "margin": -0.5656395690319174,
+            "weight": 8205
+          },
+          {
+            "id": "05091",
+            "margin": -0.4325802516734363,
+            "weight": 15803
+          },
+          {
+            "id": "05097",
+            "margin": -0.5763851061609262,
+            "weight": 3707
+          },
+          {
+            "id": "05099",
+            "margin": -0.30911493905243226,
+            "weight": 2907
+          },
+          {
+            "id": "05101",
+            "margin": -0.5852237756380997,
+            "weight": 3770
+          },
+          {
+            "id": "05103",
+            "margin": -0.08706269314880999,
+            "weight": 8626
+          },
+          {
+            "id": "05109",
+            "margin": -0.6862847854538612,
+            "weight": 4358
+          },
+          {
+            "id": "05113",
+            "margin": -0.6612144686402108,
+            "weight": 8288
+          },
+          {
+            "id": "05115",
+            "margin": -0.45255389866608253,
+            "weight": 24191
+          },
+          {
+            "id": "05127",
+            "margin": -0.6926698846682944,
+            "weight": 3384
+          },
+          {
+            "id": "05133",
+            "margin": -0.5571549310664623,
+            "weight": 4714
+          },
+          {
+            "id": "05139",
+            "margin": -0.2402388240791541,
+            "weight": 15448
+          },
+          {
+            "id": "05149",
+            "margin": -0.5464485866323205,
+            "weight": 6477
+          },
+          {
+            "id": "05119",
+            "margin": 0.569869660973946,
+            "weight": 7671
+          },
+          {
+            "id": "05131",
+            "margin": -0.6417139600299471,
+            "weight": 4406
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "63418",
+          "name": "Bruce Westerman",
+          "party": "R",
+          "providerName": "Bruce Westerman"
+        },
+        {
+          "id": "70528",
+          "name": "James Russell",
+          "party": "D",
+          "providerName": "James Russell"
+        }
+      ]
+    },
+    "house-AZ-5": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-AZ-5",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "174922",
+          "164629"
+        ],
+        "parties": {
+          "164629": "R",
+          "174922": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.219999999999999,
+        "units": [
+          {
+            "id": "04013",
+            "margin": -0.03578675216811589,
+            "weight": 362542
+          },
+          {
+            "id": "04021",
+            "margin": -0.1912444297063266,
+            "weight": 82483
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "164629",
+          "name": "Mark Lamb",
+          "party": "R",
+          "providerName": "Mark Lamb"
+        },
+        {
+          "id": "174922",
+          "name": "Elizabeth Lee",
+          "party": "D",
+          "providerName": "Elizabeth Lee"
+        }
+      ]
+    },
+    "house-AZ-7": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-AZ-7",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "167589",
+          "164828"
+        ],
+        "parties": {
+          "164828": "R",
+          "167589": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "04023",
+            "margin": 0.15190504421035178,
+            "weight": 19121
+          },
+          {
+            "id": "04003",
+            "margin": 0.1696426573429788,
+            "weight": 10805
+          },
+          {
+            "id": "04013",
+            "margin": 0.1306753456548988,
+            "weight": 38851
+          },
+          {
+            "id": "04019",
+            "margin": 0.2525875502886561,
+            "weight": 178440
+          },
+          {
+            "id": "04021",
+            "margin": -0.357254514057467,
+            "weight": 2553
+          },
+          {
+            "id": "04027",
+            "margin": -0.02481456418908301,
+            "weight": 31915
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "167589",
+          "name": "Adelita Grijalva",
+          "party": "D",
+          "providerName": "Adelita Grijalva"
+        },
+        {
+          "id": "164828",
+          "name": "Daniel Butierez Sr.",
+          "party": "R",
+          "providerName": "Daniel Butierez"
+        }
+      ]
+    },
+    "house-CA-1": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-1",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "105490",
+          "105529"
+        ],
+        "parties": {
+          "105490": "D",
+          "105529": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 9.347999999999999,
+        "units": [
+          {
+            "id": "06007",
+            "margin": -0.1481189071745186,
+            "weight": 94523
+          },
+          {
+            "id": "06021",
+            "margin": -0.4558879812107275,
+            "weight": 10442
+          },
+          {
+            "id": "06035",
+            "margin": -0.6292538024829082,
+            "weight": 11371
+          },
+          {
+            "id": "06063",
+            "margin": -0.2855381197827328,
+            "weight": 10067
+          },
+          {
+            "id": "06091",
+            "margin": -0.35507652293765235,
+            "weight": 1754
+          },
+          {
+            "id": "06103",
+            "margin": -0.5183896746998626,
+            "weight": 26532
+          },
+          {
+            "id": "06033",
+            "margin": -0.1205309868140253,
+            "weight": 23822
+          },
+          {
+            "id": "06045",
+            "margin": 0.047351577860990535,
+            "weight": 24850
+          },
+          {
+            "id": "06097",
+            "margin": 0.38243720960957694,
+            "weight": 138586
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "105490",
+          "name": "Mike McGuire",
+          "party": "D",
+          "providerName": "Mike McGuire"
+        },
+        {
+          "id": "105529",
+          "name": "James Gallagher",
+          "party": "R",
+          "providerName": "James Gallagher"
+        }
+      ]
+    },
+    "house-CA-2": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-2",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "62063",
+          "172490"
+        ],
+        "parties": {
+          "62063": "D",
+          "172490": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "06015",
+            "margin": -0.170879068585575,
+            "weight": 10564
+          },
+          {
+            "id": "06023",
+            "margin": 0.29535486974326375,
+            "weight": 64228
+          },
+          {
+            "id": "06041",
+            "margin": 0.655672832931576,
+            "weight": 144113
+          },
+          {
+            "id": "06049",
+            "margin": -0.48363553240151014,
+            "weight": 4016
+          },
+          {
+            "id": "06089",
+            "margin": -0.3757568462308317,
+            "weight": 88900
+          },
+          {
+            "id": "06093",
+            "margin": -0.2007789877274283,
+            "weight": 21489
+          },
+          {
+            "id": "06105",
+            "margin": -0.09973521607579561,
+            "weight": 5645
+          },
+          {
+            "id": "06045",
+            "margin": 0.4810478162743228,
+            "weight": 14366
+          },
+          {
+            "id": "06097",
+            "margin": 0.5631539667775005,
+            "weight": 36124
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "62063",
+          "name": "Jared Huffman",
+          "party": "D",
+          "providerName": "Jared Huffman"
+        },
+        {
+          "id": "172490",
+          "name": "Robin Littau",
+          "party": "R",
+          "providerName": "Robin Littau"
+        }
+      ]
+    },
+    "house-CA-3": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-3",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "60686",
+          "172498"
+        ],
+        "parties": {
+          "60686": "D",
+          "172498": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 10.122,
+        "units": [
+          {
+            "id": "06057",
+            "margin": 0.07860518137689088,
+            "weight": 62132
+          },
+          {
+            "id": "06017",
+            "margin": 0.022736750181433063,
+            "weight": 24357
+          },
+          {
+            "id": "06061",
+            "margin": -0.18418030119639917,
+            "weight": 73394
+          },
+          {
+            "id": "06067",
+            "margin": 0.14173952189665084,
+            "weight": 206791
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "60686",
+          "name": "Ami Bera",
+          "party": "D",
+          "providerName": "Ami Bera"
+        },
+        {
+          "id": "172498",
+          "name": "Robb Tucker",
+          "party": "R",
+          "providerName": "Robb Tucker"
+        }
+      ]
+    },
+    "house-CA-9": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-9",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "66533",
+          "161038"
+        ],
+        "parties": {
+          "66533": "D",
+          "161038": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.6032,
+        "units": [
+          {
+            "id": "06013",
+            "margin": 0.27261623898692955,
+            "weight": 78792
+          },
+          {
+            "id": "06077",
+            "margin": -0.025336653623074912,
+            "weight": 189703
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "66533",
+          "name": "Josh Harder",
+          "party": "D",
+          "providerName": "Josh Harder"
+        },
+        {
+          "id": "161038",
+          "name": "John McBride",
+          "party": "R",
+          "providerName": "John McBride"
+        }
+      ]
+    },
+    "house-CA-10": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-10",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "60108",
+          "172523"
+        ],
+        "parties": {
+          "60108": "D",
+          "172523": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "06001",
+            "margin": 0.31413743991512755,
+            "weight": 32293
+          },
+          {
+            "id": "06013",
+            "margin": 0.2477293296388985,
+            "weight": 345884
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "60108",
+          "name": "Mark DeSaulnier",
+          "party": "D",
+          "providerName": "Mark DeSaulnier"
+        },
+        {
+          "id": "172523",
+          "name": "Jeff Frese",
+          "party": "R",
+          "providerName": "Jeff Frese"
+        }
+      ]
+    },
+    "house-CA-13": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-13",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "70545",
+          "105816"
+        ],
+        "parties": {
+          "70545": "D",
+          "105816": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.817599999999999,
+        "units": [
+          {
+            "id": "06047",
+            "margin": 0.0023166807212302576,
+            "weight": 86392
+          },
+          {
+            "id": "06019",
+            "margin": 0.1295604277591611,
+            "weight": 3721
+          },
+          {
+            "id": "06039",
+            "margin": 0.04713891501943701,
+            "weight": 12326
+          },
+          {
+            "id": "06077",
+            "margin": 0.19405697305439018,
+            "weight": 32234
+          },
+          {
+            "id": "06099",
+            "margin": 0.04166448321583971,
+            "weight": 74119
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "70545",
+          "name": "Adam Gray",
+          "party": "D",
+          "providerName": "Adam Gray"
+        },
+        {
+          "id": "105816",
+          "name": "Kevin Lincoln II",
+          "party": "R",
+          "providerName": "Kevin Lincoln",
+          "aliases": [
+            "Kevin Lincoln"
+          ]
+        }
+      ]
+    },
+    "house-CA-15": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-15",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "70553",
+          "172543"
+        ],
+        "parties": {
+          "70553": "D",
+          "172543": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "06075",
+            "margin": 0.2936121686297357,
+            "weight": 41782
+          },
+          {
+            "id": "06081",
+            "margin": 0.400748253920701,
+            "weight": 263808
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "70553",
+          "name": "Kevin Mullin",
+          "party": "D",
+          "providerName": "Kevin Mullin"
+        },
+        {
+          "id": "172543",
+          "name": "Charles Hoelter",
+          "party": "R",
+          "providerName": "Charles Hoelter"
+        }
+      ]
+    },
+    "house-CA-16": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-16",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "105726",
+          "172547"
+        ],
+        "parties": {
+          "105726": "D",
+          "172547": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "06081",
+            "margin": 0.49048424468752083,
+            "weight": 66702
+          },
+          {
+            "id": "06085",
+            "margin": 0.4002119707977687,
+            "weight": 273717
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "105726",
+          "name": "Sam Liccardo",
+          "party": "D",
+          "providerName": "Sam Liccardo"
+        },
+        {
+          "id": "172547",
+          "name": "Peter Soule",
+          "party": "R",
+          "providerName": "Peter Soulé",
+          "aliases": [
+            "Peter Sundin Soulé"
+          ]
+        }
+      ]
+    },
+    "house-CA-17": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-17",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "7547",
+          "68020"
+        ],
+        "parties": {
+          "7547": "D",
+          "68020": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "06001",
+            "margin": 0.2363730700859139,
+            "weight": 33550
+          },
+          {
+            "id": "06085",
+            "margin": 0.2904653906088548,
+            "weight": 230790
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "7547",
+          "name": "Ro Khanna",
+          "party": "D",
+          "providerName": "Ro Khanna"
+        },
+        {
+          "id": "68020",
+          "name": "Ritesh Tandon",
+          "party": "R",
+          "providerName": "Ritesh Tandon"
+        }
+      ]
+    },
+    "house-CA-19": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-19",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "65030",
+          "106620"
+        ],
+        "parties": {
+          "65030": "D",
+          "106620": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "06053",
+            "margin": 0.2802321868169746,
+            "weight": 80741
+          },
+          {
+            "id": "06079",
+            "margin": -0.1646714430629328,
+            "weight": 54169
+          },
+          {
+            "id": "06085",
+            "margin": 0.2408190280820368,
+            "weight": 126564
+          },
+          {
+            "id": "06087",
+            "margin": 0.5250430039321776,
+            "weight": 114774
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "65030",
+          "name": "Jimmy Panetta",
+          "party": "D",
+          "providerName": "Jimmy Panetta"
+        },
+        {
+          "id": "106620",
+          "name": "Peter Verbica",
+          "party": "R",
+          "providerName": "Peter Verbica",
+          "aliases": [
+            "Peter Coe Verbica"
+          ]
+        }
+      ]
+    },
+    "house-CA-20": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-20",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "172559",
+          "105858"
+        ],
+        "parties": {
+          "105858": "R",
+          "172559": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "06019",
+            "margin": -0.2201065789161586,
+            "weight": 30033
+          },
+          {
+            "id": "06029",
+            "margin": -0.26697016135960616,
+            "weight": 172424
+          },
+          {
+            "id": "06031",
+            "margin": -0.21469403909902884,
+            "weight": 30589
+          },
+          {
+            "id": "06107",
+            "margin": -0.20823411826797933,
+            "weight": 82365
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "105858",
+          "name": "Vince Fong",
+          "party": "R",
+          "providerName": "Vince Fong"
+        },
+        {
+          "id": "172559",
+          "name": "Sandra Van Scotter",
+          "party": "D",
+          "providerName": "Sandra Van Scotter"
+        }
+      ]
+    },
+    "house-CA-21": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-21",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "6818",
+          "161069"
+        ],
+        "parties": {
+          "6818": "D",
+          "161069": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.8279999999999985,
+        "units": [
+          {
+            "id": "06019",
+            "margin": 0.10929367367360365,
+            "weight": 170247
+          },
+          {
+            "id": "06107",
+            "margin": -0.0812574992711046,
+            "weight": 31678
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "6818",
+          "name": "Jim Costa",
+          "party": "D",
+          "providerName": "Jim Costa"
+        },
+        {
+          "id": "161069",
+          "name": "Kyle Kirkland",
+          "party": "R",
+          "providerName": "Kyle Kirkland"
+        }
+      ]
+    },
+    "house-CA-22": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-22",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "172562",
+          "62229"
+        ],
+        "parties": {
+          "62229": "R",
+          "172562": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.813999999999998,
+        "units": [
+          {
+            "id": "06019",
+            "margin": -0.02520228717179751,
+            "weight": 32196
+          },
+          {
+            "id": "06029",
+            "margin": 0.042713866383543575,
+            "weight": 105048
+          },
+          {
+            "id": "06031",
+            "margin": -0.012078111276355274,
+            "weight": 9584
+          },
+          {
+            "id": "06039",
+            "margin": -0.2813766866912085,
+            "weight": 300
+          },
+          {
+            "id": "06107",
+            "margin": -0.03311334710233227,
+            "weight": 24228
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "172562",
+          "name": "Randy Villegas",
+          "party": "D",
+          "providerName": "Randy Villegas"
+        },
+        {
+          "id": "62229",
+          "name": "David G. Valadao",
+          "party": "R",
+          "providerName": "David Valadao"
+        }
+      ]
+    },
+    "house-CA-24": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-24",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "65043",
+          "172569"
+        ],
+        "parties": {
+          "65043": "D",
+          "172569": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "06083",
+            "margin": 0.21339963099780568,
+            "weight": 184715
+          },
+          {
+            "id": "06079",
+            "margin": 0.1523757204821281,
+            "weight": 96597
+          },
+          {
+            "id": "06111",
+            "margin": 0.20519533690104108,
+            "weight": 70492
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "65043",
+          "name": "Salud Carbajal",
+          "party": "D",
+          "providerName": "Salud Carbajal"
+        },
+        {
+          "id": "172569",
+          "name": "Bob Smith",
+          "party": "R",
+          "providerName": "Bob Smith"
+        }
+      ]
+    },
+    "house-CA-25": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-25",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "62342",
+          "172570"
+        ],
+        "parties": {
+          "62342": "D",
+          "172570": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.492799999999999,
+        "units": [
+          {
+            "id": "06025",
+            "margin": -0.0035196810045732274,
+            "weight": 54025
+          },
+          {
+            "id": "06065",
+            "margin": 0.08609681160187543,
+            "weight": 210875
+          },
+          {
+            "id": "06071",
+            "margin": -0.09014861761128634,
+            "weight": 5512
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "62342",
+          "name": "Raul Ruiz",
+          "party": "D",
+          "providerName": "Raul Ruiz"
+        },
+        {
+          "id": "172570",
+          "name": "Joe Males",
+          "party": "R",
+          "providerName": "Joe Males"
+        }
+      ]
+    },
+    "house-CA-26": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-26",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "105658",
+          "172576"
+        ],
+        "parties": {
+          "105658": "D",
+          "172576": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.543999999999999,
+        "units": [
+          {
+            "id": "06037",
+            "margin": 0.017353611859444396,
+            "weight": 94516
+          },
+          {
+            "id": "06111",
+            "margin": 0.09368701820020764,
+            "weight": 249255
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "105658",
+          "name": "Jacqui Irwin",
+          "party": "D",
+          "providerName": "Jacqui Irwin"
+        },
+        {
+          "id": "172576",
+          "name": "Samuel Gallucci",
+          "party": "R",
+          "providerName": "Sam Gallucci",
+          "aliases": [
+            "Sam Gallucci"
+          ]
+        }
+      ]
+    },
+    "house-CA-28": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-28",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "52450",
+          "161080"
+        ],
+        "parties": {
+          "52450": "D",
+          "161080": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "06037",
+            "margin": 0.30347416277324024,
+            "weight": 260879
+          },
+          {
+            "id": "06071",
+            "margin": -0.1553256763200812,
+            "weight": 66034
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "52450",
+          "name": "Judy Chu",
+          "party": "D",
+          "providerName": "Judy Chu"
+        },
+        {
+          "id": "161080",
+          "name": "April Verlato",
+          "party": "R",
+          "providerName": "April Verlato",
+          "aliases": [
+            "April A. Verlato"
+          ]
+        }
+      ]
+    },
+    "house-CA-31": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-31",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "66574",
+          "70626"
+        ],
+        "parties": {
+          "66574": "D",
+          "70626": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.692399999999999,
+        "units": [
+          {
+            "id": "06037",
+            "margin": 0.0944447325510489,
+            "weight": 248165
+          },
+          {
+            "id": "06071",
+            "margin": -0.03963708670900634,
+            "weight": 43877
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "66574",
+          "name": "Gil Cisneros",
+          "party": "D",
+          "providerName": "Gil Cisneros"
+        },
+        {
+          "id": "70626",
+          "name": "Eric Ching",
+          "party": "R",
+          "providerName": "Eric Ching"
+        }
+      ]
+    },
+    "house-CA-32": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-32",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "84",
+          "68116"
+        ],
+        "parties": {
+          "84": "D",
+          "68116": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "06037",
+            "margin": 0.2885127372941034,
+            "weight": 291907
+          },
+          {
+            "id": "06111",
+            "margin": -0.08484144124086124,
+            "weight": 67848
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "84",
+          "name": "Brad Sherman",
+          "party": "D",
+          "providerName": "Brad Sherman"
+        },
+        {
+          "id": "68116",
+          "name": "Larry Thompson",
+          "party": "R",
+          "providerName": "Larry Thompson"
+        }
+      ]
+    },
+    "house-CA-33": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-33",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "62883",
+          "172596"
+        ],
+        "parties": {
+          "62883": "D",
+          "172596": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.952799999999999,
+        "units": [
+          {
+            "id": "06065",
+            "margin": 0.012541791055071583,
+            "weight": 4873
+          },
+          {
+            "id": "06071",
+            "margin": 0.07757421237650775,
+            "weight": 243832
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "62883",
+          "name": "Pete Aguilar",
+          "party": "D",
+          "providerName": "Pete Aguilar"
+        },
+        {
+          "id": "172596",
+          "name": "Stephanie Vargas",
+          "party": "R",
+          "providerName": "Stephanie Vargas",
+          "aliases": [
+            "Stephanie M. Vargas"
+          ]
+        }
+      ]
+    },
+    "house-CA-35": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-35",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "63684",
+          "68059"
+        ],
+        "parties": {
+          "63684": "D",
+          "68059": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.133999999999999,
+        "units": [
+          {
+            "id": "06037",
+            "margin": 0.3070930145854802,
+            "weight": 42499
+          },
+          {
+            "id": "06065",
+            "margin": -0.09821278044383774,
+            "weight": 63453
+          },
+          {
+            "id": "06071",
+            "margin": 0.07776002824298756,
+            "weight": 154043
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "63684",
+          "name": "Norma Torres",
+          "party": "D",
+          "providerName": "Norma Torres",
+          "aliases": [
+            "Norma J. Torres"
+          ]
+        },
+        {
+          "id": "68059",
+          "name": "Mike Cargile",
+          "party": "R",
+          "providerName": "Mike Cargile"
+        }
+      ]
+    },
+    "house-CA-38": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-38",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "105686",
+          "161095"
+        ],
+        "parties": {
+          "105686": "D",
+          "161095": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.674399999999999,
+        "units": [
+          {
+            "id": "06037",
+            "margin": 0.18087345708653113,
+            "weight": 192172
+          },
+          {
+            "id": "06059",
+            "margin": -0.20400974613894451,
+            "weight": 69545
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "105686",
+          "name": "Hilda Solis",
+          "party": "D",
+          "providerName": "Hilda Solis"
+        },
+        {
+          "id": "161095",
+          "name": "Pedro Casas",
+          "party": "R",
+          "providerName": "Pedro Casas",
+          "aliases": [
+            "Pedro Antonio Casas"
+          ]
+        }
+      ]
+    },
+    "house-CA-41": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-41",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "116",
+          "106776"
+        ],
+        "parties": {
+          "116": "D",
+          "106776": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 9.452399999999999,
+        "units": [
+          {
+            "id": "06037",
+            "margin": 0.09519159895468876,
+            "weight": 246014
+          },
+          {
+            "id": "06059",
+            "margin": -0.07066662863262207,
+            "weight": 65067
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "116",
+          "name": "Linda Sánchez",
+          "party": "D",
+          "providerName": "Linda Sánchez"
+        },
+        {
+          "id": "106776",
+          "name": "Mitch Clemmons",
+          "party": "R",
+          "providerName": "Mitch Clemmons"
+        }
+      ]
+    },
+    "house-CA-42": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-42",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "70642",
+          "68082"
+        ],
+        "parties": {
+          "68082": "R",
+          "70642": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 7.5699999999999985,
+        "units": [
+          {
+            "id": "06037",
+            "margin": 0.48431548605879327,
+            "weight": 131862
+          },
+          {
+            "id": "06059",
+            "margin": 0.0015738277160297631,
+            "weight": 217842
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "70642",
+          "name": "Robert Garcia",
+          "party": "D",
+          "providerName": "Robert Garcia"
+        },
+        {
+          "id": "68082",
+          "name": "Brian Burley",
+          "party": "R",
+          "providerName": "Brian Burley"
+        }
+      ]
+    },
+    "house-CA-45": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-45",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "161118",
+          "172625"
+        ],
+        "parties": {
+          "161118": "D",
+          "172625": "R"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.5824,
+        "units": [
+          {
+            "id": "06037",
+            "margin": 0.21894426228104225,
+            "weight": 60412
+          },
+          {
+            "id": "06059",
+            "margin": 0.012605605992873414,
+            "weight": 239998
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "161118",
+          "name": "Derek Tran",
+          "party": "D",
+          "providerName": "Derek Tran"
+        },
+        {
+          "id": "172625",
+          "name": "Chuong Vo",
+          "party": "R",
+          "providerName": "Chuong Vo",
+          "aliases": [
+            "Chuong V. Vo"
+          ]
+        }
+      ]
+    },
+    "house-CA-48": {
+      "prior": {
+        "method": "calibrated-partial-count",
+        "modelVersion": "fea-live-partial-count-1",
+        "raceId": "house-CA-48",
+        "office": "house",
+        "electionDate": "2026-11-03",
+        "rule": "plurality",
+        "candidateIds": [
+          "172653",
+          "172645"
+        ],
+        "parties": {
+          "172645": "R",
+          "172653": "D"
+        },
+        "anchorAvailableAt": "2026-11-02T20:50:34Z",
+        "geographyAvailableAt": "2026-11-08T15:18:26.145Z",
+        "marginSigmaPoints": 8.72,
+        "units": [
+          {
+            "id": "06065",
+            "margin": -0.004983901689375125,
+            "weight": 165976
+          },
+          {
+            "id": "06073",
+            "margin": 0.08582994541099298,
+            "weight": 162912
+          }
+        ]
+      },
+      "roster": [
+        {
+          "id": "172653",
+          "name": "Marni von Wilpert",
+          "party": "D",
+          "providerName": "Marni von Wilpert"
+        },
+        {
+          "id": "172645",
+          "name": "Jim Desmond",
+          "party": "R",
+          "providerName": "Jim Desmond"
+        }
+      ]
+    }
+  },
+  "inputAuditHash": "f5584d04c82c22c3b6900162a76531204d51e5c80154d6cb12e2b2036d0e3860",
+  "geographicCrosscheckHash": "5dba7b9ae6120603a5644d6b07cad858bd28a2c912ffdff095fbcda6e2cb6c57"
+}

@@ -1107,8 +1107,8 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
       try {
         const health = control.health();
         const healthy = new Set(health.connection === 'connected' && !health.persistenceError ? health.lastHealthyRaceIds : []);
-        await liveProbability.updateBatch(id => healthy.has(id) ? control.results({details: true, raceId: id}).groups
-          .find(group => group.races.length)?.races[0] : undefined, (id, error) => {
+        await liveProbability.updateBatch((id,prior) => healthy.has(id)
+          ? control.probabilityResult(id,prior.units.map(unit=>unit.id)) : undefined, (id, error) => {
           if (!error) probabilityErrors.delete(id);
           else if (probabilityErrors.get(id) !== error.message) {
             console.warn(`Win probability update failed for ${id}: ${error.message}`);
@@ -1117,19 +1117,23 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
         });
       } finally { probabilityRunning = false; }
     }, 1000).unref();
-    // Keep the probability job from turning 506 races into an upstream burst.
-    // Details already loaded by board users are processed by the batch above.
+    // Leave one request slot available for public race details.
+    control.countyProvider.cacheLimit = Math.max(control.countyProvider.cacheLimit, control.catalogue.length);
     let hydrationRunning = false;
     setInterval(async () => {
       if (hydrationRunning) return;
-      const id = liveProbability.nextCountyRace();
       const health = control.health();
-      if (health.connection !== 'connected' || health.persistenceError || !health.lastHealthyRaceIds?.includes(id)) return;
+      if (health.connection !== 'connected' || health.persistenceError) return;
+      const slots = control.countyProvider.availableRequests()-1;
+      if (slots<=0) return;
+      const healthy = new Set(health.lastHealthyRaceIds);
+      const ids = liveProbability.nextCountyRaces(id => healthy.has(id) && control.countyPageFor(id), slots);
+      if (!ids.length) return;
       hydrationRunning = true;
-      try { await control.loadCountyResults(id, {watch: false}); }
-      catch (error) { console.warn(`Win probability county refresh failed for ${id}: ${error.message}`); }
+      try { await control.loadCountyResultsBatch(ids); }
+      catch (error) { console.warn(`Win probability county refresh failed: ${error.message}`); }
       finally { hydrationRunning = false; }
-    }, 15000).unref();
+    }, 1500).unref();
   }
 }
 
