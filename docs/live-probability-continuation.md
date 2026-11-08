@@ -12,9 +12,11 @@ Handoff after recovering Codex's unfinished work on `main` at
 | Production host | https://fedelectionsanalysis.com |
 | Local results suite | `npm run test:results` → **351 pass / 0 fail** |
 | Authorized configs at recovery | **146** (126 geographic House + 20 race-total House/governor) |
-| Authorized configs after identity expansion | **159** (rebuild from same validation gates + verified aliases) |
+| Authorized configs after identity expansion | **159** (126 geographic + 33 race-total; 155 House, 4 governor) |
+| Deployed continuation commit | `b58de8d5` on `main` |
 | Senate configs | **0** |
 | Production coverage at recovery | total 506; **live 144**; **stale 2**; waiting 0; unavailable 360 |
+| Production coverage after deploy | re-check `/api/live-results/probability?coverage=1`; newly authorized race-total races such as `house-FL-24` and `governor-HI` returned `live` |
 
 Production sample (`house-FL-2`) returned `status: live`, model
 `fea-live-partial-count-1`, 20,000 simulations, NBC provenance, and retained
