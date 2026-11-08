@@ -40,9 +40,9 @@ export function probabilityRule(raceId,electionDate) {
   return 'plurality';
 }
 
-export function probabilityGeographyBasis(geography) {
+export function probabilityGeographyBasis(geography,{allowSingleReportingUnit=false}={}) {
   const rows=geography.countyReferences, reference=geography.reference;
-  if (!reference || rows.length<2) return null;
+  if (!reference || rows.length<(allowSingleReportingUnit?1:2)) return null;
   if (reconciles(rows,reference,geography.districtCountySource?1:0)) return 'all-votes';
   // Statewide FEC controls and published county returns sometimes differ
   // only in the number of other votes. Use two-party geographic weights
@@ -295,7 +295,7 @@ export function buildCountyProbabilityPrior(geography,forecast) {
 
 // Expected vote in is an estimate, including at 100%. A separate notice
 // with an as-of timestamp is required to mark a reporting unit complete.
-export function normalizeProbabilitySnapshot(detail,roster,{at,source,completion={},reportingUnitIds}) {
+export function normalizeProbabilitySnapshot(detail,roster,{at,source,completion={},reportingUnitIds,allowSingleReportingUnit=false}) {
   requireInput(detail?.id && Array.isArray(detail.counties) && detail.counties.length &&
     Number.isFinite(dateTime(at)) && typeof source==='string' && source.trim(),'Missing dated reporting-unit returns');
   requireInput(!(detail.providerBallotAccounting?.ballotsOutsideCandidateTotals>0),
@@ -348,7 +348,7 @@ export function normalizeProbabilitySnapshot(detail,roster,{at,source,completion
   });
   requireInput(new Set(units.map(unit=>unit.id)).size===units.length,'Duplicate reporting units');
   if(reportingUnitIds){
-    requireInput(Array.isArray(reportingUnitIds)&&reportingUnitIds.length>=2&&
+    requireInput(Array.isArray(reportingUnitIds)&&reportingUnitIds.length>=(allowSingleReportingUnit?1:2)&&
       new Set(reportingUnitIds).size===reportingUnitIds.length,'Invalid expected reporting units');
     if(reportingUnitIds.every(id=>/^\d{5}$/.test(id))){
       const groups=new Map();

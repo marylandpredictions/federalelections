@@ -6,6 +6,7 @@ import {tmpdir} from 'node:os';
 import {LiveProbability,validateProbabilityRelease} from '../../scripts/results/probability-live.mjs';
 import {partialLiveModelVersion,simulatePartialProbability} from '../../scripts/results/probability-partial-adapter.mjs';
 import {partialReleaseEvidence} from '../../scripts/results/probability-partial-release.mjs';
+import {normalizeProbabilitySnapshot,probabilityGeographyBasis} from '../../scripts/results/probability-inputs.mjs';
 
 function fixture(){
  const now=Date.now(),at=new Date(now).toISOString(),e=partialReleaseEvidence();
@@ -48,6 +49,23 @@ test('Actual worker generates and persists partial estimates without requiring c
  assert.equal(recovered.view(x.id).status,'stale');assert.deepEqual(recovered.view(x.id).points,view.points);
  await recovered.update(x.id,x.detail);assert.equal(recovered.view(x.id).status,'live');assert.equal(recovered.view(x.id).points.length,1);
 });
+test('A reconciled single-county House district works through the actual partial-count service',async t=>{
+ const x=fixture(),prior=x.release.races[x.id].prior;
+ prior.units=prior.units.slice(0,1);x.detail.counties=x.detail.counties.slice(0,1);
+ x.detail.candidates=structuredClone(x.detail.counties[0].candidates);
+ const capture={at:x.detail.lastUpdated,source:'NBC News',reportingUnitIds:['01001']};
+ assert.throws(()=>normalizeProbabilitySnapshot(x.detail,x.release.races[x.id].roster,capture),/expected reporting units/);
+ const reference={valid:true,demVotes:550,repVotes:450,totalVotes:1000};
+ const geography={reference,countyReferences:[{...reference,fips:'01001'}]};
+ assert.equal(probabilityGeographyBasis(geography),null);
+ assert.equal(probabilityGeographyBasis(geography,{allowSingleReportingUnit:true}),'all-votes');
+ assert.equal(probabilityGeographyBasis({...geography,reference:{...reference,demVotes:551}},
+  {allowSingleReportingUnit:true}),null);
+ const worker=new LiveProbability(await directory(t),{now:()=>x.now});
+ await worker.load(x.release);await worker.update(x.id,x.detail);
+ assert.equal(worker.view(x.id).status,'live');assert.equal(worker.view(x.id).points[0].geography.reportedUnits,1);
+});
+
 test('Changed reporting estimates recompute odds; unchanged heartbeats do not',async t=>{
  const x=fixture();let now=x.now,runs=0;
  const worker=new LiveProbability(await directory(t),{now:()=>now,simulate:(...args)=>{runs++;return simulatePartialProbability(...args);}});

@@ -173,6 +173,7 @@ export class LiveProbability {
     race.reason = 'The NBC candidate and county returns need to reconcile before the next estimate.';
     const snapshot = normalizeProbabilitySnapshot(detail, roster, {
       at, source: 'NBC News', completion, reportingUnitIds: prior.units.map(unit => unit.id),
+      allowSingleReportingUnit:race.settings.method==='calibrated-partial-count',
     });
     race.reason = 'The NBC update is delayed.';
     const age=Math.max(now-Date.parse(snapshot.sourceUpdatedAt),...snapshot.units.filter(unit=>!unit.complete).map(unit=>now-Date.parse(unit.availableAt)));

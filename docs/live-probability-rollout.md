@@ -1,7 +1,8 @@
 # Live probability rollout — November 8, 2026
 
 The objective remains published, validated odds for all 506 races. The first
-scoped configuration contains 99 House races; the other 407 are not certified
+scoped configuration initially contained 99 House races and now contains 118;
+the other 388 are not certified
 by this release. Configuration coverage is not proof that every configured race
 currently has fresh, reconciled NBC inputs. Check the public coverage API.
 
@@ -25,6 +26,13 @@ the frozen candidate forecast. Its paired state-cluster 95% difference interval
 is [-.02117, -.00521]. Its 80% margin interval covers 88.2% of outcomes, with no
 wrong forecasts above 95% confidence. Among 21 prior-competitive races, coverage
 is 76.2% and the Brier difference interval is [-.13275, -.04196].
+
+Single-county districts use their actual one reporting unit, without invented
+subdivisions. These were already included in the frozen evaluation. The
+descriptive subgroup diagnostic is retained in
+`data/results/probability-house-single-unit-diagnostic.json`; no parameters were
+refitted for this subgroup. Classic completed-county model requirements remain
+unchanged. The partial-count path explicitly permits a reconciled single unit.
 
 This is a retrospective race holdout in one House cycle, not independent human
 review, second-cycle House certification, or validation of every election rule.
@@ -91,7 +99,7 @@ The release compiler consumes the private reconciled-input inventory and
 geographic crosscheck. It strips live votes, calls and raw NBC responses:
 
 ```text
-node scripts/results/build-partial-probability-release.mjs .runtime/probability-real-partial-points.json .runtime/probability-nbc-prior-margin-audit.json data/results/probability-release.json
+node scripts/results/build-partial-probability-release.mjs .runtime/probability-real-partial-expanded-points.json .runtime/probability-nbc-prior-margin-audit.json data/results/probability-release.json
 ```
 
 Do not call the 506-race objective complete until production board and coverage
