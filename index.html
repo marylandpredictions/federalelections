@@ -14,7 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700;8..60,800&display=swap" rel="stylesheet">
   <script src="assets/theme.js?v=20261030-features2"></script>
   <link rel="stylesheet" href="assets/wiki.css?v=20261030-features1">
-  <link rel="stylesheet" href="assets/home-results.css?v=33">
+  <link rel="stylesheet" href="assets/home-results.css?v=34">
   <link rel="stylesheet" href="assets/incoming-congress.css?v=8">
 </head>
 <body class="home-page" data-election-phase="post-election">
@@ -149,13 +149,13 @@
             <p>Explore the chamber composition and inspect individual seats.</p>
           </div>
           <div class="incoming-switch" role="group" aria-label="Chamber">
-            <button type="button" data-chamber="senate" aria-pressed="true">Senate</button>
-            <button type="button" data-chamber="house" aria-pressed="false">House</button>
+            <button type="button" data-chamber="senate" aria-pressed="false">Senate</button>
+            <button type="button" data-chamber="house" aria-pressed="true">House</button>
           </div>
         </header>
         <div class="incoming-totals" id="incoming-totals" aria-label="Seat totals"></div>
         <div class="incoming-tools">
-          <label>Arrange seats by <select id="incoming-order"><option value="party">Party</option><option value="margin">Winning margin within party</option><option value="state">State within party</option></select></label>
+          <label>Arrange seats by <select id="incoming-order"><option value="party">Party</option><option value="margin" selected>Winning margin within party</option><option value="state">State within party</option></select></label>
           <label>Find a seat <select id="incoming-find"><option value="">Choose a seat</option></select></label>
           <label class="incoming-check"><input type="checkbox" id="incoming-close"> Highlight called races within 2 points</label>
         </div>
@@ -178,7 +178,7 @@
           </div>
           <aside id="incoming-detail" aria-label="Selected seat" aria-live="polite"><h3>Explore a seat</h3><p>Choose a seat or use the seat picker to inspect the results.</p></aside>
         </div>
-        <footer class="incoming-footer"><p id="incoming-source" role="status">Loading seat data…</p><a id="incoming-results" href="/results?office=senate">Explore the full results →</a></footer>
+        <footer class="incoming-footer"><p id="incoming-source" role="status">Loading seat data…</p><a id="incoming-results" href="/results?office=house">Explore the full results →</a></footer>
       </section>
     </section>
 
@@ -251,9 +251,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
-  <script src="assets/wiki.js?v=20261108-home2"></script>
+  <script src="assets/wiki.js?v=20261109-home3"></script>
   <script src="assets/incoming-congress-model.js?v=1" defer></script>
-  <script src="assets/incoming-congress.js?v=2" defer></script>
-  <script src="assets/home-results.js?v=17" defer></script>
+  <script src="assets/incoming-congress.js?v=3" defer></script>
+  <script src="assets/home-results.js?v=18" defer></script>
 </body>
 </html>

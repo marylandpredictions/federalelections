@@ -424,9 +424,9 @@
         return wrap;
       };
       summary.replaceChildren(
-        cell(String(demStates.length), 'states where polls overstated Dems'),
-        cell(String(repStates.length), 'states where polls overstated GOP'),
-        cell(avg.toFixed(1), 'pts average absolute miss'),
+        cell(String(demStates.length), 'Dem overstated'),
+        cell(String(repStates.length), 'GOP overstated'),
+        cell(`${avg.toFixed(1)} pts`, 'avg abs. miss'),
       );
     }
     $('home-bias-preview').hidden = false;

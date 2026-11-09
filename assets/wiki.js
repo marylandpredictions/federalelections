@@ -2956,6 +2956,14 @@ function articleLeadImageMarkup(article, className = "article-lead-image") {
   return `<img class="${className}" src="${escapeHtml(url)}" alt="${escapeHtml(image.alt || article.title || "Article image")}" loading="lazy">`;
 }
 
+function truncateHomeDek(text, limit = 110) {
+  const value = String(text || "").replace(/\s+/g, " ").trim();
+  if (value.length <= limit) return value;
+  const clipped = value.slice(0, limit - 1);
+  const boundary = clipped.lastIndexOf(" ");
+  return `${(boundary > 60 ? clipped.slice(0, boundary) : clipped).trimEnd()}…`;
+}
+
 function renderTopArticle() {
   const container = document.getElementById("top-article");
   if (!container) return;
@@ -2969,11 +2977,12 @@ function renderTopArticle() {
     return;
   }
   const article = sortedArticles().find((item) => item.featured) || sortedArticles()[0];
+  const dek = truncateHomeDek(article.dek || "");
   container.innerHTML = `
     ${articleLeadImageMarkup(article, "article-teaser-image")}
     <p class="meta">${escapeHtml(article.date)} / ${escapeHtml(article.author || "Federal Elections Analysis")}</p>
     <h2 id="top-article-title"><a href="${articleUrl(article)}">${escapeHtml(article.title)}</a></h2>
-    <p>${escapeHtml(article.dek || "")}</p>
+    ${dek ? `<p class="home-desk-dek">${escapeHtml(dek)}</p>` : ""}
     <a class="button-link" href="${articleUrl(article)}">Read article</a>
   `;
 }
@@ -2984,7 +2993,7 @@ function renderHomeArticleList() {
   const featured = sortedArticles().find((item) => item.featured) || sortedArticles()[0];
   const list = sortedArticles()
     .filter((article) => article !== featured)
-    .slice(0, 4);
+    .slice(0, 3);
   container.innerHTML = list.length ? list.map((article) => `
     <a href="${articleUrl(article)}">
       ${articleLeadImageMarkup(article, "home-article-thumb")}

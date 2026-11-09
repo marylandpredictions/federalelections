@@ -15,7 +15,7 @@
   const number = new Intl.NumberFormat('en-US');
   const date = new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short',timeZone:'America/New_York'});
   const labels = {D:'Democratic',R:'Republican',I:'Independent',O:'Other',uncalled:'Uncalled',missing:'Unavailable',vacant:'Vacant'};
-  let office = 'senate', selected = '', filter = '', snapshot, catalogue, config, delayed = false;
+  let office = 'house', selected = '', filter = '', snapshot, catalogue, config, delayed = false;
   const historical = () => Boolean(snapshot?.coverage);
   let active = new Map(), blocks = new Map(), drawnOffice, pickerKey, detailKey;
   const el = (tag,text) => Object.assign(document.createElement(tag),{textContent:text});
