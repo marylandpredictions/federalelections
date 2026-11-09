@@ -427,7 +427,30 @@ async function handleLiveResultRace(request, response, url) {
   sendLive(request,response,{...detail,version:race.version,...(countyHydratedFromVersion&&countyHydratedFromVersion!==race.version&&detail.counties?.length?{countyHydratedFromVersion}:{})},'"'+race.version+'"');
 }
 
-/** Aggregate House county votes from persisted race details (no live provider fan-out). */
+function foldHouseCountyDetail(byFips, detail) {
+  for (const county of detail?.counties || []) {
+    if (!county?.fips) continue;
+    const row = byFips.get(county.fips) || { fips: county.fips, name: county.name || county.fips, D: 0, R: 0, other: 0 };
+    if (county.name) row.name = county.name;
+    for (const candidate of county.candidates || []) {
+      const votes = Number(candidate.votes);
+      if (!Number.isSafeInteger(votes) || votes < 0) continue;
+      const code = String(candidate.partyCode || candidate.party || "").toUpperCase();
+      row[code === "D" || code === "R" ? code : "other"] += votes;
+    }
+    byFips.set(county.fips, row);
+  }
+}
+
+async function readPersistedRaceDetail(detailDir, id) {
+  try {
+    return JSON.parse(await readFile(join(detailDir, `${id}.json`), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+/** Aggregate House county votes; hydrate missing county pages in bounded batches. */
 async function handleHouseCountyTotals(request, response, url) {
   if (request.method !== "GET") { sendJson(response, 405, { error: "Method not allowed" }); return; }
   const stateFilter = String(url.searchParams.get("state") || "").trim().toUpperCase();
@@ -435,47 +458,62 @@ async function handleHouseCountyTotals(request, response, url) {
     sendJson(response, 400, { error: "Invalid state" });
     return;
   }
-  const data = await currentPublicResults();
+  const hydrateBudget = Math.max(0, Math.min(80, Number(url.searchParams.get("hydrate")) || (stateFilter ? 40 : 48)));
+  let data = await currentPublicResults();
   const races = (data.groups || [])
     .flatMap((group) => group.races || [])
     .filter((race) => race.type === "house" && (!stateFilter || race.state === stateFilter));
+  const detailDir = resolve(root, "data", "live-results-races");
+  const missingIds = [];
+  for (const race of races) {
+    const detail = await readPersistedRaceDetail(detailDir, race.id);
+    if (!detail?.counties?.length) missingIds.push(race.id);
+  }
+
+  let hydratedThisPass = 0;
+  if (hydrateBudget > 0 && missingIds.length && process.env.RESULTS_MODE !== "legacy-primary") {
+    try {
+      const control = await getResultsControl();
+      const batchIds = missingIds.slice(0, hydrateBudget);
+      const changed = await control.loadCountyResultsBatch(batchIds);
+      if (changed) {
+        liveResultsCache = null;
+        data = await currentPublicResults();
+      }
+      for (const id of batchIds) {
+        try {
+          await buildRaceResultDetailWithHistory(id, { persist: true });
+          hydratedThisPass++;
+        } catch (error) {
+          console.warn(`House county detail persist failed for ${id}: ${error.message}`);
+        }
+      }
+    } catch (error) {
+      console.warn(`House county hydrate failed: ${error.message}`);
+    }
+  }
+
   const byFips = new Map();
   let racesWithCounties = 0;
   let racesMissingCounties = 0;
-  const detailDir = resolve(root, "data", "live-results-races");
   for (const race of races) {
-    let detail = null;
-    try {
-      detail = JSON.parse(await readFile(join(detailDir, `${race.id}.json`), "utf8"));
-    } catch {
-      racesMissingCounties++;
-      continue;
-    }
-    if (!Array.isArray(detail.counties) || !detail.counties.length) {
+    const detail = await readPersistedRaceDetail(detailDir, race.id);
+    if (!detail?.counties?.length) {
       racesMissingCounties++;
       continue;
     }
     racesWithCounties++;
-    for (const county of detail.counties) {
-      if (!county?.fips) continue;
-      const row = byFips.get(county.fips) || { fips: county.fips, name: county.name || county.fips, D: 0, R: 0, other: 0 };
-      if (county.name) row.name = county.name;
-      for (const candidate of county.candidates || []) {
-        const votes = Number(candidate.votes);
-        if (!Number.isSafeInteger(votes) || votes < 0) continue;
-        const code = String(candidate.partyCode || candidate.party || "").toUpperCase();
-        row[code === "D" || code === "R" ? code : "other"] += votes;
-      }
-      byFips.set(county.fips, row);
-    }
+    foldHouseCountyDetail(byFips, detail);
   }
+
   const version = resultsFeed.current.version || data.version || "house-counties";
-  const etag = `"${version}:hc:${stateFilter || "US"}:${byFips.size}:${racesWithCounties}"`;
+  const etag = `"${version}:hc:${stateFilter || "US"}:${byFips.size}:${racesWithCounties}:${racesMissingCounties}"`;
   sendLive(request, response, {
     state: stateFilter || null,
     counties: [...byFips.values()],
     racesWithCounties,
     racesMissingCounties,
+    hydratedThisPass,
     updatedAt: data.updatedAt || data.generatedAt || null,
     version
   }, etag);

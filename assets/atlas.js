@@ -225,11 +225,8 @@
     const promise = (async () => {
       const byFips = new Map();
 
-      // Prefer one bulk read of persisted race details (no NBC fan-out).
-      const query = stateFilter ? `?state=${encodeURIComponent(stateFilter)}` : "";
-      let bulk = await page.safeJson?.(`/api/live-results/house-counties${query}`);
-      if (stillCurrent() && Array.isArray(bulk?.counties)) {
-        for (const row of bulk.counties) {
+      const applyBulkRows = (rows) => {
+        for (const row of rows || []) {
           if (!row?.fips) continue;
           byFips.set(row.fips, {
             fips: row.fips,
@@ -239,9 +236,28 @@
             other: Number(row.other) || 0
           });
         }
+      };
+
+      // Bulk endpoint hydrates missing county pages in chunks; keep asking until filled.
+      let bulk = null;
+      let passes = 0;
+      while (stillCurrent() && passes < 12) {
+        passes++;
+        const params = new URLSearchParams();
+        if (stateFilter) params.set("state", stateFilter);
+        params.set("hydrate", String(stateFilter ? 40 : 48));
+        bulk = await page.safeJson?.(`/api/live-results/house-counties?${params}`);
+        if (!bulk || !Array.isArray(bulk.counties)) break;
+        applyBulkRows(bulk.counties);
         onProgress?.(byFips);
-      } else if (stillCurrent()) {
-        // Static / lab fallback: read persisted race files directly (still no provider hydrate).
+        if (!(bulk.racesMissingCounties > 0) || !(bulk.hydratedThisPass > 0)) break;
+        if (note) {
+          note.textContent = `Loading county House totals for ${label}… ${bulk.racesWithCounties || 0} seats ready, ${bulk.racesMissingCounties} left`;
+        }
+      }
+
+      if ((!bulk || !Array.isArray(bulk.counties)) && stillCurrent()) {
+        // Static / lab fallback: read persisted race files directly.
         bulk = { racesMissingCounties: 0 };
         const races = (page.dataByMode?.house || []).filter((race) => !stateFilter || race.state === stateFilter);
         const concurrency = Math.min(24, Math.max(6, races.length || 1));
@@ -307,8 +323,8 @@
       if (note) {
         const partial = bulk?.racesMissingCounties > 0;
         note.textContent = stateFilter
-          ? `${label} county House totals — votes summed across every district piece.${partial ? " Some seats still awaiting county detail." : ""}`
-          : `County totals — House votes summed across district pieces.${partial ? " Gray counties are still awaiting local detail." : ""}`;
+          ? `${label} county House totals — votes summed across every district piece.${partial ? " Finishing remaining seats…" : ""}`
+          : `County totals — House votes summed across district pieces.${partial ? " Finishing remaining seats…" : ""}`;
       }
       onProgress?.(byFips);
       return byFips;
