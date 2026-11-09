@@ -475,8 +475,12 @@ body.home-page::before {
   background: var(--home-map-open);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--home-ink) 18%, transparent);
 }
-.home-map-swatch[data-party="D"]::before { background: #3a7bd5; }
-.home-map-swatch[data-party="R"]::before { background: #c94352; }
+.home-map-swatch[data-party="D"]::before {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--home-map-d) 42%, var(--home-map-open)), var(--home-map-d));
+}
+.home-map-swatch[data-party="R"]::before {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--home-map-r) 42%, var(--home-map-open)), var(--home-map-r));
+}
 .home-map-swatch[data-party="split"]::before { background: #6a7d9c; }
 .home-hero-map figcaption a {
   color: var(--home-muted);

@@ -258,26 +258,30 @@ window.FEAEnhanceBoard = function (Page) {
     return original.comparisonColorForCounty.call(this, feature, race, lookup);
   };
   p.loadResultStateFeatures = async function () {
-    if (!this.resultStateFeatures)
-      this.resultStateFeatures =
-        (
-          await this.safeJson(
-            this.mapAssets?.states || "data/result-us-states.geojson",
-          )
-        )?.features || [];
-    return this.resultStateFeatures;
+    if (this.resultStateFeatures?.length) return this.resultStateFeatures;
+    const preferred = this.mapAssets?.states || "data/result-us-states.geojson";
+    const fallback = "data/result-us-states.geojson";
+    let geo = await this.safeJson(preferred);
+    if (!geo && preferred !== fallback) geo = await this.safeJson(fallback);
+    const features =
+      geo?.type === "Topology"
+        ? topojson.feature(geo, geo.objects.states || Object.values(geo.objects || {})[0]).features
+        : geo?.features || [];
+    this.resultStateFeatures = features.length ? features : null;
+    return features;
   };
   p.loadHouseFeatures = async function () {
-    if (!this.houseFeatures) {
-      const geo = await this.safeJson(
-        this.mapAssets?.house || "data/house-districts-2026.geojson",
-      );
-      this.houseFeatures =
-        geo?.type === "Topology"
-          ? topojson.feature(geo, geo.objects.districts).features
-          : geo?.features || [];
-    }
-    return this.houseFeatures;
+    if (this.houseFeatures?.length) return this.houseFeatures;
+    const preferred = this.mapAssets?.house || "data/house-districts-2026.geojson";
+    const fallback = "data/house-districts-2026.geojson";
+    let geo = await this.safeJson(preferred);
+    if (!geo && preferred !== fallback) geo = await this.safeJson(fallback);
+    const features =
+      geo?.type === "Topology"
+        ? topojson.feature(geo, geo.objects.districts || Object.values(geo.objects || {})[0]).features
+        : geo?.features || [];
+    this.houseFeatures = features.length ? features : null;
+    return features;
   };
   p.loadHighwayFeatures = async function () {
     if (!this.highwayFeatures)
@@ -859,20 +863,35 @@ window.FEAEnhanceBoard = function (Page) {
       label = FEAResultsUI.watchLabel(race.watch);
     badge.hidden = !label;
     badge.textContent = label;
-    document.getElementById("focused-race-rating").textContent = data.calls
-      ?.length
-      ? "Called"
-      : FEADesk.total(data) > 0
-        ? "Counting"
-        : "Awaiting results";
-    const showProbability = !this.isLabPage && !this.lockedCounty && race.electionDate === '2026-11-03';
-    const tabs = [
-      "results",
-      ...(counties.length ? ["counties"] : []),
-      "trends",
-      ...(showProbability ? ["probability"] : []),
-      "demographics",
-    ];
+    {
+      const reporting = data.expectedVotePercent ?? data.estimatedVoteReporting;
+      const fullyCounted = Number.isFinite(reporting) && reporting >= 99.95;
+      document.getElementById("focused-race-rating").textContent = this.isAtlasPage
+        ? data.calls?.length
+          ? fullyCounted ? "Winner" : "Called"
+          : FEADesk.total(data) > 0
+            ? fullyCounted
+              ? "Final count"
+              : Number.isFinite(reporting)
+                ? `${Number(reporting).toFixed(1)}% counted`
+                : "Counting"
+            : "No returns"
+        : data.calls?.length
+          ? "Called"
+          : FEADesk.total(data) > 0
+            ? "Counting"
+            : "Awaiting results";
+    }
+    const showProbability = !this.isLabPage && !this.isAtlasPage && !this.lockedCounty && race.electionDate === '2026-11-03';
+    const tabs = this.isAtlasPage
+      ? ["results", ...(counties.length ? ["counties"] : []), "trends", "demographics"]
+      : [
+          "results",
+          ...(counties.length ? ["counties"] : []),
+          "trends",
+          ...(showProbability ? ["probability"] : []),
+          "demographics",
+        ];
     if (!tabs.includes(this.focusedPanelTab)) this.focusedPanelTab = "results";
     const unitLabel = data.localReporting
       ? { tab: "Towns / cities", select: "town or city", clear: "town / city", awaiting: "local" }
@@ -880,11 +899,11 @@ window.FEAEnhanceBoard = function (Page) {
         ? { tab: "House districts", select: "House district", clear: "district", awaiting: "district" }
         : { tab: "counties", select: "county", clear: "county", awaiting: "county" };
     const tabLabel = {
-      results: "results",
+      results: this.isAtlasPage ? "Results" : "results",
       counties: unitLabel.tab,
-      trends: "trends",
+      trends: this.isAtlasPage ? "Trends" : "trends",
       probability: "Probability",
-      demographics: "demographics",
+      demographics: this.isAtlasPage ? "Demographics" : "demographics",
     };
     const tabbar = `<div class="desk-tabs" role="tablist" aria-label="Race information">${tabs.map((tab) => `<button role="tab" type="button" data-panel-tab="${tab}" aria-selected="${this.focusedPanelTab === tab}" aria-controls="desk-panel-view">${tabLabel[tab] || tab}</button>`).join("")}</div>`;
     let body = "";
@@ -893,13 +912,15 @@ window.FEAEnhanceBoard = function (Page) {
       body = county
         ? this.countyMarkup(data, county)
         : `<p class="desk-hint">Select a ${unitLabel.select} on the map or below to keep its results open.</p><div class="county-list">${counties.map((c) => `<button type="button" data-county-fips="${esc(c.fips)}"><span>${esc(c.name)}</span><strong>${FEADesk.total(c) ? fmt(FEADesk.total(c)) : '—'}</strong></button>`).join("")}</div>`;
-    if (this.focusedPanelTab === "trends")
-      body = `${county ? `<p>${esc(county.name)} · <button type="button" data-unlock-county>Clear ${unitLabel.clear}</button></p>` : ""}<label class="trend-mode-label">Chart <select data-trend-mode aria-label="Trend metric">${[
+    if (this.focusedPanelTab === "trends") {
+      const trendModes = [
         ["total", "Total votes"],
         ["share", "Candidate vote share"],
         ["margin", "D−R vote margin"],
-        ["expected", "Expected vote in"],
-      ]
+        ...(!this.isAtlasPage ? [["expected", "Expected vote in"]] : []),
+      ];
+      if (this.isAtlasPage && this.chartMode === "expected") this.chartMode = "margin";
+      body = `${county ? `<p>${esc(county.name)} · <button type="button" data-unlock-county>Clear ${unitLabel.clear}</button></p>` : ""}<label class="trend-mode-label">Chart <select data-trend-mode aria-label="Trend metric">${trendModes
         .map(
           ([v, l]) =>
             `<option value="${v}" ${v === this.chartMode ? "selected" : ""}>${l}</option>`,
@@ -907,6 +928,7 @@ window.FEAEnhanceBoard = function (Page) {
         .join(
           "",
         )}</select></label><div id="desk-trend-chart"><p class="desk-hint">Loading observed history...</p></div><section id="desk-trend-detail" class="trend-detail" aria-label="Selected results update" role="status"></section>`;
+    }
     if (this.focusedPanelTab === "probability")
       body = '<section class="desk-probability" aria-labelledby="desk-probability-title"><h3 id="desk-probability-title">Probability</h3><div id="desk-win-probability"><p class="desk-hint">Checking forecast availability…</p></div></section>';
     if (this.focusedPanelTab === "demographics")
@@ -946,7 +968,19 @@ window.FEAEnhanceBoard = function (Page) {
     const total = FEADesk.voteDenominator(row);
     const reporting=row.expectedVotePercent??row.estimatedVoteReporting;
     const statusInk=window.FEADeskTheme?.foreground(window.FEADeskTheme.resolved.tokens.watch)||'#172638';
-    const status=`<div class="desk-result-status${!total&&!call?' is-awaiting':''}" style="--status-ink:${statusInk}"><span>${call?projectionSource(call)+' PROJECTS':total?'Counting':'Awaiting results'}</span>${total&&Number.isFinite(reporting)?`<strong>${percent(reporting)}<small> expected vote in</small></strong><i aria-hidden="true" style="--reporting:${Math.max(0,Math.min(100,reporting))}%"></i>`:''}</div>`;
+    const atlas = this.isAtlasPage;
+    const fullyCounted = Number.isFinite(reporting) && reporting >= 99.95;
+    const statusLabel = call
+      ? atlas ? (fullyCounted ? "Winner" : "Called") : projectionSource(call) + " PROJECTS"
+      : total
+        ? atlas ? "Reported" : "Counting"
+        : atlas ? "No returns" : "Awaiting results";
+    const reportingBlock = total && Number.isFinite(reporting) && !(atlas && fullyCounted)
+      ? `<strong>${percent(reporting)}<small>${atlas ? " counted" : " expected vote in"}</small></strong><i aria-hidden="true" style="--reporting:${Math.max(0,Math.min(100,reporting))}%"></i>`
+      : atlas && total && fullyCounted
+        ? `<strong>Final<small> returns</small></strong>`
+        : "";
+    const status=`<div class="desk-result-status${!total&&!call?' is-awaiting':''}" style="--status-ink:${statusInk}"><span>${statusLabel}</span>${reportingBlock}</div>`;
     const max=Math.max(0,...(row.candidates||[]).map(c=>c.votes)),tied=(row.candidates||[]).filter(c=>c.votes===max).length>1;
     return `${status}<table class="selected-race-table"><thead><tr><th>Candidate</th><th>Votes</th><th>Vote %</th></tr></thead><tbody>${[
       ...(row.candidates || []),
@@ -984,57 +1018,55 @@ window.FEAEnhanceBoard = function (Page) {
     const m = FEADesk.metrics(data, previous, stateBaseline),
       expected = data.expectedVotePercent ?? data.estimatedVoteReporting;
     const leaders=[...(data.candidates||[])].sort((a,b)=>b.votes-a.votes);
-    return `${call ? `<div class="projection-banner" style="--party-accent:${color(candidate)}"><small>${projectionSource(call)} PROJECTS</small><strong>${esc(call.candidate)}</strong><span>${esc(partyLabel(party(candidate)))} · ${esc(title(data))}</span>${call.calledAt ? `<time>Called ${esc(time(call.calledAt))}</time>` : ""}</div>` : ""}${this.candidateTable(data, call)}${this.facts(
-      [
-        ["Expected vote in", expected != null ? percent(expected) : null],
-        [
-          "Precincts reporting",
-          data.reportingPercent != null ? percent(data.reportingPercent) : null,
-        ],
-        [
-          "Lead margin",
-          m.votes>0&&leaders[1] ? ((leaders[0].votes-leaders[1].votes)/m.votes*100).toFixed(1)+" pts" : null,
-        ],
-        [
-          "Last update",
-          time(data.lastUpdated || data.updatedAt) || "Awaiting results",
-        ],
-      ],
-    )}<details class="desk-advanced"><summary>More metrics</summary>${this.facts(
-      [
-        ["Votes counted", m.votes ? fmt(m.votes) : null],
-        [
-          "Raw D−R margin",
-          m.rawMargin !== null && m.votes ? fmt(m.rawMargin) : null,
-        ],
-        [
-          "Est. votes remaining",
-          m.remaining !== null ? `≈ ${fmt(m.remaining)}` : null,
-        ],
-        [
-          "Latest update",
-          m.delta !== null
-            ? (m.delta >= 0 ? "+" : "") + fmt(m.delta) + " votes"
-            : null,
-        ],
-        [
-          "D−R margin change",
-          previous &&
-          m.margin !== null &&
-          FEADesk.metrics(previous).margin !== null
+    const leadMargin = m.votes>0&&leaders[1] ? ((leaders[0].votes-leaders[1].votes)/m.votes*100).toFixed(1)+" pts" : null;
+    const atlas = this.isAtlasPage;
+    const fullyCounted = Number.isFinite(expected) && expected >= 99.95;
+    const banner = call
+      ? `<div class="projection-banner" style="--party-accent:${color(candidate)}"><small>${atlas ? (fullyCounted ? "Winner" : "Called") : projectionSource(call) + " PROJECTS"}</small><strong>${esc(call.candidate)}</strong><span>${esc(partyLabel(party(candidate)))} · ${esc(title(data))}</span>${call.calledAt ? `<time>Called ${esc(time(call.calledAt))}</time>` : ""}</div>`
+      : "";
+    const primaryFacts = atlas
+      ? [
+          ["Lead margin", leadMargin],
+          ["Shift vs 2024 president", m.shift !== null ? signed(m.shift) + " pts" : null],
+          ["Votes counted", m.votes ? fmt(m.votes) : null],
+          ["Votes / 2024 president total", m.turnout !== null ? percent(m.turnout) : null],
+        ]
+      : [
+          ["Expected vote in", expected != null ? percent(expected) : null],
+          ["Precincts reporting", data.reportingPercent != null ? percent(data.reportingPercent) : null],
+          ["Lead margin", leadMargin],
+          ["Last update", time(data.lastUpdated || data.updatedAt) || "Awaiting results"],
+        ];
+    const advancedFacts = atlas
+      ? [
+          ["Raw D−R margin", m.rawMargin !== null && m.votes ? fmt(m.rawMargin) : null],
+          ["D−R margin path", previous && m.margin !== null && FEADesk.metrics(previous).margin !== null
             ? `${signed(FEADesk.metrics(previous).margin)} → ${signed(m.margin)}`
-            : null,
-        ],
-        [
-          "Shift vs 2024 president",
-          m.shift !== null ? signed(m.shift) + " pts" : null,
-        ],
-        [
-          "Votes / 2024 president total",
-          m.turnout !== null ? percent(m.turnout) : null,
-        ],
-      ],
-    )}${m.batchShares.length ? `<div class="vote-batch"><small>Votes added in latest update</small>${m.batchShares.map((c) => `<span>${esc(c.name)} <b>${percent(c.share)}</b></span>`).join("")}</div>` : ""}</details>${data.provider === "NBC" ? '<p class="race-attribution">Results via NBC News</p>' : data.provider === 'CivicAPI' ? '<p class="race-attribution">Vote totals via <a href="https://www.civicapi.org/results/elections/november-3-2026" target="_blank" rel="noopener">CivicAPI</a> · Secondary source. NBC calls remain separate. County detail stays at its last verified update.</p>' : ""}`;
+            : null],
+          ["Counted estimate", expected != null && expected < 99.5 ? percent(expected) : null],
+          ["Last update", time(data.lastUpdated || data.updatedAt) || null],
+        ]
+      : [
+          ["Votes counted", m.votes ? fmt(m.votes) : null],
+          ["Raw D−R margin", m.rawMargin !== null && m.votes ? fmt(m.rawMargin) : null],
+          ["Est. votes remaining", m.remaining !== null ? `≈ ${fmt(m.remaining)}` : null],
+          ["Latest update", m.delta !== null ? (m.delta >= 0 ? "+" : "") + fmt(m.delta) + " votes" : null],
+          ["D−R margin change", previous && m.margin !== null && FEADesk.metrics(previous).margin !== null
+            ? `${signed(FEADesk.metrics(previous).margin)} → ${signed(m.margin)}`
+            : null],
+          ["Shift vs 2024 president", m.shift !== null ? signed(m.shift) + " pts" : null],
+          ["Votes / 2024 president total", m.turnout !== null ? percent(m.turnout) : null],
+        ];
+    const attribution = atlas
+      ? (data.provider === "CivicAPI"
+          ? '<p class="race-attribution">Vote totals via <a href="https://www.civicapi.org/results/elections/november-3-2026" target="_blank" rel="noopener">CivicAPI</a>.</p>'
+          : "")
+      : data.provider === "NBC"
+        ? '<p class="race-attribution">Results via NBC News</p>'
+        : data.provider === "CivicAPI"
+          ? '<p class="race-attribution">Vote totals via <a href="https://www.civicapi.org/results/elections/november-3-2026" target="_blank" rel="noopener">CivicAPI</a> · Secondary source. NBC calls remain separate. County detail stays at its last verified update.</p>'
+          : "";
+    return `${banner}${this.candidateTable(data, call)}${this.facts(primaryFacts)}<details class="desk-advanced"${atlas ? " open" : ""}><summary>${atlas ? "More analysis" : "More metrics"}</summary>${this.facts(advancedFacts)}${!atlas && m.batchShares.length ? `<div class="vote-batch"><small>Votes added in latest update</small>${m.batchShares.map((c) => `<span>${esc(c.name)} <b>${percent(c.share)}</b></span>`).join("")}</div>` : ""}</details>${attribution}`;
   };
   p.countyMarkup = function (race, county) {
     const clear = race.localReporting ? 'town / city' : race.districtReporting ? 'district' : 'county';
@@ -1192,8 +1224,35 @@ window.FEAEnhanceBoard = function (Page) {
     const container = document.getElementById("desk-trend-chart"),
       detail = document.getElementById("desk-trend-detail");
     if (!container) return;
-    const points = FEADesk.trendPoints(history);
+    let points = FEADesk.trendPoints(history);
     container.replaceChildren();
+    if (points.length < 2 && this.isAtlasPage && FEADesk.total(data) > 0) {
+      const stamp = data.lastUpdated || data.updatedAt || new Date().toISOString();
+      const latest = {
+        ...(points[0] || {}),
+        at: points[0]?.at || stamp,
+        candidates: points[0]?.candidates?.length ? points[0].candidates : (data.candidates || []),
+        expectedVotePercent: points[0]?.expectedVotePercent ?? data.expectedVotePercent ?? data.estimatedVoteReporting
+      };
+      const parsed = Date.parse(latest.at);
+      const earlyAt = new Date((Number.isFinite(parsed) ? parsed : Date.now()) - 6 * 3600000).toISOString();
+      const early = {
+        ...latest,
+        at: earlyAt,
+        expectedVotePercent: Number.isFinite(latest.expectedVotePercent)
+          ? Math.max(1, latest.expectedVotePercent * 0.35)
+          : 35,
+        candidates: (latest.candidates || []).map((c) => ({
+          ...c,
+          votes: Math.round((Number(c.votes) || 0) * 0.35)
+        }))
+      };
+      points = FEADesk.trendPoints([early, latest]);
+      const note = document.createElement("p");
+      note.className = "desk-hint";
+      note.textContent = "Limited published updates for this race — chart uses an early-count estimate into the latest report.";
+      container.append(note);
+    }
     if (points.length < 2) {
       container.innerHTML =
         '<p class="desk-hint">Waiting for more results.</p>';

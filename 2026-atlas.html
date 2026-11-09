@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026 Election Atlas | Federal Elections Analysis</title>
+  <meta name="description" content="FEA Election Atlas — post-election House popular vote, constituency maps, swing, and vote-drop detail for 2026.">
+  <link rel="icon" href="assets/img/FEA_Icon.webp" type="image/webp">
+  <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
+  <script>window.FEA_ATLAS = true;</script>
+  <script src="assets/desk-theme.js?v=20261103-broadcast6"></script>
+  <script src="assets/desk-bootstrap.js?v=20261028-board18"></script>
+  <link rel="stylesheet" href="assets/wiki.css?v=20261027-night-final2">
+  <link rel="stylesheet" href="assets/results-board.css?v=20261108-probability-plain">
+  <link rel="stylesheet" href="assets/desk-experience.css?v=20261031-maker1">
+  <link rel="stylesheet" href="assets/desk-styles.css?v=20261108-probability-plain">
+  <link rel="stylesheet" href="assets/desk-reference.css?v=20261103-current-districts3">
+  <link rel="stylesheet" href="assets/night-awareness.css?v=20261108-probability-plain">
+  <link rel="stylesheet" href="assets/atlas.css?v=12">
+</head>
+<body class="results-board atlas-page">
+  <main class="election-night-page atlas-shell" aria-label="2026 Election Atlas">
+    <h1 class="board-sr-only">2026 Election Atlas</h1>
+    <div class="board-top-controls atlas-top">
+      <div class="atlas-brand">
+        <p class="atlas-kicker">Federal Elections Analysis</p>
+        <strong>2026 Election Atlas</strong>
+      </div>
+      <div class="election-mode-toggle" role="tablist" aria-label="Office">
+        <button type="button" data-mode="house" role="tab" aria-selected="true">House</button>
+        <button type="button" data-mode="senate" role="tab" aria-selected="false">Senate</button>
+        <button type="button" data-mode="governor" role="tab" aria-selected="false">Governors</button>
+      </div>
+      <section class="election-chamber-board" aria-label="Chamber control">
+        <p id="chamber-board-subtitle" class="board-sr-only"></p>
+        <div class="election-chamber-meter">
+          <div class="election-chamber-labels">
+            <strong id="chamber-dem-count">0 D</strong>
+            <span id="chamber-majority-label">218 for majority</span>
+            <strong id="chamber-rep-count">0 R</strong>
+          </div>
+          <div class="election-chamber-bar">
+            <span id="chamber-bar-dem-safe" class="election-chamber-segment chamber-dem-safe" hidden></span>
+            <span id="chamber-bar-dem" class="election-chamber-segment chamber-dem"></span>
+            <span id="chamber-bar-uncalled" class="election-chamber-segment chamber-uncalled"></span>
+            <span id="chamber-bar-rep" class="election-chamber-segment chamber-rep"></span>
+            <span id="chamber-bar-rep-safe" class="election-chamber-segment chamber-rep-safe" hidden></span>
+            <i id="chamber-majority-line" class="election-chamber-majority-line" aria-hidden="true"></i>
+          </div>
+        </div>
+      </section>
+      <div class="atlas-lens" role="toolbar" aria-label="Atlas map overlays">
+        <button type="button" data-atlas-lens="county" aria-pressed="false">County</button>
+        <button type="button" data-atlas-lens="pv" aria-pressed="false">House PV</button>
+        <button type="button" data-atlas-lens="bubbles" aria-pressed="false">Pop. weighted</button>
+        <button type="button" data-atlas-lens="swing" aria-pressed="false">Swing</button>
+      </div>
+    </div>
+    <div class="board-overflow">
+      <button id="board-menu-button" type="button" aria-label="Atlas menu" aria-expanded="false" aria-controls="board-menu">⋯</button>
+      <div id="board-menu" hidden>
+        <a href="/">Return to main site</a>
+        <a href="/2026-results">Open results board</a>
+        <button type="button" data-desk-appearance>Appearance</button>
+      </div>
+    </div>
+    <p id="results-provider-status" class="board-delay" role="status" hidden></p>
+    <p id="atlas-lens-note" class="atlas-lens-note" role="status">District map — open a seat for county detail. Overlays toggle on/off.</p>
+    <section class="election-map-panel" aria-label="Election Atlas map">
+      <div class="election-map-shell">
+        <div id="election-map" class="election-map-canvas">
+          <div class="election-map-loading">Loading Election Atlas…</div>
+        </div>
+        <aside id="focused-race-panel" class="election-focus-panel election-focus-overlay" aria-labelledby="focused-race-title" hidden>
+          <div class="focused-card-head">
+            <span id="focused-race-kind" class="focused-pill" hidden></span>
+            <span id="focused-race-rating" class="focused-pill focused-pill-light"></span>
+            <button class="sheet-toggle" type="button" aria-label="Expand race details" aria-expanded="false">⌃</button>
+            <button class="focused-close" type="button" data-clear-focus aria-label="Close selected race">×</button>
+          </div>
+          <h2 id="focused-race-title">Select a race</h2>
+          <div id="focused-race-content"></div>
+          <button type="button" class="focus-resize-handle" aria-label="Resize race window. Arrow keys resize; Home or double-click resets." title="Drag to resize · double-click to reset">◢</button>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+  <script src="assets/desk-appearance.js?v=20261101-yapms1"></script>
+  <script src="assets/results-desk.js?v=20261107-ballots1"></script>
+  <script src="assets/results-ui.js?v=20261101-maker4"></script>
+  <script src="assets/results-desk-board.js?v=20261109-atlas6"></script>
+  <script src="assets/night-awareness.js?v=20261029-rehearsal6"></script>
+  <script src="assets/atlas.js?v=15"></script>
+  <script src="assets/election-night.js?v=20261109-atlas4"></script>
+</body>
+</html>

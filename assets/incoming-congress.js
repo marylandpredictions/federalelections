@@ -25,7 +25,7 @@
     return node;
   };
   const link = (href,text) => Object.assign(el('a',text),{href});
-  const resultHref = seat => '/results?'+new URLSearchParams({office,race:seat?.race?.id || ''});
+  const resultHref = seat => '/2026-results?'+new URLSearchParams({office,race:seat?.race?.id || ''});
   const reading = seat => seat.winner?.name || seat.name || (seat.status==='uncalled'
     ? seat.tied ? 'Tied in reported votes' : seat.leader ? seat.leader.name+' leads' : ''
     : '');
@@ -205,7 +205,7 @@
         state:'Seats sorted by state within each section'}[mode],
       'Seat order is illustrative'].filter(Boolean).join(' · ');
     if (status.textContent!==text) status.textContent = text;
-    $('incoming-results').href = '/results?office='+office;
+    $('incoming-results').href = '/2026-results?office='+office;
     $('incoming-election').textContent = `${config.election} · ${config.congress}th Congress`;
   }
   $('incoming-order').onchange = render;

@@ -994,10 +994,21 @@ async function serveStatic(request, response) {
     return;
   }
 
+  if (url.pathname === "/results" || url.pathname === "/results.html") {
+    response.writeHead(302, {
+      Location: `/2026-results${url.search || ""}`,
+      "Cache-Control": "no-store"
+    });
+    response.end();
+    return;
+  }
+
   if (requestedPath === adminPath) {
     requestedPath = "/admin.html";
   } else if (requestedPath === "/fea-results-lab-26") {
     requestedPath = "/election-night.html";
+  } else if (requestedPath === "/2026-results" || requestedPath === "/2026-results.html") {
+    requestedPath = "/results.html";
   } else if (requestedPath === "/admin.html") {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     response.end("Not found");

@@ -53,6 +53,9 @@ test('House popular vote sums every district ballot by party for each state',()=
   assert.equal(leans.get('CA').lean,'R');
   assert.equal(leans.get('TX').lean,'R');
   assert.equal(leans.get('CA').total,335);
+  assert.ok(leans.get('TX').margin < leans.get('CA').margin);
+  assert.equal(home.marginFill(null, {open:'#111'}), '#111');
+  assert.equal(home.marginFill(leans.get('TX'), {D:'#00f',R:'#f00',open:'#111',split:'#888'}), '#f00');
   assert.deepEqual(nationalHouse,{
     D:300,R:370,other:15,total:685,
     demShare:100*300/685,repShare:100*370/685,otherShare:100*15/685,

@@ -216,10 +216,17 @@ function hasActiveResults(race) {
 }
 
 function callProvenance(race) {
+  if (window.FEA_ATLAS) return isActuallyCalled(race) ? "Winner" : "";
   return race?.calls?.some(c => c.provider === "NBC") ? "NBC projects" : "FEA projects";
 }
 function reportingLabel(race) {
   const expected = race.expectedVotePercent ?? race.estimatedVoteReporting;
+  if (window.FEA_ATLAS) {
+    if (expected != null && expected >= 99.95) return "Final";
+    if (expected != null) return `${formatReportingPercent(expected)} counted`;
+    if (hasVotes(race)) return "Votes reported";
+    return "No votes yet";
+  }
   if (expected != null) return `${formatReportingPercent(expected)} expected vote in`;
   if (race.reportingPercent != null) return `${formatReportingPercent(race.reportingPercent)} precincts reporting`;
   return "Reporting estimate unavailable";
@@ -1336,9 +1343,12 @@ class ElectionNightPage {
   }
 
   async loadHouseFeatures() {
-    if (!this.houseFeatures) {
+    if (!this.houseFeatures?.length) {
       const districts = await this.safeJson("data/house-districts-2026.geojson");
-      this.houseFeatures = districts?.features || [];
+      const features = districts?.features || [];
+      if (features.length) this.houseFeatures = features;
+      else this.houseFeatures = null;
+      return features;
     }
     return this.houseFeatures;
   }
@@ -2364,9 +2374,14 @@ function initElectionNight() {
     return;
   }
   window.FEAEnhanceBoard?.(ElectionNightPage);
-  window.FEACompleteBoard?.(ElectionNightPage);
-  window.FEANightAwareness?.(ElectionNightPage);
-  new ElectionNightPage();
+  if (!window.FEA_ATLAS) {
+    window.FEACompleteBoard?.(ElectionNightPage);
+    window.FEANightAwareness?.(ElectionNightPage);
+  } else {
+    window.FEAAtlasPrepare?.(ElectionNightPage);
+  }
+  const page = new ElectionNightPage();
+  window.FEAAtlasBoot?.(page);
 }
 
 if (document.readyState === "loading") {

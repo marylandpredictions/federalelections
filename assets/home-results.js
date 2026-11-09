@@ -91,20 +91,34 @@
         demShare: total ? 100 * row.D / total : 0,
         repShare: total ? 100 * row.R / total : 0,
         otherShare: total ? 100 * row.other / total : 0,
+        margin: total ? 100 * (row.D - row.R) / total : 0,
       });
     }
     return colors;
   }
 
+  /** Match election-night / results-lab margin choropleth (strength scales with |D−R|). */
+  function marginFill(row, colors) {
+    if (!row?.total) return colors.open;
+    if (row.lean === 'other' || row.lean === 'split') return colors.split;
+    if (row.lean !== 'D' && row.lean !== 'R') return colors.open;
+    const strength = Math.max(0.4, Math.min(1, 0.42 + Math.abs(row.margin) / 28));
+    const ink = row.lean === 'D' ? colors.D : colors.R;
+    if (typeof d3 !== 'undefined' && typeof d3.interpolateRgb === 'function') {
+      return d3.interpolateRgb(colors.wash || '#dbe2f0', ink)(strength);
+    }
+    return ink;
+  }
+
   if (typeof module==='object' && module.exports) {
-    module.exports = {summarize,houseGeometryId,statePopularLean,nationalHousePopular};
+    module.exports = {summarize,houseGeometryId,statePopularLean,nationalHousePopular,marginFill};
     return;
   }
 
   const $ = id => document.getElementById(id);
   const element = (tag,text) => Object.assign(document.createElement(tag),{textContent:text});
   const link = (href,text) => Object.assign(element('a',text),{href});
-  const raceLink = race => link('/results?'+new URLSearchParams({office:race.type,race:race.id}),race.electionName || race.title || race.id);
+  const raceLink = race => link('/2026-results?'+new URLSearchParams({office:race.type,race:race.id}),race.electionName || race.title || race.id);
   function tone(node,code) {
     node.dataset.party = code==='D'||code==='R' ? code : code==='I' ? 'I' : 'other';
     return node;
@@ -133,6 +147,7 @@
   function mapFill() {
     const styles = getComputedStyle(document.body);
     const read = (name, fallback) => styles.getPropertyValue(name).trim() || fallback;
+    const theme = document.documentElement.getAttribute('data-theme');
     return {
       D: read('--home-map-d', '#3a7bd5'),
       R: read('--home-map-r', '#c94352'),
@@ -141,6 +156,7 @@
       split: read('--home-map-split', '#6a7d9c'),
       water: read('--home-map-water', '#07101f'),
       stroke: read('--home-map-stroke', 'rgba(5, 12, 28, 0.9)'),
+      wash: theme === 'light' ? '#dbe2f0' : read('--home-map-open', '#1a2438'),
     };
   }
   const fipsToState = {
@@ -224,10 +240,9 @@
     if (!row?.total) {
       return `<strong>${state}</strong><span>No House votes reported</span>`;
     }
-    const lead = row.lean === 'D' ? 'Dem lead'
-      : row.lean === 'R' ? 'Rep lead'
-      : row.lean === 'other' ? 'Other lead'
-      : 'Tied';
+    const lead = row.lean === 'other' ? 'Other lead'
+      : row.margin === 0 ? 'Tied'
+      : `${row.margin > 0 ? 'D' : 'R'} +${Math.abs(row.margin).toFixed(1)}`;
     const other = row.other
       ? `<em data-party="other">O ${row.otherShare.toFixed(1)}%</em>`
       : '';
@@ -321,10 +336,7 @@
     svg.selectAll('path.state')
       .attr('stroke', colors.stroke)
       .attr('fill', function() {
-        const row = leans.get(this.getAttribute('data-state'));
-        const code = row?.lean;
-        if (code === 'split') return colors.split;
-        return colors[code] || colors.open;
+        return marginFill(leans.get(this.getAttribute('data-state')), colors);
       })
       .attr('data-lean', function() {
         return leans.get(this.getAttribute('data-state'))?.lean || 'open';
@@ -356,7 +368,7 @@
         const counts = element('strong','');
         counts.append(tone(element('span',total.D+' D'),'D'),' · ',tone(element('span',total.R+' R'),'R'));
         if (total.other) counts.append(' · ',tone(element('span',total.other+' I'),'I'));
-        row.append(link('/results?office='+office,offices[office]),counts,
+        row.append(link('/2026-results?office='+office,offices[office]),counts,
           bar([['D',total.D],['other',total.other],['R',total.R]],total.called+total.open),
           element('small',`${total.called} called · ${total.open} outstanding`));
         return row;

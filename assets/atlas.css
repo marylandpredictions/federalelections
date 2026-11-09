@@ -1,0 +1,266 @@
+/* 2026 Election Atlas — post-results viewer chrome */
+
+.atlas-page .election-night-page {
+  --atlas-ink: #e8eefc;
+  --atlas-muted: #9aa9c7;
+  --atlas-line: rgba(158, 176, 216, 0.2);
+  --atlas-panel: rgba(10, 18, 36, 0.92);
+}
+
+.atlas-page .board-top-controls.atlas-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  align-items: center;
+  padding: 0.7rem 1rem 0.55rem;
+  pointer-events: none;
+}
+
+.atlas-page .atlas-top .atlas-brand,
+.atlas-page .atlas-top .atlas-lens,
+.atlas-page .atlas-top .election-mode-toggle,
+.atlas-page .atlas-top .election-chamber-board {
+  pointer-events: auto;
+}
+
+.atlas-page .atlas-top .election-chamber-board {
+  flex: 1 1 16rem;
+  min-width: 14rem;
+}
+
+.atlas-page .atlas-top .atlas-lens {
+  margin-left: auto;
+}
+
+.atlas-brand {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 10rem;
+}
+
+.atlas-kicker {
+  margin: 0;
+  font: 800 0.62rem/1.1 Telegraf, "Segoe UI", sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--atlas-muted, #9aa9c7);
+}
+
+.atlas-brand strong {
+  font: 850 0.95rem/1.1 Telegraf, "Segoe UI", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.atlas-lens {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 3px;
+  border: 1px solid var(--atlas-line, rgba(158, 176, 216, 0.2));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--atlas-panel, #0a1224) 88%, transparent);
+}
+
+.atlas-lens button {
+  min-height: 2.1rem;
+  padding: 0.3rem 0.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: 800 0.78rem/1 Telegraf, "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+.atlas-lens button[aria-pressed="true"],
+.atlas-lens button[aria-selected="true"] {
+  background: color-mix(in srgb, #2f7fe0 28%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #2f7fe0 45%, transparent);
+}
+
+.atlas-lens-note {
+  margin: 0;
+  padding: 0 1rem 0.45rem;
+  color: var(--atlas-muted, #9aa9c7);
+  font: 700 0.78rem/1.3 Telegraf, "Segoe UI", sans-serif;
+}
+
+.atlas-page .atlas-lens button[hidden] {
+  display: none !important;
+}
+
+/* Match race tooltips — do not restyle PV/county lean tooltips into a flat text stack. */
+.atlas-page .election-map-tooltip {
+  min-width: 220px;
+  max-width: min(320px, calc(100vw - 24px));
+}
+
+.atlas-page .election-map-tooltip-title {
+  font: 850 0.95rem/1.2 Telegraf, "Segoe UI", sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.atlas-page .election-map-tooltip-table {
+  width: 100%;
+  border-collapse: collapse;
+  font: 700 0.8rem/1.35 Telegraf, "Segoe UI", sans-serif;
+}
+
+.atlas-page .election-map-tooltip-table td {
+  padding: 0.28rem 0;
+  vertical-align: middle;
+}
+
+.atlas-page .election-map-tooltip-table td:last-child,
+.atlas-page .election-map-tooltip-table td:nth-child(2) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.atlas-page .election-map-tooltip-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.45rem;
+  color: var(--atlas-muted, #9aa9c7);
+  font: 700 0.72rem/1.2 Telegraf, "Segoe UI", sans-serif;
+}
+
+.atlas-page .trend-mode-label {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.35rem 0 0.65rem;
+  color: var(--text-secondary, #9aa9c7);
+  font: 700 0.78rem/1.2 Telegraf, "Segoe UI", sans-serif;
+}
+
+.atlas-page .trend-mode-label select {
+  min-height: 2rem;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--panel-border, rgba(158, 176, 216, 0.28));
+  border-radius: 8px;
+  background: var(--panel-raised, rgba(16, 28, 48, 0.92));
+  color: var(--text-primary, #e8eefc);
+}
+
+.atlas-page #desk-trend-chart {
+  min-height: 230px;
+}
+
+.atlas-page .trend-summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: end;
+  padding: 12px 0 14px;
+}
+
+.atlas-page #projection-alerts,
+.atlas-page .desk-outline-setting,
+.atlas-page .election-map-controls [data-poll-clock],
+.atlas-page .board-edition,
+.atlas-page .night-tv-chrome,
+.atlas-page .desk-probability,
+.atlas-page [data-panel-tab="probability"] {
+  display: none !important;
+}
+
+.atlas-page .election-focus-panel {
+  width: min(520px, calc(100% - 36px));
+  min-width: min(420px, calc(100% - 36px));
+  max-height: calc(100dvh - 140px);
+}
+
+.atlas-page .election-focus-panel .desk-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.atlas-page .election-focus-panel .race-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem 0.85rem;
+}
+
+.atlas-page .election-focus-panel .desk-advanced {
+  margin-top: 0.75rem;
+}
+
+.atlas-page .election-focus-panel .desk-advanced[open] > summary {
+  margin-bottom: 0.55rem;
+}
+
+.atlas-page .desk-result-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.75rem;
+}
+
+.atlas-page .election-chamber-labels strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.atlas-page .house-district-shape.atlas-hidden-borders {
+  stroke: transparent !important;
+  stroke-width: 0 !important;
+}
+
+.atlas-page .atlas-state-shape {
+  stroke: rgba(232, 238, 252, 0.55);
+  stroke-width: 1.15;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  paint-order: stroke fill;
+}
+
+.atlas-page .atlas-bubble {
+  stroke: rgba(255, 255, 255, 0.55);
+  stroke-width: 1.15;
+  fill-opacity: 0.88;
+  pointer-events: all;
+}
+
+.atlas-page .atlas-bubble-layer {
+  pointer-events: none;
+}
+
+.atlas-page .atlas-bubble-layer .atlas-bubble {
+  pointer-events: all;
+}
+
+.atlas-page .atlas-swing-arrow {
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.atlas-page .atlas-swing-arrow[data-party="D"] { stroke: #3a7bd5; }
+.atlas-page .atlas-swing-arrow[data-party="R"] { stroke: #c94352; }
+.atlas-page .atlas-swing-arrow[data-party="split"] { stroke: #8b93a5; }
+
+/* Keep detail-map context continuous when overlays (bubbles) are on. */
+.atlas-page[data-atlas-active-lens="bubbles"] .county-result-shape {
+  transition: fill-opacity 160ms ease;
+}
+
+@media (max-width: 980px) {
+  .atlas-page .board-top-controls.atlas-top {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+  .atlas-lens { width: 100%; }
+  .atlas-lens button { flex: 1 1 auto; text-align: center; }
+}
+
+@media (max-width: 600px) {
+  .atlas-page .election-focus-panel {
+    width: auto;
+    min-width: 0;
+  }
+}
