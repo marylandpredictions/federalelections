@@ -322,7 +322,16 @@ window.FEAEnhanceBoard = function (Page) {
         cache: isApi || isMapManifest ? "no-cache" : "default",
         ...(deadline?{signal:deadline.signal}:{}),
       });
-      return response.ok ? await response.json() : null;
+      if (!response.ok) return null;
+      // Some local static servers return raw .json.gz bytes without Content-Encoding.
+      if (String(url).includes(".json.gz") && typeof DecompressionStream === "function") {
+        const buffer = new Uint8Array(await response.clone().arrayBuffer());
+        if (buffer.length >= 2 && buffer[0] === 0x1f && buffer[1] === 0x8b) {
+          const stream = new Response(new Blob([buffer]).stream().pipeThrough(new DecompressionStream("gzip")));
+          return await stream.json();
+        }
+      }
+      return await response.json();
     } catch {
       return null;
     } finally {

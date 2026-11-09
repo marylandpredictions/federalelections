@@ -427,18 +427,26 @@ async function handleLiveResultRace(request, response, url) {
   sendLive(request,response,{...detail,version:race.version,...(countyHydratedFromVersion&&countyHydratedFromVersion!==race.version&&detail.counties?.length?{countyHydratedFromVersion}:{})},'"'+race.version+'"');
 }
 
+function houseChoroplethFips(fips) {
+  const id = String(fips || "");
+  if (/^\d{5}$/.test(id)) return id;
+  if (/^\d{10}$/.test(id)) return id.slice(0, 5); // New England town GEOID → county
+  return "";
+}
+
 function foldHouseCountyDetail(byFips, detail) {
   for (const county of detail?.counties || []) {
-    if (!county?.fips) continue;
-    const row = byFips.get(county.fips) || { fips: county.fips, name: county.name || county.fips, D: 0, R: 0, other: 0 };
-    if (county.name) row.name = county.name;
+    const fips = houseChoroplethFips(county?.fips);
+    if (!fips) continue;
+    const row = byFips.get(fips) || { fips, name: /^\d{5}$/.test(String(county.fips)) ? (county.name || fips) : fips, D: 0, R: 0, other: 0 };
+    if (/^\d{5}$/.test(String(county.fips)) && county.name) row.name = county.name;
     for (const candidate of county.candidates || []) {
       const votes = Number(candidate.votes);
       if (!Number.isSafeInteger(votes) || votes < 0) continue;
       const code = String(candidate.partyCode || candidate.party || "").toUpperCase();
       row[code === "D" || code === "R" ? code : "other"] += votes;
     }
-    byFips.set(county.fips, row);
+    byFips.set(fips, row);
   }
 }
 
@@ -458,7 +466,16 @@ async function handleHouseCountyTotals(request, response, url) {
     sendJson(response, 400, { error: "Invalid state" });
     return;
   }
-  const hydrateBudget = Math.max(0, Math.min(80, Number(url.searchParams.get("hydrate")) || (stateFilter ? 40 : 48)));
+  const hydrateParam = url.searchParams.get("hydrate");
+  const hydrateBudget = Math.max(
+    0,
+    Math.min(
+      80,
+      hydrateParam === null || hydrateParam === ""
+        ? (stateFilter ? 40 : 48)
+        : Number(hydrateParam)
+    )
+  );
   let data = await currentPublicResults();
   const races = (data.groups || [])
     .flatMap((group) => group.races || [])

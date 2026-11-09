@@ -1258,14 +1258,25 @@ export async function buildRaceResultDetail(id) {
 
 export async function buildRaceResultDetailWithHistory(id, options = {}) {
   const detail = await buildRaceResultDetail(id);
-  const hydratedDetail = {
+  let hydratedDetail = {
     ...detail,
     voteHistory: appendVoteHistory(detail)
   };
   if (options.persist !== false) {
     mkdirSync(DETAIL_DIR_URL, { recursive: true });
-    const target=new URL(`${id}.json`, DETAIL_DIR_URL), encoded=JSON.stringify(hydratedDetail);
+    const target=new URL(`${id}.json`, DETAIL_DIR_URL);
     let previous="";try{previous=readFileSync(target,"utf8");}catch{}
+    // Never clobber a persisted county breakdown with an empty one from a
+    // topline-only rebuild (corrupted runtime / pre-hydrate refresh).
+    if (previous && !hydratedDetail.counties?.length) {
+      try {
+        const prior = JSON.parse(previous);
+        if (prior?.counties?.length) {
+          hydratedDetail = { ...hydratedDetail, counties: prior.counties };
+        }
+      } catch {}
+    }
+    const encoded=JSON.stringify(hydratedDetail);
     if(previous!==encoded){const temp=new URL(`${id}.json.tmp`,DETAIL_DIR_URL);writeFileSync(temp,encoded,"utf8");renameSync(temp,target);}
   }
   return hydratedDetail;

@@ -170,22 +170,31 @@
     );
   }
 
+  /** Census county FIPS for choropleth keys; roll New England towns (10-digit GEOID) up. */
+  function countyChoroplethFips(fips) {
+    const id = String(fips || "");
+    if (/^\d{5}$/.test(id)) return id;
+    if (/^\d{10}$/.test(id)) return id.slice(0, 5);
+    return "";
+  }
+
   function foldCountyVotes(byFips, counties) {
     for (const county of counties || []) {
-      if (!county?.fips) continue;
-      const row = byFips.get(county.fips) || {
-        fips: county.fips,
-        name: county.name || county.fips,
+      const fips = countyChoroplethFips(county?.fips);
+      if (!fips) continue;
+      const row = byFips.get(fips) || {
+        fips,
+        name: /^\d{5}$/.test(String(county.fips)) ? (county.name || fips) : fips,
         D: 0,
         R: 0,
         other: 0
       };
-      if (county.name) row.name = county.name;
+      if (/^\d{5}$/.test(String(county.fips)) && county.name) row.name = county.name;
       const votes = countyVoteRow(county);
       row.D += votes.D;
       row.R += votes.R;
       row.other += votes.other;
-      byFips.set(county.fips, row);
+      byFips.set(fips, row);
     }
   }
 
@@ -227,36 +236,52 @@
 
       const applyBulkRows = (rows) => {
         for (const row of rows || []) {
-          if (!row?.fips) continue;
-          byFips.set(row.fips, {
-            fips: row.fips,
-            name: row.name || row.fips,
-            D: Number(row.D) || 0,
-            R: Number(row.R) || 0,
-            other: Number(row.other) || 0
-          });
+          const fips = countyChoroplethFips(row?.fips);
+          if (!fips) continue;
+          const prev = byFips.get(fips) || { fips, name: row.name || fips, D: 0, R: 0, other: 0 };
+          if (row.name && /^\d{5}$/.test(String(row.fips))) prev.name = row.name;
+          prev.D += Number(row.D) || 0;
+          prev.R += Number(row.R) || 0;
+          prev.other += Number(row.other) || 0;
+          byFips.set(fips, prev);
         }
       };
 
-      // Bulk endpoint hydrates missing county pages in chunks; keep asking until filled.
+      // Prefer the prebuilt national aggregate (works on static serve-local).
       let bulk = null;
+      if (!stateFilter && stillCurrent()) {
+        bulk = await page.safeJson?.("data/election-night-house-counties.json")
+          || await page.safeJson?.("data/election-night-house-counties.json.gz");
+        if (bulk && Array.isArray(bulk.counties) && bulk.counties.length) {
+          applyBulkRows(bulk.counties);
+          onProgress?.(byFips);
+          if (note) {
+            note.textContent = `Loading county House totals for ${label}… ${bulk.racesWithCounties || bulk.counties.length} seats ready`;
+          }
+        } else {
+          bulk = null;
+        }
+      }
+
+      // Live API hydrates missing county pages in chunks; keep asking until filled.
       let passes = 0;
       while (stillCurrent() && passes < 12) {
         passes++;
         const params = new URLSearchParams();
         if (stateFilter) params.set("state", stateFilter);
         params.set("hydrate", String(stateFilter ? 40 : 48));
-        bulk = await page.safeJson?.(`/api/live-results/house-counties?${params}`);
-        if (!bulk || !Array.isArray(bulk.counties)) break;
-        applyBulkRows(bulk.counties);
+        const live = await page.safeJson?.(`/api/live-results/house-counties?${params}`);
+        if (!live || !Array.isArray(live.counties)) break;
+        bulk = live;
+        applyBulkRows(live.counties);
         onProgress?.(byFips);
-        if (!(bulk.racesMissingCounties > 0) || !(bulk.hydratedThisPass > 0)) break;
+        if (!(live.racesMissingCounties > 0) || !(live.hydratedThisPass > 0)) break;
         if (note) {
-          note.textContent = `Loading county House totals for ${label}… ${bulk.racesWithCounties || 0} seats ready, ${bulk.racesMissingCounties} left`;
+          note.textContent = `Loading county House totals for ${label}… ${live.racesWithCounties || 0} seats ready, ${live.racesMissingCounties} left`;
         }
       }
 
-      if ((!bulk || !Array.isArray(bulk.counties)) && stillCurrent()) {
+      if ((!bulk || !Array.isArray(bulk.counties) || !bulk.counties.length) && stillCurrent()) {
         // Static / lab fallback: read persisted race files directly.
         bulk = { racesMissingCounties: 0 };
         const races = (page.dataByMode?.house || []).filter((race) => !stateFilter || race.state === stateFilter);
@@ -596,14 +621,26 @@
       ? (page.houseCountyAggregate || new Map())
       : new Map();
     let features = [];
+    const statePopular = housePopularByState(page.modeRaces?.() || page.dataByMode?.house || []);
+
+    const fillForCounty = (feature) => {
+      const row = totals.get(fipsOf(feature));
+      const local = leanForRow(row);
+      if (local.total) return { stats: local, fill: stateFill(local.lean, tokens, local.margin), viaState: false };
+      // Alaska publishes House districts, not borough FIPS — fall back to state House PV
+      // so the national County lens never leaves empty grey holes.
+      const state = stateCodeFromFeature(feature);
+      const stateStats = leanForRow(statePopular.get(state));
+      if (stateStats.total) {
+        return { stats: stateStats, fill: stateFill(stateStats.lean, tokens, stateStats.margin), viaState: true };
+      }
+      return { stats: local, fill: stateFill(local.lean, tokens, local.margin), viaState: false };
+    };
 
     const paintFills = (map) => {
       totals = map || totals;
       page.viewport?.selectAll(".county-result-shape")
-        .attr("fill", (feature) => {
-          const stats = leanForRow(totals.get(fipsOf(feature)));
-          return stateFill(stats.lean, tokens, stats.margin);
-        });
+        .attr("fill", (feature) => fillForCounty(feature).fill);
     };
 
     const paintShapes = (nextFeatures) => {
@@ -614,18 +651,20 @@
         .join("path")
         .attr("class", "county-result-shape election-map-shape")
         .attr("d", (feature) => projectedFeaturePath(feature, projection))
-        .attr("fill", (feature) => {
-          const stats = leanForRow(totals.get(fipsOf(feature)));
-          return stateFill(stats.lean, tokens, stats.margin);
-        })
+        .attr("fill", (feature) => fillForCounty(feature).fill)
         .attr("stroke", "rgba(226,232,255,.55)")
         .attr("stroke-width", 0.35)
         .attr("tabindex", 0)
         .on("mousemove", (event, feature) => {
-          const row = totals.get(fipsOf(feature));
-          const stats = leanForRow(row);
-          const name = row?.name || feature.properties?.NAME || feature.properties?.countyName || fipsOf(feature);
-          page.showTooltip?.(event, leanTooltip(name, stats, "County House total"));
+          const painted = fillForCounty(feature);
+          const name = totals.get(fipsOf(feature))?.name
+            || feature.properties?.NAME
+            || feature.properties?.countyName
+            || fipsOf(feature);
+          page.showTooltip?.(
+            event,
+            leanTooltip(name, painted.stats, painted.viaState ? "State House PV fallback" : "County House total")
+          );
         })
         .on("mouseleave blur", () => page.hideTooltip?.());
     };
@@ -874,6 +913,7 @@
 
     proto.init = async function () {
       this.isAtlasPage = true;
+      this.mapRevision = this.mapRevision || 0;
       this.atlasLens = "districts";
       try {
         this.atlasLens = migrateLens(localStorage.getItem("feaAtlasLens"));
@@ -949,13 +989,13 @@
     proto.renderMap = async function () {
       if (this.selectedMode === "house" && this.atlasLens === "county") {
         const container = document.getElementById("election-map");
-        const revision = ++this.mapRevision;
+        const revision = this.mapRevision = (this.mapRevision || 0) + 1;
         container.innerHTML = `<div class="election-map-loading">Loading county House totals…</div>`;
         return renderAtlasCountyChoropleth(this, container, revision, null);
       }
       if (this.selectedMode === "house" && this.atlasLens === "pv") {
         const container = document.getElementById("election-map");
-        const revision = ++this.mapRevision;
+        const revision = this.mapRevision = (this.mapRevision || 0) + 1;
         if (this.atlasPvState) {
           return renderAtlasStateCountyMap(this, this.atlasPvState, revision, true);
         }

@@ -5,6 +5,7 @@ import { gunzipSync } from "node:zlib";
 
 const root = resolve(process.cwd());
 const port = Number(process.env.PORT || 8000);
+const apiOrigin = process.env.FEA_API_ORIGIN || "http://127.0.0.1:8010";
 
 const contentTypes = {
   ".html": "text/html; charset=utf-8",
@@ -27,6 +28,32 @@ createServer(async (request, response) => {
     return;
   }
 
+  // Proxy live results APIs to the main election server when available.
+  if (url.pathname.startsWith("/api/")) {
+    try {
+      const upstream = await fetch(`${apiOrigin}${url.pathname}${url.search}`, {
+        method: request.method,
+        headers: {
+          Accept: request.headers.accept || "application/json",
+          "If-None-Match": request.headers["if-none-match"] || ""
+        },
+        signal: AbortSignal.timeout(120000)
+      });
+      const headers = {
+        "Content-Type": upstream.headers.get("content-type") || "application/json; charset=utf-8",
+        "Cache-Control": "no-store"
+      };
+      const etag = upstream.headers.get("etag");
+      if (etag) headers.ETag = etag;
+      response.writeHead(upstream.status, headers);
+      response.end(Buffer.from(await upstream.arrayBuffer()));
+    } catch {
+      response.writeHead(502, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Live results API unavailable", origin: apiOrigin }));
+    }
+    return;
+  }
+
   let requestedPath = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
   if (requestedPath === "/2026-results" || requestedPath === "/2026-results.html") requestedPath = "/results.html";
   if (!extname(requestedPath)) requestedPath += ".html";
@@ -44,17 +71,12 @@ createServer(async (request, response) => {
       "Content-Type": contentTypes[extname(filePath).toLowerCase()] || "application/octet-stream",
       "Cache-Control": "no-store"
     };
-    // Precompressed JSON (.json.gz): either advertise gzip or decompress for clients
-    // that treat the body as raw JSON (cache: no-store fetch + response.json()).
+    // Precompressed JSON (.json.gz): always decompress for local preview.
+    // Browsers often omit Content-Encoding handling for opaque/file fetches, and
+    // response.json() then fails on raw gzip bytes — which left the County map blank.
     if (filePath.endsWith(".json.gz")) {
-      const accept = String(request.headers["accept-encoding"] || "");
-      if (/\bgzip\b/.test(accept)) {
-        headers["Content-Encoding"] = "gzip";
-        headers["Content-Type"] = "application/json; charset=utf-8";
-      } else {
-        body = gunzipSync(body);
-        headers["Content-Type"] = "application/json; charset=utf-8";
-      }
+      body = gunzipSync(body);
+      headers["Content-Type"] = "application/json; charset=utf-8";
     }
     response.writeHead(200, headers);
     response.end(body);
