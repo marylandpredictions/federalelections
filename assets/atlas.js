@@ -217,61 +217,98 @@
 
     const gen = (page.houseCountyHydrateGen || 0) + 1;
     page.houseCountyHydrateGen = gen;
-
-    const races = (page.dataByMode?.house || []).filter((race) => {
-      if (stateFilter && race.state !== stateFilter) return false;
-      // Skip empty contests — they almost never have county rows worth waiting for.
-      return raceHasReportedVotes(race) || page.liveRaceDetails?.get(race.id)?.counties?.length;
-    });
-    const byFips = new Map();
-    const seen = new Set();
-
-    for (const race of races) {
-      const cached = page.liveRaceDetails?.get(race.id);
-      if (!cached?.counties?.length) continue;
-      foldCountyVotes(byFips, cached.counties);
-      seen.add(race.id);
-    }
-
-    const missing = races.filter((race) => !seen.has(race.id));
     const note = document.getElementById("atlas-lens-note");
     const label = stateFilter ? STATE_NAMES[stateFilter] || stateFilter : "national";
     const stillCurrent = () => page.houseCountyHydrateGen === gen;
-    if (note && stillCurrent()) {
-      note.textContent = missing.length
-        ? `Loading county House totals for ${label}…`
-        : `County House totals — ${label}`;
-    }
-    if (stillCurrent()) onProgress?.(byFips);
+    if (note) note.textContent = `Loading county House totals for ${label}…`;
 
     const promise = (async () => {
-      const concurrency = Math.min(40, Math.max(8, missing.length || 1));
-      let cursor = 0;
-      let finished = 0;
-      async function worker() {
-        while (cursor < missing.length && stillCurrent()) {
-          const race = missing[cursor++];
-          try {
-            foldCountyVotes(byFips, await fetchRaceCounties(page, race));
-          } catch {}
-          finished++;
-          if (!stillCurrent()) return;
-          if (finished === missing.length || finished % 6 === 0) {
-            if (note && missing.length) {
-              note.textContent = `Loading county House totals for ${label}… ${finished}/${missing.length}`;
+      const byFips = new Map();
+
+      // Prefer one bulk read of persisted race details (no NBC fan-out).
+      const query = stateFilter ? `?state=${encodeURIComponent(stateFilter)}` : "";
+      let bulk = await page.safeJson?.(`/api/live-results/house-counties${query}`);
+      if (stillCurrent() && Array.isArray(bulk?.counties)) {
+        for (const row of bulk.counties) {
+          if (!row?.fips) continue;
+          byFips.set(row.fips, {
+            fips: row.fips,
+            name: row.name || row.fips,
+            D: Number(row.D) || 0,
+            R: Number(row.R) || 0,
+            other: Number(row.other) || 0
+          });
+        }
+        onProgress?.(byFips);
+      } else if (stillCurrent()) {
+        // Static / lab fallback: read persisted race files directly (still no provider hydrate).
+        bulk = { racesMissingCounties: 0 };
+        const races = (page.dataByMode?.house || []).filter((race) => !stateFilter || race.state === stateFilter);
+        const concurrency = Math.min(24, Math.max(6, races.length || 1));
+        let cursor = 0;
+        let finished = 0;
+        async function fileWorker() {
+          while (cursor < races.length && stillCurrent()) {
+            const race = races[cursor++];
+            try {
+              const detail = await page.safeJson?.(`data/live-results-races/${encodeURIComponent(race.id)}.json`);
+              if (detail?.counties?.length) foldCountyVotes(byFips, detail.counties);
+              else bulk.racesMissingCounties++;
+            } catch {
+              bulk.racesMissingCounties++;
             }
-            onProgress?.(byFips);
+            finished++;
+            if (finished === races.length || finished % 20 === 0) onProgress?.(byFips);
           }
         }
+        await Promise.all(Array.from({ length: Math.min(concurrency, races.length || 1) }, () => fileWorker()));
+        onProgress?.(byFips);
       }
-      await Promise.all(Array.from({ length: Math.min(concurrency, missing.length || 1) }, () => worker()));
+
+      // Fold anything already cached in the client.
+      for (const race of page.dataByMode?.house || []) {
+        if (stateFilter && race.state !== stateFilter) continue;
+        const cached = page.liveRaceDetails?.get(race.id);
+        if (cached?.counties?.length) foldCountyVotes(byFips, cached.counties);
+      }
+      onProgress?.(byFips);
+
+      // Only gap-fill at state scope — national fan-out to /race is what made County feel broken.
+      if (stateFilter && stillCurrent()) {
+        const missing = (page.dataByMode?.house || []).filter((race) => {
+          if (race.state !== stateFilter || !raceHasReportedVotes(race)) return false;
+          return !page.liveRaceDetails?.get(race.id)?.counties?.length;
+        });
+        if (missing.length) {
+          const concurrency = Math.min(10, missing.length);
+          let cursor = 0;
+          let finished = 0;
+          async function worker() {
+            while (cursor < missing.length && stillCurrent()) {
+              const race = missing[cursor++];
+              try {
+                foldCountyVotes(byFips, await fetchRaceCounties(page, race));
+              } catch {}
+              finished++;
+              if (!stillCurrent()) return;
+              if (finished === missing.length || finished % 3 === 0) {
+                if (note) note.textContent = `Loading county House totals for ${label}… ${finished}/${missing.length}`;
+                onProgress?.(byFips);
+              }
+            }
+          }
+          await Promise.all(Array.from({ length: concurrency }, () => worker()));
+        }
+      }
+
       if (!stillCurrent()) return byFips;
       page.houseCountyAggregate = byFips;
       page.houseCountyAggregateState = key;
       if (note) {
+        const partial = bulk?.racesMissingCounties > 0;
         note.textContent = stateFilter
-          ? `${label} county House totals — votes summed across every district piece.`
-          : "County totals — House votes summed across every district piece in each county.";
+          ? `${label} county House totals — votes summed across every district piece.${partial ? " Some seats still awaiting county detail." : ""}`
+          : `County totals — House votes summed across district pieces.${partial ? " Gray counties are still awaiting local detail." : ""}`;
       }
       onProgress?.(byFips);
       return byFips;
@@ -283,6 +320,48 @@
     } finally {
       if (page.houseCountyHydrate?.promise === promise) page.houseCountyHydrate = null;
     }
+  }
+
+  async function loadAtlasCountyFeatures(page, stateFilter, revision, onBatch) {
+    if (stateFilter) {
+      let features = await page.loadCountyFeatures?.(stateFilter) || [];
+      if (!features.length) {
+        const national = await page.safeJson?.("data/result-counties.geojson");
+        const fips = typeof stateFipsForElectionNight === "function" ? stateFipsForElectionNight(stateFilter) : "";
+        features = (national?.features || []).filter((feature) => {
+          const id = String(feature.id || feature.properties?.GEOID || "").padStart(5, "0");
+          return !fips || id.slice(0, 2) === fips;
+        });
+      }
+      return features;
+    }
+
+    // National: load compact per-state county packs (never the 28MB national GeoJSON).
+    if (page.atlasNationalCountyFeatures?.length) return page.atlasNationalCountyFeatures;
+    const assets = page.mapAssets?.counties || {};
+    const entries = Object.entries(assets);
+    const features = [];
+    const concurrency = 8;
+    let cursor = 0;
+    async function worker() {
+      while (cursor < entries.length) {
+        if (revision !== page.mapRevision) return;
+        const [, path] = entries[cursor++];
+        const geo = await page.safeJson?.(path);
+        const batch = geo?.type === "Topology"
+          ? (typeof topojson !== "undefined"
+            ? topojson.feature(geo, geo.objects.counties || Object.values(geo.objects || {})[0]).features
+            : [])
+          : (geo?.features || []);
+        if (batch.length) {
+          features.push(...batch);
+          onBatch?.(features);
+        }
+      }
+    }
+    await Promise.all(Array.from({ length: Math.min(concurrency, entries.length || 1) }, () => worker()));
+    if (revision === page.mapRevision) page.atlasNationalCountyFeatures = features;
+    return features;
   }
 
   function updateLensChrome(page) {
@@ -373,9 +452,16 @@
     if (!panel || innerWidth <= 600 || page._atlasPanelSized) return;
     page._atlasPanelSized = true;
     let saved = null;
-    try { saved = JSON.parse(localStorage.getItem("feaRacePanelSize") || "null"); } catch {}
-    if (!saved || (Array.isArray(saved) && Number(saved[0]) < 420)) {
-      page.setPanelSize?.(Math.min(520, innerWidth - 48), Math.min(640, Math.max(520, innerHeight - 160)));
+    let trimmed = false;
+    try {
+      saved = JSON.parse(localStorage.getItem("feaRacePanelSize") || "null");
+      trimmed = localStorage.getItem("feaAtlasPanelTrimmed") === "1";
+    } catch {}
+    const tooSmall = !saved || (Array.isArray(saved) && Number(saved[0]) < 360);
+    const tooBigFromPriorDefault = !trimmed && Array.isArray(saved) && Number(saved[0]) >= 500;
+    if (tooSmall || tooBigFromPriorDefault) {
+      page.setPanelSize?.(Math.min(440, innerWidth - 48), Math.min(560, Math.max(420, innerHeight - 180)));
+      try { localStorage.setItem("feaAtlasPanelTrimmed", "1"); } catch {}
     }
   }
 
@@ -429,40 +515,23 @@
 
   async function renderAtlasCountyChoropleth(page, container, revision, stateFilter = null) {
     page.detailMapActive = Boolean(stateFilter);
-
-    let features = [];
-    if (page.loadCountyFeatures) {
-      features = await page.loadCountyFeatures(stateFilter) || [];
-    }
-    if (!features.length) {
-      const national = await page.safeJson?.("data/result-counties.geojson");
-      features = national?.features || [];
-    }
-    if (revision !== page.mapRevision) return;
-    if (stateFilter) {
-      const fips = typeof stateFipsForElectionNight === "function" ? stateFipsForElectionNight(stateFilter) : "";
-      features = features.filter((feature) => {
-        const id = String(feature.id || feature.properties?.GEOID || "").padStart(5, "0");
-        return !fips || id.slice(0, 2) === fips;
-      });
-    }
-    if (!features.length) {
-      updateLensChrome(page);
-      return;
-    }
-
     const tokens = window.FEADeskTheme?.resolved?.tokens || {};
     const { width, height } = page.mapDimensions();
+    const stateFeatures = sanitizeStateFeatures(await page.loadResultStateFeatures());
+    if (revision !== page.mapRevision) return;
+
+    // Fit to states first so the national view paints immediately while county packs stream in.
+    const fitFeatures = stateFilter
+      ? stateFeatures.filter((feature) => stateCodeFromFeature(feature) === stateFilter)
+      : stateFeatures;
     const projection = FEANight.fitRenderedGeometry(
       d3.geoAlbersUsa(),
       stateFilter ? [[34, 34], [width - 34, height - 34]] : page.mapExtent(width, height),
-      { type: "FeatureCollection", features }
+      { type: "FeatureCollection", features: fitFeatures.length ? fitFeatures : stateFeatures }
     );
     page.path = d3.geoPath(projection);
     page.createSvg(container, width, height);
-    page.visibleCountyFeatures = features;
 
-    const stateFeatures = sanitizeStateFeatures(await page.loadResultStateFeatures());
     if (stateFilter) {
       page.drawMapContext?.(projection, {
         highways: page.highwayFeatures || [],
@@ -489,6 +558,17 @@
         highways: await page.loadHighwayFeatures?.() || [],
         raceStates: new Set(page.modeRaces().map((race) => race.state))
       });
+      page.viewport.append("g")
+        .attr("class", "election-map-context-layer")
+        .selectAll(".map-context-shape")
+        .data(stateFeatures)
+        .join("path")
+        .attr("class", "map-context-shape is-dimmed-context")
+        .attr("d", (feature) => projectedFeaturePath(feature, projection))
+        .attr("fill", tokens["map-neutral"] || "#1a2840")
+        .attr("stroke", "rgba(226,232,255,.28)")
+        .attr("stroke-width", 0.45)
+        .attr("pointer-events", "none");
     }
 
     const fipsOf = (feature) => {
@@ -499,6 +579,7 @@
     let totals = page.houseCountyAggregateState === (stateFilter || "*")
       ? (page.houseCountyAggregate || new Map())
       : new Map();
+    let features = [];
 
     const paintFills = (map) => {
       totals = map || totals;
@@ -509,36 +590,49 @@
         });
     };
 
-    page.viewport.selectAll(".county-result-shape")
-      .data(features)
-      .join("path")
-      .attr("class", "county-result-shape election-map-shape")
-      .attr("d", (feature) => projectedFeaturePath(feature, projection))
-      .attr("fill", (feature) => {
-        const stats = leanForRow(totals.get(fipsOf(feature)));
-        return stateFill(stats.lean, tokens, stats.margin);
-      })
-      .attr("stroke", "rgba(226,232,255,.55)")
-      .attr("stroke-width", 0.35)
-      .attr("tabindex", 0)
-      .on("mousemove", (event, feature) => {
-        const row = totals.get(fipsOf(feature));
-        const stats = leanForRow(row);
-        const name = row?.name || feature.properties?.NAME || feature.properties?.countyName || fipsOf(feature);
-        page.showTooltip?.(event, leanTooltip(name, stats, "County House total"));
-      })
-      .on("mouseleave blur", () => page.hideTooltip?.());
+    const paintShapes = (nextFeatures) => {
+      features = nextFeatures;
+      page.visibleCountyFeatures = features;
+      page.viewport.selectAll(".county-result-shape")
+        .data(features, (feature) => fipsOf(feature))
+        .join("path")
+        .attr("class", "county-result-shape election-map-shape")
+        .attr("d", (feature) => projectedFeaturePath(feature, projection))
+        .attr("fill", (feature) => {
+          const stats = leanForRow(totals.get(fipsOf(feature)));
+          return stateFill(stats.lean, tokens, stats.margin);
+        })
+        .attr("stroke", "rgba(226,232,255,.55)")
+        .attr("stroke-width", 0.35)
+        .attr("tabindex", 0)
+        .on("mousemove", (event, feature) => {
+          const row = totals.get(fipsOf(feature));
+          const stats = leanForRow(row);
+          const name = row?.name || feature.properties?.NAME || feature.properties?.countyName || fipsOf(feature);
+          page.showTooltip?.(event, leanTooltip(name, stats, "County House total"));
+        })
+        .on("mouseleave blur", () => page.hideTooltip?.());
+    };
 
     page.addZoomControls();
     updateLensChrome(page);
 
-    const hydrated = await hydrateHouseCountyTotals(page, stateFilter, {
+    // Votes and geometry load in parallel; geometry streams state-by-state nationally.
+    const hydratePromise = hydrateHouseCountyTotals(page, stateFilter, {
       onProgress: (map) => {
         if (revision !== page.mapRevision) return;
         paintFills(map);
       }
     });
+
+    const geometryPromise = loadAtlasCountyFeatures(page, stateFilter, revision, (batch) => {
+      if (revision !== page.mapRevision) return;
+      paintShapes(batch.slice());
+    });
+
+    const [hydrated, loadedFeatures] = await Promise.all([hydratePromise, geometryPromise]);
     if (revision !== page.mapRevision) return;
+    if (loadedFeatures?.length) paintShapes(loadedFeatures);
     paintFills(hydrated);
   }
 
