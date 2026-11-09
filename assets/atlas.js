@@ -135,18 +135,22 @@
     return `${Number(n || 0).toFixed(1)}%`;
   }
 
-  /** Match election-night race tooltip chrome (title + party table + foot). */
-  function raceStyleTooltip(title, rows, footLeft = "", footRight = "") {
-    const body = (rows || []).map((row, index) => `
-      <tr class="${index === 0 && row.live ? "leading" : ""}">
-        <td><span class="tooltip-party-bar" style="background:${escapeHtml(row.color)}"></span>${escapeHtml(row.name)}</td>
-        <td>${escapeHtml(row.percent)}</td>
+  /** Match election-night county tooltip chrome (title + Candidate/Votes/Pct table). */
+  function raceStyleTooltip(title, rows, footLeft = "", footRight = "", { muted = "" } = {}) {
+    const body = (rows || []).map((row) => `
+      <tr class="${row.live ? "leading" : ""}">
+        <td><span class="tooltip-party-bar" style="background:${escapeHtml(row.color)}"></span>${escapeHtml(row.name)}${row.party ? ` <small>(${escapeHtml(row.party)})</small>` : ""}</td>
         <td>${escapeHtml(row.votes)}</td>
+        <td>${escapeHtml(row.percent)}</td>
       </tr>
     `).join("");
     return `
       <div class="election-map-tooltip-title">${escapeHtml(title)}</div>
-      <table class="election-map-tooltip-table"><tbody>${body}</tbody></table>
+      ${muted ? `<div class="election-map-tooltip-muted">${escapeHtml(muted)}</div>` : ""}
+      <table class="election-map-tooltip-table">
+        ${rows?.length ? "<thead><tr><th>Candidate</th><th>Votes</th><th>Pct</th></tr></thead>" : ""}
+        <tbody>${body}</tbody>
+      </table>
       <div class="election-map-tooltip-foot">
         <span>${escapeHtml(footLeft)}</span>
         <span>${escapeHtml(footRight)}</span>
@@ -154,25 +158,35 @@
     `;
   }
 
-  function leanTooltip(title, stats, footRight = "") {
+  function leanTooltip(title, stats, footOrOpts = "") {
+    const opts = typeof footOrOpts === "string" ? { footRight: footOrOpts } : (footOrOpts || {});
+    const footLeft = opts.footLeft || "";
+    const footRight = opts.footRight || "";
+    const muted = opts.muted || "";
     if (!stats.total) {
-      return raceStyleTooltip(title, [], "No votes tabulated yet", footRight);
+      return raceStyleTooltip(title, [], footLeft || "No votes tabulated yet", footRight, { muted });
     }
     const tokens = window.FEADeskTheme?.resolved?.tokens || {};
     return raceStyleTooltip(
       title,
       [
-        { name: "Democratic", color: tokens["map-dem"] || "#3a7bd5", percent: formatPercent(stats.demShare), votes: formatVotes(stats.D), live: stats.lean === "D" },
-        { name: "Republican", color: tokens["map-rep"] || "#c94352", percent: formatPercent(stats.repShare), votes: formatVotes(stats.R), live: stats.lean === "R" }
+        { name: "Democratic", party: "D", color: tokens["map-dem"] || "#3a7bd5", percent: formatPercent(stats.demShare), votes: formatVotes(stats.D), live: stats.lean === "D" },
+        { name: "Republican", party: "R", color: tokens["map-rep"] || "#c94352", percent: formatPercent(stats.repShare), votes: formatVotes(stats.R), live: stats.lean === "R" }
       ],
-      `Margin D−R ${stats.margin >= 0 ? "+" : ""}${stats.margin.toFixed(1)}`,
-      footRight || `${formatVotes(stats.total)} votes`
+      footLeft || `Margin D−R ${stats.margin >= 0 ? "+" : ""}${stats.margin.toFixed(1)}`,
+      footRight || `${formatVotes(stats.total)} votes`,
+      { muted }
     );
   }
 
-  /** Census county FIPS for choropleth keys; roll New England towns (10-digit GEOID) up. */
+  function dcTooltip() {
+    return `<div class="election-map-tooltip-title">No voting house member</div>`;
+  }
+
+  /** Choropleth unit id: county/planning-region FIPS, NE town→county, or Alaska HD. */
   function countyChoroplethFips(fips) {
     const id = String(fips || "");
+    if (/^AK-HD-(?:0[1-9]|[1-3]\d|40)$/.test(id) || id === "AK-OA") return id;
     if (/^\d{5}$/.test(id)) return id;
     if (/^\d{10}$/.test(id)) return id.slice(0, 5);
     return "";
@@ -184,12 +198,14 @@
       if (!fips) continue;
       const row = byFips.get(fips) || {
         fips,
-        name: /^\d{5}$/.test(String(county.fips)) ? (county.name || fips) : fips,
+        name: county.name && county.name !== fips ? county.name : fips,
         D: 0,
         R: 0,
         other: 0
       };
-      if (/^\d{5}$/.test(String(county.fips)) && county.name) row.name = county.name;
+      if (county.name && county.name !== String(county.fips) && !/^\d{10}$/.test(String(county.fips))) {
+        row.name = county.name;
+      }
       const votes = countyVoteRow(county);
       row.D += votes.D;
       row.R += votes.R;
@@ -236,10 +252,10 @@
 
       const applyBulkRows = (rows) => {
         for (const row of rows || []) {
-          const fips = countyChoroplethFips(row?.fips);
+          const fips = countyChoroplethFips(row?.fips) || (/^AK-HD-|^AK-OA$/.test(String(row?.fips || "")) ? String(row.fips) : "");
           if (!fips) continue;
           const prev = byFips.get(fips) || { fips, name: row.name || fips, D: 0, R: 0, other: 0 };
-          if (row.name && /^\d{5}$/.test(String(row.fips))) prev.name = row.name;
+          if (row.name && row.name !== fips) prev.name = row.name;
           prev.D += Number(row.D) || 0;
           prev.R += Number(row.R) || 0;
           prev.other += Number(row.other) || 0;
@@ -249,23 +265,27 @@
 
       // Prefer the prebuilt national aggregate (works on static serve-local).
       let bulk = null;
+      let staticComplete = false;
       if (!stateFilter && stillCurrent()) {
         bulk = await page.safeJson?.("data/election-night-house-counties.json")
           || await page.safeJson?.("data/election-night-house-counties.json.gz");
         if (bulk && Array.isArray(bulk.counties) && bulk.counties.length) {
           applyBulkRows(bulk.counties);
           onProgress?.(byFips);
+          staticComplete = !(bulk.racesMissingCounties > 0) && byFips.size >= 2800;
           if (note) {
-            note.textContent = `Loading county House totals for ${label}… ${bulk.racesWithCounties || bulk.counties.length} seats ready`;
+            note.textContent = staticComplete
+              ? NOTES.county
+              : `Loading county House totals for ${label}… ${bulk.racesWithCounties || bulk.counties.length} seats ready`;
           }
         } else {
           bulk = null;
         }
       }
 
-      // Live API hydrates missing county pages in chunks; keep asking until filled.
+      // Live API only when the static aggregate is incomplete — avoid multi-pass NBC waits.
       let passes = 0;
-      while (stillCurrent() && passes < 12) {
+      while (!staticComplete && stillCurrent() && passes < 12) {
         passes++;
         const params = new URLSearchParams();
         if (stateFilter) params.set("state", stateFilter);
@@ -363,7 +383,26 @@
     }
   }
 
+  async function loadGeoFeatures(page, path) {
+    if (!path) return [];
+    const geo = await page.safeJson?.(path);
+    if (!geo) return [];
+    if (geo.type === "Topology") {
+      return typeof topojson !== "undefined"
+        ? topojson.feature(geo, geo.objects.counties || geo.objects.districts || Object.values(geo.objects || {})[0]).features
+        : [];
+    }
+    return geo.features || [];
+  }
+
   async function loadAtlasCountyFeatures(page, stateFilter, revision, onBatch) {
+    if (stateFilter === "AK") {
+      const fips = typeof stateFipsForElectionNight === "function" ? stateFipsForElectionNight("AK") : "02";
+      const path = page.mapAssets?.legislativeDistricts?.[fips]?.path;
+      const features = await loadGeoFeatures(page, path);
+      if (features.length) return features;
+      return page.loadCountyFeatures?.("AK") || [];
+    }
     if (stateFilter) {
       let features = await page.loadCountyFeatures?.(stateFilter) || [];
       if (!features.length) {
@@ -377,50 +416,70 @@
       return features;
     }
 
-    // National: load compact per-state county packs (never the 28MB national GeoJSON).
+    // National: per-state packs; Alaska uses House-district geometry (one at-large seat).
     if (page.atlasNationalCountyFeatures?.length) return page.atlasNationalCountyFeatures;
-    const assets = page.mapAssets?.counties || {};
-    const entries = Object.entries(assets);
+    const countyAssets = page.mapAssets?.counties || {};
+    const entries = Object.entries(countyAssets).filter(([fips]) => fips !== "02");
+    const akPath = page.mapAssets?.legislativeDistricts?.["02"]?.path;
     const features = [];
-    const concurrency = 8;
+    const concurrency = 16;
     let cursor = 0;
     async function worker() {
       while (cursor < entries.length) {
         if (revision !== page.mapRevision) return;
         const [, path] = entries[cursor++];
-        const geo = await page.safeJson?.(path);
-        const batch = geo?.type === "Topology"
-          ? (typeof topojson !== "undefined"
-            ? topojson.feature(geo, geo.objects.counties || Object.values(geo.objects || {})[0]).features
-            : [])
-          : (geo?.features || []);
+        const batch = await loadGeoFeatures(page, path);
         if (batch.length) {
           features.push(...batch);
           onBatch?.(features);
         }
       }
     }
-    await Promise.all(Array.from({ length: Math.min(concurrency, entries.length || 1) }, () => worker()));
+    const jobs = [Promise.all(Array.from({ length: Math.min(concurrency, entries.length || 1) }, () => worker()))];
+    if (akPath) {
+      jobs.push((async () => {
+        const batch = await loadGeoFeatures(page, akPath);
+        if (revision !== page.mapRevision || !batch.length) return;
+        features.push(...batch);
+        onBatch?.(features);
+      })());
+    }
+    await Promise.all(jobs);
     if (revision === page.mapRevision) page.atlasNationalCountyFeatures = features;
     return features;
   }
 
   function updateLensChrome(page) {
     const house = page.selectedMode === "house";
+    const countyOn = Boolean(page.atlasCountyOn);
     document.querySelectorAll(".atlas-lens [data-atlas-lens]").forEach((button) => {
       const lens = button.dataset.atlasLens;
-      button.hidden = (lens === "pv" || lens === "county") && !house;
-      const on = page.atlasLens === lens && !button.hidden;
+      // County geography hides House PV; Pop. weighted + Swing stay as overlays.
+      button.hidden = ((lens === "pv" || lens === "county") && !house) || (lens === "pv" && countyOn);
+      let on = false;
+      if (lens === "county") on = countyOn;
+      else if (lens === "bubbles") on = page.atlasOverlay === "bubbles" || (!countyOn && page.atlasLens === "bubbles");
+      else if (lens === "swing") on = page.atlasOverlay === "swing" || (!countyOn && page.atlasLens === "swing");
+      else if (lens === "pv") on = !countyOn && page.atlasLens === "pv";
+      else on = page.atlasLens === lens && !button.hidden;
       button.setAttribute("aria-pressed", String(on));
       button.setAttribute("aria-selected", String(on));
     });
     const note = document.getElementById("atlas-lens-note");
     if (note) {
-      note.textContent = house
-        ? (NOTES[page.atlasLens] || NOTES.districts)
-        : "State map for this chamber. Open a race for local detail. Pop. weighted and Swing stay available.";
+      if (!house) {
+        note.textContent = "State map for this chamber. Open a race for local detail. Pop. weighted and Swing stay available.";
+      } else if (countyOn && page.atlasOverlay === "bubbles") {
+        note.textContent = "County House totals with population-weighted bubbles.";
+      } else if (countyOn && page.atlasOverlay === "swing") {
+        note.textContent = "County House swing vs baseline (blue = Dem, red = Rep). Use View to pick a baseline.";
+      } else if (countyOn) {
+        note.textContent = NOTES.county;
+      } else {
+        note.textContent = NOTES[page.atlasLens] || NOTES.districts;
+      }
     }
-    document.body.dataset.atlasActiveLens = page.atlasLens;
+    document.body.dataset.atlasActiveLens = countyOn ? `county${page.atlasOverlay ? `-${page.atlasOverlay}` : ""}` : page.atlasLens;
   }
 
   async function restoreRaceDetail(page, race, county) {
@@ -439,36 +498,63 @@
     const keepRace = page.currentRace;
     const keepCounty = page.lockedCounty;
     const priorLens = page.atlasLens;
-    page.atlasLens = lens;
-    try { localStorage.setItem("feaAtlasLens", lens); } catch {}
-    if (lens === "swing") {
-      if (page.comparisonMode === "live") setAtlasComparison(page, "pres-2024");
+    const countyWasOn = Boolean(page.atlasCountyOn);
+
+    if (lens === "county") {
+      page.atlasCountyOn = !page.atlasCountyOn;
+      page.atlasOverlay = null;
+      page.atlasLens = page.atlasCountyOn ? "county" : "districts";
+      page.atlasPvState = page.atlasCountyOn && keepRace?.state ? keepRace.state : null;
+    } else if ((lens === "bubbles" || lens === "swing") && (page.atlasCountyOn || countyWasOn && lens === page.atlasOverlay)) {
+      // Overlays on the County House map — County stays on.
+      page.atlasCountyOn = true;
+      page.atlasOverlay = page.atlasOverlay === lens ? null : lens;
+      page.atlasLens = "county";
+      if (page.atlasOverlay === "swing" && page.comparisonMode === "live") setAtlasComparison(page, "pres-2024");
+      if (!page.atlasOverlay) setAtlasComparison(page, "live");
     } else {
-      setAtlasComparison(page, "live");
+      page.atlasCountyOn = false;
+      page.atlasOverlay = null;
+      page.atlasLens = lens === page.atlasLens ? "districts" : lens;
+      if (page.atlasLens === "swing") {
+        if (page.comparisonMode === "live") setAtlasComparison(page, "pres-2024");
+      } else if (page.atlasLens !== "county") {
+        setAtlasComparison(page, "live");
+      }
     }
+
+    try { localStorage.setItem("feaAtlasLens", page.atlasCountyOn ? "county" : page.atlasLens); } catch {}
     updateLensChrome(page);
 
-    // Leaving PV/County without an explicit state target clears drill-down.
-    // Staying on PV/County (or opening them from a race) keeps / sets atlasPvState.
-    if (lens !== "pv" && lens !== "county") {
+    if (!page.atlasCountyOn && page.atlasLens !== "pv" && page.atlasLens !== "county") {
       page.atlasPvState = null;
-    } else if (keepRace?.state) {
-      page.atlasPvState = keepRace.state;
-    } else if (priorLens !== lens) {
-      page.atlasPvState = null;
+    } else if (page.atlasLens === "pv" || page.atlasCountyOn) {
+      if (keepRace?.state) page.atlasPvState = keepRace.state;
+      else if (priorLens !== page.atlasLens && !page.atlasCountyOn) page.atlasPvState = null;
     }
 
-    if (keepRace && lens === "bubbles") {
+    if (page.atlasCountyOn) {
+      page.mapRevision = (page.mapRevision || 0) + 1;
+      if (keepRace?.state && page.atlasPvState) {
+        await renderAtlasStateCountyMap(page, keepRace.state, page.mapRevision, false);
+        page.renderFocusedRace?.(keepRace);
+      } else {
+        await page.renderMap();
+      }
+      return;
+    }
+
+    if (keepRace && page.atlasLens === "bubbles") {
       await renderAtlasCountyBubbles(page, keepRace);
       return;
     }
-    if (keepRace && (lens === "county" || lens === "pv")) {
+    if (keepRace && page.atlasLens === "pv") {
       page.mapRevision = (page.mapRevision || 0) + 1;
-      await renderAtlasStateCountyMap(page, keepRace.state, page.mapRevision, lens === "pv");
+      await renderAtlasStateCountyMap(page, keepRace.state, page.mapRevision, true);
       page.renderFocusedRace?.(keepRace);
       return;
     }
-    if (keepRace && (lens === "districts" || lens === "swing")) {
+    if (keepRace && (page.atlasLens === "districts" || page.atlasLens === "swing")) {
       await restoreRaceDetail(page, keepRace, keepCounty);
       return;
     }
@@ -480,9 +566,7 @@
       button.addEventListener("click", async () => {
         const lens = button.dataset.atlasLens;
         if (!lens || button.hidden) return;
-        // Toggle off → return to default district map.
-        const next = lens === page.atlasLens ? "districts" : lens;
-        await applyLens(page, next);
+        await applyLens(page, lens);
       });
     });
     updateLensChrome(page);
@@ -614,33 +698,115 @@
 
     const fipsOf = (feature) => {
       if (typeof featureCountyFipsForElectionNight === "function") return featureCountyFipsForElectionNight(feature);
-      return String(feature.id || feature.properties?.GEOID || "").padStart(5, "0");
+      return String(feature.id || feature.properties?.GEOID || feature.properties?.reportingUnitId || "").padStart(5, "0");
     };
 
     let totals = page.houseCountyAggregateState === (stateFilter || "*")
       ? (page.houseCountyAggregate || new Map())
       : new Map();
     let features = [];
-    const statePopular = housePopularByState(page.modeRaces?.() || page.dataByMode?.house || []);
+    const swingOn = page.atlasCountyOn && page.atlasOverlay === "swing";
+    const bubblesOn = page.atlasCountyOn && page.atlasOverlay === "bubbles";
+    if (swingOn) {
+      if (page.comparisonMode === "live") setAtlasComparison(page, "pres-2024");
+      const source = page.comparisonSource?.();
+      if (source?.id && source.id !== "live") {
+        try { await page.loadComparisonDataset?.("county", source); } catch {}
+      }
+    }
+
+    const unitName = (feature) => {
+      const id = fipsOf(feature);
+      const row = totals.get(id);
+      if (row?.name && row.name !== id) return row.name;
+      return feature.properties?.NAME || feature.properties?.NAMELSAD || feature.properties?.countyName || row?.name || id;
+    };
+
+    const atlasBaselineMargin = (feature) => {
+      const source = page.comparisonSource?.();
+      if (!source || source.id === "live") return NaN;
+      const rows = page.comparisonDatasetRows?.(page.comparisonData?.get(`${source.id}:county`), "counties") || [];
+      const id = fipsOf(feature);
+      const row = rows.find((item) => String(item.fips || item.countyFips || "").padStart(5, "0") === id);
+      return row && typeof FEAResultsUI?.margin === "function" ? FEAResultsUI.margin(row) : NaN;
+    };
 
     const fillForCounty = (feature) => {
-      const row = totals.get(fipsOf(feature));
-      const local = leanForRow(row);
-      if (local.total) return { stats: local, fill: stateFill(local.lean, tokens, local.margin), viaState: false };
-      // Alaska publishes House districts, not borough FIPS — fall back to state House PV
-      // so the national County lens never leaves empty grey holes.
-      const state = stateCodeFromFeature(feature);
-      const stateStats = leanForRow(statePopular.get(state));
-      if (stateStats.total) {
-        return { stats: stateStats, fill: stateFill(stateStats.lean, tokens, stateStats.margin), viaState: true };
+      const id = fipsOf(feature);
+      if (id === "11001" || id === "11") {
+        return { stats: leanForRow(null), fill: tokens["map-neutral"] || "#1a2840", dc: true };
       }
-      return { stats: local, fill: stateFill(local.lean, tokens, local.margin), viaState: false };
+      const row = totals.get(id);
+      const local = leanForRow(row);
+      if (swingOn) {
+        if (!local.total) return { stats: local, fill: tokens["map-neutral"] || "#1a2840" };
+        const baseline = atlasBaselineMargin(feature);
+        const shift = Number.isFinite(baseline) ? local.margin - baseline : NaN;
+        const fill = Number.isFinite(shift) && typeof marginColor === "function"
+          ? marginColor(shift)
+          : (tokens["map-neutral"] || "#1a2840");
+        return { stats: local, fill, shift };
+      }
+      if (!local.total) return { stats: local, fill: tokens["map-neutral"] || "#1a2840" };
+      return { stats: local, fill: stateFill(local.lean, tokens, local.margin) };
+    };
+
+    const tooltipForCounty = (feature) => {
+      const id = fipsOf(feature);
+      if (id === "11001" || feature.properties?.NAME === "District of Columbia") return dcTooltip();
+      const painted = fillForCounty(feature);
+      const name = unitName(feature);
+      if (swingOn && Number.isFinite(painted.shift)) {
+        return leanTooltip(name, painted.stats, {
+          footLeft: `${painted.shift >= 0 ? "D" : "R"} shift +${Math.abs(painted.shift).toFixed(1)} pts`,
+          footRight: `${formatVotes(painted.stats.total)} votes`
+        });
+      }
+      return leanTooltip(name, painted.stats);
+    };
+
+    const paintBubbles = () => {
+      page.viewport?.selectAll(".atlas-bubble-layer").remove();
+      if (!bubblesOn) return;
+      const rows = [];
+      page.viewport.selectAll(".county-result-shape").each(function (feature) {
+        try {
+          const box = this.getBBox();
+          if (!(box.width > 0 && box.height > 0)) return;
+          const stats = leanForRow(totals.get(fipsOf(feature)));
+          if (!(stats.total > 0)) return;
+          rows.push({
+            feature,
+            stats,
+            centroid: [box.x + box.width / 2, box.y + box.height / 2]
+          });
+        } catch {}
+      });
+      if (!rows.length) return;
+      const maxVotes = Math.max(1, ...rows.map((row) => row.stats.total));
+      const radius = d3.scaleSqrt().domain([0, maxVotes]).range([2.5, 22]);
+      page.viewport.append("g")
+        .attr("class", "atlas-bubble-layer")
+        .selectAll(".atlas-bubble")
+        .data(rows)
+        .join("circle")
+        .attr("class", "atlas-bubble")
+        .attr("cx", (d) => d.centroid[0])
+        .attr("cy", (d) => d.centroid[1])
+        .attr("r", (d) => radius(d.stats.total))
+        .attr("fill", (d) => stateFill(d.stats.lean, tokens, d.stats.margin))
+        .attr("fill-opacity", 0.88)
+        .attr("stroke", "rgba(8,12,24,.45)")
+        .attr("stroke-width", 0.6)
+        .attr("pointer-events", "none");
     };
 
     const paintFills = (map) => {
       totals = map || totals;
       page.viewport?.selectAll(".county-result-shape")
-        .attr("fill", (feature) => fillForCounty(feature).fill);
+        .attr("fill", (feature) => fillForCounty(feature).fill)
+        .attr("fill-opacity", bubblesOn ? 0.55 : 1);
+      paintBubbles();
     };
 
     const paintShapes = (nextFeatures) => {
@@ -652,21 +818,15 @@
         .attr("class", "county-result-shape election-map-shape")
         .attr("d", (feature) => projectedFeaturePath(feature, projection))
         .attr("fill", (feature) => fillForCounty(feature).fill)
+        .attr("fill-opacity", bubblesOn ? 0.55 : 1)
         .attr("stroke", "rgba(226,232,255,.55)")
         .attr("stroke-width", 0.35)
         .attr("tabindex", 0)
         .on("mousemove", (event, feature) => {
-          const painted = fillForCounty(feature);
-          const name = totals.get(fipsOf(feature))?.name
-            || feature.properties?.NAME
-            || feature.properties?.countyName
-            || fipsOf(feature);
-          page.showTooltip?.(
-            event,
-            leanTooltip(name, painted.stats, painted.viaState ? "State House PV fallback" : "County House total")
-          );
+          page.showTooltip?.(event, tooltipForCounty(feature));
         })
         .on("mouseleave blur", () => page.hideTooltip?.());
+      paintBubbles();
     };
 
     page.addZoomControls();
@@ -915,13 +1075,16 @@
       this.isAtlasPage = true;
       this.mapRevision = this.mapRevision || 0;
       this.atlasLens = "districts";
+      this.atlasCountyOn = false;
+      this.atlasOverlay = null;
       try {
         this.atlasLens = migrateLens(localStorage.getItem("feaAtlasLens"));
+        this.atlasCountyOn = this.atlasLens === "county";
       } catch {}
       this.outlineRaceIds = new Set();
       this.selectedMode = "house";
       try { localStorage.setItem("electionNightMode", "house"); } catch {}
-      if (this.atlasLens === "swing") {
+      if (this.atlasLens === "swing" || this.atlasOverlay === "swing") {
         if (this.comparisonMode === "live") setAtlasComparison(this, "pres-2024");
       } else {
         setAtlasComparison(this, "live");
@@ -929,12 +1092,17 @@
       this.appearance = typeof FEAAppearance === "function" ? FEAAppearance() : null;
       await originalInit.call(this);
       updateLensChrome(this);
+      // Warm county votes + geometry so the first County toggle feels like Results.
+      hydrateHouseCountyTotals(this, null).catch(() => {});
+      loadAtlasCountyFeatures(this, null, this.mapRevision || 0).catch(() => {});
     };
 
     proto.switchMode = async function (mode) {
       await originalSwitchMode.call(this, mode);
-      if (this.selectedMode !== "house" && (this.atlasLens === "pv" || this.atlasLens === "county")) {
+      if (this.selectedMode !== "house" && (this.atlasLens === "pv" || this.atlasLens === "county" || this.atlasCountyOn)) {
         this.atlasLens = "districts";
+        this.atlasCountyOn = false;
+        this.atlasOverlay = null;
         try { localStorage.setItem("feaAtlasLens", this.atlasLens); } catch {}
         this.atlasPvState = null;
       }
@@ -987,10 +1155,13 @@
     };
 
     proto.renderMap = async function () {
-      if (this.selectedMode === "house" && this.atlasLens === "county") {
+      if (this.selectedMode === "house" && (this.atlasCountyOn || this.atlasLens === "county")) {
+        this.atlasCountyOn = true;
         const container = document.getElementById("election-map");
         const revision = this.mapRevision = (this.mapRevision || 0) + 1;
-        container.innerHTML = `<div class="election-map-loading">Loading county House totals…</div>`;
+        if (!this.atlasNationalCountyFeatures?.length || !this.houseCountyAggregate) {
+          container.innerHTML = `<div class="election-map-loading">Loading county House totals…</div>`;
+        }
         return renderAtlasCountyChoropleth(this, container, revision, null);
       }
       if (this.selectedMode === "house" && this.atlasLens === "pv") {
@@ -1013,7 +1184,8 @@
         if (this.atlasPvState) return renderAtlasStateCountyMap(this, this.atlasPvState, revision, true);
         return renderAtlasHousePv(this, container, revision);
       }
-      if (this.atlasLens === "county") {
+      if (this.atlasCountyOn || this.atlasLens === "county") {
+        this.atlasCountyOn = true;
         return renderAtlasCountyChoropleth(this, container, revision, null);
       }
       if (this.atlasLens === "bubbles") {
@@ -1054,7 +1226,8 @@
       const watch = document.querySelector(".board-watch-select");
       if (watch) watch.hidden = true;
       const label = document.querySelector(".election-comparison-control");
-      if (label) label.hidden = this.atlasLens !== "swing" || this.detailMapActive;
+      const swingOn = this.atlasLens === "swing" || (this.atlasCountyOn && this.atlasOverlay === "swing");
+      if (label) label.hidden = !swingOn || this.detailMapActive;
     };
   };
 

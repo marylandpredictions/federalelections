@@ -18,6 +18,7 @@ const PASSES = Math.max(1, Math.min(40, Number(process.env.HOUSE_COUNTY_PASSES) 
 
 function choroplethFips(fips) {
   const id = String(fips || "");
+  if (/^AK-HD-(?:0[1-9]|[1-3]\d|40)$/.test(id) || id === "AK-OA") return id;
   if (/^\d{5}$/.test(id)) return id;
   if (/^\d{10}$/.test(id)) return id.slice(0, 5);
   return "";

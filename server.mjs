@@ -429,8 +429,9 @@ async function handleLiveResultRace(request, response, url) {
 
 function houseChoroplethFips(fips) {
   const id = String(fips || "");
+  if (/^AK-HD-(?:0[1-9]|[1-3]\d|40)$/.test(id) || id === "AK-OA") return id;
   if (/^\d{5}$/.test(id)) return id;
-  if (/^\d{10}$/.test(id)) return id.slice(0, 5); // New England town GEOID → county
+  if (/^\d{10}$/.test(id)) return id.slice(0, 5); // New England town GEOID → county / CT planning region
   return "";
 }
 
