@@ -48,6 +48,8 @@ export class ResultsControl {
     this.queue = Promise.resolve();
     this.failures = 0;
     this.nextPoll = 0;
+    // Race IDs whose NBC ballot/counties changed since the last probability drain.
+    this.pendingProbabilityRaceIds = new Set();
   }
   serial(fn) {
     const task = this.queue.then(async () => {
@@ -203,6 +205,14 @@ export class ResultsControl {
   countyPageFor(id) {
     return nbcCountyPage(this.runtime.races[id]);
   }
+  noteProbabilityInputChange(id) {
+    if (id) this.pendingProbabilityRaceIds.add(id);
+  }
+  drainProbabilityInputChanges() {
+    const ids = [...this.pendingProbabilityRaceIds];
+    this.pendingProbabilityRaceIds.clear();
+    return ids;
+  }
   probabilityResult(id,reportingUnitIds) {
     const raw=this.visible.runtime.races[id];
     if(!raw)return undefined;
@@ -239,6 +249,7 @@ export class ResultsControl {
           const next={...current,counties:published},signature=resultFingerprint(next);
           if(signature===current._signature)continue;
           this.runtime.races[raw.id]={...next,_signature:signature};
+          this.noteProbabilityInputChange(raw.id);
           changed=true;
           continue;
         }
@@ -253,6 +264,7 @@ export class ResultsControl {
         const next={...current,counties:merged,probabilityCounties:modelCounties,probabilityUnits:modelUnits},signature=resultFingerprint(next);
         if(signature===current._signature&&!modelChanged&&(!refreshTimestamps||!counties.some(c=>c.lastUpdated!==previous.get(c.fips)?.lastUpdated)))continue;
         this.runtime.races[raw.id]={...next,_signature:signature};
+        this.noteProbabilityInputChange(raw.id);
         changed=true;
       }
       if(!changed)return false;
@@ -341,7 +353,10 @@ export class ResultsControl {
           const prior = this.runtime.races[r.id];
           // Fetch time is deliberately excluded: a successful request is not a new result.
           const signature = resultFingerprint(r);
-          if (signature !== prior?._signature) changed = true;
+          if (signature !== prior?._signature) {
+            changed = true;
+            this.noteProbabilityInputChange(r.id);
+          }
           const lastNbcVotes=r.provider==='CivicAPI'&&(prior?.provider==='NBC'
             ? {lastUpdated:prior.lastUpdated,candidates:prior.candidates.map(({name,votes})=>({name,votes}))}
             : prior?._lastNbcVotes);

@@ -240,7 +240,8 @@ window.FEAEnhanceBoard = function (Page) {
   p.preloadLikelyDetailAssets = function () {}; // Deliberately lazy, including watched races.
   p.comparisonColorForRace = function (race) {
     if(this.isComparisonActive()&&!Number.isFinite(this.baselineRaceMargin(race)))return window.FEADeskTheme?.resolved.tokens['map-neutral']||'#8993a0';
-    if (!this.isComparisonActive() && !FEADesk.total(race))
+    // Called / uncontested seats can have 0 tabulated votes — still color the winner.
+    if (!this.isComparisonActive() && !FEADesk.total(race) && !(typeof isActuallyCalled === "function" && isActuallyCalled(race)))
       return getComputedStyle(document.body)
         .getPropertyValue("--map-neutral")
         .trim();

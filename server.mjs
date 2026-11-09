@@ -1222,26 +1222,44 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
   if (liveProbability.races.size) {
     let probabilityRunning = false;
     const probabilityErrors = new Map();
-    setInterval(async () => {
+    const probabilityDetail = (id, prior) => {
+      const aggregate = ['race-total', 'race-total-multi', 'unopposed', 'majority-lock'].includes(prior.inputMode);
+      const health = control.health();
+      const healthy = health.connection === 'connected' && !health.persistenceError
+        ? new Set(health.lastHealthyRaceIds)
+        : new Set();
+      // Aggregate race-total paths only need the national ballot, not a healthy county page.
+      if (!aggregate && !healthy.has(id)) return undefined;
+      return control.probabilityResult(id, prior.units.map((unit) => unit.id));
+    };
+    const onProbabilityError = (id, error) => {
+      if (!error) probabilityErrors.delete(id);
+      else if (probabilityErrors.get(id) !== error.message) {
+        console.warn(`Win probability update failed for ${id}: ${error.message}`);
+        probabilityErrors.set(id, error.message);
+      }
+    };
+    const runProbabilityPass = async (mode) => {
       if (probabilityRunning) return;
       probabilityRunning = true;
       try {
-        const health = control.health();
-        const healthy = new Set(health.connection === 'connected' && !health.persistenceError ? health.lastHealthyRaceIds : []);
-        await liveProbability.updateBatch((id,prior) => {
-          const aggregate=['race-total','race-total-multi','unopposed','majority-lock'].includes(prior.inputMode);
-          // Aggregate race-total paths only need the national ballot, not a healthy county page.
-          if (!aggregate && !healthy.has(id)) return undefined;
-          return control.probabilityResult(id,prior.units.map(unit=>unit.id));
-        }, (id, error) => {
-          if (!error) probabilityErrors.delete(id);
-          else if (probabilityErrors.get(id) !== error.message) {
-            console.warn(`Win probability update failed for ${id}: ${error.message}`);
-            probabilityErrors.set(id, error.message);
-          }
-        });
+        // Queue any races whose NBC votes/counties changed since the last pass.
+        liveProbability.prioritize(control.drainProbabilityInputChanges());
+        if (mode === 'all') {
+          await liveProbability.updateAll(probabilityDetail, onProbabilityError, {concurrency: 2});
+        } else {
+          // Shorter cadence: vote-drop races first, then a round-robin slice.
+          await liveProbability.updateBatch(probabilityDetail, onProbabilityError, {
+            limit: 16,
+            concurrency: 2,
+          });
+        }
       } finally { probabilityRunning = false; }
-    }, 1000).unref();
+    };
+    // Fast pass — vote drops are prioritized inside updateBatch.
+    setInterval(() => { void runProbabilityPass('batch'); }, 500).unref();
+    // Full sweep of every authorized model for good measure.
+    setInterval(() => { void runProbabilityPass('all'); }, 30000).unref();
     // Leave one request slot available for public race details.
     control.countyProvider.cacheLimit = Math.max(control.countyProvider.cacheLimit, control.catalogue.length);
     let hydrationRunning = false;
@@ -1255,10 +1273,14 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
       const ids = liveProbability.nextCountyRaces(id => healthy.has(id) && control.countyPageFor(id), slots);
       if (!ids.length) return;
       hydrationRunning = true;
-      try { await control.loadCountyResultsBatch(ids); }
+      try {
+        await control.loadCountyResultsBatch(ids);
+        // County vote drops should re-run that race's model on the next pass.
+        liveProbability.prioritize(control.drainProbabilityInputChanges());
+      }
       catch (error) { console.warn(`Win probability county refresh failed: ${error.message}`); }
       finally { hydrationRunning = false; }
-    }, 1500).unref();
+    }, 1000).unref();
   }
 }
 

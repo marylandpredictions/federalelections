@@ -83,6 +83,8 @@ export class LiveProbability {
     this.races = new Map();
     this.cursor = 0;
     this.hydrationCursor = 0;
+    // Vote-drop / county-refresh races run before the ordinary round-robin.
+    this.priorityQueue = new Set();
   }
 
   async load(release) {
@@ -117,7 +119,24 @@ export class LiveProbability {
 
   nextRaces(limit) {
     const ids = [...this.races.keys()];
+    if (!ids.length || limit <= 0) return [];
     const batch = Array.from({length: Math.min(limit, ids.length)}, () => ids[this.cursor++ % ids.length]);
+    return batch;
+  }
+
+  prioritize(ids) {
+    for (const id of ids || []) {
+      if (this.races.has(id)) this.priorityQueue.add(id);
+    }
+  }
+
+  nextPriorityRaces(limit) {
+    const batch = [];
+    for (const id of this.priorityQueue) {
+      if (batch.length >= limit) break;
+      this.priorityQueue.delete(id);
+      if (this.races.has(id)) batch.push(id);
+    }
     return batch;
   }
 
@@ -130,17 +149,30 @@ export class LiveProbability {
   }
   nextCountyRace(){return this.nextCountyRaces(()=>true,1)[0];}
 
-  async updateBatch(detailFor, onError) {
-    const batch = this.nextRaces(12);
-    await Promise.all([0, 1].map(async slot => {
-      for (let index = slot; index < batch.length; index += 2) {
+  async runIds(ids, detailFor, onError, {concurrency = 2} = {}) {
+    const batch = [...new Set(ids)].filter(id => this.races.has(id));
+    if (!batch.length) return;
+    const workers = Math.max(1, Math.min(concurrency, batch.length));
+    await Promise.all(Array.from({length: workers}, async (_, slot) => {
+      for (let index = slot; index < batch.length; index += workers) {
         const id = batch[index];
         try {
-          await this.update(id, await detailFor(id,this.races.get(id).config.prior));
-          onError(id, null);
-        } catch (error) { onError(id, error); }
+          await this.update(id, await detailFor(id, this.races.get(id).config.prior));
+          onError?.(id, null);
+        } catch (error) { onError?.(id, error); }
       }
     }));
+  }
+
+  async updateBatch(detailFor, onError, {limit = 12, concurrency = 2} = {}) {
+    // Vote drops first (individually queued), then fill with round-robin.
+    const priority = this.nextPriorityRaces(limit);
+    const batch = [...priority, ...this.nextRaces(limit - priority.length)];
+    await this.runIds(batch, detailFor, onError, {concurrency});
+  }
+
+  async updateAll(detailFor, onError, {concurrency = 2} = {}) {
+    await this.runIds([...this.races.keys()], detailFor, onError, {concurrency});
   }
 
   view(id) {

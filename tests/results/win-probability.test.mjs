@@ -236,6 +236,16 @@ test('Reviewed regular-model release runs off-thread, keeps history on restart, 
   });
   assert.equal(new Set(visited.slice(0,506)).size,506);
   assert.equal(peak,2);
+  // Vote-drop races are processed before the ordinary round-robin slice.
+  const priorityVisited=[];
+  national.prioritize(['senate-test-400','senate-test-401']);
+  await national.updateBatch(async id=>{priorityVisited.push(id);},()=>{},{limit:4});
+  assert.deepEqual(priorityVisited.slice(0,2),['senate-test-400','senate-test-401']);
+  assert.equal(priorityVisited.length,4);
+  const allVisited=[];
+  await national.updateAll(async id=>{allVisited.push(id);},()=>{},{concurrency:2});
+  assert.equal(allVisited.length,506);
+  assert.equal(new Set(allVisited).size,506);
   const hydrated=new Set();
   for(let batch=0;batch<169;batch++){
     const selected=national.nextCountyRaces(()=>true,3);

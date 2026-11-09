@@ -10,6 +10,15 @@ function unitId(fips) {
   return "";
 }
 
+function countyTotal(county) {
+  let total = 0;
+  for (const candidate of county?.candidates || []) {
+    const votes = Number(candidate.votes);
+    if (Number.isSafeInteger(votes) && votes > 0) total += votes;
+  }
+  return total;
+}
+
 function fold(by, detail, names) {
   for (const county of detail?.counties || []) {
     const fips = unitId(county?.fips);
@@ -19,7 +28,9 @@ function fold(by, detail, names) {
       name: names.get(fips) || county.name || fips,
       D: 0,
       R: 0,
-      other: 0
+      other: 0,
+      raceIds: [],
+      raceVotes: {}
     };
     if (names.get(fips)) row.name = names.get(fips);
     else if (/^\d{5}$/.test(String(county.fips)) && county.name) row.name = county.name;
@@ -29,6 +40,10 @@ function fold(by, detail, names) {
       if (!Number.isSafeInteger(votes) || votes < 0) continue;
       const code = String(candidate.partyCode || candidate.party || "").toUpperCase();
       row[code === "D" || code === "R" ? code : "other"] += votes;
+    }
+    if (detail?.id) {
+      if (!row.raceIds.includes(detail.id)) row.raceIds.push(detail.id);
+      row.raceVotes[detail.id] = (row.raceVotes[detail.id] || 0) + countyTotal(county);
     }
     by.set(fips, row);
   }
@@ -85,14 +100,10 @@ const encoded = JSON.stringify(payload);
 await writeFile(resolve(root, "data/election-night-house-counties.json"), encoded);
 await writeFile(resolve(root, "data/election-night-house-counties.json.gz"), gzipSync(Buffer.from(encoded)));
 
-const ne = [...by.values()].filter((row) => /^(09|23|25|33|44|50)/.test(row.fips));
+const sample = by.get("35039");
 console.log(JSON.stringify({
   total: by.size,
   withCounties,
   missing,
-  neNamed: ne.filter((row) => row.name !== row.fips).length,
-  neTotal: ne.length,
-  ak: [...by.keys()].filter((key) => String(key).startsWith("AK-")).length,
-  sanBernardino: by.get("06071"),
-  cumberland: by.get("23005")
+  rioArriba: sample && { name: sample.name, races: sample.raceIds, votes: sample.raceVotes }
 }, null, 2));
