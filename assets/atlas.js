@@ -249,7 +249,8 @@
       page.atlasCountyOn = false;
       page.atlasOverlay = null;
       page.atlasLens = "districts";
-      page.atlasMapType = "district";
+      page.atlasPvState = null;
+      setAtlasComparison(page, "live");
       updateLensChrome(page);
     }
     const countyLabel = row?.name || page.houseCountyAggregate?.get(fips)?.name || fips;
@@ -576,10 +577,13 @@
       page.atlasCountyOn = !page.atlasCountyOn;
       page.atlasOverlay = null;
       page.atlasLens = page.atlasCountyOn ? "county" : "districts";
-      page.atlasPvState = page.atlasCountyOn && keepRace?.state ? keepRace.state : null;
-    } else if ((lens === "bubbles" || lens === "swing") && (page.atlasCountyOn || countyWasOn && lens === page.atlasOverlay)) {
+      // Keep an existing state drilldown when turning County on (e.g. from House PV).
+      page.atlasPvState = page.atlasCountyOn
+        ? (keepRace?.state || page.atlasPvState || null)
+        : null;
+      setAtlasComparison(page, "live");
+    } else if ((lens === "bubbles" || lens === "swing") && page.atlasCountyOn) {
       // Overlays on the County House map — County stays on.
-      page.atlasCountyOn = true;
       page.atlasOverlay = page.atlasOverlay === lens ? null : lens;
       page.atlasLens = "county";
       if (page.atlasOverlay === "swing" && page.comparisonMode === "live") setAtlasComparison(page, "pres-2024");
@@ -590,7 +594,7 @@
       page.atlasLens = lens === page.atlasLens ? "districts" : lens;
       if (page.atlasLens === "swing") {
         if (page.comparisonMode === "live") setAtlasComparison(page, "pres-2024");
-      } else if (page.atlasLens !== "county") {
+      } else {
         setAtlasComparison(page, "live");
       }
     }
@@ -608,9 +612,11 @@
 
     if (page.atlasCountyOn) {
       page.mapRevision = (page.mapRevision || 0) + 1;
-      if (keepRace?.state && page.atlasPvState) {
-        await renderAtlasStateCountyMap(page, keepRace.state, page.mapRevision, false);
-        page.renderFocusedRace?.(keepRace);
+      const state = keepRace?.state || page.atlasPvState;
+      if (state) {
+        page.atlasPvState = state;
+        await renderAtlasStateCountyMap(page, state, page.mapRevision, false);
+        if (keepRace) page.renderFocusedRace?.(keepRace);
       } else {
         await page.renderMap();
       }
@@ -645,284 +651,10 @@
     updateLensChrome(page);
   }
 
-  const CARTOGRAM_LABEL = {
-    AL: "Ala.", AK: "Alaska", AZ: "Ariz.", AR: "Ark.", CA: "Calif.", CO: "Colo.",
-    CT: "Conn.", DE: "Del.", FL: "Fla.", GA: "Ga.", HI: "Hawaii", ID: "Idaho",
-    IL: "Ill.", IN: "Ind.", IA: "Iowa", KS: "Kan.", KY: "Ky.", LA: "La.",
-    ME: "Me.", MD: "Md.", MA: "Mass.", MI: "Mich.", MN: "Minn.", MS: "Miss.",
-    MO: "Mo.", MT: "Mont.", NE: "Neb.", NV: "Nev.", NH: "N.H.", NJ: "N.J.",
-    NM: "N.M.", NY: "N.Y.", NC: "N.C.", ND: "N.D.", OH: "Ohio", OK: "Okla.",
-    OR: "Ore.", PA: "Pa.", RI: "R.I.", SC: "S.C.", SD: "S.D.", TN: "Tenn.",
-    TX: "Texas", UT: "Utah", VT: "Vt.", VA: "Va.", WA: "Wash.", WV: "W.Va.",
-    WI: "Wis.", WY: "Wyo.", DC: "D.C."
-  };
-
-  // Label side relative to each state silhouette: above | below | left | right
-  const CARTOGRAM_LABEL_SIDE = {
-    WA: "above", OR: "left", CA: "left", NV: "above", ID: "left", MT: "above",
-    WY: "above", UT: "left", AZ: "left", CO: "above",     NM: "left", ND: "above",
-    SD: "left", NE: "above", KS: "above", OK: "above", TX: "below", MN: "above",
-    WI: "above", IA: "left", IL: "left", MO: "below", AR: "left", LA: "below",
-    MI: "above", IN: "right", OH: "above", KY: "below", TN: "above", PA: "above",
-    NJ: "right", MD: "right", DE: "right", WV: "left", VA: "right", NC: "below",
-    SC: "below", GA: "right", AL: "left", MS: "below", FL: "below", NY: "above",
-    MA: "above", CT: "right", RI: "right", VT: "above", NH: "above", ME: "above",
-    AK: "below", HI: "below"
-  };
-
-  function cartogramShapes() {
-    return window.FEA_ATLAS_CARTOGRAM_SHAPES || {};
-  }
-
-  function cartogramFallbackShape(count) {
-    const cols = Math.max(1, Math.ceil(Math.sqrt(count)));
-    return Array.from({ length: count }, (_, index) => [index % cols, Math.floor(index / cols)]);
-  }
-
-  function cartogramLayout(races, width, height) {
-    const byState = new Map();
-    for (const race of races || []) {
-      if (!race?.state) continue;
-      const list = byState.get(race.state) || [];
-      list.push(race);
-      byState.set(race.state, list);
-    }
-    const shapes = cartogramShapes();
-    const blocks = [];
-    for (const [state, stateRaces] of byState) {
-      const sorted = stateRaces
-        .slice()
-        .sort((a, b) => String(a.district).localeCompare(String(b.district), undefined, { numeric: true }));
-      let shape = (shapes[state] || []).map((pair) => [Number(pair[0]), Number(pair[1])]);
-      if (shape.length < sorted.length) {
-        const extra = cartogramFallbackShape(sorted.length - shape.length);
-        const maxX = shape.reduce((m, p) => Math.max(m, p[0]), -1);
-        const maxY = shape.reduce((m, p) => Math.max(m, p[1]), 0);
-        shape = shape.concat(extra.map(([x, y]) => [maxX + 1 + x, maxY + y]));
-      } else if (shape.length > sorted.length) {
-        shape = shape.slice(0, sorted.length);
-      }
-      const xs = shape.map((p) => p[0]);
-      const ys = shape.map((p) => p[1]);
-      blocks.push({
-        state,
-        races: sorted,
-        shape,
-        minX: Math.min(...xs),
-        maxX: Math.max(...xs),
-        minY: Math.min(...ys),
-        maxY: Math.max(...ys),
-        label: CARTOGRAM_LABEL[state] || state
-      });
-    }
-
-    let minX = Infinity;
-    let maxX = -Infinity;
-    let minY = Infinity;
-    let maxY = -Infinity;
-    for (const block of blocks) {
-      minX = Math.min(minX, block.minX);
-      maxX = Math.max(maxX, block.maxX + 1);
-      minY = Math.min(minY, block.minY);
-      maxY = Math.max(maxY, block.maxY + 1);
-    }
-    const gridW = Math.max(1, maxX - minX);
-    const gridH = Math.max(1, maxY - minY);
-    // Fill most of the map stage — silhouettes need room to read.
-    const fit = Math.min((width * 0.98) / gridW, (height * 0.94) / gridH);
-    const step = Math.max(12, Math.min(32, fit));
-    const gap = Math.max(0.85, step * 0.07);
-    const cell = step - gap;
-    const originBaseX = (width - gridW * step) / 2;
-    const originBaseY = (height - gridH * step) / 2;
-    const cells = [];
-    const labels = [];
-    for (const block of blocks) {
-      block.races.forEach((race, index) => {
-        const [gx, gy] = block.shape[index] || block.shape[block.shape.length - 1];
-        cells.push({
-          race,
-          state: block.state,
-          x: originBaseX + (gx - minX) * step + cell / 2,
-          y: originBaseY + (gy - minY) * step + cell / 2,
-          size: cell
-        });
-      });
-      const blockLeft = originBaseX + (block.minX - minX) * step;
-      const blockTop = originBaseY + (block.minY - minY) * step;
-      const blockW = (block.maxX - block.minX + 1) * step - gap;
-      const blockH = (block.maxY - block.minY + 1) * step - gap;
-      const side = CARTOGRAM_LABEL_SIDE[block.state] || "below";
-      let lx = blockLeft + blockW / 2;
-      let ly = blockTop + blockH + 12;
-      let anchor = "middle";
-      if (side === "above") {
-        ly = blockTop - 5;
-      } else if (side === "left") {
-        lx = blockLeft - 6;
-        ly = blockTop + blockH / 2;
-        anchor = "end";
-      } else if (side === "right") {
-        lx = blockLeft + blockW + 6;
-        ly = blockTop + blockH / 2;
-        anchor = "start";
-      }
-      labels.push({
-        state: block.state,
-        text: block.label,
-        x: lx,
-        y: ly,
-        anchor
-      });
-    }
-    return { cells, labels, cell };
-  }
-
-  function cartogramSeatHatch(race) {
-    // Hatch tight live races (not called). Called / uncontested stay solid.
-    if (typeof isActuallyCalled === "function" && isActuallyCalled(race)) return false;
-    const margin = typeof raceLiveDemMargin === "function"
-      ? raceLiveDemMargin(race)
-      : leanForRow(countyVoteRow({ candidates: race?.candidates })).margin;
-    return Number.isFinite(margin) && Math.abs(margin) < 5;
-  }
-
-  function cartogramRaceFill(page, race, tokens) {
-    // Same candidate coloring as the district map (handles called / uncontested).
-    if (typeof page.comparisonColorForRace === "function") {
-      return page.comparisonColorForRace(race);
-    }
-    if (typeof raceColor === "function") return raceColor(race);
-    const stats = leanForRow(countyVoteRow({ candidates: race?.candidates }));
-    if (!stats.total) return tokens?.["map-neutral"] || "#243044";
-    return stateFill(stats.lean, tokens, stats.margin);
-  }
-
-  function cartogramRaceTooltip(page, race) {
-    // Called uncontested seats often have 0 tabulated votes — still list the winner.
-    const called = typeof isActuallyCalled === "function" && isActuallyCalled(race);
-    const hasVotes = (race?.candidates || []).some((c) => Number(c.votes) > 0);
-    if (called && !hasVotes) {
-      const tokens = window.FEADeskTheme?.resolved?.tokens || {};
-      const winnerName = race.calls?.[0]?.candidate
-        || race.candidates?.find((c) => c.isWinner || c.winner)?.name
-        || race.candidates?.[0]?.name;
-      const winner = (race.candidates || []).find((c) => c.name === winnerName) || race.candidates?.[0];
-      const color = (typeof candidateColor === "function" && winner)
-        ? candidateColor(winner)
-        : (tokens["map-dem"] || "#3a7bd5");
-      return raceStyleTooltip(
-        race?.title || race?.id,
-        winner ? [{
-          name: winner.name,
-          party: party(winner) || "",
-          color,
-          percent: "Uncontested",
-          votes: "—",
-          live: true
-        }] : [],
-        typeof callProvenance === "function" ? callProvenance(race) : "Winner",
-        "No votes tabulated"
-      );
-    }
-    if (typeof tooltipMarkup === "function") {
-      return tooltipMarkup(race, race?.title || race?.id, page.comparisonTooltipNote?.(race) || "");
-    }
-    const stats = leanForRow(countyVoteRow({ candidates: race?.candidates }));
-    return leanTooltip(race?.title || race?.id, stats);
-  }
-
   function bindBubbleHoverOutline(selection) {
     // CSS :hover draws the outline. Do not reparent on mouseenter — that
     // cancels :hover / mouseleave in SVG and kills tooltips.
     return selection;
-  }
-
-  async function renderAtlasProportionalMap(page, container, revision) {
-    page.detailMapActive = false;
-    const tokens = window.FEADeskTheme?.resolved?.tokens || {};
-    const { width, height } = page.mapDimensions();
-    if (revision !== page.mapRevision) return;
-    const races = page.modeRaces?.() || page.dataByMode?.house || [];
-    page.createSvg(container, width, height);
-    // Flat field — no geographic basemap (NYT-style seat cartogram).
-    page.svg?.attr("class", `${page.svg.attr("class") || ""} atlas-cartogram-svg`.trim());
-    page.viewport.append("rect")
-      .attr("class", "atlas-cartogram-backdrop")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", width)
-      .attr("height", height)
-      .attr("fill", tokens["map-canvas"] || "#0a1220")
-      .attr("pointer-events", "none");
-
-    const { cells, labels } = cartogramLayout(races, width, height);
-    const hatchId = "atlas-cartogram-hatch";
-    const defs = page.svg.select("defs").empty() ? page.svg.insert("defs", ":first-child") : page.svg.select("defs");
-    if (defs.select(`#${hatchId}`).empty()) {
-      defs.append("pattern")
-        .attr("id", hatchId)
-        .attr("patternUnits", "userSpaceOnUse")
-        .attr("width", 5)
-        .attr("height", 5)
-        .append("path")
-        .attr("d", "M0,5 L5,0")
-        .attr("stroke", "rgba(255,255,255,.55)")
-        .attr("stroke-width", 1.1);
-    }
-
-    page.viewport.append("g")
-      .attr("class", "atlas-cartogram-layer")
-      .selectAll(".atlas-cartogram-cell")
-      .data(cells)
-      .join("rect")
-      .attr("class", (d) => `atlas-cartogram-cell${cartogramSeatHatch(d.race) ? " is-close" : ""}`)
-      .attr("x", (d) => d.x - d.size / 2)
-      .attr("y", (d) => d.y - d.size / 2)
-      .attr("width", (d) => d.size)
-      .attr("height", (d) => d.size)
-      .attr("rx", 0.4)
-      .attr("fill", (d) => cartogramRaceFill(page, d.race, tokens))
-      .attr("tabindex", 0)
-      .on("mousemove", (event, d) => {
-        page.showTooltip?.(event, cartogramRaceTooltip(page, d.race));
-      })
-      .on("mouseleave blur", () => page.hideTooltip?.())
-      .on("click keydown", async (event, d) => {
-        if (event.type === "keydown" && event.key !== "Enter" && event.key !== " ") return;
-        page.hideTooltip?.();
-        await page.selectRace(d.race, null);
-      });
-
-    page.viewport.append("g")
-      .attr("class", "atlas-cartogram-hatch-layer")
-      .selectAll(".atlas-cartogram-hatch")
-      .data(cells.filter((d) => cartogramSeatHatch(d.race)))
-      .join("rect")
-      .attr("class", "atlas-cartogram-hatch")
-      .attr("x", (d) => d.x - d.size / 2)
-      .attr("y", (d) => d.y - d.size / 2)
-      .attr("width", (d) => d.size)
-      .attr("height", (d) => d.size)
-      .attr("rx", 0.4)
-      .attr("fill", `url(#${hatchId})`)
-      .attr("pointer-events", "none");
-
-    page.viewport.append("g")
-      .attr("class", "atlas-cartogram-labels")
-      .selectAll(".atlas-cartogram-label")
-      .data(labels)
-      .join("text")
-      .attr("class", "atlas-cartogram-label")
-      .attr("x", (d) => d.x)
-      .attr("y", (d) => d.y)
-      .attr("text-anchor", (d) => d.anchor || "middle")
-      .attr("dominant-baseline", (d) => (d.anchor === "middle" ? "auto" : "middle"))
-      .text((d) => d.text);
-
-    page.addZoomControls();
-    const note = document.getElementById("atlas-lens-note");
-    if (note) note.textContent = "Proportional map — each square is one House seat, sized equally and placed near its state.";
   }
 
   function sizeAtlasPanel(page) {
@@ -1461,6 +1193,22 @@
     const originalSelectRace = proto.selectRace;
     const originalRenderFocusedRace = proto.renderFocusedRace;
     const originalRefreshResults = proto.refreshResults;
+    const originalClearFocus = proto.clearFocus;
+
+    proto.clearFocus = async function () {
+      // House PV / County state drilldown: Reset returns to the national lens view.
+      if (this.atlasPvState && (this.atlasLens === "pv" || this.atlasCountyOn || this.atlasLens === "county")) {
+        this.currentRace = null;
+        this.atlasPvState = null;
+        this.detailMapActive = false;
+        this.hideFocusPanel?.();
+        this.mapRevision = (this.mapRevision || 0) + 1;
+        await this.renderMap();
+        updateLensChrome(this);
+        return;
+      }
+      return originalClearFocus.call(this);
+    };
 
     proto.init = async function () {
       this.isAtlasPage = true;
@@ -1468,11 +1216,11 @@
       this.atlasLens = "districts";
       this.atlasCountyOn = false;
       this.atlasOverlay = null;
-      this.atlasMapType = "district";
       this.countyRaceIndex = new Map();
       try {
         this.atlasLens = migrateLens(localStorage.getItem("feaAtlasLens"));
         this.atlasCountyOn = this.atlasLens === "county";
+        // Legacy Proportional/District toggle keys — no longer used.
         localStorage.removeItem("feaAtlasMapType");
         localStorage.removeItem("feaAtlasMapTypeCollapsed");
       } catch {}

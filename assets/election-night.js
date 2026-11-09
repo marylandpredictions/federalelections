@@ -1305,7 +1305,10 @@ class ElectionNightPage {
     const source = this.comparisonSource();
     if (!source) return "#5f6b80";
     const shift = this.comparisonRaceShift(race);
-    return Number.isFinite(shift) ? marginColor(shift) : "#3c4658";
+    if (Number.isFinite(shift)) return marginColor(shift);
+    // Called / uncontested seats often lack a two-party live margin for swing.
+    if (typeof isActuallyCalled === "function" && isActuallyCalled(race)) return raceColor(race);
+    return "#3c4658";
   }
 
   comparisonColorForCounty(feature, race, lookup) {

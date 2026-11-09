@@ -239,12 +239,17 @@ window.FEAEnhanceBoard = function (Page) {
   };
   p.preloadLikelyDetailAssets = function () {}; // Deliberately lazy, including watched races.
   p.comparisonColorForRace = function (race) {
-    if(this.isComparisonActive()&&!Number.isFinite(this.baselineRaceMargin(race)))return window.FEADeskTheme?.resolved.tokens['map-neutral']||'#8993a0';
+    const called = typeof isActuallyCalled === "function" && isActuallyCalled(race);
+    if (this.isComparisonActive() && !Number.isFinite(this.baselineRaceMargin(race))) {
+      // Called / uncontested seats with no baseline: show the winner, not grey.
+      if (called && typeof raceColor === "function") return raceColor(race);
+      return window.FEADeskTheme?.resolved.tokens["map-neutral"] || "#8993a0";
+    }
     // Called / uncontested seats can have 0 tabulated votes — still color the winner.
-    if (!this.isComparisonActive() && !FEADesk.total(race) && !(typeof isActuallyCalled === "function" && isActuallyCalled(race)))
-      return getComputedStyle(document.body)
-        .getPropertyValue("--map-neutral")
-        .trim();
+    if (!this.isComparisonActive() && !FEADesk.total(race) && !called)
+      return window.FEADeskTheme?.resolved.tokens["map-neutral"]
+        || getComputedStyle(document.body).getPropertyValue("--map-neutral").trim()
+        || "#8993a0";
     return original.comparisonColorForRace.call(this, race);
   };
   p.comparisonColorForCounty = function (feature, race, lookup) {

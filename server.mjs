@@ -1249,8 +1249,16 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
       try {
         // Queue any races whose NBC votes/counties changed since the last pass.
         liveProbability.prioritize(control.drainProbabilityInputChanges());
-        if (mode === 'all') {
-          await liveProbability.updateAll(probabilityDetail, onProbabilityError, {concurrency: 2});
+        if (mode === "all") {
+          // Prefer pending vote drops over a long full sweep that would starve them.
+          if (liveProbability.priorityQueue.size) {
+            await liveProbability.updateBatch(probabilityDetail, onProbabilityError, {
+              limit: 24,
+              concurrency: 2,
+            });
+          } else {
+            await liveProbability.updateAll(probabilityDetail, onProbabilityError, {concurrency: 2});
+          }
         } else {
           // Shorter cadence: vote-drop races first, then a round-robin slice.
           await liveProbability.updateBatch(probabilityDetail, onProbabilityError, {
@@ -1261,9 +1269,9 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
       } finally { probabilityRunning = false; }
     };
     // Fast pass — vote drops are prioritized inside updateBatch.
-    setInterval(() => { void runProbabilityPass('batch'); }, 500).unref();
+    setInterval(() => { void runProbabilityPass("batch"); }, 500).unref();
     // Full sweep of every authorized model for good measure.
-    setInterval(() => { void runProbabilityPass('all'); }, 45000).unref();
+    setInterval(() => { void runProbabilityPass("all"); }, 45000).unref();
     // Leave one request slot available for public race details.
     control.countyProvider.cacheLimit = Math.max(control.countyProvider.cacheLimit, control.catalogue.length);
     let hydrationRunning = false;

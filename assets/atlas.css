@@ -172,11 +172,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.atlas-page .house-district-shape.atlas-hidden-borders {
-  stroke: transparent !important;
-  stroke-width: 0 !important;
-}
-
 .atlas-page .atlas-state-shape {
   stroke: rgba(232, 238, 252, 0.55);
   stroke-width: 1.15;
@@ -186,6 +181,7 @@
 }
 
 .atlas-page .atlas-bubble {
+  cursor: pointer;
   stroke: rgba(8, 12, 24, 0.45);
   stroke-width: 0.7;
   fill-opacity: 0.88;
@@ -215,16 +211,14 @@
 .atlas-page .atlas-swing-arrow[data-party="split"] { stroke: #8b93a5; }
 
 /* Keep detail-map context continuous when overlays (bubbles) are on. */
-.atlas-page[data-atlas-active-lens="bubbles"] .county-result-shape {
+.atlas-page[data-atlas-active-lens="bubbles"] .county-result-shape,
+.atlas-page[data-atlas-active-lens="county-bubbles"] .county-result-shape,
+.atlas-page[data-atlas-active-lens="county-swing"] .county-result-shape {
   transition: fill-opacity 160ms ease;
 }
 
 .atlas-page .election-map-shell {
   position: relative;
-}
-
-.atlas-page .atlas-bubble {
-  cursor: pointer;
 }
 
 .atlas-page .atlas-bubble:hover,
