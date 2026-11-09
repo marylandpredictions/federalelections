@@ -31,28 +31,23 @@
     : '');
   const description = seat => [seat.title,reading(seat),seat.status==='continuing'?'Continuing':labels[seat.group]].filter(Boolean).join(' · ');
   function seatSize() {
-    const senate = office==='senate';
-    return senate ? {w:12,d:5,height:5} : {w:6.5,d:3,height:3};
+    return office==='senate' ? {r:9.2} : {r:5};
   }
   function buildSeat(id) {
-    const {w,d,height} = seatSize();
+    const {r} = seatSize();
     const block = svg('g',{'data-seat':id,class:'incoming-seat'});
     const faces = svg('g',{class:'incoming-faces'});
-    faces.append(
-      svg('path',{class:'incoming-side',d:`M${w} 0 l${d} ${-d} v${height} l${-d} ${d}Z`}),
-      svg('path',{class:'incoming-front',d:`M${-w} 0 H${w} V${height} H${-w}Z`}),
-      svg('path',{class:'incoming-top',d:`M${-w} 0 H${w} l${d} ${-d} H${-w+d}Z`})
-    );
-    block.append(faces,svg('rect',{class:'incoming-hit',x:-w-1,y:-d-1,width:2*w+d+2,height:d+height+2}));
+    faces.append(svg('circle',{class:'incoming-dot',cx:'0',cy:'0',r:String(r)}));
+    block.append(faces,svg('circle',{class:'incoming-hit',cx:'0',cy:'0',r:String(r+2.5)}));
     return block;
   }
   function drawGuides(seats, slots, majority) {
     const guides = $('incoming-guides');
     const zones = $('incoming-zones');
-    const {w,d,height} = seatSize();
+    const {r} = seatSize();
     const cutouts = $('incoming-guide-cutouts');
     if (cutouts.childElementCount!==slots.length) cutouts.replaceChildren(...slots.map(({x,y})=>
-      svg('rect',{x:x-w-4,y:y-d-7,width:2*w+d+8,height:d+height+11})));
+      svg('circle',{cx:x,cy:y,r:r+3.5})));
     const point = (radius,angle) => `${450+radius*Math.cos(angle)} ${340-.70*radius*Math.sin(angle)}`;
     const outlines = [];
     const fills = [];
@@ -88,7 +83,7 @@
     if (key===detailKey) return;
     detailKey = key;
     if (!seat) {
-      detail.replaceChildren(el('h3','Explore a seat'),el('p','Choose a block or use the seat picker to inspect the results.'));
+      detail.replaceChildren(el('h3','Explore a seat'),el('p','Choose a seat or use the seat picker to inspect the results.'));
       return;
     }
     const heading = el('h3',seat.title);

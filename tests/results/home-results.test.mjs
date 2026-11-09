@@ -31,3 +31,31 @@ test('Close-race gaps use all reported votes and omit very early estimates',()=>
   assert.deepEqual(close.map(row=>row.race.id),[race.id]);
   assert.equal(close[0].gap,400/110);
 });
+
+test('House popular vote sums every district ballot by party for each state',()=>{
+  const races = [
+    {id:'h-ca-1',type:'house',state:'CA',candidates:[
+      {partyCode:'D',votes:100},{partyCode:'R',votes:80},{party:'Green',votes:5},
+    ]},
+    {id:'h-ca-2',type:'house',state:'CA',candidates:[
+      {partyCode:'D',votes:50},{partyCode:'R',votes:90},{partyCode:'I',votes:10},
+    ]},
+    {id:'h-tx-1',type:'house',state:'TX',candidates:[
+      {partyCode:'R',votes:200},{partyCode:'D',votes:150},
+    ]},
+  ];
+  const {housePopular,nationalHouse} = home.summarize(races);
+  assert.deepEqual(Object.fromEntries(housePopular),{
+    CA:{D:150,R:170,other:15},
+    TX:{D:150,R:200,other:0},
+  });
+  const leans = home.statePopularLean(housePopular);
+  assert.equal(leans.get('CA').lean,'R');
+  assert.equal(leans.get('TX').lean,'R');
+  assert.equal(leans.get('CA').total,335);
+  assert.deepEqual(nationalHouse,{
+    D:300,R:370,other:15,total:685,
+    demShare:100*300/685,repShare:100*370/685,otherShare:100*15/685,
+    margin:100*(300-370)/685,
+  });
+});

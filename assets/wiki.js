@@ -2981,7 +2981,10 @@ function renderTopArticle() {
 function renderHomeArticleList() {
   const container = document.getElementById("home-article-list");
   if (!container) return;
-  const list = sortedArticles().slice(0, 6);
+  const featured = sortedArticles().find((item) => item.featured) || sortedArticles()[0];
+  const list = sortedArticles()
+    .filter((article) => article !== featured)
+    .slice(0, 4);
   container.innerHTML = list.length ? list.map((article) => `
     <a href="${articleUrl(article)}">
       ${articleLeadImageMarkup(article, "home-article-thumb")}
@@ -3784,7 +3787,7 @@ function renderLoadError(error) {
 async function init() {
   installInteractionDismiss();
   articles = await loadArticles();
-  if (document.getElementById("countdown-title")) {
+  if (document.body.classList.contains("home-page") || document.getElementById("countdown-title")) {
     renderHomeLatestVideo(); renderTopArticle(); renderHomeArticleList();
     return;
   }

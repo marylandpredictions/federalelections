@@ -9,13 +9,16 @@
   <link rel="icon" href="assets/img/FEA_Icon.webp" type="image/webp">
   <meta name="theme-color" content="#849eed" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000e38" media="(prefers-color-scheme: dark)">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700;8..60,800&display=swap" rel="stylesheet">
   <script src="assets/theme.js?v=20261030-features2"></script>
   <link rel="stylesheet" href="assets/wiki.css?v=20261030-features1">
-  <link rel="stylesheet" href="assets/home-results.css?v=5">
-  <link rel="stylesheet" href="assets/incoming-congress.css?v=2">
+  <link rel="stylesheet" href="assets/home-results.css?v=31">
+  <link rel="stylesheet" href="assets/incoming-congress.css?v=7">
 </head>
 <body class="home-page" data-election-phase="post-election">
-      <header class="site-header">
+  <header class="site-header">
     <a class="brand" href="/">
       <img class="brand-mark" src="assets/img/FEA_Icon.webp" alt="Federal Elections Analysis">
       <span><strong>Federal Elections Analysis</strong><small style="font-weight: 700;">Election analysis</small></span>
@@ -31,142 +34,191 @@
   </header>
 
   <main class="home-layout">
-    <aside class="home-approval-rail" aria-label="Trump approval">
-      <a class="home-approval-track" href="/polling/trump-approval">
-        <p class="home-approval-kicker">Polling average</p>
-        <h2 class="home-approval-heading">Trump</h2>
-        <p class="home-approval-subhead">Job approval</p>
-        <div class="home-approval-rows">
-          <div class="home-approval-row is-approve">
-            <span>Approve</span>
-            <strong id="home-approval-approve">—</strong>
-            <i id="home-approval-approve-bar" aria-hidden="true"></i>
+    <section class="home-hero" aria-labelledby="page-title">
+      <div class="home-hero-sides">
+        <aside class="home-metric-card home-approval-card" aria-labelledby="home-approval-title">
+          <p class="home-metric-kicker">Polling average</p>
+          <h2 id="home-approval-title">Trump <span>Job approval</span></h2>
+          <div class="home-metric-rows">
+            <div class="home-metric-row" data-tone="approve">
+              <div class="home-metric-row-head">
+                <span>Approve</span>
+                <strong id="home-approval-approve">—</strong>
+              </div>
+              <div class="home-metric-track" aria-hidden="true"><i id="home-approval-approve-bar"></i></div>
+            </div>
+            <div class="home-metric-row" data-tone="disapprove">
+              <div class="home-metric-row-head">
+                <span>Disapprove</span>
+                <strong id="home-approval-disapprove">—</strong>
+              </div>
+              <div class="home-metric-track" aria-hidden="true"><i id="home-approval-disapprove-bar"></i></div>
+            </div>
           </div>
-          <div class="home-approval-row is-disapprove">
-            <span>Disapprove</span>
-            <strong id="home-approval-disapprove">—</strong>
-            <i id="home-approval-disapprove-bar" aria-hidden="true"></i>
+          <p class="home-metric-net" id="home-approval-net">Net —</p>
+          <a class="home-metric-link" href="/polling/trump-approval">Open tracker →</a>
+        </aside>
+
+        <div class="home-hero-main">
+          <div class="home-hero-top">
+            <div class="home-hero-copy">
+              <p class="home-kicker">Federal Elections Analysis</p>
+              <h1 id="page-title">What the 2026 midterms changed</h1>
+              <p class="home-lede">Live chamber totals, seat-by-seat composition, and the reporting desk in one place.</p>
+              <div class="home-hero-actions">
+                <a class="home-btn home-btn-primary" href="/results">Read the full results</a>
+                <a class="home-btn home-btn-ghost" href="/videos">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z"></path></svg>
+                  Watch our coverage
+                </a>
+              </div>
+            </div>
+            <aside class="home-national-results" aria-labelledby="national-results-title">
+              <p class="home-kicker">National results</p>
+              <h2 id="national-results-title">Chamber control</h2>
+              <div id="home-results-lines"><p>Loading published calls…</p></div>
+              <p class="home-results-source" id="home-results-source" role="status">Loading published calls…</p>
+              <a class="home-btn home-btn-ghost" href="/results">View results →</a>
+            </aside>
           </div>
+          <figure class="home-hero-map" aria-label="2026 results map">
+            <div class="home-map-shell">
+              <div id="home-hero-map" class="home-map-canvas" role="img" aria-label="United States colored by statewide House popular vote"></div>
+              <div id="home-map-tip" class="home-map-tip" hidden></div>
+            </div>
+            <figcaption>
+              <div class="home-map-legend" aria-hidden="true">
+                <span>House popular vote by state</span>
+                <span class="home-map-swatch" data-party="D">Dem lead</span>
+                <span class="home-map-swatch" data-party="R">Rep lead</span>
+                <span class="home-map-swatch" data-party="split">Tied / no votes</span>
+              </div>
+              <a href="/results?office=house">Open the results board →</a>
+            </figcaption>
+          </figure>
         </div>
-        <p class="home-approval-net" id="home-approval-net">Net —</p>
-        <span class="home-approval-link">Open tracker →</span>
-      </a>
-    </aside>
-    <div class="home-main-column">
-    <section class="home-hero-shell" aria-labelledby="page-title">
-      <div class="hero-main home-hero">
-        <p class="kicker">Federal Elections Analysis</p>
-        <h1 id="page-title">Analysis on your screen.</h1>
-        <p class="lede">Election coverage, reporting, and analysis from the FEA team.</p>
-        <div class="hero-actions"><a class="button-link" href="/results">2026 election results →</a><a class="button-link" href="/videos">Watch our coverage</a></div>
+
+        <aside class="home-metric-card home-pv-card" aria-labelledby="home-pv-title">
+          <p class="home-metric-kicker">2026 midterms</p>
+          <h2 id="home-pv-title">House <span>Popular vote</span></h2>
+          <div class="home-metric-rows">
+            <div class="home-metric-row" data-tone="D">
+              <div class="home-metric-row-head">
+                <span>Democrat</span>
+                <strong id="home-pv-dem">—</strong>
+              </div>
+              <div class="home-metric-track" aria-hidden="true"><i id="home-pv-dem-bar"></i></div>
+            </div>
+            <div class="home-metric-row" data-tone="R">
+              <div class="home-metric-row-head">
+                <span>Republican</span>
+                <strong id="home-pv-rep">—</strong>
+              </div>
+              <div class="home-metric-track" aria-hidden="true"><i id="home-pv-rep-bar"></i></div>
+            </div>
+            <div class="home-metric-row" data-tone="other">
+              <div class="home-metric-row-head">
+                <span>Other</span>
+                <strong id="home-pv-other">—</strong>
+              </div>
+              <div class="home-metric-track" aria-hidden="true"><i id="home-pv-other-bar"></i></div>
+            </div>
+          </div>
+          <p class="home-metric-net" id="home-pv-margin">National total —</p>
+          <a class="home-metric-link" href="/results?office=house">Open results →</a>
+        </aside>
       </div>
-      <aside class="election-countdown home-national-results" aria-labelledby="national-results-title">
-        <p class="kicker">2026 General Election</p>
-        <h2 id="national-results-title">National Results</h2>
-        <div id="home-results-lines"><p>Loading published calls…</p></div>
-        <p id="home-results-source" role="status"></p>
-        <a class="button-link" href="/results">View results →</a>
-      </aside>
     </section>
 
-    <section class="chart-panel home-explore" aria-labelledby="home-explore-title">
+    <nav class="home-explore" aria-labelledby="home-explore-title">
       <h2 id="home-explore-title">Explore FEA</h2>
-      <div>
-        <a class="button-link" href="/features/map-maker">Map Maker</a>
-        <a class="button-link" href="/features/polling-bias">State Polling Bias</a>
-        <a class="button-link" href="/polling/trump-approval">Trump Approval</a>
-        <a class="button-link" href="/results">Results Board</a>
+      <div class="home-explore-rail">
+        <a href="/features/map-maker">Map Maker</a>
+        <a href="/features/polling-bias">State Polling Data</a>
+        <a href="/polling/trump-approval">Trump Approval</a>
+        <a href="/results">Results Board</a>
+        <a href="/election-night.html">Election Lab</a>
       </div>
-    </section>
+    </nav>
 
-    <section class="chart-panel incoming-congress" id="incoming-congress" aria-labelledby="incoming-title">
-      <header class="incoming-header">
-        <div><p class="kicker" id="incoming-election">2026 midterms · 120th Congress</p>
-          <h2 id="incoming-title">Incoming Congress</h2>
-          <p>Explore the balance of power, seat by seat.</p></div>
-        <div class="incoming-switch" role="group" aria-label="Chamber">
-          <button type="button" data-chamber="senate" aria-pressed="true">Senate</button>
-          <button type="button" data-chamber="house" aria-pressed="false">House</button>
+    <section class="home-congress-band">
+      <section class="chart-panel incoming-congress" id="incoming-congress" aria-labelledby="incoming-title">
+        <header class="incoming-header">
+          <div>
+            <p class="kicker" id="incoming-election">2026 midterms · 120th Congress</p>
+            <h2 id="incoming-title">The balance of power, seat by seat</h2>
+            <p>Explore the chamber composition and inspect individual seats.</p>
+          </div>
+          <div class="incoming-switch" role="group" aria-label="Chamber">
+            <button type="button" data-chamber="senate" aria-pressed="true">Senate</button>
+            <button type="button" data-chamber="house" aria-pressed="false">House</button>
+          </div>
+        </header>
+        <div class="incoming-totals" id="incoming-totals" aria-label="Seat totals"></div>
+        <div class="incoming-tools">
+          <label>Arrange seats by <select id="incoming-order"><option value="party">Party</option><option value="margin">Winning margin within party</option><option value="state">State within party</option></select></label>
+          <label>Find a seat <select id="incoming-find"><option value="">Choose a seat</option></select></label>
+          <label class="incoming-check"><input type="checkbox" id="incoming-close"> Highlight called races within 2 points</label>
         </div>
-      </header>
-      <div class="incoming-totals" id="incoming-totals" aria-label="Seat totals"></div>
-      <div class="incoming-tools">
-        <label>Arrange seats by <select id="incoming-order"><option value="party">Party</option><option value="margin">Winning margin within party</option><option value="state">State within party</option></select></label>
-        <label>Find a seat <select id="incoming-find"><option value="">Choose a seat</option></select></label>
-        <label class="incoming-check"><input type="checkbox" id="incoming-close"> Highlight called races within 2 points</label>
-      </div>
-      <div class="incoming-stage">
-        <div class="incoming-graphic">
-          <svg id="incoming-chart" viewBox="0 0 900 362" role="img" aria-labelledby="incoming-chart-title incoming-chart-desc">
-            <title id="incoming-chart-title">Incoming Congress seat composition</title>
-            <desc id="incoming-chart-desc">Select individual seats using Find a seat. Seat order illustrates the composition of the chamber.</desc>
-            <defs>
-              <mask id="incoming-guide-clearance" maskUnits="userSpaceOnUse" x="0" y="0" width="900" height="362">
-                <rect width="900" height="362" fill="white"/>
-                <g id="incoming-guide-cutouts" fill="black"></g>
-              </mask>
-            </defs>
-            <g id="incoming-zones" aria-hidden="true"></g>
-            <g id="incoming-guides" aria-hidden="true" mask="url(#incoming-guide-clearance)"></g>
-            <g id="incoming-seats" aria-hidden="true"></g>
-          </svg>
-          <p id="incoming-hover" aria-hidden="true"></p>
+        <div class="incoming-stage">
+          <div class="incoming-graphic">
+            <svg id="incoming-chart" viewBox="0 0 900 362" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="incoming-chart-title incoming-chart-desc">
+              <title id="incoming-chart-title">Incoming Congress seat composition</title>
+              <desc id="incoming-chart-desc">Select individual seats using Find a seat. Seat order illustrates the composition of the chamber.</desc>
+              <defs>
+                <mask id="incoming-guide-clearance" maskUnits="userSpaceOnUse" x="0" y="0" width="900" height="362">
+                  <rect width="900" height="362" fill="white"/>
+                  <g id="incoming-guide-cutouts" fill="black"></g>
+                </mask>
+              </defs>
+              <g id="incoming-zones" aria-hidden="true"></g>
+              <g id="incoming-guides" aria-hidden="true" mask="url(#incoming-guide-clearance)"></g>
+              <g id="incoming-seats" aria-hidden="true"></g>
+            </svg>
+            <p id="incoming-hover" aria-hidden="true"></p>
+          </div>
+          <aside id="incoming-detail" aria-label="Selected seat" aria-live="polite"><h3>Explore a seat</h3><p>Choose a seat or use the seat picker to inspect the results.</p></aside>
         </div>
-        <aside id="incoming-detail" aria-label="Selected seat" aria-live="polite"><h3>Explore a seat</h3><p>Choose a block or use the seat picker to inspect the results.</p></aside>
-      </div>
-      <footer class="incoming-footer"><p id="incoming-source" role="status">Loading seat data…</p><a id="incoming-results" href="/results?office=senate">Open Results Board →</a></footer>
+        <footer class="incoming-footer"><p id="incoming-source" role="status">Loading seat data…</p><a id="incoming-results" href="/results?office=senate">Explore the full results →</a></footer>
+      </section>
     </section>
 
-    <div class="home-section-head">
-      <span>Latest Coverage</span>
-      <h2>Newest analysis from the channel</h2>
-    </div>
-    <section class="text-panel home-latest-video" aria-label="Latest Federal Elections Analysis video">
-      <div id="home-latest-video" class="home-video-feature">
-        <p class="meta">Latest video will appear here.</p>
-      </div>
-    </section>
-
-    <div class="home-section-head">
-      <span>Articles</span>
-      <h2>Latest Analysis</h2>
-    </div>
-    <section class="dashboard-grid home-news-grid" aria-label="Latest articles">
-      <article class="chart-panel article-teaser" id="top-article" aria-labelledby="top-article-title">
-        <p class="meta">No articles yet.</p>
-      </article>
-      <aside class="chart-panel">
-        <span class="chart-label">More articles</span>
+    <section class="home-desk-grid" aria-label="Desk coverage">
+      <section class="home-desk-column" aria-labelledby="home-desk-title">
+        <p class="home-kicker">From the FEA desk</p>
+        <h2 id="home-desk-title">Latest coverage</h2>
+        <article class="home-desk-feature" id="top-article" aria-labelledby="top-article-title">
+          <p class="meta">No articles yet.</p>
+        </article>
         <div id="home-article-list" class="home-article-list"></div>
-        <p><a class="button-link" href="articles.html">See all articles</a></p>
-      </aside>
-    </section>
-    <section class="chart-panel home-research" aria-labelledby="home-research-title">
-      <p class="kicker">Original FEA Research</p>
-      <h2 id="home-research-title">Where have polls missed?</h2>
-      <p>FEA uses Senate polling and results from 2014–2024 to estimate how much polls might overstate either party’s margin in each state.</p>
-      <div id="home-bias-preview" hidden>
-        <p class="meta">Largest estimated polling biases in each direction for 2026</p>
-        <ul id="home-bias-rows"></ul>
-      </div>
-      <a class="button-link" href="/features/polling-bias">Explore State Polling Bias →</a>
-    </section>
+        <section class="home-latest-video" aria-label="Latest Federal Elections Analysis video">
+          <div id="home-latest-video" class="home-video-feature">
+            <p class="meta">Latest video will appear here.</p>
+          </div>
+        </section>
+      </section>
 
-    <section id="home-election-updates" aria-labelledby="home-updates-title">
-      <div class="home-section-head"><h2 id="home-updates-title">Election Updates</h2></div>
-      <div class="dashboard-grid home-update-grid">
-        <section class="chart-panel" aria-labelledby="home-close-title">
-          <h3 id="home-close-title">Closest uncalled races</h3>
-          <p class="meta">Ranked by reported vote-share gap. Races below 25% of expected votes are omitted when an estimate is available.</p>
-          <ul id="home-notable-races"><li>Loading reported margins…</li></ul>
-        </section>
-        <section class="chart-panel" aria-labelledby="home-calls-title">
-          <h3 id="home-calls-title">Recent calls</h3>
-          <ul id="home-recent-calls"><li>Loading published calls…</li></ul>
-        </section>
-      </div>
+      <section class="home-research" aria-labelledby="home-research-title">
+        <p class="home-kicker">Original research</p>
+        <h2 id="home-research-title">Where have polls missed?</h2>
+        <p class="home-research-copy">Historical average Senate poll misses by state from 2014–2024.</p>
+        <div id="home-bias-preview" hidden>
+          <p class="meta">Largest historical misses by state</p>
+          <ul id="home-bias-rows"></ul>
+          <div class="home-bias-summary" id="home-bias-summary" aria-label="National poll-miss summary"></div>
+          <p class="home-bias-key"><span data-party="D">D +</span> polls overstated Democrats · <span data-party="R">R +</span> polls overstated Republicans</p>
+        </div>
+        <a class="home-btn home-btn-ghost" href="/features/polling-bias">Explore State Polling Bias →</a>
+      </section>
+
+      <section class="home-calls" id="home-election-updates" aria-labelledby="home-calls-title">
+        <p class="home-kicker">Election night</p>
+        <h2 id="home-calls-title">Latest calls</h2>
+        <ul id="home-recent-calls"><li>Loading published calls…</li></ul>
+        <h3 id="home-close-title">Closest uncalled</h3>
+        <ul id="home-notable-races"><li>Loading reported margins…</li></ul>
+      </section>
     </section>
-    </div>
   </main>
 
   <footer class="site-footer">
@@ -198,11 +250,11 @@
     </nav>
   </footer>
 
-  <script src="assets/wiki.js?v=20260721-ratings"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+  <script src="assets/wiki.js?v=20261108-home2"></script>
   <script src="assets/incoming-congress-model.js?v=1" defer></script>
-  <script src="assets/incoming-congress.js?v=1" defer></script>
-  <script src="assets/home-results.js?v=4" defer></script>
+  <script src="assets/incoming-congress.js?v=2" defer></script>
+  <script src="assets/home-results.js?v=17" defer></script>
 </body>
 </html>
-
-
