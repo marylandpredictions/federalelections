@@ -1225,12 +1225,16 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
     const probabilityDetail = (id, prior) => {
       const aggregate = ['race-total', 'race-total-multi', 'unopposed', 'majority-lock'].includes(prior.inputMode);
       const health = control.health();
-      const healthy = health.connection === 'connected' && !health.persistenceError
-        ? new Set(health.lastHealthyRaceIds)
+      // Persistence failures must not freeze live odds — in-memory NBC ballots are still usable.
+      const healthy = health.connection === 'connected'
+        ? new Set(health.lastHealthyRaceIds || [])
         : new Set();
       // Aggregate race-total paths only need the national ballot, not a healthy county page.
       if (!aggregate && !healthy.has(id)) return undefined;
-      return control.probabilityResult(id, prior.units.map((unit) => unit.id));
+      const detail = control.probabilityResult(id, prior.units.map((unit) => unit.id));
+      // Skip geographic races that have not hydrated counties yet — never demote a published estimate.
+      if (!aggregate && !detail?.counties?.length) return undefined;
+      return detail;
     };
     const onProbabilityError = (id, error) => {
       if (!error) probabilityErrors.delete(id);
@@ -1259,17 +1263,18 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
     // Fast pass — vote drops are prioritized inside updateBatch.
     setInterval(() => { void runProbabilityPass('batch'); }, 500).unref();
     // Full sweep of every authorized model for good measure.
-    setInterval(() => { void runProbabilityPass('all'); }, 30000).unref();
+    setInterval(() => { void runProbabilityPass('all'); }, 45000).unref();
     // Leave one request slot available for public race details.
     control.countyProvider.cacheLimit = Math.max(control.countyProvider.cacheLimit, control.catalogue.length);
     let hydrationRunning = false;
     setInterval(async () => {
       if (hydrationRunning) return;
       const health = control.health();
-      if (health.connection !== 'connected' || health.persistenceError) return;
+      // Keep hydrating from memory even if durable writes are failing.
+      if (health.connection !== 'connected') return;
       const slots = control.countyProvider.availableRequests()-1;
       if (slots<=0) return;
-      const healthy = new Set(health.lastHealthyRaceIds);
+      const healthy = new Set(health.lastHealthyRaceIds || []);
       const ids = liveProbability.nextCountyRaces(id => healthy.has(id) && control.countyPageFor(id), slots);
       if (!ids.length) return;
       hydrationRunning = true;

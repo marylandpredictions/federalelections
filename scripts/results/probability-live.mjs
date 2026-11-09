@@ -157,7 +157,13 @@ export class LiveProbability {
       for (let index = slot; index < batch.length; index += workers) {
         const id = batch[index];
         try {
-          await this.update(id, await detailFor(id, this.races.get(id).config.prior));
+          const detail = await detailFor(id, this.races.get(id).config.prior);
+          // Skip empty ticks entirely — never clobber a published estimate.
+          if (detail == null) {
+            onError?.(id, null);
+            continue;
+          }
+          await this.update(id, detail);
           onError?.(id, null);
         } catch (error) { onError?.(id, error); }
       }
@@ -209,33 +215,62 @@ export class LiveProbability {
   async update(id, detail, completion) {
     const race = this.races.get(id);
     if (!race) return;
-    race.available = false;
-    race.reason = 'Waiting for a verified NBC update.';
+    // No detail this tick (or a caller skipped hydration) — keep the last estimate.
+    if (detail == null) return;
     const mode=race.config.prior.inputMode;
     const aggregate=['race-total','race-total-multi','unopposed','majority-lock'].includes(mode);
-    if (detail?.id !== id || detail.provider !== 'NBC' || detail.providerStale === true ||
-        !aggregate&&(!detail.counties?.length || detail.counties.some(unit => unit.source !== 'NBC News'))) return;
+    if (detail?.id !== id || detail.provider !== 'NBC' || detail.providerStale === true) {
+      // Explicit bad/non-NBC feed — demote freshness, but keep published points.
+      race.available = false;
+      race.reason = 'Waiting for a verified NBC update.';
+      return;
+    }
+    if (!aggregate && (!detail.counties?.length || detail.counties.some(unit => unit.source !== 'NBC News'))) {
+      // Counties not ready yet — leave the last estimate alone.
+      if (!race.points.length) {
+        race.available = false;
+        race.reason = 'Waiting for a verified NBC update.';
+      }
+      return;
+    }
     const now = this.now(), at = new Date(now).toISOString();
     const {prior, roster} = race.config;
     completion ??= await readJson(join(this.completionDirectory, id + '.json')) || {};
-    race.reason = aggregate?'The NBC ballot needs to reconcile before the next estimate.':
-      'The NBC candidate and county returns need to reconcile before the next estimate.';
-    const snapshot = normalizeProbabilitySnapshot(detail, roster, {
-      at, source: 'NBC News', completion, reportingUnitIds: prior.units.map(unit => unit.id),
-      allowSingleReportingUnit:race.settings.method==='calibrated-partial-count',
-      aggregateRace:mode==='race-total-multi'?'multi':mode==='unopposed'?'unopposed':
-        mode==='majority-lock'?'majority-lock':aggregate,
-    });
-    race.reason = 'The NBC update is delayed.';
+    let snapshot;
+    try {
+      snapshot = normalizeProbabilitySnapshot(detail, roster, {
+        at, source: 'NBC News', completion, reportingUnitIds: prior.units.map(unit => unit.id),
+        allowSingleReportingUnit:race.settings.method==='calibrated-partial-count',
+        aggregateRace:mode==='race-total-multi'?'multi':mode==='unopposed'?'unopposed':
+          mode==='majority-lock'?'majority-lock':aggregate,
+      });
+    } catch {
+      // Keep showing the last published point while the ballot is mid-reconcile.
+      if (!race.points.length) {
+        race.available = false;
+        race.reason = aggregate?'The NBC ballot needs to reconcile before the next estimate.':
+          'The NBC candidate and county returns need to reconcile before the next estimate.';
+      }
+      return;
+    }
     const age=Math.max(now-Date.parse(snapshot.sourceUpdatedAt),...snapshot.units.filter(unit=>!unit.complete).map(unit=>now-Date.parse(unit.availableAt)));
     const partial=race.settings.method==='calibrated-partial-count';
     const delayed=age>maxAgeMs;
-    if (snapshot.electionDate !== prior.electionDate ||
-        age>(partial?race.settings.maximumInputAgeMs:maxAgeMs)) return;
     const freshness={available:!delayed,reason:delayed?'NBC returns are delayed. Showing the last supported estimate.':''};
+    if (snapshot.electionDate !== prior.electionDate ||
+        age>(partial?race.settings.maximumInputAgeMs:maxAgeMs)) {
+      Object.assign(race, race.points.length ? freshness : {
+        available: false,
+        reason: 'The NBC update is delayed.',
+      });
+      return;
+    }
     const previous = race.snapshot;
     const units = new Map(snapshot.units.map(unit => [unit.id, unit]));
-    if (previous && Date.parse(snapshot.sourceUpdatedAt) < Date.parse(previous.sourceUpdatedAt)) return;
+    if (previous && Date.parse(snapshot.sourceUpdatedAt) < Date.parse(previous.sourceUpdatedAt)) {
+      Object.assign(race, freshness);
+      return;
+    }
     const evidence = evidenceHash(snapshot);
     // Same NBC ballot can still need a fresh draw after a prior/model revision.
     if (race.evidence === evidence && !race.pendingModelRevision) {
