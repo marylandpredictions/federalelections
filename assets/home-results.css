@@ -1126,20 +1126,6 @@ body.home-page::before {
   background: transparent;
 }
 
-@media (max-width: 1080px) {
-  .home-desk-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .home-calls { grid-column: 1 / -1; }
-  .home-page .site-footer {
-    grid-template-columns: auto minmax(0, 1fr) !important;
-  }
-  .home-page .site-footer > nav,
-  .home-page .site-footer .footer-columns {
-    grid-column: 1 / -1 !important;
-  }
-}
-
 @media (max-width: 1180px) {
   .home-hero-sides {
     grid-template-columns: 1fr 1fr;
@@ -1150,20 +1136,235 @@ body.home-page::before {
   }
 }
 
-@media (max-width: 860px) {
-  .home-hero-top { grid-template-columns: 1fr; }
-  .home-page .home-video-feature {
-    grid-template-columns: 1fr !important;
+@media (max-width: 1080px) {
+  .home-desk-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .home-calls { grid-column: 1 / -1; }
+  .home-page .site-footer,
+  :root[data-theme="light"] .home-page .site-footer,
+  :root[data-theme="dark"] .home-page .site-footer {
+    grid-template-columns: auto minmax(0, 1fr) !important;
+  }
+  .home-page .site-footer > .footer-logo-link {
+    grid-column: 1 !important;
+  }
+  .home-page .site-footer > div {
+    grid-column: 2 !important;
+  }
+  .home-page .site-footer > nav,
+  .home-page .site-footer .footer-columns {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
 
-@media (max-width: 760px) {
-  .home-hero-sides { grid-template-columns: 1fr; }
-  .home-hero-copy h1 { max-width: 12ch; }
-  .home-desk-grid { grid-template-columns: 1fr; }
-  .home-calls { grid-column: auto; }
-  .home-btn { width: 100%; }
-  .home-page .site-footer {
+@media (max-width: 860px) {
+  .home-hero-top { grid-template-columns: 1fr; }
+  .home-hero-main { gap: 1.35rem; }
+  .home-page .home-video-feature {
     grid-template-columns: 1fr !important;
+  }
+  .home-congress-band .incoming-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .home-congress-band .incoming-switch {
+    align-self: start;
+  }
+  .home-congress-band .incoming-tools {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .home-congress-band .incoming-tools label:not(.incoming-check) {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .home-congress-band .incoming-tools select {
+    width: 100%;
+    max-width: none;
+  }
+  #incoming-find { width: 100%; }
+}
+
+@media (max-width: 760px) {
+  .home-page .site-header {
+    padding-inline: 14px;
+  }
+  .home-page .home-hero,
+  .home-page .home-explore,
+  .home-page .home-desk-grid {
+    width: min(100% - 28px, 1220px);
+  }
+  .home-hero {
+    gap: 0.85rem;
+    padding: 0.85rem 0 0.55rem;
+  }
+  .home-hero-sides {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+  .home-hero-main { gap: 1.1rem; }
+  .home-hero-copy {
+    min-height: 0;
+    padding: 1.15rem 1.05rem 1.2rem;
+    background:
+      linear-gradient(
+        105deg,
+        color-mix(in srgb, var(--home-void) 94%, transparent) 0%,
+        color-mix(in srgb, var(--home-void) 86%, transparent) 42%,
+        color-mix(in srgb, var(--home-void) 48%, transparent) 72%,
+        color-mix(in srgb, var(--home-void) 18%, transparent) 88%,
+        transparent 100%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--home-void) 28%, transparent),
+        color-mix(in srgb, var(--home-void) 52%, transparent)
+      ),
+      url("/assets/img/hero-senate.webp") 68% center / cover;
+  }
+  :root[data-theme="light"] .home-hero-copy {
+    background:
+      linear-gradient(
+        105deg,
+        color-mix(in srgb, var(--home-panel) 96%, transparent) 0%,
+        color-mix(in srgb, var(--home-panel) 88%, transparent) 44%,
+        color-mix(in srgb, var(--home-panel) 52%, transparent) 74%,
+        color-mix(in srgb, var(--home-panel) 18%, transparent) 90%,
+        transparent 100%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--home-panel) 22%, transparent),
+        color-mix(in srgb, var(--home-panel) 48%, transparent)
+      ),
+      url("/assets/img/hero-senate.webp") 68% center / cover;
+  }
+  .home-hero-copy h1 {
+    max-width: 11ch;
+    font-size: clamp(1.95rem, 9vw, 2.55rem);
+  }
+  .home-lede {
+    max-width: 34ch;
+    font-size: 0.98rem;
+  }
+  .home-hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .home-btn { width: 100%; }
+  .home-national-results {
+    padding: 1rem 1rem 1.05rem;
+  }
+  .home-map-canvas {
+    height: clamp(210px, 46vw, 280px);
+  }
+  .home-hero-map figcaption {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.45rem;
+  }
+  .home-map-legend {
+    gap: 0.4rem 0.7rem;
+  }
+  .home-metric-card {
+    padding: 0.85rem 0.9rem 0.9rem 1rem;
+  }
+  .home-metric-card h2 {
+    font-size: 1.35rem;
+  }
+  .home-explore {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+    padding-bottom: 1.15rem;
+  }
+  .home-explore-rail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
+  }
+  .home-explore-rail a {
+    justify-content: center;
+    text-align: center;
+    min-height: 2.55rem;
+    padding-inline: 0.55rem;
+  }
+  .home-congress-band {
+    padding-block: 1.35rem;
+    padding-inline: 14px;
+  }
+  .home-congress-band .incoming-totals {
+    gap: 0.45rem;
+  }
+  .home-congress-band .incoming-totals button {
+    flex: 1 1 calc(50% - 0.45rem);
+    justify-content: space-between;
+  }
+  .home-congress-band #incoming-detail {
+    border-radius: 12px;
+    border-inline-start-width: 1px;
+  }
+  .home-desk-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1.35rem 0 1rem;
+  }
+  .home-calls { grid-column: auto; }
+  .home-desk-column,
+  .home-research,
+  .home-calls {
+    padding: 1rem;
+  }
+  .home-page .home-article-list a {
+    grid-template-columns: 64px minmax(0, 1fr) !important;
+    gap: 0.65rem !important;
+  }
+  .home-page .home-article-thumb,
+  .home-page .home-article-list img {
+    width: 64px !important;
+    height: 48px !important;
+  }
+  .home-calls li {
+    grid-template-columns: 1.3rem minmax(0, 1fr);
+    grid-template-areas:
+      "party race"
+      "party name"
+      "party time";
+  }
+  .home-calls li small {
+    text-align: left;
+  }
+  .home-page .site-footer,
+  :root[data-theme="light"] .home-page .site-footer,
+  :root[data-theme="dark"] .home-page .site-footer {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    padding-inline: 14px !important;
+  }
+  .home-page .site-footer > .footer-logo-link,
+  .home-page .site-footer > div,
+  .home-page .site-footer > nav,
+  .home-page .site-footer .footer-columns {
+    grid-column: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .home-page .site-footer nav,
+  .home-page .footer-columns {
+    grid-template-columns: 1fr !important;
+    margin: 0 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .home-explore-rail {
+    grid-template-columns: 1fr;
+  }
+  .home-congress-band .incoming-totals button {
+    flex: 1 1 100%;
   }
 }

@@ -222,7 +222,29 @@
     border-block-start: 2px solid var(--stage-line);
     border-radius: 12px;
   }
-  .incoming-tools label:not(.incoming-check) { display: grid; }
+  .incoming-header {
+    align-items: stretch;
+  }
+  .incoming-tools {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+  .incoming-tools label:not(.incoming-check) {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .incoming-tools select {
+    width: 100%;
+    max-width: none;
+  }
+  #incoming-find { width: 100%; }
+  .incoming-totals {
+    gap: 0.45rem;
+  }
+  .incoming-totals button {
+    flex: 1 1 calc(50% - 0.45rem);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .incoming-seat,
