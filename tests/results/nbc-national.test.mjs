@@ -129,6 +129,29 @@ test('Actual control refreshes at 15 seconds, publishes the zero-vote NBC roster
 });
 
 
+test('An advancing NBC ballot can clear its anonymous write-in total while named resets are quarantined', async t => {
+ const x = await runtime(t);
+ const tooltip = x.data.house.mapData['1001'].tooltip;
+ tooltip.candidates.push({name:'Total Write-ins',party:'OTH',votes:501});
+ batch(x.data.house,'1001',[1000,900,501]);
+ await x.control.poll();
+ const current = () => x.control.probabilityResult('house-DE-AL').candidates.map(candidate => candidate.votes);
+ assert.deepEqual(current(),[1000,900,501]);
+ x.advance();
+ batch(x.data.house,'1001',[1000,900,0]);
+ await x.control.poll();
+ assert.deepEqual(current(),[1000,900,501]);
+ x.advance();
+ batch(x.data.house,'1001',[1300,1200,0]);
+ await x.control.poll();
+ assert.deepEqual(current(),[1300,1200,0]);
+ x.advance();
+ batch(x.data.house,'1001',[2200,0,0]);
+ await x.control.poll();
+ assert.deepEqual(current(),[1300,1200,0]);
+ assert.ok(x.control.health().quarantined.some(row => /Candidate vote reset/.test(row.reason)));
+});
+
 test('Public transport carries only safe NBC page links and unchanged races need no repeat national download',async t=>{
  const x=await runtime(t);await x.control.poll();const feed=new ResultsChangeFeed();const a=feed.update(x.control.results());
  x.advance();await x.control.poll();feed.update(x.control.results());assert.equal(feed.changes(a.version).races.length,0);

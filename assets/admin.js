@@ -122,6 +122,27 @@
   });
   for(const id of ["raceSearch","raceOffice","raceFilter"]) $(id).addEventListener(id === "raceSearch" ? "input" : "change",()=>{if(dirty || noteDirty){setStatus($("control-status"),"Save current race edits before filtering.",true);return;}renderApp();});
   $("returnRaceAuto").addEventListener("click",()=>runButton($("returnRaceAuto"),()=>controlAction("auto",currentRace()?.id)));
+  const regenerateProbabilityButton = $("regenerateRaceProbability");
+  regenerateProbabilityButton.addEventListener("click", () => runButton(regenerateProbabilityButton, async () => {
+    const race = currentRace();
+    const status = $("race-probability-status");
+    if (!race) {
+      setStatus(status, "Choose a race first.", true);
+      return;
+    }
+    setStatus(status, `Regenerating ${race.label}…`);
+    try {
+      const result = await adminFetch("/api/admin/results-probability/regenerate", {
+        method: "POST",
+        body: JSON.stringify({raceId:race.id})
+      });
+      const sourceTime = new Date(result.sourceUpdatedAt).toLocaleString([], {timeZoneName:"short"});
+      const age = result.status === "stale" ? " NBC returns are delayed." : "";
+      setStatus(status, `${race.label} regenerated using NBC returns from ${sourceTime}.${age}`);
+    } catch (error) {
+      setStatus(status, error.message, true);
+    }
+  }));
   $("lockAdmin").addEventListener("click",async()=>{if((dirty||noteDirty||overlayDirty)&&!await confirmAction("Lock and discard unsaved edits?"))return;sessionStorage.removeItem("feaAdminSecret");state.secret="";secretInput.value="";dirty=false;noteDirty=false;overlayDirty=false;adminApp.hidden=true;loginPanel.hidden=false;clearInterval(controlTimer);controlTimer=null;});
   document.addEventListener("keydown", event=>{
     if(["INPUT","TEXTAREA","SELECT"].includes(event.target.tagName)||$("control-confirm").open||event.ctrlKey||event.metaKey||event.altKey) return;

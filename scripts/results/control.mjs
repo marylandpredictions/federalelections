@@ -4,6 +4,7 @@ import { readFile, writeFile, rename, mkdir,readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { NbcProvider } from "./nbc-provider.mjs";
 import { genericName,matchBallotCandidate } from "./candidate-roster.mjs";
+import {isAnonymousWriteInAggregate} from './probability-ballot-filter.mjs';
 import { createHash } from "node:crypto";
 import { resultStorage } from './storage.mjs';
 import { auditRosters } from './roster-audit.mjs';
@@ -334,7 +335,22 @@ export class ResultsControl {
           }
           const resetBaseline=Math.max(oldTotal,baselineTotal);
           if(resetBaseline>=100&&newTotal<resetBaseline*.5)throw Error('Suspicious partial vote reset; last-good race retained for review');
-          if((voteBaseline?.candidates||[]).some(c=>c.votes>=100&&r.candidates.some(k=>k.name===c.name&&k.votes===0)))throw Error('Candidate vote reset; last-good race retained for review');
+          const candidateResets = (voteBaseline?.candidates || []).filter(candidate =>
+            candidate.votes >= 100 && r.candidates.some(next => next.name === candidate.name && next.votes === 0));
+          if (candidateResets.length) {
+            // NBC can zero its anonymous write-in bucket while reporting a newer
+            // count for every named candidate. Keep the named-candidate reset guard.
+            const namedBefore = prior.candidates.filter(candidate => !isAnonymousWriteInAggregate(candidate));
+            const namedAfter = new Map(r.candidates.filter(candidate => !isAnonymousWriteInAggregate(candidate))
+              .map(candidate => [candidate.name, candidate.votes]));
+            const advancingNationalBallot = prior.provider === 'NBC' && r.provider === 'NBC' &&
+              r.providerScope === 'national' && after > before &&
+              namedBefore.length === namedAfter.size &&
+              namedBefore.every(candidate => namedAfter.get(candidate.name) >= candidate.votes) &&
+              namedBefore.some(candidate => namedAfter.get(candidate.name) > candidate.votes);
+            if (!advancingNationalBallot || candidateResets.some(candidate => !isAnonymousWriteInAggregate(candidate)))
+              throw Error('Candidate vote reset; last-good race retained for review');
+          }
           if(['national','civic-fallback'].includes(r.providerScope)&&!r.counties?.length&&prior?.counties?.length)r.counties=prior.counties;
           races.push(r);
           } catch(error){quarantined.push({race:r?.id||'Unknown',reason:error.message});}

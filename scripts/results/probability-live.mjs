@@ -85,6 +85,7 @@ export class LiveProbability {
     this.hydrationCursor = 0;
     // Vote-drop / county-refresh races run before the ordinary round-robin.
     this.priorityQueue = new Set();
+    this.pendingUpdates = new Map();
   }
 
   async load(release) {
@@ -212,18 +213,31 @@ export class LiveProbability {
     return {total:races.length,counts,races};
   }
 
-  async update(id, detail, completion) {
+  async update(id, detail, completion, {regenerate = false} = {}) {
+    const previous = this.pendingUpdates.get(id);
+    const run = () => this.updateRace(id, detail, completion, regenerate);
+    const task = previous ? previous.then(run, run) : run();
+    this.pendingUpdates.set(id, task);
+    try {
+      return await task;
+    } finally {
+      if (this.pendingUpdates.get(id) === task) this.pendingUpdates.delete(id);
+    }
+  }
+
+  async updateRace(id, detail, completion, regenerate) {
     const race = this.races.get(id);
-    if (!race) return;
+    const skipped = reason => regenerate ? {regenerated:false, reason} : undefined;
+    if (!race) return skipped('This race has no approved model.');
     // No detail this tick (or a caller skipped hydration) — keep the last estimate.
-    if (detail == null) return;
+    if (detail == null) return skipped('Verified NBC returns are unavailable for this race.');
     const mode=race.config.prior.inputMode;
     const aggregate=['race-total','race-total-multi','unopposed','majority-lock'].includes(mode);
     if (detail?.id !== id || detail.provider !== 'NBC' || detail.providerStale === true) {
       // Explicit bad/non-NBC feed — demote freshness, but keep published points.
       race.available = false;
       race.reason = 'Waiting for a verified NBC update.';
-      return;
+      return skipped(race.reason);
     }
     if (!aggregate && (!detail.counties?.length || detail.counties.some(unit => unit.source !== 'NBC News'))) {
       // Counties not ready yet — leave the last estimate alone.
@@ -231,7 +245,7 @@ export class LiveProbability {
         race.available = false;
         race.reason = 'Waiting for a verified NBC update.';
       }
-      return;
+      return skipped('Verified NBC reporting areas are unavailable for this race.');
     }
     const now = this.now(), at = new Date(now).toISOString();
     const {prior, roster} = race.config;
@@ -251,7 +265,7 @@ export class LiveProbability {
         race.reason = aggregate?'The NBC ballot needs to reconcile before the next estimate.':
           'The NBC candidate and county returns need to reconcile before the next estimate.';
       }
-      return;
+      return skipped('The NBC ballot and model roster or reporting areas do not reconcile.');
     }
     const age=Math.max(now-Date.parse(snapshot.sourceUpdatedAt),...snapshot.units.filter(unit=>!unit.complete).map(unit=>now-Date.parse(unit.availableAt)));
     const partial=race.settings.method==='calibrated-partial-count';
@@ -263,21 +277,21 @@ export class LiveProbability {
         available: false,
         reason: 'The NBC update is delayed.',
       });
-      return;
+      return skipped('The NBC snapshot is outside this model’s supported date or freshness window.');
     }
     const previous = race.snapshot;
     const units = new Map(snapshot.units.map(unit => [unit.id, unit]));
     if (previous && Date.parse(snapshot.sourceUpdatedAt) < Date.parse(previous.sourceUpdatedAt)) {
       Object.assign(race, freshness);
-      return;
+      return skipped('A newer NBC snapshot is already available. Try again.');
     }
     const evidence = evidenceHash(snapshot);
     // Same NBC ballot can still need a fresh draw after a prior/model revision.
-    if (race.evidence === evidence && !race.pendingModelRevision) {
+    if (!regenerate && race.evidence === evidence && !race.pendingModelRevision) {
       Object.assign(race, {...freshness, snapshot});
       return;
     }
-    if (race.rejectedEvidence?.hash === evidence) {
+    if (!regenerate && race.rejectedEvidence?.hash === evidence) {
       race.reason = race.rejectedEvidence.reason;
       return;
     }
@@ -301,29 +315,37 @@ export class LiveProbability {
       if(minorNbcRevision)correctionSource='NBC News verified count revision: '+snapshot.sourceUpdatedAt;
       else if (correction?.previousInputHash !== last.inputHash || correction?.snapshotHash !== hash(reported) ||
           !(Date.parse(correction.availableAt) <= Date.parse(observedAt)) ||
-          typeof correction.source !== 'string' || !correction.source.trim()) return;
+          typeof correction.source !== 'string' || !correction.source.trim()) {
+        race.available = false;
+        return skipped(race.reason);
+      }
       else correctionSource = correction.source;
     }
     const point = await this.simulate(prior, snapshot, race.settings,
-      race.pendingModelRevision ? undefined : last?.inputHash);
+      regenerate || race.pendingModelRevision ? undefined : last?.inputHash);
     if (point.status === 'unavailable') {
       race.reason = partial?point.reason:'Waiting for verified reporting-unit completion. '+point.reason;
       race.rejectedEvidence = {hash: evidence, reason: race.reason};
-      return;
+      return skipped(race.reason);
     }
     if (point.status === 'unchanged') {
       Object.assign(race, {...freshness, snapshot, evidence});
-      return;
+      return skipped('The model did not return a new calculation.');
     }
-    if (point.status !== 'research') return;
+    if (point.status !== 'research') return skipped('The model did not return a publishable estimate.');
     const {status, ...estimate} = point;
-    const reason = correctionSource ? 'documented-correction' : race.pendingModelRevision?'model-revision':last ? 'reporting-update' : 'first-supported-snapshot';
-    const points = [...race.points, {...estimate, reason, ...(correctionSource ? {correctionSource} : {})}].slice(-maxPoints);
+    const reason = correctionSource ? 'documented-correction' : race.pendingModelRevision ? 'model-revision' :
+      regenerate ? 'manual-regeneration' : last ? 'reporting-update' : 'first-supported-snapshot';
+    const duplicate = regenerate && !race.pendingModelRevision && point.inputHash === last?.inputHash;
+    const points = duplicate ? race.points :
+      [...race.points, {...estimate, reason, ...(correctionSource ? {correctionSource} : {})}].slice(-maxPoints);
     await mkdir(this.directory, {recursive: true});
     const file = join(this.directory, id + '.json');
     await writeFile(file + '.tmp', JSON.stringify({identity: race.identity, snapshot, points}) + '\n');
     await rename(file + '.tmp', file);
-    Object.assign(race, {...freshness, snapshot, points, evidence,pendingModelRevision:false});
+    Object.assign(race, {...freshness, snapshot, points, evidence, pendingModelRevision:false, rejectedEvidence:null});
+    if (regenerate) return {regenerated:true, regeneratedAt:at, sourceUpdatedAt:snapshot.sourceUpdatedAt,
+      historyChanged:!duplicate, status:delayed ? 'stale' : 'live'};
   }
 }
 

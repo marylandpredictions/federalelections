@@ -38,12 +38,43 @@ test('Actual worker publishes and restores a race-total point without county dat
  await recovered.update(x.id,x.detail);assert.equal(recovered.view(x.id).status,'live');assert.equal(recovered.view(x.id).points.length,1);
 });
 
+test('Manual regeneration reruns identical inputs, preserves history and serializes competing updates', async t => {
+ const x = fixture();
+ const path = await directory(t);
+ const simulate = (await import('../../scripts/results/probability-aggregate-adapter.mjs')).simulateAggregateProbability;
+ let active = 0;
+ let runs = 0;
+ const worker = new LiveProbability(path, {now:()=>x.now, simulate:async (...args) => {
+   assert.equal(++active, 1);
+   runs++;
+   await new Promise(resolve => setImmediate(resolve));
+   try { return simulate(...args); } finally { active--; }
+ }});
+ await worker.load(x.release);
+ const [, manual] = await Promise.all([
+   worker.update(x.id,x.detail),
+   worker.update(x.id,x.detail,undefined,{regenerate:true})
+ ]);
+ assert.equal(runs,2);
+ assert.equal(manual.regenerated,true);
+ assert.equal(manual.historyChanged,false);
+ assert.equal(worker.view(x.id).points.length,1);
+ const before = worker.view(x.id).points;
+ const rejected = await worker.update(x.id,{...x.detail,provider:'CivicAPI'},undefined,{regenerate:true});
+ assert.equal(rejected.regenerated,false);
+ assert.equal(runs,2);
+ assert.deepEqual(worker.view(x.id).points,before);
+});
+
 test('The governor path uses the same verified worker and complete-ballot checks',async t=>{
  const x=fixture('governor-IA'),worker=new LiveProbability(await directory(t),{now:()=>x.now});
  await worker.load(x.release);await worker.update(x.id,x.detail);assert.equal(worker.view(x.id).status,'live');
  const before=worker.view(x.id).points;
- await assert.rejects(worker.update(x.id,{...x.detail,candidates:[...x.detail.candidates,{name:'Another Candidate',party:'I',votes:1}]}),/Unknown provider/);
- assert.deepEqual(worker.view(x.id).points,before);assert.equal(worker.view(x.id).status,'stale');
+ const invalid = {...x.detail,candidates:[...x.detail.candidates,{name:'Another Candidate',party:'I',votes:1}]};
+ const result = await worker.update(x.id,invalid,undefined,{regenerate:true});
+ assert.equal(result.regenerated,false);
+ assert.match(result.reason,/do not reconcile/);
+ assert.deepEqual(worker.view(x.id).points,before);
 });
 
 test('Race-total normalization maps aliases, ignores county geometry, and cannot import a completion notice',()=>{

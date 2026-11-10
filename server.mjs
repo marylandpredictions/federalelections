@@ -52,6 +52,7 @@ const rateLimit = new Map();
 const resultsFeed = new ResultsChangeFeed();
 const countyHistory = new CountyHistory(root);
 const liveProbability = await openLiveProbability(resultStorage(root));
+let regeneratingProbability = false;
 const wireCache = new Map();
 let wireCacheBytes = 0;
 function compressBody(body, encoding, etag) {
@@ -736,6 +737,21 @@ function validatePredictionPayload(payload) {
   return "";
 }
 
+function probabilityUsesRaceTotals(prior) {
+  return ['race-total', 'race-total-multi', 'unopposed', 'majority-lock'].includes(prior.inputMode);
+}
+
+function probabilityDetail(control, id, prior) {
+  const aggregate = probabilityUsesRaceTotals(prior);
+  if (!aggregate) {
+    const health = control.health();
+    if (health.connection !== 'connected' || !health.lastHealthyRaceIds?.includes(id)) return undefined;
+  }
+  const detail = control.probabilityResult(id, prior.units.map(unit => unit.id));
+  if (!aggregate && !detail?.counties?.length) return undefined;
+  return detail;
+}
+
 async function handleAdmin(request, response, url) {
   if (!adminEnabled()) {
     sendJson(response, 503, { ok: false, error: "Admin is disabled. Set ADMIN_SECRET in the server environment." });
@@ -833,6 +849,51 @@ async function handleAdmin(request, response, url) {
 
   if(url.pathname==='/api/admin/results-self-test'&&request.method==='GET'){
     sendJson(response,200,await readiness(await getResultsControl(),root));return;
+  }
+  if (url.pathname === "/api/admin/results-probability/regenerate") {
+    if (request.method !== "POST") {
+      sendJson(response, 405, {ok:false, error:"Method not allowed."});
+      return;
+    }
+    let raceId;
+    try {
+      ({raceId} = await readJsonBody(request));
+    } catch {
+      sendJson(response, 400, {ok:false, error:"Invalid regeneration request."});
+      return;
+    }
+    if (typeof raceId !== "string" || !isValidRaceId(raceId)) {
+      sendJson(response, 400, {ok:false, error:"Choose a results race first."});
+      return;
+    }
+    const prior = liveProbability.races.get(raceId)?.config.prior;
+    if (!prior) {
+      sendJson(response, 404, {ok:false, error:"This race has no approved win probability model."});
+      return;
+    }
+    if (regeneratingProbability) {
+      sendJson(response, 409, {ok:false, error:"A manual regeneration is already running. Try again shortly."});
+      return;
+    }
+    regeneratingProbability = true;
+    try {
+      const control = await getResultsControl();
+      await control.poll();
+      if (!probabilityUsesRaceTotals(prior)) await control.loadCountyResults(raceId, {watch:false});
+      const result = await liveProbability.update(raceId, probabilityDetail(control, raceId, prior),
+        undefined, {regenerate:true});
+      if (!result?.regenerated) {
+        sendJson(response, 409, {ok:false, error:result?.reason || "No estimate was generated."});
+        return;
+      }
+      sendJson(response, 200, {ok:true, raceId, ...result});
+    } catch (error) {
+      console.error(`Win probability regeneration failed for ${raceId}: ${error.message}`);
+      sendJson(response, 500, {ok:false, error:"Unable to calculate or save the estimate. Check server logs."});
+    } finally {
+      regeneratingProbability = false;
+    }
+    return;
   }
   if (url.pathname === "/api/admin/results-control") {
     const control = await getResultsControl();
@@ -1222,20 +1283,7 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
   if (liveProbability.races.size) {
     let probabilityRunning = false;
     const probabilityErrors = new Map();
-    const probabilityDetail = (id, prior) => {
-      const aggregate = ['race-total', 'race-total-multi', 'unopposed', 'majority-lock'].includes(prior.inputMode);
-      const health = control.health();
-      // Persistence failures must not freeze live odds — in-memory NBC ballots are still usable.
-      const healthy = health.connection === 'connected'
-        ? new Set(health.lastHealthyRaceIds || [])
-        : new Set();
-      // Aggregate race-total paths only need the national ballot, not a healthy county page.
-      if (!aggregate && !healthy.has(id)) return undefined;
-      const detail = control.probabilityResult(id, prior.units.map((unit) => unit.id));
-      // Skip geographic races that have not hydrated counties yet — never demote a published estimate.
-      if (!aggregate && !detail?.counties?.length) return undefined;
-      return detail;
-    };
+    const detailFor = (id, prior) => probabilityDetail(control, id, prior);
     const onProbabilityError = (id, error) => {
       if (!error) probabilityErrors.delete(id);
       else if (probabilityErrors.get(id) !== error.message) {
@@ -1252,16 +1300,16 @@ if (process.env.RESULTS_MODE !== "legacy-primary") {
         if (mode === "all") {
           // Prefer pending vote drops over a long full sweep that would starve them.
           if (liveProbability.priorityQueue.size) {
-            await liveProbability.updateBatch(probabilityDetail, onProbabilityError, {
+            await liveProbability.updateBatch(detailFor, onProbabilityError, {
               limit: 24,
               concurrency: 2,
             });
           } else {
-            await liveProbability.updateAll(probabilityDetail, onProbabilityError, {concurrency: 2});
+            await liveProbability.updateAll(detailFor, onProbabilityError, {concurrency: 2});
           }
         } else {
           // Shorter cadence: vote-drop races first, then a round-robin slice.
-          await liveProbability.updateBatch(probabilityDetail, onProbabilityError, {
+          await liveProbability.updateBatch(detailFor, onProbabilityError, {
             limit: 16,
             concurrency: 2,
           });

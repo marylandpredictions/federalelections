@@ -104,6 +104,11 @@ test("HTTP integration: admin auth, calls, detail and summary refresh, no foreca
     "scripts/results/probability-live.mjs",
     "scripts/results/probability-partial-adapter.mjs",
     "scripts/results/probability-aggregate-adapter.mjs",
+    "scripts/results/probability-ballot-filter.mjs",
+    "scripts/results/probability-majority-lock-adapter.mjs",
+    "scripts/results/probability-multi-aggregate-adapter.mjs",
+    "scripts/results/probability-rule-outcomes.mjs",
+    "scripts/results/probability-unopposed-adapter.mjs",
     "scripts/results/probability-partial-release.mjs",
     "scripts/results/probability-partial-model.mjs",
     "scripts/results/probability-inputs.mjs",
@@ -202,6 +207,15 @@ test("HTTP integration: admin auth, calls, detail and summary refresh, no foreca
   ])
     assert.equal((await fetch(base + route)).status, 404, route);
   assert.equal((await fetch(base + "/api/admin/bootstrap")).status, 401);
+  const regeneratePath = base + "/api/admin/results-probability/regenerate";
+  assert.equal((await fetch(regeneratePath, {method:"POST"})).status, 401);
+  assert.equal((await fetch(regeneratePath, {headers:auth})).status, 405);
+  assert.equal((await fetch(regeneratePath, {
+    method:"POST", headers:auth, body:JSON.stringify({raceId:"../senate-AK"})
+  })).status, 400);
+  assert.equal((await fetch(regeneratePath, {
+    method:"POST", headers:auth, body:JSON.stringify({raceId:"senate-AK"})
+  })).status, 404);
   const bootstrap = await (
     await fetch(base + "/api/admin/bootstrap", { headers: auth })
   ).json();

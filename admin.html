@@ -50,7 +50,8 @@
           <label for="raceSearch">Search races</label><input class="admin-input" id="raceSearch" type="search" placeholder="CO-04, Colorado 4, Illinois Senate, surname"><details class="race-filters"><summary>Filter by office or status</summary><label for="raceOffice">Office</label><select class="admin-select" id="raceOffice"><option value="">All offices</option><option value="house">House</option><option value="senate">Senate</option><option value="governor">Governor</option></select><label for="raceFilter">Status</label><select class="admin-select" id="raceFilter"><option value="">All races</option><option value="called">Called</option><option value="uncalled">Uncalled</option><option value="pending">NBC pending</option><option value="override">Override</option><option value="key">Watch races</option></select></details><label for="raceSelect">Select race</label>
           <select class="admin-select" id="raceSelect"></select>
         </div>
-        <div class="admin-candidate-list" id="candidateList"></div><div id="race-control-meta"></div><div class="admin-actions"><button class="admin-button secondary" id="returnRaceAuto">Use NBC calls again</button></div>
+        <div class="admin-candidate-list" id="candidateList"></div><div id="race-control-meta"></div><div class="admin-actions"><button class="admin-button secondary" id="returnRaceAuto">Use NBC calls again</button><button type="button" class="admin-button secondary" id="regenerateRaceProbability">Regenerate live win probability</button></div>
+        <p id="race-probability-status" role="status"></p>
         <p class="admin-muted" id="raceHelp">Choose a candidate, then confirm your call. Your choice stays in place until you return this race to NBC.</p>
       </aside>
 
@@ -166,6 +167,6 @@
     <dialog id="control-confirm"><form method="dialog"><h2>Confirm election call action</h2><p id="confirm-message"></p><div class="admin-actions"><button class="admin-button secondary" value="cancel">Cancel</button><button class="admin-button" value="confirm">Confirm</button></div></form></dialog>
   </main>
   <script src="assets/results-ui.js?v=20261027-desk14"></script>
-  <script src="assets/admin.js?v=20261031-maker1"></script>
+  <script src="assets/admin.js?v=20261109-probability"></script>
 </body>
 </html>
