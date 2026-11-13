@@ -1,0 +1,46 @@
+name: Daily polling averages
+
+on:
+  schedule:
+    - cron: "40 11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-polling-averages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out site
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Sync branch before generation
+        run: git pull --ff-only origin "$GITHUB_REF_NAME"
+
+      - name: Build Trump approval and 2028 primary averages
+        run: npm run build:polling-averages
+
+      - name: Commit polling average data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/polling/trump-approval.json data/polling/2028-primary.json
+          if git diff --cached --quiet; then
+            echo "No polling average changes to commit."
+            exit 0
+          fi
+          git commit -m "Update polling averages"
+          git push origin "HEAD:$GITHUB_REF_NAME"

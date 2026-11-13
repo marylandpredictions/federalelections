@@ -8,8 +8,17 @@ import {
   dedupeApprovalPolls,
   fromVoteHub,
 } from './approval-sources.mjs';
+import {
+  POPULATION_WEIGHT,
+  POPULATION_RANK,
+  ageDays,
+  eachDay,
+  chooseHalfLife,
+  chooseMaxAgeDays,
+  sampleSizeWeight,
+  pollsterQuality,
+} from './weighting.mjs';
 
-const clamp = (lo, hi, value) => Math.min(hi, Math.max(lo, value));
 const normalize = s => String(s || '')
   .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
   .toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -18,17 +27,13 @@ export const TRUMP_APPROVAL_METHOD =
   'FEA weighted Trump job-approval average from multiple public feeds (VoteHub individual ' +
   'polls, CC BY 4.0, plus Pollfinity’s published poll list). Identical surveys are collapsed ' +
   'across sources by pollster/date/result before weighting. Soft exponential recency decay with ' +
-  'no short hard cutoff. When recent polling is thin, the half-life lengthens (about 14→45 days). ' +
+  'no short hard cutoff. When recent polling is thick the half-life shortens (about 10–21 days); ' +
+  'when it is thin the half-life lengthens (up to about 45 days) and the look-back window widens. ' +
   'Within each pollster, polls are recency-weighted; pollsters are then weighted by the recency ' +
-  'of their latest poll. LV beats RV beats adults when the same release reports multiple ' +
-  'populations. Internals excluded. ENOP is the sum of raw pollster weights before normalization. ' +
-  'This is FEA’s own aggregate, not VoteHub’s or Pollfinity’s published average.';
-
-const POPULATION_WEIGHT = {lv: 1.15, rv: 1.05, a: 1, v: 0.9};
-const POPULATION_RANK = {lv: 3, rv: 2, a: 1, v: 0};
-const DEFAULT_MAX_AGE_DAYS = 180;
-const DENSE_HALF_LIFE = 14;
-const SPARSE_HALF_LIFE = 45;
+  'of their latest poll, with a mild quality prior. LV beats RV beats adults when the same ' +
+  'release reports multiple populations. Internals excluded. ENOP is the sum of raw pollster ' +
+  'weights before normalization. This is FEA’s own aggregate, not VoteHub’s or Pollfinity’s ' +
+  'published average.';
 
 export function normalizeApprovalPoll(raw) {
   // Already-normalized multi-source row.
@@ -67,35 +72,19 @@ export function collapseSamePollsterDay(rows) {
   return [...byKey.values()];
 }
 
-function ageDays(asOf, endDate) {
-  return (Date.parse(`${asOf}T12:00:00Z`) - Date.parse(`${endDate}T12:00:00Z`)) / 86400000;
-}
-
-function chooseHalfLife(polls, asOf) {
-  const recent = polls.filter(p => {
-    const age = ageDays(asOf, p.endDate);
-    return age >= 0 && age <= 60;
-  });
-  const pollsters = new Set(recent.map(p => normalize(p.pollster)));
-  // Sparse Trump-approval periods need a long half-life so one new poll
-  // cannot spike the chart the way a short hard window did.
-  if (recent.length >= 25 && pollsters.size >= 12) return DENSE_HALF_LIFE;
-  if (recent.length >= 15 && pollsters.size >= 8) return 21;
-  if (recent.length >= 10 && pollsters.size >= 6) return 30;
-  return SPARSE_HALF_LIFE;
-}
-
 export function weightApprovalPolls(rows, {
   asOf,
-  maxAgeDays = DEFAULT_MAX_AGE_DAYS,
+  maxAgeDays,
   halfLife,
 } = {}) {
+  const keyFn = (p) => normalize(p.pollster);
+  const life = halfLife ?? chooseHalfLife(rows, asOf, keyFn);
+  const windowDays = maxAgeDays ?? chooseMaxAgeDays(rows, asOf, keyFn);
   const eligible = rows.filter(p => {
     const age = ageDays(asOf, p.endDate);
-    return age >= 0 && age <= maxAgeDays;
+    return age >= 0 && age <= windowDays;
   });
   if (!eligible.length) return null;
-  const life = halfLife ?? chooseHalfLife(eligible, asOf);
 
   const byPollster = new Map();
   for (const poll of eligible) {
@@ -112,12 +101,13 @@ export function weightApprovalPolls(rows, {
   let enop = 0;
   const weighted = [];
 
-  for (const [, group] of [...byPollster.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+  for (const [pollsterKey, group] of [...byPollster.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
     const ordered = [...group].sort((a, b) => b.endDate.localeCompare(a.endDate) || a.id.localeCompare(b.id));
     const latestAge = Math.max(0, ageDays(asOf, ordered[0].endDate));
     const pollsterRecency = Math.pow(0.5, latestAge / life);
     const partisanWeight = ordered.some(p => p.partisan) ? 0.78 : 1;
-    const pollsterRaw = pollsterRecency * partisanWeight;
+    const quality = pollsterQuality(pollsterKey);
+    const pollsterRaw = pollsterRecency * partisanWeight * quality;
     if (pollsterRaw <= 0) continue;
     enop += pollsterRaw;
 
@@ -125,9 +115,9 @@ export function weightApprovalPolls(rows, {
     const inner = [];
     for (const poll of ordered) {
       const age = Math.max(0, ageDays(asOf, poll.endDate));
-      const sampleWeight = clamp(0.55, 2.1, Math.sqrt(poll.sampleSize || 800) / 30);
-      const populationWeight = POPULATION_WEIGHT[poll.population] || 1;
-      const w = Math.pow(0.5, age / life) * sampleWeight * populationWeight;
+      const w = Math.pow(0.5, age / life) *
+        sampleSizeWeight(poll.sampleSize) *
+        (POPULATION_WEIGHT[poll.population] || 1);
       innerSum += w;
       inner.push({poll, w});
     }
@@ -164,22 +154,11 @@ export function weightApprovalPolls(rows, {
     effectivePollsters: byPollster.size,
     enop,
     halfLife: life,
-    maxAgeDays,
+    maxAgeDays: windowDays,
     totalWeight: weightSum,
     latestPoll: weighted.map(p => p.endDate).sort().at(-1),
     polls: weighted.sort((a, b) => b.endDate.localeCompare(a.endDate) || b.weight - a.weight),
   };
-}
-
-function eachDay(from, to) {
-  const days = [];
-  let ms = Date.parse(`${from}T12:00:00Z`);
-  const end = Date.parse(`${to}T12:00:00Z`);
-  while (ms <= end) {
-    days.push(new Date(ms).toISOString().slice(0, 10));
-    ms += 86400000;
-  }
-  return days;
 }
 
 export function buildTrumpApproval(rawPolls, {asOf, ingest = null} = {}) {
@@ -195,24 +174,32 @@ export function buildTrumpApproval(rawPolls, {asOf, ingest = null} = {}) {
   const current = weightApprovalPolls(polls, {asOf: currentAsOf});
   if (!current) throw Error('Unable to form current approval average');
 
+  // One point per calendar day once the average is warm. Days without a fresh
+  // usable window keep yesterday's reading so the chart never drops to blank.
   const series = [];
+  let lastGood = null;
   for (const day of eachDay(first, currentAsOf)) {
     const point = weightApprovalPolls(polls, {asOf: day});
-    // Skip the unstable warm-up and ultra-thin days that create chart spikes.
-    if (!point || point.pollCount < 8 || point.enop < 3) continue;
-    const ageFromEnd = (Date.parse(`${currentAsOf}T12:00:00Z`) - Date.parse(`${day}T12:00:00Z`)) / 86400000;
-    const keep = ageFromEnd <= 180 || day.endsWith('-01') || day.endsWith('-08') ||
-      day.endsWith('-15') || day.endsWith('-22') || day === currentAsOf;
-    if (!keep) continue;
+    if (point && point.pollCount >= 8 && point.enop >= 3) {
+      lastGood = {
+        date: day,
+        approve: Number(point.approve.toFixed(2)),
+        disapprove: Number(point.disapprove.toFixed(2)),
+        net: Number(point.net.toFixed(2)),
+        pollCount: point.pollCount,
+        effectivePollsters: point.effectivePollsters,
+        enop: Number(point.enop.toFixed(2)),
+        halfLife: point.halfLife,
+        carriedForward: false,
+      };
+      series.push(lastGood);
+      continue;
+    }
+    if (!lastGood) continue;
     series.push({
+      ...lastGood,
       date: day,
-      approve: Number(point.approve.toFixed(2)),
-      disapprove: Number(point.disapprove.toFixed(2)),
-      net: Number(point.net.toFixed(2)),
-      pollCount: point.pollCount,
-      effectivePollsters: point.effectivePollsters,
-      enop: Number(point.enop.toFixed(2)),
-      halfLife: point.halfLife,
+      carriedForward: true,
     });
   }
 
@@ -232,7 +219,7 @@ export function buildTrumpApproval(rawPolls, {asOf, ingest = null} = {}) {
   }));
 
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
     subject: 'Donald Trump',
     asOf: currentAsOf,
     builtAt: new Date().toISOString(),
@@ -262,6 +249,7 @@ export function buildTrumpApproval(rawPolls, {asOf, ingest = null} = {}) {
       effectivePollsters: current.effectivePollsters,
       enop: Number(current.enop.toFixed(2)),
       halfLife: current.halfLife,
+      maxAgeDays: current.maxAgeDays,
       latestPoll: current.latestPoll,
     },
     series,
@@ -279,7 +267,7 @@ async function main() {
     `Trump approval: ${result.current.approve}% / ${result.current.disapprove}% ` +
     `(net ${result.current.net >= 0 ? '+' : ''}${result.current.net}) · ` +
     `${result.current.pollCount} polls · ENOP ${result.current.enop} · ` +
-    `half-life ${result.current.halfLife}d · as of ${result.asOf} · ` +
+    `half-life ${result.current.halfLife}d · window ${result.current.maxAgeDays}d · as of ${result.asOf} · ` +
     `${result.series.length} series points · sources ${ingest.sources.join('+')} · ` +
     `deduped ${ingest.collapsed}`,
   );

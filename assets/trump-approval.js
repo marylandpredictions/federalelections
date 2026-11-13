@@ -38,11 +38,7 @@
     $('approval-meter-disapprove').style.width = `${100 - approveShare}%`;
     $('approval-method-text').textContent = data.method;
     const guide = $('approval-chart-guide');
-    if (guide) {
-      guide.textContent = current.halfLife
-        ? `Soft-decay weighted average (half-life ${current.halfLife} days). Hover or focus the chart for a daily reading.`
-        : 'Soft-decay weighted average. Hover or focus the chart for a daily reading.';
-    }
+    if (guide) guide.textContent = 'Hover or focus for each day.';
   }
 
   function setPollTable(polls) {
@@ -67,7 +63,7 @@
       const sample = document.createElement('td');
       sample.textContent = poll.sampleSize
         ? `${poll.sampleSize.toLocaleString('en-US')} ${populationLabel(poll.population)}`
-        : populationLabel(poll.population);
+        : `— ${populationLabel(poll.population)}`;
       const approve = document.createElement('td');
       approve.className = 'is-approve';
       approve.textContent = fmtPct(poll.approve);
@@ -79,9 +75,7 @@
       net.textContent = fmtNet(poll.net);
       const weight = document.createElement('td');
       weight.textContent = poll.weight.toFixed(2);
-      const sources = document.createElement('td');
-      sources.textContent = (poll.sources || []).join(', ') || '—';
-      tr.append(name, dates, sample, approve, disapprove, net, weight, sources);
+      tr.append(name, dates, sample, approve, disapprove, net, weight);
       body.append(tr);
     }
   }

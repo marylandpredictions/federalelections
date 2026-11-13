@@ -176,6 +176,11 @@ body.home-page::before {
   gap: 1rem 1.1rem;
   align-items: start;
 }
+.home-metric-stack {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
 .home-hero-main {
   display: grid;
   gap: 3rem;
@@ -266,6 +271,12 @@ body.home-page::before {
 }
 .home-pv-card::before {
   background: linear-gradient(180deg, var(--home-dem), var(--home-rep));
+}
+.home-primary-card::before {
+  background: linear-gradient(180deg, #4d7cff, #12a454);
+}
+.home-metric-row[data-tone="primary"] .home-metric-track > i {
+  background: currentColor;
 }
 .home-metric-kicker {
   margin: 0;
@@ -583,7 +594,7 @@ body.home-page::before {
   transform: translateY(-1px);
 }
 
-/* Congress band — full-bleed without 100vw (avoids off-center + edge clipping) */
+/* Congress band: full-bleed without 100vw (avoids off-center + edge clipping) */
 .home-congress-band {
   box-sizing: border-box;
   width: 100%;

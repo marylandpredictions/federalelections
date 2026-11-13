@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2028 Primary Averages | Federal Elections Analysis</title>
+<meta name="description" content="FEA’s weighted 2028 Democratic and Republican presidential primary averages from VoteHub and Pollfinity polls.">
+<link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
+<script src="/assets/theme.js?v=20261113-primary3"></script>
+<link rel="stylesheet" href="/assets/wiki.css?v=20261113-primary3">
+<link rel="stylesheet" href="/assets/trump-approval.css?v=20261113-primary8">
+<link rel="stylesheet" href="/assets/primary-2028.css?v=20261113-primary8">
+<script defer src="/assets/primary-2028.js?v=20261113-primary8"></script>
+</head><body>
+<header class="site-header">
+    <a class="brand" href="/">
+      <img class="brand-mark" src="/assets/img/FEA_Icon.webp" alt="Federal Elections Analysis">
+      <span><strong>Federal Elections Analysis</strong><small style="font-weight: 700;">Election analysis</small></span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/2026-results">Results</a><a href="/videos">Videos</a><a href="/articles">Articles</a><details class="nav-dropdown"><summary>Features</summary><div class="nav-dropdown-menu"><a href="/features/polling-bias">State polling bias</a><a href="/features/map-maker">Map maker</a><a href="/2026-atlas">Election Atlas</a></div></details><details class="nav-dropdown"><summary class="active">Polling averages</summary><div class="nav-dropdown-menu"><a href="/polling/trump-approval">Trump Approval</a><a href="/polling/2028-primary" aria-current="page">2028 Primary</a></div></details></nav>
+    <div class="site-nav-right">
+      <a href="https://gofund.me/50724cf21" target="_blank" rel="noopener" class="donate-button">$ Donate</a>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A8.5 8.5 0 1 1 11.21 3 6.5 6.5 0 0 0 21 12.79Z"></path></svg>
+      </button>
+    </div>
+  </header>
+<main class="approval-page">
+<header class="approval-hero">
+  <p class="kicker">Polling averages</p>
+  <h1>2028 presidential primary.</h1>
+</header>
+
+<section class="approval-summary" aria-labelledby="primary-current-title">
+  <div class="approval-summary-heading">
+    <div>
+      <p class="kicker">Current average</p>
+      <h2 id="primary-current-title">National primary</h2>
+    </div>
+    <p id="primary-asof" class="approval-asof" role="status">Loading…</p>
+  </div>
+  <dl id="primary-lead-stats" class="approval-stats"></dl>
+  <div class="approval-meter" aria-hidden="true">
+    <div id="primary-meter-track" class="approval-meter-track primary-meter-track"></div>
+    <div id="primary-meter-labels" class="approval-meter-labels"></div>
+  </div>
+  <ol id="primary-standings" class="primary-standings is-collapsed" aria-label="Candidate average"></ol>
+  <button type="button" id="primary-standings-toggle" class="primary-standings-toggle" hidden>Show all</button>
+</section>
+
+<section class="approval-section" aria-labelledby="primary-chart-title">
+  <div class="approval-section-heading">
+    <div>
+      <p class="kicker">Trend</p>
+      <h2 id="primary-chart-title">Support over time</h2>
+    </div>
+    <div class="approval-view-toggle" id="primary-party-toggle" role="group" aria-label="Party"></div>
+  </div>
+  <p id="primary-chart-guide" class="approval-chart-guide">Hover or focus for each day.</p>
+  <div id="primary-chart" class="approval-chart" aria-busy="true">Loading chart…</div>
+  <aside id="primary-tooltip" class="approval-tooltip" role="tooltip" hidden>
+    <strong id="primary-tooltip-date"></strong>
+    <p id="primary-tooltip-values"></p>
+  </aside>
+  <div id="primary-legend" class="approval-legend" aria-label="Candidate legend"></div>
+</section>
+
+<section class="approval-section" aria-labelledby="primary-table-title">
+  <div class="approval-section-heading">
+    <div>
+      <p class="kicker">Recent polls</p>
+      <h2 id="primary-table-title">Polls in the current average</h2>
+    </div>
+  </div>
+  <p class="approval-table-guide">Swipe sideways on small screens.</p>
+  <div class="approval-table-wrap" role="region" aria-label="Recent 2028 primary polls" tabindex="0">
+    <table class="approval-table">
+      <caption>Weighted polls · percentages</caption>
+      <thead>
+        <tr>
+          <th scope="col">Pollster</th>
+          <th scope="col">Dates</th>
+          <th scope="col">Sample</th>
+          <th scope="col">Top results</th>
+          <th scope="col">Weight</th>
+        </tr>
+      </thead>
+      <tbody id="primary-poll-rows"></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="approval-section approval-method" aria-labelledby="primary-method-title">
+  <h2 id="primary-method-title">How the average is built</h2>
+  <p id="primary-method-text"></p>
+</section>
+<p class="approval-source">Sources: <a href="https://votehub.com/polls/api/" target="_blank" rel="noopener noreferrer">VoteHub ↗</a> (CC BY 4.0), <a href="https://en.wikipedia.org/wiki/Nationwide_opinion_polling_for_the_2028_Democratic_Party_presidential_primaries" target="_blank" rel="noopener noreferrer">Wikipedia ↗</a> (CC BY-SA), and <a href="https://pollfinity.com/averages.json" target="_blank" rel="noopener noreferrer">Pollfinity ↗</a>. Duplicates removed before averaging.</p>
+</main>
+</body></html>

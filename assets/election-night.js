@@ -432,23 +432,79 @@ function raceWinnerParty(race) {
   return normalizedPartyCode(winner || raceLeader(race) || {});
 }
 
-function raceColor(race) {
-  if(window.FEADeskTheme) {
-    const neutral=FEADeskTheme.resolved.tokens['map-neutral'];
-    if(!race||(!hasActiveResults(race)&&!isActuallyCalled(race)))return neutral;
-    const leaders=topCandidates(race,2),called=race.calls?.[0],leader=called?race.candidates.find(c=>c.name===called.candidate):leaders[0];
-    if(!leader)return neutral;
-    const base=FEADeskTheme.candidateColor(leader,race.candidates);
-    return FEADeskTheme.mix(neutral,base,called?1:Math.min(.84,.48+Math.max(0,(leaders[0]?.percent||0)-(leaders[1]?.percent||0))/100));
+function marginShadeEnabled() {
+  try {
+    const stored = localStorage.getItem("feaResultsMarginShade");
+    if (stored === "flat") return false;
+    if (stored === "margin") return true;
+  } catch {}
+  return true;
+}
+
+function setMarginShadeEnabled(enabled) {
+  try { localStorage.setItem("feaResultsMarginShade", enabled ? "margin" : "flat"); } catch {}
+}
+
+// Match forecast map bands: Toss-up / Tilt / Lean / Likely / Safe (pts of margin).
+const MARGIN_BAND_THRESHOLDS = { tilt: 1, lean: 3, likely: 7, safe: 12 };
+const MARGIN_BAND_STRENGTH = { tossup: 0.28, tilt: 0.44, lean: 0.6, likely: 0.78, safe: 0.96 };
+
+function marginBand(marginPct) {
+  const abs = Math.abs(Number(marginPct));
+  if (!Number.isFinite(abs) || abs < MARGIN_BAND_THRESHOLDS.tilt) return "tossup";
+  if (abs < MARGIN_BAND_THRESHOLDS.lean) return "tilt";
+  if (abs < MARGIN_BAND_THRESHOLDS.likely) return "lean";
+  if (abs < MARGIN_BAND_THRESHOLDS.safe) return "likely";
+  return "safe";
+}
+
+function marginBandStrength(marginPct) {
+  return MARGIN_BAND_STRENGTH[marginBand(marginPct)] ?? MARGIN_BAND_STRENGTH.tossup;
+}
+
+function mixMapColor(base, strength, neutralFallback = "#cfd6e5") {
+  if (window.FEADeskTheme) {
+    const neutral = FEADeskTheme.resolved.tokens["map-neutral"] || neutralFallback;
+    return FEADeskTheme.mix(neutral, base, strength);
   }
-  if (!race || (!hasActiveResults(race) && !isActuallyCalled(race))) return "#5f6b80";
-  const candidates = topCandidates(race, 2);
-  const leader = candidates[0];
-  const runnerUp = candidates[1];
-  if (!leader) return "#5f6b80";
-  const margin = Math.max(0, (leader.percent || 0) - (runnerUp?.percent || 0));
-  const strength = Math.max(0.44, Math.min(1, 0.46 + margin / 32));
-  return d3.interpolateRgb("#cfd6e5", partyColor(normalizedPartyCode(leader)))(strength);
+  if (typeof d3?.interpolateRgb === "function") {
+    return d3.interpolateRgb(neutralFallback, base)(strength);
+  }
+  return base;
+}
+
+function leadersMarginPct(leaders = []) {
+  const a = Number(leaders[0]?.percent);
+  const b = Number(leaders[1]?.percent);
+  if (!Number.isFinite(a)) return NaN;
+  if (!Number.isFinite(b)) return Math.max(0, a);
+  return Math.max(0, a - b);
+}
+
+function raceColor(race) {
+  const shade = marginShadeEnabled();
+  const neutral = window.FEADeskTheme?.resolved.tokens["map-neutral"] || "#5f6b80";
+  if (!race || (!hasActiveResults(race) && !isActuallyCalled(race))) return neutral;
+  const leaders = topCandidates(race, 2);
+  const called = isActuallyCalled(race);
+  const call = race.calls?.[0];
+  const leader = call
+    ? race.candidates.find((c) => c.name === call.candidate) || leaders[0]
+    : leaders[0];
+  if (!leader) return neutral;
+  const base = window.FEADeskTheme
+    ? FEADeskTheme.candidateColor(leader, race.candidates)
+    : partyColor(normalizedPartyCode(leader));
+  if (!shade) {
+    // Winner-only: called = full color; uncalled = muted wash
+    return mixMapColor(base, called ? 1 : 0.55);
+  }
+  // Margin mode: discrete Safe / Likely / Lean / Tilt / Toss-up by vote margin
+  const marginPct = leadersMarginPct(leaders);
+  if (!Number.isFinite(marginPct)) {
+    return mixMapColor(base, called ? MARGIN_BAND_STRENGTH.safe : MARGIN_BAND_STRENGTH.tossup);
+  }
+  return mixMapColor(base, marginBandStrength(marginPct));
 }
 
 function liveDemMarginFromCandidates(candidates = []) {
@@ -463,8 +519,27 @@ function marginColor(margin) {
   const value = Number(margin);
   if (!Number.isFinite(value)) return "#5f6b80";
   const party = value >= 0 ? "D" : "R";
-  const strength = Math.max(0.4, Math.min(1, 0.42 + Math.abs(value) / 28));
-  return d3.interpolateRgb("#dbe2f0", partyColor(party))(strength);
+  return mixMapColor(partyColor(party), marginBandStrength(value), "#dbe2f0");
+}
+
+function countyLiveColor(county) {
+  const rawLeaders = countyTopCandidatesForElectionNight(county, 2);
+  const total = (county?.candidates || []).reduce((sum, c) => sum + (Number(c.votes) || 0), 0);
+  const leaders = rawLeaders.map((candidate) => ({
+    ...candidate,
+    percent: Number.isFinite(Number(candidate.percent)) && Number(candidate.percent) > 0
+      ? Number(candidate.percent)
+      : (total > 0 ? (Number(candidate.votes) || 0) / total * 100 : 0),
+  }));
+  const leader = leaders[0];
+  if (!leader || (!(Number(leader.votes) > 0) && !(Number(leader.percent) > 0))) {
+    return window.FEADeskTheme?.resolved.tokens["map-neutral"] || "#334054";
+  }
+  const base = window.FEADeskTheme
+    ? FEADeskTheme.candidateColor(leader, county.candidates)
+    : candidateColor(leader);
+  if (!marginShadeEnabled()) return mixMapColor(base, 0.72, "#06142e");
+  return mixMapColor(base, marginBandStrength(leadersMarginPct(leaders)), "#06142e");
 }
 
 function partyPopularVote(races) {
@@ -1313,10 +1388,7 @@ class ElectionNightPage {
 
   comparisonColorForCounty(feature, race, lookup) {
     if (!this.isComparisonActive()) {
-      const county = countyForFeature(feature, lookup);
-      const leader = countyTopCandidatesForElectionNight(county, 1)[0];
-      if (!leader) return "#334054";
-      return window.FEADeskTheme ? FEADeskTheme.mix(FEADeskTheme.resolved.tokens['map-neutral'],FEADeskTheme.candidateColor(leader,county.candidates),.72) : d3.interpolateRgb("#06142e", candidateColor(leader))(0.9);
+      return countyLiveColor(countyForFeature(feature, lookup));
     }
     const source = this.comparisonSource();
     if (!source || source.id === "live") return "#334054";
@@ -1709,10 +1781,18 @@ class ElectionNightPage {
     const comparisonOptions = (this.comparisonSourcesForCurrentMap().length ? this.comparisonSourcesForCurrentMap() : [{ id: "live", label: "Live results" }])
       .map((source) => `<option value="${escapeHtml(source.id)}" ${source.id === this.comparisonMode ? "selected" : ""}>${escapeHtml(source.label || source.id)}</option>`)
       .join("");
+    const shadeOn = marginShadeEnabled();
     controls.innerHTML = `
       <label class="election-comparison-control">
         <span>View</span>
         <select data-comparison-baseline aria-label="Comparison baseline">${comparisonOptions}</select>
+      </label>
+      <label class="election-comparison-control">
+        <span>Color</span>
+        <select data-margin-shade aria-label="Map color mode">
+          <option value="flat" ${shadeOn ? "" : "selected"}>Winner only</option>
+          <option value="margin" ${shadeOn ? "selected" : ""}>Margin</option>
+        </select>
       </label>
       <select class="board-watch-select" aria-label="Watch races"><option value="">Watch races</option>${this.modeRaces().filter(race=>this.watchlist?.has(race.id)).map(race=>`<option value="${escapeHtml(race.id)}">${escapeHtml(this.shortRaceLabel(race))} • ${FEAResultsUI.watchLabel(race.watch)}</option>`).join("")}</select>
       <input class="election-map-search" type="search" placeholder="Find race or candidate" aria-label="Search races" list="dashboard-race-suggestions"><datalist id="dashboard-race-suggestions">${Object.values(this.dataByMode).flat().map(r=>`<option value="${escapeHtml(FEAResultsUI.raceLabel({...r,stateName:STATE_NAMES[r.state]}))}">${escapeHtml(this.shortRaceLabel(r))}</option>`).join("")}</datalist>
@@ -1734,6 +1814,14 @@ class ElectionNightPage {
       comparisonSelect.addEventListener("change", async () => {
         this.comparisonMode = comparisonSelect.value || "live";
         try{localStorage.setItem("electionNightComparison", this.comparisonMode);}catch{}
+        if (this.currentRace) await this.selectRace(this.currentRace, null);
+        else await this.renderMap();
+      });
+    }
+    const shadeSelect = controls.querySelector("[data-margin-shade]");
+    if (shadeSelect) {
+      shadeSelect.addEventListener("change", async () => {
+        setMarginShadeEnabled(shadeSelect.value !== "flat");
         if (this.currentRace) await this.selectRace(this.currentRace, null);
         else await this.renderMap();
       });

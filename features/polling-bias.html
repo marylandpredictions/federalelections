@@ -14,7 +14,7 @@
       <img class="brand-mark" src="/assets/img/FEA_Icon.webp" alt="Federal Elections Analysis">
       <span><strong>Federal Elections Analysis</strong><small style="font-weight: 700;">Election analysis</small></span>
     </a>
-    <nav class="site-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/2026-results">Results</a><a href="/videos">Videos</a><a href="/articles">Articles</a><details class="nav-dropdown"><summary class="active">Features</summary><div class="nav-dropdown-menu"><a href="/features/polling-bias" aria-current="page">State polling bias</a><a href="/features/map-maker">Map maker</a></div></details><details class="nav-dropdown"><summary>Polling averages</summary><div class="nav-dropdown-menu"><a href="/polling/trump-approval">Trump Approval</a></div></details></nav>
+    <nav class="site-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/2026-results">Results</a><a href="/videos">Videos</a><a href="/articles">Articles</a><details class="nav-dropdown"><summary class="active">Features</summary><div class="nav-dropdown-menu"><a href="/features/polling-bias" aria-current="page">State polling bias</a><a href="/features/map-maker">Map maker</a><a href="/2026-atlas">Election Atlas</a></div></details><details class="nav-dropdown"><summary>Polling averages</summary><div class="nav-dropdown-menu"><a href="/polling/trump-approval">Trump Approval</a><a href="/polling/2028-primary">2028 Primary</a></div></details></nav>
     <div class="site-nav-right">
       <a href="https://gofund.me/50724cf21" target="_blank" rel="noopener" class="donate-button">$ Donate</a>
       <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
@@ -26,13 +26,13 @@
 <main class="bias-page">
 <header class="bias-hero"><p class="kicker">Features / Polling research</p>
 <h1>State-by-state polling biases.</h1>
-<p class="lede">Which party might Senate polls make look stronger than the result? Explore FEA’s estimates for 2026, then see what happened in past elections.</p>
+<p class="lede">Estimates of how much Senate polls may overstate Democrats or Republicans in each state for 2026, with the past races behind those numbers.</p>
 <p class="bias-source">Source: <a href="https://docs.google.com/spreadsheets/d/1_jm2C7nYv4MRVhPWf-_4Q1UCJzDU_liIJAhG7pUT-BQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer">FEA calculations ↗</a></p>
 <div class="bias-meta"><span><strong>50</strong> states</span><span><strong>135</strong> past Senate races</span><span><strong>835</strong> polls studied</span><span><strong>2014–2024</strong> election history</span></div>
 </header>
 <section aria-label="Estimated state polling bias">
 <article class="bias-map-card"><div class="bias-map-heading"><div><p class="kicker">Looking ahead</p><h2>Estimated polling bias for 2026</h2></div><a href="#state-details">Choose a state ↓</a></div>
-<p>The map shows one estimate: how much polls may overstate either party in 2026. Hover or focus on a state for a preview; select it to explore its history.</p>
+<p>Each state shows how much polls may overstate one party in 2026. Select a state for its past Senate races.</p>
 <div id="bias-map-prior" class="bias-map" aria-busy="true">Loading state map…</div>
 <aside id="bias-preview" class="bias-preview" role="tooltip" hidden><strong id="bias-preview-state"></strong><b id="bias-preview-value"></b><p id="bias-preview-meaning"></p><p id="bias-preview-evidence"></p><small>Select state to see past races</small></aside>
 <div class="bias-legend" aria-label="Bias color scale"><div class="bias-legend-bar"></div><div class="bias-legend-labels"><span><strong>R</strong> · Polls overstate Republicans</span><span><strong>D</strong> · Polls overstate Democrats</span></div><div class="bias-legend-values"><span>R by 7 points or more</span><span>Even</span><span>D by 7 points or more</span></div></div>
@@ -46,7 +46,7 @@
 <h3>What happened in past Senate races?</h3><p class="bias-table-guide">Under “Polling average” and “Actual result,” <strong>D</strong> means a Democratic lead and <strong>R</strong> a Republican lead. The <strong>polling miss</strong> column shows which party the polls made look too strong. Blue means Democrats; red means Republicans.</p>
 <p class="bias-swipe">Swipe the table sideways to compare the polling average with the result →</p><div class="bias-table-wrap" role="region" aria-label="Past polls compared with results; scroll horizontally if needed" tabindex="0"><table class="bias-table"><caption>Polls compared with actual results · margins in percentage points</caption><thead><tr><th scope="col">Election</th><th scope="col">Polling miss</th><th scope="col">Polling average</th><th scope="col">Actual result</th><th scope="col">Polls studied</th></tr></thead><tbody id="bias-race-rows"></tbody></table></div>
 <p id="bias-no-races" class="bias-footnote" hidden></p>
-<p class="bias-example"><strong>For example:</strong> if polls show <span class="bias-positive">D by 5</span> but the result is <span class="bias-positive">D by 2</span>, the polling miss is <span class="bias-positive">D by 3</span> — Democrats looked 3 points stronger in the polls than in the result.</p>
+<p class="bias-example"><strong>For example:</strong> if polls show <span class="bias-positive">D by 5</span> but the result is <span class="bias-positive">D by 2</span>, the polling miss is <span class="bias-positive">D by 3</span>: Democrats looked 3 points stronger in the polls than in the result.</p>
 <details class="bias-calculations"><summary>More about the calculation</summary>
 <p>The map is FEA’s adjusted estimate for 2026. The historical average below describes past polling errors before that adjustment. These are different measures, so only the 2026 estimate appears on the map.</p>
 <dl class="bias-stats"><div><dt>Historical average miss</dt><dd id="bias-raw"></dd></div><div><dt>Regional starting point</dt><dd id="bias-division"></dd></div><div><dt>Combined evidence weight</dt><dd id="bias-weight"></dd></div><div><dt>Consistency adjustment</dt><dd id="bias-coherence"></dd></div></dl>

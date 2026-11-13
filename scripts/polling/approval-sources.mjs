@@ -174,15 +174,28 @@ async function fetchJson(url, {timeoutMs = 30000, maxBytes = 8_000_000} = {}) {
 }
 
 export async function fetchVoteHubApprovalPolls() {
-  const data = await fetchJson('https://api.votehub.com/polls?poll_type=approval&subject=trump');
-  const rows = Array.isArray(data) ? data : Array.isArray(data.polls) ? data.polls : null;
-  if (!rows) throw Error('Unexpected VoteHub schema');
+  const urls = [
+    'https://api.votehub.com/polls?poll_type=approval&subject=trump',
+    'https://api.votehub.com/polls?poll_type=approval&subject=donald-trump',
+  ];
+  const byId = new Map();
+  for (const url of urls) {
+    const data = await fetchJson(url);
+    const rows = Array.isArray(data) ? data : Array.isArray(data.polls) ? data.polls : null;
+    if (!rows) continue;
+    for (const row of rows) {
+      const poll = fromVoteHub(row);
+      if (!poll) continue;
+      byId.set(poll.id, poll);
+    }
+  }
+  if (!byId.size) throw Error('Unexpected VoteHub schema');
   return {
     source: 'votehub',
     sourceUrl: 'https://votehub.com/polls/api/',
     license: 'CC BY 4.0',
-    fetched: rows.length,
-    polls: rows.map(fromVoteHub).filter(Boolean),
+    fetched: byId.size,
+    polls: [...byId.values()],
   };
 }
 

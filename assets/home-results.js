@@ -97,12 +97,21 @@
     return colors;
   }
 
-  /** Match election-night / results-lab margin choropleth (strength scales with |D−R|). */
+  /** Match election-night margin choropleth: Safe ≥12, Likely ≥7, Lean ≥3, Tilt ≥1. */
+  function marginBandStrength(marginPct) {
+    const abs = Math.abs(Number(marginPct));
+    if (!Number.isFinite(abs) || abs < 1) return 0.28;
+    if (abs < 3) return 0.44;
+    if (abs < 7) return 0.6;
+    if (abs < 12) return 0.78;
+    return 0.96;
+  }
+
   function marginFill(row, colors) {
     if (!row?.total) return colors.open;
     if (row.lean === 'other' || row.lean === 'split') return colors.split;
     if (row.lean !== 'D' && row.lean !== 'R') return colors.open;
-    const strength = Math.max(0.4, Math.min(1, 0.42 + Math.abs(row.margin) / 28));
+    const strength = marginBandStrength(row.margin);
     const ink = row.lean === 'D' ? colors.D : colors.R;
     if (typeof d3 !== 'undefined' && typeof d3.interpolateRgb === 'function') {
       return d3.interpolateRgb(colors.wash || '#dbe2f0', ink)(strength);
@@ -496,21 +505,108 @@
     }
   }
 
-  let approvalDay = etDay();
+  const PRIMARY_COLORS = ['#4d7cff', '#e35d7a', '#12a454', '#d4a017', '#8b5cf6', '#0f9aa8', '#f97316', '#64748b'];
+  const NAME_SUFFIX = /^(jr\.?|sr\.?|ii|iii|iv|v)$/i;
+  function shortCandidateName(name) {
+    const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+    if (parts.length <= 1) return name || '—';
+    if (parts[0] === 'JB' || parts[0] === 'AOC' || parts[0] === 'RFK') {
+      return NAME_SUFFIX.test(parts.at(-1)) ? parts.join(' ') : parts[0];
+    }
+    if (NAME_SUFFIX.test(parts.at(-1)) && parts.length >= 2) {
+      const suffix = parts.at(-1).replace(/\.$/, '');
+      const pretty = /^(jr|sr)$/i.test(suffix) ? `${suffix}.` : suffix;
+      return `${parts.at(-2)} ${pretty}`;
+    }
+    return parts.at(-1);
+  }
+
+  function renderPrimaryPlaceholders() {
+    const rows = $('home-primary-rows');
+    if (!rows) return;
+    rows.replaceChildren(...[0, 1, 2].map(() => {
+      const row = document.createElement('div');
+      row.className = 'home-metric-row';
+      row.dataset.tone = 'primary';
+      row.innerHTML = '<div class="home-metric-row-head"><span>—</span><strong>—</strong></div><div class="home-metric-track" aria-hidden="true"><i></i></div>';
+      return row;
+    }));
+    const asOf = $('home-primary-asof');
+    if (asOf) asOf.textContent = 'As of —';
+  }
+
+  async function primaryCard() {
+    const rows = $('home-primary-rows');
+    if (!rows) return;
+    try {
+      const response = await fetch(`/data/polling/2028-primary.json?d=${etDay()}`, {
+        cache: 'no-cache',
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!response.ok) throw Error('Primary unavailable');
+      const payload = await response.json();
+      const dem = payload?.parties?.D;
+      const top = (dem?.current?.candidates || []).slice(0, 3);
+      if (!top.length) throw Error('No candidates');
+      const scale = Math.max(...top.map(c => Number(c.pct) || 0), 1);
+      rows.replaceChildren(...top.map((candidate, index) => {
+        const color = PRIMARY_COLORS[index % PRIMARY_COLORS.length];
+        const pct = Number(candidate.pct) || 0;
+        const row = document.createElement('div');
+        row.className = 'home-metric-row';
+        row.dataset.tone = 'primary';
+        row.style.color = color;
+        const head = document.createElement('div');
+        head.className = 'home-metric-row-head';
+        const label = document.createElement('span');
+        label.textContent = shortCandidateName(candidate.name);
+        const value = document.createElement('strong');
+        value.textContent = `${pct.toFixed(1)}%`;
+        value.style.color = color;
+        head.append(label, value);
+        const track = document.createElement('div');
+        track.className = 'home-metric-track';
+        track.setAttribute('aria-hidden', 'true');
+        const bar = document.createElement('i');
+        bar.style.background = color;
+        bar.style.width = `${Math.max(0, Math.min(100, 100 * pct / scale))}%`;
+        track.append(bar);
+        row.append(head, track);
+        return row;
+      }));
+      const asOf = $('home-primary-asof');
+      if (asOf) {
+        const raw = dem.asOf || dem.coverage?.latestPoll;
+        if (raw) {
+          const d = new Date(`${raw}T12:00:00Z`);
+          asOf.textContent = `As of ${d.toLocaleDateString('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'})}`;
+        } else {
+          asOf.textContent = 'As of —';
+        }
+      }
+    } catch {
+      renderPrimaryPlaceholders();
+    }
+  }
+
+  let pollingDay = etDay();
   void approvalCard();
+  void primaryCard();
   setInterval(() => {
     const day = etDay();
-    if (day !== approvalDay) {
-      approvalDay = day;
+    if (day !== pollingDay) {
+      pollingDay = day;
       void approvalCard();
+      void primaryCard();
     }
   }, 60 * 60 * 1000);
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) return;
     const day = etDay();
-    if (day !== approvalDay) {
-      approvalDay = day;
+    if (day !== pollingDay) {
+      pollingDay = day;
       void approvalCard();
+      void primaryCard();
     }
   });
 

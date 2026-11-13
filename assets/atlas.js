@@ -2,8 +2,8 @@
   if (!window.FEA_ATLAS) return;
 
   const NOTES = {
-    districts: "District map — open a seat for county / township / HD detail. Overlays toggle on/off.",
-    county: "County totals — House votes summed across every district piece in each county.",
+    districts: "District map. Open a seat for county, township, or HD detail. Overlays toggle on and off.",
+    county: "County totals: House votes summed across every district piece in each county.",
     pv: "House popular vote by state. Click a state for its county choropleth.",
     bubbles: "Population-weighted bubbles by reported votes. Inside a race, bubbles stay on local units.",
     swing: "Swing vs baseline (arrows: blue = Dem, red = Rep). Use View to pick a baseline."
@@ -255,7 +255,7 @@
     }
     const countyLabel = row?.name || page.houseCountyAggregate?.get(fips)?.name || fips;
     if (races.length > 1) {
-      page.atlasCountyOpenNote = `${countyLabel}: ${races.length} House seats — showing ${races[0].title || races[0].id}. Also: ${races.slice(1).map((race) => race.title || race.id).join(", ")}.`;
+      page.atlasCountyOpenNote = `${countyLabel}: ${races.length} House seats, showing ${races[0].title || races[0].id}. Also: ${races.slice(1).map((race) => race.title || race.id).join(", ")}.`;
     } else {
       page.atlasCountyOpenNote = null;
     }
@@ -434,8 +434,8 @@
       if (note && countyNoteActive()) {
         const partial = bulk?.racesMissingCounties > 0;
         note.textContent = stateFilter
-          ? `${label} county House totals — votes summed across every district piece.${partial ? " Finishing remaining seats…" : ""}`
-          : `County totals — House votes summed across district pieces.${partial ? " Finishing remaining seats…" : ""}`;
+          ? `${label} county House totals: votes summed across every district piece.${partial ? " Finishing remaining seats…" : ""}`
+          : `County totals: House votes summed across district pieces.${partial ? " Finishing remaining seats…" : ""}`;
       }
       onProgress?.(byFips);
       return byFips;
@@ -979,7 +979,7 @@
     if (fromPv) {
       const note = document.getElementById("atlas-lens-note");
       if (note) {
-        note.textContent = `${STATE_NAMES[state] || state} county House totals — Reset or toggle County/House PV off to leave this view.`;
+        note.textContent = `${STATE_NAMES[state] || state} county House totals. Reset or turn off County/House PV to leave this view.`;
       }
     }
   }

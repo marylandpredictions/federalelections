@@ -94,7 +94,12 @@
     "build:polling-reference": "node scripts/results/polling-reference.mjs",
     "build:kalshi-markets": "node scripts/results/kalshi-race-markets.mjs",
     "build:prior-anchors": "node scripts/results/build-prior-anchors.mjs",
-    "build:trump-approval": "node scripts/polling/build-trump-approval.mjs"
+    "build:trump-approval": "node scripts/polling/build-trump-approval.mjs",
+    "build:2028-primary": "node scripts/polling/build-2028-primary.mjs",
+    "build:polling-averages": "npm run build:trump-approval && npm run build:2028-primary",
+    "build:dpi": "node scripts/dpi/build-dpi.mjs",
+    "audit:dpi": "node scripts/dpi/audit-dpi.mjs",
+    "test:dpi": "node --test tests/dpi/*.test.mjs"
   },
   "dependencies": {
     "sharp": "^0.34.5"
