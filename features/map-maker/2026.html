@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026 Map Maker | Federal Elections Analysis</title>
+<meta name="description" content="Build your own House, Senate and governor ratings maps. Paint races, undo changes, save your scenario and download an image.">
+<link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
+<script src="/assets/desk-theme.js?v=20261121-rebuild26"></script><script src="/assets/desk-bootstrap.js?v=20261101-maker4"></script>
+<link rel="stylesheet" href="/assets/wiki.css?v=20261121-rebuild26">
+<link rel="stylesheet" href="/assets/results-board.css?v=20261121-rebuild26">
+<link rel="stylesheet" href="/assets/desk-experience.css?v=20261121-rebuild26">
+<link rel="stylesheet" href="/assets/projection-card.css?v=20261103-broadcast5">
+<link rel="stylesheet" href="/assets/desk-styles.css?v=20261101-maker4">
+<link rel="stylesheet" href="/assets/desk-reference.css?v=20261103-current-districts3">
+<link rel="stylesheet" href="/assets/map-maker.css?v=20261121-rebuild26">
+<script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script defer src="/assets/prediction-map-utils.js?v=20261121-rebuild26"></script>
+<script defer src="/assets/desk-appearance.js?v=20261121-rebuild26"></script>
+<script defer src="/assets/scenario-model.js?v=20261121-rebuild26"></script>
+<script defer src="/assets/results-ui.js?v=20261121-rebuild26"></script>
+<script defer src="/assets/yapms-import.js?v=20261101-maker4"></script>
+<script defer src="/assets/night-awareness.js?v=20261101-maker4"></script>
+<script defer src="/assets/map-annotations.js?v=20261101-maker4"></script>
+<script defer src="/assets/map-maker-detail.js?v=20261121-rebuild26"></script>
+<script defer src="/assets/map-maker-theme.js?v=20261121-rebuild26"></script>
+<script defer src="/assets/map-maker.js?v=20261121-rebuild26"></script>
+</head><body class="results-board map-maker" data-map-cycle="2026">
+<header id="desk-masthead"><a class="desk-publication" href="/" aria-label="FEA home"><img src="/assets/img/FEA_Icon.webp" alt="Federal Elections Analysis" width="104" height="44"></a><strong>2026 Map Maker</strong><span class="desk-edition-note">Your scenario · Not live results</span></header>
+<button type="button" id="maker-draw-button" class="maker-draw-button" aria-label="Draw on map" aria-pressed="false" aria-controls="maker-draw-tools" title="Draw on map"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16-1 5 5-1L20 8l-4-4L4 16ZM14 6l4 4M3 21l5-1"/></svg></button>
+<div id="maker-draw-tools" role="toolbar" aria-label="Map drawing tools" hidden><label>Ink <input id="maker-ink-color" type="color" value="#ffe600" aria-label="Drawing color"></label><div class="maker-ink-swatches" role="group" aria-label="Ink colors"><button type="button" data-ink-color="#ffe600">Yellow</button><button type="button" data-ink-color="#ffffff">White</button><button type="button" data-ink-color="#00ee88">Green</button></div><label>Width <select id="maker-ink-width"><option value="3">Fine</option><option value="5" selected>Medium</option><option value="9">Bold</option></select></label><button type="button" id="maker-ink-undo">Undo ink</button><button type="button" id="maker-ink-clear">Clear ink</button><button type="button" id="maker-ink-done">Resume map</button><small>Drawing on · Map controls paused</small></div><div class="board-overflow"><button id="maker-menu-button" type="button" aria-label="Map maker menu" aria-expanded="false" aria-controls="board-menu">⋯</button><div id="board-menu" hidden>
+<a href="/">Home</a>
+<a href="/features/map-maker">All Map Makers</a>
+<a href="/archive">Archive</a>
+<hr class="board-menu-rule">
+<label class="maker-detail-switch"><input type="checkbox" id="maker-detail-enabled"> Inspect / right-click for detail</label>
+<label class="maker-detail-switch"><input type="checkbox" id="maker-labels" checked> Map labels</label>
+<button type="button" id="maker-open-detail" hidden>Open selected race</button>
+<button type="button" id="maker-appearance">Appearance</button>
+</div></div>
+<section class="board-top-controls" aria-label="Scenario office and totals"><div class="election-mode-toggle" role="tablist" aria-label="Election office"><button type="button" data-office="house" role="tab">House</button><button type="button" data-office="senate" role="tab">Senate</button><button type="button" data-office="governor" role="tab">Governors</button></div><div class="election-chamber-board"><div id="maker-ticket-bar" class="maker-ticket-bar" aria-label="Presidential tickets" hidden></div><div class="maker-totals" id="maker-totals" aria-label="Your rated races"></div><div id="maker-seat-bar" aria-hidden="true"></div><p id="maker-count-caption"></p></div></section>
+<section id="maker-seat-summary" aria-label="Scenario seat distribution" hidden><svg id="maker-seat-ring" viewBox="0 0 220 220" role="img" aria-label="Seats by rating"></svg><img class="maker-seat-badge" src="/assets/img/FEA_Badge.png" alt="FEA" width="120" height="120"><p data-seat-caption class="maker-seat-caption">YOUR SCENARIO</p></section>
+<main class="maker-workspace">
+<aside class="maker-tools" aria-label="Map editing tools">
+<h1 id="maker-tools-title">Your ratings</h1><p id="maker-tools-lead">Choose a rating, then click or tap a race. These are your choices, not FEA’s forecast. Loading 2026 map maker…</p>
+<label class="maker-mobile-brush">Paint rating<select id="maker-brush" aria-label="Paint rating"></select></label>
+<div id="maker-mayor-view" class="maker-mayor-view" role="group" aria-label="Mayoral view" hidden><button type="button" data-mayor-view="map" aria-pressed="true">Map</button><button type="button" data-mayor-view="list" aria-pressed="false">List</button></div><div id="maker-interaction" role="group" aria-label="Map interaction" hidden><button type="button" data-maker-interaction="paint" aria-pressed="true">Paint ratings</button><button type="button" data-maker-interaction="inspect" aria-pressed="false">Inspect races</button><small>Inspect: tap a race for counties, past elections and demographics.</small></div>
+<div id="maker-palette" role="group" aria-label="Paint rating"></div>
+<label class="maker-drag"><input type="checkbox" id="maker-drag"> Paint by dragging</label>
+<nav id="maker-city-rail" class="maker-city-rail" aria-label="Cities" hidden></nav><div class="maker-actions"><button type="button" id="maker-undo">Undo</button><button type="button" id="maker-redo">Redo</button><button type="button" id="maker-clear">Clear office</button></div>
+<details class="maker-file-tools"><summary>Find, save & download</summary><label>Find a race<select id="maker-race" aria-label="Find a race"></select></label><button type="button" id="maker-apply">Apply rating to selected race</button><label>Map title<input id="maker-title" maxlength="80" value="My 2026 election map"></label><button type="button" id="maker-image">Download PNG</button><button type="button" id="maker-save">Save scenario file</button><label class="maker-upload">Open FEA / YAPms file<input type="file" id="maker-open" accept="application/json,.json,.yapms"></label><p>Ratings save on this browser. Use a scenario file to move your map to another device.</p></details>
+</aside>
+<section class="maker-map-region" aria-label="Your ratings map"><section id="maker-mayor-board" class="maker-mayor-board" aria-label="Mayoral city list" hidden><header class="maker-mayor-board-head"><strong>Mayoral races</strong><p id="maker-mayor-board-caption">Click a city to cycle ratings · double-click or right-click for detail</p></header><div id="maker-mayor-list" class="maker-mayor-list"></div></section><div id="maker-split-ev" class="maker-split-ev" aria-label="Maine and Nebraska electoral votes" hidden></div><div id="maker-map"><p role="status">Loading map maker…</p></div><section class="maker-detail-map" id="maker-detail-map" aria-label="Race geography" hidden><button id="maker-county-reset" type="button">Reset map</button><div id="maker-detail-map-tooltip" class="prediction-map-tooltip maker-detail-tooltip" hidden></div><div id="maker-county-map"></div></section><aside id="focused-race-panel" class="election-focus-panel maker-focus-panel" aria-labelledby="focused-race-title" hidden>
+<div class="focused-card-head"><span class="focused-pill" id="maker-party-pill">Your scenario</span><span id="focused-race-rating" class="focused-pill focused-pill-light"></span><button class="focused-close" id="maker-detail-close" type="button" aria-label="Back to national map">×</button></div>
+<h2 id="focused-race-title"></h2><div id="focused-race-content">
+<div class="desk-tabs" role="tablist" aria-label="Race information"><button role="tab" data-detail-tab="ratings" aria-controls="maker-detail-ratings">Results</button><button role="tab" data-detail-tab="counties" aria-controls="maker-detail-counties">Counties</button><button role="tab" data-detail-tab="history" aria-controls="maker-detail-history">Past elections</button><button role="tab" data-detail-tab="demographics" aria-controls="maker-detail-demographics">Demographics</button></div>
+<div class="county-focus-band"><strong id="maker-detail-location"></strong><button id="maker-race-wide" type="button">Race-wide</button></div>
+<p id="maker-detail-note" class="desk-hint" role="status"></p>
+<div class="maker-detail-actions"><button id="maker-county-undo" type="button">Undo</button><button id="maker-county-redo" type="button">Redo</button></div>
+<section id="maker-detail-ratings" data-detail-content="ratings"><label class="maker-rating-control">Your race rating<select id="maker-race-rating"></select><button type="button" id="maker-rate-race">Apply</button></label><div id="maker-detail-roster"></div></section>
+<section id="maker-detail-counties" data-detail-content="counties" hidden><p id="maker-detail-rating" class="desk-hint"></p><label class="maker-rating-control">County rating<select id="maker-county-brush"></select></label><button id="maker-county-apply" type="button">Apply to selected county</button><div id="maker-counties-list" class="county-list"></div></section>
+<select id="maker-history-source" aria-label="Historical map election" hidden></select><section id="maker-detail-history" data-detail-content="history" hidden></section><section id="maker-detail-demographics" data-detail-content="demographics" hidden></section>
+<button type="button" class="focus-resize-handle" id="maker-focus-resize" aria-label="Resize race panel"></button></div></aside><svg id="maker-ink" aria-label="Map drawing surface" hidden></svg><p id="maker-status" role="status" aria-live="polite">Your scenario · Not live results</p></section>
+
+</main>
+<noscript><p>This map editor needs JavaScript. <a href="/features/polling-bias">Explore state polling bias</a>.</p></noscript>
+<dialog id="maker-import-review" aria-labelledby="maker-import-title"><h2 id="maker-import-title">Match YAPms parties</h2><p>This file uses custom candidate names. Choose which party each represents; colors alone do not identify a party.</p><form method="dialog"><div id="maker-import-parties"></div><button value="cancel">Cancel</button><button value="apply">Import ratings</button></form></dialog>
+<script src="/assets/clean-display.js?v=20261101-yapms3"></script>
+</body></html>

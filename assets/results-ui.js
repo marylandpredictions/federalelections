@@ -37,13 +37,19 @@
     const d = String(race?.district ?? "").toUpperCase();
     return `${race?.state}-${["AL", "0"].includes(d) ? "AL" : String(Number(d)).padStart(2, "0")}`;
   }
+  function historyOffice(race) {
+    // Presidential baselines are keyed to governor/senate/house; mayor and
+    // president detail reuse those state returns for past-election context.
+    if (race?.type === "mayor" || race?.type === "president") return "governor";
+    return race?.type;
+  }
   function baselineMargin(race, source, datasets = {}) {
     if (
       !race ||
       !source ||
       source.id === "live" ||
       source.status !== "available" ||
-      !source.appliesTo?.includes(race.type)
+      !source.appliesTo?.includes(historyOffice(race))
     )
       return NaN;
     if (race.type === "house") {
@@ -68,12 +74,14 @@
     return margin(row);
   }
   function historicalSnapshot(race, source, datasets = new Map(), countyFips = null) {
-    if (!race || !source || source.status !== 'available' || !source.appliesTo?.includes(race.type)) return null;
+    if (!race || !source || source.status !== 'available' || !source.appliesTo?.includes(historyOffice(race))) return null;
     let row, value;
-    if (countyFips) {
+    // Ward/council/tract ids are not county FIPS — fall back to statewide.
+    const fips = countyFips && /^\d{5}(\d{5})?$/.test(String(countyFips)) ? countyFips : null;
+    if (fips) {
       const data = datasets.get(`${source.id}:county`);
       if ((race.type === 'house' && source.countyReferenceCompatible!==true) || source.countyCompatible !== true || data?.marginBasis !== 'all-votes') return null;
-      const matches = (data.counties || data.rows || []).filter(r => String(r.fips || r.countyFips || '') === String(countyFips) && r.valid !== false);
+      const matches = (data.counties || data.rows || []).filter(r => String(r.fips || r.countyFips || '') === String(fips) && r.valid !== false);
       if (matches.length !== 1) return null;
       row = matches[0]; value = margin(row);
     } else {
@@ -148,6 +156,62 @@
       b = finite(baseline);
     return Number.isFinite(a) && Number.isFinite(b) ? a - b : NaN;
   }
+  /**
+   * NYT-style shift arrows (hedgehog map):
+   * Dem ↖ up-left / blue, Rep ↗ up-right / red; length = |shift| pp.
+   * Drawn as filled arrow polygons over a neutral county plate.
+   */
+  function drawSwingArrows(layer, arrows, options = {}) {
+    if (!layer || typeof d3 === 'undefined') return;
+    const minAbs = options.minAbs ?? 0.25;
+    const maxLen = options.maxLen ?? 18;
+    const colorD = options.colorD || '#3d7dd6';
+    const colorR = options.colorR || '#d94a55';
+    const rows = (arrows || []).filter((a) => Number.isFinite(a?.shift) && Math.abs(a.shift) >= minAbs && Number.isFinite(a.x) && Number.isFinite(a.y));
+    const root = layer.selectAll ? layer : d3.select(layer);
+    root.selectAll('.fea-swing-layer').remove();
+    const g = root.append('g').attr('class', 'fea-swing-layer').attr('aria-hidden', 'true');
+
+    const arrowPath = (d) => {
+      const abs = Math.abs(d.shift);
+      const len = Math.min(maxLen, 4.5 + abs * 0.95);
+      // Dem ↖ (−135°), Rep ↗ (−45°) — up and left/right, not flat.
+      const angle = (d.shift > 0 ? -135 : -45) * Math.PI / 180;
+      const ux = Math.cos(angle);
+      const uy = Math.sin(angle);
+      const px = -uy;
+      const py = ux;
+      const half = Math.max(0.85, Math.min(2.0, 0.65 + abs * 0.05));
+      const headLen = Math.max(3.2, Math.min(6.5, len * 0.38));
+      const headHalf = half * 2.35;
+      const tipX = d.x + ux * (len * 0.55);
+      const tipY = d.y + uy * (len * 0.55);
+      const baseX = d.x - ux * (len * 0.45);
+      const baseY = d.y - uy * (len * 0.45);
+      const neckX = tipX - ux * headLen;
+      const neckY = tipY - uy * headLen;
+      const pt = (x, y, offset) => `${x + px * offset},${y + py * offset}`;
+      return [
+        `M${pt(baseX, baseY, -half)}`,
+        `L${pt(neckX, neckY, -half)}`,
+        `L${pt(neckX, neckY, -headHalf)}`,
+        `L${tipX},${tipY}`,
+        `L${pt(neckX, neckY, headHalf)}`,
+        `L${pt(neckX, neckY, half)}`,
+        `L${pt(baseX, baseY, half)}`,
+        'Z'
+      ].join(' ');
+    };
+
+    g.selectAll('path.fea-swing-arrow').data(rows).join('path')
+      .attr('class', (d) => `fea-swing-arrow atlas-swing-arrow ${d.shift > 0 ? 'is-dem' : 'is-rep'}`)
+      .attr('data-party', (d) => (d.shift > 0 ? 'D' : 'R'))
+      .attr('fill', (d) => (d.shift > 0 ? colorD : colorR))
+      .attr('fill-opacity', 0.9)
+      .attr('stroke', 'none')
+      .attr('pointer-events', 'none')
+      .attr('d', arrowPath);
+  }
   function stateLabel(state) {
     return (
       {
@@ -199,6 +263,7 @@
     candidateLead,
     historicalTooltip,
     shift,
+    drawSwingArrows,
     stateLabel,
     feedLabel,
     raceLabel,

@@ -287,9 +287,30 @@ window.FEAAppearance = function () {
     if (event.key === "Escape") event.stopPropagation();
   });
   q("[data-apply]").onclick = () => {
-    store.current = clone(draft);
-    persist();
-    T.apply(draft);
+    const isMapMaker = document.body.classList.contains("map-maker");
+    const isYapms = draft.id === "yapms-map" || draft.presentation === "yapms";
+    if (isMapMaker) {
+      try {
+        localStorage.setItem(
+          "feaMakerPresentation.v1",
+          isYapms ? "yapms-map" : draft.id || draft.presentation || "fea-night",
+        );
+      } catch {}
+    }
+    if (isYapms) {
+      // YAPms stays on map maker only; keep the sitewide desk theme as FEA Night.
+      if (!isMapMaker) {
+        store.current = clone(T.presets[0]);
+        persist();
+        T.apply(store.current);
+      } else {
+        T.apply(draft, false);
+      }
+    } else {
+      store.current = clone(draft);
+      persist();
+      T.apply(draft);
+    }
     dialog.close();
     previousFocus?.focus();
   };

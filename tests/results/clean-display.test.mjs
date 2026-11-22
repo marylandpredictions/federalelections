@@ -13,7 +13,8 @@ test('Clean display is isolated from feed polling and local preferences; page in
  assert.doesNotMatch(code,/fetch\(|localStorage|sessionStorage|\/api\//);
  assert.match(code,/x.sequence<=received/);assert.match(code,/pending=x/);assert.match(code,/setTimeout\(capture,350\)/);
  assert.match(code,/script,iframe,object,embed/);assert.match(code,/observer\?\.disconnect/);
- for(const page of ['features/map-maker.html','results.html','election-night.html'])assert.equal((readFileSync(page,'utf8').match(/src="\/assets\/clean-display.js/g)||[]).length,1);
+ for(const page of ['features/map-maker/2026.html','features/map-maker/2027.html','features/map-maker/2028.html','results.html','election-night.html'])assert.equal((readFileSync(page,'utf8').match(/src="\/assets\/clean-display.js/g)||[]).length,1);
+ assert.match(readFileSync('features/map-maker.html','utf8'),/features\/map-maker\/2028/);
 });
 test('NBC slate surfaces are readable, coordinated, and migrate only untouched built-in tokens',()=>{
  const theme=T.presets.find(t=>t.id==='nbc-big-board'),resolved=T.resolve(theme);

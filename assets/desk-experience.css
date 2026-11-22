@@ -140,7 +140,7 @@
   background: linear-gradient(to right, var(--watch) var(--bar), var(--panel-raised) var(--bar));
 }
 .results-board
-  :is(button, input, select, textarea, a, [tabindex]):focus-visible {
+  :is(button, input, select, textarea, a, [tabindex]):focus-visible:not(path):not(circle):not(rect):not(polygon):not(ellipse):not(g) {
   outline-color: var(--focus);
 }
 .results-board .focused-pill {

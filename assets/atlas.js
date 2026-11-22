@@ -6,7 +6,7 @@
     county: "County totals: House votes summed across every district piece in each county.",
     pv: "House popular vote by state. Click a state for its county choropleth.",
     bubbles: "Population-weighted bubbles by reported votes. Inside a race, bubbles stay on local units.",
-    swing: "Swing vs baseline (arrows: blue = Dem, red = Rep). Use View to pick a baseline."
+    swing: "Shift vs baseline (↖ blue Dem, ↗ red Rep; longer = bigger). Use View to pick a baseline."
   };
 
   const LENS_IDS = new Set(["districts", "county", "pv", "bubbles", "swing"]);
@@ -543,7 +543,7 @@
         note.textContent = "County House totals with population-weighted bubbles.";
       } else if (countyOn && page.atlasOverlay === "swing") {
         page.atlasCountyOpenNote = null;
-        note.textContent = "County House swing vs baseline (blue = Dem, red = Rep). Use View to pick a baseline.";
+        note.textContent = "County House shift vs baseline (↖ blue Dem, ↗ red Rep; longer = bigger). Use View for baseline.";
       } else if (countyOn) {
         page.atlasCountyOpenNote = null;
         note.textContent = NOTES.county;
@@ -829,14 +829,14 @@
       const row = totals.get(id);
       const local = leanForRow(row);
       if (swingOn) {
-        if (!local.total) return { stats: local, fill: tokens["map-neutral"] || "#1a2840" };
+        // NYT hedgehog: gray counties; arrows encode the shift.
+        const land = tokens["map-neutral"] || "#d8dde6";
+        if (!local.total) return { stats: local, fill: land };
         const baseline = atlasBaselineMargin(feature);
-        if (Number.isFinite(baseline) && typeof marginColor === "function") {
-          const shift = local.margin - baseline;
-          return { stats: local, fill: marginColor(shift), shift };
+        if (Number.isFinite(baseline)) {
+          return { stats: local, fill: land, shift: local.margin - baseline };
         }
-        // No county baseline (e.g. CT planning regions, AK HDs) — keep live fill so units don't vanish.
-        return { stats: local, fill: stateFill(local.lean, tokens, local.margin) };
+        return { stats: local, fill: land };
       }
       if (!local.total) return { stats: local, fill: tokens["map-neutral"] || "#1a2840" };
       return { stats: local, fill: stateFill(local.lean, tokens, local.margin) };
@@ -908,12 +908,33 @@
         });
     };
 
+    const paintSwingArrows = () => {
+      page.viewport?.selectAll(".fea-swing-layer, .atlas-swing-layer").remove();
+      if (!swingOn || !page.viewport) return;
+      const arrows = [];
+      page.viewport.selectAll(".county-result-shape").each(function (feature) {
+        const painted = fillForCounty(feature);
+        if (!Number.isFinite(painted.shift)) return;
+        try {
+          const box = this.getBBox();
+          if (!(box.width > 0 && box.height > 0)) return;
+          arrows.push({
+            x: box.x + box.width / 2,
+            y: box.y + box.height / 2,
+            shift: painted.shift
+          });
+        } catch {}
+      });
+      FEAResultsUI.drawSwingArrows?.(page.viewport, arrows, { maxLen: stateFilter ? 22 : 14 });
+    };
+
     const paintFills = (map) => {
       totals = map || totals;
       page.viewport?.selectAll(".county-result-shape")
         .attr("fill", (feature) => fillForCounty(feature).fill)
         .attr("fill-opacity", bubblesOn ? 0.55 : 1);
       paintBubbles();
+      paintSwingArrows();
     };
 
     const paintShapes = (nextFeatures) => {
@@ -926,7 +947,7 @@
         .attr("d", (feature) => projectedFeaturePath(feature, projection))
         .attr("fill", (feature) => fillForCounty(feature).fill)
         .attr("fill-opacity", bubblesOn ? 0.55 : 1)
-        .attr("stroke", "rgba(226,232,255,.55)")
+        .attr("stroke", swingOn ? "rgba(60,70,90,.32)" : "rgba(226,232,255,.55)")
         .attr("stroke-width", 0.35)
         .attr("tabindex", 0)
         .on("mousemove", (event, feature) => {
@@ -942,6 +963,7 @@
           await openHouseRacesForCounty(page, id, row);
         });
       paintBubbles();
+      paintSwingArrows();
     };
 
     page.addZoomControls();
@@ -1137,6 +1159,13 @@
   }
 
   function drawSwingArrows(page, raceByDistrict, projection) {
+    page.viewport?.selectAll(".fea-swing-layer, .atlas-swing-layer").remove();
+    const tokens = page.themeTokens?.() || FEADeskTheme?.resolved?.tokens || {};
+    const land = tokens["map-neutral"] || "#d8dde6";
+    page.viewport?.selectAll(".house-district-shape, .prediction-shape-feature")
+      .attr("fill", land)
+      .attr("fill-opacity", 1)
+      .attr("stroke", "rgba(60,70,90,.32)");
     const arrows = (page.geo?.features || []).map((feature) => {
       const race = raceByDistrict.get(feature.properties?.id);
       if (!race || !page.isComparisonActive?.()) return null;
@@ -1144,42 +1173,9 @@
       if (!Number.isFinite(shift) || Math.abs(shift) < 0.25) return null;
       const centroid = projection(d3.geoCentroid(feature));
       if (!centroid || !Number.isFinite(centroid[0])) return null;
-      const partyCode = shift > 0 ? "D" : "R";
-      const length = Math.min(18, 6 + Math.abs(shift) * 0.9);
-      const dir = shift > 0 ? -1 : 1;
-      return {
-        id: feature.properties?.id,
-        party: partyCode,
-        x1: centroid[0] - dir * length * 0.15,
-        y1: centroid[1],
-        x2: centroid[0] + dir * length,
-        y2: centroid[1]
-      };
+      return { id: feature.properties?.id, x: centroid[0], y: centroid[1], shift };
     }).filter(Boolean);
-
-    const layer = page.viewport.append("g").attr("class", "atlas-swing-layer");
-    layer.selectAll(".atlas-swing-arrow")
-      .data(arrows)
-      .join("path")
-      .attr("class", "atlas-swing-arrow")
-      .attr("data-party", (d) => d.party)
-      .attr("marker-end", (d) => `url(#atlas-arrow-${d.party})`)
-      .attr("d", (d) => `M${d.x1},${d.y1} L${d.x2},${d.y2}`);
-
-    const defs = page.svg.append("defs");
-    for (const code of ["D", "R"]) {
-      defs.append("marker")
-        .attr("id", `atlas-arrow-${code}`)
-        .attr("viewBox", "0 0 10 10")
-        .attr("refX", 8)
-        .attr("refY", 5)
-        .attr("markerWidth", 6)
-        .attr("markerHeight", 6)
-        .attr("orient", "auto")
-        .append("path")
-        .attr("d", "M0,0 L10,5 L0,10 z")
-        .attr("fill", code === "D" ? "#3a7bd5" : "#c94352");
-    }
+    FEAResultsUI.drawSwingArrows?.(page.viewport, arrows, { maxLen: 18 });
   }
 
   window.FEAAtlasPrepare = function (Page) {

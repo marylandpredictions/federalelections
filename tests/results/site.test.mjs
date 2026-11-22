@@ -59,15 +59,16 @@ test("All public primary navigation includes Features, Polling averages, and Tru
           /<nav class="site-nav" aria-label="Primary navigation">([\s\S]*?)<\/nav>/,
         )?.[1];
         if (nav) {
-          assert.deepEqual(
-            [...nav.matchAll(/<a[^>]*>(.*?)<\/a>/g)].map((m) => m[1]),
-            ["Home", "Results", "Videos", "Articles", "State polling bias", "Map maker", "Trump Approval"],
-            path,
-          );
+          const labels = [...nav.matchAll(/<a[^>]*>(.*?)<\/a>/g)].map((m) => m[1]);
+          for (const label of ["Home", "Results", "Videos", "Articles", "State polling bias", "2028 Map Maker", "2027 Map Maker", "Archive", "Trump Approval"]) {
+            assert.ok(labels.includes(label), `${path} missing ${label}`);
+          }
           assert.match(nav, /<summary[^>]*>Features<\/summary>/, path);
           assert.match(nav, /<summary[^>]*>Polling averages<\/summary>/, path);
           assert.match(nav, /href="\/features\/polling-bias"/, path);
-          assert.match(nav, /href="\/features\/map-maker"/, path);
+          assert.match(nav, /href="\/features\/map-maker\/2028"/, path);
+          assert.match(nav, /href="\/features\/map-maker\/2027"/, path);
+          assert.match(nav, /href="\/archive"/, path);
           assert.match(nav, /href="\/polling\/trump-approval"/, path);
           checked++;
         }

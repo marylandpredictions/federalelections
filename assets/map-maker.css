@@ -12,13 +12,30 @@ html:has(body.map-maker dialog[open]) { overflow:hidden!important; }
 #maker-seat-bar span { display:block; height:100%; }
 #maker-count-caption { font-size:11px; margin:4px 0 0; text-align:center; color:var(--text-secondary); }
 .map-maker .maker-workspace { position:absolute; inset:183px 18px 15px; margin:0; padding:0; width:auto; max-width:none; display:grid; grid-template-columns:245px minmax(0,1fr); gap:16px; }
-.maker-tools { overflow:auto; background:var(--panel-bg); border:1px solid var(--panel-border); padding:14px; scrollbar-width:thin; }
+.maker-tools { overflow:auto; background:var(--panel-bg); border:1px solid var(--panel-border); padding:14px; scrollbar-width:thin; min-height:0; height:100%; }
 .maker-tools h1 { font-size:23px; margin:0; }.maker-tools p { font-size:12px; line-height:1.5; color:var(--text-secondary); }
 .map-maker .maker-tools h1 { background:none; -webkit-text-fill-color:var(--text-primary); color:var(--text-primary); }
 .maker-tools :is(button,input,select),.map-maker .prediction-map-controls button { color:var(--text-primary); background:var(--control-bg); border:1px solid var(--panel-border); border-radius:4px; font:inherit; padding:8px; min-height:38px; }
 .maker-tools button { cursor:pointer; }.maker-tools button:disabled { opacity:.45; cursor:default; }
-#maker-palette { display:grid; grid-template-columns:1fr 1fr; gap:5px; }
-#maker-palette button { border-left:9px solid var(--paint-color); font-size:12px; text-align:left; padding:7px; }
+#maker-palette { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+#maker-palette.maker-palette-compact { grid-template-columns:1fr 1fr; }
+#maker-palette button {
+  border-left:9px solid var(--paint-color);
+  font-size:12px;
+  text-align:left;
+  padding:8px 9px;
+  display:grid;
+  gap:2px;
+  min-height:44px;
+}
+#maker-palette.maker-palette-compact button {
+  background:color-mix(in srgb, var(--paint-color) 22%, var(--control-bg));
+  color:var(--text-primary);
+  border:1px solid color-mix(in srgb, var(--paint-color) 45%, var(--panel-border));
+  border-left-width:9px;
+}
+#maker-palette button strong { font-size:13px; line-height:1.1; }
+#maker-palette button small { font-size:11px; opacity:.78; font-weight:600; }
 #maker-palette button[aria-pressed="true"] { outline:2px solid var(--focus); outline-offset:1px; font-weight:800; }
 .maker-drag { display:flex; align-items:center; gap:8px; font-size:12px; margin:10px 0; }
 .maker-drag input { min-height:0; }
@@ -33,9 +50,28 @@ html:has(body.map-maker dialog[open]) { overflow:hidden!important; }
 .map-maker .prediction-shape-svg { display:block; width:100%; height:100%; min-height:0; touch-action:none; }
 .map-maker .prediction-map-controls { position:absolute; z-index:2; top:8px; left:8px; display:flex; gap:4px; }
 .map-maker .prediction-map-controls button { min-width:40px; cursor:pointer; }
-.map-maker .prediction-shape-feature { stroke:var(--state-border); stroke-width:.65px; vector-effect:non-scaling-stroke; cursor:pointer; }
+.map-maker .prediction-shape-feature { stroke:var(--state-border); stroke-width:.65px; vector-effect:non-scaling-stroke; cursor:pointer; paint-order:stroke fill; }
 .map-maker .prediction-shape-feature.is-muted { fill:var(--panel-raised); stroke:var(--panel-border); cursor:default; }
-.map-maker .prediction-shape-feature:is(:hover,:focus,.is-selected) { stroke:var(--selection); stroke-width:2px; outline:none; }
+/* Kill rectangular browser/theme focus boxes on every map SVG hit target. */
+.map-maker :is(.prediction-shape-feature,.prediction-split-unit,.prediction-unit-shape,.county-result-shape,.election-map-shape,.house-district-shape,.state-result-shape,.mayor-city,.mayor-pin,.mayor-halo,.map-context-shape):is(:focus,:focus-visible),
+.map-maker svg :is(path,circle,rect,polygon,ellipse,g)[tabindex]:is(:focus,:focus-visible) {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+/* Path rings use .prediction-hover-outline (above neighbors). Rect split panels keep CSS stroke. */
+.map-maker .prediction-split-unit:is(:hover,:focus,.is-selected),
+.map-maker rect.prediction-shape-feature:is(:hover,:focus,.is-selected) {
+  stroke:var(--selection) !important; stroke-width:2.4px !important; outline:none !important;
+}
+.map-maker .prediction-hover-outline {
+  fill:none !important;
+  stroke:var(--selection,#849eed) !important;
+  stroke-width:2.4px !important;
+  stroke-linejoin:round;
+  stroke-linecap:round;
+  vector-effect:non-scaling-stroke;
+  pointer-events:none;
+}
 .map-maker .prediction-rating-legend { display:none; }
 .map-maker .prediction-map-tooltip { position:absolute; z-index:5; pointer-events:none; padding:12px 16px; border:1px solid var(--panel-border); border-radius:5px; background:var(--panel-bg); color:var(--text-primary); font-size:clamp(15px,1vw,24px); max-width:320px; box-shadow:0 3px 14px #0004; }
 .map-maker .prediction-map-tooltip :is(strong,span,b,small) { color:inherit!important; -webkit-text-fill-color:currentColor; }
@@ -44,6 +80,10 @@ html:has(body.map-maker dialog[open]) { overflow:hidden!important; }
 .map-maker .prediction-map-loading,.map-maker .prediction-map-error { padding:30px; }
 #maker-status { margin:6px 0; font-size:12px; line-height:1.4; color:var(--text-secondary); }
 .map-maker :is(button,input,select,summary):focus-visible { outline:3px solid var(--focus); outline-offset:2px; }
+.map-maker #focused-race-panel :is(input,select,textarea,button):focus-visible {
+  outline: 2px solid var(--maker-detail-accent, var(--focus));
+  outline-offset: 1px;
+}
 /* Keep this standalone workspace out of the live board's centered overlays. */
 body.map-maker.results-board .board-top-controls { position:absolute; left:18px!important; right:18px!important; width:auto!important; max-width:none!important; margin:0!important; transform:none!important; display:grid; }
 body.map-maker.results-board #desk-masthead { inset:0 0 auto; width:100%; box-sizing:border-box; padding:8px 132px 8px 18px; gap:12px; }
@@ -52,32 +92,304 @@ body.map-maker.results-board #desk-masthead strong { font-size:32px; line-height
 
 .map-maker dialog { background:var(--panel-bg);color:var(--text-primary);border:1px solid var(--panel-border); }
 .map-maker dialog::backdrop { background:#0009; }
-.map-maker :is(dialog,#focused-race-panel) :is(button,select) { color:var(--text-primary);background:var(--control-bg);border:1px solid var(--panel-border);border-radius:3px;padding:8px;min-height:36px;font:inherit; }
+.map-maker :is(dialog,#focused-race-panel) :is(button,select):not([data-select-unit]) { color:var(--text-primary);background:var(--control-bg);border:1px solid var(--panel-border);border-radius:3px;padding:8px;min-height:36px;font:inherit; }
 #maker-import-review { max-width:480px;width:calc(100% - 24px);padding:24px; }
 #maker-import-parties label { display:grid;gap:6px;margin:15px 0; }
-.map-maker #focused-race-panel { position:absolute;inset:12px auto 46px 12px;width:var(--maker-panel-width,350px);height:auto;max-width:calc(100% - 24px);max-height:none;display:flex;flex-direction:column;box-sizing:border-box;z-index:4; }
+body.map-maker.results-board #focused-race-panel.election-focus-panel.maker-focus-panel,
+.map-maker #focused-race-panel.maker-focus-panel,
+.map-maker #focused-race-panel {
+  --maker-detail-accent:#3d6fd8;
+  --maker-detail-accent-ink:#fff;
+  position:absolute;
+  inset:14px auto 42px 14px;
+  width:var(--maker-panel-width,380px);
+  min-width:320px;
+  height:auto;
+  max-width:min(480px,calc(100% - 28px));
+  max-height:calc(100% - 56px);
+  display:flex;
+  flex-direction:column;
+  box-sizing:border-box;
+  z-index:8;
+  overflow:hidden;
+  resize:none;
+  background:
+    linear-gradient(180deg,color-mix(in srgb,var(--maker-detail-accent) 28%,transparent),transparent 140px),
+    var(--panel-bg) !important;
+  color:var(--text-primary) !important;
+  border:3px solid var(--maker-detail-accent) !important;
+  border-left:14px solid var(--maker-detail-accent) !important;
+  border-radius:16px !important;
+  box-shadow:0 18px 50px color-mix(in srgb,#000 28%,transparent), 0 0 0 1px color-mix(in srgb,var(--maker-detail-accent) 45%,transparent);
+  padding:0 !important;
+}
+body.map-maker.results-board #focused-race-panel[data-party="D"],
+.map-maker #focused-race-panel[data-party="D"] { --maker-detail-accent:#3d6fd8; --maker-detail-accent-ink:#fff; }
+body.map-maker.results-board #focused-race-panel[data-party="R"],
+.map-maker #focused-race-panel[data-party="R"] { --maker-detail-accent:#d14848; --maker-detail-accent-ink:#fff; }
+body.map-maker.results-board #focused-race-panel[data-party="I"],
+.map-maker #focused-race-panel[data-party="I"] { --maker-detail-accent:#8a5fd4; --maker-detail-accent-ink:#fff; }
+body.map-maker.results-board #focused-race-panel[data-party="T"],
+.map-maker #focused-race-panel[data-party="T"] { --maker-detail-accent:#8e9bb3; --maker-detail-accent-ink:#101828; }
+.map-maker #focused-race-panel::before {
+  content:"";
+  display:block;
+  flex:none;
+  height:14px;
+  background:var(--maker-detail-accent);
+}
 .map-maker #focused-race-panel[hidden],#maker-detail-map[hidden],#maker-map[hidden],[data-detail-content][hidden],.maker-detail-actions[hidden] { display:none!important; }
-.map-maker #focused-race-content { flex:1;min-height:0;overflow:auto; }
-.map-maker #focused-race-panel .desk-tabs { overflow:visible;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px; }
-.map-maker #focused-race-panel .desk-tabs button { min-width:0;font:600 11px/1.3 Arial,sans-serif;letter-spacing:0;text-transform:none;white-space:normal;overflow-wrap:normal;padding:8px 2px; }
-.map-maker .county-focus-band { display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0; }
+body.map-maker.results-board #focused-race-panel .focused-card-head,
+.map-maker #focused-race-panel .focused-card-head {
+  flex:none;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:14px 16px 12px !important;
+  margin:0 !important;
+  background:var(--maker-detail-accent) !important;
+  border:0 !important;
+  border-bottom:0 !important;
+  box-shadow:none !important;
+  cursor:default !important;
+  touch-action:auto !important;
+  user-select:auto !important;
+  color:#fff !important;
+}
+.map-maker #focused-race-title,
+body.map-maker.results-board #focused-race-title {
+  flex:none;
+  font:700 1.35rem/1.2 Arial,Helvetica,sans-serif !important;
+  margin:12px 16px 8px !important;
+  padding:0 !important;
+  color:var(--text-primary) !important;
+  letter-spacing:-.01em;
+  text-transform:none !important;
+  border-bottom:0 !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  background:none !important;
+}
+.map-maker #focused-race-content {
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:0 16px 18px;
+  scrollbar-width:thin;
+}
+body.map-maker.results-board #focused-race-panel .desk-tabs,
+.map-maker #focused-race-panel .desk-tabs {
+  position:relative !important;
+  top:auto !important;
+  overflow:visible;
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:5px;
+  margin:6px 0 12px !important;
+  padding:4px !important;
+  background:color-mix(in srgb,var(--maker-detail-accent) 16%,var(--panel-raised)) !important;
+  border:1px solid color-mix(in srgb,var(--maker-detail-accent) 40%,var(--panel-border)) !important;
+  border-radius:10px !important;
+  border-bottom:1px solid color-mix(in srgb,var(--maker-detail-accent) 40%,var(--panel-border)) !important;
+}
+body.map-maker.results-board #focused-race-panel .desk-tabs button,
+.map-maker #focused-race-panel .desk-tabs button {
+  min-width:0;
+  font:600 12px/1.25 Arial,Helvetica,sans-serif !important;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+  white-space:normal;
+  padding:10px 4px !important;
+  border-radius:7px !important;
+  border:1px solid transparent !important;
+  border-bottom:1px solid transparent !important;
+  background:transparent !important;
+  color:var(--text-secondary) !important;
+}
+.map-maker #focused-race-panel .desk-tabs button:hover {
+  color:var(--text-primary) !important;
+  background:color-mix(in srgb,var(--control-bg) 70%,transparent) !important;
+}
+body.map-maker.results-board #focused-race-panel .desk-tabs button[aria-selected="true"],
+.map-maker #focused-race-panel .desk-tabs button[aria-selected="true"] {
+  background:var(--maker-detail-accent) !important;
+  color:#fff !important;
+  border-color:color-mix(in srgb,var(--maker-detail-accent) 70%,#000) !important;
+  box-shadow:0 1px 0 color-mix(in srgb,#000 18%,transparent);
+  font-weight:800 !important;
+}
+.map-maker .county-focus-band {
+  display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0 12px;
+  padding:8px 10px;border-radius:8px;
+  background:color-mix(in srgb,var(--maker-detail-accent) 10%,var(--panel-raised));
+  border:1px solid color-mix(in srgb,var(--maker-detail-accent) 20%,var(--panel-border));
+}
+.map-maker .county-focus-band strong { font-size:13px; }
 .map-maker .county-focus-band button { font-size:11px; }
 .maker-detail-actions { display:flex;gap:5px;margin:8px 0; }
-.maker-rating-control { display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:10px 0;font-size:13px; }
+.maker-rating-control {
+  display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:10px 0;padding:10px;
+  font-size:13px;border-radius:10px;
+  background:color-mix(in srgb,var(--maker-detail-accent) 12%,var(--panel-raised));
+  border:1px solid color-mix(in srgb,var(--maker-detail-accent) 24%,var(--panel-border));
+}
 .maker-rating-control select { flex:1;min-width:100px; }
-#maker-counties-list { margin-top:12px; }
+.maker-rating-control button {
+  background:var(--maker-detail-accent) !important;
+  color:var(--maker-detail-accent-ink) !important;
+  border-color:color-mix(in srgb,var(--maker-detail-accent) 55%,#000) !important;
+  font-weight:700;
+}
+.map-maker #focused-race-panel #maker-counties-list { margin-top:12px; display:grid; gap:5px; max-height:36vh; overflow:auto; }
+.map-maker #focused-race-panel #maker-counties-list button[data-select-unit] {
+  display:flex; justify-content:space-between; gap:8px; width:100%; text-align:left; cursor:pointer;
+  border-radius:8px; padding:8px 10px; min-height:40px; font:inherit; color:var(--text-primary);
+  border:1px solid color-mix(in srgb,var(--unit-rating,var(--panel-border)) 45%,var(--panel-border));
+  border-left:7px solid var(--unit-rating,var(--panel-border));
+  background:color-mix(in srgb,var(--unit-rating,var(--control-bg)) 28%,var(--control-bg));
+}
+.map-maker #focused-race-panel #maker-counties-list button[data-select-unit] strong {
+  font-size:11px;letter-spacing:.02em;
+  color:color-mix(in srgb,var(--unit-rating,var(--text-secondary)) 70%,#fff);
+}
+.map-maker #focused-race-panel #maker-counties-list button[data-select-unit][aria-pressed="true"] {
+  outline:2px solid var(--unit-rating,var(--selection)); outline-offset:-2px;
+  background:color-mix(in srgb,var(--unit-rating,var(--panel-raised)) 42%,var(--panel-bg));
+  font-weight:700;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--unit-rating) 50%,transparent);
+}
 .map-maker #desk-past-margins { margin:10px 0;padding:0;border:0;width:auto; }
 .map-maker #desk-past-margins .comparison-workspace { grid-template-columns:minmax(0,1fr) 54px; }
 .map-maker #desk-past-margins .comparison-matrix { grid-template-columns:minmax(0,1fr); }
 .map-maker #desk-past-margins .comparison-candidate strong { font-size:19px; }
 .map-maker #desk-past-margins .comparison-candidate b { font-size:30px; }
 .map-maker #desk-past-margins .comparison-rail button { width:100%;padding:6px 2px;font-size:12px; }
-.maker-detail-map { position:relative;height:calc(100% - 34px); }
-#maker-county-map { position:absolute;inset:0 0 0 calc(var(--maker-panel-width,350px) + 36px); }
-#maker-county-map svg { width:100%;height:100%;display:block;touch-action:none; }
-#maker-county-map path { stroke:var(--county-border,var(--state-border));stroke-width:.7px;vector-effect:non-scaling-stroke;cursor:pointer; }
-#maker-county-map path:is(:hover,:focus-visible,.is-selected) { stroke:var(--selection);stroke-width:2.5px;outline:none; }
-#maker-county-reset { position:absolute;right:8px;top:8px;z-index:2;color:var(--text-primary);background:var(--control-bg);border:1px solid var(--panel-border);padding:9px;cursor:pointer; }
+.maker-detail-map {
+  position:relative;
+  height:calc(100% - 34px);
+  background:var(--map-bg);
+  border:1px solid var(--panel-border);
+  border-radius:12px;
+  overflow:hidden;
+}
+.maker-detail-tooltip { z-index:6; font-size:14px; display:grid; gap:2px; }
+.maker-detail-tooltip strong { font-size:15px; }
+#maker-county-map { position:absolute;inset:0 0 0 calc(var(--maker-panel-width,380px) + 24px); }
+#maker-county-map svg {
+  width:100%;height:100%;display:block;touch-action:none;
+  background:var(--map-bg);
+}
+#maker-county-map.is-city-detail svg {
+  background:var(--map-bg);
+}
+#maker-county-map path.county-result-shape {
+  stroke:color-mix(in srgb, var(--map-bg) 40%, var(--county-border,var(--state-border)));
+  stroke-width:.65px;
+  stroke-linejoin:round;
+  stroke-linecap:round;
+  vector-effect:non-scaling-stroke;
+  paint-order:fill stroke;
+  cursor:pointer;
+  transition:filter .12s ease, stroke-width .12s ease;
+}
+#maker-county-map.is-city-detail path.county-result-shape {
+  /* Soft internal seams; outer shoreline comes from the clipped city outline. */
+  stroke:color-mix(in srgb, var(--map-bg) 55%, var(--text-primary));
+  stroke-width:.45px;
+  stroke-opacity:.55;
+}
+/* Kill rectangular browser focus boxes on irregular county paths. */
+#maker-county-map path.county-result-shape,
+#maker-county-map path.county-result-shape:focus,
+#maker-county-map path.county-result-shape:focus-visible,
+body.map-maker.results-board #maker-county-map path.county-result-shape:focus,
+body.map-maker.results-board #maker-county-map path.county-result-shape:focus-visible {
+  outline:none !important;
+  box-shadow:none !important;
+  -webkit-tap-highlight-color:transparent;
+}
+#maker-county-map path.county-result-shape:is(:hover,:focus-visible) {
+  filter:brightness(1.08);
+  outline:none !important;
+}
+#maker-county-map path.county-result-shape.is-selected {
+  filter:brightness(1.06);
+}
+/* Selection ring follows party/rating accent (not YAPms yellow). */
+#maker-county-map .prediction-hover-outline {
+  fill:none !important;
+  stroke:var(--maker-detail-accent,var(--selection,#849eed)) !important;
+  stroke-width:2.4px !important;
+  stroke-linejoin:round;
+  stroke-linecap:round;
+  vector-effect:non-scaling-stroke;
+  pointer-events:none;
+}
+#maker-county-map path.maker-city-base,
+#maker-county-map path.maker-city-underlay {
+  fill:var(--map-neutral, #cbcacd);
+  stroke:none;
+  pointer-events:none;
+}
+#maker-county-map path.maker-city-boundary {
+  fill:none;
+  stroke:color-mix(in srgb, var(--text-primary) 72%, var(--selection));
+  stroke-width:2.2px;
+  stroke-opacity:.88;
+  stroke-linejoin:round;
+  stroke-linecap:round;
+  vector-effect:non-scaling-stroke;
+  pointer-events:none;
+  paint-order:stroke;
+}
+#maker-county-map .maker-city-stage-wash { display:none; }
+.map-maker.maker-city-focus .map-context-shape.is-selected-context {
+  fill:color-mix(in srgb, var(--map-neutral) 22%, var(--map-bg));
+  stroke:none;
+  opacity:.55;
+}
+.map-maker.maker-city-focus .map-context-shape.is-dimmed-context { display:none; }
+#maker-county-map path.maker-city-land {
+  fill:var(--map-neutral, #cbcacd);
+  stroke:none;
+  pointer-events:none;
+}
+#maker-county-map.is-city-detail {
+  background:color-mix(in srgb, var(--map-bg) 88%, #1a2a44);
+}
+#maker-county-map.is-city-detail path.county-result-shape {
+  stroke:color-mix(in srgb, var(--text-primary) 28%, var(--map-bg));
+  stroke-width:.55px;
+  stroke-opacity:.55;
+}
+#maker-county-map .maker-city-gapfill path {
+  vector-effect:non-scaling-stroke;
+}
+.map-maker .maker-tools {
+  border-radius:12px;
+  box-shadow:0 8px 24px color-mix(in srgb,#000 14%,transparent);
+}
+.map-maker #maker-map {
+  border-radius:12px;
+  border:1px solid var(--panel-border);
+  overflow:hidden;
+  background:var(--map-bg);
+}
+.map-maker .prediction-map-controls button {
+  border-radius:8px;
+  box-shadow:0 4px 12px color-mix(in srgb,#000 16%,transparent);
+}
+.map-maker #maker-status {
+  padding:6px 4px;
+  font-size:12px;
+  color:var(--text-secondary);
+}
+#maker-county-reset {
+  position:absolute;right:12px;top:12px;z-index:3;
+  color:var(--text-primary);background:var(--control-bg);
+  border:1px solid var(--panel-border);border-radius:8px;
+  padding:9px 12px;cursor:pointer;font-weight:600;
+  box-shadow:0 4px 14px color-mix(in srgb,#000 12%,transparent);
+}
 body.results-board.map-maker.maker-detail-open .maker-workspace { left:18px;grid-template-columns:minmax(0,1fr) 210px; }
 .maker-detail-open .maker-tools { grid-column:2;grid-row:1; }
 .maker-detail-open .maker-map-region { grid-column:1;grid-row:1; }
@@ -149,7 +461,7 @@ body.map-maker[data-presentation="broadcast"] :is(#desk-masthead,.maker-tools,.e
  .map-maker .election-mode-toggle { justify-content:center; }
  .map-maker .maker-workspace { position:relative;inset:auto;margin:12px 10px;display:flex;flex-direction:column;gap:10px; }
  .maker-tools { padding:10px;overflow:visible; }.maker-tools h1 { font-size:18px; }
- #maker-palette { display:none; }.maker-mobile-brush { display:flex;gap:8px;align-items:center;font-size:13px; }.maker-mobile-brush select { flex:1;min-width:0; }
+ #maker-palette { display:grid; }.maker-mobile-brush { display:none; }
  .maker-map-region { height:420px;flex:none; }#maker-map { height:380px; }
  body.results-board.map-maker.maker-detail-open .maker-workspace { position:relative;left:auto; }
  .maker-detail-open .maker-tools { display:none; }
@@ -169,8 +481,14 @@ body.results-board.map-maker.maker-detail-open[data-presentation="broadcast"] .m
 /* Share the results geography treatment; the selected geography remains above
    the dim national backdrop. Never overlay mismatched state paths on House SVG. */
 .map-maker :is(.prediction-shape-svg,.election-map-svg) { background:var(--map-bg); }
-.map-maker .prediction-shape-feature { stroke:var(--state-border);stroke-width:.55px;vector-effect:non-scaling-stroke;transition:fill .18s; }
-.map-maker .prediction-shape-feature[data-race-id^="house-"] { stroke:var(--district-border);stroke-width:.25px; }
+.map-maker .prediction-shape-feature { stroke:var(--state-border);stroke-width:.55px;vector-effect:non-scaling-stroke;transition:fill .18s,stroke-width .12s,stroke .12s;paint-order:stroke fill; }
+.map-maker .prediction-shape-feature[data-race-id^="house-"] { stroke:var(--district-border);stroke-width:.35px; }
+/* Path hover/selection rings come from .prediction-hover-outline (above neighbors). */
+body.map-maker .prediction-hover-outline,
+body.map-maker[data-presentation="yapms"] .prediction-hover-outline {
+  stroke:var(--selection,#849eed) !important;
+  stroke-width:2.4px !important;
+}
 .map-maker .election-map-context-layer { pointer-events:none; }
 .map-maker .map-context-shape { fill:var(--map-neutral);stroke:var(--state-border);stroke-width:.6px;vector-effect:non-scaling-stroke; }
 .map-maker .map-context-shape.is-dimmed-context { opacity:.3; }
@@ -191,7 +509,10 @@ body.results-board.map-maker.maker-detail-open[data-presentation="broadcast"] .m
 #maker-seat-summary[hidden] { display:none!important; }
 .prediction-state-label { display:none;pointer-events:none;user-select:none; }
 .map-maker.maker-labels-hidden :is(.prediction-state-label,.night-geo-labels,.map-background-city) { display:none!important; }
-body.map-maker[data-presentation="yapms"] { --yapms-rail:clamp(210px,21vw,290px); }
+body.map-maker[data-presentation="yapms"] {
+  --yapms-rail:clamp(210px,21vw,290px);
+  --yapms-left-top:96px;
+}
 body.map-maker[data-presentation="yapms"] #desk-masthead { height:64px;border:0;background:var(--board-bg); }
 body.map-maker[data-presentation="yapms"] #desk-masthead strong { font:600 26px Arial,sans-serif;letter-spacing:-.5px;text-transform:none; }
 body.map-maker[data-presentation="yapms"] .board-top-controls { top:76px!important;left:calc(var(--yapms-rail) + 36px)!important;right:18px!important;width:auto!important;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap; }
@@ -204,19 +525,118 @@ body.map-maker[data-presentation="yapms"] .maker-total-party { order:-1;font-siz
 body.map-maker[data-presentation="yapms"] .maker-totals .maker-t { background:var(--tossup);color:var(--tower-ink);order:-1; }
 body.map-maker[data-presentation="yapms"] :is(#maker-seat-bar,#maker-count-caption) { display:none; }
 body.map-maker[data-presentation="yapms"] .maker-workspace { display:block;inset:140px 18px 16px calc(var(--yapms-rail) + 36px); }
-body.map-maker[data-presentation="yapms"] .maker-map-region { height:100%; }
-body.map-maker[data-presentation="yapms"] .maker-tools { position:fixed;box-sizing:border-box;left:18px;top:calc(135px + var(--yapms-rail));bottom:18px;width:var(--yapms-rail);padding:12px 8px;background:transparent;border:0;border-top:1px solid var(--panel-border); }
-body.map-maker[data-presentation="yapms"] .maker-tools h1 { font:600 15px Arial,sans-serif; }
-body.map-maker[data-presentation="yapms"] #maker-palette button { background:var(--paint-color);color:var(--paint-ink);border:1px solid #ffffff55;font-weight:600;min-height:32px; }
-body.map-maker[data-presentation="yapms"] #maker-seat-summary { display:block;position:absolute;left:18px;top:115px;width:var(--yapms-rail);z-index:2; }
-body.map-maker[data-presentation="yapms"] #maker-seat-summary svg { width:100%;height:auto;display:block; }
-body.map-maker[data-presentation="yapms"] #maker-seat-summary p { text-align:center;font:500 11px Arial,sans-serif;line-height:1.4;color:var(--text-secondary);margin:0; }
+body.map-maker[data-presentation="yapms"] .maker-map-region { height:100%;position:relative; }
+/* Ring + badge + tools share one fixed column (tools are moved into #maker-seat-summary). */
+body.map-maker[data-presentation="yapms"] #maker-seat-summary {
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  position:fixed;left:18px;top:var(--yapms-left-top);bottom:18px;width:var(--yapms-rail);z-index:3;
+  pointer-events:none;overflow:hidden;
+}
+body.map-maker[data-presentation="yapms"] #maker-seat-summary > * { pointer-events:auto; }
+body.map-maker[data-presentation="yapms"] #maker-seat-summary svg { width:100%;height:auto;display:block;flex:none; }
+body.map-maker[data-presentation="yapms"] #maker-seat-summary .maker-seat-badge {
+  width:min(104px,44%);height:auto;display:block;margin:2px 0 0;border-radius:50%;
+  box-shadow:0 6px 18px #0005;flex:none;
+}
+body.map-maker[data-presentation="yapms"] #maker-seat-summary .maker-seat-caption {
+  text-align:center;font:600 10px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text-secondary);margin:0;flex:none;
+}
+body.map-maker[data-presentation="yapms"] #maker-seat-summary .maker-tools,
+body.map-maker[data-presentation="yapms"] .maker-tools {
+  position:static;box-sizing:border-box;width:100%;flex:1 1 auto;min-height:0;align-self:stretch;
+  margin-top:6px;padding:12px 8px 10px;background:var(--panel-bg);border:1px solid var(--panel-border);
+  border-radius:12px;overflow:auto;z-index:2;
+}
+body.map-maker[data-presentation="yapms"] .maker-tools h1 { font:700 14px/1.2 Arial,Helvetica,sans-serif;letter-spacing:-.01em;margin:0 0 4px; }
+body.map-maker[data-presentation="yapms"] #maker-tools-lead { color:var(--text-secondary);font-size:11px;line-height:1.35;margin:0 0 8px;max-width:28ch; }
+body.map-maker[data-presentation="yapms"] #maker-interaction { margin:0 0 8px; }
+body.map-maker[data-presentation="yapms"] #maker-interaction small { display:none; }
+body.map-maker[data-presentation="yapms"] .maker-drag { font-size:11px;margin:6px 0; }
+body.map-maker[data-presentation="yapms"] #maker-palette { gap:8px; }
+body.map-maker[data-presentation="yapms"] #maker-palette button {
+  background:var(--paint-color);color:var(--paint-ink);font-weight:600;min-height:32px;
+  border-radius:8px;border:1px solid color-mix(in srgb,#fff 22%,transparent);box-shadow:0 2px 8px #0003;
+}
+body.map-maker[data-presentation="yapms"] #maker-palette button small { display:none; }
 body.map-maker[data-presentation="yapms"].maker-detail-open #maker-seat-summary { display:none; }
 body.map-maker[data-presentation="yapms"].maker-detail-open .maker-workspace { left:18px; }
 body.map-maker[data-presentation="yapms"].maker-detail-open .maker-tools { display:none; }
 body.map-maker[data-presentation="yapms"] .prediction-shape-feature { stroke-width:1px; }
 body.map-maker[data-presentation="yapms"] .prediction-shape-feature.is-muted { fill:var(--map-neutral);stroke:var(--state-border);opacity:1; }
 body.map-maker[data-presentation="yapms"] .prediction-state-label { display:block;fill:#ffffff;paint-order:stroke;stroke:#20283899;stroke-width:.8px;stroke-linejoin:round; }
+
+/* Split boxes are SVG map chrome — same tokens as state fills/borders */
+.maker-split-ev { display:none !important; }
+.prediction-split-panels { pointer-events:auto; }
+.prediction-split-frame,
+.prediction-split-nest {
+  fill:var(--map-neutral);
+  stroke:var(--state-border);
+  stroke-width:1px;
+  vector-effect:non-scaling-stroke;
+}
+.prediction-split-unit {
+  cursor:pointer;
+  stroke:var(--state-border);
+  stroke-width:1px;
+  vector-effect:non-scaling-stroke;
+}
+.prediction-split-label {
+  fill:#ffffff;
+  stroke:#20283899;
+  stroke-width:.8px;
+  paint-order:stroke;
+  pointer-events:none;
+}
+.prediction-split-unit:is(:hover,:focus,.is-selected) {
+  stroke:var(--selection,#849eed) !important;
+  stroke-width:2px !important;
+  outline:none;
+}
+body.map-maker[data-presentation="yapms"] .prediction-shape-feature.is-president-cd {
+  stroke:var(--state-border);stroke-width:1px;vector-effect:non-scaling-stroke;
+}
+body.map-maker[data-presentation="yapms"] .prediction-shape-feature.is-president-al {
+  stroke:var(--state-border);stroke-width:1px;
+}
+body.map-maker[data-presentation="yapms"] .prediction-split-unit:is(:hover,:focus,.is-selected) {
+  stroke:var(--selection,#849eed) !important;
+  stroke-width:2px !important;
+}
+
+/* Presidential tickets reuse the same chips as governor totals. */
+.maker-ticket-bar { display:none; }
+.maker-ticket-bar:not([hidden]) { display:flex;flex-wrap:wrap;gap:7px;align-items:center;justify-content:center; }
+.maker-ticket {
+  display:inline-flex;align-items:center;gap:5px;min-height:36px;margin:0;padding:6px 9px 7px;
+  border:0;border-radius:3px;cursor:pointer;font:700 clamp(14px,1vw,20px) Arial,sans-serif;
+  background:var(--tower-color);color:var(--tower-ink);
+  border-bottom:5px solid color-mix(in srgb,var(--tower-color) 55%,white);
+}
+.maker-ticket .maker-total-party { order:-1;font-size:inherit; }
+.maker-ticket .maker-ticket-edit { text-decoration:underline;text-underline-offset:2px; }
+.maker-ticket.maker-t { background:var(--tossup,#a8a8a8);color:#111;border-bottom-color:color-mix(in srgb,var(--tossup,#a8a8a8) 55%,white); }
+body.map-maker[data-presentation="yapms"] .maker-ticket-bar:not([hidden]) { display:flex; }
+body.map-maker[data-presentation="yapms"] .election-chamber-board { display:flex;flex-direction:row;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center; }
+body.map-maker[data-presentation="yapms"] .election-chamber-board .maker-totals:empty { display:none; }
+
+/* Compact overflow menu */
+.map-maker #board-menu {
+  min-width:220px;max-width:min(280px,92vw);padding:8px;display:grid;gap:2px;
+  border:1px solid var(--panel-border);border-radius:10px;background:var(--panel-bg);
+  box-shadow:0 12px 28px #0006;
+}
+.map-maker #board-menu[hidden] { display:none !important; }
+.map-maker #board-menu :is(a,button,label) {
+  display:block;width:100%;box-sizing:border-box;margin:0;padding:8px 10px;border:0;border-radius:6px;
+  background:transparent;color:var(--text-primary);text-align:left;font:600 13px/1.3 Arial,Helvetica,sans-serif;
+  text-decoration:none;white-space:normal;
+}
+.map-maker #board-menu :is(a,button,label):hover { background:var(--panel-raised); }
+.map-maker #board-menu .board-menu-rule { border:0;border-top:1px solid var(--panel-border);margin:6px 2px; }
+.map-maker #board-menu .maker-detail-switch { display:flex;align-items:flex-start;gap:8px;font-weight:500;font-size:12px;color:var(--text-secondary); }
+.map-maker #board-menu .maker-detail-switch input { margin-top:2px;flex:none; }
 @media(min-width:801px) and (max-width:1100px) and (min-height:481px) {
  body.map-maker[data-presentation="yapms"] .board-top-controls { gap:8px; }
  body.map-maker[data-presentation="yapms"] .maker-workspace { top:166px; }
@@ -233,4 +653,746 @@ body.map-maker[data-presentation="yapms"] .prediction-state-label { display:bloc
  body.map-maker[data-presentation="yapms"] .maker-tools { position:static;top:auto;bottom:auto;width:auto;padding:10px; }
  body.map-maker[data-presentation="yapms"] .maker-map-region { height:420px; }
  body.map-maker[data-presentation="yapms"].maker-detail-open .maker-map-region { height:850px; }
+}
+
+.prediction-basemap-state { opacity: .45; }
+.prediction-shape-feature.is-outline { cursor: pointer; }
+.mayor-city, .mayor-marker { cursor: pointer; }
+.prediction-shape-feature.is-dimmed-focus { opacity: .45; }
+.prediction-unit-overlay { pointer-events:auto; }
+.prediction-unit-overlay .prediction-unit-shape {
+  cursor: pointer;
+  vector-effect: non-scaling-stroke;
+  fill: var(--map-neutral, #cbcacd);
+  stroke: currentColor;
+  stroke-width: .7px;
+  outline: none;
+  transition: filter .12s ease, stroke-width .12s ease, opacity .12s ease;
+}
+.prediction-unit-overlay .prediction-unit-shape:is(:hover,:focus-visible) {
+  filter: brightness(1.12);
+  stroke: var(--selection);
+  stroke-width: 1.6px;
+  outline: none !important;
+}
+.prediction-unit-overlay .prediction-unit-shape.is-selected {
+  stroke: var(--selection);
+  stroke-width: 2.2px;
+  filter: brightness(1.06);
+  paint-order: stroke fill;
+  outline: none !important;
+}
+.maker-outline-legend { display:flex; flex-wrap:wrap; gap:8px 14px; padding:8px 12px 10px; font-size:12px; color:var(--text-secondary); border-top:1px solid var(--panel-border); background:color-mix(in srgb, var(--panel-bg) 88%, transparent); }
+.maker-outline-legend span { display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+.maker-outline-legend i { width:12px; height:12px; border-radius:2px; border:1px solid color-mix(in srgb, currentColor 35%, transparent); display:inline-block; flex:none; }
+.prediction-mayor-map .prediction-map-legend:not(.maker-outline-legend) { display:none; }
+.prediction-mayor-cities path.mayor-city { paint-order: stroke fill; }
+body.map-maker.maker-detail-open.maker-outline-mode .maker-tools { opacity: .92; }
+body.map-maker.maker-city-focus .election-chamber-board { visibility: hidden; }
+.maker-mayor-past { display:grid; gap:4px; margin:0 0 12px; padding:10px; border:1px solid var(--panel-border); background:var(--panel-raised); border-radius:6px; font-size:13px; }
+.maker-mayor-past small { text-transform:uppercase; letter-spacing:.06em; opacity:.7; font-weight:700; }
+.maker-mayor-past p { margin:4px 0 0; opacity:.85; }
+body.map-maker.has-focused-race #focused-race-panel { display:flex; }
+body.map-maker.has-focused-race .maker-map-region { position:relative; }
+body.map-maker.has-focused-race:not(.maker-detail-open) #maker-map { display:block !important; }
+body.map-maker.has-focused-race:not(.maker-detail-open) #maker-detail-map { display:none !important; }
+body.map-maker.has-focused-race .election-chamber-board { visibility:hidden; }
+/* Dedicated detail map must win over national map / list chrome (screenshot 4). */
+body.map-maker.maker-detail-open #maker-map,
+body.map-maker.maker-detail-open #maker-mayor-board { display:none !important; }
+body.map-maker.maker-detail-open #maker-detail-map { display:block !important; visibility:visible !important; }
+.maker-outline-mode #maker-interaction { display: grid; }
+.maker-candidate-list { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 8px; }
+.maker-candidate-list li,
+.maker-candidate-list li.maker-candidate-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  border-left: 6px solid var(--panel-border);
+  background: var(--control-bg);
+}
+.maker-candidate-list li[data-party="D"] {
+  border-left-color: #3d6fd8;
+  background: color-mix(in srgb,#3d6fd8 18%,var(--control-bg));
+}
+.maker-candidate-list li[data-party="R"] {
+  border-left-color: #d14848;
+  background: color-mix(in srgb,#d14848 18%,var(--control-bg));
+}
+.maker-candidate-list li[data-party="I"] {
+  border-left-color: #8a5fd4;
+  background: color-mix(in srgb,#8a5fd4 18%,var(--control-bg));
+}
+.maker-candidate-meta { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.maker-candidate-meta strong { font-size: .95rem; }
+.maker-candidate-meta small {
+  font-size: .7rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.maker-candidate-list li[data-party="D"] .maker-candidate-meta small { color: #8eb0ff; }
+.maker-candidate-list li[data-party="R"] .maker-candidate-meta small { color: #f0a0a0; }
+.maker-candidate-list li[data-party="I"] .maker-candidate-meta small { color: #c4a8f0; }
+.maker-add-candidate { display: grid; gap: 8px; margin-top: 8px; padding: 10px; border-radius: 10px; border: 1px solid color-mix(in srgb,var(--maker-detail-accent) 30%,var(--panel-border)); background: color-mix(in srgb,var(--maker-detail-accent) 10%,var(--panel-raised)); }
+.maker-add-candidate label { display: grid; gap: 4px; font-size: 12px; }
+#maker-detail-candidates { margin-bottom: 12px; }
+
+.map-maker #focused-race-panel .focused-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--control-bg);
+  color: var(--text-primary);
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+body.map-maker.results-board #focused-race-panel .focused-card-head .focused-pill,
+.map-maker #focused-race-panel .focused-card-head .focused-pill {
+  background: #fff !important;
+  color: var(--maker-detail-accent) !important;
+  border: 1px solid #fff !important;
+  font-weight: 800;
+}
+body.map-maker.results-board #focused-race-panel #focused-race-rating,
+.map-maker #focused-race-panel #focused-race-rating,
+.map-maker #focused-race-panel .focused-pill-light {
+  background: color-mix(in srgb,#fff 22%,transparent) !important;
+  color: #fff !important;
+  border: 1px solid color-mix(in srgb,#fff 45%,transparent) !important;
+  font-weight: 800;
+}
+.map-maker #focused-race-panel .focused-card-head .focused-close {
+  background: color-mix(in srgb,#000 18%,transparent) !important;
+  color: #fff !important;
+}
+.map-maker #focused-race-panel .focused-close {
+  margin-left: auto;
+  min-width: 40px;
+  min-height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--panel-bg);
+  color: var(--text-primary);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.map-maker #focused-race-panel .focused-close:hover { background: var(--hover-bg, var(--control-bg)); }
+.map-maker #focused-race-panel .selected-race-table {
+  width: 100%;
+  margin: 12px 0;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.map-maker #focused-race-panel .selected-race-table th {
+  font-size: .65rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  text-align: left;
+  padding: 6px 4px;
+}
+.map-maker #focused-race-panel .selected-race-table td {
+  border-bottom: 1px solid var(--panel-border);
+  padding: 10px 4px;
+  vertical-align: middle;
+}
+.map-maker #focused-race-panel .selected-race-table td strong { display:block; font-size: .98rem; }
+.map-maker #focused-race-panel .selected-race-table td small { color: var(--text-secondary); }
+.map-maker #focused-race-panel .selected-party-rail {
+  display: inline-block;
+  width: 4px;
+  min-height: 28px;
+  margin-right: 8px;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+.map-maker #focused-race-panel .focus-resize-handle {
+  position: absolute !important;
+  right: 8px !important;
+  bottom: 8px !important;
+  float: none !important;
+  width: 18px;
+  height: 18px;
+  margin: 0 !important;
+  border: 0;
+  border-right: 2px solid var(--text-secondary);
+  border-bottom: 2px solid var(--text-secondary);
+  background: transparent;
+  color: transparent;
+  font-size: 0;
+  cursor: nwse-resize;
+  opacity: .75;
+  z-index: 3;
+}
+.map-maker #focused-race-panel .focus-resize-handle:hover { opacity: 1; border-color: var(--text-primary); }
+.map-maker.maker-detail-open .maker-outline-legend,
+.map-maker.maker-detail-open #maker-status {
+  margin-left: calc(var(--maker-panel-width, 380px) + 24px);
+  padding-left: 4px;
+  width: auto;
+  max-width: calc(100% - var(--maker-panel-width, 380px) - 36px);
+  box-sizing: border-box;
+}
+.map-maker.maker-city-focus .maker-detail-map {
+  box-shadow: 0 8px 24px #0003;
+}
+
+/* National mayor locator: light outlines + halos, not a zoomable city map. */
+.prediction-mayor-locator .prediction-basemap-state { opacity: .32; }
+.prediction-mayor-locator .mayor-city {
+  paint-order: stroke fill;
+  cursor: pointer;
+}
+.prediction-mayor-locator .mayor-city:is(:hover,:focus-visible,.is-selected) {
+  fill-opacity: .55 !important;
+  stroke-width: 2.2px;
+}
+.prediction-mayor-halos .mayor-halo.is-selected {
+  stroke-width: 3px;
+  fill-opacity: .5;
+}
+.prediction-mayor-pins .mayor-pin.is-selected {
+  r: 7;
+  stroke-width: 2.5;
+}
+.maker-outline-legend .maker-legend-halo {
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--selection) 35%, transparent);
+  border-color: var(--selection);
+}
+.prediction-mayor-label {
+  font-family: Arial, Helvetica, sans-serif !important;
+  letter-spacing: -.01em;
+  opacity: .95;
+}
+.maker-mayor-view {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin: 0 0 10px;
+  padding: 3px;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  background: var(--control-bg);
+}
+.maker-mayor-view[hidden] { display: none !important; }
+.maker-mayor-view button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.maker-mayor-view button[aria-pressed="true"] {
+  background: var(--panel-bg);
+  outline: 1px solid var(--panel-border);
+}
+.maker-mayor-board {
+  height: calc(100% - 34px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  background: var(--panel-bg);
+  box-shadow: 0 8px 24px #0003;
+  overflow: hidden;
+}
+.maker-mayor-board[hidden] { display: none !important; }
+.maker-mayor-board-head {
+  flex: none;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--panel-border);
+}
+.maker-mayor-board-head strong {
+  display: block;
+  font-size: 1.15rem;
+  letter-spacing: -.02em;
+}
+.maker-mayor-board-head p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.maker-mayor-list {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  padding: 14px;
+  align-content: start;
+  scrollbar-width: thin;
+}
+.maker-mayor-card {
+  display: grid;
+  grid-template-columns: 8px 72px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 12px 12px 12px 10px;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text-primary);
+  background: var(--control-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  box-shadow: 0 4px 14px #0002;
+  min-height: 72px;
+}
+.maker-mayor-card-thumb {
+  width: 72px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--map-bg) 70%, var(--panel-raised));
+  border: 1px solid var(--panel-border);
+  overflow: hidden;
+}
+.maker-mayor-card-outline {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.maker-mayor-card-outline path {
+  fill: color-mix(in srgb, var(--paint-color) 55%, var(--map-neutral, #cbcacd));
+  stroke: color-mix(in srgb, var(--text-primary) 45%, transparent);
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+}
+.maker-mayor-card:hover,
+.maker-mayor-card:focus-visible {
+  border-color: color-mix(in srgb, var(--paint-color) 45%, var(--panel-border));
+  background: var(--panel-raised);
+}
+.maker-mayor-card[aria-pressed="true"] {
+  outline: 2px solid var(--selection);
+  outline-offset: 1px;
+}
+.maker-mayor-card-swatch {
+  align-self: stretch;
+  width: 8px;
+  border-radius: 99px;
+  background: var(--paint-color);
+}
+.maker-mayor-card-body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.maker-mayor-card-body strong {
+  font-size: .98rem;
+  letter-spacing: -.01em;
+}
+.maker-mayor-card-body small,
+.maker-mayor-card-meta small {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+.maker-mayor-card-meta {
+  display: grid;
+  gap: 2px;
+  justify-items: end;
+  text-align: right;
+}
+.maker-mayor-card-meta b {
+  font-size: 12px;
+  font-weight: 800;
+}
+body.map-maker.maker-mayor-list-mode .maker-city-rail { display: none !important; }
+
+/* Kill wiki gradient race banners inside Map Maker demographics. */
+.map-maker .election-focus-overlay #maker-detail-demographics h3,
+.map-maker #maker-detail-demographics h3 {
+  margin: 0 0 8px;
+  padding: 0;
+  background: none !important;
+  color: var(--text-primary) !important;
+  font: 750 1.05rem/1.25 Arial, Helvetica, sans-serif !important;
+  letter-spacing: 0;
+  -webkit-text-fill-color: currentColor;
+}
+.map-maker #maker-detail-demographics {
+  display: grid;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.map-maker #maker-detail-history,
+.map-maker #maker-detail-demographics,
+.map-maker #maker-detail-ratings,
+.map-maker #maker-detail-counties {
+  padding: 2px 0 4px;
+}
+.map-maker #maker-detail-history .comparison-heading,
+.map-maker #maker-detail-demographics .desk-hint {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb,var(--maker-detail-accent) 10%,var(--panel-raised));
+  border: 1px solid color-mix(in srgb,var(--maker-detail-accent) 18%,var(--panel-border));
+}
+.map-maker #maker-detail-history .comparison-rail button[aria-pressed="true"] {
+  background: var(--maker-detail-accent);
+  color: var(--maker-detail-accent-ink);
+  border-color: color-mix(in srgb,var(--maker-detail-accent) 55%,#000);
+}
+.map-maker #focused-race-panel .selected-race-table tbody tr {
+  background: color-mix(in srgb,var(--candidate-color,transparent) 8%,transparent);
+}
+.map-maker #focused-race-panel .selected-party-rail {
+  width: 6px;
+  min-height: 32px;
+  box-shadow: 0 0 0 1px color-mix(in srgb,var(--candidate-color,#000) 25%,transparent);
+}
+.map-maker #maker-detail-note.desk-hint {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border-left: 4px solid var(--maker-detail-accent);
+  background: color-mix(in srgb,var(--maker-detail-accent) 9%,var(--panel-raised));
+}
+
+.maker-city-rail {
+  display: grid;
+  gap: 4px;
+  margin: 12px 0;
+  max-height: 280px;
+  overflow: auto;
+  padding-right: 2px;
+}
+.maker-city-rail[hidden] { display: none !important; }
+.maker-city-rail > strong {
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.maker-city-rail button {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border-left: 5px solid var(--paint-color, var(--panel-border));
+}
+.maker-city-rail button[aria-pressed="true"] {
+  outline: 2px solid var(--selection);
+  outline-offset: -2px;
+  font-weight: 700;
+}
+.maker-city-rail button small { opacity: .8; white-space: nowrap; }
+
+.map-maker #focused-race-panel .focus-resize-handle {
+  display: block;
+  position: sticky;
+  float: right;
+  bottom: -8px;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  margin: 0 -10px -10px 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: nwse-resize;
+  font-size: 1.15rem;
+  touch-action: none;
+  opacity: .7;
+}
+.map-maker #focused-race-panel .focus-resize-handle:hover,
+.map-maker #focused-race-panel .focus-resize-handle:focus-visible {
+  opacity: 1;
+  color: var(--text-primary);
+}
+.map-maker #focused-race-panel {
+  resize: none;
+  min-width: 300px;
+  min-height: 280px;
+}
+/* Party-tinted county rows — beat panel button cascade; obvious Dem/Rep/Ind rails. */
+.map-maker #focused-race-panel #maker-counties-list { display: grid; gap: 5px; max-height: 42vh; overflow: auto; }
+.map-maker #focused-race-panel #maker-counties-list button[data-select-unit] {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-height: 40px;
+  font: inherit;
+  color: var(--text-primary);
+  border: 1px solid color-mix(in srgb,var(--unit-rating,var(--panel-border)) 45%,var(--panel-border));
+  border-left: 7px solid var(--unit-rating,var(--panel-border));
+  background: color-mix(in srgb,var(--unit-rating,var(--control-bg)) 28%,var(--control-bg));
+}
+.map-maker #focused-race-panel #maker-counties-list button[data-select-unit] strong {
+  font-size: 11px;
+  letter-spacing: .02em;
+  color: color-mix(in srgb,var(--unit-rating,#9aa3b5) 65%,#ffffff);
+}
+.map-maker #focused-race-panel #maker-counties-list button[data-select-unit][aria-pressed="true"] {
+  outline: 2px solid var(--unit-rating,var(--selection));
+  outline-offset: -2px;
+  background: color-mix(in srgb,var(--unit-rating,var(--panel-raised)) 42%,var(--panel-bg));
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb,var(--unit-rating) 50%,transparent);
+}
+.map-maker #focused-race-panel #maker-counties-list button[data-party="D"][aria-pressed="true"] { outline-color: #4f73d1; }
+.map-maker #focused-race-panel #maker-counties-list button[data-party="R"][aria-pressed="true"] { outline-color: #cb5452; }
+.map-maker #focused-race-panel #maker-counties-list button[data-party="I"][aria-pressed="true"] { outline-color: #865cc6; }
+.map-maker #focused-race-panel #maker-counties-list button[data-party="T"][aria-pressed="true"] { outline-color: #9aa3b5; }
+
+/* Studio / contrast presentation parity with results desk. */
+body.map-maker[data-presentation="studio"] #desk-masthead strong {
+  font-size: clamp(30px, 2.4vw, 48px);
+  letter-spacing: -.04em;
+}
+body.map-maker[data-presentation="studio"] .maker-tools {
+  border-radius: 12px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-bg);
+}
+body.map-maker[data-presentation="studio"] #focused-race-panel.election-focus-panel {
+  border-radius: 16px;
+}
+body.map-maker[data-presentation="studio"] #focused-race-title {
+  font-size: 1.4rem;
+  letter-spacing: -.02em;
+  font-family: Arial, Helvetica, sans-serif;
+}
+body.map-maker[data-presentation="studio"] #focused-race-panel .desk-tabs {
+  border: 0;
+  gap: 5px;
+  background: transparent;
+}
+body.map-maker[data-presentation="studio"] #focused-race-panel .desk-tabs button {
+  border-radius: 9px;
+  border: 1px solid var(--panel-border);
+}
+body.map-maker[data-presentation="studio"] .maker-totals {
+  gap: 12px;
+}
+body.map-maker[data-presentation="studio"] .maker-outline-legend {
+  border-radius: 0 0 12px 12px;
+}
+
+body.map-maker[data-presentation="contrast"] :is(#desk-masthead,.maker-tools,.election-chamber-board,#focused-race-panel) {
+  border-width: 2px;
+}
+body.map-maker[data-presentation="contrast"] #focused-race-panel.election-focus-panel {
+  border-radius: 3px;
+  box-shadow: none;
+}
+body.map-maker[data-presentation="contrast"] #focused-race-panel .desk-tabs {
+  border-width: 2px;
+  border-radius: 3px;
+}
+body.map-maker[data-presentation="contrast"] #focused-race-panel .desk-tabs button,
+body.map-maker[data-presentation="contrast"] .selected-race-table td,
+body.map-maker[data-presentation="contrast"] .selected-race-table td small {
+  font-size: .9rem;
+}
+body.map-maker[data-presentation="contrast"] .selected-race-table td {
+  border-bottom: 2px solid var(--panel-border);
+}
+body.map-maker[data-presentation="contrast"] .prediction-unit-overlay .prediction-unit-shape {
+  stroke-width: 1.1px;
+}
+body.map-maker[data-presentation="contrast"] .prediction-shape-feature.is-dimmed-focus {
+  opacity: .5;
+}
+body.map-maker[data-presentation="contrast"] .maker-outline-legend,
+body.map-maker[data-presentation="contrast"] #maker-status {
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prediction-unit-overlay .prediction-unit-shape,
+  .map-maker .prediction-shape-feature { transition: none; }
+}
+
+/* —— Map Maker desk alignment (match results board, keep chrome quiet) —— */
+.map-maker .maker-tools {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 8px 24px #0003;
+}
+.map-maker .maker-tools h1 {
+  font: 800 1.25rem/1.2 Arial, Helvetica, sans-serif;
+  letter-spacing: -.02em;
+  margin: 0 0 6px;
+}
+.map-maker .maker-tools > p {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+.map-maker .election-mode-toggle {
+  align-self: start;
+}
+.map-maker .election-chamber-board {
+  border-radius: 12px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 4px 18px #0002;
+}
+#maker-interaction {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin: 0 0 10px;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  background: var(--control-bg);
+}
+#maker-interaction[hidden] { display: none !important; }
+#maker-interaction button {
+  min-height: 34px;
+  border-radius: 6px;
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+}
+#maker-interaction button[aria-pressed="true"] {
+  background: var(--panel-bg);
+  outline: 1px solid var(--panel-border);
+}
+#maker-interaction small {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  padding: 2px 4px 4px;
+}
+#maker-palette.maker-palette-compact {
+  gap: 6px;
+}
+#maker-palette.maker-palette-compact button {
+  min-height: 46px;
+  border-radius: 6px;
+  padding: 8px 9px;
+  background: color-mix(in srgb, var(--paint-color) 18%, var(--control-bg));
+  border: 1px solid var(--panel-border);
+  border-left: 8px solid var(--paint-color);
+}
+#maker-palette.maker-palette-compact button[aria-pressed="true"] {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+  font-weight: 800;
+}
+.maker-actions { margin-top: 4px; gap: 4px; }
+.maker-file-tools {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--panel-border);
+}
+.maker-file-tools summary {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: none;
+  letter-spacing: 0;
+}
+#maker-status {
+  margin: 6px 2px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.map-maker.results-board #focused-race-panel.election-focus-panel.maker-focus-panel,
+.map-maker #focused-race-panel.maker-focus-panel {
+  border-radius: 16px !important;
+  border: 3px solid var(--maker-detail-accent) !important;
+  border-left: 14px solid var(--maker-detail-accent) !important;
+  background:
+    linear-gradient(180deg,color-mix(in srgb,var(--maker-detail-accent) 28%,transparent),transparent 140px),
+    var(--panel-bg) !important;
+  box-shadow: 0 12px 45px #0005;
+}
+body.map-maker.results-board #focused-race-panel .focused-card-head,
+.map-maker #focused-race-panel .focused-card-head {
+  background: var(--maker-detail-accent) !important;
+  border-bottom: 0 !important;
+  color: #fff !important;
+}
+.map-maker #focused-race-panel .focused-pill {
+  border-radius: 5px;
+  padding: 5px 7px;
+  letter-spacing: .05em;
+}
+.map-maker #focused-race-title {
+  font: 800 1.45rem/1.15 Arial, Helvetica, sans-serif !important;
+  letter-spacing: -.02em !important;
+}
+.maker-city-rail {
+  margin: 10px 0 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  max-height: 240px;
+}
+.maker-city-rail button {
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+  background: var(--control-bg);
+  padding: 8px 10px;
+  min-height: 36px;
+}
+.maker-city-rail button:hover { background: var(--panel-raised); }
+body.map-maker.maker-city-focus .election-chamber-board { visibility: hidden; pointer-events: none; }
+body.map-maker.maker-city-focus .board-top-controls {
+  grid-template-columns: auto;
+  justify-content: start;
+}
+body.map-maker.maker-city-focus .maker-workspace {
+  inset: 148px 18px 14px;
+}
+body.map-maker.maker-city-focus #maker-county-map {
+  inset: 0 0 0 calc(var(--maker-panel-width, 380px) + 20px);
+}
+.maker-outline-legend {
+  border-radius: 0 0 12px 12px;
+  background: color-mix(in srgb, var(--panel-bg) 92%, transparent);
+}
+.map-maker .prediction-map-controls button {
+  border-radius: 6px;
+  min-width: 40px;
+  min-height: 40px;
+  background: var(--control-bg);
+}
+@media (max-width: 900px) {
+  body.map-maker.maker-city-focus .maker-workspace { inset: 160px 10px 10px; }
+  .map-maker.maker-detail-open #maker-status {
+    margin-left: 0;
+    max-width: 100%;
+    white-space: normal;
+  }
 }

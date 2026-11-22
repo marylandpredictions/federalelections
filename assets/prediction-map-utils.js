@@ -160,16 +160,27 @@
       }
       return state && district ? `${state}-${district}` : "";
     }
+    if (office === "president" && (state === "ME" || state === "NE")) {
+      const district = padDistrict(race.district);
+      if (!district || district === "AL") return `${state}-AL`;
+      return `${state}-${district}`;
+    }
     return state;
   }
 
   function featureKey(feature, office) {
     const props = feature?.properties || {};
-    if (office === "house") {
+    if (office === "house" || props.presidentEvUnit) {
+      if (props.presidentEvUnit) return String(props.presidentEvUnit).toUpperCase();
       if (props.id) return String(props.id).replace(/-(\d)$/, "-0$1").toUpperCase();
       const state = stateAbbrFromFeature(feature);
       const cd = padDistrict(props.district ?? props.CD119FP ?? props.CD118FP ?? props.CD116FP);
       return state && cd && !["ZZ", "98", "99"].includes(cd) ? `${state}-${cd}` : "";
+    }
+    if (office === "president") {
+      const state = stateAbbrFromFeature(feature);
+      if (state === "ME" || state === "NE") return `${state}-AL`;
+      return state;
     }
     return stateAbbrFromFeature(feature);
   }
@@ -183,7 +194,17 @@
       return `${stateAbbrToName[state] || state} US House ${districtLabel}`.trim();
     }
     if (race.displayName) return race.displayName;
-    const officeName = office === "governor" ? "Governor" : "Senate";
+    if (race.name && office === "president") return race.name;
+    if (office === "mayor" || race.type === "mayor") {
+      return `${race.city || race.name || "City"} Mayor`;
+    }
+    if (office === "president" && (race.state === "ME" || race.state === "NE") && race.district != null) {
+      const district = padDistrict(race.district);
+      const state = String(race.state || "").toUpperCase();
+      if (!district || district === "AL") return `${stateAbbrToName[state] || state} at-large electors`;
+      return `${stateAbbrToName[state] || state} CD-${Number(district) || district}`;
+    }
+    const officeName = office === "governor" ? "Governor" : office === "president" ? "President" : "Senate";
     const state = String(race.state || "").toUpperCase();
     return `${stateAbbrToName[state] || state} ${officeName}`;
   }
@@ -443,6 +464,167 @@
     });
   }
 
+  function unitFeatureId(feature) {
+    return String(feature?.properties?.unitId || feature?.properties?.GEOID || feature?.id || "");
+  }
+
+  function unitFeatureName(feature) {
+    return feature?.properties?.countyName
+      || feature?.properties?.NAME
+      || feature?.properties?.name
+      || unitFeatureId(feature)
+      || "Unit";
+  }
+
+  function createSubdivisionOverlay({ g, path, projection, width, height, container, svg, zoom, strokeWidth = 0.7 }) {
+    let unitLayer = null;
+    let lastSpec = null;
+    const tooltip = container.querySelector(".prediction-map-tooltip");
+    const reduceMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function hideTooltip() {
+      if (tooltip) tooltip.hidden = true;
+    }
+
+    function showUnitTooltip(event, feature, ratingLabel) {
+      if (!tooltip) return;
+      const name = unitFeatureName(feature);
+      const rating = ratingLabel || "Tossup";
+      tooltip.innerHTML = `<strong class="prediction-tooltip-title">${name}</strong><div class="prediction-tooltip-rating"><span>${rating}</span><span class="rating-pill">${rating}</span></div><small>Click to select / paint</small>`;
+      tooltip.hidden = false;
+      const stage = container.querySelector(".prediction-map-stage") || container;
+      const rect = stage.getBoundingClientRect();
+      const x = Math.min(rect.width - 24, Math.max(12, event.clientX - rect.left + 14));
+      const y = Math.min(rect.height - 24, Math.max(12, event.clientY - rect.top + 14));
+      tooltip.style.left = `${x}px`;
+      tooltip.style.top = `${y}px`;
+    }
+
+    function clearSubdivisionOverlay() {
+      unitLayer?.remove();
+      unitLayer = null;
+      lastSpec = null;
+      hideTooltip();
+    }
+
+    function paintPath(selection, spec) {
+      const fillOf = (feature) => {
+        const fill = spec.getFill?.(feature);
+        return fill || colors.Tossup || "#cbcacd";
+      };
+      selection
+        .attr("d", (feature) => renderedFeaturePath(feature, path, projection, width, height))
+        .attr("fill", fillOf)
+        .style("fill", fillOf)
+        .attr("data-unit", unitFeatureId)
+        .attr("aria-label", (feature) => {
+          const rating = spec.getRating?.(feature) || "Tossup";
+          return `${unitFeatureName(feature)}: ${rating}`;
+        })
+        .classed("is-selected", (feature) => Boolean(spec.selectedUnit && unitFeatureId(feature) === String(spec.selectedUnit)));
+    }
+
+    function bindUnitEvents(selection, spec) {
+      selection
+        .on("click.unit", (event, feature) => {
+          event.stopPropagation();
+          spec.onUnit?.(feature);
+        })
+        .on("keydown.unit", (event, feature) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          event.stopPropagation();
+          spec.onUnit?.(feature);
+        })
+        .on("pointerenter.unit", (event, feature) => {
+          const rating = spec.getRating?.(feature) || "Tossup";
+          showUnitTooltip(event, feature, rating);
+        })
+        .on("pointermove.unit", (event, feature) => {
+          const rating = spec.getRating?.(feature) || "Tossup";
+          showUnitTooltip(event, feature, rating);
+        })
+        .on("pointerleave.unit", hideTooltip)
+        .on("blur.unit", hideTooltip);
+    }
+
+    function setSubdivisionOverlay(spec = {}) {
+      const list = Array.isArray(spec.features) ? spec.features : [];
+      if (!list.length) {
+        clearSubdivisionOverlay();
+        return;
+      }
+      lastSpec = spec;
+      if (!unitLayer) {
+        unitLayer = g.append("g")
+          .attr("class", "prediction-unit-overlay")
+          .style("opacity", 0);
+        requestAnimationFrame(() => {
+          unitLayer?.style("opacity", 1);
+        });
+      }
+      const joined = unitLayer.selectAll("path.prediction-unit-shape")
+        .data(list, unitFeatureId);
+      joined.exit().remove();
+      const entered = joined.enter()
+        .append("path")
+        .attr("class", "prediction-unit-shape")
+        .attr("fill", colors.Tossup || "#cbcacd")
+        .style("fill", colors.Tossup || "#cbcacd")
+        .attr("stroke", "currentColor")
+        .attr("stroke-width", strokeWidth)
+        .attr("vector-effect", "non-scaling-stroke")
+        .attr("tabindex", 0)
+        .attr("role", "button");
+      const merged = entered.merge(joined);
+      paintPath(merged, spec);
+      bindUnitEvents(merged, spec);
+    }
+
+    function syncSubdivisionFills() {
+      if (!unitLayer || !lastSpec) return;
+      paintPath(unitLayer.selectAll("path.prediction-unit-shape"), lastSpec);
+    }
+
+    function fitFeatures(list, opts = {}) {
+      const boxes = (list || [])
+        .map((feature) => projectedFeatureBounds(feature, projection, width, height))
+        .filter(Boolean);
+      if (!boxes.length) return false;
+      const bounds = [
+        [Math.min(...boxes.map((box) => box[0][0])), Math.min(...boxes.map((box) => box[0][1]))],
+        [Math.max(...boxes.map((box) => box[1][0])), Math.max(...boxes.map((box) => box[1][1]))]
+      ];
+      const panel = document.getElementById("focused-race-panel");
+      const leftPad = panel && !panel.hidden ? Math.min(width * 0.42, 360) : 24;
+      const dx = Math.max(1, bounds[1][0] - bounds[0][0]);
+      const dy = Math.max(1, bounds[1][1] - bounds[0][1]);
+      const maxScale = Number.isFinite(opts.maxScale) ? opts.maxScale : 12;
+      const minScale = Number.isFinite(opts.minScale) ? opts.minScale : 1.15;
+      const scale = Math.min(
+        maxScale,
+        Math.max(minScale, 0.82 / Math.max(dx / Math.max(80, width - leftPad - 40), dy / (height - 48)))
+      );
+      const x = (bounds[0][0] + bounds[1][0]) / 2;
+      const y = (bounds[0][1] + bounds[1][1]) / 2;
+      const next = window.d3.zoomIdentity
+        .translate(leftPad + (width - leftPad) / 2 - scale * x, height / 2 - scale * y)
+        .scale(scale);
+      const duration = reduceMotion || opts.instant ? 0 : 320;
+      const transition = svg.transition().duration(duration).call(zoom.transform, next);
+      if (duration) transition.on("end.unit-fill", syncSubdivisionFills);
+      else syncSubdivisionFills();
+      return true;
+    }
+
+    return {
+      setSubdivisionOverlay,
+      clearSubdivisionOverlay,
+      syncSubdivisionFills,
+      fitFeatures
+    };
+  }
+
   function renderedFeaturePath(feature, path, projection, width, height) {
     // Build rating maps from screened projected segments instead of D3's
     // generated closed path. A few Alaska/at-large geometries wrap near the
@@ -450,6 +632,41 @@
     // full-panel rectangle and hide the rest of the map.
     if (!projectedFeatureBounds(feature, projection, width, height)) return "";
     return safeFeaturePath(feature, projection, width, height) || "";
+  }
+
+  /** Draw hover/selection rings above neighbors so shared borders stay complete. */
+  function createHoverOutlineController(parent) {
+    const hoverOutline = parent.append("path")
+      .attr("class", "prediction-hover-outline")
+      .attr("fill", "none")
+      .attr("pointer-events", "none")
+      .attr("aria-hidden", "true")
+      .attr("visibility", "hidden");
+
+    function sync(node) {
+      const outlineNode = hoverOutline.node();
+      if (!node || node.tagName?.toLowerCase() !== "path" || !node.getAttribute("d")) {
+        hoverOutline
+          .attr("d", null)
+          .attr("clip-path", null)
+          .attr("visibility", "hidden");
+        return;
+      }
+      hoverOutline
+        .attr("d", node.getAttribute("d"))
+        .attr("clip-path", node.getAttribute("clip-path") || null)
+        .attr("visibility", "visible");
+      if (outlineNode?.parentNode) outlineNode.parentNode.appendChild(outlineNode);
+    }
+
+    function syncSelected(selector = "path.prediction-shape-feature.is-selected") {
+      const selected = parent.selectAll(selector).filter(function () {
+        return this.tagName?.toLowerCase() === "path" && this.getAttribute("d");
+      }).node();
+      sync(selected);
+    }
+
+    return { hoverOutline, sync, syncSelected };
   }
 
   function projectedFeatureBounds(feature, projection, width, height) {
@@ -590,7 +807,8 @@
       onPaintRace,
       onPaintEnd,
       isPaintEnabled,
-      interactive = true
+      interactive = true,
+      outlineOnly = false
     } = options || {};
     if (!container) return null;
     container.classList.add("prediction-shape-map", "prediction-yapms-house-map");
@@ -645,11 +863,14 @@
       });
     svg.call(zoom);
 
+    const hoverRing = createHoverOutlineController(districtLayer);
+
     function setSelected(id) {
-      districtLayer.selectAll("path").classed("is-selected", (entry) => {
+      districtLayer.selectAll("path.prediction-shape-feature").classed("is-selected", (entry) => {
         const race = raceByKey.get(entry.key);
         return Boolean(id && race?.raceId === id);
       });
+      hoverRing.syncSelected();
     }
 
     function tooltipHtml(race, entry) {
@@ -679,18 +900,22 @@
       tooltip.style.top = `${Math.min(rect.height - tooltipHeight - 10, Math.max(10, event.clientY - rect.top + 14))}px`;
     }
 
-    districtLayer.selectAll("path")
+    function houseFill(race) {
+      if (!race) return colors.neutral;
+      return colorForRating(normalizeRating(race?.prediction?.rating));
+    }
+
+    districtLayer.selectAll("path.prediction-shape-feature")
       .data(paths)
       .join("path")
       .attr("d", (entry) => entry.d)
       .attr("class", (entry) => {
         const race = raceByKey.get(entry.key);
-        return `prediction-shape-feature prediction-feature ${race ? "has-race" : "is-muted"}`;
+        return `prediction-shape-feature prediction-feature ${race ? "has-race" : "is-muted"}${outlineOnly ? " is-outline" : ""}`;
       })
-      .attr("fill", (entry) => {
-        const race = raceByKey.get(entry.key);
-        return race ? colorForRating(race?.prediction?.rating) : colors.neutral;
-      })
+      .attr("fill", (entry) => houseFill(raceByKey.get(entry.key)))
+      .attr("stroke", outlineOnly ? "currentColor" : null)
+      .attr("stroke-width", outlineOnly ? 0.9 : null)
       .attr("data-rating", (entry) => {
         const race = raceByKey.get(entry.key);
         return race ? normalizeRating(race?.prediction?.rating) : "";
@@ -725,6 +950,7 @@
             .attr("data-rating", normalizeRating(race?.prediction?.rating));
           return;
         }
+        hoverRing.sync(this);
         tooltip.innerHTML = tooltipHtml(race, entry);
         tooltip.hidden = false;
         positionTooltip(event);
@@ -734,6 +960,7 @@
       })
       .on("mouseleave blur", () => {
         tooltip.hidden = true;
+        hoverRing.syncSelected();
       })
       .on("click", (event, entry) => {
         if (suppressClick) {
@@ -754,6 +981,9 @@
         setSelected(race.raceId);
         onSelect(race);
       });
+
+    // Keep the ring above district fills after the data join.
+    hoverRing.hoverOutline.raise();
 
     const houseBounds = districtLayer.node()?.getBBox();
     if (houseBounds && Number.isFinite(houseBounds.x) && houseBounds.width > 0) {
@@ -790,7 +1020,7 @@
       const race = raceById.get(raceId);
       if (!race) return;
       const key = raceKey(race, "house");
-      const pathNode = districtLayer.selectAll("path").filter((entry) => entry.key === key).node();
+      const pathNode = districtLayer.selectAll("path.prediction-shape-feature").filter((entry) => entry.key === key).node();
       if (!pathNode) return;
       const bounds = pathNode.getBBox();
       const x = houseTranslateX + houseMapSource.scale * (bounds.x + bounds.width / 2);
@@ -839,10 +1069,13 @@
       onPaintRace,
       onPaintEnd,
       isPaintEnabled,
-      interactive = true
+      interactive = true,
+      outlineOnly = false,
+      blankBasemap = false
     } = options || {};
     if (!container) return null;
-    if (office === "house") return renderYapmsHouseMap(options);
+    if (office === "mayor") return renderMayorCityMap(options);
+    if (office === "house") return renderYapmsHouseMap({...options, outlineOnly});
     container.classList.add("prediction-shape-map");
     if (!window.d3) {
       container.innerHTML = `<p class="prediction-map-error">Ratings map library could not load.</p>`;
@@ -864,13 +1097,68 @@
       if (race.raceId) raceById.set(race.raceId, race);
     });
 
-    const features = (geo.features || []).map((feature) => {
+    let features = (geo.features || []).map((feature) => {
       return office === "house" ? normalizedHouseFeature(feature, statesByAbbr) : feature;
     }).filter((feature) => {
       if (office !== "house") return Boolean(featureKey(feature, office));
       const key = featureKey(feature, office);
       return key && raceByKey.has(key);
     });
+
+    // President ME/NE: YAPms-style — CD fills on the map (clipped to the state
+    // outline so house coastline cannot bleed into Iowa), AL via state underlay
+    // + floating panels. District ids are zero-padded (ME-01) to match raceKey.
+    const presidentClipStates = new Map();
+    if (office === "president") {
+      try {
+        const houseGeo = sanitizeFeatureCollectionForMap(await loadGeometry("house"));
+        const splitIds = new Set(["ME-01", "ME-02", "NE-01", "NE-02", "NE-03"]);
+        for (const feature of features) {
+          const st = stateAbbrFromFeature(feature);
+          if ((st === "ME" || st === "NE") && !feature.properties?.presidentEvUnit) {
+            presidentClipStates.set(st, feature);
+          }
+        }
+        const cds = (houseGeo.features || [])
+          .map((feature) => {
+            const id = normalizeYapmsHouseKey(feature.properties?.id || feature.properties?.ID);
+            if (!splitIds.has(id)) return null;
+            const [state, dist] = id.split("-");
+            return {
+              ...feature,
+              properties: {
+                ...feature.properties,
+                id,
+                state,
+                district: dist,
+                presidentEvUnit: id,
+                presidentCd: true
+              }
+            };
+          })
+          .filter(Boolean)
+          .filter((feature) => raceByKey.has(featureKey(feature, "president")));
+        features = features.map((feature) => {
+          const st = stateAbbrFromFeature(feature);
+          if ((st === "ME" || st === "NE") && !feature.properties?.presidentEvUnit) {
+            return {
+              ...feature,
+              properties: {
+                ...feature.properties,
+                presidentEvUnit: `${st}-AL`,
+                presidentAlBasemap: true
+              }
+            };
+          }
+          return feature;
+        });
+        const alStates = features.filter((f) => f.properties?.presidentAlBasemap);
+        const otherStates = features.filter((f) => !f.properties?.presidentAlBasemap && !f.properties?.presidentCd);
+        features = [...otherStates, ...alStates, ...cds];
+      } catch (err) {
+        console.warn("ME/NE district overlay unavailable", err);
+      }
+    }
     const drawGeo = { type: "FeatureCollection", features };
     const width = Math.max(720, container.clientWidth || 960);
     const height = Math.max(520, Math.min(900, Math.round(width * (office === "house" ? 0.62 : 0.56))));
@@ -897,6 +1185,17 @@
     let painting = false;
     let suppressClick = false;
 
+    if (office === "president" && presidentClipStates.size) {
+      const defs = svg.append("defs");
+      for (const [st, feature] of presidentClipStates) {
+        defs.append("clipPath")
+          .attr("id", `president-clip-${st}`)
+          .attr("clipPathUnits", "userSpaceOnUse")
+          .append("path")
+          .attr("d", renderedFeaturePath(feature, path, projection, width, height));
+      }
+    }
+
     const zoom = window.d3.zoom()
       .scaleExtent([1, 12])
       .on("zoom", (event) => {
@@ -906,11 +1205,18 @@
 
     svg.call(zoom);
 
+    const hoverRing = createHoverOutlineController(g);
+
     function setSelected(id) {
-      g.selectAll("path").classed("is-selected", (feature) => {
+      g.selectAll("path.prediction-shape-feature").classed("is-selected", (feature) => {
         const race = raceByKey.get(featureKey(feature, office));
         return Boolean(id && race?.raceId === id);
       });
+      g.selectAll("rect.prediction-split-unit").classed("is-selected", (unit) => {
+        const raceId = unit?.race?.raceId || unit?.race?.id;
+        return Boolean(id && raceId === id);
+      });
+      hoverRing.syncSelected();
     }
 
     function tooltipHtml(race, feature) {
@@ -941,17 +1247,55 @@
       tooltip.style.top = `${Math.min(rect.height - tooltipHeight - 10, Math.max(10, event.clientY - rect.top + 14))}px`;
     }
 
-    g.selectAll("path")
+    function shapeFill(race) {
+      if (!race) return blankBasemap || outlineOnly ? "transparent" : colors.neutral;
+      return colorForRating(normalizeRating(race?.prediction?.rating));
+    }
+
+    if (blankBasemap || outlineOnly) {
+      g.append("g").attr("class", "prediction-basemap")
+        .selectAll("path")
+        .data(statesGeo.features || [])
+        .join("path")
+        .attr("d", (feature) => renderedFeaturePath(feature, path, projection, width, height))
+        .attr("class", "prediction-basemap-state")
+        .attr("fill", "transparent")
+        .attr("stroke", "currentColor")
+        .attr("stroke-width", 0.6)
+        .attr("pointer-events", "none");
+    }
+
+    g.selectAll("path.prediction-shape-feature")
       .data(features)
       .join("path")
       .attr("d", (feature) => renderedFeaturePath(feature, path, projection, width, height))
       .attr("class", (feature) => {
         const race = raceByKey.get(featureKey(feature, office));
-        return `prediction-shape-feature prediction-feature ${race ? "has-race" : "is-muted"}`;
+        const cd = feature.properties?.presidentCd ? " is-president-cd" : "";
+        const al = feature.properties?.presidentAlBasemap ? " is-president-al" : "";
+        return `prediction-shape-feature prediction-feature ${race ? "has-race" : "is-muted"}${outlineOnly ? " is-outline" : ""}${cd}${al}`;
       })
-      .attr("fill", (feature) => {
-        const race = raceByKey.get(featureKey(feature, office));
-        return race ? colorForRating(race?.prediction?.rating) : colors.neutral;
+      .attr("fill", (feature) => shapeFill(raceByKey.get(featureKey(feature, office))))
+      .attr("stroke", (feature) => {
+        if (outlineOnly) return "currentColor";
+        if (feature.properties?.presidentCd) return "var(--state-border, #1a1a1a)";
+        return null;
+      })
+      .attr("stroke-width", (feature) => {
+        if (outlineOnly) return 1.1;
+        if (feature.properties?.presidentCd) return 0.9;
+        return null;
+      })
+      .attr("clip-path", (feature) => {
+        if (feature.properties?.presidentCd && feature.properties?.state) {
+          return `url(#president-clip-${feature.properties.state})`;
+        }
+        return null;
+      })
+      .style("pointer-events", (feature) => {
+        // AL is painted from the floating panels; map hits go to CDs.
+        if (feature.properties?.presidentAlBasemap) return "none";
+        return null;
       })
       .attr("data-rating", (feature) => {
         const race = raceByKey.get(featureKey(feature, office));
@@ -965,7 +1309,7 @@
       .each(function (feature) {
         repairBrokenRenderedPath(this, feature, projection, width, height);
       })
-      .attr("tabindex", interactive ? 0 : -1)
+      .attr("tabindex", (feature) => (interactive && !feature.properties?.presidentAlBasemap ? 0 : -1))
       .on("pointerdown", function (event, feature) {
         const race = raceByKey.get(featureKey(feature, office));
         if (event.button !== 0 || !race || !isPaintEnabled?.()) return;
@@ -989,6 +1333,7 @@
             .attr("data-rating", normalizeRating(race?.prediction?.rating));
           return;
         }
+        hoverRing.sync(this);
         tooltip.innerHTML = tooltipHtml(race, feature);
         tooltip.hidden = false;
         positionTooltip(event);
@@ -998,6 +1343,7 @@
       })
       .on("mouseleave blur", () => {
         tooltip.hidden = true;
+        hoverRing.syncSelected();
       })
       .on("click", (event, feature) => {
         if (suppressClick) {
@@ -1030,6 +1376,198 @@
     window.addEventListener("pointerup", finishPaint);
     window.addEventListener("blur", finishPaint);
 
+    function bindPaintable(selection, raceFor) {
+      selection
+        .attr("tabindex", interactive ? 0 : -1)
+        .on("pointerdown", function (event, datum) {
+          const race = raceFor(datum);
+          if (event.button !== 0 || !race || !isPaintEnabled?.()) return;
+          event.preventDefault();
+          event.stopPropagation();
+          painting = true;
+          suppressClick = true;
+          tooltip.hidden = true;
+          onPaintStart?.(race);
+          onPaintRace?.(race);
+          window.d3.select(this)
+            .attr("fill", colorForRating(race?.prediction?.rating))
+            .attr("data-rating", normalizeRating(race?.prediction?.rating));
+        })
+        .on("mouseenter focus", function (event, datum) {
+          const race = raceFor(datum);
+          if (painting && race && (event.buttons & 1)) {
+            onPaintRace?.(race);
+            window.d3.select(this)
+              .attr("fill", colorForRating(race?.prediction?.rating))
+              .attr("data-rating", normalizeRating(race?.prediction?.rating));
+            return;
+          }
+          // Split panels are free-floating rects — CSS stroke is enough.
+          hoverRing.sync(null);
+          tooltip.innerHTML = tooltipHtml(race, null);
+          tooltip.hidden = false;
+          positionTooltip(event);
+        })
+        .on("mousemove", (event) => {
+          if (!painting) positionTooltip(event);
+        })
+        .on("mouseleave blur", () => {
+          tooltip.hidden = true;
+          hoverRing.syncSelected();
+        })
+        .on("click", (event, datum) => {
+          if (suppressClick) {
+            suppressClick = false;
+            return;
+          }
+          const race = raceFor(datum);
+          if (!race || typeof onSelect !== "function") return;
+          event.stopPropagation();
+          setSelected(race.raceId);
+          onSelect(race);
+        })
+        .on("keydown", (event, datum) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          const race = raceFor(datum);
+          if (!race || typeof onSelect !== "function") return;
+          setSelected(race.raceId);
+          onSelect(race);
+        });
+    }
+
+    // YAPms-style split boxes live in the zoom layer so they pan/zoom with the map.
+    if (office === "president" && interactive) {
+      const splitGroups = [
+        { state: "NE", keys: ["NE-AL", "NE-01", "NE-02", "NE-03"] },
+        { state: "ME", keys: ["ME-AL", "ME-01", "ME-02"] }
+      ].map((group) => ({
+        ...group,
+        units: group.keys.map((key) => {
+          const race = raceByKey.get(key);
+          if (!race) return null;
+          const dist = key.split("-")[1];
+          return {
+            key,
+            race,
+            label: dist === "AL" ? `${group.state}-AL` : key,
+            ev: dist === "AL" ? 2 : 1,
+            isAl: dist === "AL"
+          };
+        }).filter(Boolean)
+      })).filter((group) => group.units.length);
+
+      if (splitGroups.length) {
+        const meFeature = presidentClipStates.get("ME") || features.find((f) => stateAbbrFromFeature(f) === "ME");
+        let meBounds = null;
+        try { meBounds = meFeature ? path.bounds(meFeature) : null; } catch { meBounds = null; }
+        // Sit in the ocean gap west of Maine — same relative pocket as YAPms, no land overlap.
+        const unitH = 16;
+        const unitGap = 1;
+        const pad = 3;
+        const cardW = 100;
+        const cardGap = 8;
+        const cardsW = cardW * splitGroups.length + cardGap * (splitGroups.length - 1);
+        const maxCardH = Math.max(...splitGroups.map((group) => {
+          const cds = group.units.filter((u) => !u.isAl).length;
+          const al = group.units.some((u) => u.isAl) ? 1 : 0;
+          const nestH = cds ? cds * unitH + (cds - 1) * unitGap + pad * 2 : 0;
+          return pad * 2 + (al ? unitH : 0) + (al && cds ? unitGap : 0) + nestH;
+        }));
+        let originX = 24;
+        let originY = 24;
+        if (meBounds && Number.isFinite(meBounds[0][0])) {
+          originX = meBounds[0][0] - cardsW - 18;
+          originY = meBounds[0][1] - 4;
+          // If the pocket is tight, nudge further into empty water above ME.
+          if (originX < 8) originX = Math.max(8, meBounds[0][0] - cardsW - 8);
+          if (originY < 8) originY = 8;
+          if (originY + maxCardH > meBounds[1][1] - 8) originY = Math.max(8, meBounds[0][1] - maxCardH - 10);
+        }
+
+        const stroke = "var(--state-border)";
+        const neutral = "var(--map-neutral)";
+        const labelFill = "#ffffff";
+        const labelStroke = "#20283899";
+        const panels = g.append("g").attr("class", "prediction-split-panels");
+        splitGroups.forEach((group, index) => {
+          const al = group.units.find((u) => u.isAl);
+          const cds = group.units.filter((u) => !u.isAl);
+          const nestH = cds.length ? cds.length * unitH + (cds.length - 1) * unitGap + pad * 2 : 0;
+          const cardH = pad * 2 + (al ? unitH : 0) + (al && cds.length ? unitGap : 0) + nestH;
+          const card = panels.append("g")
+            .attr("class", "prediction-split-card")
+            .attr("transform", `translate(${originX + index * (cardW + cardGap)},${originY})`);
+
+          // One flat plate — same fill/stroke language as state shapes (no double chrome).
+          card.append("rect")
+            .attr("class", "prediction-split-frame")
+            .attr("width", cardW)
+            .attr("height", cardH)
+            .attr("fill", neutral)
+            .attr("stroke", stroke)
+            .attr("stroke-width", 1)
+            .attr("vector-effect", "non-scaling-stroke")
+            .attr("pointer-events", "none");
+
+          let y = pad;
+          const drawUnit = (unit, x, w, h) => {
+            const rating = normalizeRating(unit.race?.prediction?.rating);
+            const fill = rating === "Tossup" ? neutral : shapeFill(unit.race);
+            const row = card.append("g").attr("transform", `translate(${x},${y})`);
+            const rect = row.append("rect")
+              .datum(unit)
+              .attr("class", `prediction-split-unit prediction-shape-feature has-race${unit.isAl ? " is-president-al-panel" : " is-president-cd-panel"}`)
+              .attr("width", w)
+              .attr("height", h)
+              .attr("fill", fill)
+              .attr("stroke", stroke)
+              .attr("stroke-width", 1)
+              .attr("vector-effect", "non-scaling-stroke")
+              .attr("data-race-id", unit.race.raceId || unit.race.id)
+              .attr("data-rating", rating)
+              .attr("aria-label", `${raceTitle(unit.race, office)}: ${rating}`);
+            const label = (text, xPos, anchor) => row.append("text")
+              .attr("class", "prediction-split-label")
+              .attr("x", xPos)
+              .attr("y", h / 2)
+              .attr("dy", "0.35em")
+              .attr("text-anchor", anchor)
+              .attr("fill", labelFill)
+              .attr("stroke", labelStroke)
+              .attr("stroke-width", 0.8)
+              .attr("paint-order", "stroke")
+              .attr("font-family", "Arial, Helvetica, sans-serif")
+              .attr("font-size", 11)
+              .attr("font-weight", 700)
+              .attr("pointer-events", "none")
+              .text(text);
+            label(unit.label, 6, "start");
+            label(String(unit.ev), w - 6, "end");
+            bindPaintable(rect, (d) => d.race);
+            y += h + unitGap;
+          };
+
+          if (al) drawUnit(al, pad, cardW - pad * 2, unitH);
+          if (cds.length) {
+            const nestY = y;
+            const nest = card.append("g").attr("transform", `translate(${pad},${nestY})`);
+            nest.append("rect")
+              .attr("class", "prediction-split-nest")
+              .attr("width", cardW - pad * 2)
+              .attr("height", nestH)
+              .attr("fill", neutral)
+              .attr("stroke", stroke)
+              .attr("stroke-width", 1)
+              .attr("vector-effect", "non-scaling-stroke")
+              .attr("pointer-events", "none");
+            y = nestY + pad;
+            cds.forEach((unit) => drawUnit(unit, pad * 2, cardW - pad * 4, unitH));
+          }
+        });
+      }
+    }
+
     if(options.stateLabels){
       const omitted=new Set(['CT','DE','DC','MD','MA','NJ','RI','VT','NH','HI']);
       const labelPoint=feature=>{
@@ -1039,10 +1577,18 @@
         let polygon={type:'Polygon',coordinates:rings};if(window.d3.geoArea(polygon)>Math.PI*2)polygon={...polygon,coordinates:rings.map(r=>[...r].reverse())};
         return projection(window.d3.geoCentroid(polygon));
       };
-      const labels=features.map(feature=>{const race=raceByKey.get(featureKey(feature,office)),point=race&&!omitted.has(race.state)?labelPoint(feature):null;return point?{race,point}:null;}).filter(row=>row&&row.point.every(Number.isFinite));
+      // One label per state — skip ME/NE CD shards so NE/ME are not stamped 2–3 times.
+      const labels=features.map(feature=>{
+        if(feature.properties?.presidentCd)return null;
+        const race=raceByKey.get(featureKey(feature,office));
+        const point=race&&!omitted.has(race.state)?labelPoint(feature):null;
+        return point?{race,point}:null;
+      }).filter(row=>row&&row.point.every(Number.isFinite));
       g.append('g').attr('aria-hidden','true').attr('pointer-events','none').selectAll('text').data(labels).join('text').attr('class','prediction-state-label').attr('data-label-race-id',row=>row.race.id||row.race.raceId).attr('x',row=>row.point[0]).attr('y',row=>row.point[1]).attr('text-anchor','middle').attr('dy','.35em').attr('font-family','Arial,sans-serif').attr('font-size',12).attr('font-weight',600).text(row=>row.race.state);
     }
 
+    // Above fills, split panels, and labels so shared borders stay complete.
+    hoverRing.hoverOutline.raise();
     setSelected(selectedRaceId);
 
     function reset() {
@@ -1053,7 +1599,7 @@
       svg.transition().duration(180).call(zoom.scaleBy, factor);
     }
 
-    function focusRace(raceId) {
+    function focusRace(raceId, opts = {}) {
       const race = raceById.get(raceId);
       if (!race) return;
       const keys = new Set([raceKey(race, office)]);
@@ -1069,14 +1615,27 @@
         bounds = projectedCollectionBounds(selectedFeatures, projection, width, height);
       }
       if (!bounds) return;
+      const panel = document.getElementById("focused-race-panel");
+      const leftPad = panel && !panel.hidden ? Math.min(width * 0.42, 360) : 24;
       const dx = Math.max(1, bounds[1][0] - bounds[0][0]);
       const dy = Math.max(1, bounds[1][1] - bounds[0][1]);
-      const scale = Math.min(10, Math.max(1.45, 0.82 / Math.max(dx / width, dy / height)));
+      const maxScale = Number.isFinite(opts.maxScale) ? opts.maxScale : 12;
+      const scale = Math.min(maxScale, Math.max(1.2, 0.78 / Math.max(dx / Math.max(80, width - leftPad - 40), dy / (height - 48))));
       const x = (bounds[0][0] + bounds[1][0]) / 2;
       const y = (bounds[0][1] + bounds[1][1]) / 2;
-      const translate = [width / 2 - scale * x, height / 2 - scale * y];
+      const translate = [leftPad + (width - leftPad) / 2 - scale * x, height / 2 - scale * y];
       svg.transition().duration(320).call(zoom.transform, window.d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
       setSelected(raceId);
+    }
+
+    const overlay = createSubdivisionOverlay({
+      g, path, projection, width, height, container, svg, zoom, strokeWidth: 0.7
+    });
+    function setFocusDim(on) {
+      g.selectAll("path.prediction-shape-feature").classed("is-dimmed-focus", function () {
+        if (!on) return false;
+        return !this.classList.contains("is-selected");
+      });
     }
 
     container.querySelector('[data-map-action="zoom-in"]')?.addEventListener("click", () => zoomBy(1.35));
@@ -1085,9 +1644,15 @@
 
     return {
       focusRace,
+      fitFeatures: overlay.fitFeatures,
       reset,
       setSelected,
+      setSubdivisionOverlay: overlay.setSubdivisionOverlay,
+      clearSubdivisionOverlay: overlay.clearSubdivisionOverlay,
+      syncSubdivisionFills: overlay.syncSubdivisionFills,
+      setFocusDim,
       destroy() {
+        overlay.clearSubdivisionOverlay();
         svg.on(".zoom", null);
         window.removeEventListener("pointerup", finishPaint);
         window.removeEventListener("blur", finishPaint);
@@ -1095,6 +1660,258 @@
       getTransform() {
         return currentTransform;
       }
+    };
+  }
+
+  async function renderMayorCityMap(options) {
+    const {
+      ratingLabel = "Your rating",
+      container,
+      data,
+      onSelect,
+      interactive = true,
+      outlineOnly = false
+    } = options || {};
+    if (!container || !window.d3) return null;
+    container.classList.add("prediction-shape-map", "prediction-mayor-map");
+    if (outlineOnly) container.classList.add("prediction-mayor-locator");
+    container.innerHTML = `<div class="prediction-map-loading">Loading mayoral map…</div>`;
+    const statesGeo = sanitizeFeatureCollectionForMap(await loadStatesGeometry());
+    const races = Array.isArray(data?.races) ? data.races : [];
+    function geometryLooksGeographic(geometry) {
+      try {
+        let point = geometry?.coordinates;
+        while (Array.isArray(point?.[0])) point = point[0];
+        const [x, y] = point || [];
+        return Number.isFinite(x) && Number.isFinite(y) && Math.abs(x) <= 180 && Math.abs(y) <= 90;
+      } catch {
+        return false;
+      }
+    }
+    const outlines = await Promise.all(races.map(async (race) => {
+      if (!race.outlineUrl) return null;
+      try {
+        const res = await fetch(race.outlineUrl);
+        if (!res.ok) return null;
+        const fc = await res.json();
+        const feature = (fc.features || []).find((f) => f?.geometry) || (fc.type === "Feature" ? fc : null);
+        if (!feature?.geometry || !geometryLooksGeographic(feature.geometry)) return null;
+        return {...race, geometry: feature.geometry};
+      } catch {
+        return null;
+      }
+    }));
+    const cityFeatures = outlines.filter(Boolean);
+    const width = Math.max(720, container.clientWidth || 960);
+    const height = Math.max(520, Math.min(900, Math.round(width * 0.56)));
+    container.innerHTML = `
+      <div class="prediction-map-stage">
+        <div class="prediction-map-controls" aria-label="Map controls">
+          <button type="button" data-map-action="zoom-in" aria-label="Zoom in">+</button>
+          <button type="button" data-map-action="zoom-out" aria-label="Zoom out">-</button>
+          <button type="button" data-map-action="reset">Reset</button>
+        </div>
+        <div class="prediction-map-tooltip" hidden></div>
+        <svg class="prediction-shape-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Mayoral races map"></svg>
+      </div>
+      <div class="prediction-map-legend maker-outline-legend" aria-label="Map legend">
+        <span><i class="maker-legend-halo"></i> City pin</span>
+        <span><i style="background:${colors.Tossup}"></i> Tossup / unset</span>
+        <span><i style="background:${colors["Safe Democratic"]}"></i> Democratic winner</span>
+        <span><i style="background:${colors["Safe Republican"]}"></i> Republican winner</span>
+        <span><i style="background:${colors["Safe Independent"]}"></i> Independent winner</span>
+      </div>
+    `;
+    const svg = window.d3.select(container).select("svg");
+    const g = svg.append("g").attr("class", "prediction-shape-layer");
+    const projection = window.d3.geoAlbersUsa().fitExtent([[24, 24], [width - 24, height - 24]], statesGeo);
+    const path = window.d3.geoPath(projection);
+    const tooltip = container.querySelector(".prediction-map-tooltip");
+    let currentTransform = window.d3.zoomIdentity;
+    // Locator map only — keep zoom modest; city detail uses the dedicated map.
+    const zoom = window.d3.zoom().scaleExtent([1, 3.2]).on("zoom", (event) => {
+      currentTransform = event.transform;
+      g.attr("transform", currentTransform);
+    });
+    svg.call(zoom);
+    g.append("g").attr("class", "prediction-basemap")
+      .selectAll("path")
+      .data(statesGeo.features || [])
+      .join("path")
+      .attr("d", path)
+      .attr("class", "prediction-basemap-state")
+      .attr("fill", "transparent")
+      .attr("stroke", "currentColor")
+      .attr("stroke-width", 0.55)
+      .attr("pointer-events", "none");
+
+    function cityFill(race) {
+      return colorForRating(normalizeRating(race?.prediction?.rating));
+    }
+    function cityDecided(race) {
+      return normalizeRating(race?.prediction?.rating) !== "Tossup";
+    }
+
+    const labelPoints = cityFeatures.map((race) => {
+      try {
+        const centroid = window.d3.geoCentroid({type: "Feature", geometry: race.geometry, properties: {}});
+        const point = projection(centroid);
+        return point ? {...race, x: point[0], y: point[1]} : null;
+      } catch {
+        return null;
+      }
+    }).filter(Boolean);
+
+    const haloLayer = g.append("g").attr("class", "prediction-mayor-halos").attr("aria-hidden", "true");
+    haloLayer.selectAll("circle.mayor-halo")
+      .data(labelPoints)
+      .join("circle")
+      .attr("class", "mayor-halo")
+      .attr("cx", (d) => d.x)
+      .attr("cy", (d) => d.y)
+      .attr("r", 24)
+      .attr("fill", (d) => cityFill(d))
+      .attr("fill-opacity", (d) => cityDecided(d) ? 0.4 : 0.22)
+      .attr("stroke", (d) => cityFill(d))
+      .attr("stroke-opacity", 0.95)
+      .attr("stroke-width", 2.4)
+      .attr("data-race-id", (d) => d.raceId || d.id)
+      .attr("pointer-events", "none");
+
+    const cityLayer = g.append("g").attr("class", "prediction-mayor-cities");
+    cityLayer.selectAll("path")
+      .data(cityFeatures)
+      .join("path")
+      .attr("d", (d) => renderedFeaturePath({type: "Feature", geometry: d.geometry, properties: {}}, path, projection, width, height))
+      .attr("class", (d) => `prediction-shape-feature has-race is-outline mayor-city${cityDecided(d) ? " is-decided" : ""}`)
+      .attr("fill", (d) => cityFill(d))
+      .attr("fill-opacity", (d) => cityDecided(d) ? 0.5 : 0.18)
+      .attr("stroke", (d) => cityDecided(d) ? cityFill(d) : "currentColor")
+      .attr("stroke-width", 1.8)
+      .attr("stroke-opacity", 1)
+      .attr("vector-effect", "non-scaling-stroke")
+      .attr("data-race-id", (d) => d.raceId || d.id)
+      .attr("data-rating", (d) => normalizeRating(d?.prediction?.rating))
+      .attr("tabindex", interactive ? 0 : -1)
+      .attr("role", "button")
+      .attr("aria-label", (d) => `${raceTitle(d, "mayor")}: ${normalizeRating(d?.prediction?.rating)}`)
+      .each(function (d) {
+        repairBrokenRenderedPath(this, {type: "Feature", geometry: d.geometry, properties: {}}, projection, width, height);
+      })
+      .on("mouseenter focus", (event, d) => showMayorTip(event, d))
+      .on("mouseleave blur", () => { tooltip.hidden = true; })
+      .on("click", (event, d) => { event.stopPropagation(); onSelect?.(d); })
+      .on("keydown", (event, d) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        onSelect?.(d);
+      });
+
+    function showMayorTip(event, d) {
+      tooltip.innerHTML = `<strong class="prediction-tooltip-title">${escapeHtml(raceTitle(d, "mayor"))}</strong>
+        <div class="prediction-tooltip-rating"><span>${escapeHtml(ratingLabel)}</span>
+        <b class="rating-pill">${escapeHtml(normalizeRating(d?.prediction?.rating))}</b></div>
+        <div class="prediction-tooltip-label">Click to paint · Right-click for detail</div>`;
+      tooltip.hidden = false;
+      const rect = container.getBoundingClientRect();
+      tooltip.style.left = `${Math.min(rect.width - 220, Math.max(10, event.clientX - rect.left + 14))}px`;
+      tooltip.style.top = `${Math.min(rect.height - 120, Math.max(10, event.clientY - rect.top + 14))}px`;
+    }
+
+    // Solid pins so cities stay visible even when outlines are tiny.
+    const pinLayer = g.append("g").attr("class", "prediction-mayor-pins").attr("aria-hidden", "true");
+    pinLayer.selectAll("circle.mayor-pin")
+      .data(labelPoints)
+      .join("circle")
+      .attr("class", "mayor-pin")
+      .attr("cx", (d) => d.x)
+      .attr("cy", (d) => d.y)
+      .attr("r", 5.5)
+      .attr("fill", (d) => cityFill(d))
+      .attr("stroke", "var(--map-bg, #0b1524)")
+      .attr("stroke-width", 2)
+      .attr("data-race-id", (d) => d.raceId || d.id)
+      .attr("pointer-events", "none");
+
+    // Larger hit targets at national scale (outlines can be tiny).
+    g.append("g").attr("class", "prediction-mayor-targets")
+      .selectAll("circle")
+      .data(labelPoints)
+      .join("circle")
+      .attr("cx", (d) => d.x)
+      .attr("cy", (d) => d.y)
+      .attr("r", 34)
+      .attr("fill", "transparent")
+      .attr("class", "mayor-marker")
+      .attr("data-race-id", (d) => d.raceId || d.id)
+      .attr("tabindex", interactive ? 0 : -1)
+      .attr("role", "button")
+      .attr("aria-label", (d) => `${raceTitle(d, "mayor")}: ${normalizeRating(d?.prediction?.rating)}`)
+      .on("mouseenter focus", (event, d) => showMayorTip(event, d))
+      .on("mouseleave blur", () => { tooltip.hidden = true; })
+      .on("click", (event, d) => { event.stopPropagation(); onSelect?.(d); })
+      .on("keydown", (event, d) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        onSelect?.(d);
+      });
+
+    g.append("g").attr("class", "prediction-mayor-labels")
+      .selectAll("text")
+      .data(labelPoints)
+      .join("text")
+      .attr("x", (d) => d.x)
+      .attr("y", (d) => d.y - 22)
+      .attr("class", "prediction-mayor-label")
+      .attr("data-label-race-id", (d) => d.raceId || d.id)
+      .attr("data-race-id", (d) => d.raceId || d.id)
+      .attr("text-anchor", "middle")
+      .attr("dy", "0.35em")
+      .attr("fill", "currentColor")
+      .attr("font-size", 13)
+      .attr("font-family", "Arial, sans-serif")
+      .attr("font-weight", 800)
+      .attr("paint-order", "stroke")
+      .attr("stroke", "var(--map-bg, #fff)")
+      .attr("stroke-width", 4)
+      .attr("cursor", "pointer")
+      .text((d) => d.city || d.name || d.state)
+      .on("mouseenter", (event, d) => showMayorTip(event, d))
+      .on("mouseleave", () => { tooltip.hidden = true; })
+      .on("click", (event, d) => { event.stopPropagation(); onSelect?.(d); });
+
+    function setSelected(id) {
+      cityLayer.selectAll("path").classed("is-selected", (d) => Boolean(id && (d.raceId || d.id) === id));
+      haloLayer.selectAll("circle").classed("is-selected", (d) => Boolean(id && (d.raceId || d.id) === id));
+      pinLayer.selectAll("circle").classed("is-selected", (d) => Boolean(id && (d.raceId || d.id) === id));
+    }
+    function setFocusDim() {
+      // National mayor map is a locator only; never dim/zoom for city detail.
+    }
+    function focusRace(raceId) {
+      // Do not deep-zoom national outlines — city detail uses the dedicated map.
+      setSelected(raceId);
+    }
+    function reset() {
+      svg.transition().duration(250).call(zoom.transform, window.d3.zoomIdentity);
+    }
+    function zoomBy(factor) {
+      svg.transition().duration(180).call(zoom.scaleBy, factor);
+    }
+    container.querySelector('[data-map-action="zoom-in"]')?.addEventListener("click", () => zoomBy(1.25));
+    container.querySelector('[data-map-action="zoom-out"]')?.addEventListener("click", () => zoomBy(0.8));
+    container.querySelector('[data-map-action="reset"]')?.addEventListener("click", reset);
+    return {
+      focusRace,
+      fitFeatures() { return false; },
+      reset,
+      setSelected,
+      setSubdivisionOverlay() {},
+      clearSubdivisionOverlay() {},
+      syncSubdivisionFills() {},
+      setFocusDim,
+      destroy() { svg.on(".zoom", null); },
+      getTransform() { return currentTransform; }
     };
   }
 
@@ -1107,6 +1924,9 @@
     colorForRating,
     displayDate,
     renderRaceShapeMap,
-    raceKey
+    renderMayorCityMap,
+    createHoverOutlineController,
+    raceKey,
+    raceTitle
   };
 })();

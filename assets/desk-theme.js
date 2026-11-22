@@ -103,6 +103,17 @@
     });
   const presets = [
     make("fea-night", "FEA Night", "dark", "#849eed"),
+    // Map-maker appearance list: YAPms sits directly under FEA Night.
+    make("yapms-map", "YAPms · FEA", "dark", "#849eed", {
+      D:"#2c54bc", R:"#b5312f", I:"#9361ba", O:"#c79938",
+    }, {
+      "board-bg":"#0b1220", "map-bg":"#0d1524", "map-neutral":"#3a4558",
+      "panel-bg":"#121a2b", "panel-raised":"#1c263a", "control-bg":"#1c263a",
+      "panel-border":"#3a4860", "text-primary":"#f4f7ff", "text-secondary":"#c5d0e0", "text-muted":"#9aabc0",
+      "tooltip-bg":"#121a2b", "race-window-bg":"#121a2b", "projection-bg":"#121a2b",
+      "state-border":"#e8edf7", "district-border":"#c3c9d4", "county-border":"#c3c9d4",
+      tossup:"#a8a8a8", selection:"#ffe600", focus:"#9ec1ff",
+    }),
     make("fea-light", "FEA Light", "light", "#849eed"),
     make("system", "System", "system", "#849eed"),
     make("high-contrast", "High Contrast", "dark", "#b5c8ff", defaults, {
@@ -145,16 +156,6 @@
       "poll-bg": "#20334a", "tray-bg": "#20334a",
       "pin-bg": "#20334a", "race-window-bg": "#20334a",
       "chart-axis": "#cbd6e3", "chart-grid": "#50657d",
-    }),
-    make("yapms-map", "YAPms", "dark", "#7899e9", {
-      D:"#2c54bc", R:"#b5312f", I:"#9361ba", O:"#c79938",
-    }, {
-      "board-bg":"#0f1526", "map-bg":"#0f1526", "map-neutral":"#3e4451",
-      "panel-bg":"#151c2e", "panel-raised":"#252d41", "control-bg":"#252d41",
-      "panel-border":"#41495d", "text-primary":"#f6f7fb", "text-secondary":"#d0d5e0", "text-muted":"#b5bfce",
-      "tooltip-bg":"#151c2e", "race-window-bg":"#151c2e", "projection-bg":"#151c2e",
-      "state-border":"#eeeeef", "district-border":"#c3c9d4", "county-border":"#c3c9d4",
-      tossup:"#a8a8a8", selection:"#ffffff", focus:"#a9c2ff",
     }),
     make("nyt-results", "NYT Results", "light", "#333333", {
       D: "#2b6b9c", R: "#c5232b", I: "#8872a8", O: "#a5792a",
@@ -318,6 +319,11 @@
         x.current={...x.current,advanced};
       }
       if(x.current?.id==='yapms-map'&&!x.current.advanced?.tossup)x.current={...x.current,advanced:{...x.current.advanced,tossup:'#a8a8a8'}};
+      // YAPms is map-maker-only. If it leaked into the sitewide desk theme, restore FEA Night.
+      if(x.current?.id==='yapms-map'||x.current?.presentation==='yapms'){
+        x.current=presets[0];
+        try{storage.setItem(key,JSON.stringify({schemaVersion:1,current:x.current,saved:x.saved||[]}));}catch{}
+      }
       return {
         schemaVersion: 1,
         current: validate(x.current),

@@ -1,0 +1,38 @@
+import fs from 'node:fs';
+
+fs.writeFileSync('features/map-maker.html', `<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map Maker | Federal Elections Analysis</title>
+<meta name="description" content="Build your own election scenario maps for 2027 and 2028. 2026 lives in the archive.">
+<link rel="icon" href="/assets/img/FEA_Icon.webp" type="image/webp">
+<link rel="stylesheet" href="/assets/wiki.css?v=20261101-maker4">
+<style>
+  body.maker-hub{margin:0;min-height:100dvh;font:16px/1.45 Arial,Helvetica,sans-serif;background:#03050b;color:#f7f9ff;}
+  .maker-hub main{max-width:920px;margin:0 auto;padding:48px 20px 64px;}
+  .maker-hub nav{margin-bottom:24px;font-size:14px;}
+  .maker-hub nav a{color:#9ec1ff;}
+  .maker-hub h1{font-size:clamp(28px,4vw,42px);margin:0 0 10px;letter-spacing:-.02em;}
+  .maker-hub > main > p{color:#a9b6c9;max-width:54ch;margin:0;}
+  .maker-hub-grid{display:grid;gap:12px;margin-top:28px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
+  .maker-hub-grid a{display:grid;gap:6px;padding:16px;border:1px solid #314560;border-radius:12px;background:#122033;color:inherit;text-decoration:none;}
+  .maker-hub-grid a:hover{border-color:#6f8db3;background:#182a42;}
+  .maker-hub-grid strong{font-size:1.15rem;}
+  .maker-hub-grid span{font-size:13px;color:#a9b6c9;}
+  .maker-hub-note{margin-top:22px;font-size:13px;color:#a9b6c9;}
+  .maker-hub-note a{color:#9ec1ff;}
+</style>
+</head><body class="maker-hub">
+<main>
+  <nav><a href="/">Home</a> · <a href="/archive">Archive</a></nav>
+  <h1>Map Maker</h1>
+  <p>Pick a cycle. Each map is your scenario — not FEA’s forecast or live results.</p>
+  <div class="maker-hub-grid">
+    <a href="/features/map-maker/2028"><strong>2028</strong><span>President, House, Senate, and governors.</span></a>
+    <a href="/features/map-maker/2027"><strong>2027</strong><span>Governors plus mayoral races with city ward maps.</span></a>
+  </div>
+  <p class="maker-hub-note">Looking for 2026? It’s in the <a href="/archive">Archive</a>.</p>
+</main>
+</body></html>
+`);
+console.log('wrote features/map-maker.html');

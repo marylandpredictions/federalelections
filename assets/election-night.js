@@ -1312,7 +1312,9 @@ class ElectionNightPage {
   }
 
   isComparisonActive() {
-    return this.comparisonMode && this.comparisonMode !== "live";
+    const active = this.comparisonMode && this.comparisonMode !== "live";
+    document.querySelector(".results-board")?.classList.toggle("is-comparison-active", !!active);
+    return active;
   }
 
   async loadComparisonDataset(kind, source = this.comparisonSource()) {
@@ -1377,28 +1379,52 @@ class ElectionNightPage {
     if (!this.isComparisonActive()) {
       return raceColor(race);
     }
-    const source = this.comparisonSource();
-    if (!source) return "#5f6b80";
-    const shift = this.comparisonRaceShift(race);
-    if (Number.isFinite(shift)) return marginColor(shift);
-    // Called / uncontested seats often lack a two-party live margin for swing.
-    if (typeof isActuallyCalled === "function" && isActuallyCalled(race)) return raceColor(race);
-    return "#3c4658";
+    // NYT hedgehog map: neutral plate; arrows carry the shift.
+    return FEADeskTheme?.resolved?.tokens?.["map-neutral"] || "#c8ced8";
   }
 
+  drawRaceSwingArrows(features, raceForFeature, projection, { maxLen = 22 } = {}) {
+    this.viewport?.selectAll(".fea-swing-layer, .atlas-swing-layer").remove();
+    if (!this.isComparisonActive?.() || !this.viewport || !features?.length || !projection) return;
+    const arrows = [];
+    for (const feature of features) {
+      const race = raceForFeature?.(feature);
+      if (!race) continue;
+      const shift = this.comparisonRaceShift(race);
+      if (!Number.isFinite(shift) || Math.abs(shift) < 0.25) continue;
+      try {
+        const point = projection(d3.geoCentroid(feature));
+        if (!point || !Number.isFinite(point[0])) continue;
+        arrows.push({ x: point[0], y: point[1], shift });
+      } catch {}
+    }
+    FEAResultsUI.drawSwingArrows?.(this.viewport, arrows, { maxLen });
+  }
+
+  drawComparisonSwingArrows(features, lookup, projection) {
+    this.viewport?.selectAll(".fea-swing-layer, .atlas-swing-layer").remove();
+    if (!this.isComparisonActive?.() || !this.viewport || !features?.length || !projection) return;
+    const arrows = [];
+    for (const feature of features) {
+      const county = countyForFeature(feature, lookup);
+      const liveMargin = countyLiveDemMargin(county);
+      const baselineMargin = FEAResultsUI.margin(this.baselineCountyRow(feature));
+      const shift = Number.isFinite(liveMargin) && Number.isFinite(baselineMargin) ? liveMargin - baselineMargin : NaN;
+      if (!Number.isFinite(shift) || Math.abs(shift) < 0.25) continue;
+      try {
+        const point = projection(d3.geoCentroid(feature));
+        if (!point || !Number.isFinite(point[0])) continue;
+        arrows.push({ x: point[0], y: point[1], shift });
+      } catch {}
+    }
+    FEAResultsUI.drawSwingArrows?.(this.viewport, arrows, { maxLen: 24 });
+  }
   comparisonColorForCounty(feature, race, lookup) {
     if (!this.isComparisonActive()) {
       return countyLiveColor(countyForFeature(feature, lookup));
     }
-    const source = this.comparisonSource();
-    if (!source || source.id === "live") return "#334054";
-    if (source.countyCompatible === false) return "#202b3f";
-    const row = this.baselineCountyRow(feature);
-    const county = countyForFeature(feature, lookup);
-    const liveMargin = countyLiveDemMargin(county);
-    const baselineMargin = FEAResultsUI.margin(row);
-    const shift = Number.isFinite(liveMargin) && Number.isFinite(baselineMargin) ? liveMargin - baselineMargin : NaN;
-    return Number.isFinite(shift) ? marginColor(shift) : "#202b3f";
+    // NYT hedgehog map: neutral county plate; arrows carry the shift.
+    return FEADeskTheme?.resolved?.tokens?.["map-neutral"] || "#c8ced8";
   }
 
   async loadResultStateFeatures() {
@@ -1678,7 +1704,8 @@ class ElectionNightPage {
         const race = raceByState.get(state);
         return race ? this.comparisonColorForRace(race) : "#334054";
       })
-      .attr("stroke", "#e2e8ff")
+      .attr("fill-opacity", 1)
+      .attr("stroke", this.isComparisonActive() ? "rgba(60,70,90,.28)" : "#e2e8ff")
       .attr("stroke-width", 0.55)
       .attr("tabindex", (feature) => raceByState.has(FIPS_TO_STATE[featureStateFipsForElectionNight(feature)]) ? 0 : -1)
       .on("click keydown", (event, feature) => {
@@ -1693,6 +1720,13 @@ class ElectionNightPage {
         this.showTooltip(event, tooltipMarkup(race, STATE_NAMES[state] || state, this.comparisonTooltipNote(race)));
       })
       .on("mouseleave blur", () => this.hideTooltip());
+
+    if (this.isComparisonActive()) {
+      this.drawRaceSwingArrows(this.stateFeatures, (feature) => {
+        const state = FIPS_TO_STATE[featureStateFipsForElectionNight(feature)];
+        return raceByState.get(state);
+      }, projection, { maxLen: 28 });
+    }
 
     this.addZoomControls();
   }
@@ -1727,7 +1761,8 @@ class ElectionNightPage {
       .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("fill-rule", "evenodd")
       .attr("fill", (feature) => this.comparisonColorForRace(raceByDistrict.get(feature.properties?.id)))
-      .attr("stroke", "rgba(226, 232, 255, .22)")
+      .attr("fill-opacity", 1)
+      .attr("stroke", this.isComparisonActive() ? "rgba(60,70,90,.22)" : "rgba(226, 232, 255, .22)")
       .attr("stroke-width", 0.16)
       .attr("vector-effect", "non-scaling-stroke")
       .attr("tabindex", (feature) => {
@@ -1744,6 +1779,10 @@ class ElectionNightPage {
         this.showTooltip(event, tooltipMarkup(race, title, this.comparisonTooltipNote(race)));
       })
       .on("mouseleave blur", () => this.hideTooltip());
+
+    if (this.isComparisonActive()) {
+      this.drawRaceSwingArrows(this.geo.features || [], (feature) => raceByDistrict.get(feature.properties?.id), projection, { maxLen: 18 });
+    }
 
     this.addZoomControls();
   }
@@ -2009,7 +2048,10 @@ class ElectionNightPage {
       .attr("d", (feature) => projectedFeaturePath(feature, projection))
       .attr("fill-rule", "evenodd")
       .attr("fill", (feature) => this.comparisonColorForCounty(feature, race, lookup))
-      .attr("stroke", options.districtMode ? "rgba(226, 232, 255, .42)" : "rgba(226, 232, 255, .58)")
+      .attr("fill-opacity", 1)
+      .attr("stroke", this.isComparisonActive()
+        ? "rgba(60,70,90,.28)"
+        : (options.districtMode ? "rgba(226, 232, 255, .42)" : "rgba(226, 232, 255, .58)"))
       .attr("stroke-width", options.districtMode ? 0.22 : 0.36)
       .on("mousemove", (event, feature) => {
         this.showTooltip(event, countyTooltipMarkupClean(
@@ -2021,6 +2063,8 @@ class ElectionNightPage {
         ));
       })
       .on("mouseleave blur", () => this.hideTooltip());
+
+    if (this.isComparisonActive()) this.drawComparisonSwingArrows(features, lookup, projection);
 
     this.addZoomControls();
     if (!options.preserveMapTransform) {

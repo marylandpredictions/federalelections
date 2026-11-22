@@ -198,17 +198,23 @@
   pointer-events: all;
 }
 
-.atlas-page .atlas-swing-arrow {
-  fill: none;
-  stroke-width: 2.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+/* NYT hedgehog arrows: filled left/right polygons over a gray plate. */
+.atlas-page .atlas-swing-arrow,
+.atlas-page .fea-swing-arrow {
+  stroke: none;
   pointer-events: none;
+  opacity: .92;
 }
+.atlas-page .atlas-swing-arrow[data-party="D"],
+.atlas-page .fea-swing-arrow.is-dem { fill: #3d7dd6; }
+.atlas-page .atlas-swing-arrow[data-party="R"],
+.atlas-page .fea-swing-arrow.is-rep { fill: #d94a55; }
 
-.atlas-page .atlas-swing-arrow[data-party="D"] { stroke: #3a7bd5; }
-.atlas-page .atlas-swing-arrow[data-party="R"] { stroke: #c94352; }
-.atlas-page .atlas-swing-arrow[data-party="split"] { stroke: #8b93a5; }
+.atlas-page[data-atlas-active-lens="swing"] .house-district-shape,
+.atlas-page[data-atlas-active-lens="county-swing"] .county-result-shape {
+  fill: var(--map-neutral, #d8dde6);
+  stroke: rgba(60, 70, 90, .32);
+}
 
 /* Keep detail-map context continuous when overlays (bubbles) are on. */
 .atlas-page[data-atlas-active-lens="bubbles"] .county-result-shape,
@@ -232,6 +238,11 @@
 
 .atlas-page .county-result-shape {
   cursor: pointer;
+}
+.atlas-page :is(.county-result-shape,.election-map-shape,.house-district-shape,.state-result-shape,.prediction-shape-feature,.atlas-bubble):is(:focus,:focus-visible),
+.atlas-page svg :is(path,circle,rect)[tabindex]:is(:focus,:focus-visible) {
+  outline: none !important;
+  outline-offset: 0 !important;
 }
 
 @media (max-width: 980px) {

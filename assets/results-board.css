@@ -266,6 +266,20 @@ body.results-board {
   stroke-width: 2;
   outline: none;
 }
+.results-board .fea-swing-arrow,
+.results-board .atlas-swing-arrow {
+  stroke: none;
+  pointer-events: none;
+  opacity: .92;
+}
+.results-board .fea-swing-arrow.is-dem { fill: #3d7dd6; }
+.results-board .fea-swing-arrow.is-rep { fill: #d94a55; }
+.results-board.is-comparison-active .county-result-shape,
+.results-board.is-comparison-active .house-district-shape,
+.results-board.is-comparison-active .state-result-shape {
+  fill: var(--map-neutral, #c8ced8);
+  stroke: rgba(60, 70, 90, .28);
+}
 .results-board .election-focus-panel {
   position: absolute;
   z-index: 7;
@@ -573,9 +587,15 @@ body.results-board {
 .results-board select:focus-visible,
 .results-board input:focus-visible,
 .results-board a:focus-visible,
-.results-board [tabindex]:focus-visible {
+.results-board [tabindex]:focus-visible:not(path):not(circle):not(rect):not(polygon):not(ellipse):not(g):not(line):not(polyline) {
   outline: 3px solid #849eed;
   outline-offset: 3px;
+}
+/* SVG map shapes use path-following rings — never a bounding-box focus rectangle. */
+.results-board :is(path,circle,rect,polygon,ellipse,g)[tabindex]:is(:focus,:focus-visible),
+.results-board :is(.prediction-shape-feature,.prediction-split-unit,.prediction-unit-shape,.county-result-shape,.election-map-shape,.house-district-shape,.state-result-shape,.mayor-city,.mayor-pin,.mayor-halo,.map-context-shape):is(:focus,:focus-visible) {
+  outline: none !important;
+  outline-offset: 0 !important;
 }
 .results-board [hidden] {
   display: none !important;

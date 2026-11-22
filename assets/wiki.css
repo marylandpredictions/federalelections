@@ -9635,7 +9635,8 @@ body {
 .countdown-digits{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center;font-variant-numeric:tabular-nums}
 .countdown-digits strong{display:block;font-size:clamp(2.6rem,5vw,5rem);line-height:1.2;color:white}.countdown-digits span{font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;color:#beccf7}
 [hidden]{display:none!important}
-:focus-visible{outline:3px solid #849eed;outline-offset:4px}
+:focus-visible:not(path):not(circle):not(rect):not(polygon):not(ellipse):not(g):not(line):not(polyline){outline:3px solid #849eed;outline-offset:4px}
+:is(path,circle,rect,polygon,ellipse,g)[tabindex]:is(:focus,:focus-visible){outline:none!important;outline-offset:0!important}
 #results-provider-status{font-size:.85rem;color:var(--muted)}
 @media(max-width:650px){.home-hero-shell{grid-template-columns:1fr}.election-countdown{margin:0 0 20px}.countdown-digits{gap:10px}}
 

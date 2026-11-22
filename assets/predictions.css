@@ -636,6 +636,12 @@ body.prediction-page .prediction-shape-svg {
   stroke-width: 2.8;
   filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.72)) brightness(1.12) saturate(1.08);
 }
+.prediction-shape-feature:is(:focus,:focus-visible),
+.prediction-split-unit:is(:focus,:focus-visible),
+.prediction-unit-shape:is(:focus,:focus-visible) {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
 
 .prediction-rating-legend {
   display: grid;
