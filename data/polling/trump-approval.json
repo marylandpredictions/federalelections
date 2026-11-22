@@ -1,8 +1,8 @@
 {
   "schemaVersion": 4,
   "subject": "Donald Trump",
-  "asOf": "2026-11-11",
-  "builtAt": "2026-11-13T03:35:14.744Z",
+  "asOf": "2026-11-19",
+  "builtAt": "2026-11-21T18:14:58.515Z",
   "source": "VoteHub + Pollfinity public polls",
   "sourceUrl": "https://votehub.com/polls/api/",
   "sources": [
@@ -10,41 +10,41 @@
       "source": "votehub",
       "sourceUrl": "https://votehub.com/polls/api/",
       "license": "CC BY 4.0",
-      "fetched": 1026,
-      "usable": 1026,
+      "fetched": 1041,
+      "usable": 1041,
       "lastUpdated": null
     },
     {
       "source": "pollfinity",
       "sourceUrl": "https://pollfinity.com/averages.json",
       "license": null,
-      "fetched": 4,
-      "usable": 4,
-      "lastUpdated": "2026-11-11"
+      "fetched": 18,
+      "usable": 18,
+      "lastUpdated": "2026-11-19"
     }
   ],
   "license": "VoteHub rows CC BY 4.0; Pollfinity rows per Pollfinity terms",
   "method": "FEA weighted Trump job-approval average from multiple public feeds (VoteHub individual polls, CC BY 4.0, plus Pollfinity’s published poll list). Identical surveys are collapsed across sources by pollster/date/result before weighting. Soft exponential recency decay with no short hard cutoff. When recent polling is thick the half-life shortens (about 10–21 days); when it is thin the half-life lengthens (up to about 45 days) and the look-back window widens. Within each pollster, polls are recency-weighted; pollsters are then weighted by the recency of their latest poll, with a mild quality prior. LV beats RV beats adults when the same release reports multiple populations. Internals excluded. ENOP is the sum of raw pollster weights before normalization. This is FEA’s own aggregate, not VoteHub’s or Pollfinity’s published average.",
-  "windowDays": 180,
-  "halfLife": 32,
+  "windowDays": 120,
+  "halfLife": 10,
   "coverage": {
     "firstPoll": "2025-01-20",
-    "latestPoll": "2026-11-11",
-    "usablePolls": 839,
-    "collapsedDuplicates": 19,
+    "latestPoll": "2026-11-19",
+    "usablePolls": 853,
+    "collapsedDuplicates": 33,
     "sourceErrors": []
   },
   "current": {
-    "approve": 37.2,
-    "disapprove": 59.6,
-    "net": -22.4,
-    "disagreement": 7.14,
-    "pollCount": 82,
-    "effectivePollsters": 39,
-    "enop": 5.51,
-    "halfLife": 32,
-    "maxAgeDays": 180,
-    "latestPoll": "2026-11-11"
+    "approve": 36.5,
+    "disapprove": 59.9,
+    "net": -23.4,
+    "disagreement": 6.29,
+    "pollCount": 25,
+    "effectivePollsters": 16,
+    "enop": 9.49,
+    "halfLife": 10,
+    "maxAgeDays": 120,
+    "latestPoll": "2026-11-19"
   },
   "series": [
     {
@@ -7111,162 +7111,485 @@
     },
     {
       "date": "2026-10-30",
-      "approve": 37.95,
-      "disapprove": 58.51,
-      "net": -20.56,
-      "pollCount": 91,
-      "effectivePollsters": 40,
-      "enop": 4.52,
-      "halfLife": 32,
+      "approve": 38.72,
+      "disapprove": 58.4,
+      "net": -19.68,
+      "pollCount": 90,
+      "effectivePollsters": 39,
+      "enop": 6.24,
+      "halfLife": 45,
       "carriedForward": false
     },
     {
       "date": "2026-10-31",
-      "approve": 37.95,
-      "disapprove": 58.51,
-      "net": -20.56,
-      "pollCount": 90,
-      "effectivePollsters": 40,
-      "enop": 4.43,
-      "halfLife": 32,
+      "approve": 38.72,
+      "disapprove": 58.41,
+      "net": -19.68,
+      "pollCount": 89,
+      "effectivePollsters": 39,
+      "enop": 6.14,
+      "halfLife": 45,
       "carriedForward": false
     },
     {
       "date": "2026-11-01",
-      "approve": 37.96,
-      "disapprove": 58.49,
-      "net": -20.53,
-      "pollCount": 88,
-      "effectivePollsters": 39,
-      "enop": 4.31,
-      "halfLife": 32,
+      "approve": 38.75,
+      "disapprove": 58.36,
+      "net": -19.61,
+      "pollCount": 87,
+      "effectivePollsters": 38,
+      "enop": 5.99,
+      "halfLife": 45,
       "carriedForward": false
     },
     {
       "date": "2026-11-02",
-      "approve": 37.95,
-      "disapprove": 58.49,
-      "net": -20.54,
-      "pollCount": 86,
-      "effectivePollsters": 39,
-      "enop": 4.22,
-      "halfLife": 32,
+      "approve": 38.74,
+      "disapprove": 58.37,
+      "net": -19.63,
+      "pollCount": 85,
+      "effectivePollsters": 38,
+      "enop": 5.9,
+      "halfLife": 45,
       "carriedForward": false
     },
     {
       "date": "2026-11-03",
-      "approve": 37.96,
-      "disapprove": 58.49,
-      "net": -20.53,
+      "approve": 38.45,
+      "disapprove": 57.35,
+      "net": -18.9,
       "pollCount": 85,
-      "effectivePollsters": 39,
-      "enop": 4.13,
+      "effectivePollsters": 38,
+      "enop": 4.11,
       "halfLife": 32,
       "carriedForward": false
     },
     {
       "date": "2026-11-04",
-      "approve": 37.95,
-      "disapprove": 58.48,
-      "net": -20.53,
+      "approve": 38.45,
+      "disapprove": 57.33,
+      "net": -18.89,
       "pollCount": 84,
-      "effectivePollsters": 38,
-      "enop": 4.02,
+      "effectivePollsters": 37,
+      "enop": 4,
       "halfLife": 32,
       "carriedForward": false
     },
     {
       "date": "2026-11-05",
-      "approve": 37.95,
-      "disapprove": 58.48,
-      "net": -20.53,
+      "approve": 38.45,
+      "disapprove": 57.33,
+      "net": -18.89,
       "pollCount": 84,
-      "effectivePollsters": 38,
-      "enop": 3.93,
+      "effectivePollsters": 37,
+      "enop": 3.92,
       "halfLife": 32,
       "carriedForward": false
     },
     {
       "date": "2026-11-06",
-      "approve": 37.52,
-      "disapprove": 59.25,
-      "net": -21.73,
+      "approve": 38.54,
+      "disapprove": 57.95,
+      "net": -19.41,
       "pollCount": 85,
-      "effectivePollsters": 39,
-      "enop": 4.93,
+      "effectivePollsters": 38,
+      "enop": 4.61,
       "halfLife": 32,
       "carriedForward": false
     },
     {
       "date": "2026-11-07",
-      "approve": 37.49,
-      "disapprove": 59.28,
-      "net": -21.78,
+      "approve": 38.03,
+      "disapprove": 58.74,
+      "net": -20.71,
       "pollCount": 84,
       "effectivePollsters": 38,
-      "enop": 4.83,
+      "enop": 5.58,
       "halfLife": 32,
       "carriedForward": false
     },
     {
       "date": "2026-11-08",
-      "approve": 37.49,
-      "disapprove": 59.28,
-      "net": -21.78,
-      "pollCount": 82,
-      "effectivePollsters": 38,
-      "enop": 4.72,
-      "halfLife": 32,
+      "approve": 38.01,
+      "disapprove": 59.44,
+      "net": -21.43,
+      "pollCount": 12,
+      "effectivePollsters": 11,
+      "enop": 4.58,
+      "halfLife": 10,
       "carriedForward": false
     },
     {
       "date": "2026-11-09",
-      "approve": 37.49,
-      "disapprove": 59.28,
-      "net": -21.78,
-      "pollCount": 82,
-      "effectivePollsters": 38,
-      "enop": 4.62,
-      "halfLife": 32,
+      "approve": 36.88,
+      "disapprove": 60.49,
+      "net": -23.61,
+      "pollCount": 13,
+      "effectivePollsters": 11,
+      "enop": 5.27,
+      "halfLife": 10,
       "carriedForward": false
     },
     {
       "date": "2026-11-10",
-      "approve": 37.49,
-      "disapprove": 59.28,
-      "net": -21.78,
-      "pollCount": 82,
-      "effectivePollsters": 38,
-      "enop": 4.52,
-      "halfLife": 32,
+      "approve": 36.88,
+      "disapprove": 60.49,
+      "net": -23.61,
+      "pollCount": 13,
+      "effectivePollsters": 11,
+      "enop": 4.92,
+      "halfLife": 10,
       "carriedForward": false
     },
     {
       "date": "2026-11-11",
-      "approve": 37.2,
-      "disapprove": 59.61,
-      "net": -22.41,
-      "pollCount": 82,
-      "effectivePollsters": 39,
-      "enop": 5.51,
-      "halfLife": 32,
+      "approve": 35.95,
+      "disapprove": 60.97,
+      "net": -25.02,
+      "pollCount": 14,
+      "effectivePollsters": 11,
+      "enop": 5.66,
+      "halfLife": 10,
+      "carriedForward": false
+    },
+    {
+      "date": "2026-11-12",
+      "approve": 36.44,
+      "disapprove": 60.81,
+      "net": -24.38,
+      "pollCount": 15,
+      "effectivePollsters": 12,
+      "enop": 6.29,
+      "halfLife": 10,
+      "carriedForward": false
+    },
+    {
+      "date": "2026-11-13",
+      "approve": 35.79,
+      "disapprove": 61.57,
+      "net": -25.78,
+      "pollCount": 16,
+      "effectivePollsters": 13,
+      "enop": 6.86,
+      "halfLife": 10,
+      "carriedForward": false
+    },
+    {
+      "date": "2026-11-14",
+      "approve": 35.8,
+      "disapprove": 61.5,
+      "net": -25.69,
+      "pollCount": 17,
+      "effectivePollsters": 13,
+      "enop": 6.82,
+      "halfLife": 10,
+      "carriedForward": false
+    },
+    {
+      "date": "2026-11-15",
+      "approve": 36.03,
+      "disapprove": 61.34,
+      "net": -25.3,
+      "pollCount": 18,
+      "effectivePollsters": 13,
+      "enop": 6.74,
+      "halfLife": 10,
+      "carriedForward": false
+    },
+    {
+      "date": "2026-11-16",
+      "approve": 36.35,
+      "disapprove": 60.56,
+      "net": -24.22,
+      "pollCount": 23,
+      "effectivePollsters": 15,
+      "enop": 10,
+      "halfLife": 10,
+      "carriedForward": false
+    },
+    {
+      "date": "2026-11-17",
+      "approve": 36.35,
+      "disapprove": 60.56,
+      "net": -24.22,
+      "pollCount": 23,
+      "effectivePollsters": 15,
+      "enop": 9.33,
+      "halfLife": 10,
+      "carriedForward": false
+    },
+    {
+      "date": "2026-11-18",
+      "approve": 36.35,
+      "disapprove": 60.56,
+      "net": -24.22,
+      "pollCount": 23,
+      "effectivePollsters": 15,
+      "enop": 8.7,
+      "halfLife": 10,
+      "carriedForward": false
+    },
+    {
+      "date": "2026-11-19",
+      "approve": 36.46,
+      "disapprove": 59.9,
+      "net": -23.44,
+      "pollCount": 25,
+      "effectivePollsters": 16,
+      "enop": 9.49,
+      "halfLife": 10,
       "carriedForward": false
     }
   ],
   "recentPolls": [
     {
-      "id": "pollfinity:yougovtheeconomist-2026-11-11-36-61",
-      "pollster": "YouGov / The Economist",
-      "endDate": "2026-11-11",
-      "startDate": "2026-11-11",
+      "id": "pollfinity:emersoncollegepolling-2026-11-19-37-54",
+      "pollster": "Emerson College Polling",
+      "endDate": "2026-11-19",
+      "startDate": "2026-11-19",
       "population": "a",
-      "sampleSize": 1463,
+      "sampleSize": null,
+      "approve": 37,
+      "disapprove": 54,
+      "net": -17,
+      "weight": 1.05,
+      "url": null,
+      "sources": [
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "pollfinity:economistyougov-2026-11-19-37-62",
+      "pollster": "Economist/YouGov",
+      "endDate": "2026-11-19",
+      "startDate": "2026-11-19",
+      "population": "a",
+      "sampleSize": null,
+      "approve": 37,
+      "disapprove": 62,
+      "net": -25,
+      "weight": 0.5041,
+      "url": null,
+      "sources": [
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "votehub:appdoneme80339688",
+      "pollster": "Emerson College",
+      "endDate": "2026-11-16",
+      "startDate": "2026-11-14",
+      "population": "rv",
+      "sampleSize": 1000,
+      "approve": 37.3,
+      "disapprove": 54.1,
+      "net": -16.8,
+      "weight": 0.8529,
+      "url": "https://docs.google.com/spreadsheets/d/1ISaRqoYU9Tgw27qbPEZj5z7t0xrqButP/edit?gid=853284861#gid=853284861",
+      "sources": [
+        "votehub",
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "votehub:appdonech181be440",
+      "pollster": "Echelon Insights",
+      "endDate": "2026-11-16",
+      "startDate": "2026-11-12",
+      "population": "lv",
+      "sampleSize": 1027,
+      "approve": 36,
+      "disapprove": 63,
+      "net": -27,
+      "weight": 0.8285,
+      "url": "https://echeloninsights.com/hubfs/_Media%20for%20Insights%20Blog/November%202026%20-%20Voter%20Omnibus%20Topline%20-%20External.pdf",
+      "sources": [
+        "votehub",
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "votehub:appdonrmgbb354cbc",
+      "pollster": "RMG Research",
+      "endDate": "2026-11-16",
+      "startDate": "2026-11-09",
+      "population": "rv",
+      "sampleSize": 2000,
+      "approve": 39,
+      "disapprove": 58,
+      "net": -19,
+      "weight": 0.7662,
+      "url": "https://napolitannews.org/jobapproval#11-16-2026",
+      "sources": [
+        "votehub",
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "votehub:appdonyou6913201b",
+      "pollster": "YouGov",
+      "endDate": "2026-11-16",
+      "startDate": "2026-11-13",
+      "population": "a",
+      "sampleSize": 1628,
+      "approve": 35,
+      "disapprove": 61,
+      "net": -26,
+      "weight": 0.5094,
+      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econtoplines_cFBSkiP.pdf",
+      "sources": [
+        "votehub",
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "votehub:appdonips45a4215e",
+      "pollster": "Ipsos",
+      "endDate": "2026-11-16",
+      "startDate": "2026-11-13",
+      "population": "a",
+      "sampleSize": 1521,
+      "approve": 32,
+      "disapprove": 66,
+      "net": -34,
+      "weight": 0.491,
+      "url": "https://www.ipsos.com/en-us/democrats-optimistic-republicans-discouraged-after-2026-midterms",
+      "sources": [
+        "votehub",
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "votehub:appdonmor5d540bf2",
+      "pollster": "Morning Consult",
+      "endDate": "2026-11-15",
+      "startDate": "2026-11-13",
+      "population": "rv",
+      "sampleSize": 2203,
+      "approve": 40,
+      "disapprove": 58,
+      "net": -18,
+      "weight": 0.4551,
+      "url": "https://eyokley.com/read/outlook-2026-11-16",
+      "sources": [
+        "votehub",
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "pollfinity:economistyougov-2026-11-14-36-61",
+      "pollster": "Economist/YouGov",
+      "endDate": "2026-11-14",
+      "startDate": "2026-11-14",
+      "population": "a",
+      "sampleSize": null,
       "approve": 36,
       "disapprove": 61,
       "net": -25,
-      "weight": 1.08,
+      "weight": 0.3565,
       "url": null,
       "sources": [
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "votehub:appdonverd846e0e2",
+      "pollster": "Verasight",
+      "endDate": "2026-11-13",
+      "startDate": "2026-11-11",
+      "population": "rv",
+      "sampleSize": 1403,
+      "approve": 32,
+      "disapprove": 66,
+      "net": -34,
+      "weight": 0.6598,
+      "url": "https://www.gelliottmorris.com/p/2026-11-18-november-strength-in-numbers-verasight-poll-release",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonthe9e7d6157",
+      "pollster": "The Rainey Center",
+      "endDate": "2026-11-12",
+      "startDate": "2026-11-08",
+      "population": "lv",
+      "sampleSize": 1001,
+      "approve": 39,
+      "disapprove": 60,
+      "net": -21,
+      "weight": 0.6156,
+      "url": "https://www.raineyfreedom.org/news-and-events/voter-priorities-post-election-cost-of-living-and-bipartisanship",
+      "sources": [
+        "votehub",
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "votehub:appdonyou2d56a2c2",
+      "pollster": "YouGov",
+      "endDate": "2026-11-11",
+      "startDate": "2026-11-09",
+      "population": "a",
+      "sampleSize": 1685,
+      "approve": 32,
+      "disapprove": 63,
+      "net": -31,
+      "weight": 0.3664,
+      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econTabReport_9PIqjA0.pdf#page=27",
+      "sources": [
+        "votehub",
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "votehub:appdonips03a82cf3",
+      "pollster": "Ipsos",
+      "endDate": "2026-11-09",
+      "startDate": "2026-11-06",
+      "population": "a",
+      "sampleSize": 1705,
+      "approve": 32,
+      "disapprove": 65,
+      "net": -33,
+      "weight": 0.32,
+      "url": "https://www.ipsos.com/en-us/reutersipsos-post-election-survey",
+      "sources": [
+        "votehub",
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "votehub:appdonglob56ad910",
+      "pollster": "Global Strategy Group",
+      "endDate": "2026-11-08",
+      "startDate": "2026-10-28",
+      "population": "lv",
+      "sampleSize": 3000,
+      "approve": 37,
+      "disapprove": 63,
+      "net": -26,
+      "weight": 0.4665,
+      "url": "https://navigatorresearch.org/trump-disapproval-and-regret-fueled-the-blue-wave",
+      "sources": [
+        "votehub",
+        "pollfinity"
+      ]
+    },
+    {
+      "id": "votehub:appdonmora140cb74",
+      "pollster": "Morning Consult",
+      "endDate": "2026-11-08",
+      "startDate": "2026-11-06",
+      "population": "rv",
+      "sampleSize": 2200,
+      "approve": 40,
+      "disapprove": 57,
+      "net": -17,
+      "weight": 0.28,
+      "url": "https://eyokley.com/read/outlook-2026-11-09",
+      "sources": [
+        "votehub",
         "pollfinity"
       ]
     },
@@ -7280,41 +7603,43 @@
       "approve": 36,
       "disapprove": 62,
       "net": -26,
-      "weight": 0.5005,
+      "weight": 0.2194,
       "url": null,
       "sources": [
         "pollfinity"
       ]
     },
     {
-      "id": "pollfinity:economistyougov-2026-11-06-36-62",
-      "pollster": "Economist/YouGov",
+      "id": "votehub:appdonyoube43ac46",
+      "pollster": "YouGov Blue",
       "endDate": "2026-11-06",
-      "startDate": "2026-11-06",
-      "population": "a",
-      "sampleSize": null,
-      "approve": 36,
-      "disapprove": 62,
-      "net": -26,
-      "weight": 0.4898,
-      "url": null,
+      "startDate": "2026-10-29",
+      "population": "rv",
+      "sampleSize": 1339,
+      "approve": 39,
+      "disapprove": 61,
+      "net": -22,
+      "weight": 0.3168,
+      "url": "https://democracycorps.com/national-surveys/briefing-deck-what-voters-told-us-about-the-2026-election",
       "sources": [
+        "votehub",
         "pollfinity"
       ]
     },
     {
-      "id": "pollfinity:emersoncollegepolling-2026-10-30-37-57",
-      "pollster": "Emerson College Polling",
-      "endDate": "2026-10-30",
-      "startDate": "2026-10-30",
-      "population": "a",
-      "sampleSize": null,
-      "approve": 37,
-      "disapprove": 57,
-      "net": -20,
-      "weight": 0.8097,
-      "url": null,
+      "id": "votehub:appdonj.l59671df7",
+      "pollster": "J.L. Partners",
+      "endDate": "2026-11-03",
+      "startDate": "2026-11-03",
+      "population": "rv",
+      "sampleSize": 1000,
+      "approve": 39,
+      "disapprove": 52,
+      "net": -13,
+      "weight": 0.3299,
+      "url": "https://jlpartners.com/sitting-out-the-surf",
       "sources": [
+        "votehub",
         "pollfinity"
       ]
     },
@@ -7328,7 +7653,7 @@
       "approve": 43,
       "disapprove": 56,
       "net": -13,
-      "weight": 0.1894,
+      "weight": 0.0447,
       "url": "https://napolitannews.org/jobapproval#10-06-2026",
       "sources": [
         "votehub"
@@ -7344,7 +7669,7 @@
       "approve": 30,
       "disapprove": 68,
       "net": -38,
-      "weight": 0.483,
+      "weight": 0.0454,
       "url": "https://www.pewresearch.org/politics/2026/10/08/with-americans-in-a-sour-mood-democratic-voters-are-more-engaged-in-midterms",
       "sources": [
         "votehub"
@@ -7360,24 +7685,8 @@
       "approve": 38,
       "disapprove": 52,
       "net": -14,
-      "weight": 0.1725,
+      "weight": 0.0032,
       "url": "https://issuesinsights.com/2026/08/31/trumps-voter-approval-stays-strong-with-gop-but-weakens-with-indie-voters-ii-tipp-poll/",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonips081c616d",
-      "pollster": "Ipsos",
-      "endDate": "2026-08-24",
-      "startDate": "2026-08-21",
-      "population": "rv",
-      "sampleSize": 951,
-      "approve": 37,
-      "disapprove": 63,
-      "net": -26,
-      "weight": 0.0906,
-      "url": "https://www.ipsos.com/en-us/americans-continue-expect-extended-us-military-involvement-iran",
       "sources": [
         "votehub"
       ]
@@ -7392,8 +7701,24 @@
       "approve": 40,
       "disapprove": 57,
       "net": -17,
-      "weight": 0.0684,
+      "weight": 0.0015,
       "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econTabReport_v7iliA1.pdf#page=31",
+      "sources": [
+        "votehub"
+      ]
+    },
+    {
+      "id": "votehub:appdonips081c616d",
+      "pollster": "Ipsos",
+      "endDate": "2026-08-24",
+      "startDate": "2026-08-21",
+      "population": "rv",
+      "sampleSize": 951,
+      "approve": 37,
+      "disapprove": 63,
+      "net": -26,
+      "weight": 0.0012,
+      "url": "https://www.ipsos.com/en-us/americans-continue-expect-extended-us-military-involvement-iran",
       "sources": [
         "votehub"
       ]
@@ -7408,7 +7733,7 @@
       "approve": 42,
       "disapprove": 55,
       "net": -13,
-      "weight": 0.0641,
+      "weight": 0.0014,
       "url": "https://napolitannews.org/jobapproval#08-17-2026",
       "sources": [
         "votehub"
@@ -7424,632 +7749,8 @@
       "approve": 42,
       "disapprove": 56,
       "net": -14,
-      "weight": 0.1258,
+      "weight": 0.0014,
       "url": "https://www.thecentersquare.com/polls#08-16-2026",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonyou319bfe49",
-      "pollster": "YouGov",
-      "endDate": "2026-06-29",
-      "startDate": "2026-06-26",
-      "population": "rv",
-      "sampleSize": 1428,
-      "approve": 40,
-      "disapprove": 58,
-      "net": -18,
-      "weight": 0.0207,
-      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econTabReport_1tbbxVr.pdf#page=4",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonbig21afe736",
-      "pollster": "Big Data Poll",
-      "endDate": "2026-06-28",
-      "startDate": "2026-06-26",
-      "population": "lv",
-      "sampleSize": 2604,
-      "approve": 44.4,
-      "disapprove": 53.3,
-      "net": -8.9,
-      "weight": 0.0327,
-      "url": "https://www.bigdatapoll.com/blog/trump-bump-voters-overwhelmingly-support-iran-peace-deal/",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonmcl82c5b1de",
-      "pollster": "McLaughlin & Associates",
-      "endDate": "2026-06-23",
-      "startDate": "2026-06-17",
-      "population": "lv",
-      "sampleSize": 1000,
-      "approve": 46,
-      "disapprove": 50,
-      "net": -4,
-      "weight": 0.0297,
-      "url": "https://mclaughlinonline.com/pols/wp-content/uploads/2026/06/National-June-Presentation-RELEASE-June-2026.pdf",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonrmgbdce1d04",
-      "pollster": "RMG Research",
-      "endDate": "2026-06-23",
-      "startDate": "2026-06-16",
-      "population": "rv",
-      "sampleSize": 3000,
-      "approve": 43,
-      "disapprove": 55,
-      "net": -12,
-      "weight": 0.0239,
-      "url": "https://napolitannews.org/jobapproval",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonquic94c3045",
-      "pollster": "Quinnipiac University",
-      "endDate": "2026-06-22",
-      "startDate": "2026-06-18",
-      "population": "rv",
-      "sampleSize": 1165,
-      "approve": 38,
-      "disapprove": 55,
-      "net": -17,
-      "weight": 0.0342,
-      "url": "https://poll.qu.edu/poll-release?releaseid=3961",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonvera0a8d3f8",
-      "pollster": "Verasight",
-      "endDate": "2026-06-22",
-      "startDate": "2026-06-17",
-      "population": "a",
-      "sampleSize": 2087,
-      "approve": 37,
-      "disapprove": 60,
-      "net": -23,
-      "weight": 0.0326,
-      "url": "https://www.gelliottmorris.com/p/poll",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonips8b682645",
-      "pollster": "Ipsos",
-      "endDate": "2026-06-22",
-      "startDate": "2026-06-18",
-      "population": "rv",
-      "sampleSize": 978,
-      "approve": 34,
-      "disapprove": 64,
-      "net": -30,
-      "weight": 0.0235,
-      "url": "https://www.reuters.com/data/trumps-approval-rating-2025-01-21/",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonech4ae9eee2",
-      "pollster": "Echelon Insights",
-      "endDate": "2026-06-22",
-      "startDate": "2026-06-18",
-      "population": "lv",
-      "sampleSize": 1003,
-      "approve": 41,
-      "disapprove": 58,
-      "net": -17,
-      "weight": 0.0203,
-      "url": "https://echeloninsights.com/insights/june-2026-america-250-verified-voter-omnibus",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonyoub2fe3e15",
-      "pollster": "YouGov",
-      "endDate": "2026-06-22",
-      "startDate": "2026-06-19",
-      "population": "rv",
-      "sampleSize": 1517,
-      "approve": 39,
-      "disapprove": 58,
-      "net": -19,
-      "weight": 0.0183,
-      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econTabReport_v8p0Pe8.pdf#page=4",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonmord01ba943",
-      "pollster": "Morning Consult",
-      "endDate": "2026-06-22",
-      "startDate": "2026-06-19",
-      "population": "rv",
-      "sampleSize": 2200,
-      "approve": 43.1,
-      "disapprove": 54.3,
-      "net": -11.2,
-      "weight": 0.0106,
-      "url": "https://pro-assets.morningconsult.com/wp-uploads/2026/06/MCPI-PI-Weekly_260622.html",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonj.l5a345c41",
-      "pollster": "J.L. Partners",
-      "endDate": "2026-06-21",
-      "startDate": "2026-06-19",
-      "population": "rv",
-      "sampleSize": 1042,
-      "approve": 47,
-      "disapprove": 53,
-      "net": -6,
-      "weight": 0.0307,
-      "url": "https://www.dailymail.com/news/article-15921233/trump-approval-bounces-iran-deal.html",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonameea0e73fc",
-      "pollster": "American Research Group",
-      "endDate": "2026-06-20",
-      "startDate": "2026-06-16",
-      "population": "rv",
-      "sampleSize": 1006,
-      "approve": 30,
-      "disapprove": 67,
-      "net": -37,
-      "weight": 0.0292,
-      "url": "https://americanresearchgroup.com/economy/",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonyoub00f2735",
-      "pollster": "YouGov",
-      "endDate": "2026-06-19",
-      "startDate": "2026-06-17",
-      "population": "a",
-      "sampleSize": 2519,
-      "approve": 38,
-      "disapprove": 62,
-      "net": -24,
-      "weight": 0.0211,
-      "url": "https://assets1.cbsnewsstatic.com/hub/cms/prod_cms_alt/file/2026/06/21/90063c95-6d0a-4a28-b9ab-528e08940916/cbsnews_20260621_sun.pdf",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonrmg0715e331",
-      "pollster": "RMG Research",
-      "endDate": "2026-06-18",
-      "startDate": "2026-06-10",
-      "population": "rv",
-      "sampleSize": 3000,
-      "approve": 43,
-      "disapprove": 55,
-      "net": -12,
-      "weight": 0.0214,
-      "url": "https://napolitannews.org/jobapproval#06-18-2026",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonap-6dc2cc83",
-      "pollster": "AP-NORC",
-      "endDate": "2026-06-17",
-      "startDate": "2026-06-11",
-      "population": "a",
-      "sampleSize": 3040,
-      "approve": 37,
-      "disapprove": 62,
-      "net": -25,
-      "weight": 0.0315,
-      "url": "https://apnorc.org/wp-content/uploads/2026/06/June-2026-Topline.pdf",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonqua1fbaf73b",
-      "pollster": "Quantus Insights",
-      "endDate": "2026-06-17",
-      "startDate": "2026-06-16",
-      "population": "lv",
-      "sampleSize": 1000,
-      "approve": 43,
-      "disapprove": 56,
-      "net": -13,
-      "weight": 0.0238,
-      "url": "https://polls.quantusinsights.org/polls/national-approval-june-17?tab=toplines",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonthe259afea8",
-      "pollster": "The Bullfinch Group",
-      "endDate": "2026-06-16",
-      "startDate": "2026-06-12",
-      "population": "rv",
-      "sampleSize": 1000,
-      "approve": 42,
-      "disapprove": 56,
-      "net": -14,
-      "weight": 0.0233,
-      "url": "https://cdn.prod.website-files.com/68f64c3625044325e169d107/6a3583631f77734f69af70c8_2026%20IC%20Nationwide%20News%20Survey%20Toplines%20(1).pdf",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonmar846f107b",
-      "pollster": "Marquette University Law School",
-      "endDate": "2026-06-15",
-      "startDate": "2026-06-09",
-      "population": "a",
-      "sampleSize": 1514,
-      "approve": 38,
-      "disapprove": 62,
-      "net": -24,
-      "weight": 0.0268,
-      "url": "https://law.marquette.edu/poll/",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonbea7035f2d9",
-      "pollster": "Beacon Research/Shaw & Co. Research",
-      "endDate": "2026-06-15",
-      "startDate": "2026-06-12",
-      "population": "rv",
-      "sampleSize": 1002,
-      "approve": 39,
-      "disapprove": 60,
-      "net": -21,
-      "weight": 0.0257,
-      "url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/06/fox_june-12-15-2026_national_topline_june-17-release.pdf",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonipsb35d6ff5",
-      "pollster": "Ipsos",
-      "endDate": "2026-06-15",
-      "startDate": "2026-06-12",
-      "population": "rv",
-      "sampleSize": 1195,
-      "approve": 40,
-      "disapprove": 60,
-      "net": -20,
-      "weight": 0.0223,
-      "url": "https://www.ipsos.com/sites/default/files/ct/news/documents/2026-06/Reuters%20Ipsos%20America%20250%20Poll%20Topline%20June%202026_0.pdf",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonyouf5029f98",
-      "pollster": "YouGov",
-      "endDate": "2026-06-15",
-      "startDate": "2026-06-13",
-      "population": "rv",
-      "sampleSize": 1403,
-      "approve": 41,
-      "disapprove": 56,
-      "net": -15,
-      "weight": 0.0151,
-      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econTabReport_GpnDRNm.pdf#page=47",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonmor53d7f039",
-      "pollster": "Morning Consult",
-      "endDate": "2026-06-15",
-      "startDate": "2026-06-12",
-      "population": "rv",
-      "sampleSize": 2200,
-      "approve": 43.1,
-      "disapprove": 53.4,
-      "net": -10.3,
-      "weight": 0.0091,
-      "url": "https://pro-assets.morningconsult.com/wp-uploads/2026/06/MCPI-PI-Weekly_260622.html",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonech98624dac",
-      "pollster": "Echelon Insights",
-      "endDate": "2026-06-14",
-      "startDate": "2026-06-11",
-      "population": "lv",
-      "sampleSize": 1012,
-      "approve": 40,
-      "disapprove": 59,
-      "net": -19,
-      "weight": 0.0172,
-      "url": "https://echeloninsights.com/hubfs/_Media%20for%20Insights%20Blog/June%202026%20Voter%20Omnibus%20Topline%20-%20External.pdf",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonmarc2ce770a",
-      "pollster": "Marist University",
-      "endDate": "2026-06-11",
-      "startDate": "2026-06-08",
-      "population": "rv",
-      "sampleSize": 1162,
-      "approve": 38,
-      "disapprove": 59,
-      "net": -21,
-      "weight": 0.0364,
-      "url": "https://maristpoll.marist.edu/wp-content/uploads/2026/06/NPR_PBS-News_Marist-Poll_USA-NOS-and-Tables_202606120857.pdf",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonrmg65905496",
-      "pollster": "RMG Research",
-      "endDate": "2026-06-11",
-      "startDate": "2026-06-03",
-      "population": "rv",
-      "sampleSize": 3000,
-      "approve": 42,
-      "disapprove": 56,
-      "net": -14,
-      "weight": 0.0184,
-      "url": "https://napolitannews.org/jobapproval#06-11-2026",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonipsafe1f92e",
-      "pollster": "Ipsos",
-      "endDate": "2026-06-08",
-      "startDate": "2026-06-03",
-      "population": "rv",
-      "sampleSize": 3578,
-      "approve": 38,
-      "disapprove": 61,
-      "net": -23,
-      "weight": 0.0332,
-      "url": "https://www.ipsos.com/sites/default/files/ct/news/documents/2026-06/Reuters%20Ipsos%20Large%20Issue%20Topline%20June%202026%206.8%20release.pdf",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonemeab263756",
-      "pollster": "Emerson College",
-      "endDate": "2026-06-08",
-      "startDate": "2026-06-07",
-      "population": "lv",
-      "sampleSize": 1200,
-      "approve": 39.4,
-      "disapprove": 54.6,
-      "net": -15.2,
-      "weight": 0.0214,
-      "url": "https://docs.google.com/spreadsheets/d/1OdhDSPbsk575neEvXB2v103QdfEAE8l-/edit?gid=1710999602#gid=1710999602",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonglo438a47fc",
-      "pollster": "Global Strategy Group",
-      "endDate": "2026-06-08",
-      "startDate": "2026-06-04",
-      "population": "rv",
-      "sampleSize": 1000,
-      "approve": 40,
-      "disapprove": 58,
-      "net": -18,
-      "weight": 0.0208,
-      "url": "https://navigatorresearch.org/wp-content/uploads/2026/06/Navigator-Update-06.15.2026.pdf",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonyoudd7ff04e",
-      "pollster": "YouGov",
-      "endDate": "2026-06-08",
-      "startDate": "2026-06-05",
-      "population": "rv",
-      "sampleSize": 1438,
-      "approve": 39,
-      "disapprove": 59,
-      "net": -20,
-      "weight": 0.0132,
-      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econTabReport_nvajahp.pdf#page=16",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonmor94b82fbd",
-      "pollster": "Morning Consult",
-      "endDate": "2026-06-08",
-      "startDate": "2026-06-06",
-      "population": "rv",
-      "sampleSize": 2200,
-      "approve": 44,
-      "disapprove": 54,
-      "net": -10,
-      "weight": 0.0078,
-      "url": "https://pro-assets.morningconsult.com/wp-uploads/2026/06/MCPI-PI-Weekly_260609.html#06-08-2026",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonhar2d99bbc2",
-      "pollster": "HarrisX",
-      "endDate": "2026-06-07",
-      "startDate": "2026-05-20",
-      "population": "lv",
-      "sampleSize": 1137,
-      "approve": 44,
-      "disapprove": 54,
-      "net": -10,
-      "weight": 0.0333,
-      "url": "https://www.harrisx.com/content/forbes-harrisx-american-confidence-tracker-june-2026#06-07-2026",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonhar035e6496",
-      "pollster": "Hart Research Associates/Public Opinion Strategies",
-      "endDate": "2026-06-07",
-      "startDate": "2026-05-29",
-      "population": "rv",
-      "sampleSize": 2400,
-      "approve": 42,
-      "disapprove": 57,
-      "net": -15,
-      "weight": 0.0333,
-      "url": "https://www.documentcloud.org/documents/28246606-260216-nbc-june-2026-poll-61426-release",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonres6259e65c",
-      "pollster": "Research Co.",
-      "endDate": "2026-06-06",
-      "startDate": "2026-06-04",
-      "population": "a",
-      "sampleSize": 1001,
-      "approve": 38,
-      "disapprove": 57,
-      "net": -19,
-      "weight": 0.0326,
-      "url": "https://researchco.ca/wp-content/uploads/2026/06/Tables_Politics_USA_15Jun2026.pdf",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonclad90d3abf",
-      "pollster": "Clarity Campaign Labs",
-      "endDate": "2026-06-05",
-      "startDate": "2026-05-28",
-      "population": "lv",
-      "sampleSize": 1045,
-      "approve": 40,
-      "disapprove": 58,
-      "net": -18,
-      "weight": 0.0319,
-      "url": "https://www.claritycampaigns.com/clarity-omnibus-2026-may",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonnob95ec3b7f",
-      "pollster": "Noble Predictive Insights",
-      "endDate": "2026-06-04",
-      "startDate": "2026-06-01",
-      "population": "rv",
-      "sampleSize": 2585,
-      "approve": 40,
-      "disapprove": 58,
-      "net": -18,
-      "weight": 0.0261,
-      "url": "https://www.thecentersquare.com/national/article_068f34af-cac1-4328-b582-915d04044322.html",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonrmga1d490a7",
-      "pollster": "RMG Research",
-      "endDate": "2026-06-04",
-      "startDate": "2026-05-26",
-      "population": "rv",
-      "sampleSize": 3000,
-      "approve": 44,
-      "disapprove": 55,
-      "net": -11,
-      "weight": 0.0158,
-      "url": "https://napolitannews.org/jobapproval#06-04-2026",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonthe0b6c3d57",
-      "pollster": "The Argument/Verasight",
-      "endDate": "2026-06-03",
-      "startDate": "2026-05-29",
-      "population": "rv",
-      "sampleSize": 3008,
-      "approve": 38,
-      "disapprove": 61,
-      "net": -23,
-      "weight": 0.0306,
-      "url": "https://www.theargumentmag.com/p/the-biggest-issue-in-american-politics",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdontheb893ec9c",
-      "pollster": "The Winston Group",
-      "endDate": "2026-06-02",
-      "startDate": "2026-05-30",
-      "population": "rv",
-      "sampleSize": 1000,
-      "approve": 37,
-      "disapprove": 58,
-      "net": -21,
-      "weight": 0.0233,
-      "url": "https://www.winningtheissues.org/wp-content/uploads/2026/06/May-2026-Winning-the-Issues-Survey.pdf",
-      "sources": [
-        "votehub"
-      ]
-    },
-    {
-      "id": "votehub:appdonqua9c30128a",
-      "pollster": "Quantus Insights",
-      "endDate": "2026-06-02",
-      "startDate": "2026-06-01",
-      "population": "lv",
-      "sampleSize": 1050,
-      "approve": 42,
-      "disapprove": 56,
-      "net": -14,
-      "weight": 0.0176,
-      "url": "https://drive.google.com/file/d/170FM0UjFJmSccdmQqJKxbqhw-wsWDtdi/view",
       "sources": [
         "votehub"
       ]
