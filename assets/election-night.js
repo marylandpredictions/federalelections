@@ -295,17 +295,9 @@ function refreshRaceSnapshotBaseline(race) {
 function topCandidates(race, limit = 3) {
   const total = totalVotes(race);
   const live = hasActiveResults(race);
-  return (race?.candidates || [])
-    .map((candidate) => ({ ...candidate, percent: safePercent(candidate, total) }))
-    .sort((a, b) => candidateSortValue(b, live) - candidateSortValue(a, live))
-    .slice(0, limit);
-}
-
-function candidateSortValue(candidate, live) {
-  if (live) return (Number(candidate.votes) || 0) * 1000 + (Number(candidate.percent) || 0);
-  const party = normalizedPartyCode(candidate);
-  const partyOrder = party === "D" ? 500 : party === "R" ? 490 : party === "I" ? 470 : 430;
-  return partyOrder + (candidate.incumbent ? 100 : 0);
+  const order = globalThis.FEACandidateOrder?.orderCandidates || globalThis.FEAResultsUI?.orderCandidates;
+  const rows = (race?.candidates || []).map((candidate) => ({ ...candidate, percent: safePercent(candidate, total) }));
+  return (order ? order(rows, { live }) : rows.sort((a, b) => (Number(b.votes) || 0) - (Number(a.votes) || 0))).slice(0, limit);
 }
 
 function countyTopCandidatesForElectionNight(county, limit = 3) {
@@ -1164,7 +1156,7 @@ class ElectionNightPage {
         isWinner: false
       };
     });
-    race.candidates.sort((a, b) => (b.votes || 0) - (a.votes || 0));
+    race.candidates = (globalThis.FEACandidateOrder?.orderCandidates || globalThis.FEAResultsUI?.orderCandidates || ((rows) => [...rows].sort((a, b) => (Number(b.votes) || 0) - (Number(a.votes) || 0))))(race.candidates || []);
     race.status = "reporting";
     if (reportingPercent >= 90) {
       race.status = "called";

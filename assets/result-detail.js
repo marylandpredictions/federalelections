@@ -1097,51 +1097,30 @@ function hasReportedVotes(candidates) {
 }
 
 function sortedCandidates(race) {
+  const order = globalThis.FEACandidateOrder?.orderCandidates;
+  if (order) return order(race?.candidates || []);
   const candidates = [...(race?.candidates || [])];
-  const hasCalls = candidates.some((candidate) => candidate.callLabel);
   if (hasReportedVotes(candidates)) {
     return candidates.sort((a, b) => (
-      Number(Boolean(b.callLabel)) - Number(Boolean(a.callLabel))
+      Number(b.votes || 0) - Number(a.votes || 0)
       || Number(b.percent || 0) - Number(a.percent || 0)
-      || Number(b.votes || 0) - Number(a.votes || 0)
       || String(a.name || "").localeCompare(String(b.name || ""))
     ));
   }
-  if (hasCalls) {
-    return candidates.sort((a, b) => (
-      Number(Boolean(b.callLabel)) - Number(Boolean(a.callLabel))
-      || String(a.name || "").localeCompare(String(b.name || ""))
-    ));
-  }
-  const featuredNames = (race?.featuredCandidateNames || []).map((name) => String(name).toLowerCase());
-  if (!featuredNames.length) return candidates;
+  const major = (c) => {
+    const p = String(c.partyCode || c.party || "").toUpperCase();
+    return p === "D" || p === "R" || /democrat|republican|gop/i.test(String(c.party || ""));
+  };
   return candidates.sort((a, b) => {
-    const aRank = featuredNames.indexOf(String(a.name || "").toLowerCase());
-    const bRank = featuredNames.indexOf(String(b.name || "").toLowerCase());
-    const aValue = aRank === -1 ? Number.POSITIVE_INFINITY : aRank;
-    const bValue = bRank === -1 ? Number.POSITIVE_INFINITY : bRank;
-    return aValue - bValue;
+    const aMajor = major(a);
+    const bMajor = major(b);
+    if (aMajor !== bMajor) return aMajor ? -1 : 1;
+    return String(a.name || "").localeCompare(String(b.name || ""));
   });
 }
 
 function sortedCandidatesForCounty(race) {
-  const candidates = [...(race?.candidates || [])];
-  if (hasReportedVotes(candidates)) {
-    return candidates.sort((a, b) => (
-      Number(b.percent || 0) - Number(a.percent || 0)
-      || Number(b.votes || 0) - Number(a.votes || 0)
-      || String(a.name || "").localeCompare(String(b.name || ""))
-    ));
-  }
-  const featuredNames = (race?.featuredCandidateNames || []).map((name) => String(name).toLowerCase());
-  if (!featuredNames.length) return candidates;
-  return candidates.sort((a, b) => {
-    const aRank = featuredNames.indexOf(String(a.name || "").toLowerCase());
-    const bRank = featuredNames.indexOf(String(b.name || "").toLowerCase());
-    const aValue = aRank === -1 ? Number.POSITIVE_INFINITY : aRank;
-    const bValue = bRank === -1 ? Number.POSITIVE_INFINITY : bRank;
-    return aValue - bValue;
-  });
+  return sortedCandidates(race);
 }
 
 function candidateFill(race, candidate) {
@@ -1178,12 +1157,7 @@ function mixColor(from, to, amount) {
 }
 
 function marginCandidates(region) {
-  const candidates = [...(region?.candidates || [])];
-  const hasVotes = candidates.some((candidate) => Number(candidate.votes || 0) > 0);
-  return candidates.sort((a, b) => {
-    if (hasVotes) return Number(b.votes || 0) - Number(a.votes || 0) || Number(b.percent || 0) - Number(a.percent || 0);
-    return Number(b.percent || 0) - Number(a.percent || 0);
-  });
+  return sortedCandidates({ candidates: region?.candidates || [] });
 }
 
 function resultMarginInfo(race, region) {
@@ -1419,22 +1393,11 @@ function regionLeader(county) {
 }
 
 function countyTopCandidates(county, race, limit = 3) {
-  const candidates = [...(county.candidates || [])];
-  const hasVotes = hasReportedVotes(candidates);
-  const featuredNames = !hasVotes
-    ? (race?.featuredCandidateNames || []).map((name) => String(name).toLowerCase())
-    : [];
-  return candidates
-    .sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))
-    .sort((a, b) => {
-      if (hasVotes || !featuredNames.length) return 0;
-      const aRank = featuredNames.indexOf(String(a.name || "").toLowerCase());
-      const bRank = featuredNames.indexOf(String(b.name || "").toLowerCase());
-      const aValue = aRank === -1 ? Number.POSITIVE_INFINITY : aRank;
-      const bValue = bRank === -1 ? Number.POSITIVE_INFINITY : bRank;
-      return aValue - bValue;
-    })
-    .slice(0, limit);
+  const order = globalThis.FEACandidateOrder?.orderCandidates;
+  const rows = order
+    ? order(county?.candidates || [])
+    : sortedCandidates({ candidates: county?.candidates || [], featuredCandidateNames: race?.featuredCandidateNames });
+  return rows.slice(0, limit);
 }
 
 function countyTooltipMarkup(county, race, titlePrefix = "") {

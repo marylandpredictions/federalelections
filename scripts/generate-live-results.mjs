@@ -1,8 +1,11 @@
 import { mkdirSync, readFileSync, writeFileSync,renameSync } from "node:fs";
+import { createRequire } from "node:module";
 import {resultStorage} from './results/storage.mjs';
 import { pathToFileURL } from "node:url";
 import { resultSignature } from "./results/history.mjs";
 import { getResultsControl } from "./results/control.mjs";
+
+const { orderCandidates } = createRequire(import.meta.url)("../assets/candidate-order.js");
 
 const OUTPUT_URL = new URL("../data/live-results.json", import.meta.url);
 const DETAIL_DIR_URL = process.env.RESULTS_STORAGE_DIR ? pathToFileURL(resultStorage().details+'/') : new URL("../data/live-results-races/", import.meta.url);
@@ -647,12 +650,10 @@ function normalizeNbcRace(id, source, data, nbcRace, options = {}) {
   };
   const rawCandidates = Array.isArray(summary.candidates) ? summary.candidates : [];
   const hasVotes = rawCandidates.some((candidate) => Number(candidate.votes || 0) || Number(candidate.percentVote || 0));
-  let candidates = rawCandidates.map((candidate, index) => ({ ...normalizeNbcCandidate(candidate, raceBase), sourceOrder: index }));
-  candidates = candidates.sort((a, b) => {
-    if (hasVotes) return b.votes - a.votes || b.percent - a.percent;
-    const rankDelta = featuredRank(id, a.name) - featuredRank(id, b.name);
-    return Number.isFinite(rankDelta) ? rankDelta : a.sourceOrder - b.sourceOrder;
-  }).map(({ sourceOrder, ...candidate }) => candidate);
+  let candidates = orderCandidates(
+    rawCandidates.map((candidate) => normalizeNbcCandidate(candidate, raceBase)),
+    { live: hasVotes }
+  );
   const manualCalls = readManualCalls();
   const explicitCalls = manualCalls.races?.[String(id)]?.calls || [];
   const automaticCalls = explicitCalls.length ? [] : automaticUncontestedCalls(raceBase, candidates);
@@ -668,9 +669,9 @@ function normalizeNbcRace(id, source, data, nbcRace, options = {}) {
   const district = source.atLarge ? null : (source.district ?? (summary.district ? `${raceBase.state}-${String(summary.district).padStart(2, "0")}` : null));
   const counties = (nbcRace.areas || []).map((area) => {
     const areaRace = { ...raceBase, id: String(id) };
-    const areaCandidates = (area.candidates || [])
-      .map((candidate) => normalizeNbcCandidate(candidate, areaRace))
-      .sort((a, b) => b.votes - a.votes || b.percent - a.percent);
+    const areaCandidates = orderCandidates(
+      (area.candidates || []).map((candidate) => normalizeNbcCandidate(candidate, areaRace))
+    );
     return {
       id: slugify(area.name || area.areaId || ""),
       name: area.name || "",
@@ -880,13 +881,10 @@ function calculateGroupEstimatedVoteReporting(races) {
 
 function normalizeRace(race, group, options = {}) {
   const candidateHasVotes = (race.candidates || []).some((candidate) => Number(candidate.votes || 0) || Number(candidate.percent || 0));
-  const candidates = (race.candidates || []).map((candidate, index) => ({ ...normalizeCandidate(candidate), sourceOrder: index }))
-    .sort((a, b) => {
-      if (candidateHasVotes) return b.votes - a.votes || b.percent - a.percent;
-      const rankDelta = featuredRank(race.id, a.name) - featuredRank(race.id, b.name);
-      return Number.isFinite(rankDelta) ? rankDelta : a.sourceOrder - b.sourceOrder;
-    })
-    .map(({ sourceOrder, ...candidate }) => candidate);
+  const candidates = orderCandidates(
+    (race.candidates || []).map((candidate) => normalizeCandidate(candidate)),
+    { live: candidateHasVotes }
+  );
   const calledCandidates = candidates.map((candidate) => withManualCall(candidate, race));
   const manualCalls = readManualCalls();
   const explicitCalls = manualCalls.races?.[String(race.id)]?.calls || [];
@@ -951,8 +949,9 @@ function normalizeRace(race, group, options = {}) {
 function normalizeRegionResults(regionResults, race, externalEstimate = null) {
   if (!regionResults || typeof regionResults !== "object") return [];
   return Object.entries(regionResults).map(([key, region]) => {
-    const candidates = (region.candidates || []).map((candidate) => withManualCall(normalizeCandidate(candidate), race))
-      .sort((a, b) => b.votes - a.votes || b.percent - a.percent);
+    const candidates = orderCandidates(
+      (region.candidates || []).map((candidate) => withManualCall(normalizeCandidate(candidate), race))
+    );
     const precinctReporting = clampPercent(region.percent_reporting);
     const externalCounty = externalCountyEstimateFor({ id: key, name: region.name }, externalEstimate);
 

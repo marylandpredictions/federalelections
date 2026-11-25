@@ -98,9 +98,12 @@
     if(candidates.some(c=>!c.name||!Number.isSafeInteger(c.votes)||c.votes<0)||candidates.reduce((n,c)=>n+c.votes,0)>total)return null;
     return {margin:value,total,name:row.county||row.name,year:row.year,label:row.baselineRace,round:row.round,scope:race.type==='house'&&countyFips?'whole-county-reference':countyFips?'county':'race',candidates};
   }
+  function orderCandidates(candidates, options) {
+    return (root.FEACandidateOrder?.orderCandidates || ((rows) => [...(rows || [])].sort((a, b) => (Number(b.votes) || 0) - (Number(a.votes) || 0))))(candidates, options);
+  }
   function candidateLead(candidates,total) {
     if(!(total>0)||!Array.isArray(candidates)||!candidates.length||candidates.some(c=>!Number.isFinite(c.votes)||c.votes<0))return null;
-    const rows=[...candidates].sort((a,b)=>b.votes-a.votes);
+    const rows=orderCandidates(candidates,{live:true});
     if(rows.reduce((n,c)=>n+c.votes,0)>total)return null;
     return {name:rows[0].name,party:rows[0].partyCode||rows[0].party||'O',margin:(rows[0].votes-(rows[1]?.votes||0))/total*100};
   }
@@ -108,7 +111,7 @@
     const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const head=`<div class="election-map-tooltip-title">${esc(options.name||snapshot?.name||'Historical result')}</div><div class="election-map-tooltip-muted">${esc(options.label||'Historical election')}</div>`;
     if(!snapshot)return head+'<div class="election-map-tooltip-foot"><span>No verified comparable result</span></div>';
-    const sorted=[...snapshot.candidates].sort((a,b)=>b.votes-a.votes),rows=sorted.slice(0,3);
+    const sorted=orderCandidates(snapshot.candidates,{live:true}),rows=sorted.slice(0,3);
     if(sorted.length>3)rows.push({name:'Other candidates',party:'O',votes:sorted.slice(3).reduce((n,c)=>n+c.votes,0)});
     const body=rows.map(c=>{
       const color=options.color?.(c);
@@ -124,9 +127,10 @@
   function comparisonColumn(heading,subtitle,snapshot,theme){
     const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const lead=snapshot?candidateLead(snapshot.candidates,snapshot.total):null;
-    return `<section class="comparison-column" aria-label="${esc(heading+' '+subtitle)}"><header><strong class="comparison-year">${esc(heading)}</strong><span>${esc(subtitle)}</span>${snapshot?.total?`<small class="comparison-reporting">${snapshot.total.toLocaleString()} votes</small>`:''}</header><div class="comparison-candidates">${snapshot?snapshot.candidates.map(c=>{
-      const color=theme.candidateColor(c,snapshot.candidates),ink=theme.foreground(color),party=c.partyCode||c.party||'O';
-      return `<div class="comparison-candidate ${snapshot.total&&c.votes===Math.max(...snapshot.candidates.map(r=>r.votes))?'is-history-leader':''}" style="--candidate-color:${color};--candidate-ink:${ink}"><small>${esc(party)}</small><strong>${esc(c.name)}</strong><b>${snapshot.total?(c.votes/snapshot.total*100).toFixed(1)+'<em>%</em>':'—'}</b><span>${snapshot.total?Number(c.votes).toLocaleString()+' votes':'—'}</span></div>`;
+    const ordered=snapshot?orderCandidates(snapshot.candidates):[];
+    return `<section class="comparison-column" aria-label="${esc(heading+' '+subtitle)}"><header><strong class="comparison-year">${esc(heading)}</strong><span>${esc(subtitle)}</span>${snapshot?.total?`<small class="comparison-reporting">${snapshot.total.toLocaleString()} votes</small>`:''}</header><div class="comparison-candidates">${snapshot?ordered.map(c=>{
+      const color=theme.candidateColor(c,ordered),ink=theme.foreground(color),party=c.partyCode||c.party||'O';
+      return `<div class="comparison-candidate ${snapshot.total&&c.votes===Math.max(...ordered.map(r=>r.votes))?'is-history-leader':''}" style="--candidate-color:${color};--candidate-ink:${ink}"><small>${esc(party)}</small><strong>${esc(c.name)}</strong><b>${snapshot.total?(c.votes/snapshot.total*100).toFixed(1)+'<em>%</em>':'—'}</b><span>${snapshot.total?Number(c.votes).toLocaleString()+' votes':'—'}</span></div>`;
     }).join(''):'<div class="comparison-unavailable"><strong>—</strong><span>No verified result for these boundaries</span></div>'}</div><footer><span>Lead margin</span><strong>${lead?lead.margin===0?'Even':esc(lead.party)+' +'+lead.margin.toFixed(1):'—'}</strong></footer></section>`;
   }
   function demographicProfile(row,{district=false,county=false,house=false,simulated=false}={}){
@@ -260,6 +264,7 @@
     historicalSnapshot,
     comparisonColumn,
     demographicProfile,
+    orderCandidates,
     candidateLead,
     historicalTooltip,
     shift,

@@ -223,18 +223,18 @@ function setRaceFavorite(race, favorite) {
 }
 
 function leadingCandidate(race) {
+  const order = globalThis.FEACandidateOrder?.orderCandidates || globalThis.FEAResultsUI?.orderCandidates;
+  if (order) return order(race.candidates || [])[0] || null;
   const candidates = [...(race.candidates || [])];
   if (candidates.some((candidate) => Number(candidate.votes || 0) || Number(candidate.percent || 0))) {
-    return candidates.sort((a, b) => Number(b.percent || 0) - Number(a.percent || 0) || Number(b.votes || 0) - Number(a.votes || 0))[0] || null;
+    return candidates.sort((a, b) => Number(b.votes || 0) - Number(a.votes || 0) || Number(b.percent || 0) - Number(a.percent || 0))[0] || null;
   }
-  const featuredNames = (race.featuredCandidateNames || []).map((name) => String(name).toLowerCase());
-  if (!featuredNames.length) return candidates[0] || null;
   return candidates.sort((a, b) => {
-    const aRank = featuredNames.indexOf(String(a.name || "").toLowerCase());
-    const bRank = featuredNames.indexOf(String(b.name || "").toLowerCase());
-    const aValue = aRank === -1 ? Number.POSITIVE_INFINITY : aRank;
-    const bValue = bRank === -1 ? Number.POSITIVE_INFINITY : bRank;
-    return aValue - bValue;
+    const major = (c) => /^(D|R)$/i.test(String(c.partyCode || c.party || "")) || /democrat|republican|gop/i.test(String(c.party || ""));
+    const aMajor = major(a);
+    const bMajor = major(b);
+    if (aMajor !== bMajor) return aMajor ? -1 : 1;
+    return String(a.name || "").localeCompare(String(b.name || ""));
   })[0] || null;
 }
 

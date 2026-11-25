@@ -153,9 +153,10 @@
     const code = c => String(c.partyCode || c.party || '').toUpperCase();
     const key = c => String(c.id || c.name).normalize('NFKC').toLowerCase();
     const identity = c => (race?.candidates || []).find(k => (k.id && c.id && k.id === c.id) || k.name === c.name || k.aliases?.includes(c.name));
-    const ranked = [...candidates].sort((a,b) => (Number(b.votes)||0)-(Number(a.votes)||0));
+    const order = globalThis.FEACandidateOrder?.orderCandidates || globalThis.FEAResultsUI?.orderCandidates;
+    const ranked = order ? order(candidates) : [...candidates].sort((a,b) => (Number(b.votes)||0)-(Number(a.votes)||0));
     const liveLeaders = new Set(ranked.filter(c => Number(c.votes)>0).slice(0,2).map(key));
-    const rows = candidates.filter(c => { const meta = identity(c); return (!(c.writeIn || meta?.writeIn) && ['D','R'].includes(code(c))) || c.summaryVisible || meta?.summaryVisible || liveLeaders.has(key(c)); });
+    const rows = ranked.filter(c => { const meta = identity(c); return (!(c.writeIn || meta?.writeIn) && ['D','R'].includes(code(c))) || c.summaryVisible || meta?.summaryVisible || liveLeaders.has(key(c)); });
     // A minor-party-only contest still needs a meaningful summary.
     return rows.length ? rows : ranked.filter(c=>!c.writeIn).slice(0,2);
   }

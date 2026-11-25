@@ -79,6 +79,21 @@ window.FEAEnhanceBoard = function (Page) {
     }).observe(document.getElementById("focused-race-panel"));
     // FEACompleteBoard's fea-desk-theme handler already refreshes fills.
   };
+  p.loadLiveResultsSummary = p.loadLiveResultsSummary || async function () {
+    return (
+      (await this.safeJson("/api/live-results")) ||
+      (await this.safeJson("/data/live-results.json")) ||
+      (await this.safeJson("data/live-results.json"))
+    );
+  };
+  p.loadLiveRaceDetail = p.loadLiveRaceDetail || async function (id) {
+    if (!id) return null;
+    return (
+      (await this.safeJson(`/api/live-results/race?id=${encodeURIComponent(id)}`)) ||
+      (await this.safeJson(`/data/live-results-races/${encodeURIComponent(id)}.json`)) ||
+      (await this.safeJson(`data/live-results-races/${encodeURIComponent(id)}.json`))
+    );
+  };
   p.loadData = async function () {
     // Manifest is small; heavy resources stay lazy.
     const [assets, live, watchlist, comparisons] = await Promise.all([
@@ -995,10 +1010,7 @@ window.FEAEnhanceBoard = function (Page) {
         : "";
     const status=`<div class="desk-result-status${!total&&!call?' is-awaiting':''}" style="--status-ink:${statusInk}"><span>${statusLabel}</span>${reportingBlock}</div>`;
     const max=Math.max(0,...(row.candidates||[]).map(c=>c.votes)),tied=(row.candidates||[]).filter(c=>c.votes===max).length>1;
-    return `${status}<table class="selected-race-table"><thead><tr><th>Candidate</th><th>Votes</th><th>Vote %</th></tr></thead><tbody>${[
-      ...(row.candidates || []),
-    ]
-      .sort((a,b)=>window.FEADeskTheme?.current.presentation==='broadcast'?(({D:0,R:1,I:2}[party(a)]??3)-({D:0,R:1,I:2}[party(b)]??3)||b.votes-a.votes):b.votes-a.votes)
+    return `${status}<table class="selected-race-table"><thead><tr><th>Candidate</th><th>Votes</th><th>Vote %</th></tr></thead><tbody>${(window.FEAResultsUI?.orderCandidates||window.FEACandidateOrder?.orderCandidates||(rows=>[...rows].sort((a,b)=>(b.votes||0)-(a.votes||0))))(row.candidates || [])
       .map(
         (c) =>
           `<tr class="${call?.candidate === c.name ? "is-projected" : ""}" style="--candidate-color:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)};--candidate-ink:${window.FEADeskTheme?.foreground(window.FEADeskTheme.candidateColor(c,row.candidates))||'#ffffff'}"><td><span class="selected-party-rail" style="background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></span><strong>${esc(c.name)} ${!call&&total&&c.votes===max?`<span class="desk-leader-tag">${tied?"Tied":"Leading"}</span>`:""} ${call?.candidate === c.name ? '<span class="winner-check" aria-label="Projected winner">✓</span>' : ""}</strong><small>${esc(c.partyLabels?.length?c.partyLabels.join(" / "):partyLabel(party(c)))}${c.writeIn?" · Write-in":""}${c.ballotStatus?" · "+esc(c.ballotStatus):""}</small>${total?`<span class="desk-candidate-track" aria-hidden="true"><i data-bar-id="${esc(c.id||c.name)}" style="width:${Math.max(0,Math.min(100,c.votes/total*100))}%;background:${window.FEADeskTheme?.candidateColor(c,row.candidates)||color(c)}"></i></span>`:''}</td><td data-number="${esc(c.name)}-votes">${total ? fmt(c.votes) : "—"}</td><td data-number="${esc(c.name)}-share">${total ? percent((c.votes / total) * 100) : "—"}</td></tr>`,
