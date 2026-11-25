@@ -997,7 +997,7 @@ class ElectionNightPage {
     if (this.refreshBusy) return;
     this.refreshBusy = true;
     try {
-      const data = await this.safeJson("/api/live-results");
+      const data = await this.loadLiveResultsSummary();
       if (!data?.groups) { this.renderProviderStatus({ status: "Connection failed", stale: true }); return; }
       this.lastCheckedAt = Date.now();
       this.liveRaceIndex = data.groups.flatMap(g => g.races || []);
@@ -1067,7 +1067,7 @@ class ElectionNightPage {
   async loadData() {
     const [results, liveResults, countyDescriptions, comparisonManifest, analysisNotes, watchlist] = await Promise.all([
       this.safeJson("data/election-night-races.json"),
-      this.safeJson("/api/live-results"),
+      this.loadLiveResultsSummary(),
       this.safeJson("data/result-county-descriptions.json"),
       this.safeJson("data/result-comparison-baselines.json"),
       this.safeJson("data/result-analysis-notes.json"),
@@ -1284,6 +1284,23 @@ class ElectionNightPage {
       console.error(`Could not load ${url}`, error);
       return null;
     }
+  }
+
+  async loadLiveResultsSummary() {
+    return (
+      (await this.safeJson("/api/live-results")) ||
+      (await this.safeJson("/data/live-results.json")) ||
+      (await this.safeJson("data/live-results.json"))
+    );
+  }
+
+  async loadLiveRaceDetail(id) {
+    if (!id) return null;
+    return (
+      (await this.safeJson(`/api/live-results/race?id=${encodeURIComponent(id)}`)) ||
+      (await this.safeJson(`/data/live-results-races/${encodeURIComponent(id)}.json`)) ||
+      (await this.safeJson(`data/live-results-races/${encodeURIComponent(id)}.json`))
+    );
   }
 
   comparisonSource(id = this.comparisonMode) {
@@ -2298,7 +2315,7 @@ class ElectionNightPage {
     const match = this.findLiveRaceIndexMatch(race);
     if (!match?.id) return null;
     if (this.liveRaceDetails.has(match.id)) return this.liveRaceDetails.get(match.id);
-    const detail = await this.safeJson(`/api/live-results/race?id=${encodeURIComponent(match.id)}`);
+    const detail = await this.loadLiveRaceDetail(match.id);
     this.liveRaceDetails.set(match.id, detail || null);
     return detail || null;
   }

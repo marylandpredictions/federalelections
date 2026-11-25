@@ -83,7 +83,7 @@ window.FEAEnhanceBoard = function (Page) {
     // Manifest is small; heavy resources stay lazy.
     const [assets, live, watchlist, comparisons] = await Promise.all([
       this.safeJson("data/results/map-assets.json"),
-      this.safeJson("/api/live-results"),
+      this.loadLiveResultsSummary(),
       this.safeJson("data/election-night-watchlist.json"),
       this.safeJson("data/result-comparison-baselines.json"),
     ]);
@@ -372,7 +372,7 @@ window.FEAEnhanceBoard = function (Page) {
           )
         : null;
       if (!changes || changes.reset) {
-        const full = await this.safeJson("/api/live-results");
+        const full = await this.loadLiveResultsSummary();
         if (!full?.groups) throw Error("Snapshot unavailable");
         changes = { ...full, races: full.groups.flatMap((g) => g.races) };
       }
@@ -510,9 +510,7 @@ window.FEAEnhanceBoard = function (Page) {
       this.liveRaceDetailRequests.set(
         key,
         (async () => {
-          const detail = await this.safeJson(
-            `/api/live-results/race?id=${encodeURIComponent(race.id)}`,
-          );
+          const detail = await this.loadLiveRaceDetail(race.id);
           if (detail?.id === race.id && Array.isArray(detail.candidates)) {
             const latestVersion=(this.liveRaceIndex||[]).find(r=>r.id===race.id)?.version||race.version;
             // First-open county hydration advances the server race version.

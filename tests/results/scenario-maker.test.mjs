@@ -103,7 +103,12 @@ test('Multi-year catalogues, president EV splits, tickets, and YAPms FEA shell',
  assert.ok(c28.races.some(r=>r.id==='president-ME-AL'));
  assert.ok(c28.races.some(r=>r.id==='president-ME-2'));
  assert.ok(c28.races.some(r=>r.id==='president-NE-3'));
- assert.equal(c28.races.filter(r=>r.type==='senate').length,33);
+ assert.equal(c28.races.filter(r=>r.type==='senate').length,35);
+ assert.ok(c28.races.some(r=>r.id==='senate-TN'),'2028 includes TN Class I special');
+ assert.deepEqual(cycles['2028'].heldSeats.senate,{D:40,R:25,I:0});
+ assert.deepEqual(cycles['2028'].heldSeats.governor,{D:27,R:12,I:0});
+ assert.deepEqual(cycles['2027'].heldSeats.governor,{D:29,R:18,I:0});
+ assert.deepEqual(cycles['2026'].heldSeats.senate,{D:34,R:31,I:0});
  assert.equal(Object.values(cycles['2028'].electoralVotes).reduce((n,v)=>n+v,0),538);
  assert.equal(cycles['2028'].electoralVotes['ME-AL'],2);
  assert.equal(cycles['2028'].electoralVotes['ME-1'],1);
@@ -121,7 +126,7 @@ test('Multi-year catalogues, president EV splits, tickets, and YAPms FEA shell',
  assert.match(mapUtils,/ME-01/);
  assert.match(readFileSync('assets/results-ui.js','utf8'),/function historyOffice/);
  const makerJs=readFileSync('assets/map-maker.js','utf8');
- assert.match(makerJs,/ensureYapmsDefault/);
+ assert.match(makerJs,/ensureMakerPresentation/);
  assert.match(makerJs,/syncTicketBar/);
  assert.match(makerJs,/syncSplitEv/);
  assert.match(makerJs,/layoutYapmsRail/);
@@ -135,9 +140,11 @@ test('Multi-year catalogues, president EV splits, tickets, and YAPms FEA shell',
  assert.match(readFileSync('assets/map-maker.css','utf8'),/maker-ticket-bar/);
  assert.match(readFileSync('assets/map-maker.css','utf8'),/maker-split-ev/);
  assert.match(readFileSync('assets/map-maker.css','utf8'),/maker-detail-open #maker-map/);
- assert.match(readFileSync('features/map-maker/2027.html','utf8'),/map-maker\.css\?v=20261121-rebuild6/);
+ assert.match(readFileSync('features/map-maker/2027.html','utf8'),/map-maker\.css\?v=20261124-snapshot1/);
  assert.match(readFileSync('features/map-maker/2027.html','utf8'),/FEA_Badge\.png/);
  assert.match(readFileSync('features/map-maker/2027.html','utf8'),/YOUR SCENARIO/);
+ assert.match(readFileSync('features/map-maker/2027.html','utf8'),/Loading map maker/);
+ assert.doesNotMatch(readFileSync('features/map-maker/2028.html','utf8'),/Loading 2026 map maker/);
  assert.match(readFileSync('features/map-maker/2028.html','utf8'),/maker-ticket-bar/);
  assert.match(readFileSync('features/map-maker/2028.html','utf8'),/maker-split-ev/);
  assert.match(readFileSync('features/map-maker/2028.html','utf8'),/All Map Makers/);
@@ -150,7 +157,9 @@ test('Multi-year catalogues, president EV splits, tickets, and YAPms FEA shell',
  assert.match(readFileSync('features/map-maker.html','utf8'),/maker-hub-grid/);
  assert.doesNotMatch(readFileSync('features/map-maker.html','utf8'),/href="\/features\/map-maker\/2026"/);
  assert.match(readFileSync('archive.html','utf8'),/map-maker\/2026/);
+ assert.match(readFileSync('archive.html','utf8'),/predictions\/2026\/senate/);
  assert.match(readFileSync('index.html','utf8'),/map-maker\/2028.*map-maker\/2027.*\/archive/s);
+ assert.match(readFileSync('index.html','utf8'),/home-explore[\s\S]*map-maker\/2027/);
  const declared=JSON.parse(readFileSync('data/features/map-maker/declared-candidates-2027.json'));
  assert.ok(declared.races['governor-MS']?.length>=4);
  assert.equal(declared.races['mayor-chicago'],undefined);

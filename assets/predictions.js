@@ -154,7 +154,7 @@
     const data = state.viewData;
     if ($("prediction-title")) $("prediction-title").textContent = config.title;
     if ($("prediction-subtitle")) {
-      $("prediction-subtitle").textContent = "Categorical FEA Ratings for the current 2026 map. Use the timeline to view earlier weekly snapshots.";
+      $("prediction-subtitle").textContent = "Archived categorical FEA Ratings from the 2026 midterms cycle. Use the timeline to view earlier weekly snapshots.";
     }
     if ($("prediction-updated")) {
       const date = data?.selectedSnapshotDate || data?.lastPublishedAt || data?.generatedAt;

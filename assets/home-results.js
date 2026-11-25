@@ -356,13 +356,21 @@
       });
   }
 
+  async function fetchLiveResults() {
+    try {
+      const response = await fetch('/api/live-results',{signal:AbortSignal.timeout(12000)});
+      if (response.ok) return {data: await response.json(), source: 'live'};
+    } catch {}
+    const response = await fetch('/data/live-results.json',{cache:'no-store',signal:AbortSignal.timeout(12000)});
+    if (!response.ok) throw Error('Results unavailable');
+    return {data: await response.json(), source: 'snapshot'};
+  }
+
   async function refresh() {
     if (busy || document.hidden || document.activeElement?.closest('.home-national-results,#home-election-updates,.home-calls')) return;
     busy = true;
     try {
-      const response = await fetch('/api/live-results',{signal:AbortSignal.timeout(12000)});
-      if (!response.ok) throw Error('Results unavailable');
-      const data = await response.json();
+      const {data, source} = await fetchLiveResults();
       const races = data.groups.flatMap(group=>group.races).filter(race=>race.electionDate==='2026-11-03');
       if (!races.length) throw Error('No 2026 races in the response');
       const updatedAt = data.updatedAt || data.generatedAt;
@@ -383,9 +391,12 @@
         return row;
       }));
       const stamp = Date.parse(data.provider?.lastUpstreamUpdate || updatedAt);
-      lastSource = [data.provider?.name || 'FEA results',
+      lastSource = [
+        data.provider?.name || 'FEA results',
         Number.isFinite(stamp) ? date.format(stamp)+' ET' : '',
-        data.provider?.stale ? 'Updates may be delayed' : ''].filter(Boolean).join(' · ');
+        source === 'snapshot' ? 'Recorded snapshot' : '',
+        data.provider?.stale ? 'Updates may be delayed' : ''
+      ].filter(Boolean).join(' · ');
       $('home-results-source').textContent = lastSource;
       $('home-notable-races').replaceChildren(...(close.length ? close.map(({race,candidates,total,gap})=>{
         const item = element('li','');

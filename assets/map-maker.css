@@ -51,7 +51,7 @@ html:has(body.map-maker dialog[open]) { overflow:hidden!important; }
 .map-maker .prediction-map-controls { position:absolute; z-index:2; top:8px; left:8px; display:flex; gap:4px; }
 .map-maker .prediction-map-controls button { min-width:40px; cursor:pointer; }
 .map-maker .prediction-shape-feature { stroke:var(--state-border); stroke-width:.65px; vector-effect:non-scaling-stroke; cursor:pointer; paint-order:stroke fill; }
-.map-maker .prediction-shape-feature.is-muted { fill:var(--panel-raised); stroke:var(--panel-border); cursor:default; }
+.map-maker .prediction-shape-feature.is-muted { fill:color-mix(in srgb,var(--panel-raised) 55%,var(--map-bg)); stroke:var(--panel-border); stroke-dasharray:3 2; cursor:default; opacity:.72; }
 /* Kill rectangular browser/theme focus boxes on every map SVG hit target. */
 .map-maker :is(.prediction-shape-feature,.prediction-split-unit,.prediction-unit-shape,.county-result-shape,.election-map-shape,.house-district-shape,.state-result-shape,.mayor-city,.mayor-pin,.mayor-halo,.map-context-shape):is(:focus,:focus-visible),
 .map-maker svg :is(path,circle,rect,polygon,ellipse,g)[tabindex]:is(:focus,:focus-visible) {
@@ -474,7 +474,7 @@ body.map-maker[data-presentation="broadcast"] :is(#desk-masthead,.maker-tools,.e
  .maker-totals { font-size:19px; }
 }
 
-.map-maker .prediction-shape-feature.is-muted { fill:color-mix(in srgb,var(--map-neutral) 28%,var(--map-bg));stroke:color-mix(in srgb,var(--map-neutral) 70%,var(--map-bg)); }
+.map-maker .prediction-shape-feature.is-muted { fill:color-mix(in srgb,var(--map-neutral) 18%,var(--map-bg));stroke:color-mix(in srgb,var(--map-neutral) 55%,var(--map-bg));stroke-dasharray:3 2;opacity:.7; }
 
 body.results-board.map-maker.maker-detail-open[data-presentation="broadcast"] .maker-workspace { grid-template-columns:minmax(0,1fr) clamp(150px,12vw,240px); }
 
@@ -563,7 +563,7 @@ body.map-maker[data-presentation="yapms"].maker-detail-open #maker-seat-summary 
 body.map-maker[data-presentation="yapms"].maker-detail-open .maker-workspace { left:18px; }
 body.map-maker[data-presentation="yapms"].maker-detail-open .maker-tools { display:none; }
 body.map-maker[data-presentation="yapms"] .prediction-shape-feature { stroke-width:1px; }
-body.map-maker[data-presentation="yapms"] .prediction-shape-feature.is-muted { fill:var(--map-neutral);stroke:var(--state-border);opacity:1; }
+body.map-maker[data-presentation="yapms"] .prediction-shape-feature.is-muted { fill:color-mix(in srgb,var(--map-neutral) 45%,var(--map-bg));stroke:var(--state-border);stroke-dasharray:3 2;opacity:.75; }
 body.map-maker[data-presentation="yapms"] .prediction-state-label { display:block;fill:#ffffff;paint-order:stroke;stroke:#20283899;stroke-width:.8px;stroke-linejoin:round; }
 
 /* Split boxes are SVG map chrome — same tokens as state fills/borders */

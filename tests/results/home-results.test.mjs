@@ -16,7 +16,7 @@ test('The homepage counts published contest calls, preserves the Mississippi man
   const {totals,recent,close} = home.summarize([manual,retracted]);
   assert.deepEqual(totals.senate,{D:1,R:0,other:0,called:1,open:1});
   assert.equal(recent[0].winner.name,'Scott Colom');
-  assert.equal(recent[0].call.source,'fea-manual');
+  assert.equal(recent[0].call.source,production.calls[0].source);
   assert.equal(close[0].race.id,retracted.id);
   const config = read('data/features/incoming-congress-120.json');
   const catalogue = read('data/features/map-maker-races.json').races;

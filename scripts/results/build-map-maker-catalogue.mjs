@@ -21,16 +21,23 @@ writeFileSync(
   JSON.stringify({schemaVersion: 1, cycle: 2027, races: races2027}) + '\n'
 );
 
-// Class III Senate seats (2028 cycle).
-const senate2028 = ['AL','AK','AZ','AR','CA','CO','CT','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','MD','MO','NV','NH','NY','NC','ND','OH','OK','OR','PA','SC','SD','UT','VT','WA','WI'];
+// Class III Senate seats + TN Class I special (Blackburn gubernatorial vacancy) for the 2028 cycle.
+const senate2028 = ['AL','AK','AZ','AR','CA','CO','CT','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','MD','MO','NV','NH','NY','NC','ND','OH','OK','OR','PA','SC','SD','TN','UT','VT','WA','WI'];
 // Gubernatorial seats on the 2028 ballot.
 const governor2028 = ['DE','IN','MO','MT','NH','NC','ND','UT','VT','WA','WV'];
-const states = JSON.parse(readFileSync('data/features/map-maker/cycles.json', 'utf8')).cycles['2028'].electoralVotes;
+const electoralVotes = JSON.parse(readFileSync('data/features/map-maker/cycles.json', 'utf8')).cycles['2028'].electoralVotes;
+const president2028 = Object.keys(electoralVotes).map((key) => {
+  if (key.includes('-')) {
+    const [state, district] = key.split('-');
+    return {id: `president-${key}`, type: 'president', state, district};
+  }
+  return {id: `president-${key}`, type: 'president', state: key};
+});
 const races2028 = [
   ...races2026.filter((r) => r.type === 'house'),
   ...senate2028.map((state) => ({id: `senate-${state}`, type: 'senate', state})),
   ...governor2028.map((state) => ({id: `governor-${state}`, type: 'governor', state})),
-  ...Object.keys(states).map((state) => ({id: `president-${state}`, type: 'president', state}))
+  ...president2028
 ];
 writeFileSync(
   'data/features/map-maker/races-2028.json',
